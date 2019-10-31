@@ -1,0 +1,14 @@
+FROM quay.io/battelleecology/data_access_parent:4
+
+ENV APP_DIR="location_active_dates"
+ENV LIB_DIR="lib"
+ENV DATA_ACCESS_DIR="data_access"
+
+ENV CONTAINER_ROOT="/usr/src/app"
+ENV PYTHONPATH="${PYTHONPATH}:/usr/src/app"
+
+WORKDIR ${CONTAINER_ROOT}
+
+ADD ${APP_DIR} ${CONTAINER_ROOT}/${APP_DIR}
+ADD ${LIB_DIR} ${CONTAINER_ROOT}/${LIB_DIR}
+ADD ${DATA_ACCESS_DIR} ${CONTAINER_ROOT}/${DATA_ACCESS_DIR}

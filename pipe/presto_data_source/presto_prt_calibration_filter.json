@@ -1,0 +1,26 @@
+{
+  "pipeline": {
+    "name": "presto_prt_calibration_filter"
+  },
+  "transform": {
+    "cmd": [ "/bin/bash" ],
+    "stdin": ["Rscript /flow.cal.filt.R $presto_prt_calibration_group"],
+    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.16",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"]
+  },
+  "input": {
+    "pfs": {
+      "repo": "presto_prt_calibration_group",
+      "glob": "/prt/*/*/*/"
+    }
+  },
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200M",
+    "cpu": 1.0
+  },
+  "enable_stats": true,
+  "standby": true
+}

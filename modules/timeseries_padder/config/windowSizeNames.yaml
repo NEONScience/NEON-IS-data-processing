@@ -1,0 +1,4 @@
+windowSizesInPoints:
+  - "Despiking window size - points"
+windowSizesInSeconds:
+  - "Persistence (time - seconds)"

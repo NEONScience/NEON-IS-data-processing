@@ -1,0 +1,26 @@
+{
+  "pipeline": {
+    "name": "presto_prt_regularize_10sec"
+  },
+  "transform": {
+    "cmd": [ "/bin/bash" ],
+    "stdin": ["Rscript /flow.rglr.R $presto_prt_calibration 0.1 CybiEc Trlg PosWndwMin data flags"],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.6",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"]
+  },
+  "input": {
+    "pfs": {
+      "repo": "presto_prt_calibration",
+      "glob": "/prt/*/*/*/"
+    }
+  },
+  "enable_stats": true,
+  "standby": true,
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 1.0
+  },
+  "parallelism_spec": {
+    "constant": "1"
+  }
+}
