@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-def format(date_time):
+def convert(date_time):
     """
     Return a datetime as an ISO standard string.
     :param date_time A datetime object.

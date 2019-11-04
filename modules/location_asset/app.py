@@ -24,7 +24,6 @@ def write_file(out_path, asset, location_history, date_generated):
     :param asset: Dictionary containing asset type and ID.
     :param location_history: Dictionary containing the asset location history.
     :param date_generated: The file generation date.
-    :return:
     """
     pathlib.Path(out_path).mkdir(parents=True, exist_ok=True)
 
@@ -53,7 +52,7 @@ def load(db_url, out_path):
             if asset_type is not None:
                 asset_out_dir = os.path.join(out_path, asset_type, str(asset_id))
                 location_history = named_location_finder.get_asset_history(connection, asset_id)
-                date_generated = date_formatter.format(datetime.utcnow())
+                date_generated = date_formatter.convert(datetime.utcnow())
                 write_file(asset_out_dir, asset, location_history, date_generated)
             else:
                 log.error(f'Type for asset {asset_id} is not defined.')

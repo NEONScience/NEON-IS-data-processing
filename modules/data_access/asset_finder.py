@@ -16,8 +16,8 @@ def find_location_assets(connection, named_location_id):
         results = []
         for row in rows:
             asset_uid = row[0]
-            install_date = date_formatter.format(row[1])
-            remove_date = date_formatter.format(row[2])
+            install_date = date_formatter.convert(row[1])
+            remove_date = date_formatter.convert(row[2])
             results.append({
                 'asset_uid': asset_uid,
                 'install_date': install_date,

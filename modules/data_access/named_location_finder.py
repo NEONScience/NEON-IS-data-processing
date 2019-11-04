@@ -9,11 +9,12 @@ import lib.date_formatter as date_formatter
 log = structlog.get_logger()
 
 
-def get_active_periods(connection, named_location_id):
+def get_active_periods(connection, named_location_id, cutoff_date):
     """
     Get the active time periods for a named location.
     :param connection: A database connection
     :param named_location_id: The ID to search on.
+    :param cutoff_date: The end time for periods with no set end time.
     :return: Dictionary of active periods.
     """
     sql = '''
@@ -24,18 +25,21 @@ def get_active_periods(connection, named_location_id):
         rows = cursor.execute(None, id=named_location_id)
         periods = []
         for row in rows:
-            start_date = date_formatter.format(row[0])
-            end_date = date_formatter.format(row[1])
+            start_date = date_formatter.convert(row[0])
+            end_date = date_formatter.convert(row[1])
+            if end_date is None:
+                end_date = date_formatter.convert(cutoff_date)
             periods.append({'start_date': start_date, 'end_date': end_date})
         return periods
 
 
-def get_type_context(connection, type_name, context):
+def get_type_context(connection, type_name, context, cutoff_date):
     """
     Get named locations by type.
     :param connection: A database connection.
     :param type_name: The named location type.
     :param context: The named location context.
+    :param cutoff_date: The maximum active end time to return.
     :return: Geojson FeatureCollection of locations.
     """
     sql = '''
@@ -70,7 +74,7 @@ def get_type_context(connection, type_name, context):
             location_properties = get_properties(connection, named_location_id)
             parents = get_parents(connection, named_location_id)
             context = get_context(connection, named_location_id)
-            active_periods = get_active_periods(connection, named_location_id)
+            active_periods = get_active_periods(connection, named_location_id, cutoff_date)
 
             # The parent value contains only site
             site = parents[0]['name']
@@ -159,9 +163,9 @@ def get_asset_history(connection, asset_id):
         named_locations = []
         for row in rows:
             named_location_id = row[0]
-            install_date = date_formatter.format(row[1])
-            remove_date = date_formatter.format(row[2])
-            tran_date = date_formatter.format(row[3])
+            install_date = date_formatter.convert(row[1])
+            remove_date = date_formatter.convert(row[2])
+            tran_date = date_formatter.convert(row[3])
             named_location_name = row[4]
 
             locations = location_finder.get_all(connection, named_location_id)
@@ -237,7 +241,7 @@ def get_properties(connection, named_location_id):
             description = row[1]
             string_value = row[2]
             number_value = row[3]
-            date_value = date_formatter.format(row[4])
+            date_value = date_formatter.convert(row[4])
             prop = {
                 'name': name,
                 'description': description,

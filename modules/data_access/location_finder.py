@@ -2,7 +2,7 @@ from contextlib import closing
 
 from geojson import Point, Feature, FeatureCollection
 
-from lib.date_formatter import format
+from lib.date_formatter import convert
 
 
 def get_all(connection, named_location_id):
@@ -66,9 +66,9 @@ def get_all(connection, named_location_id):
                                          properties={'name': named_location_offset, 'locations': reference_locations})
 
             location = Feature(geometry=geometry,
-                               properties={'start_date': format(start_date),
-                                           'end_date': format(end_date),
-                                           'transaction_date': format(transaction_date),
+                               properties={'start_date': convert(start_date),
+                                           'end_date': convert(end_date),
+                                           'transaction_date': convert(transaction_date),
                                            'alpha': alpha,
                                            'beta': beta,
                                            'gamma': gamma,

@@ -62,9 +62,9 @@ def write(out_path, location):
                 outfile.write(geojson_data)
 
 
-def load(db_url, out_path, context, location_type):
+def load(db_url, out_path, context, location_type, cutoff_date):
     with closing(cx_Oracle.connect(db_url)) as connection:
-        locations = named_location_finder.get_type_context(connection, location_type, context)
+        locations = named_location_finder.get_type_context(connection, location_type, context, cutoff_date)
         log.debug(f'total locations found: {len(locations)}')
         for location in locations:
             write(out_path, location)
@@ -74,12 +74,19 @@ def main():
     env = environs.Env()
     context = env('CONTEXT')
     location_type = env('LOCATION_TYPE')
+    today = env('tick')
     db_url = env('DATABASE_URL')
     out_path = env('OUT_PATH')
     log_level = env('LOG_LEVEL')
     log_config.configure(log_level)
     log.debug(f'Out path: {out_path}')
-    load(db_url, out_path, context, location_type)
+
+    if today.startswith('/'):
+        path = pathlib.Path(today)
+        last_part = pathlib.Path(*path.parts[3:])
+        today = str(last_part)
+    cutoff_date = datetime.strptime(today, '%Y-%m-%dT%H:%M:%SZ')
+    load(db_url, out_path, context, location_type, cutoff_date)
 
 
 if __name__ == "__main__":

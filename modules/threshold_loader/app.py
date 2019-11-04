@@ -45,7 +45,7 @@ def main():
 
     with closing(cx_Oracle.connect(db_url)) as connection:
         thresholds = threshold_finder.find_thresholds(connection)
-        date_generated = date_formatter.format(datetime.utcnow())
+        date_generated = date_formatter.convert(datetime.utcnow())
         write_file(thresholds, out_path, date_generated)
 
 
