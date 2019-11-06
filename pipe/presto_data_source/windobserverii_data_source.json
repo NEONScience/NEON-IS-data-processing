@@ -1,10 +1,10 @@
 {
     "pipeline": {
-      "name": "presto_prt_data_source"
+      "name": "windobserverii_data_source"
     },
     "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-      "image": "quay.io/battelleecology/genavro:v1.0.0",
+      "image": "quay.io/battelleecology/genavro:v1.0.1",
       "cmd": [
         "bash"
       ],
@@ -22,15 +22,15 @@
         "  site=${arr[5]}",
         "  export GEN_DATE=$year-$month-$day",
         "  export GEN_SITE_NAME=$site",
-        "  export GEN_OUTPUT_DIR=/pfs/out/prt/$year/$month/$day",
+        "  export GEN_OUTPUT_DIR=/pfs/out/windobserverii/$year/$month/$day",
         "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem",
         "  mkdir -p $GEN_OUTPUT_DIR",
         "  /usr/src/app/genscript/gen.py",
         "done"
       ],
       "env": {
-        "GEN_YAML_CONF": "/usr/src/app/genscript/configs/prt_streams.yaml",
-        "GEN_SCHEMA_FILE": "/usr/src/app/schemas/prt/prt.avsc",
+        "GEN_YAML_CONF": "/usr/src/app/genscript/configs/windobserverii_streams.yaml",
+        "GEN_SCHEMA_FILE": "/usr/src/app/schemas/windobserverii/windobserverii.avsc",
         "LOG_LEVEL": "info",
         "REQUESTS_CA_BUNDLE": "/etc/pki/tls/cert.pem"
       },
@@ -53,7 +53,7 @@
       ]
     },
     "parallelism_spec": {
-      "constant": "8"
+      "constant": "4"
     },
     "output_branch": "master",
     "resource_requests": {
