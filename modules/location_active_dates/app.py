@@ -25,26 +25,31 @@ def dates_between(start_date, end_date):
     :return: List of dates.
     """
     delta = end_date - start_date  # as timedelta
-    days = []
+    dates = []
     for i in range(delta.days + 1):
-        day = start_date + timedelta(days=i)
-        days.append(day)
-    return days
+        date = start_date + timedelta(days=i)
+        dates.append(date)
+    return dates
 
 
 def write(out_path, location):
     """
-    Write a file for each active period '/yyyy/mm/dd/location_name'
+    Write a path and file for each active date '/yyyy/mm/dd/<location name>/<location name>.json'.
     :param out_path: The path for writing files.
-    :param location: Geojson containing the active period and location metadata.
+    :param location: Geojson object containing the active period and location metadata.
     """
+    # create the output directory if it does not exist.
     pathlib.Path(out_path).mkdir(parents=True, exist_ok=True)
+
+    # parse the geojson data for the location name and active periods
     geojson_data = geojson.dumps(location, indent=4, sort_keys=False, default=str)
-    json_dict = json.loads(geojson_data)
-    features = json_dict['features']
+    json_data = json.loads(geojson_data)
+    features = json_data['features']
     properties = features[0]['properties']
     location_name = properties['name']
     active_periods = properties['active-periods']
+
+    # loop over active periods and write directories and files for each date
     for period in active_periods:
         start_date = period['start_date']
         end_date = period['end_date']
@@ -55,14 +60,24 @@ def write(out_path, location):
             month = datetime_obj.strftime('%m')
             day = datetime_obj.strftime('%d')
             dir_path = os.path.join(out_path, year, month, day, location_name)
+            # create the output directory
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
             file_path = os.path.join(dir_path, location_name + '.json')
+            # write the file
             with open(file_path, 'w') as outfile:
                 outfile.write(geojson_data)
 
 
 def load(db_url, out_path, context, location_type, cutoff_date):
+    """
+    Load the locations and write output directories for each location active date.
+    :param db_url: A database url.
+    :param out_path: The output directory root path.
+    :param context: The context to constrain locations read from the database.
+    :param location_type: The location type to read from the database.
+    :param cutoff_date: The most recent date to create an output directory and file.
+    """
     with closing(cx_Oracle.connect(db_url)) as connection:
         locations = named_location_finder.get_type_context(connection, location_type, context, cutoff_date)
         log.debug(f'total locations found: {len(locations)}')
@@ -71,6 +86,8 @@ def load(db_url, out_path, context, location_type, cutoff_date):
 
 
 def main():
+
+    # Read configuration
     env = environs.Env()
     context = env('CONTEXT')
     location_type = env('LOCATION_TYPE')
@@ -81,11 +98,14 @@ def main():
     log_config.configure(log_level)
     log.debug(f'Out path: {out_path}')
 
+    # Parse the input timestamp as the cutoff date.
     if today.startswith('/'):
         path = pathlib.Path(today)
         last_part = pathlib.Path(*path.parts[3:])
         today = str(last_part)
     cutoff_date = datetime.strptime(today, '%Y-%m-%dT%H:%M:%SZ')
+
+    # Load location files and create output directories
     load(db_url, out_path, context, location_type, cutoff_date)
 
 

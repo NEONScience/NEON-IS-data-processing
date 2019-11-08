@@ -13,7 +13,7 @@ log = structlog.get_logger()
 
 def group(calibrated_path, location_path, out_path):
     """Write calibrated data and location files into output path."""
-    i = 0;
+    i = 0
     for file_path in file_crawler.crawl(calibrated_path):
         parts = file_path.parts
         source_type = parts[3]
@@ -48,7 +48,6 @@ def main():
     out_path = env('OUT_PATH')
     log_level = env('LOG_LEVEL')
     log_config.configure(log_level)
-    log = structlog.get_logger()
     log.debug(f'calibrated_dir: {calibrated_path} location_dir: {location_path} out_dir: {out_path}')
     group(calibrated_path, location_path, out_path)
 
