@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempAirSingle_dualfan_data_location_group"
+    "name": "windobserverii_data_location_group"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -17,8 +17,8 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_dualfan",
-          "glob": "/dualfan/*/*/*/dualfan_(*)_*-*-*.avro",
+          "repo": "data_source_windobserverii",
+          "glob": "/windobserverii/*/*/*/windobserverii_(*)_*-*-*.avro",
           "joinOn": "$1",
           "empty_files": true
         }
