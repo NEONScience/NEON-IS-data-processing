@@ -14,8 +14,8 @@ class AppTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.out_path = os.path.join('/', 'outputs')
-        self.data_path = os.path.join('/', 'data')
+        self.out_path = os.path.join('/', 'repo', 'outputs')
+        self.data_path = os.path.join('/', 'repo', 'data')
         self.location_path = os.path.join('/', 'location')
         self.metadata_path = os.path.join('prt', '2019', '05', '17')
 
