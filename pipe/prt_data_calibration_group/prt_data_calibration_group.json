@@ -36,7 +36,7 @@
           "name": "DATA_PATH",
           "repo": "prt_data_source_subset",
           "branch": "master",
-          "glob": "/prt/*/*/*/prt_(*)_*-*-*.avro",
+          "glob": "/prt/*/*/*/prt_(*)_*-*-*.*",
           "joinOn": "$1",
           "empty_files": true
         }

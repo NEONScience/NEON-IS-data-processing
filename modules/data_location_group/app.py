@@ -17,11 +17,12 @@ def group(data_path, location_path, out_path):
     i = 0
     for file_path in file_crawler.crawl(data_path):
         parts = file_path.parts
-        source_type = parts[2]
-        year = parts[3]
-        month = parts[4]
-        day = parts[5]
-        filename = parts[6]
+        source_type = parts[3]
+        year = parts[4]
+        month = parts[5]
+        day = parts[6]
+        filename = parts[7]
+        log.debug(f'data filename: {filename}')
         name = DataFilename(filename)
         source_id = name.source_id()
         log.debug(f'source type: {source_type} source_id: {source_id}')
