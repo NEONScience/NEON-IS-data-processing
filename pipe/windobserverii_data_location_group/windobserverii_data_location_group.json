@@ -27,7 +27,7 @@
         "pfs": {
           "name": "LOCATION_PATH",
           "repo": "location_asset",
-          "glob": "/prt/(*)",
+          "glob": "/windobserverii/(*)",
           "joinOn": "$1",
           "empty_files": true
         }
