@@ -28,8 +28,8 @@
       }
     ]
   },
-  "standby": false,
   "enable_stats": true,
+  "standby": true,
   "parallelism_spec": {
     "constant": "2"
   },
