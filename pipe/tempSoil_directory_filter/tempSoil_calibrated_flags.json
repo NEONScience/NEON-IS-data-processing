@@ -10,7 +10,7 @@
         "env": {
             "OUT_PATH": "/pfs/out",
             "FILTER_DIR": "flags",
-            "LOG_LEVEL": "DEBUG"
+            "LOG_LEVEL": "INFO"
         }
     },
     "input": {
@@ -21,6 +21,6 @@
                 "empty_files": true
         }
     },
-    "enable_stats": true,
+    "enable_stats": false,
     "standby": true
 }

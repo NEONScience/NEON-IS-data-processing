@@ -4,10 +4,10 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.loc.repo.strc.R","DirIn=$DIR_IN","DirOut=/pfs/out","Comb=TRUE"],
-    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.4",
+    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.5",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO"
     }  
   },
   "input": {
@@ -17,7 +17,7 @@
       "glob": "/windobserverii/*/*/*/"
       }
   },
-  "enable_stats": true,
+  "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
     "constant": "2"

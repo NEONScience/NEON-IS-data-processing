@@ -4,10 +4,10 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=data","FileSchmRglr=$FILE_SCHEMA_RGLR", "FreqRglr=0.1","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
-    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.10",
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.11",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO"
     }  
   },
   "input": {
@@ -28,7 +28,7 @@
       }
     ]
   },
-  "enable_stats": true,
+  "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
     "constant": "2"
