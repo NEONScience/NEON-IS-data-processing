@@ -21,7 +21,7 @@ RUN git clone -b master https://$GITHUB_PAT_BE@github.battelleecology.org/Battel
 
 # Now make the final build, which will leave behind our access token
 # Start with stable R version
-FROM rocker/r-ver:3.5.2
+FROM rocker/r-ver:3.6.1
 
 # copy the NEONprocIS.base package from local
 COPY ./ pack/NEONprocIS.base/
@@ -87,7 +87,7 @@ RUN apt-get autoremove -y && \
 	  rm -rf /var/lib/apt/lists/*
 	  
 # Install devtools package
-RUN R -e 'utils::install.packages("devtools")'
+RUN R -e 'utils::install.packages(c("devtools"))'
 
 # Install the NEONprocIS package, including dependencies, and clean up afterwards
 RUN R -e 'devtools::install("/pack/NEONprocIS.base",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && \
