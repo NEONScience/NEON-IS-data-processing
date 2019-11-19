@@ -44,6 +44,8 @@ def find_all(connection):
                     is_asset_assignment.asset_definition_uuid = is_asset_definition.asset_definition_uuid
                 and
                     is_asset_definition.sensor_type_name = is_sensor_type.sensor_type_name
+                and 
+                    is_sensor_type.avro_schema_name is not null
             '''
         rows = cursor.execute(sql)
         results = []

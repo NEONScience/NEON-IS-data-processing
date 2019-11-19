@@ -83,12 +83,12 @@ def link_path(file_path, out_path):
     file_linker.link(file_path, destination)
 
 
-def match_context(location_file, context_match):
+def get_context_group(location_file, context_match):
     """
     Match the context to a location file context.
     :param location_file: A location file path to load.
     :param context_match: The context to match.
-    :return True if file: contains an entry for the given context.
+    :return The context item containing the given context matching string.
     """
     log.debug('matching context')
     with open(location_file) as f:
@@ -100,6 +100,6 @@ def match_context(location_file, context_match):
             if not context:
                 return False
             for item in context:
-                if item == context_match:
-                    return True
-        return False
+                if context_match in item:
+                    return item
+        return None;

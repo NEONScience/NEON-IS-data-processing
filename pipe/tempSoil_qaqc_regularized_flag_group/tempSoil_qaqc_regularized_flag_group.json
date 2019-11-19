@@ -13,12 +13,13 @@
     }
   },
   "input": {
-    "cross": [
+    "join": [
       {
         "pfs": {
           "name": "REGULARIZED_PATH",
           "repo": "tempSoil_regularized_flags",
-          "glob": "/prt/*/*/*/*",
+          "glob": "/prt/*/*/(*)/(*)",
+          "joinOn": "$1/$2",
           "empty_files": true
         } 
       },
@@ -26,7 +27,8 @@
         "pfs": {
           "name": "QUALITY_PATH",
           "repo": "tempSoil_qaqc_flags",
-          "glob": "/prt/*/*/*/*",
+          "glob": "/prt/*/*/(*)/(*)",
+          "joinOn": "$1/$2",
           "empty_files": true
         }
       }
