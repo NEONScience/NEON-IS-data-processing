@@ -8,7 +8,7 @@
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "/usr/bin/python3 -m qaqc_regularized_flag_group.app" ],
     "env": {
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out"
     }
   },
@@ -34,6 +34,6 @@
       }
     ]
   },
-  "enable_stats": true,
+  "enable_stats": false,
   "standby": true
 }

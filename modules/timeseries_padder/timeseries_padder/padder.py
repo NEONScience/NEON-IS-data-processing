@@ -40,7 +40,8 @@ class Padder(object):
         try:
             max_window_size_by_date_and_location = {}
             min_data_rate_by_date_and_location = {}
-            manifest = []
+            manifests = {}
+            manifest_filenames = {}
             for root, dirs, files in os.walk(self.data_path):
                 for filename in files:
                     if not filename.startswith('.'):
@@ -55,6 +56,9 @@ class Padder(object):
                             date_location_key = year+month+day+config_location
 
                             config_location_path = os.path.join(*parts[0:self.config_location_index + 1])
+
+                            if config_location not in manifests:
+                                manifests[config_location] = []
 
                             # get min of all data rates (to ensure adequate window coverage)
                             if date_location_key not in min_data_rate_by_date_and_location:
@@ -96,18 +100,19 @@ class Padder(object):
                                 log.debug(f'source: {file_path}')
                                 log.debug(f'destination: {destination_path}')
                                 file_linker.link(file_path, destination_path)
-                                manifest.append(dateInPaddedRange)
+                                manifests[config_location].append(dateInPaddedRange)
                                 if dateInPaddedRange == date:
                                     # construct manifest filename
                                     manifest_path = os.path.dirname(destination_path)  # Remove data file name
-                                    manifest_file = os.path.join(manifest_path, 'manifest.txt')
+                                    manifest_filenames[config_location] = os.path.join(manifest_path, 'manifest.txt')
 
                                 self.write_thresholds(config_location_path, destination_path)
 
-            #  Write manifest file
-            with open(manifest_file, 'w') as f:
-                for item in manifest:
-                    f.write("%s\n" % item)
+            #  Write manifest files
+            for config_location in manifests.keys():
+                with open(manifest_filenames[config_location], 'w') as f:
+                    for item in manifests[config_location]:
+                        f.write("%s\n" % item)
 
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()

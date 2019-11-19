@@ -10,7 +10,7 @@
     "env": {
       "OUT_PATH": "/pfs/out",
       "CONTEXT": "soil",
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO"
     }
   },
   "input": {
@@ -20,6 +20,6 @@
         "glob": "/*/*/*/*"
       }
   },
-  "enable_stats": true,
+  "enable_stats": false,
   "standby": true
 }

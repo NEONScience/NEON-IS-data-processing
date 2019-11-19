@@ -11,7 +11,7 @@
     "stdin": [ "#!/bin/bash", "python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app" ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO"
     }
   },
   "parallelism_spec": {

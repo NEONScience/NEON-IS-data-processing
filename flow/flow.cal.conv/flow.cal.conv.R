@@ -311,6 +311,11 @@ for(idxDirIn in DirIn){
   } else {
     nameVarOut <- nameVarIn
   }
+  if(base::length(nameVarIn) != base::length(nameVarOut)){
+    log$fatal(base::paste0('File ', idxDirData,'/',fileData[1], ' contains ',base::length(nameVarIn), ' variables but the output schema specifies ',base::length(nameVarOut),
+                           '. This cannot be.'))
+    stop()
+  }
   mappNameVar <- base::data.frame(nameVarIn=nameVarIn,nameVarOut=nameVarOut,stringsAsFactors=FALSE)
   newVar <- varCal[!(varCal %in% mappNameVar$nameVarIn)] # Calibration variables not in the input data (we'll return uncertainty info for these anyway)
   mappNameVar <- base::rbind(mappNameVar,base::data.frame(nameVarIn=newVar,nameVarOut=newVar,stringsAsFactors = FALSE))

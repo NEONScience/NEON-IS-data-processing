@@ -2,7 +2,7 @@
 
 # Start with the neon-is-base-r image. 
 # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.24 as intermediate
+FROM quay.io/battelleecology/neon-is-base-r:v0.0.29 as intermediate
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -19,7 +19,7 @@ ENV GITHUB_PAT=$auth_token
 RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
 
 # Now make the final build, which will leave behind our access token
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.24
+FROM quay.io/battelleecology/neon-is-base-r:v0.0.29
 
 # copy the eddy4R.base package from the previous image
 COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/

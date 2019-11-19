@@ -173,7 +173,7 @@ for(idxDirIn in DirIn){
   # Copy with a symbolic link the desired subfolders 
   if(base::length(DirSubCopy) > 0){
     base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
-    log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
+    log$info(base::paste0('Unmodified subdirectories: ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
   }  
   
   # The time frame of the data is one day, and this day is indicated in the directory structure. 
@@ -242,6 +242,11 @@ for(idxDirIn in DirIn){
     }))
     
     # Error check
+    if(base::length(setFilt) == 0){
+      log$error(base::paste0('No thresholds match term: ', idxParaThsh$Term, ' and context(s): ', base::paste0(idxParaThsh$Ctxt,collapse=','),
+          ' for location: ', nameLoc, ' and date: ', timeBgn))
+      stop()
+    }
     
     # Make it pretty
     thshFilt <- NEONprocIS.qaqc::def.read.thsh.qaqc.json(listThsh=base::list(thresholds=thshRaw[setFilt]))

@@ -97,6 +97,8 @@
 #     added uncertainty calculation
 #   Cove Sturtevant (2019-10-30)
 #     added fdas uncertainty calculation
+#   Cove Sturtevant (2019-11-07)
+#     sync up missing data values between data and fdas uncertainty
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -300,7 +302,9 @@ for(idxDirIn in DirIn){
         nameColUcrtFdas <- base::names(dataUcrtFdas) # Column names
         
         # Get names of variables that FDAS uncertainty applies
-        nameVarUcrtFdas <- base::unique(base::unlist(base::lapply(base::strsplit(utils::tail(nameColUcrtFdas,n=-1),'_'),utils::head,n=1)))
+        nameColVarUcrtFdas <- base::unlist(base::lapply(base::strsplit(utils::tail(nameColUcrtFdas,n=-1),'_'),utils::head,n=1)) # for each column, minus the first (readout_time)
+        nameVarUcrtFdas <- base::unique(nameColVarUcrtFdas) # the vars themselves (no duplicates)
+
       }
     } # End if statement around FDAS uncertainty
   } # End if statement around expUncert
@@ -326,6 +330,14 @@ for(idxDirIn in DirIn){
     }
     timeMeas <- base::as.POSIXlt(data$readout_time)
     
+    # For each of the variables in the data file, go through and remove the FDAS uncertainties for any time points that were filtered (e.g. from the QA/QC step)
+    if(base::sum(nameVarIn %in% nameVarUcrtFdas) > 0){
+      for(idxVar in nameVarIn){
+        # Do we have FDAS uncertainty data for this variable? If so, create NAs where they exist in the data
+        dataUcrtFdas[base::is.na(data[[idxVar]]),base::unlist(base::lapply(base::strsplit(nameColUcrtFdas,'_'),utils::head,n=1))==idxVar] <- NA
+      }      
+    }
+
     
     # Run through each aggregation interval, creating the daily time series of windows
     for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
