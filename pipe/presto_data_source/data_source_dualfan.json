@@ -4,7 +4,7 @@
     },
     "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-      "image": "quay.io/battelleecology/genavro:v1.0.1",
+      "image": "quay.io/battelleecology/genavro:v1.0.6",
       "cmd": [
         "bash"
       ],
@@ -25,7 +25,7 @@
         "  export GEN_OUTPUT_DIR=/pfs/out/dualfan/$year/$month/$day",
         "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem",
         "  mkdir -p $GEN_OUTPUT_DIR",
-        "  /usr/src/app/genscript/gen.py --truncsecond",
+        "  /usr/src/app/genscript/gen.py --truncsecond --codec deflate",
         "done"
       ],
       "env": {
