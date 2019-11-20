@@ -1,6 +1,6 @@
 FROM quay.io/battelleecology/python_parent:3
 
-ENV APP_DIR="data_group"
+ENV APP_DIR="related_location_group"
 ENV LIB_DIR="lib"
 
 ENV CONTAINER_ROOT="/usr/src/app"
