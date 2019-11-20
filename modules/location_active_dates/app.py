@@ -12,6 +12,7 @@ from contextlib import closing
 import data_access.named_location_finder as named_location_finder
 import lib.date_formatter as date_formatter
 import lib.log_config as log_config
+import lib.target_path as target_path
 
 
 log = structlog.get_logger()
@@ -101,7 +102,7 @@ def main():
     # Parse the input timestamp as the cutoff date.
     if today.startswith('/'):
         path = pathlib.Path(today)
-        last_part = pathlib.Path(*path.parts[3:])
+        last_part = target_path.trim_path(path)
         today = str(last_part)
     cutoff_date = datetime.strptime(today, '%Y-%m-%dT%H:%M:%SZ')
 
