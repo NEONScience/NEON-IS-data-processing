@@ -105,7 +105,7 @@ def get_by_asset(connection, asset_id):
     Find named locations by asset ID.
     :param connection: A database connection.
     :param asset_id: The asset ID.
-    :return:
+    :return: Dictionary with ID, name, and type of asset's location.
     """
     sql = '''
                 select
@@ -258,16 +258,29 @@ def get_context(connection, named_location_id):
     Get context entries for a named location.
     :param connection: A database connection.
     :param named_location_id: The named location ID.
-    :return: List of context codes.
+    :return: List of context entries.
     """
-    sql = 'select context_code from nam_locn_context where nam_locn_id = :named_location_id'
+    sql = '''
+        select
+            context_code,
+            context_group_id
+        from 
+            nam_locn_context 
+        where 
+            nam_locn_id = :named_location_id
+        '''
     with closing(connection.cursor()) as cursor:
         rows = cursor.execute(sql, named_location_id=named_location_id)
-        context_codes = []
+        contexts = []
         for row in rows:
             context_code = row[0]
-            context_codes.append(context_code)
-        return context_codes
+            group = row[1]
+            if group is None:
+                contexts.append(context_code)
+            else:
+                group = context_code + '-' + str(group)
+                contexts.append(group)
+        return contexts
 
 
 def get_parents(connection, named_location_id):
@@ -302,7 +315,6 @@ def add_parent(cursor, named_location_id, parents):
     :param cursor: A database cursor object.
     :param named_location_id: The location ID.
     :param parents: Dictionary of parents to append to.
-    :return:
     """
     res = cursor.execute(None, named_location_id=named_location_id)
     row = res.fetchone()
@@ -310,7 +322,6 @@ def add_parent(cursor, named_location_id, parents):
         parent_id = row[0]
         parent_name = row[1]
         type_name = row[2]
-        # Only include the site.
-        if type_name.lower() == 'site':
+        if type_name.lower() == 'site':  # Only include the site.
             parents.append({'id': parent_id, 'name': parent_name, 'type': type_name})
         add_parent(cursor, parent_id, parents)

@@ -20,6 +20,7 @@ threshold_regularized_group.tests.test_app \
 padded_timeseries_analyzer.tests.test_app \
 qaqc_regularized_flag_group.tests.test_app \
 quality_metrics_statistics_group.tests.test_app \
+related_location_group.tests.test_app \
 statistics_uncertainty_group.tests.test_app \
 timeseries_padder.tests.test_padder_util \
 timeseries_padder.tests.test_app

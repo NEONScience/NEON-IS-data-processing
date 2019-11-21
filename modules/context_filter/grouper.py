@@ -1,11 +1,11 @@
 import os
 import pathlib
-import json
 
 import structlog
 
 import lib.file_linker as file_linker
 import lib.file_crawler as file_crawler
+import lib.location_file_context as location_file_context
 
 log = structlog.get_logger()
 
@@ -43,7 +43,7 @@ def group_sources(sources, context, out_path):
         for path in file_paths:
             for data_type in path:
                 file_path = path.get(data_type)
-                if data_type == 'location' and match_context(file_path, context):
+                if data_type == 'location' and location_file_context.match(file_path, context):
                     link_source(file_paths, out_path)  # Link all the paths under this source.
 
 
@@ -81,25 +81,3 @@ def link_path(file_path, out_path):
     destination = os.path.join(target_dir, filename)
     log.debug(f'source: {file_path} destination: {destination}')
     file_linker.link(file_path, destination)
-
-
-def match_context(location_file, context_match):
-    """
-    Match the context to a location file context.
-    :param location_file: A location file path to load.
-    :param context_match: The context to match.
-    :return True if file: contains an entry for the given context.
-    """
-    log.debug('matching context')
-    with open(location_file) as f:
-        geojson = json.load(f)
-        features = geojson['features']
-        for feature in features:
-            props = feature['properties']
-            context = props['context']
-            if not context:
-                return False
-            for item in context:
-                if item == context_match:
-                    return True
-        return False
