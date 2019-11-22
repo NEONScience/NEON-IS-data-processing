@@ -45,7 +45,7 @@ class AppTest(TestCase):
 
     def test_main(self):
         os.environ['SOURCE_PATH'] = self.source_path
-        os.environ['GROUP_PATH'] = self.group_path
+        os.environ['RELATED_INPUTS'] = self.group_path
         os.environ['OUT_PATH'] = self.output_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
         app.main()
