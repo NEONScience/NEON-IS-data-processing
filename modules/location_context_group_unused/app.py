@@ -2,7 +2,7 @@ import environs
 import structlog
 
 from lib import log_config as log_config
-import location_context_group.grouper as grouper
+import location_context_group_unused.grouper as grouper
 
 
 def main():

@@ -2,7 +2,7 @@ import os
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import location_context_group.app as app
+import location_context_group_unused.app as app
 from lib import log_config as log_config
 
 
