@@ -16,7 +16,9 @@ class AppTest(TestCase):
         self.input_path = os.path.join('/', 'repo', 'inputs')
         self.output_path = os.path.join('/', 'outputs')
 
-        self.metadata_path = os.path.join('2019', '05', '24', '0001', 'CFGLOC123')
+        self.location = 'CFGLOC123'
+
+        self.metadata_path = os.path.join('2019', '05', '24', '0001', self.location)
 
         self.data_dir = 'data'
         self.location_dir = 'location'
@@ -53,15 +55,18 @@ class AppTest(TestCase):
 
     def check_output(self):
         root_output_path = os.path.join(self.output_path, 'prt', self.metadata_path)
+
         source_data_path = os.path.join(root_output_path, self.data_dir, self.data_file)
         print(f'test_source_data_path: {source_data_path}')
         source_location_path = os.path.join(root_output_path, self.location_dir, self.location_file)
         print(f'test_source_location_path: {source_location_path}')
-        related_path = os.path.join(root_output_path, 'related_locations', 'dualfan')
-        group_data_path = os.path.join(related_path, self.metadata_path, self.data_dir, self.data_file)
+
+        related_path = os.path.join(root_output_path, 'related_locations', 'dualfan', self.location)
+        group_data_path = os.path.join(related_path, self.data_dir, self.data_file)
         print(f'test_group_data_path: {group_data_path}')
-        group_location_path = os.path.join(related_path, self.metadata_path, self.location_dir, self.location_file)
+        group_location_path = os.path.join(related_path, self.location_dir, self.location_file)
         print(f'test_group_location_path: {group_location_path}')
+
         self.assertTrue(os.path.lexists(source_data_path))
         self.assertTrue(os.path.lexists(source_location_path))
         self.assertTrue(os.path.lexists(group_data_path))

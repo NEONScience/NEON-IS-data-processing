@@ -1,4 +1,5 @@
 import os
+import pathlib
 
 from structlog import get_logger
 import environs
@@ -33,7 +34,19 @@ def group_related(related_path_variables, group_output_path):
         path = os.environ[related_path_variable]
         for file_path in file_crawler.crawl(path):
             trimmed_path = target_path.trim_path(file_path)
-            target = os.path.join(group_output_path, trimmed_path)
+            parts = pathlib.Path(trimmed_path).parts
+            source_type = parts[0]
+            year = parts[1]
+            month = parts[2]
+            day = parts[3]
+            group = parts[4]
+            location = parts[5]
+            data_type = parts[6]
+            filename = parts[7]
+
+            minimal_path = os.path.join(source_type, location, data_type, filename)
+
+            target = os.path.join(group_output_path, minimal_path)
             log.debug(f'Group target: {target}')
             file_linker.link(file_path, target)
 

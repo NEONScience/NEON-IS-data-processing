@@ -25,11 +25,14 @@ def get_active_periods(connection, named_location_id, cutoff_date):
         rows = cursor.execute(None, id=named_location_id)
         periods = []
         for row in rows:
-            start_date = date_formatter.convert(row[0])
-            end_date = date_formatter.convert(row[1])
+            start_date = row[0]
+            end_date = row[1]
             if end_date is None:
-                end_date = date_formatter.convert(cutoff_date)
-            periods.append({'start_date': start_date, 'end_date': end_date})
+                end_date = cutoff_date
+            if end_date > cutoff_date:
+                end_date = cutoff_date
+            periods.append({'start_date': date_formatter.convert(start_date),
+                            'end_date': date_formatter.convert(end_date)})
         return periods
 
 
