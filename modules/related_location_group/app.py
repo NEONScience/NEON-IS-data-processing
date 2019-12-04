@@ -12,26 +12,18 @@ import lib.target_path as target_path
 log = get_logger()
 
 
-def group_source(source_path, out_path):
-    """
-    Link the source data files into the output directory.
-    :param source_path: The source path.
-    :param out_path: The output directory.
-    """
-    for file_path in file_crawler.crawl(source_path):
-        target = target_path.get_path(file_path, out_path)
-        log.debug(f'Source target: {target}')
-        file_linker.link(file_path, target)
-
-
-def group_related(related_path_variables, group_output_path):
+def group_related(related_paths, out_path):
     """
     Link related data and location files into the output directory.
-    :param related_path_variables: Related path variable names containing directory paths.
-    :param group_output_path: The output path for related data.
+    :param related_paths: Related path variable names containing directory paths.
+    :param out_path: The output path for related data.
     """
-    for related_path_variable in related_path_variables:
-        path = os.environ[related_path_variable]
+    if ',' in related_paths:
+        related_paths = related_paths.split(',')
+    log.debug(f'related_paths: {related_paths}')
+    for related_path in related_paths:
+        log.debug(f'related_path: {related_path}')
+        path = os.environ[related_path]
         for file_path in file_crawler.crawl(path):
             trimmed_path = target_path.trim_path(file_path)
             parts = pathlib.Path(trimmed_path).parts
@@ -43,45 +35,23 @@ def group_related(related_path_variables, group_output_path):
             location = parts[5]
             data_type = parts[6]
             filename = parts[7]
-
-            minimal_path = os.path.join(source_type, location, data_type, filename)
-
-            target = os.path.join(group_output_path, minimal_path)
-            log.debug(f'Group target: {target}')
+            base_output_path = os.path.join(out_path, year, month, day, group)
+            target = os.path.join(base_output_path, source_type, location, data_type, filename)
+            log.debug(f'File target: {target}')
             file_linker.link(file_path, target)
-
-
-def get_related_output_path(source_path, out_path):
-    """
-    Build the output path for the location related data files.
-    :param source_path: The source path.
-    :param out_path: The output path for writing source data.
-    """
-    target = target_path.get_path(source_path, out_path)
-    path = os.path.join(target, 'related_locations')
-    return path
 
 
 def main():
     """
-    Group related data sources configured at the same location.
+    Group data by related location group.
     """
     env = environs.Env()
-    source_path = env('SOURCE_PATH')
-    related_inputs = env('RELATED_INPUTS')
+    related_paths = env('RELATED_PATHS')
     out_path = env('OUT_PATH')
     log_level = env('LOG_LEVEL')
     log_config.configure(log_level)
-    log.debug(f'source_path: {source_path} related_inputs: {related_inputs} out_path: {out_path}')
-    group_source(source_path, out_path)
-    group_output_path = get_related_output_path(source_path, out_path)
-    log.debug(f'group_output_path: {group_output_path}')
-    # Check for multiple inputs
-    if ',' in related_inputs:
-        related_path_variables = related_inputs.split(',')
-    else:
-        related_path_variables = ['RELATED_INPUTS']
-    group_related(related_path_variables, group_output_path)
+    log.debug(f'related_inputs: {related_paths} out_path: {out_path}')
+    group_related(related_paths, out_path)
 
 
 if __name__ == '__main__':
