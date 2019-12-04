@@ -104,6 +104,8 @@
 #   Cove Sturtevant (2019-10-02)
 #     made inputs FileSchmData and FileSchmQf optional
 #     fix bug returning all padded data
+#   Cove Sturtevant (2019-11-27)
+#     fix bug when only one test selected
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -432,7 +434,7 @@ for(idxDirIn in DirIn){
       qfSpk <- base::do.call(eddy4R.qaqc::def.dspk.wndw, argsSpk)$qfSpk
       names(qfSpk) <- 'qfSpk'
       
-      if(base::is.null(qf)){
+      if(base::is.null(qf[[idxTerm]])){
         qf[[idxTerm]] <- qfSpk
       } else {
         qf[[idxTerm]] <- base::cbind(qf[[idxTerm]],qfSpk)
@@ -442,10 +444,10 @@ for(idxDirIn in DirIn){
     # Retain the output from the requested tests and order the flags in the order they came in from the arguments 
     # (so that it is apparent how the output schema should be ordered), and so we know which failed tests result in NA data.
     setTest <- base::unlist(base::lapply(ParaTest[[idxTerm]]$test, base::grep,x=mapNameQf$nameTest,fixed=TRUE))
-    qf[[idxTerm]] <- qf[[idxTerm]][,mapNameQf$nameQf[setTest]]
+    qf[[idxTerm]] <- base::subset(x=qf[[idxTerm]],select=mapNameQf$nameQf[setTest])
     
     # Remove data (turn to NA) for failed test results if requested
-    dataOut[[idxTerm]][base::apply(X=qf[[idxTerm]][,ParaTest[[idxTerm]]$rmv],MARGIN=1,FUN=base::sum) > 0] <- NA
+    dataOut[[idxTerm]][base::apply(X=base::subset(x=qf[[idxTerm]],select=ParaTest[[idxTerm]]$rmv),MARGIN=1,FUN=base::sum) > 0] <- NA
     
     # prep the column names for final output (term name as prefix)
     names(qf[[idxTerm]])<- base::paste0(base::paste(base::toupper(base::substr(mapNameQf$nameTest[setTest],1,1)),
@@ -465,8 +467,8 @@ for(idxDirIn in DirIn){
   dataOut <- dataOut[setKeep,]
   
   # Use as.integer in order to write out as integer with the avro schema
-  qf[,2:base::ncol(qf)] <- base::apply(X=qf[,2:base::ncol(qf)],MARGIN=2,FUN=base::as.integer)
-  
+  qf[,2:base::ncol(qf)] <- base::apply(X=base::subset(x=qf,select=2:base::ncol(qf)),MARGIN=2,FUN=base::as.integer)
+                                       
   
   # Determine the input filename we will base our output filename on - it is the filename with this data day embedded
   fileDataOut <- fileData[base::grepl(pattern=base::format(timeBgn,'%Y-%m-%d'),x=fileData)] 

@@ -28,7 +28,7 @@
       }
     ]
   },
-  "enable_stats": true,
+  "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
     "constant": "2"
