@@ -8,7 +8,7 @@
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m related_location_group.app" ],
     "env": {
-      "RELATED_PATHS": "PRT_PATH,DUALFAN_PATH,WIND2D_PATH",
+      "RELATED_PATHS": "PRT_PATH,DUALFAN_PATH,WIND2D_PATH,HEATER_PATH",
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out"
     }
@@ -38,6 +38,15 @@
         "name": "WIND2D_PATH",
         "repo": "tempAirSingle_wind2d_data_location_group_path",
         "glob": "/windobserverii/(*)/(*)/(*)/(*)",
+        "joinOn": "$1/$2/$3/$4",
+        "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+        "name": "HEATER_PATH",
+        "repo": "tempAirSingle_heater_data_location_group_path",
+        "glob": "/heater/(*)/(*)/(*)/(*)",
         "joinOn": "$1/$2/$3/$4",
         "empty_files": true
         }

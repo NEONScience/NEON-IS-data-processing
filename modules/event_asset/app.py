@@ -12,7 +12,7 @@ from lib.data_filename import DataFilename
 log = structlog.get_logger()
 
 
-def group(data_path, location_path, out_path):
+def group(data_path, out_path):
     """Write data and location files into output path."""
     for file_path in file_crawler.crawl(data_path):
         parts = file_path.parts
@@ -28,29 +28,19 @@ def group(data_path, location_path, out_path):
         log.debug(f'year: {year}  month: {month}  day: {day}')
         log.debug(f'filename: {filename}')
         target_root = os.path.join(out_path, source_type, year, month, day, source_id)
-        link_location(location_path, target_root)
         data_target_path = os.path.join(target_root, 'data', filename)
         print(f'data_target_path: {data_target_path}')
         file_linker.link(file_path, data_target_path)
 
 
-def link_location(location_path, target_root):
-    for file in file_crawler.crawl(location_path):
-        location_filename = pathlib.Path(file).name
-        location_target_path = os.path.join(target_root, 'location', location_filename)
-        print(f'location_target_path: {location_target_path}')
-        file_linker.link(file, location_target_path)
-
-
 def main():
     env = environs.Env()
-    data_path = env('DATA_PATH')
-    location_path = env('LOCATION_PATH')
+    source_path = env('SOURCE_PATH')
     out_path = env('OUT_PATH')
     log_level = env('LOG_LEVEL')
     log_config.configure(log_level)
-    log.debug(f'data_dir: {data_path} location_dir: {location_path} out_dir: {out_path}')
-    group(data_path, location_path, out_path)
+    log.debug(f'data_dir: {source_path} out_dir: {out_path}')
+    group(source_path, out_path)
 
 
 if __name__ == '__main__':
