@@ -15,12 +15,12 @@ class AppTest(TestCase):
         self.setUpPyfakefs()
 
         self.source_id = '0001'
+        self.location_file = 'heater_' + self.source_id + '_locations.json'
         self.out_path = os.path.join('/', 'outputs', 'repo',)
-        self.source_path = os.path.join('/', 'inputs', 'repo', 'heater', self.source_id,
-                                        'heater_' + self.source_id + '_locations.json')
+        self.source_path = os.path.join('/', 'inputs', 'repo', 'heater', self.source_id, self.location_file)
         #  Create data input file.
         self.fs.create_file(self.source_path)
-        #  Create output dir
+        #  Create output directory.
         self.fs.create_dir(self.out_path)
 
     def test_group(self):
@@ -36,6 +36,7 @@ class AppTest(TestCase):
 
     def check_output(self):
         print(f'source_path: {self.source_path}')
-        self.output_path = os.path.join(self.out_path, 'heater', self.source_id, 'heater_' + self.source_id + '.json')
+        self.output_path = os.path.join(self.out_path, 'heater', self.source_id,
+                                        'heater_' + self.source_id + '_events.json')
         print(f'output_path: {self.output_path}')
         self.assertTrue(os.path.lexists(self.output_path))
