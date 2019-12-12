@@ -1,6 +1,6 @@
 FROM quay.io/battelleecology/python_parent:3
 
-ENV APP_DIR="event_asset"
+ENV APP_DIR="event_asset_loader"
 ENV LIB_DIR="lib"
 
 ENV CONTAINER_ROOT="/usr/src/app"

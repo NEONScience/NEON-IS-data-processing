@@ -18,7 +18,7 @@
         "pfs": {
           "name": "DATA_PATH",
           "repo": "heater_events",
-          "glob": "/heater/*/*/*/heater_(*)_*-*-*.*",
+          "glob": "/heater/(*)/*",
           "joinOn": "$1",
           "empty_files": true
         }
