@@ -8,6 +8,7 @@ data_location_group.tests.test_app \
 directory_filter.tests.test_app \
 event_asset_loader.tests.test_app \
 event_location_group.tests.test_app \
+event_location_group_path.tests.test_app \
 lib.tests.test_log_config \
 lib.tests.test_file_linker \
 lib.tests.test_date_formatter \

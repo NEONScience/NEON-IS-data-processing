@@ -8,6 +8,7 @@ import lib.file_linker as file_linker
 import lib.file_crawler as file_crawler
 import lib.location_file_context as location_file_context
 import lib.log_config as log_config
+import lib.target_path as target_path
 
 log = get_logger()
 
@@ -25,21 +26,16 @@ def process(source_path, group, out_path):
     for file_path in file_crawler.crawl(source_path):
 
         # Parse path elements
-        parts = pathlib.Path(file_path).parts
-        source_type = parts[3]
-        year = parts[4]
-        month = parts[5]
-        day = parts[6]
-        location = parts[7]
-        data_type = parts[8]
-        filename = parts[9]
+        trimmed_path = target_path.trim_path(file_path)
+        parts = pathlib.Path(trimmed_path).parts
+        source_type = parts[0]
+        source_id = parts[1]
+        data_type = parts[2]
+        filename = parts[3]
 
         path_parts = {
             "source_type": source_type,
-            "year": year,
-            "month": month,
-            "day": day,
-            "location": location,
+            "source_id": source_id,
             "data_type": data_type,
             "filename": filename
         }
@@ -64,16 +60,13 @@ def link(paths, group_name, out_path):
         parts = path.get('path_parts')
 
         source_type = parts.get("source_type")
-        year = parts.get("year")
-        month = parts.get("month")
-        day = parts.get("day")
-        location = parts.get("location")
+        source_id = parts.get("source_id")
         data_type = parts.get("data_type")
         filename = parts.get("filename")
 
         # Build the output path
-        log.debug(f't: {source_type} Y: {year} M: {month} D: {day} loc: {location} type: {data_type} file: {filename}')
-        target_dir = os.path.join(out_path, source_type, year, month, day, group_name, location, data_type)
+        log.debug(f'source_type: {source_type} id: {source_id} data_type: {data_type} file: {filename}')
+        target_dir = os.path.join(out_path, source_type, group_name, source_id, data_type)
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
         destination = os.path.join(target_dir, filename)
