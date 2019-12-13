@@ -19,17 +19,17 @@ class AppTest(TestCase):
         self.location_path = os.path.join('/', 'location')
         self.metadata_path = os.path.join('prt', '2019', '05', '17')
 
-        #  Create data input file.
+        #  Create data file.
         self.data_file = 'prt_00001_2019-05-17.avro'
         self.input_data_path = os.path.join(self.data_path, self.metadata_path, self.data_file)
         self.fs.create_file(self.input_data_path)
 
-        #  Create location input file.
+        #  Create location file.
         self.location_file = 'prt_00001_locations.json'
         self.input_location_path = os.path.join(self.location_path, 'prt', '00001', self.location_file)
         self.fs.create_file(self.input_location_path)
 
-        #  Create output dir
+        #  Create output directory.
         self.fs.create_dir(self.out_path)
 
     def test_group(self):
