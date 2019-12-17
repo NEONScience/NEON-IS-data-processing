@@ -16,7 +16,7 @@
         "pfs": {
           "name": "REPO_LOCATIONS",
           "repo": "tempAirSingle_locations",
-          "glob": "/prt/*/*/*/"
+          "glob": "/*/*/*/"
         }
       },
       {
