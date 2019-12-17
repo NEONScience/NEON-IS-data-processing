@@ -16,7 +16,7 @@
   "input": {
       "pfs": {
         "name": "IN_PATH",
-        "repo": "prt_location_filter",
+        "repo": "prt_fill_date_gaps_by_location",
         "glob": "/*/*/*/*"
       }
   },

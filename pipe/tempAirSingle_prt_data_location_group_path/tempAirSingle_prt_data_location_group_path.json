@@ -16,7 +16,7 @@
   "input": {
     "pfs": {
       "name": "SOURCE_PATH",
-      "repo": "tempAirSingle_fill_date_gaps_by_location",
+      "repo": "prt_fill_date_gaps_by_location",
       "glob": "/prt/*/*/*/*"
     }
   },
