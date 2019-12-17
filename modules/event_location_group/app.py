@@ -7,27 +7,23 @@ import structlog
 import lib.log_config as log_config
 import lib.file_linker as file_linker
 import lib.file_crawler as file_crawler
-from lib.data_filename import DataFilename
+import lib.target_path as target_path
 
 log = structlog.get_logger()
 
 
 def group(data_path, location_path, out_path):
-    """Write data and location files into output path."""
+    """Write event data and location files into output path."""
     for file_path in file_crawler.crawl(data_path):
-        parts = file_path.parts
-        source_type = parts[3]
-        year = parts[4]
-        month = parts[5]
-        day = parts[6]
-        filename = parts[7]
-        log.debug(f'data filename: {filename}')
-        name = DataFilename(filename)
-        source_id = name.source_id()
-        log.debug(f'source type: {source_type} source_id: {source_id}')
-        log.debug(f'year: {year}  month: {month}  day: {day}')
+        trimmed_path = target_path.trim_path(file_path)
+        log.debug(f'trimmed_path: {trimmed_path}')
+        parts = trimmed_path.parts
+        source_type = parts[0]
+        source_id = parts[1]
+        filename = parts[2]
         log.debug(f'filename: {filename}')
-        target_root = os.path.join(out_path, source_type, year, month, day, source_id)
+        log.debug(f'source type: {source_type} source_id: {source_id}')
+        target_root = os.path.join(out_path, source_type, source_id)
         link_location(location_path, target_root)
         data_target_path = os.path.join(target_root, 'data', filename)
         log.debug(f'data_target_path: {data_target_path}')

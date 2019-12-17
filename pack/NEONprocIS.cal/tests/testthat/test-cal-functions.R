@@ -4,7 +4,7 @@
 #' @examples
 #' To run with testthat:
 #' devtools::test(pkg="<path>/NEON-IS-data-processing/pack/NEONprocIS.cal")
-
+#' an example, devtools::test(pkg="C:/projects/NEON-IS-data-processing/pack/NEONprocIS.cal")
 
 # Define test context
 context("calibration conversion")
@@ -21,9 +21,12 @@ test_that("calibration conversion works", {
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
   
   # Calibrate the data
-  calibrated <- NEONprocIS.cal::def.cal.conv(data = data, cal = cal)
+  # coefUcrtMeas, coefUcrtFdas, coefUcrtFdasOfst need to be passed to def.cal.conv.R
+  # validate the correct values with Cove
+  #  0.3, 0.2, 0.33 are used atm.
+  calibrated <- NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
   print(calibrated)
   
   # Check the zeroed data and calibrated data are equal
-  expect_equal(data, calibrated)
+  expect_equal(data, calibrated$data)
 })
