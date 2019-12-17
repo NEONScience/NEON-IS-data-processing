@@ -31,8 +31,8 @@
 #' 
 #' Below this path is a directory named for the location identifier of the data included 
 #' within it. (e.g. #/pfs/BASE_REPO/#/yyyy/mm/dd/#/CGFLOC12345/). The location identifier will be matched 
-#' against the location information supplied in the location file(s) (see below). Further nested within the 
-#' location identifier folder is the folder:
+#' against the location information supplied in the location file(s) (see below). Nested exactly one level
+#' deep within the location identifier folder is the folder:
 #'         location/ 
 #' The location folder holds at least 1 json file with location data/properties specific to the location 
 #' identifier in the directory path. If there is more than one file in this directory, only the first will 
@@ -58,7 +58,7 @@
 #' later time.
 #' 
 #' N+1. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
-#' pipes, at the same level as the calibration folder in the input path that are to be copied with a 
+#' pipes, at the same level as the location folder in the input path that are to be copied with a 
 #' symbolic link to the output path.
 #' 
 #' 
