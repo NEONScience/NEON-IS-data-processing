@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/timeseries_padder:13",
+    "image": "quay.io/battelleecology/timeseries_padder:14",
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m timeseries_padder.timeseries_padder.app --yearindex 4 --monthindex 5 --dayindex 6 --locindex 7 --subdirindex 8" ],
     "env": {
