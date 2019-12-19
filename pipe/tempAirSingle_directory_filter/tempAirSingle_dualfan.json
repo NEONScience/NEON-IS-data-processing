@@ -16,7 +16,7 @@
     "input": {
         "pfs": {
                 "name": "IN_PATH",
-                "repo": "tempAirSingle_heater_event_related_location_group",
+                "repo": "tempAirSingle_heater_related_location_group",
                 "glob": "/*/*/*/*",
                 "empty_files": true
         }

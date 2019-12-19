@@ -26,7 +26,7 @@
       "name": "DATA_PATH",
       "repo": "tempAirSingle_threshold_regularized_group",
       "branch": "master",
-      "glob": "/prt/*/*/*"
+      "glob": "/*/*/*"
     }
   },
   "standby": true,

@@ -18,7 +18,7 @@
       {
         "pfs": {
           "name": "PRT_PATH",
-          "repo": "tempAirSingle_prt_data_location_group_path",
+          "repo": "tempAirSingle_prt_group_path",
           "glob": "/prt/(*)/(*)/(*)/(*)",
           "joinOn": "$1/$2/$3/$4",
           "empty_files": true
@@ -27,7 +27,7 @@
       {
         "pfs": {
           "name": "DUALFAN_PATH",
-          "repo": "tempAirSingle_dualfan_data_location_group_path",
+          "repo": "tempAirSingle_dualfan_group_path",
           "glob": "/dualfan/(*)/(*)/(*)/(*)",
           "joinOn": "$1/$2/$3/$4",
           "empty_files": true
@@ -36,7 +36,7 @@
       {
         "pfs": {
         "name": "WIND2D_PATH",
-        "repo": "tempAirSingle_wind2d_data_location_group_path",
+        "repo": "tempAirSingle_windobserverii_group_path",
         "glob": "/windobserverii/(*)/(*)/(*)/(*)",
         "joinOn": "$1/$2/$3/$4",
         "empty_files": true
