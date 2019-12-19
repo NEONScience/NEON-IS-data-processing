@@ -24,7 +24,7 @@ def main():
     parser.add_argument('--subdirindex')
     args = parser.parse_args()
 
-    padder = Padder(data_path, out_path, year_index, month_index, day_index, loc_index, subdir_index)
+    padder = Padder(data_path, out_path, args.yearindex, args.monthindex, args.dayindex, args.locindex, args.subdirindex)
     padder.pad()
 
 
