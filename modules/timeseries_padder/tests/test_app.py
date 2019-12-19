@@ -1,8 +1,10 @@
 import os
+import sys
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import timeseries_padder.timeseries_padder.app as app
+from timeseries_padder.timeseries_padder.padder import Padder
 import lib.log_config as log_config
 from lib.merged_data_filename import MergedDataFilename
 
@@ -23,6 +25,12 @@ class AppTest(TestCase):
         source_month = os.path.join('prt', '2018', '01')
         self.input_data_dir = os.path.join(self.input_root, source_month, '03')
         self.source_dir = os.path.join(source_month, '03', self.location)
+
+        self.year_index = 4
+        self.month_index = 5
+        self.day_index = 6
+        self.loc_index = 7
+        self.subdir_index = 8
 
         self.setUpPyfakefs()
 
@@ -53,11 +61,10 @@ class AppTest(TestCase):
         print(f'input location path: {location_path}')
         print(f'input threshold path: {threshold_path}')
 
-    def test_main(self):
-        os.environ['DATA_PATH'] = self.input_data_dir
-        os.environ['OUT_PATH'] = self.out_dir
-        os.environ['LOG_LEVEL'] = 'DEBUG'
-        app.main()
+    def test_padder(self):
+        padder = Padder(self.input_data_dir, self.out_dir, self.year_index, self.month_index, self.day_index, self.loc_index, self.subdir_index)
+        padder.pad()
+
         self.check_output()
 
     def check_output(self):
