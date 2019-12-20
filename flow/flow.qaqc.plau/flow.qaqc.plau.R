@@ -505,9 +505,9 @@ for(idxDirIn in DirIn){
   # Write out the flags 
   fileDataOutSplt <- base::strsplit(fileDataOut,'[.]')[[1]] # Try to grab the file name without extension
   if(base::length(fileDataOutSplt) > 1){
-    NameFileOutQf <- base::paste0(idxDirOutQf,'/',base::paste0(fileDataOutSplt[-base::length(fileDataOutSplt)],collapse='.'),'_plausibility.',utils::tail(fileDataOutSplt,1))
+    NameFileOutQf <- base::paste0(idxDirOutQf,'/flags_',base::paste0(fileDataOutSplt[-base::length(fileDataOutSplt)],collapse='.'),'_plausibility.',utils::tail(fileDataOutSplt,1))
   } else {
-    NameFileOutQf <- base::paste0(idxDirOutQf,'/',fileDataOut,'_plausibility')
+    NameFileOutQf <- base::paste0(idxDirOutQf,'/flags_',fileDataOut,'_plausibility')
   }
   rptQf <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=qf,NameFile=NameFileOutQf,NameFileSchm=NULL,Schm=SchmQfOut,NameLib='/ravro.so'),silent=TRUE)
   if(base::class(rptQf) == 'try-error'){
