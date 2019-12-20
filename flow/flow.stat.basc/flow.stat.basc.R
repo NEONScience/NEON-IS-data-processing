@@ -205,24 +205,13 @@ if(base::length(DirIn) == 0){
 }
 
 # Create the binning for each aggregation interval
-timeDmmyBgn <- base::as.POSIXlt('1970-01-01',tz='GMT')
-timeDmmyEnd <- timeDmmyBgn + base::as.difftime(1,units='days') 
 timeBgnDiff <- list()
 timeEndDiff <- list()
 for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
+  timeBinDiff <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr[idxWndwAgr],WndwTime=base::as.difftime(1,units='days'))
   
-  # Time series of aggregation windows 
-  timeBgnSeq <- base::as.POSIXlt(base::seq.POSIXt(from=timeDmmyBgn,to=timeDmmyEnd,by=base::format(WndwAgr[idxWndwAgr])))
-  timeBgnSeq <- utils::head(timeBgnSeq,n=-1) # Lop off the last one at timeEnd 
-  timeEndSeq <- timeBgnSeq + WndwAgr[idxWndwAgr] 
-  if(utils::tail(timeEndSeq,n=1) != timeDmmyEnd){
-    log$fatal(base::paste0('The aggregation interval must be an even divisor of one day. An aggregation interval of ',
-                           WndwAgr[idxWndwAgr],' does not fit this requirement. Check inputs.'))
-    stop()
-  }
-  
-  timeBgnDiff[[idxWndwAgr]] <- timeBgnSeq - timeDmmyBgn # Add to timeBgn of each day to represent the starting time sequence
-  timeEndDiff[[idxWndwAgr]] <- timeEndSeq - timeDmmyBgn # Add to timeBgn of each day to represent the end time sequence
+  timeBgnDiff[[idxWndwAgr]] <- timeBinDiff$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+  timeEndDiff[[idxWndwAgr]] <- timeBinDiff$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
 } # End loop around aggregation intervals
 
 
