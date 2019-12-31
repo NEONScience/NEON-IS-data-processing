@@ -17,11 +17,11 @@ class AppTest(TestCase):
         self.source_id = '00001'
 
         self.out_path = os.path.join('/', 'repo', 'outputs')
-        self.data_path = os.path.join('/', 'repo', 'events', 'heater', self.source_id)
+        self.data_path = os.path.join('/', 'repo', 'events', 'heater', '2019', '01', '01', self.source_id)
         self.location_path = os.path.join('/', 'location')
 
         #  Create data file.
-        self.data_file = 'heater_' + self.source_id + '_events.json'
+        self.data_file = 'heater_' + self.source_id + '_events_2019-01-01.json'
         self.input_data_path = os.path.join(self.data_path, self.data_file)
         self.fs.create_file(self.input_data_path)
 
@@ -50,7 +50,7 @@ class AppTest(TestCase):
         print(f'input_data_path: {self.input_data_path}')
         print(f'input_location_path: {self.input_location_path}')
 
-        root_path = os.path.join(self.out_path, 'heater', '00001')
+        root_path = os.path.join(self.out_path, 'heater', '2019', '01', '01', '00001')
 
         self.output_data_path = os.path.join(root_path, 'data', self.data_file)
         self.output_location_path = os.path.join(root_path, 'location', self.location_file)
