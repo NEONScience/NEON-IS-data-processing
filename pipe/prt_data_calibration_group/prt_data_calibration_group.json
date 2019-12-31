@@ -34,7 +34,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_prt_subset",
+          "repo": "data_source_prt",
           "branch": "master",
           "glob": "/prt/*/*/*/prt_(*)_*-*-*.*",
           "joinOn": "$1",

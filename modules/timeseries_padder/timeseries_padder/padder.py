@@ -14,15 +14,15 @@ log = get_logger()
 
 class Padder(object):
 
-    def __init__(self, data_path, out_path):
+    def __init__(self, data_path, out_path, year_index, month_index, day_index, loc_index, subdir_index):
         self.data_path = data_path
         self.out_path = out_path
         # Date and location indices in file path
-        self.year_index = 4
-        self.month_index = 5
-        self.day_index = 6
-        self.config_location_index = 7
-        self.sub_dir_index = 8
+        self.year_index = year_index
+        self.month_index = month_index
+        self.day_index = day_index
+        self.config_location_index = loc_index
+        self.sub_dir_index = subdir_index
         self.sub_dirs_to_output = ['data']
         self.out_dir_parts = list(pathlib.Path(out_path).parts)
         self.threshold_dir = 'threshold'

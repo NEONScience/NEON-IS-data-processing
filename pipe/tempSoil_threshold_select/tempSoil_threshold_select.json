@@ -22,7 +22,7 @@
       {
         "pfs": {
           "name": "FILE_THRESHOLDS",
-          "repo": "prt_soil_threshold_filter",
+          "repo": "tempSoil_threshold_filter",
           "glob": "/thresholds.json"
         }
       }

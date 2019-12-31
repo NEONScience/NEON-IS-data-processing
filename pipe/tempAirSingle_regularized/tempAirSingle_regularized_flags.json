@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "tempAirSingle_calibrated_flags",
-      "glob": "/prt/*/*/*/"
+      "glob": "/*/*/*/"
     }
   },
   "enable_stats": false,

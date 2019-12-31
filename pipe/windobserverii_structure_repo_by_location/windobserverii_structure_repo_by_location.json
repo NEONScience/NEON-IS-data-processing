@@ -1,10 +1,10 @@
 {
   "pipeline": {
-    "name": "prt_soil_threshold_filter"
+    "name": "windobserverii_structure_repo_by_location"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.thsh.filt.R","DirIn=$threshold","DirOut=/pfs/out","Term=temp","Ctxt=soil"],
-    "image": "quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.3",
+    "cmd": ["Rscript","/flow.loc.repo.strc.R","DirIn=$DIR_IN","DirOut=/pfs/out","Comb=TRUE"],
+    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.5",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -12,9 +12,10 @@
   },
   "input": {
     "pfs": {
-      "repo": "threshold",
-      "glob": "/"
-    }
+      "name": "DIR_IN",
+      "repo": "windobserverii_location_filter",
+      "glob": "/windobserverii/*/*/*/"
+      }
   },
   "enable_stats": false,
   "standby": true,

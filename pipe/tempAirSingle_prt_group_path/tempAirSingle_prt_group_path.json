@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempAirSingle_prt_data_location_group_path"
+    "name": "tempAirSingle_prt_group_path"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
