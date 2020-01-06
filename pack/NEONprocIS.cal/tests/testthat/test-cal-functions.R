@@ -13,8 +13,7 @@ context("calibration conversion")
 test_that("testing calibration conversion", {
   # Create data to calibrate
   
-  cat(
-    "\n\n  ========== Happy path - data with valid input and valid cal =============\n\n")
+  cat("\n\n  ========== Happy path - data with valid input and valid cal =============\n\n")
   
   # Create calibration coefficients
   
@@ -29,26 +28,28 @@ test_that("testing calibration conversion", {
   # validate the correct values with Cove
   #  0.3, 0.2, 0.33 are used atm.
   
-  calibrated <-  NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
+  calibrated <-
+    NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
   cat("\n  Calibration ran and calibrated:::: \n\n")
   print(calibrated)
   cat("\n\n ")
   expect_equal(data, calibrated$data, tolerance = 10)
   cat("\n  ========== Happy path  completed  =================\n\n")
   
-  ########## Sad path #1 - data is empty
+  ########## Sad path #1 - data (vector) is empty
   
-  cat("\n  ========== Sad path #1 - data (vector) is empty ========\n\n")
+  cat("\n  ========== Sad path #1 - data (vector) is empty expecting Error ========\n\n")
   
   data <- vector(mode = "numeric", length = 0)
   
-  calibrated <- NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
+  calibrated <-
+    NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
   
-   #  expect_equal(data, calibrated$data, tolerance = 10)
+  #  expect_equal(data, calibrated$data, tolerance = 10)
   
   ########## Sad path #2 - cal (data frame) is empty
   
-  cat("\n  ========== Sad path #2 - cal (data frame) is empty ============\n\n")
+  cat("\n  ========== Sad path #2 - cal (data frame) is empty expecting Error ============\n\n")
   data <- as.numeric(c("1", "0.1", "1", "1"))
   
   Name = c()
@@ -63,7 +64,7 @@ test_that("testing calibration conversion", {
   
   ########## Sad path #3 - negative testing with valid data and invalid calibration
   
-  cat("\n  ========== Sad path #3 - data having invalid value(s) ===================\n\n")
+  cat("\n  ========== Sad path #3 - data having invalid value(s) expecting Error ===================\n\n")
   
   data <- as.numeric(c("fde.a", "0.1", "1", "1"))
   
@@ -72,14 +73,14 @@ test_that("testing calibration conversion", {
   
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
   
-  calibrated <-    NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
+  calibrated <-
+    NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
   
- 
   #expect_equal(data, calibrated$data, tolerance=10)
   
   ########## Sad path #4 - negative testing with valid data and invalid calibration
   
-  cat("\n  ========== Sad path #4 - data frame having invalid value(s) ==============\n\n")
+  cat("\n  ========== Sad path #4 - data frame having invalid value(s) expecting Error ==============\n\n")
   
   data <- as.numeric(c("1", "0.1", "1", "1"))
   
@@ -87,7 +88,8 @@ test_that("testing calibration conversion", {
   Value = as.numeric(c("ab.1b", "1", "1", "0.000196", "0.0000229", "0.0067"))
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
   
-  calibrated <- NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
+  calibrated <-
+    NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
   
   #expect_equal(data, calibrated$data, tolerance=10)
 })

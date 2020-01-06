@@ -110,5 +110,5 @@ def.cal.conv <- function(data,
     return(base::list(data = dataConv, ucrt = ucrt))
     }
   else
-    cat ("\n #################### Error at cal.conv:  Calibration will not run due to data error moving to the next test\n \n")
+    cat ("\n #################### Error at cal.conv:  Calibration will not run due to data error moving to the next test\n\n")
 }

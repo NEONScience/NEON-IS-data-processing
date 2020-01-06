@@ -1,11 +1,18 @@
+###################################################################################################
+#' @title Validate vector
 
+#' @author
+#' Mija Choi \email{choim@battelleecology.org}
 
+#' @description
+#' Validate a vector to check it is empty or has invalid values.
+#' Returns True if valid. FALSE otherwise.
+###################################################################################################
 
 def.validate.vector <- function(vectIn) {
   a = TRUE
   
   if (length(vectIn) == 0) {
-   
     cat ("\n #################### validating vector::: input vector is empty \n\n")
     a = FALSE
   }
@@ -14,6 +21,6 @@ def.validate.vector <- function(vectIn) {
     cat ("\n #################### validating vector:::  input vector has invalid or missing values \n\n")
     a = FALSE
   }
- 
+  
   return (a)
 }
