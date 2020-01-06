@@ -25,13 +25,13 @@
       {
         "pfs": {
           "name": "EVENT_PATH",
-          "repo": "tempAirSingle_heater_group_path",
-          "glob": "/heater/*",
+          "repo": "tempAirSingle_heater_data_location_group_path",
+          "glob": "/heater/*/*/*/*",
           "empty_files": true
         }
       }
     ]
   },
   "enable_stats": false,
-  "standby": false 
+  "standby": true
 }
