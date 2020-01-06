@@ -1,6 +1,6 @@
 {
     "pipeline": {
-        "name": "tempAirSingle_qaqc_data"
+        "name": "tempAirSingle_qaqc_specific_data"
     },
     "transform": {
         "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -16,8 +16,8 @@
     "input": {
         "pfs": {
                 "name": "IN_PATH",
-                "repo": "tempAirSingle_qaqc_plausibility",
-                "glob": "/*/*/*/*",
+                "repo": "tempAirSingle_qaqc_specific",
+                "glob": "/*/*/*/*/*/*",
                 "empty_files": true
         }
     },

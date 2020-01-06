@@ -1,6 +1,6 @@
 {
     "pipeline": {
-        "name": "tempAirSingle_qaqc_flags"
+        "name": "tempAirSingle_qaqc_plausibility_data"
     },
     "transform": {
         "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -9,7 +9,7 @@
         "stdin": [ "#!/bin/bash", "python3 -m directory_filter.app" ],
         "env": {
             "OUT_PATH": "/pfs/out",
-            "FILTER_DIR": "flags",
+            "FILTER_DIR": "data",
             "LOG_LEVEL": "INFO"
         }
     },
@@ -17,7 +17,7 @@
         "pfs": {
                 "name": "IN_PATH",
                 "repo": "tempAirSingle_qaqc_plausibility",
-                "glob": "/*/*/*/*",
+                "glob": "/*/*/*/*/*/*",
                 "empty_files": true
         }
     },

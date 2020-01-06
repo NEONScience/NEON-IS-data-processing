@@ -1,6 +1,6 @@
 {
     "pipeline": {
-        "name": "tempAirSingle_windobserverii"
+        "name": "tempAirSingle_qaqc_specific_flags"
     },
     "transform": {
         "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -9,15 +9,15 @@
         "stdin": [ "#!/bin/bash", "python3 -m directory_filter.app" ],
         "env": {
             "OUT_PATH": "/pfs/out",
-            "FILTER_DIR": "windobserverii",
+            "FILTER_DIR": "flags",
             "LOG_LEVEL": "INFO"
         }
     },
     "input": {
         "pfs": {
                 "name": "IN_PATH",
-                "repo": "tempAirSingle_related_location_group",
-                "glob": "/*/*/*/*",
+                "repo": "tempAirSingle_qaqc_specific",
+                "glob": "/*/*/*/*/*/*",
                 "empty_files": true
         }
     },
