@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "tempAirSingle_padded_timeseries_analyzer",
-          "glob": "/prt/*/*/*/"
+          "glob": "/*/*/*/"
         }
       },
       {
