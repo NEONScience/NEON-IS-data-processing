@@ -143,7 +143,7 @@ Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut","S
                                                      "DirSubCopySens","DirSubCopyTemp",
                                                      base::paste0("SensTermWind",2:100),
                                                      "RmvFlow","RmvHeat"),
-                                      ValuParaOptn=base::list(AvelTbneMin=400,VeloWindMin=12,RmvFlow=FALSE,
+                                      ValuParaOptn=base::list(AvelTbneMin=300,VeloWindMin=12,RmvFlow=FALSE,
                                                               RmvHeat=TRUE),
                                       TypePara = base::list(AvelTbneMin='numeric',VeloWindMin='numeric',
                                                             RmvFlow='logical',RmvHeat='logical'),
@@ -361,12 +361,16 @@ for(idxDirIn in DirIn){
   #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TRY MATCHING ATBD !!!!!!!!!!!
   
   # Take a 30-second bin average of wind speed 
-  veloVectWind <- base::subset(dataWind,select=SensTermWind[[idxSensWind]]$term)
-  veloWind <- base::sqrt(base::rowSums(x=veloVectWind^2,na.rm=TRUE)) # Vector sum of wind speed components
-  binWind <- .bincode(x=dataWind$readout_time,breaks=timeBrk,right=FALSE)
-  setBin <- base::sort(base::unique(binWind))
-  dataFlow$veloWind[setBin] <- base::unlist(base::lapply(setBin,FUN=function(idxBin){
-    base::mean(veloWind[binWind==idxBin],na.rm=TRUE)}))
+  dataFlow$veloWind <- NA
+  if(!base::is.null(dataWind)){
+    veloVectWind <- base::subset(dataWind,select=SensTermWind[[idxSensWind]]$term)
+    veloWind <- base::sqrt(base::rowSums(x=veloVectWind^2,na.rm=TRUE)) # Vector sum of wind speed components
+    binWind <- .bincode(x=dataWind$readout_time,breaks=timeBrk,right=FALSE)
+    setBin <- base::sort(base::unique(binWind))
+    dataFlow$veloWind[setBin] <- base::unlist(base::lapply(setBin,FUN=function(idxBin){
+      base::mean(veloWind[binWind==idxBin],na.rm=TRUE)}))
+  }
+ 
   
   # Create 30-second flow rate flags
   qfFlowSec30 <- flagFailSec30
