@@ -1,0 +1,48 @@
+{
+  "pipeline": {
+    "name": "tempAirSingle_statistics_uncertainty_group"
+  },
+  "transform": {
+    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+    "image": "quay.io/battelleecology/statistics_uncertainty_group:4",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m statistics_uncertainty_group.app" ],
+    "env": {
+      "LOG_LEVEL": "INFO",
+      "OUT_PATH": "/pfs/out"
+    }
+  },
+  "input": {
+    "join": [
+      {
+        "pfs": {
+          "name": "STATISTICS_PATH",
+          "repo": "tempAirSingle_merge_qaqc_data",
+          "glob": "/*/*/(*)/(*)/prt/*/data",
+          "joinOn": "$1/$2",
+          "empty_files": true
+        } 
+      },
+      {
+        "pfs": {
+          "name": "UNCERTAINTY_PATH",
+          "repo": "tempAirSingle_uncertainty_coefficients",
+          "glob": "/*/*/(*)/(*)/prt/*/uncertainty",
+          "joinOn": "$1/$2",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "UNCERTAINTY_FDAS_PATH",
+          "repo": "tempAirSingle_regularized_uncertainty_fdas",
+          "glob": "/*/*/(*)/(*)/prt/*/uncertainty_fdas",
+          "joinOn": "$1/$2",
+          "empty_files": true
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true
+}

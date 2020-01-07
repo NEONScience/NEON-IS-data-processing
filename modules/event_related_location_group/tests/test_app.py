@@ -87,9 +87,9 @@ class AppTest(TestCase):
         self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.windobserver_data)))
         self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.windobserver_location)))
 
-        event_location_path = os.path.join(self.out_path, self.metadata_path, 'events', 'heater', '9999999',
+        event_location_path = os.path.join(self.out_path, self.metadata_path, 'heater', '9999999',
                                            'location', 'heater_9999999_locations.json')
-        event_data_path = os.path.join(self.out_path, self.metadata_path, 'events', 'heater', '9999999',
+        event_data_path = os.path.join(self.out_path, self.metadata_path, 'heater', '9999999',
                                        'data', 'heater_9999999_events.json')
 
         print(f'event_location_path: {event_location_path}')

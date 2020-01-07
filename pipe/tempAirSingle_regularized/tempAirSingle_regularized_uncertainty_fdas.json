@@ -14,7 +14,7 @@
       "pfs": {
         "name": "DIR_IN",
         "repo": "tempAirSingle_uncertainty_fdas",
-        "glob": "/prt/*/*/*/"
+        "glob": "/*/*/*/"
       }
   },
   "enable_stats": false,

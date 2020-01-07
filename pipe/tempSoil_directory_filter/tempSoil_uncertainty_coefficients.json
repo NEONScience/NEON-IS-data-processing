@@ -16,7 +16,7 @@
     "input": {
         "pfs": {
                 "name": "IN_PATH",
-                "repo": "tempSoil_fill_date_gaps_by_location",
+                "repo": "tempSoil_context_group",
                 "glob": "/*/*/*/*",
                 "empty_files": true
         }

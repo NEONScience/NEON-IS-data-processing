@@ -14,9 +14,9 @@ log = structlog.get_logger()
 
 def group_data(data_path, out_path):
     """Write data and event files into output path."""
+    target_root = None
     for file_path in file_crawler.crawl(data_path):
         trimmed_path = target_path.trim_path(file_path)
-        # log.debug(f'trimmed_path: {trimmed_path}')
         parts = trimmed_path.parts
         year = parts[0]
         month = parts[1]
@@ -33,6 +33,7 @@ def group_data(data_path, out_path):
 
 
 def group_events(event_path, target_root):
+    reference_group = pathlib.Path(target_root).name
     for file_path in file_crawler.crawl(event_path):
         trimmed_path = target_path.trim_path(file_path)
         parts = pathlib.Path(trimmed_path).parts
@@ -41,9 +42,10 @@ def group_events(event_path, target_root):
         source_id = parts[2]
         data_type = parts[3]
         filename = parts[4]
-        event_target = os.path.join(target_root, 'events', source_type, source_id, data_type, filename)
+        event_target = os.path.join(target_root, source_type, source_id, data_type, filename)
         log.debug(f'event_target: {event_target}')
-        file_linker.link(file_path, event_target)
+        if group_name == reference_group:
+            file_linker.link(file_path, event_target)
 
 
 def main():

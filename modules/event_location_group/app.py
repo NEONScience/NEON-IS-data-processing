@@ -19,11 +19,14 @@ def group(data_path, location_path, out_path):
         log.debug(f'trimmed_path: {trimmed_path}')
         parts = trimmed_path.parts
         source_type = parts[0]
-        source_id = parts[1]
-        filename = parts[2]
+        year = parts[1]
+        month = parts[2]
+        day = parts[3]
+        source_id = parts[4]
+        filename = parts[5]
         log.debug(f'filename: {filename}')
         log.debug(f'source type: {source_type} source_id: {source_id}')
-        target_root = os.path.join(out_path, source_type, source_id)
+        target_root = os.path.join(out_path, source_type, year, month, day, source_id)
         link_location(location_path, target_root)
         data_target_path = os.path.join(target_root, 'data', filename)
         log.debug(f'data_target_path: {data_target_path}')
