@@ -1,5 +1,3 @@
-import os
-
 from structlog import get_logger
 import environs
 
@@ -18,8 +16,7 @@ def group(path, out_path):
     :param out_path: The output path.
     """
     for file_path in file_crawler.crawl(path):
-        trimmed_path = target_path.trim_path(file_path)
-        target = os.path.join(out_path, trimmed_path)
+        target = target_path.get_path(file_path, out_path)
         log.debug(f'target: {target}')
         file_linker.link(file_path, target)
 
