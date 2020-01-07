@@ -53,14 +53,26 @@ def.cal.conv <- function(data,
                          cal,
                          coefUcrtMeas = NULL,
                          coefUcrtFdas = NULL,
-                         coefUcrtFdasOfst = NULL) {
+                         coefUcrtFdasOfst = NULL,
+                         log = NULL) {
   # Reduce cal coefficients to ones we recognize
-  
-  
-  if ((validateVector <- NEONprocIS.cal::def.validate.vector (data))
-    & (validateDf <- NEONprocIS.cal::def.validate.df (cal)))
-  
+  # Check to see if data is empty
+  msg <- NULL
+  if ((validateVector <-
+       NEONprocIS.cal::def.validate.notEmpty.vector (data)) == FALSE)
   {
+    msg <-
+      base::paste0(' ||------ data is empty. Calibration will not run ')
+  }
+  # Check to see if cal is empty or has invalid values
+  else if (((validateDf <-
+             NEONprocIS.cal::def.validate.df (cal))) == FALSE)
+  {
+    msg <-
+      base::paste0(' ||------ cal is empty or has invalid values. Calibration will not run')
+    
+  }
+  else {
     cal <- cal[grep('CVALA[0-9]', cal$Name), ]
     
     # Pull out the numeric polynomial level of each coefficient (a0,a1,a2,...)
@@ -108,7 +120,11 @@ def.cal.conv <- function(data,
     }
     
     return(base::list(data = dataConv, ucrt = ucrt))
-    }
-  else
-    cat ("\n #################### Error at cal.conv:  Calibration will not run due to data error moving to the next test\n\n")
+  }
+  
+  if(!base::is.null(msg)){
+    print(msg)
+    
+  }
 }
+
