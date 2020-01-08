@@ -10,7 +10,7 @@
 
 #' @param dfIn Input data frame to be validated
 
-#' @return Boolean. True if the input vector is not empty AND does not have invalid values. FALSE otherwise. \cr
+#' @return Boolean. True if the input data frame is not empty AND does not have invalid values. FALSE otherwise. \cr
 
 #' @references Currently none
 
