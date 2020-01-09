@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Basic statistics module for NEON IS data processing.
+#' @title Quality metrics module for NEON IS data processing.
 
 #' @author 
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
