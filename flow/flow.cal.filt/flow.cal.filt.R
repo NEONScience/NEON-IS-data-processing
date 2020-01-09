@@ -74,7 +74,6 @@ filter_calibration_files <- function(DirIn, DirOut, DirSubCopy) {
   
   # Options
   base::options(digits.secs = 3)
-  get
   # Pull in command line arguments (parameters)
   #arg <- base::commandArgs(trailingOnly=TRUE)
 
@@ -243,6 +242,9 @@ filter_calibration_files <- function(DirIn, DirOut, DirSubCopy) {
       
       # We are left with a filtered cal list. Let's copy the files in that list over to the output directory
       base::system(base::paste0('ln -s ',DirCalVar,'/',metaCal$file,' ',DirOutCalVar, collapse=' && '))
+      createLink(link="base::paste0(DirCalVar,'/',metaCal$file,' ',DirOutCalVar, collapse=' && ').", DirOutCalVar, skip=!overwrite, overwrite=TRUE,
+                 methods=getOption("createLink/args/methods", c("unix-symlink", "windows-ntfs-symlink",
+                                                                "windows-shortcut")), ...)
       
     } # End loop around cal streams
       

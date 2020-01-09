@@ -1,6 +1,7 @@
 library(testthat)
-source("/flow/flow.cal.filt/")
+library("flow.cal.filt")
+     
+test_check("flow.cal.filt")
 
-test_check("test_flow_calibration_filter.R")
 
 
