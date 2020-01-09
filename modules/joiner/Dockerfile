@@ -1,6 +1,6 @@
 FROM quay.io/battelleecology/python_parent:3
 
-ENV APP_DIR="quality_metrics_statistics_group"
+ENV APP_DIR="joiner"
 ENV LIB_DIR="lib"
 
 ENV CONTAINER_ROOT="/usr/src/app"
