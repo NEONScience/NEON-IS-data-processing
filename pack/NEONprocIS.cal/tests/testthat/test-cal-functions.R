@@ -74,7 +74,7 @@ test_that("testing calibration conversion", {
   # Check the zeroed data and calibrated data are equal
   expect_equal(data, calibrated$data)
   
-  cat("\n       |=====================================================+++===|\n")
+  cat("\n       |===========================================================|\n")
   cat("\n       |------ data and cal are not empty and have valid values    |\n")
   cat("\n       |------ Calibration ran successfully!                       |\n")
   cat("\n       |===========================================================|\n")
