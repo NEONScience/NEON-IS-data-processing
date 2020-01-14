@@ -244,9 +244,8 @@ filter_calibration_files <- function(DirIn, DirOut, DirSubCopy) {
       # base::system(base::paste0('ln -s ',DirCalVar,'/',metaCal$file,' ',DirOutCalVar, collapse=' && '))
       source_file <- base::paste0(DirCalVar, '/', metaCal$file)
       target_file <- base::paste0(DirOutCalVar, '/',metaCal$file) 
-     # R.utils::createLink(link=source_file, target_file, overwrite=TRUE)
-   R.utils::createLink(target_file,source_file, overwrite=TRUE)
-  #    file.link(source_file, target_file)
+     
+      R.utils::createLink(target_file,source_file, overwrite=TRUE)
       
     } # End loop around cal streams
       
