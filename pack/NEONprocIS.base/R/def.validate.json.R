@@ -16,7 +16,7 @@
 
 #' @keywords Currently none
 
-#' @examples Currently none
+#' @examples NEONprocIS.base::def.validate.json (NameFileIn)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #'
@@ -30,7 +30,8 @@
 
 def.validate.json <- function(jsonIn) {
  
-   c <- RJSONIO::isValidJSON(jsonIn))
+   c <- RJSONIO::isValidJSON(jsonIn)
 
 return (c)
 }
+
