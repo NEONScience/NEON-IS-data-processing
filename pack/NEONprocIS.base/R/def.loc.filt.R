@@ -38,21 +38,24 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-07-09)
 #     original creation
+#   Mija Choi (2020-01-14)
+#     Added parameter validations and logging
 ##############################################################################################
 def.loc.filt <-
   function(NameFileIn,
            NameFileOut = NULL,
            TimeBgn,
            TimeEnd = NULL) {
+
     log <- NEONprocIS.base::def.log.init()
     msg <- NULL
     
-    # validate the input json to ensure that it is valid
+    # validate the input json to see if it is valid
     if (!(validateJson <-
           NEONprocIS.base::def.validate.json (NameFileIn)))
     {
       msg <-
-        base::paste0('       |------ input json is empty or invalid. loc.filt will not run\n')
+        base::paste0('              |------ input json is empty or invalid. loc.filt will not run\n')
       log$error(msg)
       on.exit()
     }

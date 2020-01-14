@@ -62,6 +62,11 @@ test_that("   Testing Filter named location information by date-time range", {
   
   # Happy path test 1:  No features and locations in the time range by sending today's date as the Begin and NULL as End date
   
+  cat("\n       |===================================================================================|\n")
+  cat("\n       |------ Positive test 1:: timeBgn is now and timeEnd is NULL                        |\n")
+  cat("\n       |------ No features returned in this time range                                     |\n")
+  cat("\n       |===================================================================================|\n")
+  
   TimeBgn <- Sys.Date()
   TimeEnd <- NULL
   
@@ -69,13 +74,11 @@ test_that("   Testing Filter named location information by date-time range", {
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   expect_true (length(locReturned$features) == 0)
   
-  cat("\n       |===========================================================|\n")
-  cat("\n       |------ Positive test 1                                     |\n")
-  cat("\n       |------ call def.loc.filt with time, now and NULL           |\n")
-  cat("\n       |------ No features returned in this time range             |\n")
-  cat("\n       |===========================================================|\n")
-  
   # Happy path test 2: will have features in the time range
+  
+  cat("\n       |------ Positive test 2:: between '2017-02-06T00:10:20Z' and '2017-02-07T00:18:28Z' |\n")
+  cat("\n       |------ Will have features returned in the time range                               |\n")
+  cat("\n       |===================================================================================|\n")
   
   TimeBgn <- base::as.POSIXct('2017-02-06T00:10:20Z')
   TimeEnd <- base::as.POSIXct('2017-02-07T00:18:28Z')
@@ -83,45 +86,34 @@ test_that("   Testing Filter named location information by date-time range", {
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   expect_true (length(locReturned$features) > 0)
-  
-  cat("\n       |===========================================================|\n")
-  cat("\n       |------ Positive test 2                                     |\n")
-  cat("\n       |------ call def.loc.filt with time, '2017-02-06T00:10:20Z' |\n")
-  cat("\n       |------                          and '2017-02-07T00:18:28Z' |\n")
-  cat("\n       |------ Will have features returned in the time range       |\n")
-  cat("\n       |===========================================================|\n")
-  
-  # Sad path test 1:  An empty json is passed on to def.loc.filt
+ 
+ #
+ # Sad path test 1:  An empty json is passed on to def.loc.filt
   
   NameFileIn = 'locations-empty.json'
-  
-  NameFileOut = 'locations-out.json'
   
   TimeBgn <- base::as.POSIXct('2017-02-06T00:10:20Z')
   TimeEnd <- base::as.POSIXct('2017-02-07T00:18:28Z')
   
+  cat("\n       |------ Negatgive test 1::An empty json is passed on to def.loc.filt               |\n")
+  cat("\n       |------ Log the error and exit                                                     |\n")
+  cat("\n       |==================================================================================|\n\n")
+  
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   # expect_true (length(locReturned$features) == 0)
-  
-  cat("\n       |===========================================================|\n")
-  cat("\n       |------ Negatgive test 1                                    |\n")
-  cat("\n       |------ An empty json is passed on to def.loc.filt          |\n")
-  cat("\n       |------ Log the error and exit                              |\n")
-  cat("\n       |===========================================================|\n")
-  
+ 
+  #
   # Sad path test 2:  An invalid json is passed on to def.loc.filt
+  
+  cat("\n       |------ Negatgive test 2::An invalid json is passed on                             |\n")
+  cat("\n       |------ Log the error and exit                                                     |\n")
+  cat("\n       |==================================================================================|\n\n")
   
   NameFileIn = 'locations-invalid.json'
   
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   # expect_true (length(locReturned$features) == 0)
-  
-  cat("\n       |===========================================================|\n")
-  cat("\n       |------ Negatgive test 2                                    |\n")
-  cat("\n       |------ An invalid json is passed on to def.loc.filt          |\n")
-  cat("\n       |------ Log the error and exit                              |\n")
-  cat("\n       |===========================================================|\n")
-  
+
 })
