@@ -43,7 +43,9 @@ def.copy.dir.symb <- function(DirSrc,DirDest){
 
   
   rptDir <- base::lapply(DirDest,base::dir.create,recursive=TRUE) # Create the destination directories
-  cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
-  rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
+  #cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
+  file.link(base::paste0(DirSrc),base::paste0(DirDest) )
+  R.utils::createLink(base::paste0(DirSrc),base::paste0(DirDest),overwrite=TRUE)
+ # rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
   
 }
