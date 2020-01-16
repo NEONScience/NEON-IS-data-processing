@@ -6,6 +6,7 @@ data_access.tests.test_data_access \
 data_calibration_group.tests.test_app \
 data_location_group.tests.test_app \
 directory_filter.tests.test_app \
+egress.tests.test_app \
 event_asset_loader.tests.test_app \
 event_location_group.tests.test_app \
 event_location_group_path.tests.test_app \
