@@ -2,7 +2,7 @@
 
 # Delete the tempAirSingle pipeline.
 
-pachctl begin transaction
+pachctl start transaction
 
 pachctl delete pipeline tempAirSingle_level1_group
 pachctl delete pipeline tempAirSingle_statistics

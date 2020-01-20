@@ -5,7 +5,7 @@
 # Prerequisite pipelines: data_source_windobserverii, data_source_prt, calibration, data_source_dualfan,
 # avro_schemas, threshold
 
-pachctl begin transaction
+pachctl start transaction
 
 pachctl create pipeline -f windobserverii_data_location_group/windobserverii_data_location_group.json
 pachctl create pipeline -f heater_data_location_group/heater_data_location_group.json
