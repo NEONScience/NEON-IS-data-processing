@@ -10,7 +10,8 @@ test_that(
     FileSchmQf <- "C:/Users/vchundru/git/NEONScience/NEON-IS-data-processing/flow/flow.cal.conv/tests/test_input/avro_schemas/dp0p/flags_validCal.avsc"
     Term <- "resistance"
     NumDayExpiMax <- "NA"
-    filter_calibration_conversion(DirIn,DirOut, FileSchmData, FileSchmQf, Term, NumDayExpiMax)
+    FileUcrtFdas <- "C:/Users/vchundru/git/NEONScience/NEON-IS-data-processing/flow/flow.cal.conv/tests/test_input/uncertainty_fdas/fdas_calibration_uncertainty_general.json"
+    filter_calibration_conversion(DirIn,DirOut, FileSchmData, FileSchmQf, Term, NumDayExpiMax, TermUcrtFdas="resistance(R)", FileUcrtFdas=FileUcrtFdas)
     expect_that(file.exists(file.path(DirOut, DirEXTENSION)),is_true())
   }
 )
