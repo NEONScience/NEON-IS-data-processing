@@ -229,12 +229,16 @@ filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQ
   numVarUcrtFdas <- base::nrow(ParaFdas)
   
   # Retrieve optional subdirectories to copy over
-  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('data','uncertainty','flags')))
-  log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
+  if(! missing(DirSubCopy)) {
+    DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('data','uncertainty','flags')))
+    log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
+    nameDirSub <- base::as.list(c('data','calibration',DirSubCopy))
+  } else {
+    # What are the expected subdirectories of each input path
+    nameDirSub <- base::as.list(c('data','calibration'))
+    log$debug(base::paste0('Expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
+  }
   
-  # What are the expected subdirectories of each input path
-  nameDirSub <- base::as.list(c('data','calibration',DirSubCopy))
-  log$debug(base::paste0('Expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
   
   # Find all the input paths (datums). We will process each one.
   DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub)
@@ -280,9 +284,11 @@ filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQ
     }
     
     # Copy with a symbolic link the desired subfolders 
-    if(base::length(DirSubCopy) > 0){
-      base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
-      log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
+    if(!missing(DirSubCopy)) {
+       if(base::length(DirSubCopy) > 0){
+          base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
+          log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
+       }
     }  
     
     # Load in data file in AVRO format into data frame 'data'. Grab the first file only, since there should only be one. 
