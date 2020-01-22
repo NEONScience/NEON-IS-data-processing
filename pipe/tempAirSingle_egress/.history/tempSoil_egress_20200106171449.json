@@ -1,0 +1,24 @@
+{
+  "pipeline": {
+    "name": "tempSoil_egress"
+  },
+  "transform": {
+    "image": "centos",
+    "cmd": ["bash"],
+    "stdin": ["cp -rs $tempSoil_level1_group /pfs/out"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }
+  },  
+  "input": {
+    "pfs": {
+      "repo": "tempSoil_level1_group",
+      "glob": "/*/*/*/*"
+    }
+  },
+  "egress": {
+    "URL": "s3://test-s3.data.neonscience.org/int-pub-2/tempSoil"
+  },
+  "enable_stats": false,
+  "standby": true
+}

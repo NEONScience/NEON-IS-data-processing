@@ -1,0 +1,22 @@
+{
+  "pipeline": {
+    "name": "tempSoil_egress"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.thsh.slct.R","DirIn=$REPO_LOCATIONS","DirOut=/pfs/out","FileThsh=$FILE_THRESHOLDS","TermCtxt1=temp|soil","DirSubCopy=location"],
+    "image": "centos",
+    "cmd": ["bash"],
+    "stdin": ["cp -rs"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "pfs": {
+      "repo": "tempSoil_level1_group",
+      "glob": "/*/*/*/*"
+    }
+  },
+  "enable_stats": false,
+  "standby": true
+}

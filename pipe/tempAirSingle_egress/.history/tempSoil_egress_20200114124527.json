@@ -1,0 +1,31 @@
+{
+  "pipeline": {
+    "name": "tempSoil_egress"
+  },
+  "transform": {
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/egress:0",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m egress.egress.app --dateindex 2 --locindex 1" ],
+    "env": {
+      "OUT_PATH": "/pfs/out",
+      "LOG_LEVEL": "DBEUG"
+    }
+  },
+  "output_branch": "master",
+  "input": {
+    "pfs": {
+      "name": "DATA_PATH",
+      "repo": "tempSoil_level1_group",
+      "branch": "master",
+      "glob": "/prt/*/*/*"
+    }
+  },
+  "egress": {
+    "URL": "s3://int-pub-2/tempSoil"
+  },
+  "enable_stats": false,
+  "standby": true
+}
