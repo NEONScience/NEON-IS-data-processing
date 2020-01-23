@@ -14,7 +14,7 @@
 
 
 # Module or local package directory
-dirWork <- '/scratch/SOM/Github/RstudioServer/NEON-IS-data-processing/NEON-IS-data-processing/pack/NEONprocIS.base'
+dirWork <- '/scratch/SOM/Github/RstudioServer/NEON-IS-data-processing/NEON-IS-data-processing/pack/NEONprocIS.cal'
 PackIgnr <- c('NEONprocIS.base','NEONprocIS.cal','NEONprocIS.qaqc') # These should already be in the respective docker containers
 
 # Keep and use the local project that renv creates when creating/updating the lockfile 
@@ -26,7 +26,7 @@ KeepProj <- FALSE
   
 # Keep the local library in dirWork that results from creating/updating the lockfile? If TRUE, 
 # the local library is retained. If FALSE, it is deleted. Cannot be FALSE if KeepProj is TRUE.
-KeepLocalLib <- TRUE
+KeepLocalLib <- FALSE
 
 # Use the local library created/updated in dirWork after creating/updating the lockfile?
 # If TRUE, any package updates or new installations will be installed in the local library. 
@@ -73,7 +73,7 @@ if(KeepProj == FALSE){
 
 # Remove the local library
 if(KeepLocalLib == FALSE){
-  base::suppressWarnings(base::unlink(base::paste0(dirWork,'/',c('*.Rproj','.Rprofile')), recursive=TRUE))
+  base::suppressWarnings(base::unlink(base::paste0(dirWork,'/renv/'), recursive=TRUE))
 }
 
 # Don't use the local library
