@@ -20,8 +20,9 @@ ENV GITHUB_PAT_BE=$auth_token_be
 RUN git clone -b master https://$GITHUB_PAT_BE@github.battelleecology.org/BattelleEcology/avro.git
 
 # Now make the final build, which will leave behind our access token
-# Start with stable R version
-FROM rocker/r-ver:3.6.1
+# Start with stable R version - note that this must match the R version in any renv.lock file in order
+# to correctly install Bioconductor packages
+FROM rocker/r-ver:3.5.1
 
 # Required to install devtools
 RUN apt-get update \
@@ -86,6 +87,7 @@ COPY ./ravro.so /ravro.so
 COPY ./ pack/NEONprocIS.base/
 
 # Install devtools & renv (package manager), restore from specific versions of dependencies, install NEONprocIS.base from local, and clean up afterwards. 
+# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
 RUN R -e 'utils::install.packages(c("devtools"))' && \
     R -e 'remotes::install_github("rstudio/renv@0.9.2-20")' && \
     R -e 'renv::consent(provided=TRUE); renv::restore("pack/NEONprocIS.base/")' && \
