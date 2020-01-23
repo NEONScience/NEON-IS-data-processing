@@ -47,7 +47,8 @@ def.loc.filt <-
            TimeBgn,
            TimeEnd = NULL,
            log = NULL) {
-    log <- NEONprocIS.base::def.log.init()
+   
+    if (is.null(log)) {log <- NEONprocIS.base::def.log.init()}
     msg <- NULL
     
     # validate the input json to see if it is valid
