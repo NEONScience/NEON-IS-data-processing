@@ -14,7 +14,7 @@
 
 
 # Module or local package directory
-dirWork <- '/scratch/SOM/Github/RstudioServer/NEON-IS-data-processing/NEON-IS-data-processing/pack/NEONprocIS.base/'
+dirWork <- '/scratch/SOM/Github/RstudioServer/NEON-IS-data-processing/NEON-IS-data-processing/pack/NEONprocIS.base'
 PackIgnr <- c('NEONprocIS.base','NEONprocIS.cal','NEONprocIS.qaqc') # These should already be in the respective docker containers
 
 # Keep and use the local project that renv creates when creating/updating the lockfile 
@@ -54,10 +54,14 @@ if(KeepProj == TRUE && KeepLocalLib == FALSE){
 # Ensure that package 'renv' is installed
 if(!("renv" %in% rownames(installed.packages()))) install.packages("renv")
 
+# Change the working directory to the module/package directory
+# MUST DO THIS - if not the ignored packages are not actually ignored
+base::setwd(dirWork)
+
 # Initialize dependency management
-ignored.packages <- getOption("renv.config.ignored.packages")
-options(renv.config.ignored.packages = PackIgnr)
+renv::settings$ignored.packages(PackIgnr)
 renv::init(dirWork,restart=KeepProj)
+
 
 # If there is already a lockfile, you will be asked whether to restore from the lockfile, 
 # discard the lockfile and re-initialize it, or to activate the project but do nothing else.
