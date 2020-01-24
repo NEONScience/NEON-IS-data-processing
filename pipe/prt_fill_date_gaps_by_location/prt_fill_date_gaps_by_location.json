@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": [ "Rscript","/flow.loc.repo.gf.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_FLAGS"],
-    "image": "quay.io/battelleecology/neon-is-loc-repo-gf-r:v0.0.5",
+    "image": "quay.io/battelleecology/neon-is-loc-repo-gf-r:v0.0.6",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
