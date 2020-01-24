@@ -1,4 +1,10 @@
-# This script initializes/re-initializes the renv.lock file for the chosen module or local 
+##############################################################################################
+#' @title Initialize renv lockfile for NEON-IS-data processing package/module dependencies
+
+#' @author 
+#' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
+
+#' @description Workflow. Initializes/re-initializes the renv.lock file for the chosen module or local 
 # package. The renv.lock file is a listing of the exact packages used by the module/package and 
 # their versions as existed in the top-facing library when renv.lock was last created/updated, 
 # i.e the local packrat library or user library > system library). Adjust the options below to 
@@ -8,13 +14,26 @@
 # If a lockfile (renv.lock) already exists, the user will be interactively asked whether to 
 # restore from it or reinitialize it from the current top-facing library. Do not use this script
 # to update the lockfile after installing packages in the packrat library (i.e. when using 
-# install.packages when the packrat library is the top-facing library). In that case, use 
+# renv::install when the packrat library is the top-facing library). In that case, use 
 # renv::snapshot(</path/to/module/or/package/>) to update the lockfile, otherwise the packrat 
-# library will be reinitialized from the system library, erasing all your recent install work.
+# library will be reinitialized from the user/system library, erasing all your recent install work.
+#' 
+#' @return Lockfile listing module/package dependencies in the module/package directory
 
+#' @references
+#' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+
+#' @keywords Currently none
+
+# changelog and author contributions / copyrights
+#   Cove Sturtevant (2020-01-23)
+#     original creation
+##############################################################################################
+
+# ------ Choose options --------
 
 # Module or local package directory
-dirWork <- '/scratch/SOM/Github/RstudioServer/NEON-IS-data-processing/NEON-IS-data-processing/pack/NEONprocIS.cal'
+dirWork <- '/scratch/SOM/Github/RstudioServer/NEON-IS-data-processing/NEON-IS-data-processing/flow/flow.stat.basc'
 PackIgnr <- c('NEONprocIS.base','NEONprocIS.cal','NEONprocIS.qaqc') # These should already be in the respective docker containers
 
 # Keep and use the local project that renv creates when creating/updating the lockfile 
@@ -26,6 +45,8 @@ KeepProj <- FALSE
   
 # Keep the local library in dirWork that results from creating/updating the lockfile? If TRUE, 
 # the local library is retained. If FALSE, it is deleted. Cannot be FALSE if KeepProj is TRUE.
+# NOTE: Only the renv.lock file is needed for restoring dependencies, and is still retained if 
+# this option is TRUE.
 KeepLocalLib <- FALSE
 
 # Use the local library created/updated in dirWork after creating/updating the lockfile?
