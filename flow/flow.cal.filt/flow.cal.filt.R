@@ -17,10 +17,12 @@ Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut"),N
 
 # Retrieve datum path. 
 DirBgn <- Para$DirIn # Input directory. 
-log$debug(base::paste0('Input directory: ',DirBgn))
+
+log$debug(base::paste0('Input directory Flow C: ',DirBgn))
 
 # Retrieve base output path
 DirOut <- Para$DirOut
+
 log$debug(base::paste0('Output directory: ',DirOut))
 
 # Retrieve optional subdirectories to copy over
@@ -28,4 +30,4 @@ DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,c('calibration'))) # Ma
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
 
 source("calibration_filter.R")
-filter_calibration_files(DirIn,DirOut, DirSubCopy)
+filter_calibration_files(DirBgn,DirOut, DirSubCopy)
