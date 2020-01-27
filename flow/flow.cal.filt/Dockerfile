@@ -8,3 +8,4 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 
 # Copy in calibration filter workflow
 COPY ./flow.cal.filt.R /flow.cal.filt.R
+COPY ./flow.cal.filt.R /calibration_filter.R
