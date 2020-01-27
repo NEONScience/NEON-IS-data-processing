@@ -23,11 +23,11 @@ log$debug(base::paste0('Input directory Flow C: ',DirBgn))
 # Retrieve base output path
 DirOut <- Para$DirOut
 
-log$debug(base::paste0('Output directory: ',DirOut))
+log$debug(base::paste0('Output directory Flow C: ',DirOut))
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,c('calibration'))) # Make sure we don't symbolically link the calibration folder
-log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
+log$debug(base::paste0('Additional subdirectories to copy Flow C: ',base::paste0(DirSubCopy,collapse=',')))
 
 source("calibration_filter.R")
-filter_calibration_files(DirBgn,DirOut, DirSubCopy)
+filter_calibration_files(DirBgn, DirOut, DirSubCopy)

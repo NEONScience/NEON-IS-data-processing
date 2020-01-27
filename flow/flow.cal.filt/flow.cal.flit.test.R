@@ -41,7 +41,7 @@
 #   "No Valid Calibration for the Data Date, get the latest one before the data date.",
 #   {
 #     DirEXTENSION <- "2019/01/04/"
-#     DirIn <- file.path("C:/Users/vchundru/git/NEONScience/NEON-IS-data-processing/flow/flow.cal.filt/tests/test_input/pfs/prt", DirEXTENSION)
+#     DirIn <- file.path(" ", DirEXTENSION)
 #     DirOut <- "C:/Users/vchundru/git/NEONScience/NEON-IS-data-processing/flow/flow.cal.filt/tests/test_output/prt"
 #     DirSubCopy <- "data"
 #     filePath <- paste0(DirOut, DirEXTENSION,"19963/calibration/resistance/30000000014473_WO12766_78769.xml" )
