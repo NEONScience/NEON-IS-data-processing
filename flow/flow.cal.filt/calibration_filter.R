@@ -69,21 +69,19 @@
 #     added arguments for output directory and optional copying of additional subdirectories
 ##############################################################################################
 filter_calibration_files <- function(DirIn, DirOut, DirSubCopy) {
-  # Start logging
-  log <- NEONprocIS.base::def.log.init()
   
-  # Options
+  log <- NEONprocIS.base:::def.log.init()
+  log$debug('You are in the Calibration_filter.R')
+ 
+   # Options
   base::options(digits.secs = 3)
-  # Pull in command line arguments (parameters)
-  #arg <- base::commandArgs(trailingOnly=TRUE)
-
   # Retrieve datum path. 
   
   DirBgn <- DirIn # Input directory. 
   log$debug(base::paste0('Input directory: ',DirBgn))
   
   # Retrieve base output path
-  DirOut <- DirOut
+ 
   log$debug(base::paste0('Output directory: ',DirOut))
   
   # Retrieve optional subdirectories to copy over

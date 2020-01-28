@@ -56,9 +56,9 @@
 test_that(
   "No Valid Calibration for the Data Date, if there is no calibration file found before data date",
   {
-    DirEXTENSION <- "2019/01/05/"
-    DirIn <- file.path("C:/Users/vchundru/git/NEONScience/NEON-IS-data-processing/flow/flow.cal.filt/tests/test_input/pfs/prt", DirEXTENSION)
-    DirOut <- "C:/Users/vchundru/git/NEONScience/NEON-IS-data-processing/flow/flow.cal.filt/tests/test_output/prt"
+    DirEXTENSION <- "2019/01/01/"
+    DirIn <- file.path("/Users/vchundru/git/NEON-IS-data-processing/flow/flow.cal.filt/tests/test_input/pfs/prt", DirEXTENSION)
+    DirOut <- "/Users/vchundru/git/NEON-IS-data-processing/flow/flow.cal.filt/tests/test_output/prt"
     DirSubCopy <- "data"
     filePath <- paste0(DirOut, DirEXTENSION,"19963/calibration/resistance/30000000014473_WO12766_123059.xml" )
     print(file.path(filePath))
