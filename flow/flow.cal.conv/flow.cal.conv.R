@@ -4,7 +4,29 @@
 #' @author 
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} 
 
-#' @description Workflow. Apply calibration to data. 
+#' @description Workflow. Apply polyomial calibration function to L0 data and save uncertainty 
+#' coefficients included in calibration files. Optionally compute FDAS (datalogger) uncertainty for 
+#' each data value. The valid date ranges and certificate numbers in the calibration files are used 
+#' to determine the most applicable calibration to apply. Quality flags are output indicating whether
+#' an expired calibration was used. 
+#' 
+#' General code workflow:
+#'    Parse input parameters
+#'    Read in output schemas if indicated in parameters
+#'    Read in FDAS (datalogger) uncertainty coefficients if indicated in parameters
+#'    Determine datums to process (set of files/folders to process as a single unit)
+#'    For each datum:
+#'      Create output directories and copy over (by symbolic link) unmodified components 
+#'      Read in L0 data
+#       For each L0 data stream with calibration information:
+#          Read in calibration and uncertainty coefficients and valid date ranges from all available calibration files 	
+#          Apply calibration polynomial function to the L0 data using the most valid available calibration coefficients for the data date/time
+#          Compute FDAS uncertainty for each data value using the uncertainty coefficients
+#          Quality flag any calibrated data values that used expired calibration coefficients
+#       Write out the calibrated data to file
+#       Write out the quality flags to file
+#       Write out the uncertainty information
+
 #' This script is run at the command line with 6 or 7 arguments. Each argument must be a string in the 
 #' format "Para=value", where "Para" is the intended parameter name and "value" is the value of the 
 #' parameter. The arguments are: 
