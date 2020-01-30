@@ -40,10 +40,10 @@ def.copy.dir.symb <- function(DirSrc,DirDest){
   if(numDirDest != 1 && numDirSrc != numDirDest){
     base::stop('Lengths of DirSrc and DirDest must be equal if length of DirDest is not equal to 1.')
   }
-
+  
   
   rptDir <- base::lapply(DirDest,base::dir.create,recursive=TRUE) # Create the destination directories
-  R.utils::createLink(base::paste0(DirDest),base::paste0(DirSrc),overwrite=TRUE)
+  cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
   rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
   
 }

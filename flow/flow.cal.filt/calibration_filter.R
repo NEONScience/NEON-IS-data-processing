@@ -239,11 +239,7 @@ filter_calibration_files <- function(DirIn, DirOut, DirSubCopy) {
       log$info(base::paste0(base::nrow(metaCal), ' calibration file(s) saved to filtered cal directory ',DirOutCalVar))
       
       # We are left with a filtered cal list. Let's copy the files in that list over to the output directory
-      # base::system(base::paste0('ln -s ',DirCalVar,'/',metaCal$file,' ',DirOutCalVar, collapse=' && '))
-      source_file <- base::paste0(DirCalVar, '/', metaCal$file)
-      target_file <- base::paste0(DirOutCalVar, '/',metaCal$file) 
-     
-      R.utils::createLink(target_file,source_file, overwrite=TRUE)
+      base::system(base::paste0('ln -s ',DirCalVar,'/',metaCal$file,' ',DirOutCalVar, collapse=' && '))
       
     } # End loop around cal streams
       

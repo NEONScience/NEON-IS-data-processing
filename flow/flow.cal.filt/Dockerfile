@@ -8,4 +8,6 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 
 # Copy in calibration filter workflow
 COPY ./flow.cal.filt.R /flow.cal.filt.R
-COPY ./flow.cal.filt.R /calibration_filter.R
+COPY ./calibration_filter.R /calibration_filter.R
+#below line is needed for testing in the local docker container for input files.
+#COPY  ./tests/test_input /test_input
