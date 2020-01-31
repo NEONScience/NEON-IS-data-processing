@@ -40,6 +40,8 @@
 #     original creation
 #   Mija Choi (2020-01-14)
 #     Added parameter validations and logging
+#   Mija Choi (2020-01-30)
+#     Added json schema validations
 ##############################################################################################
 def.loc.filt <-
   function(NameFileIn,
@@ -51,18 +53,45 @@ def.loc.filt <-
       log <- NEONprocIS.base::def.log.init()
     }
     msg <- NULL
-    
-    # validate the input json to see if it is valid
-    if (!(validateJson <-
-          NEONprocIS.base::def.validate.json (NameFileIn)))
-    {
+    #
+    # First, validate the syntax of input json to see if it is valid
+    #
+    validateJson <-
+      NEONprocIS.base::def.validate.json (NameFileIn)
+    #
+    # Log the error and exit if the json syntax is invalid
+    #
+    if (!(validateJson)) {
       msg <-
-        base::paste0('              |------ input json is empty or invalid. loc.filt will not run\n')
+        base::paste0('\n\n       |*******   Error message = Input json is empty or invalid. loc.filt will not run     |')
       log$error(msg)
       on.exit()
     }
-    
-    else
+    #
+    # Second, validate the json against the schema only if the syntax is valid.
+    # Otherwise, validateJsonSchema err out due to the syntax error
+    #
+    validateJsonSchema <- FALSE
+    if (validateJson) {
+      validateJsonSchema <-
+        NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
+    }
+    #
+    # Log the error and exit if the json does not conform to the schema
+    #
+    if (!(validateJsonSchema))
+    {
+      msg <-
+        base::paste0(
+          '\n\n       |------   Error message = Input json does not conform to the schema. loc.filt will not run|'
+        )
+      log$error(msg)
+      on.exit()
+    }
+    #
+    # Run the code below when the input json is correct syntacically and valid against the schema
+    #
+    if ((validateJson) && (validateJsonSchema))
     {
       # If NULL, set TimeEnd to 1 second after TimeBgn
       if (base::is.null(TimeEnd)) {

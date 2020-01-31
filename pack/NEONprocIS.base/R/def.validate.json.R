@@ -29,7 +29,13 @@
 
 
 def.validate.json <- function(jsonIn) {
-  c <- RJSONIO::isValidJSON(jsonIn)
+  c = FALSE
+  #
+  # TRUE if jsonIn is a valid json
+  #
+  if (RJSONIO::isValidJSON(jsonIn)) {
+    c = TRUE
+  }
   
   return (c)
 }
