@@ -126,7 +126,7 @@
 ##############################################################################################
 filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQf, Term, NumDayExpiMax, TermUcrtFdas, FileUcrtFdas, DirSubCopy) {
   # Start logging
-  log <- NEONprocIS.base::def.log.init()
+  log <- NEONprocIS.base:::def.log.init()
   
   # Retrieve datum path. 
   DirBgn <- DirIn # Input directory. 
@@ -150,7 +150,7 @@ filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQ
     SchmDataOut <- NULL
   } else {
     # Retrieve and interpret the output data schema 
-    SchmDataOutAll <- NEONprocIS.base::def.schm.avro.pars(FileSchm=FileSchmData,log=log)
+    SchmDataOutAll <- NEONprocIS.base:::def.schm.avro.pars(FileSchm=FileSchmData,log=log)
     SchmDataOut <- SchmDataOutAll$schmJson
     SchmDataOutVar <- SchmDataOutAll$var
   }
@@ -241,7 +241,7 @@ filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQ
   
   
   # Find all the input paths (datums). We will process each one.
-  DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub)
+  DirIn <- NEONprocIS.base:::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub)
   if(base::length(DirIn) == 0){
     log$warn(base::paste0('No datums found for processing in parent directory ',DirBgn))
   } else {
@@ -268,7 +268,7 @@ filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQ
     }
     
     # Create the output directories for data, flags, and uncertainty. 
-    InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
+    InfoDirIn <- NEONprocIS.base:::def.dir.splt.pach.time(idxDirIn)
     timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
     idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
     idxDirOutData <- base::paste0(idxDirOut,'/data')
@@ -286,7 +286,7 @@ filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQ
     # Copy with a symbolic link the desired subfolders 
     if(!missing(DirSubCopy)) {
        if(base::length(DirSubCopy) > 0){
-          base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
+          base::suppressWarnings(NEONprocIS.base:::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
           log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
        }
     }  
@@ -296,7 +296,7 @@ filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQ
     if(base::length(fileData) > 1){
       log$warn(base::paste0('There is more than one data file. Using only the first: ',fileData[1]))
     }
-    data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=base::paste0(idxDirData,'/',fileData[1]),NameLib='/ravro.so'),silent=FALSE)
+    data  <- base::try(NEONprocIS.base:::def.read.avro.deve(NameFile=base::paste0(idxDirData,'/',fileData[1]),NameLib='/ravro.so'),silent=FALSE)
     if(base::class(data) == 'try-error'){
       # Generate error and stop execution
       log$error(base::paste0('File ', idxDirData,'/',fileData[1], ' is unreadable.')) 
@@ -546,7 +546,7 @@ filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQ
     # Write out the calibrated data
     options(digits.secs = 3)
     NameFileOutData <- base::paste0(idxDirOutData,'/',fileData[1])
-    rptData <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=data,NameFile=NameFileOutData,NameFileSchm=NULL,Schm=SchmDataOut,NameLib='/ravro.so'),silent=TRUE)
+    rptData <- base::try(NEONprocIS.base:::def.wrte.avro.deve(data=data,NameFile=NameFileOutData,NameFileSchm=NULL,Schm=SchmDataOut,NameLib='/ravro.so'),silent=TRUE)
     if(base::class(rptData) == 'try-error'){
       log$error(base::paste0('Cannot write Calibrated data to ', NameFileOutData,'. ',attr(rptData,"condition"))) 
       stop()
@@ -562,7 +562,7 @@ filter_calibration_conversion <- function(DirIn, DirOut, FileSchmData, FileSchmQ
       NameFileOutQfExpi <- base::paste0(idxDirOutQf,'/',fileData[1],'_validCal')
     }
     qfExpi[,ParaCal$var] <- base::as.integer(qfExpi[,ParaCal$var])  # Use as.integer in order to write out as integer with the avro schema
-    rptQfExpi <- NEONprocIS.base::def.wrte.avro.deve(data=qfExpi,NameFile=NameFileOutQfExpi,NameFileSchm=NULL,Schm=SchmQf,NameLib='/ravro.so')
+    rptQfExpi <- NEONprocIS.base:::def.wrte.avro.deve(data=qfExpi,NameFile=NameFileOutQfExpi,NameFileSchm=NULL,Schm=SchmQf,NameLib='/ravro.so')
     if(rptQfExpi == 0){
       log$info(base::paste0('Valid calibration flags written successfully in ',NameFileOutQfExpi))
     }
