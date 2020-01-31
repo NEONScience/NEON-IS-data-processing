@@ -135,13 +135,8 @@ nameDirSub <- base::as.list(base::unique(c(DirSubCopy,'location')))
 log$debug(base::paste0('Expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
 
 # Find all the input paths. We will process each one.
-DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub)
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub,log=log)
 
-if(base::length(DirIn) == 0){
-  log$warn(base::paste0('No datums found for processing in parent directory ',DirBgn))
-} else {
-  log$info(base::paste0('Preparing to process ',base::length(DirIn),' datum(s).'))
-}
 
 # Process each file path
 for(idxDirIn in DirIn){

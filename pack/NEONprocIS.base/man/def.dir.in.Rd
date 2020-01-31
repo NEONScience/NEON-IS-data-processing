@@ -4,7 +4,7 @@
 \alias{def.dir.in}
 \title{Determine input directories based on expected subdirectories}
 \usage{
-def.dir.in(DirBgn, nameDirSub)
+def.dir.in(DirBgn, nameDirSub, log = NULL)
 }
 \arguments{
 \item{DirBgn}{String. Directory path considered to be zero or more parents above the input directories.}
