@@ -4,13 +4,15 @@
 #' @author
 #' Kaelin Cawley \email{kcawley@battelleecology.org}
 
-#' @description Workflow. Create files with uncertainty information based off of the L0,
+#' @description Alternative calibration uncertainty function. Create files with uncertainty information based off of the L0,
 #' regularized dissolved oxygen (DO) data values.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 
-#' @return Directories for uncertainty values
+#' @param doData Dissolved oxygen data from the flow.cal.conv.R module [dataframe]
+
+#' @return dataData dataframe with L0 uncertatinty appended as an additional column [dataframe]
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -26,18 +28,18 @@
 #   Kaelin Cawley (2020-01-23)
 #     original creation
 ##############################################################################################
-flow.unc.wq.do <- function(doDataRegularized) {
+def.ucrt.wq.do <- function(doData) {
+  
   # Start logging
   log <- NEONprocIS.base::def.log.init()
   
-  #Set some directory information similar to all the other scripts to access the pachyderm repo(s)
-  
-  #Read in the L0, regularized DO data
-  
-  #Create an output file of U_CVALA1 that can be used by flow.cal.conv.R based off of the following rules:
+  #Expect the doData from the flow.cal.conv.R script as a dataframe
+  #Create an output dataframe with U_CVALA1 that can be used by flow.cal.conv.R based off of the following rules:
   ### U_CVALA1 = 0.01 if DO is <= 20 mg/l
   ### U_CVALA1 = 0.05 if DO is >20 mg/l
+  doData$U_CVALA1[] <- 0.01
+  doData$U_CVALA1[] <- 0.05
   
-  #I think this would have to end up being time range based, rather than DO value based
+  return(doData)
   
 }
