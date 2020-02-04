@@ -59,14 +59,16 @@ def.loc.filt <-
     validateJson <-
       NEONprocIS.base::def.validate.json (NameFileIn)
     #
-    # Log the error and exit if the json syntax is invalid
+    # Catch the error if the json syntax is invalid
     #
-    if (!(validateJson)) {
-      msg <-
-        base::paste0('\n\n       |*******   Error message = Input json is empty or invalid. loc.filt will not run     |')
-      log$error(msg)
-      on.exit()
-    }
+    
+    tryCatch(
+      validateJson,
+      error = function(e) {
+        print(paste("Input json does not conform to the schema"))
+      }
+    )
+    
     #
     # Second, validate the json against the schema only if the syntax is valid.
     # Otherwise, validateJsonSchema err out due to the syntax error
@@ -77,17 +79,15 @@ def.loc.filt <-
         NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
     }
     #
-    # Log the error and exit if the json does not conform to the schema
+    # Catch the error if the json does not conform to the schema
     #
-    if (!(validateJsonSchema))
-    {
-      msg <-
-        base::paste0(
-          '\n\n       |------   Error message = Input json does not conform to the schema. loc.filt will not run|'
-        )
-      log$error(msg)
-      on.exit()
-    }
+    tryCatch(
+      validateJsonSchema,
+      error = function(e) {
+        print(paste("Input json does not conform to the schema"))
+      }
+    )
+    
     #
     # Run the code below when the input json is correct syntacically and valid against the schema
     #
