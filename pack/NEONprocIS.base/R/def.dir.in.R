@@ -31,8 +31,15 @@
 #     original creation
 #   Cove Sturtevant (2019-10-01)
 #     add catch for duplicate nameDirSub
+#   Cove Sturtevant (2010-01-30)
+#     add log output
 ##############################################################################################
-def.dir.in <- function(DirBgn,nameDirSub){
+def.dir.in <- function(DirBgn,nameDirSub,log=NULL){
+  
+  # Initialize log if not input
+  if(base::is.null(log)){
+    log <- NEONprocIS.base::def.log.init()
+  }
   
   # Get rid of duplicates
   nameDirSub <- base::unique(nameDirSub)
@@ -70,6 +77,13 @@ def.dir.in <- function(DirBgn,nameDirSub){
     }))
     DirIn <- base::unique(dirAllBgn[setMtch])
     
+  }
+  
+  # Log status
+  if(base::length(DirIn) == 0){
+    log$warn(base::paste0('No datums found for processing in parent directory ',DirBgn))
+  } else {
+    log$info(base::paste0(base::length(DirIn),' datums found for processing.'))
   }
   
   return(DirIn)

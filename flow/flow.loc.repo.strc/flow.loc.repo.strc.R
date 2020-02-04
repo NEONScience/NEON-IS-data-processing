@@ -117,13 +117,8 @@ if(base::is.na(Comb)){
 nameDirSub <- base::list('location')
 
 # Find all the input paths. We will process each one.
-DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub)
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub,log=log)
 
-if(base::length(DirIn) == 0){
-  log$warn(base::paste0('No datums found for processing in parent directory ',DirBgn))
-} else {
-  log$info(base::paste0('Preparing to process ',base::length(DirIn),' datums.'))
-}
 
 # Process each datum
 for(idxDirIn in DirIn){

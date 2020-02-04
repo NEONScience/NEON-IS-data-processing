@@ -197,12 +197,7 @@ nameDirSub <- base::as.list(base::unique(c(DirSubCopy,dirSub)))
 log$debug(base::paste0('Minimum expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
 
 # Find all the input paths (datums). We will process each one.
-DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub)
-if(base::length(DirIn) == 0){
-  log$warn(base::paste0('No datums found for processing in parent directory ',DirBgn))
-} else {
-  log$info(base::paste0('Preparing to process ',base::length(DirIn),' datum(s).'))
-}
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub,log=log)
 
 # Create the binning for each aggregation interval
 timeBgnDiff <- list()

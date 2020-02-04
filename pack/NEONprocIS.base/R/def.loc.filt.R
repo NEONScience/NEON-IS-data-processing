@@ -47,8 +47,9 @@ def.loc.filt <-
            TimeBgn,
            TimeEnd = NULL,
            log = NULL) {
-   
-    if (is.null(log)) {log <- NEONprocIS.base::def.log.init()}
+    if (is.null(log)) {
+      log <- NEONprocIS.base::def.log.init()
+    }
     msg <- NULL
     
     # validate the input json to see if it is valid
@@ -117,7 +118,8 @@ def.loc.filt <-
           }
           
           if ((timeBgnGeo < TimeEnd) &&
-              (base::is.null(timeEndGeo) || (timeEndGeo > TimeBgn))) {
+              (base::is.null(timeEndGeo) ||
+               (timeEndGeo > TimeBgn))) {
             setKeepGeo <- c(setKeepGeo, idxGeo)
           } else {
             # We're deleting this geolocation, let's move on
@@ -288,7 +290,8 @@ def.loc.filt <-
         
         # Keep only applicable geolocations
         locGeo <- locGeo[setKeepGeo]
-        loc$features[[idxLoc]]$properties$locations$features <- locGeo
+        loc$features[[idxLoc]]$properties$locations$features <-
+          locGeo
         
       } # End loop around named locations
       
