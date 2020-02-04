@@ -5,7 +5,7 @@
 \title{Apply NEON calibration coefficients and compute measurement uncertainty}
 \usage{
 def.cal.conv(data, cal, coefUcrtMeas = NULL, coefUcrtFdas = NULL,
-  coefUcrtFdasOfst = NULL)
+  coefUcrtFdasOfst = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Numeric vector of data to apply calibration to}
@@ -14,29 +14,29 @@ def.cal.conv(data, cal, coefUcrtMeas = NULL, coefUcrtFdas = NULL,
 \code{Name} String. The name of the coefficient. Must fit regular expression CVALA[0-9]\cr
 \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr}
 
-\item{coefUcrtMeas}{Combined uncertainty of an individual measurement (U_CVALA1) in units of converted value 
+\item{coefUcrtMeas}{Combined uncertainty of an individual measurement (U_CVALA1) in units of converted value
 (e.g. temperature). Defaults to NULL, in which case uncertainty will not be calculated.}
 
 \item{coefUcrtFdas}{Combined, relative FDAS uncertainty of an individual measurement (U_CVALR1 or U_CVALV1, unitless).
 Defaults to NULL, in which case uncertainty will not be calculated.}
 
-\item{coefUcrtFdasOfst}{offset imposed by the FDAS for e.g. resistance or voltage readings (U_CVALR4 or U_CVALV4). 
+\item{coefUcrtFdasOfst}{offset imposed by the FDAS for e.g. resistance or voltage readings (U_CVALR4 or U_CVALV4).
 Defaults to NULL, in which case uncertainty will not be calculated.}
 }
 \value{
 A list of: \cr
 \code{data} Numeric vector of calibrated data\cr
 \code{ucrt} A data frame with the following variables:\cr
-\code{ucrt$ucrtMeas} - combined measurement uncertainty for an individual reading. Includes the 
-repeatability and reproducibility of the sensor and the lab DAS and ii) uncertainty of the 
+\code{ucrt$ucrtMeas} - combined measurement uncertainty for an individual reading. Includes the
+repeatability and reproducibility of the sensor and the lab DAS and ii) uncertainty of the
 calibration procedures and coefficients including uncertainty in the standard (truth).
-\code{ucrt$derivCal} - 1st derivative of calibration function evaluated at raw reading value (e.g. partial derivative 
+\code{ucrt$derivCal} - 1st derivative of calibration function evaluated at raw reading value (e.g. partial derivative
 of a temperature measurement with respect to the resistance reading)\cr
 \code{ucrt$ucrtFdas} - standard uncertainty of individual measurement introduced by the Field DAS \cr
 \code{ucrt$ucrtComb} - combined, standard, measurement uncertainty for an individual measurement
 }
 \description{
-Definition function. Apply NEON calibration coefficients to a data stream and compute 
+Definition function. Apply NEON calibration coefficients to a data stream and compute
 uncertainty for individual measurements.
 }
 \examples{
