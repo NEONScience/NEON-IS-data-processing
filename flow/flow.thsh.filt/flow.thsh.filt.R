@@ -77,33 +77,7 @@ log$debug(base::paste0('Base output directory: ',DirOut))
 # Retrieve Term & Context values
 Term <- Para$Term
 Ctxt <- Para$Ctxt
+source("./threshold_filter.R")
+filter_threshold(DirIn, DirOut, Term, Ctxt)
 
-log$info(base::paste0('Filtering thresholds for Term = ',base::paste0(Term,collapse=','), ', Context = ', base::paste0(Ctxt,collapse=',')))
-
-log$info(base::paste0('Processing path to datum: ',DirIn))
-  
-# Get directory listing of input directory
-file <- base::dir(DirIn)
-  
-# Gather info about the input directory (including date, if present) and create the output directory. 
-InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
-DirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
-base::dir.create(DirOut,recursive=TRUE)
-  
-if(base::length(file) > 1){
-  log$warn(base::paste0('There are is more than one threshold file in path: ',DirIn,'... Filtering them all!'))
-}
-
-# Filter each available file
-for(idxFile in file){
-  
-  # Construct file names
-  fileIn <- base::paste0(DirIn,'/',idxFile)
-  log$info(base::paste0('Processing file: ',fileIn))
-  fileOut <- base::paste0(DirOut,'/',idxFile)  
-  
-  # Filter the thresholds
-  NEONprocIS.qaqc::def.thsh.json.filt(NameFile=fileIn,NameFileOut=fileOut,Term=Term,Ctxt=Ctxt)
-  log$info(base::paste0('Filtered thresholds written in: ',fileOut))
-  
 }
