@@ -8,21 +8,22 @@ quality transition}
 def.ucrt.wq.do.conc(data, cal)
 }
 \arguments{
-\item{data}{Dissolved oxygen (DO) concentration data from the flow.cal.conv.R module [vector]}
+\item{data}{Dissolved oxygen (DO) concentration data [vector]}
 }
 \value{
 dataframe with L0 uncertatinty column(s) [dataframe]
 }
 \description{
-Alternative calibration uncertainty function. Create files with uncertainty
-information based off of the L0 dissolved oxygen (DO) concentration data values according
-to NEON.DOC.004931 - NEON Algorithm Theoretical Basis Document (ATBD): Water Quality.
+Alternative calibration uncertainty function. Create file (dataframe) with 
+uncertainty information based off of the L0 dissolved oxygen (DO) concentration data values 
+according to NEON.DOC.004931 - NEON Algorithm Theoretical Basis Document (ATBD): Water Quality.
 
 Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 which uses system environment variables if available.
 }
 \examples{
-#TBD
+#Written to potentially plug in line 120 of def.cal.conv.R
+ucrt <- def.ucrt.wq.do.conc(data = data, cal = NULL)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
