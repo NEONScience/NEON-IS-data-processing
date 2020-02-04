@@ -9,7 +9,7 @@ import lib.date_formatter as date_formatter
 log = structlog.get_logger()
 
 
-def get_active_periods(connection, named_location_id, cutoff_date):
+def get_active_periods(connection, named_location_id, cutoff_date=None):
     """
     Get the active time periods for a named location.
     :param connection: A database connection
@@ -26,22 +26,23 @@ def get_active_periods(connection, named_location_id, cutoff_date):
         periods = []
         for row in rows:
             start_date = row[0]
-            end_date = row[1]
-            if end_date is None:
-                end_date = cutoff_date
-            if end_date > cutoff_date:
-                end_date = cutoff_date
-            periods.append({'start_date': date_formatter.convert(start_date),
-                            'end_date': date_formatter.convert(end_date)})
+            if start_date is not None:
+                end_date = row[1]
+                if cutoff_date is not None:
+                    if end_date is None:
+                        end_date = cutoff_date
+                    elif end_date > cutoff_date:
+                        end_date = cutoff_date
+                periods.append({'start_date': date_formatter.convert(start_date),
+                                'end_date': date_formatter.convert(end_date)})
         return periods
 
 
-def get_type_context(connection, type_name, context, cutoff_date):
+def get_by_type(connection, type_name, cutoff_date=None):
     """
-    Get named locations by type.
+    Get named locations by type and cutoff date for the active time range.
     :param connection: A database connection.
     :param type_name: The named location type.
-    :param context: The named location context.
     :param cutoff_date: The maximum active end time to return.
     :return: Geojson FeatureCollection of locations.
     """
@@ -59,13 +60,15 @@ def get_type_context(connection, type_name, context, cutoff_date):
                 type.type_name = :type_name
             and 
                 nam_locn.nam_locn_id = nam_locn_context.nam_locn_id 
+            /*
             and 
                 nam_locn_context.context_code = :context
+            */
             /* fetch first 1 rows only */
         '''
     with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
-        rows = cursor.execute(None, type_name=type_name, context=context)
+        rows = cursor.execute(None, type_name=type_name)
         named_locations = []
         for row in rows:
             features = []
@@ -77,7 +80,7 @@ def get_type_context(connection, type_name, context, cutoff_date):
             location_properties = get_properties(connection, named_location_id)
             parents = get_parents(connection, named_location_id)
             context = get_context(connection, named_location_id)
-            active_periods = get_active_periods(connection, named_location_id, cutoff_date)
+            active_periods = get_active_periods(connection, named_location_id, cutoff_date=cutoff_date)
 
             # The parent value contains only site
             site = parents[0]['name']
