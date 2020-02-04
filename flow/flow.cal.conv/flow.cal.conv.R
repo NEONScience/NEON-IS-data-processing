@@ -4,7 +4,35 @@
 #' @author 
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} 
 
-#' @description Workflow. Apply calibration to data. 
+#' @description Workflow. Apply polyomial calibration function to L0 data and save applicable 
+#' uncertainty coefficients. Optionally compute FDAS (datalogger) uncertainty. Valid date 
+#' ranges and certificate numbers in calibration files are used to determine the most relevant 
+#' calibration to apply. The most relevant cal follows this choice order (1 chosen first):
+#'    1. higher certificate number & data date within valid date range
+#'    2. lower certificate number & data date within valid date range 
+#'    3. higher certificate number & data date after valid date range 
+#'    4. lower certificate number & data date after valid date range 
+#' Data points are turned to NA if no valid or expired valibration is found. Expired calibrations 
+#' are those in which the valid date range ends prior to the data date. Quality flags are output 
+#' indicating whether an expired calibration was used. 
+#' 
+#' General code workflow:
+#'    Parse input parameters
+#'    Read in output schemas if indicated in parameters
+#'    Read in FDAS (datalogger) uncertainty coefficients if indicated in parameters
+#'    Determine datums to process (set of files/folders to process as a single unit)
+#'    For each datum:
+#'      Create output directories and copy over (by symbolic link) unmodified components 
+#'      Read in L0 data
+#'     For each L0 data stream with calibration information:
+#'        Read in calibration and uncertainty coefficients and valid date ranges from all available calibration files 	
+#'        Apply calibration polynomial function to the L0 data using the most valid available calibration coefficients for each data value
+#'        Compute FDAS uncertainty for each data value using the uncertainty coefficients
+#'        Quality flag any calibrated data values that used expired calibration coefficients
+#'     Write out the calibrated data to file
+#'     Write out the quality flags to file
+#'     Write out the uncertainty information
+#'     
 #' This script is run at the command line with 6 or 7 arguments. Each argument must be a string in the 
 #' format "Para=value", where "Para" is the intended parameter name and "value" is the value of the 
 #' parameter. The arguments are: 

@@ -4,12 +4,13 @@
 \alias{def.loc.filt}
 \title{Filter named location information by date-time range for NEON instrumented systems sensors}
 \usage{
-def.loc.filt(NameFileIn, NameFileOut = NULL, TimeBgn, TimeEnd = NULL)
+def.loc.filt(NameFileIn, NameFileOut = NULL, TimeBgn, TimeEnd = NULL,
+  log = NULL)
 }
 \arguments{
 \item{NameFileIn}{Filename (including relative or absolute path). Must be json format.}
 
-\item{NameFileOut}{Filename (including relative or absolute path). Must be json format. Defaults to 
+\item{NameFileOut}{Filename (including relative or absolute path). Must be json format. Defaults to
 NULL, in which case only the filtered json will be returned in list format}
 
 \item{TimeBgn}{POSIX timestamp of the start time (inclusive)}
@@ -22,7 +23,7 @@ A list of filtered location information. If NameFileOut is specified, the filter
 information will also be writted to file in the same json format of NameFileIn
 }
 \description{
-Definition function. Read named location information (including geolocation history) from JSON file 
+Definition function. Read named location information (including geolocation history) from JSON file
 for NEON instrumented systems sensor and filter it for a date-time range
 }
 \examples{

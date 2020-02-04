@@ -16,36 +16,47 @@ class BaseTest(TestCase):
 
         self.out_path = os.path.join('/', 'outputs')
 
-        self.reject_path = 'dir1'  # The directory to be rejected by filtering.
-        self.accept_path = 'dir2'  # The directory to pass filtering.
+        self.dir1 = 'dir1'
+        self.dir_2 = 'dir2'
+        self.dir_3 = 'dir3'
 
         self.file_name1 = 'dir1.avro'
         self.file_name2 = 'dir2.avro'
+        self.file_name3 = 'dir3.avro'
 
         #  Set required files in mock filesystem.
         self.in_dir = os.path.join('/', 'inputs')
         in_dir_path = os.path.join(self.in_dir, 'dir')
 
-        reject = os.path.join(in_dir_path, self.reject_path, self.file_name1)
-        accept = os.path.join(in_dir_path, self.accept_path, self.file_name2)
-        self.fs.create_file(reject)
-        self.fs.create_file(accept)
+        file1 = os.path.join(in_dir_path, self.dir1, self.file_name1)
+        file2 = os.path.join(in_dir_path, self.dir_2, self.file_name2)
+        file3 = os.path.join(in_dir_path, self.dir_3, self.file_name3)
+        self.fs.create_file(file1)
+        self.fs.create_file(file2)
+        self.fs.create_file(file3)
 
-    def test_filter(self):
-        app.filter_directory(self.in_dir, self.accept_path, self.out_path)
-        self.check_output()
+        self.out_path1 = os.path.join(self.out_path, self.dir1, self.file_name1)
+        self.out_path2 = os.path.join(self.out_path, self.dir_2, self.file_name2)
+        self.out_path3 = os.path.join(self.out_path, self.dir_3, self.file_name3)
+
+    def test_filter_dir(self):
+        app.filter_directory(self.in_dir, self.dir1, self.out_path)
+        self.assertTrue(os.path.lexists(self.out_path1))
+        self.assertFalse(os.path.lexists(self.out_path2))
+        self.assertFalse(os.path.lexists(self.out_path3))
+
+    def test_filter_dirs(self):
+        app.filter_directory(self.in_dir, self.dir1 + ',' + self.dir_2, self.out_path)
+        self.assertTrue(os.path.lexists(self.out_path1))
+        self.assertTrue(os.path.lexists(self.out_path2))
+        self.assertFalse(os.path.lexists(self.out_path3))
 
     def test_main(self):
         os.environ['IN_PATH'] = self.in_dir
         os.environ['OUT_PATH'] = self.out_path
-        os.environ['FILTER_DIR'] = 'dir2'
+        os.environ['FILTER_DIR'] = 'dir1,dir2'
         os.environ['LOG_LEVEL'] = 'DEBUG'
         app.main()
-        self.check_output()
-
-    def check_output(self):
-        #  Only sub_dir should have passed the filter.
-        result_dir = os.path.join(self.out_path, self.accept_path)
-        self.assertTrue(os.path.lexists(result_dir))
-        self.assertTrue(os.path.exists(os.path.join(result_dir, self.file_name2)))
-        self.assertFalse(os.path.exists(os.path.join(self.out_path, self.reject_path)))
+        self.assertTrue(os.path.lexists(self.out_path1))
+        self.assertTrue(os.path.lexists(self.out_path2))
+        self.assertFalse(os.path.lexists(self.out_path3))

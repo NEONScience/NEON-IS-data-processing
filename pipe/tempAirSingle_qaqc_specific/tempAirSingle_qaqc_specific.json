@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.qaqc.temp.air.aspi.R","DirIn=$DIR_IN","DirOut=/pfs/out","SensTermTemp=prt:temp","SensTermTbne=dualfan:turbineSpeed","SensTermWind1=windobserverii:uVectorComponent:vVectorComponent","SensTermHeat=heater:state","RmvFlow=TRUE","RmvHeat=TRUE","FileSchmQf=$SCHEMA_FLAGS"],
-    "image": "quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:v0.0.3",
+    "image": "quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:v0.0.5",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"

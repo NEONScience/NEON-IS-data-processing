@@ -239,12 +239,7 @@ nameDirSubSens <- base::as.list(SensTermTemp$sens)
 log$debug(base::paste0('Minimum expected sensor subdirectories of each datum path: ',nameDirSubSens))
 
 # Find all the input paths (datums). We will process each one.
-DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSubSens)
-if(base::length(DirIn) == 0){
-  log$warn(base::paste0('No datums found for processing in parent directory ',DirBgn))
-} else {
-  log$info(base::paste0('Preparing to process ',base::length(DirIn),' datum(s).'))
-}
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub,log=log)
 
 # Create the binning for each 30-second interval evaluated for adequate aspiration
 timeBinDiff <- NEONprocIS.base::def.time.bin.diff(WndwBin=base::as.difftime(30,units="secs"),WndwTime=base::as.difftime(1,units='days'))

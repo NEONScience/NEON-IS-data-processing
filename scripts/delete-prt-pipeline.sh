@@ -1,4 +1,4 @@
-pachctl begin transaction
+pachctl start transaction
 
 pachctl delete pipeline  prt_fill_date_gaps_by_location
 pachctl delete pipeline  prt_merge_data_by_location

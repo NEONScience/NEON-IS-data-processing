@@ -27,5 +27,5 @@
         }
     },
     "enable_stats": true,
-    "standby": true
+    "standby": true 
 }

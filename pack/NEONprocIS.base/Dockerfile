@@ -20,12 +20,9 @@ ENV GITHUB_PAT_BE=$auth_token_be
 RUN git clone -b master https://$GITHUB_PAT_BE@github.battelleecology.org/BattelleEcology/avro.git
 
 # Now make the final build, which will leave behind our access token
-# Start with stable R version
-FROM rocker/r-ver:3.6.1
-
-# copy the NEONprocIS.base package from local
-COPY ./ pack/NEONprocIS.base/
-
+# Start with stable R version - note that this must match the R version in any renv.lock file in order
+# to correctly install Bioconductor packages
+FROM rocker/r-ver:3.5.1
 
 # Required to install devtools
 RUN apt-get update \
@@ -56,7 +53,9 @@ RUN apt-get update \
              libhdf5-dev \
              libmysql++-dev \
              " \
-&& apt-get install -y $BUILDDEPS $RUNDEPS
+&& apt-get install -y $BUILDDEPS $RUNDEPS && \
+   apt-get autoremove -y && \
+	 apt-get autoclean -y
 
 # Install git
 RUN apt-get -y install git-core
@@ -66,7 +65,10 @@ COPY --from=intermediate /avro/ /avro/
 
 RUN apt-get -y install cmake && \
     apt-get -y install libjansson-dev && \
-    apt-get -y install libsnappy-dev
+    apt-get -y install libsnappy-dev && \
+    apt-get autoremove -y && \
+	  apt-get autoclean -y && \
+	  rm -rf /var/lib/apt/lists/*
 
 RUN cd avro/lang/c && \
     mkdir build && \
@@ -81,21 +83,19 @@ RUN cd avro/lang/c && \
 # Copy ravro.so to root directory
 COPY ./ravro.so /ravro.so
 
-# Clean up files
-RUN apt-get autoremove -y && \
-	  apt-get autoclean -y && \
-	  rm -rf /var/lib/apt/lists/*
-	  
-# Install devtools package
-RUN R -e 'utils::install.packages(c("devtools"))'
+# Copy the NEONprocIS.base package from local
+COPY ./ pack/NEONprocIS.base/
 
-# Install the NEONprocIS package, including dependencies, and clean up afterwards
-RUN R -e 'devtools::install("/pack/NEONprocIS.base",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && \
+# Install devtools & renv (package manager), restore from specific versions of dependencies, install NEONprocIS.base from local, and clean up afterwards. 
+# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
+RUN R -e 'utils::install.packages(c("devtools"))' && \
+    R -e 'remotes::install_github("rstudio/renv@0.9.2-20")' && \
+    R -e 'renv::consent(provided=TRUE); renv::restore("pack/NEONprocIS.base/")' && \
+    R -e 'renv::install("/pack/NEONprocIS.base")' && \
     rm -rf /pack
 
 # Set environment variables for logging
 ENV LOG_TO=stdout
 ENV LOG_FORMAT=plain
 ENV LOG_LEVEL=info 
-
 

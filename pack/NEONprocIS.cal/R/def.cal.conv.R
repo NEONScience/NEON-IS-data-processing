@@ -61,7 +61,7 @@ def.cal.conv <- function(data,
   #
   # Check to see if data is empty
   #
-  log <- NEONprocIS.base::def.log.init()
+  if (is.null(log)) {log <- NEONprocIS.base::def.log.init()}
   msg <- NULL
   
   if (!(validateVect <-
@@ -87,7 +87,7 @@ def.cal.conv <- function(data,
     on.exit()
   }
   else {
-    cal <- cal[grep('CVALA[0-9]', cal$Name), ]
+    cal <- cal[grep('CVALA[0-9]', cal$Name),]
     
     # Pull out the numeric polynomial level of each coefficient (a0,a1,a2,...)
     levlPoly <-

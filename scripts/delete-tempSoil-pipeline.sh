@@ -2,7 +2,7 @@
 
 # Delete the tempSoil pipeline
 
-pachctl begin transaction
+pachctl start transaction
 
 pachctl delete pipeline tempSoil_level1_group
 pachctl delete pipeline tempSoil_quality_metrics
