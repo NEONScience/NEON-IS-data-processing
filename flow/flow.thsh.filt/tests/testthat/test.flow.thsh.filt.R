@@ -1,7 +1,6 @@
-library(testthat)
 
 test_that(
-   "Threshold Filter test expect 2 thresholds in the output files",
+   "Threshold Filter test expect 2 thresholds in the output file",
    {
      DirIn <- "/Users/vchundru/git/NEON-IS-data-processing/flow/flow.thsh.filt/tests/test_input/pfs/threshold"
      DirOut <- "/Users/vchundru/git/NEON-IS-data-processing/flow/flow.thsh.filt/tests/test_output/pfs/out"
@@ -9,9 +8,9 @@ test_that(
      Ctxt <- "aspirated-single"
      OutPutFile <- file.path(DirOut, "thresholds.json")
      filter_threshold(DirIn,DirOut, Term,Ctxt)
-     result <- fromJSON(file = OutPutFile)
-     print(result$thresholds)
-     expect_that(file.exists(file.path(DirOut, DirEXTENSION)),is_true())
+     result <- rjson::fromJSON(file=OutPutFile,simplify=TRUE)
+     expect_true(length(result$thresholds) ==2)
+
    }
  )
 
@@ -25,9 +24,7 @@ test_that(
     Ctxt <- "aspirated-single"
     OutPutFile <- file.path(DirOut, "thresholds.json")
     filter_threshold(DirIn,DirOut, Term,Ctxt)
-    result <- fromJSON(file = OutPutFile)
-    result <- base::do.call(base::rbind,result)
-    print(result$thresholds)
-    expect_that(file.exists(file.path(DirOut, DirEXTENSION)),is_true())
+    result <- rjson::fromJSON(file = OutPutFile,simplify=TRUE)
+    expect_true(length(result) == 0)
   }
 )
