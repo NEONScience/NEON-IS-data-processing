@@ -59,8 +59,6 @@ def.loc.filt <-
     validateJson <-
       NEONprocIS.base::def.validate.json (NameFileIn)
     #
-    # Check if the json syntax is invalid
-    #
     # Second, validate the json against the schema only if the syntax is valid.
     # Otherwise, validateJsonSchema err out due to the syntax error
     #
