@@ -4,10 +4,19 @@
 \alias{def.validate.dataframe}
 \title{Validate data frame not empty or invalid}
 \usage{
-def.validate.dataframe(dfIn)
+def.validate.dataframe(dfIn, TestNa = FALSE, TestNumc = FALSE,
+  log = NULL)
 }
 \arguments{
 \item{dfIn}{Input data frame to be validated}
+
+\item{TestNa}{Boolean where TRUE results in testing for any NA values (resulting in FALSE output). Defaults to FALSE.}
+
+\item{TestNumc}{Boolean where TRUE results in testing for any non-numeric values (resulting in FALSE output). Defaults to FALSE.}
+
+\item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
+created and used within the function.}
 }
 \value{
 Boolean. True if the input data frame is not empty AND does not have invalid values. FALSE otherwise. \cr
@@ -27,6 +36,7 @@ Currently none
 }
 \author{
 Mija Choi \email{choim@battelleecology.org}
+Cove Sturtevant \email{csturtevant@battelleecology.org}
 }
 \keyword{Currently}
 \keyword{none}
