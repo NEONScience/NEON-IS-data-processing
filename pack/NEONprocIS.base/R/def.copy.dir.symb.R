@@ -13,6 +13,8 @@
 #' as DirDest, each index corresponding to the same index of DirDest. NOTE: DirDest should be the parent of the 
 #' distination directories. For example, to create a link from source /parent/child/ to /newparent/child, 
 #' DirSrc='/parent/child/' and DirDest='/newparent/'
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output. Defaults to NULL, in which the logger will be created and used within the function.
 
 #' @return No output from this function other than performing the intended action.  
 
@@ -31,19 +33,28 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-07-02)
 #     original creation
+#   Cove Sturtevant (2020-02-04)
+#     added logging
 ##############################################################################################
-def.copy.dir.symb <- function(DirSrc,DirDest){
+def.copy.dir.symb <- function(DirSrc,DirDest,log=log){
+  # initialize logging if necessary
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
   
   # Do some error checking 
   numDirSrc <- base::length(DirSrc)
   numDirDest <- base::length(DirDest)
   if(numDirDest != 1 && numDirSrc != numDirDest){
-    base::stop('Lengths of DirSrc and DirDest must be equal if length of DirDest is not equal to 1.')
+    log$error('Lengths of DirSrc and DirDest must be equal if length of DirDest is not equal to 1.')
+    base::stop()
   }
 
-  
   rptDir <- base::lapply(DirDest,base::dir.create,recursive=TRUE) # Create the destination directories
   cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
   rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
+  
+  log$info(base::paste0('Unmodified ',base::paste0(DirSrc,collapse=','), ' copied to ',DirDest))
+  
   
 }

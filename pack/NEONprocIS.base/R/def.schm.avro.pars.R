@@ -30,7 +30,7 @@
 #' @examples 
 #' NEONprocIS.base::def.schm.avro.pars(FileSchm='/pfs/avro_schemas/prt_calibrated.avsc')
 
-#' @seealso \link[NEONprocIS.cal]{def.read.avro.deve}
+#' @seealso \link[NEONprocIS.base]{def.read.avro.deve}
 #' @seealso \link[NEONprocIS.base]{def.log.init}
 
 #' @export

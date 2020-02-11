@@ -4,7 +4,7 @@
 \alias{def.copy.dir.symb}
 \title{Copy all files in a directory with a symbolic link}
 \usage{
-def.copy.dir.symb(DirSrc, DirDest)
+def.copy.dir.symb(DirSrc, DirDest, log = log)
 }
 \arguments{
 \item{DirSrc}{String vector. Source directories. All files in these source directories will be copied to the 
@@ -14,6 +14,9 @@ destination directories.}
 as DirDest, each index corresponding to the same index of DirDest. NOTE: DirDest should be the parent of the 
 distination directories. For example, to create a link from source /parent/child/ to /newparent/child, 
 DirSrc='/parent/child/' and DirDest='/newparent/'}
+
+\item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+output. Defaults to NULL, in which the logger will be created and used within the function.}
 }
 \value{
 No output from this function other than performing the intended action.

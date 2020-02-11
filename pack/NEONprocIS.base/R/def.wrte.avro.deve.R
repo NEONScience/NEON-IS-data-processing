@@ -29,7 +29,7 @@
 
 #' @examples Currently none
 
-#' @seealso \link[NEONprocIS.cal]{def.read.avro.deve}
+#' @seealso \link[NEONprocIS.base]{def.read.avro.deve}
 
 #' @export
 
