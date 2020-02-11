@@ -30,14 +30,34 @@
 ##############################################################################################
 
 
-def.validate.json.schema <- function(jsonIn, jsonSchemaIn) {
-  d = FALSE
-  #
-  # TRUE if jsonIn conforms to jsonSchemaIn
-  #
-  if (jsonvalidate::json_validate(jsonIn, jsonSchemaIn)) {
-    d = TRUE
+def.validate.json.schema <-
+  function(jsonIn, jsonSchemaIn, log = NULL) {
+    #  Initialize log if not input
+    if (base::is.null(log)) {
+      log <- NEONprocIS.base::def.log.init()
+    }
+    
+    tryCatch(
+      (jsonvalidate::json_validate(jsonIn, jsonSchemaIn)),
+      
+      error = function(cond) {
+        log$error(base::paste0(NameFileIn, ' error in the json schema validation '))
+        stop
+      }
+    )
+    
+    #
+    # TRUE if jsonIn is a valid json against the schema
+    #
+    if (jsonvalidate::json_validate(jsonIn, jsonSchemaIn)) {
+      d = TRUE
+      log$info(base::paste0(jsonIn, ' is valid, conforms to the schema ***** '))
+    }
+    else
+    {
+      d = FALSE
+      log$warn(base::paste0(jsonIn, ' is invalid, does not conform to the schema ***** '))
+    }
+    
+    return (d)
   }
-  
-  return (d)
-}
