@@ -4,9 +4,8 @@
 #' @author 
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} 
 
-#' @description Workflow. Filter the directory of calibration files for the most recent calibration(s) applicable 
-#' to the data dates. Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}}, 
-#' which uses system environment variables if available.
+#' @description Workflow. Filter the directory of calibration files for those that apply to the 
+#' data dates. 
 #' 
 #' This script is run at the command line with 2 or 3 arguments. Each argument must be a string in the format
 #' "Para=value", where "Para" is the intended parameter name and "value" is the value of the parameter. The 
@@ -35,6 +34,9 @@
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 3. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at the same level as the 
 #' calibration folder in the input path that are to be copied with a symbolic link to the output path.
+#' 
+#' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}}, 
+#' which uses system environment variables if available.
 
 #' @return A directory of filtered calibration files and additional desired subfolders symbolically linked in directory DirOut, 
 #' where DirOut replaces the input directory structure up to #/pfs/BASE_REPO (see inputs above) but otherwise retains the 
@@ -67,6 +69,8 @@
 #   Cove Sturtevant (2019-09-24)
 #     structured inputs to be more human readable
 #     added arguments for output directory and optional copying of additional subdirectories
+#   Cove Sturtevant (2020-02-10)
+#     pulled out major code functionality into functions
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -139,104 +143,20 @@ for(idxDirIn in DirIn){
     DirCalVar <- base::paste0(DirCal,'/',idxVar)
     fileCal <- base::dir(DirCalVar)
     
-    #Read in each calibration file, saving the valid start/end dates & certificate number
-    metaCal <- base::lapply(fileCal,FUN=function(idxFile){
-      cal <- NEONprocIS.cal::def.read.cal.xml(NameFile=base::paste0(DirCalVar,'/',idxFile),Vrbs=TRUE)
-      rpt <- base::data.frame(file=idxFile,timeValiBgn=cal$timeVali$StartTime,timeValiEnd=cal$timeVali$EndTime,
-                              id=base::as.numeric(cal$file$StreamCalVal$CertificateNumber),stringsAsFactors=FALSE)
-    })
-    metaCal <- base::Reduce(f=base::rbind,x=metaCal)
+    #Get metadata for all the calibration files in the directory, saving the valid start/end dates & certificate number
+    metaCal <- NEONprocIS.cal::def.cal.meta(fileCal=base::paste0(DirCalVar,'/',fileCal),log=log)
     
-    # Which calibration files have valid ranges at or before our data range? 
-    use <- metaCal$timeValiBgn <= timeEnd
-    if(base::sum(use) == 0){
-      # We don't have any applicable files, issue warning and skip
-      log$warn(base::paste0('No calibration files have valid ranges at or before data date in cal directory ',DirCalVar))
-      next
-    } else {
-      # Save the usable ones
-      metaCal <- metaCal[use,] 
-    }
+    # Determine the calibrations that apply for this day
+    calSlct <- NEONprocIS.cal::def.cal.slct(metaCal=metaCal,TimeBgn=timeBgn,TimeEnd=timeEnd,log=log)
+    fileCalSlct <- base::setdiff(base::unique(calSlct$file),'NA')
+    numFileCalSlct <- base::length(fileCalSlct)
     
-    # Of the expired cals, keep only the one with the latest valid date. This has the effect of bringing the list
-    # down to one file if all cals are expired. If we have expired and unexpired cals, we'll only consider the last expired.
-    setSort <- base::sort(base::as.numeric(metaCal$timeValiEnd),decreasing=TRUE,index.return=TRUE)$ix
-    metaCal <- metaCal[setSort,]
-    setCalExpi <- base::which(metaCal$timeValiEnd < timeBgn)
-    metaCal$expi <- FALSE # Add a field for expired cals
-    metaCal$expi[setCalExpi]<- TRUE
-    if(base::length(setCalExpi)>1){
-      metaCal <- metaCal[1:setCalExpi[1],]
-    }
-    
-    # If we have more than 1 file with a valid cal during our data range, we need to do more checking
-    numCal <- base::nrow(metaCal)
-    if(numCal > 1){
-      
-      # For the expired cal (if any), move it's end date to the data start date
-      metaCal$timeValiEnd[metaCal$expi] <- timeBgn
-      
-      # If the valid range for a cal file extends past the data range, truncate it 
-      metaCal$timeValiBgn[metaCal$timeValiBgn < timeBgn] <- timeBgn
-      metaCal$timeValiEnd[metaCal$timeValiEnd > timeEnd] <- timeEnd
-      
-      # If we have a valid cal that covers the very first data point, rid ourselves of the expired cal
-      if(base::min(metaCal$timeValiBgn[!metaCal$expi]) <= timeBgn){
-        metaCal <- metaCal[!metaCal$expi,]
-        numCal <- base::nrow(metaCal)
-      }
-      
-      # Order the cals by id (most recent is the largest number)
-      setSort <- base::sort(metaCal$id,decreasing=TRUE,index.return=TRUE)$ix
-      metaCal <- metaCal[setSort,]
-      
-      # Go through each calibration file below the most recent, starting with the last. 
-      # If it is complete covered in time by the cals above it, it can be removed.
-      for(idxCal in base::seq.int(from=numCal,to=2)){
-        
-        # There's a possibility from above that we only have one cal left. If so, break out of this for loop
-        if(idxCal == 1){
-          break
-        }
-        
-        # Pull this cal's metadata out
-        metaIdx <- metaCal[idxCal,]
-        
-        # Form the set of Cal's above it
-        metaCalEval <- metaCal[1:(idxCal-1),]
-        
-        # Order the cals above it by start date
-        setSort <- base::sort(base::as.numeric(metaCalEval$timeValiBgn),index.return=TRUE)$ix
-        metaCalEval <- metaCalEval[setSort,]
-        
-        # Run through each cal above it, 
-        for(idxCalEval in 1:(idxCal-1)){
-          # Pull out the more recent one we are comparing against
-          metaEvalIdx <- metaCalEval[idxCalEval,]
-          
-          if(metaIdx$timeValiBgn < metaEvalIdx$timeValiBgn){
-            # Stop, we have reached a point where there is a gap to the next start date of a more recent cal
-            break
-          } else {
-            # Update the start date to the end date of the more recent cal (if it's greater)
-            metaIdx$timeValiBgn <- base::max(metaIdx$timeValiBgn,metaEvalIdx$timeValiEnd)
-          }
-        }
-        
-        # Do we have a start date that is at or after our end date? If so, we have more recent calibrations that cover 
-        # this cal, and can therefore get rid of it
-        if(metaIdx$timeValiBgn >= metaIdx$timeValiEnd){
-          metaCal <- metaCal[-idxCal,]
-        }
-        
-      } # End loop around additional (older) calibration files
-      
-    } # End if statement for multiple cal files
-    
-    log$info(base::paste0(base::nrow(metaCal), ' calibration file(s) saved to filtered cal directory ',DirOutCalVar))
+    log$info(base::paste0(numFileCalSlct, ' calibration file(s) saved to filtered cal directory ',DirOutCalVar))
     
     # We are left with a filtered cal list. Let's copy the files in that list over to the output directory
-    base::system(base::paste0('ln -s ',DirCalVar,'/',metaCal$file,' ',DirOutCalVar, collapse=' && '))
+    if(numFileCalSlct > 0){
+      base::system(base::paste0('ln -s ',DirCalVar,'/',fileCalSlct,' ',DirOutCalVar, collapse=' && '))
+    }
     
   } # End loop around cal streams
     
