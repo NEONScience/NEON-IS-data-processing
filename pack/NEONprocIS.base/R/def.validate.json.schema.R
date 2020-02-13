@@ -6,7 +6,7 @@
 
 #' @description
 #' Validate an input json against the schema to check it is valid.
-#' Returns FALSE if the json is empty OR invaild . TRUE otherwise.
+#' Returns TRUE if the json is vaild . FALSE if invalid or error.
 
 #' @param jsonIn Input json to be validated
 
@@ -37,27 +37,31 @@ def.validate.json.schema <-
       log <- NEONprocIS.base::def.log.init()
     }
     
+    d = FALSE
+    
     tryCatch(
       (jsonvalidate::json_validate(jsonIn, jsonSchemaIn)),
-      
       error = function(cond) {
         log$error(base::paste0(NameFileIn, ' error in the JSON schema validation '))
         stop
       }
     )
+
+    #
+    # TRUE if jsonIn is a valid JSON against the schema. FALSE if invalid or error
+    #
+    log$info(
+      base::paste0(
+        'Validate.json.schema:  Checking to see if the JSON conforms to the schema.'
+      )
+    )
     
-    #
-    # TRUE if jsonIn is a valid JSON against the schema
-    #
-    log$info(base::paste0('Validate.json.schema:  Checking to see if the JSON conforms to the schema.'))
-   
     if (jsonvalidate::json_validate(jsonIn, jsonSchemaIn)) {
       d = TRUE
       log$info(base::paste0(jsonIn, ' conforms to the schema  '))
     }
     else
     {
-      d = FALSE
       log$warn(base::paste0(jsonIn, ' does not conform to the schema  '))
     }
     

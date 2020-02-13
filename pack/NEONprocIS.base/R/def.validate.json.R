@@ -28,17 +28,16 @@
 ##############################################################################################
 
 
-def.validate.json <- function(jsonIn, log= NULL) {
-  
-  
+def.validate.json <- function(jsonIn, log = NULL) {
   # Initialize log if not input
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
   
+  c = FALSE
+  
   tryCatch(
     (RJSONIO::isValidJSON(jsonIn)),
-    
     error = function(cond) {
       log$error(base::paste0(NameFileIn, ' does not exist  '))
       stop
@@ -48,7 +47,7 @@ def.validate.json <- function(jsonIn, log= NULL) {
   #
   # TRUE if jsonIn is a valid json
   #
-   log$info(base::paste0('Validate.json: Checking to see if the JSON is strictly valid.'))
+  log$info(base::paste0('Validate.json: Checking to see if the JSON is strictly valid.'))
   
   if (RJSONIO::isValidJSON(jsonIn)) {
     c = TRUE
@@ -56,10 +55,8 @@ def.validate.json <- function(jsonIn, log= NULL) {
   }
   else
   {
-    c = FALSE
     log$warn(base::paste0(jsonIn, ' is invalid ***** '))
   }
   
   return (c)
 }
-  

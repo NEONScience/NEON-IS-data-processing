@@ -63,14 +63,18 @@ def.loc.filt <-
     # Otherwise, validateJsonSchema err out due to the syntax error
     #
     validateJsonSchema <- FALSE
-    if (!(class(validateJson) == "try-error"))  {
-      if (validateJson == TRUE)  {
-        validateJsonSchema <-
-          NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
-      }
+    
+    if (validateJson == TRUE)  {
+      validateJsonSchema <-
+        NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
     }
+    # if the validation fails, return error
+    if ((validateJson == FALSE)  |
+        (validateJsonSchema == FALSE)) 
+      stop()
+    
     #
-    # Run the code below when the input json is correct syntacically and valid against the schema
+    # else run the code below when the input json is correct syntacically and valid against the schema
     #
     if ((validateJson) && (validateJsonSchema))
     {
