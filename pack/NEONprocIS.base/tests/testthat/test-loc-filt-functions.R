@@ -72,7 +72,7 @@ test_that("   Testing Filter named location information by date-time range", {
   TimeBgn <- Sys.Date()
   TimeEnd <- NULL
   cat("\n       |------ Positive test 1:: Input JSON is valid and conforms to the schema            |\n")
-  cat("\n       |------                   timeBgn is now and timeEnd is NULL                        |\n")
+  cat("\n       |------                   timeBgn is now and timeEnd is NULL                        |\n\n")
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   expect_true (length(locReturned$features) == 0)
@@ -85,7 +85,7 @@ test_that("   Testing Filter named location information by date-time range", {
   # Happy path test 2: will have features in the time range
   
   cat("\n       |------ Positive test 2:: Input JSON is valid and conforms to the schema            |\n")
-  cat("\n       |------                   between '2017-02-06T00:10:20Z' and '2017-02-07T00:18:28Z' |\n")
+  cat("\n       |------                   between '2017-02-06T00:10:20Z' and '2017-02-07T00:18:28Z' |\n\n")
   TimeBgn <- base::as.POSIXct('2017-02-06T00:10:20Z')
   TimeEnd <- base::as.POSIXct('2017-02-07T00:18:28Z')
   
@@ -107,11 +107,11 @@ test_that("   Testing Filter named location information by date-time range", {
   TimeEnd <- base::as.POSIXct('2017-02-07T00:18:28Z')
   
   cat("\n       |------ Negative test 1::A blank json is passed on to def.loc.filt                  |\n")
-  cat("\n       |------                   A blank Json is invalid.                                  |\n")
+  cat("\n       |------                  A blank Json is not strictly valid.                        |\n\n")
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   
-  cat("\n       |------                   Catch the error and exit                                  |\n")
+  cat("\n       |----------- Catch errors if any, log the message and exit                          |\n")
   cat(
     "\n       |===================================================================================|\n"
   )
@@ -120,14 +120,14 @@ test_that("   Testing Filter named location information by date-time range", {
   #
   # Sad path test 2:  A json with syntax error is passed on to def.loc.filt
   
-  cat("\n       |------ Negative test 2::A json with syntax error(s) is passed on                   |\n\n")
-  cat("\n       |------                   such as mismatching double quotes, missing values, etc... |\n")
+  cat("\n       |------ Negative test 2::A json with syntax error(s) is passed on                   |\n")
+  cat("\n       |------                  such as mismatching double quotes, missing values, etc...  |\n\n")
   NameFileIn = 'locations-invalid.json'
   
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   
-  cat("\n       |------                   Catch the error and exit                                  |\n")
+  cat("\n       |----------- Catch errors if any, log the message and exit                          |\n")
   cat(
     "\n       |===================================================================================|\n"
   )
@@ -138,14 +138,14 @@ test_that("   Testing Filter named location information by date-time range", {
   # Sad path test 3:  An empty contents json, {}, is passed on to def.loc.filt
   
   cat("\n       |------ Negative test 3::An empty contents json, {}, is passed on                   |\n")
-  cat("\n       |------                   The JSON is valid, but does not conforms to the schema    |\n")
+  cat("\n       |------                 That is strictly valid, but does not conforms to the schema |\n\n")
   
   NameFileIn = 'locations-emptyContents.json'
   
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   
-  cat("\n\n       |------                   Catch the error and exit                                  |\n")
+  cat("\n\n       |----------- Catch errors if any, log the message and exit                          |\n")
   cat(
     "\n       |===================================================================================|\n\n"
   )
@@ -155,14 +155,14 @@ test_that("   Testing Filter named location information by date-time range", {
   # Sad path test 4:  A json has missing fields, is passed on to def.loc.filt
   
   cat("\n       |------ Negative test 4::A json with missing fields, is passed on                   |\n")
-  cat("\n       |------                   The JSON is valid, but does not conforms to the schema    |\n")
+  cat("\n       |------                  That is strictly valid, but does not conforms to the schema|\n\n")
   
   NameFileIn = 'locations-invalidSchema.json'
   
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   
-  cat("\n\n       |------                   Catch the error and exit                                  |\n")
+  cat("\n\n       |----------- Catch errors if any, log the message and exit                          |\n")
   cat(
     "\n       |===================================================================================|\n\n"
   )

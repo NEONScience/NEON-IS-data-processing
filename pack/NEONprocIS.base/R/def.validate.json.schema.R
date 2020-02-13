@@ -41,22 +41,24 @@ def.validate.json.schema <-
       (jsonvalidate::json_validate(jsonIn, jsonSchemaIn)),
       
       error = function(cond) {
-        log$error(base::paste0(NameFileIn, ' error in the json schema validation '))
+        log$error(base::paste0(NameFileIn, ' error in the JSON schema validation '))
         stop
       }
     )
     
     #
-    # TRUE if jsonIn is a valid json against the schema
+    # TRUE if jsonIn is a valid JSON against the schema
     #
+    log$info(base::paste0('Validate.json.schema:  Checking to see if the JSON conforms to the schema.'))
+   
     if (jsonvalidate::json_validate(jsonIn, jsonSchemaIn)) {
       d = TRUE
-      log$info(base::paste0(jsonIn, ' is valid, conforms to the schema ***** '))
+      log$info(base::paste0(jsonIn, ' conforms to the schema  '))
     }
     else
     {
       d = FALSE
-      log$warn(base::paste0(jsonIn, ' is invalid, does not conform to the schema ***** '))
+      log$warn(base::paste0(jsonIn, ' does not conform to the schema  '))
     }
     
     return (d)
