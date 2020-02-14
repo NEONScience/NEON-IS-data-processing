@@ -69,7 +69,7 @@ def.loc.filt <-
         NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
     }
     #
-    #if the validation fails, return error
+    #if the validation fails, return error with status code -1
     #
     if ((validateJson == FALSE)  ||
         (validateJsonSchema == FALSE))
