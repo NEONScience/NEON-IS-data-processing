@@ -68,7 +68,6 @@ test_that("   Testing Filter named location information by date-time range", {
     "\n       |=================================   Test Summary   ================================|\n"
   )
   
-  
   TimeBgn <- Sys.Date()
   TimeEnd <- NULL
   cat("\n       |------ Positive test 1:: Input JSON is valid and conforms to the schema            |\n")
@@ -117,10 +116,9 @@ test_that("   Testing Filter named location information by date-time range", {
   )
   
   expect_true (locReturned == -1)
-  
   #
   # Sad path test 2:  A json with syntax error is passed on to def.loc.filt
-  
+  #
   cat("\n       |------ Negative test 2::A json with syntax error(s) is passed on                   |\n")
   cat("\n       |------                  such as mismatching double quotes, missing values, etc...  |\n\n")
   NameFileIn = 'locations-invalid.json'

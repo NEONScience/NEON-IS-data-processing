@@ -27,13 +27,12 @@
 #     original creation
 ##############################################################################################
 
-
 def.validate.json <- function(jsonIn, log = NULL) {
   # Initialize log if not input
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
-  
+  #set the default to FALSE
   c = FALSE
   
   tryCatch(
@@ -43,7 +42,6 @@ def.validate.json <- function(jsonIn, log = NULL) {
       stop
     }
   )
-  
   #
   # TRUE if jsonIn is a valid json
   #
@@ -57,6 +55,5 @@ def.validate.json <- function(jsonIn, log = NULL) {
   {
     log$warn(base::paste0(jsonIn, ' is invalid ***** '))
   }
-  
   return (c)
 }
