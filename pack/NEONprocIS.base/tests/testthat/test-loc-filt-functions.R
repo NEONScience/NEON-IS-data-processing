@@ -149,6 +149,7 @@ test_that("   Testing Filter named location information by date-time range", {
     "\n       |===================================================================================|\n\n"
   )
   expect_true (locReturned == -1)
+  #
   # A json has no syntax errors, but does not conform to the schema
   # Sad path test 4:  A json has missing fields, is passed on to def.loc.filt
   
@@ -170,4 +171,27 @@ test_that("   Testing Filter named location information by date-time range", {
   if (file.exists("locations-out.json")) {
     file.remove("locations-out.json")
   }
-})
+  #
+  # A json does not exist
+  # Sad path test 5:  A non-existing json is passed on to def.loc.filt
+  
+  cat("\n       |------ Negative test 5::A non-existing json is passed on                   |\n")
+  cat("\n       |------                 This will err out due to input json missing         |\n\n")
+  
+  NameFileIn = 'not-existing.json'
+  
+  locReturned <-
+    try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
+  
+  cat("\n       |----------- Catch errors if any, log the message and exit with status -1           |\n")
+  cat(
+    "\n       |===================================================================================|\n\n"
+  )
+  expect_true (locReturned == -1)
+  
+  # Or check to see if the output file is generated and then remove it after testing
+  if (file.exists("locations-out.json")) {
+    file.remove("locations-out.json")
+  }
+}
+)

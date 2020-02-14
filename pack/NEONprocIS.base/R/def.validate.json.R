@@ -34,26 +34,28 @@ def.validate.json <- function(jsonIn, log = NULL) {
   }
   #set the default to FALSE
   c = FALSE
-  
-  tryCatch(
-    (RJSONIO::isValidJSON(jsonIn)),
-    error = function(cond) {
-      log$error(base::paste0(NameFileIn, ' does not exist  '))
-      stop
+  #
+  res <- try((RJSONIO::isValidJSON(jsonIn)), silent = TRUE)
+  #
+  # First, check the input json passed on exists
+  #
+  if (class(res) == "try-error") {
+    log$error(base::paste0(jsonIn, ' does not exist  '))
+  }
+  #
+  # Then, check if the jsonIn is a valid json
+  #
+  if (class(res) != "try-error") {
+    if (RJSONIO::isValidJSON(jsonIn))
+    {
+      c = TRUE
+      log$info(base::paste0(jsonIn, ' is valid strictly.'))
     }
-  )
-  #
-  # TRUE if jsonIn is a valid json
-  #
-  log$info(base::paste0('Validate.json: Checking to see if the JSON is strictly valid.'))
+    else
+    {
+      log$warn(base::paste0(jsonIn, ' is invalid ***** '))
+    }
+  }
   
-  if (RJSONIO::isValidJSON(jsonIn)) {
-    c = TRUE
-    log$info(base::paste0(jsonIn, ' is valid strictly.'))
-  }
-  else
-  {
-    log$warn(base::paste0(jsonIn, ' is invalid ***** '))
-  }
   return (c)
 }

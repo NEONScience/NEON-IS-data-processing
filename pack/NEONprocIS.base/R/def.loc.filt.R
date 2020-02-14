@@ -74,7 +74,7 @@ def.loc.filt <-
     if ((validateJson == FALSE)  ||
         (validateJsonSchema == FALSE))
     {
-      warning('Erred out due to the failure of the validation')
+      warning('In def.loc.filt::::: Erred out due to the json validation failure')
       return (-1)
     }
     #

@@ -6,6 +6,7 @@
 
 #' @description
 #' Validate an input json against the schema to check it is valid.
+#' Run validate.json before validate.json.schema
 #' Returns TRUE if the json is vaild . FALSE if invalid or error.
 
 #' @param jsonIn Input json to be validated
