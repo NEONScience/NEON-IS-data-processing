@@ -111,11 +111,12 @@ test_that("   Testing Filter named location information by date-time range", {
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   
-  cat("\n       |----------- Catch errors if any, log the message and exit                          |\n")
+  cat("\n       |----------- Catch errors if any, log the message and exit with status -1           |\n")
   cat(
     "\n       |===================================================================================|\n"
   )
-  # expect_true (length(locReturned$features) == 0)
+  
+  expect_true (locReturned == -1)
   
   #
   # Sad path test 2:  A json with syntax error is passed on to def.loc.filt
@@ -125,14 +126,14 @@ test_that("   Testing Filter named location information by date-time range", {
   NameFileIn = 'locations-invalid.json'
   
   locReturned <-
-    NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+    try (NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
   
-  cat("\n       |----------- Catch errors if any, log the message and exit                          |\n")
+  cat("\n       |----------- Catch errors if any, log the message and exit with status -1           |\n")
   cat(
     "\n       |===================================================================================|\n"
   )
   
-  # expect_true (length(locReturned$features) == 0)
+  expect_true (locReturned == -1)
   
   # A json has no syntax errors, but does not conform to the schema
   # Sad path test 3:  An empty contents json, {}, is passed on to def.loc.filt
@@ -143,14 +144,13 @@ test_that("   Testing Filter named location information by date-time range", {
   NameFileIn = 'locations-emptyContents.json'
   
   locReturned <-
-    NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+    try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
   
-  cat("\n\n       |----------- Catch errors if any, log the message and exit                          |\n")
+  cat("\n       |----------- Catch errors if any, log the message and exit with status -1           |\n")
   cat(
     "\n       |===================================================================================|\n\n"
   )
-  # expect_true (length(locReturned$features) == 0)
-  
+  expect_true (locReturned == -1)
   # A json has no syntax errors, but does not conform to the schema
   # Sad path test 4:  A json has missing fields, is passed on to def.loc.filt
   
@@ -160,13 +160,13 @@ test_that("   Testing Filter named location information by date-time range", {
   NameFileIn = 'locations-invalidSchema.json'
   
   locReturned <-
-    NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+    try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
   
-  cat("\n\n       |----------- Catch errors if any, log the message and exit                          |\n")
+  cat("\n       |----------- Catch errors if any, log the message and exit with status -1           |\n")
   cat(
     "\n       |===================================================================================|\n\n"
   )
-  # expect_true (length(locReturned$features) == 0)
+  expect_true (locReturned == -1)
   
   # Or check to see if the output file is generated and then remove it after testing
   if (file.exists("locations-out.json")) {

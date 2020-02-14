@@ -68,11 +68,15 @@ def.loc.filt <-
       validateJsonSchema <-
         NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
     }
-    # if the validation fails, return error
-    if ((validateJson == FALSE)  |
-        (validateJsonSchema == FALSE)) 
-      stop()
-    
+    #----------------
+    #if the validation fails, return error
+    #------------
+    if ((validateJson == FALSE)  ||
+        (validateJsonSchema == FALSE))
+    {
+      warning('Erred out due to the failure of the validation')
+      return (-1)
+    }
     #
     # else run the code below when the input json is correct syntacically and valid against the schema
     #
