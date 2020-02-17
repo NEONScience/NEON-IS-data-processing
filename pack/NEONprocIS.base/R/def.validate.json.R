@@ -40,7 +40,7 @@ def.validate.json <- function(jsonIn, log = NULL) {
   # First, check the input json passed on exists
   #
   if (class(res) == "try-error") {
-    log$error(base::paste0(jsonIn, ' does not exist  '))
+    log$error(base::paste0( 'In def.validate.json::::: Error, the file does not exist, ', jsonIn))
   }
   #
   # Then, check if the jsonIn is a valid json
