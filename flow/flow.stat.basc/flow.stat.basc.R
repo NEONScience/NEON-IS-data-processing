@@ -232,8 +232,7 @@ for(idxDirIn in DirIn){
 
   # Copy with a symbolic link the desired subfolders 
   if(base::length(DirSubCopy) > 0){
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
-    log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
+    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
   }  
   
   # Are we computing uncertainty? If so, load the uncertainty file (there should be only 1)
@@ -276,7 +275,7 @@ for(idxDirIn in DirIn){
         nameFileUcrtFdas <- base::paste0(idxDirUcrtFdas,'/',fileUcrtFdas) # Full path to file
         
         # Open the FDAS uncertainty file
-        dataUcrtFdas  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileUcrtFdas,NameLib='/ravro.so'),silent=FALSE)
+        dataUcrtFdas  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileUcrtFdas,NameLib='/ravro.so',log=log),silent=FALSE)
         if(base::class(dataUcrtFdas) == 'try-error'){
           log$error(base::paste0('File ', fileUcrtFdas,' is unreadable.')) 
           stop()
@@ -298,7 +297,7 @@ for(idxDirIn in DirIn){
     
     # Load in data file in AVRO format into data frame 'data'.  
     fileIn <- base::paste0(idxDirData,'/',idxFileData)
-    data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileIn,NameLib='/ravro.so'),silent=FALSE)
+    data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileIn,NameLib='/ravro.so',log=log),silent=FALSE)
     if(base::class(data) == 'try-error'){
       log$error(base::paste0('File ', fileIn,' is unreadable.')) 
       stop()

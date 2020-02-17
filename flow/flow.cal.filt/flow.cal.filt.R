@@ -8,8 +8,9 @@
 #' data dates. 
 #' 
 #' This script is run at the command line with 2 or 3 arguments. Each argument must be a string in the format
-#' "Para=value", where "Para" is the intended parameter name and "value" is the value of the parameter. The 
-#' arguments are: 
+#' "Para=value", where "Para" is the intended parameter name and "value" is the value of the parameter. 
+#' Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the parameter will be assigned 
+#' from the system environment variable matching the value string. The arguments are: 
 #' 
 #' 1. "DirIn=value", where value is the input path, structured as follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number of 
 #' parent and child directories of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which 
@@ -27,11 +28,9 @@
 #'    /data 
 #'    /calibration/soilPRTResistance 
 #'    /calibration/heaterVoltage 
-#'    
-#' Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the parameter will be assigned from the system environment 
-#' variable matching the value string.
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
+#' 
 #' 3. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at the same level as the 
 #' calibration folder in the input path that are to be copied with a symbolic link to the output path.
 #' 
@@ -118,8 +117,7 @@ for(idxDirIn in DirIn){
 
   # Copy with a symbolic link the desired subfolders 
   if(base::length(DirSubCopy) > 0){
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
-    log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
+    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
   }
   
   # The time frame of the data is one day, and this day is indicated in the directory structure.

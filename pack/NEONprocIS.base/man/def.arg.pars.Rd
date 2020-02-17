@@ -31,9 +31,9 @@ in the output parameter list if they are not provided by the user.}
 TypePara=list(Para1="numeric") will attempt to convert the value of Para1 to numeric. Defaults to
 NULL, in which case no type conversion will be attempted.}
 
-\item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log 
-output in addition to standard R error messaging. Defaults to NULL, in which no logger other than 
-standard R error messaging will be used.}
+\item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
+created and used within the function.}
 }
 \value{
 A named list of parameters.

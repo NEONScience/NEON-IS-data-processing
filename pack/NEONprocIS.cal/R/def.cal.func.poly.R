@@ -43,7 +43,7 @@ def.cal.func.poly <- function(infoCal, log = NULL) {
   }
 
   # Validate calibration information
-  if (!NEONprocIS.base::def.validate.info.cal (infoCal,NameList='cal',log=log)) {
+  if (!NEONprocIS.cal::def.validate.info.cal (infoCal,NameList='cal',log=log)) {
     stop()
   }
   

@@ -62,6 +62,9 @@ def.cal.meta <- function(fileCal, log = NULL) {
     stop()
     }
     
+    # Look for whether this calibration is marked as suspect
+    
+    
     # output metadata
     metaCal[[idxFileCal]] <- base::data.frame(file=nameFileCal[idxFileCal],timeValiBgn=infoCal$timeVali$StartTime,timeValiEnd=infoCal$timeVali$EndTime,
                             id=base::as.numeric(infoCal$file$StreamCalVal$CertificateNumber),stringsAsFactors=FALSE)

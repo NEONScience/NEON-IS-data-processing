@@ -20,6 +20,7 @@
 #' created and used within the function.
 
 #' @return A data frame with the following variables:\cr
+#' \code{ucrt$raw} - raw reading value (i.e. same as input data)\cr
 #' \code{ucrt$dervCal} - 1st derivative of calibration function evaluated at raw reading value (e.g.
 #' partial derivative of a temperature measurement with respect to the resistance reading)\cr
 #' \code{ucrt$ucrtFdas} - standard uncertainty of individual measurement introduced by the Field DAS \cr
@@ -41,49 +42,57 @@
 #   Cove Sturtevant (2020-01-31)
 #     original creation
 ##############################################################################################
-def.ucrt.fdas.rstc <-
-  function(data,
-           infoCal,
-           log = NULL) {
-    # initialize logging if necessary
-    if (base::is.null(log)) {
-      log <- NEONprocIS.base::def.log.init()
-    }
-    
-    # Check inputs
-    if (!NEONprocIS.base::def.validate.vector(data)) {
-      stop()
-    }
-    if (!NEONprocIS.cal::def.validate.info.cal(infoCal,
-                                               coefUcrt = c('U_CVALR1', 'U_CVALR4'),
-                                               log = log)) {
-      stop()
-    }
-    
-    # Compute derivative of calibration function
-    func <- NEONprocIS.cal::def.cal.func.poly(cal = infoCal$cal)
-    funcDerv <- stats::deriv(func)
-    dervCal <-
-      stats::predict(object = funcDerv, newdata = data) # Eval derivative at each measurement
-    
-    # Retrieve the uncertainty coefficients for resistance measurements
-    # Combined, relative FDAS uncertainty of an individual measurement (U_CVALR1, unitless).
-    coefUcrtFdas <-
-      base::as.numeric(infoCal$ucrt$Value[infoCal$ucrt$Name == "U_CVALR1"])
-    
-    # Offset imposed by the FDAS, in units of resistance (U_CVALR4)
-    coefUcrtFdasOfst <-
-      base::as.numeric(infoCal$ucrt$Value[infoCal$ucrt$Name == "U_CVALR4"])
-    
-    # Initialize uncertainty output
-    ucrt <-
-      base::data.frame(raw = data,
-                       dervCal = dervCal,
-                       ucrtFdas = NA * data)
-    
-    # Compute FDAS uncertainty
-    ucrt$ucrtFdas <-
-      (coefUcrtFdas * data + coefUcrtFdasOfst) * base::abs(dervCal)
-    
+def.ucrt.fdas.rstc <- function(data = base::numeric(0),
+                               infoCal = NULL,
+                               log = NULL) {
+  # initialize logging if necessary
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
+  
+  # Check data input
+  if (!NEONprocIS.base::def.validate.vector(data, TestEmpty = FALSE, log =
+                                            log)) {
+    stop()
+  }
+  
+  # Initialize uncertainty output
+  ucrt <-
+    base::data.frame(raw = data,
+                     dervCal = NA * data,
+                     ucrtFdas = NA * data)
+  
+  # If infoCal is NULL, return NA data
+  if (base::is.null(infoCal)) {
+    log$debug('No calibration information supplied, returning NA values for FDAS uncertainty.')
     return(ucrt)
   }
+  
+  # Check format of infoCal
+  if (!NEONprocIS.cal::def.validate.info.cal(infoCal,
+                                             CoefUcrt = c('U_CVALR1', 'U_CVALR4'),
+                                             log = log)) {
+    stop()
+  }
+  
+  # Compute derivative of calibration function
+  func <- NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal)
+  funcDerv <- stats::deriv(func)
+  ucrt$dervCal <-
+    stats::predict(object = funcDerv, newdata = data) # Eval derivative at each measurement
+  
+  # Retrieve the uncertainty coefficients for resistance measurements
+  # Combined, relative FDAS uncertainty of an individual measurement (U_CVALR1, unitless).
+  coefUcrtFdas <-
+    base::as.numeric(infoCal$ucrt$Value[infoCal$ucrt$Name == "U_CVALR1"])
+  
+  # Offset imposed by the FDAS, in units of resistance (U_CVALR4)
+  coefUcrtFdasOfst <-
+    base::as.numeric(infoCal$ucrt$Value[infoCal$ucrt$Name == "U_CVALR4"])
+  
+  # Compute FDAS uncertainty
+  ucrt$ucrtFdas <-
+    (coefUcrtFdas * data + coefUcrtFdasOfst) * base::abs(ucrt$dervCal)
+  
+  return(ucrt)
+}

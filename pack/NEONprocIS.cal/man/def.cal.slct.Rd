@@ -4,7 +4,8 @@
 \alias{def.cal.slct}
 \title{Determine applicable date ranges for calibration}
 \usage{
-def.cal.slct(metaCal, TimeBgn, TimeEnd, TimeExpiMax = NULL, log = NULL)
+def.cal.slct(metaCal = NULL, TimeBgn, TimeEnd, TimeExpiMax = NULL,
+  log = NULL)
 }
 \arguments{
 \item{metaCal}{A data frame of calibration metadata as returned from NEONprocIS.cal::def.cal.meta}
@@ -42,7 +43,7 @@ this choice order (1 chosen first):
 Note that calibrations with a valid date range beginning after the date range of interest and
 calibrations that are expired more than their max allowable days since expiration are treated
 as if they don't exist. These time periods in the output will be filled with NA values for the 
-calibration metadata.
+calibration metadata with the expired flag = TRUE.
 }
 \examples{
 # Not run

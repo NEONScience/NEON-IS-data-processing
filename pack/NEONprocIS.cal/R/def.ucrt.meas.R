@@ -48,22 +48,32 @@
 #   Cove Sturtevant (2020-02-03)
 #     original creation
 ##############################################################################################
-def.ucrt.meas <- function(data, infoCal, log = NULL) {
+def.ucrt.meas <- function(data=base::numeric(0),
+                          infoCal = NULL,
+                          log = NULL) {
   # Initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
   
-  # Check inputs
-  if (!NEONprocIS.base::def.validate.vector(data)) {
+  # Check data input
+  if (!NEONprocIS.base::def.validate.vector(data,TestEmpty = FALSE,log=log)) {
     stop()
   }
-  if (!NEONprocIS.cal::def.validate.info.cal(infoCal,coefUcrt='U_CVALA1',log=log)){
-    stop()
-  }
-  
+ 
   # Initialize output data frame
   ucrt <- base::data.frame(ucrtMeas = NA * data)
+  
+  # If infoCal is NULL, return NA data
+  if(base::is.null(infoCal)){
+    log$debug('No calibration information supplied, returning NA values for individual measurement uncertainty.')
+    return(ucrt)
+  }
+  
+  # Check format of infoCal
+  if (!NEONprocIS.cal::def.validate.info.cal(infoCal,CoefUcrt='U_CVALA1',log=log)){
+    stop()
+  }
   
   # Uncertainty coefficient U_CVALA1 represents the combined measurement uncertainty for an
   # individual reading. It includes the repeatability and reproducibility of the sensor and the

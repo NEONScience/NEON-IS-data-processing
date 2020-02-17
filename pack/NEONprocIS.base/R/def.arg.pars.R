@@ -30,9 +30,9 @@
 #' @param TypePara Named list of R classes to convert the corresponding parameter to. For example, 
 #' TypePara=list(Para1="numeric") will attempt to convert the value of Para1 to numeric. Defaults to
 #' NULL, in which case no type conversion will be attempted.
-#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log 
-#' output in addition to standard R error messaging. Defaults to NULL, in which no logger other than 
-#' standard R error messaging will be used.
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
+#' created and used within the function.
 
 #' @return A named list of parameters.
 
@@ -70,6 +70,8 @@
 #     added additional parsing of argument string by colon (along with pipe)
 #   Cove Sturtevant (2019-10-16)
 #     added input of default parameter values
+#   Cove Sturtevant (2020-02-11)
+#     limit splitting of parameter string to a single colon or pipe (i.e. do not split double colon or double pipe)
 ##############################################################################################
 def.arg.pars <- function(arg,
                      NameParaReqd=NULL,
@@ -78,13 +80,16 @@ def.arg.pars <- function(arg,
                      TypePara=NULL, # Named list of intended class for each parameter. Conversion will be attempted
                      log=NULL){
   
+  # initialize logging if necessary
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
+  
   # Error check
   if(base::class(arg) != "character"){
     msg <- "Input argument vector must be of class character."
-    if(!base::is.null(log)){
-      log$fatal(msg)
-    } 
-    stop(msg)
+    log$fatal(msg)
+    stop()
   }
   
   # Error check
@@ -92,10 +97,8 @@ def.arg.pars <- function(arg,
   chkOptn <- !(nameValuOptn %in% NameParaOptn)
   if(base::length(chkOptn) > 0 && base::sum(chkOptn) != 0){
     msg <- base::paste0('Default parameter value(s) were provided for: ',base::paste0(nameValuOptn[chkOptn],collapse=','),', but these parameters were not listed in NameParaOptn. Check inputs.')
-    if(!base::is.null(log)){
-      log$fatal(msg)
-    } 
-    stop(msg)        
+    log$fatal(msg)
+    stop()        
   }
   
   # Intialize list of parameters
@@ -112,14 +115,12 @@ def.arg.pars <- function(arg,
     # Error check
     if(base::length(splt) != 2){
       msg <- base::paste0('There must be one equals sign (=) in each argument. Parameter ',idxArg, ' does not fulfill this requirement.')
-      if(!base::is.null(log)){
-        log$fatal(msg)
-      } 
-      stop(msg)        
+      log$fatal(msg)
+      stop()        
     }
     
-    # Split the parameter value into a character vector delimited by pipes
-    valu <- base::strsplit(splt[2],"[|:]")[[1]]
+    # Split the parameter value into a character vector delimited by pipes or colons, but not splitting if more than one pipe or colon
+    valu <- base::strsplit(splt[2],"(?<![:|])[:|]{1}(?![:|])",perl=TRUE)[[1]]
     
     # Evaluate environment variables
     for(idxValu in base::seq_len(base::length(valu))){
@@ -131,10 +132,8 @@ def.arg.pars <- function(arg,
         # Error check
         if(base::nchar(valu[idxValu]) == 0){
           msg <- base::paste0('Input parameter ',splt[1], ' was indicated to be read from system environment variable ',varEnv, ' but it cannot be found.')
-          if(!base::is.null(log)){
-            log$fatal(msg)
-          } 
-          stop(msg)        
+          log$fatal(msg)
+          stop()        
         }
       }      
     }
@@ -150,10 +149,8 @@ def.arg.pars <- function(arg,
     if(base::sum(!inPara) > 0){
       msg <- base::paste0('Missing required input parameter(s) ', base::paste0(NameParaReqd[!inPara],collapse=','),
                           '. Check inputs.')
-      if(!base::is.null(log)){
-        log$fatal(msg)
-      } 
-      stop(msg)
+      log$fatal(msg)
+      stop()
       
     }
   }
@@ -162,10 +159,8 @@ def.arg.pars <- function(arg,
     if(base::sum(outPara) > 0){
       msg <- base::paste0('Input parameter(s) ', base::paste0(base::names(Para)[outPara],collapse=','),
                           ' are not in the list of acceptable parameters (NameParaReqd & NameParaOptn). Check inputs.')
-      if(!base::is.null(log)){
-        log$fatal(msg)
-      } 
-      stop(msg)
+      log$fatal(msg)
+      stop()
       
     }
   }
@@ -182,20 +177,16 @@ def.arg.pars <- function(arg,
   if(!base::is.null(TypePara)){
     if(base::class(TypePara) != "list"){
       msg <- base::paste0('TypePara must be a named list of intended classes (as a character string) for each parameter.')
-      if(!base::is.null(log)){
-        log$fatal(msg)
-      } 
-      stop(msg)
+      log$fatal(msg)
+      stop()
       
     }
     inPara <- base::names(TypePara) %in% base::names(Para)
     if(base::sum(!inPara) > 0){
       msg <- base::paste0('List name(s): ',base::paste0(base::names(TypePara)[!inPara],collapse=','),
                           ' of TypePara do not match the names of any parameters. Check inputs.')
-      if(!base::is.null(log)){
-        log$fatal(msg)
-      } 
-      stop(msg)
+      log$fatal(msg)
+      stop()
       
     }
     

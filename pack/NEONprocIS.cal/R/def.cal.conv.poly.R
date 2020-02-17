@@ -13,6 +13,7 @@
 #' This data frame must include columns:\cr
 #' \code{Name} String. The name of the coefficient. Must fit regular expression CVALA[0-9]\cr
 #' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
+#' Defaults to NULL, in which case converted data will be retured as NA.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -45,8 +46,8 @@
 #     Removed uncertainty quantification (moved to separate function)
 #     Split out creation of the polynomial model object into a function
 ##############################################################################################
-def.cal.conv.poly <- function(data,
-                              infoCal,
+def.cal.conv.poly <- function(data=base::numeric(0),
+                              infoCal = NULL,
                               log = NULL) {
   # Intialize logging if needed
   if (base::is.null(log)) {
@@ -54,18 +55,19 @@ def.cal.conv.poly <- function(data,
   }
   chk <- base::logical(0)
   
-  # Check to see if data is not empty 
-  chkNew <- NEONprocIS.base::def.validate.vector (data,log=log)
-  if (!chk0){
+  # Check to see if data is a numeric array
+  chkNew <- NEONprocIS.base::def.validate.vector(data,TestEmpty = FALSE,log=log)
+  if (!chkNew){
     chk <- c(chk,chkNew)
   }
   
-  # Validate calibration information
-  chkNew <- NEONprocIS.cal::def.validate.info.cal(infoCal=infoCal,NameList='cal',log=log)
-  if (!chk0){
-    chk <- c(chk,chkNew)
+  # If infoCal is NULL, return NA data
+  if(base::is.null(infoCal)){
+    log$debug('No calibration information supplied, returning NA values for converted data.')
+    dataConv <- NA*data
+    return(dataConv)
   }
-  
+
   if(!all(chk)){
    on.exit() 
   }

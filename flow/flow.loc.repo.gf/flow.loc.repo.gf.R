@@ -135,7 +135,7 @@ for(idxIdLoc in idLoc){
     dirTime <- base::paste0(base::format(idxTimeExst,'%Y'),'/',base::format(idxTimeExst,'%m'),'/',base::format(idxTimeExst,'%d'))
     dirSrc <- base::paste0(DirBgn,'/',dirTime,'/',idxIdLoc)
     dirDest <- base::paste0(DirOut,InfoDirBgn$dirRepo,'/',dirTime)
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(DirSrc=dirSrc,DirDest=dirDest))
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=dirSrc,DirDest=dirDest,log=log)
     
   })
   log$info(base::paste0('Copied existing dates for location-ID: ',idxIdLoc)) 
@@ -180,7 +180,7 @@ for(idxIdLoc in idLoc){
     dirSrcBase <- base::paste0(DirBgn,'/',base::format(timeGf,'%Y'),'/',base::format(timeGf,'%m'),'/',base::format(timeGf,'%d'),'/',idxIdLoc)
     dirSrcLoc <- base::paste0(dirSrcBase,'/location')
     dirDest <- base::paste0(DirOut,InfoDirBgn$dirRepo,'/',base::format(idxTimeMiss,'%Y'),'/',base::format(idxTimeMiss,'%m'),'/',base::format(idxTimeMiss,'%d'),'/',idxIdLoc)
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(DirSrc=dirSrcLoc,DirDest=dirDest))
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=dirSrcLoc,DirDest=dirDest,log=log)
     
     # Now create the data, flags, and uncertainty folders
     nameDirAdd <- c('data','flags','uncertainty','uncertainty_fdas')

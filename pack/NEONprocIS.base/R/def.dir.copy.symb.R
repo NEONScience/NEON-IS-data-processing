@@ -22,8 +22,8 @@
 
 #' @keywords Currently none
 
-#' @examples Currently none
-#' def.copy.dir.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01/01')
+#' @examples 
+#' def.dir.copy.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01/01')
 
 
 #' @seealso Currently none
@@ -36,7 +36,7 @@
 #   Cove Sturtevant (2020-02-04)
 #     added logging
 ##############################################################################################
-def.copy.dir.symb <- function(DirSrc,DirDest,log=log){
+def.dir.copy.symb <- function(DirSrc,DirDest,log=NULL){
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -50,11 +50,13 @@ def.copy.dir.symb <- function(DirSrc,DirDest,log=log){
     base::stop()
   }
 
-  rptDir <- base::lapply(DirDest,base::dir.create,recursive=TRUE) # Create the destination directories
+  rptDir <- base::suppressWarnings(base::lapply(DirDest,base::dir.create,recursive=TRUE)) # Create the destination directories
   cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
   rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
-  
-  log$info(base::paste0('Unmodified ',base::paste0(DirSrc,collapse=','), ' copied to ',DirDest))
+
+  if(rptCopy == 0){
+    log$info(base::paste0('Unmodified ',base::paste0(DirSrc,collapse=','), ' copied to ',DirDest))
+  }
   
   
 }

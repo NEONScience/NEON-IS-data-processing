@@ -18,7 +18,7 @@
 #' Note that calibrations with a valid date range beginning after the date range of interest and
 #' calibrations that are expired more than their max allowable days since expiration are treated
 #' as if they don't exist. These time periods in the output will be filled with NA values for the 
-#' calibration metadata.
+#' calibration metadata with the expired flag = TRUE.
 
 #' @param metaCal A data frame of calibration metadata as returned from NEONprocIS.cal::def.cal.meta
 #' @param TimeBgn A POSIXct timestamp of the start date of interest (inclusive)
@@ -59,7 +59,7 @@
 #     original creation
 ##############################################################################################
 def.cal.slct <-
-  function(metaCal,
+  function(metaCal=NULL,
            TimeBgn,
            TimeEnd,
            TimeExpiMax = NULL,
@@ -69,22 +69,7 @@ def.cal.slct <-
       log <- NEONprocIS.base::def.log.init()
     }
     
-    # Check inputs: TimeBgn and TimeEnd are POSIXct. TimeEnd > TimeBgn. Validate metaCal is a data frame with columns file, timeValiBgn, timeValiEnd, id. Single difftime value or NULL for TimeExpiMax.
-    # What if metaCal is an empty data frame?
-    
-    
-    # Sort the calibration IDs. Higher calibration ID (more recently generated) is always preferrable unless it is expired.
-    metaCal <- metaCal[base::order(metaCal$id, decreasing = TRUE),]
-    
-    # Do initial filtering of calibrations to those that fulfill minimum requirements
-    # 1. Remove cals where valid date range begins after time range of interest
-    metaCal <- metaCal[metaCal$timeValiBgn < TimeEnd,]
-    # 2. Remove cals where time range of interest is after the expiration + allowance period
-    if (!base::is.null(TimeExpiMax)) {
-      metaCal <- metaCal[metaCal$timeValiEnd + TimeExpiMax > TimeBgn,]
-    }
-    
-    # Initialize the output data frame
+# Initialize the output data frame
     dmmyTime <-
       base::as.POSIXct(x = numeric(0), origin = as.POSIXct('1970-01-01', tz = 'GMT'))
     base::attr(dmmyTime, 'tzone') <- 'GMT'
@@ -97,6 +82,26 @@ def.cal.slct <-
         expi = base::logical(0),
         stringsAsFactors = FALSE
       )
+        
+    
+    # Check inputs: TimeBgn and TimeEnd are POSIXct. TimeEnd > TimeBgn. Validate metaCal is a data frame with columns file, timeValiBgn, timeValiEnd, id. Single difftime value or NULL for TimeExpiMax.
+    
+    # What if metaCal is an empty data frame, or empty? Need to return the time period as if there were no applicable cal. Do so by creating a data frame with expected columns but zero rows.
+    if(base::is.null(metaCal)){
+      metaCal <- base::data.frame(file=base::character(0),timeValiBgn=dmmyTime,timeValiEnd=dmmyTime,id=base::numeric(0),stringsAsFactors=FALSE)
+    }
+    
+    # Sort the calibration IDs. Higher calibration ID (more recently generated) is always preferrable unless it is expired.
+    metaCal <- metaCal[base::order(metaCal$id, decreasing = TRUE),]
+    
+    # Do initial filtering of calibrations to those that fulfill minimum requirements
+    # 1. Remove cals where valid date range begins after time range of interest
+    metaCal <- metaCal[metaCal$timeValiBgn < TimeEnd,]
+    # 2. Remove cals where time range of interest is after the expiration + allowance period
+    if (!base::is.null(TimeExpiMax)) {
+      metaCal <- metaCal[metaCal$timeValiEnd + TimeExpiMax > TimeBgn,]
+    }
+    
     
     # Run through the calibrations, filling in valid periods. 
     # Start with highest ID, which is the most prefereable for a given date-time
@@ -204,7 +209,7 @@ def.cal.slct <-
                   timeEnd = timeMiss$timeEnd[idxTimeMiss],
                   file = NA,
                   id = NA,
-                  expi = NA,
+                  expi = TRUE,
                   stringsAsFactors = FALSE
                 )
               )
@@ -236,7 +241,7 @@ def.cal.slct <-
               timeEnd = timeMiss$timeEnd[idxTimeMiss],
               file = NA,
               id = NA,
-              expi = NA,
+              expi = TRUE,
               stringsAsFactors = FALSE
             )
           )

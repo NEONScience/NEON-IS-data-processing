@@ -4,7 +4,7 @@
 \alias{def.ucrt.meas}
 \title{Compute individual measurement uncertainty using coefficients in NEON calibration file}
 \usage{
-def.ucrt.meas(data, infoCal, log = NULL)
+def.ucrt.meas(data = base::numeric(0), infoCal = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Numeric vector of raw measurements}

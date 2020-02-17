@@ -4,7 +4,8 @@
 \alias{def.ucrt.fdas.rstc}
 \title{Compute uncertainty attributed to NEON FDAS resistance measurements}
 \usage{
-def.ucrt.fdas.rstc(data, infoCal, log = NULL)
+def.ucrt.fdas.rstc(data = base::numeric(0), infoCal = NULL,
+  log = NULL)
 }
 \arguments{
 \item{data}{Numeric vector of raw resistance measurements}
@@ -22,6 +23,7 @@ created and used within the function.}
 }
 \value{
 A data frame with the following variables:\cr
+\code{ucrt$raw} - raw reading value (i.e. same as input data)\cr
 \code{ucrt$dervCal} - 1st derivative of calibration function evaluated at raw reading value (e.g.
 partial derivative of a temperature measurement with respect to the resistance reading)\cr
 \code{ucrt$ucrtFdas} - standard uncertainty of individual measurement introduced by the Field DAS \cr

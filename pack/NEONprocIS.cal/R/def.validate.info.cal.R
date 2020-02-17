@@ -36,7 +36,11 @@
 #     initial creation
 ##############################################################################################
 
-def.validate.info.cal <- function(infoCal, NameList=c('cal','ucrt'), CoefCal=NULL, CoefUcrt=NULL, log=NULL) {
+def.validate.info.cal <- function(infoCal, 
+                                  NameList=c('cal','ucrt'), 
+                                  CoefCal=NULL, 
+                                  CoefUcrt=NULL, 
+                                  log=NULL) {
   # Initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()

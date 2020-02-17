@@ -12,6 +12,7 @@
 #' @param dfIn Input data frame to be validated
 #' @param TestNa Boolean where TRUE results in testing for any NA values (resulting in FALSE output). Defaults to FALSE.
 #' @param TestNumc Boolean where TRUE results in testing for any non-numeric values (resulting in FALSE output). Defaults to FALSE.
+#' @param TestNameCol A character vector of minimum expected column names in dfIn. Defaults to zero-length character (none expected).
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -32,7 +33,7 @@
 #   Mija Choi (2020-01-07)
 #     original creation
 #   Cove Sturtevant (2020-02-03)
-#     added options for testing non-numeric and NA values
+#     added options for testing non-numeric values, NA values, and expected columns
 #     added logging of failures
 ##############################################################################################
 
@@ -40,6 +41,7 @@ def.validate.dataframe <-
   function(dfIn,
            TestNa = FALSE,
            TestNumc = FALSE,
+           TestNameCol = base::character(0),
            log = NULL) {
     # Initialize logging if necessary
     if (base::is.null(log)) {
@@ -69,6 +71,11 @@ def.validate.dataframe <-
              any(!unlist(lapply(dfIn, is.numeric)))) {
       b <- FALSE
       log$error('Data frame is required to be numeric.')
+    } 
+    
+    else if (!base::all(TestNameCol %in% base::names(dfIn))){
+      b <- FALSE
+      log$error(base::paste0('Columns ', base::paste0(TestNameCol[!(TestNameCol %in% base::names(dfIn))],collapse=','),' are missing from the data frame.'))
     }
     
     return (b)

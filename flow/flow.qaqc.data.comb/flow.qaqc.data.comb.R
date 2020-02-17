@@ -109,8 +109,7 @@ for(idxDirIn in DirIn){
   
   # Copy with a symbolic link the desired subfolders we aren't modifying
   if(base::length(DirSubCopy) > 0){
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
-    log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
+    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
   }  
   
   # For each data directory, merge the data within based on the union of NA indices of the individual files
@@ -130,7 +129,7 @@ for(idxDirIn in DirIn){
       nameFileData <- base::paste0(idxDirIn,'/',idxDirSubCombData,'/',idxFileData) # Full path to file
       
       # Open the data file
-      data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileData,NameLib='/ravro.so'),silent=FALSE)
+      data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileData,NameLib='/ravro.so',log=log),silent=FALSE)
       if(base::class(data) == 'try-error'){
         # Generate error and stop execution
         log$error(base::paste0('File: ', nameFileData, ' is unreadable.')) 

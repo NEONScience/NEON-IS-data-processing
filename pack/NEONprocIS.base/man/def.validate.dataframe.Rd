@@ -5,7 +5,7 @@
 \title{Validate data frame not empty or invalid}
 \usage{
 def.validate.dataframe(dfIn, TestNa = FALSE, TestNumc = FALSE,
-  log = NULL)
+  TestNameCol = base::character(0), log = NULL)
 }
 \arguments{
 \item{dfIn}{Input data frame to be validated}
@@ -13,6 +13,8 @@ def.validate.dataframe(dfIn, TestNa = FALSE, TestNumc = FALSE,
 \item{TestNa}{Boolean where TRUE results in testing for any NA values (resulting in FALSE output). Defaults to FALSE.}
 
 \item{TestNumc}{Boolean where TRUE results in testing for any non-numeric values (resulting in FALSE output). Defaults to FALSE.}
+
+\item{TestNameCol}{A character vector of minimum expected column names in dfIn. Defaults to zero-length character (none expected).}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be

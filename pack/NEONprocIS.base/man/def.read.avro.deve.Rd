@@ -4,7 +4,7 @@
 \alias{def.read.avro.deve}
 \title{Read AVRO file (development library)}
 \usage{
-def.read.avro.deve(NameFile, NameLib = "ravro.so")
+def.read.avro.deve(NameFile, NameLib = "ravro.so", log = NULL)
 }
 \arguments{
 \item{NameFile}{String. Name (including relative or absolute path) of AVRO file.}
