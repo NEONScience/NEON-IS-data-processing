@@ -80,7 +80,7 @@ def.loc.filt <-
           NameFileIn
         )
       )
-      stop("In def.loc.filt::::: Erred out due to the json validation failure of the input JSON")
+      stop("In def.loc.filt::::: Erred out due to the validation failure of the input JSON")
     }, silent = FALSE)
     #
     # else run the code below when the input json is correct syntacically and valid against the schema
