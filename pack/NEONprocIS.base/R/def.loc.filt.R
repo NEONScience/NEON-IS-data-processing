@@ -60,7 +60,7 @@ def.loc.filt <-
       NEONprocIS.base::def.validate.json (NameFileIn)
     #
     # Second, validate the json against the schema only if the syntax is valid.
-    # Otherwise, validateJsonSchema err out due to the syntax error
+    # Otherwise, validateJsonSchema errors out due to the syntax error
     #
     validateJsonSchema <- FALSE
     
@@ -69,14 +69,19 @@ def.loc.filt <-
         NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
     }
     #
-    #if the validation fails, return error with status code -1
+    #if the validation fails, the function will not be executed returning status code -1
     #
-    if ((validateJson == FALSE)  ||
-        (validateJsonSchema == FALSE))
+    loc <- try(if ((validateJson == FALSE)  ||
+                   (validateJsonSchema == FALSE))
     {
-      warning('In def.loc.filt::::: Erred out due to the json validation failure')
-      return (-1)
-    }
+      log$error(
+        base::paste0(
+          'In def.loc.filt::: Erred out due to the json validation failure of this file, ',
+          NameFileIn
+        )
+      )
+      stop("In def.loc.filt::::: Erred out due to the json validation failure of this file")
+    }, silent = FALSE)
     #
     # else run the code below when the input json is correct syntacically and valid against the schema
     #
@@ -317,7 +322,6 @@ def.loc.filt <-
       if (!base::is.null(NameFileOut)) {
         base::write(rjson::toJSON(loc, indent = 4), file = NameFileOut)
       }
-      
-      return(loc)
     }
+    return(loc)
   }
