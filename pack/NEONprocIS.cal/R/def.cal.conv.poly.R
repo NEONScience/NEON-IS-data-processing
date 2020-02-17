@@ -28,8 +28,8 @@
 
 #' @examples
 #' data=c(1,2,3)
-#' cal <- data.frame(Name=c('CVALA1','CVALA0'),Value=c(10,1),stringsAsFactors=FALSE)
-#' def.cal.conv(data=data,cal=cal)
+#' infoCal <- data.frame(Name=c('CVALA1','CVALA0'),Value=c(10,1),stringsAsFactors=FALSE)
+#' def.cal.conv(data=data,infoCal=infoCal)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #'

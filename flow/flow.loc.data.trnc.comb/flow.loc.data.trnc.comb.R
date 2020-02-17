@@ -44,8 +44,8 @@
 #' delimited fields after the source-id field (e.g. prt_12345_otherdescriptor.avro, where 12345 is the 
 #' source-id).
 #' 
-#' 4. "DirSubCombUcrt=value" (optional), where the value is the name of subfolders holding uncertainty json 
-#' files to be merged, separated by pipes (|). These additional subdirectories must be at the same level as 
+#' 4. "DirSubCombUcrt=value" (optional), where the value is the name of subfolders holding uncertainty coefficient 
+#' json files to be merged, separated by pipes (|). These additional subdirectories must be at the same level as 
 #' the location directory. Within each subfolder are uncertainty json files, one for each source-id. The 
 #' source-id is the identifier for the sensor pertaining to the uncertainty info in the file. The source-id 
 #' of each sensor is taken from the name of the files in the directory. The name of the file must be constructed 
@@ -75,11 +75,11 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.loc.comb.data.R 'DirIn=/pfs/tempSoil_structure_repo_by_location/prt/2018/01/01' 'DirOut=/pfs/out' 'DirSubCombData=data|flags' 'DirSubCombUcrt=uncertainty' 'DirSubCopy=location'
+#' Rscript flow.loc.comb.data.R 'DirIn=/pfs/tempSoil_structure_repo_by_location/prt/2018/01/01' 'DirOut=/pfs/out' 'DirSubCombData=data|flags' 'DirSubCombUcrt=uncertainty_coef' 'DirSubCopy=location'
 #' 
 #' Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/tempSoil_structure_repo_by_location/prt/2018/01/01')
-#' Rscript flow.loc.comb.data.R 'DirIn=$DIR_IN' 'DirOut=/pfs/out' 'DirSubCombData=data|flags' 'DirSubCombUcrt=uncertainty' 'DirSubCopy=location'
+#' Rscript flow.loc.comb.data.R 'DirIn=$DIR_IN' 'DirOut=/pfs/out' 'DirSubCombData=data|flags' 'DirSubCombUcrt=uncertainty_coef' 'DirSubCopy=location'
 
 #' @seealso None
 #' 

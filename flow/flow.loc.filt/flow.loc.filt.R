@@ -50,11 +50,11 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.loc.filt.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "SubDirCopy=data|flags|uncertainty"
+#' Rscript flow.loc.filt.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "SubDirCopy=data|flags|uncertainty_coef"
 #' 
 #' # Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/prt_calibration/prt/2019/01/01/27134')
-#' Rscript flow.loc.filt.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "SubDirCopy=data|flags|uncertainty"
+#' Rscript flow.loc.filt.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "SubDirCopy=data|flags|uncertainty_coef"
 
 #' @seealso None
 #' 

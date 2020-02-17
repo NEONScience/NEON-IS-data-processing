@@ -1,6 +1,6 @@
 {
     "pipeline": {
-        "name": "tempAirSingle_uncertainty_fdas"
+        "name": "tempAirSingle_uncertainty_data"
     },
     "transform": {
         "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -9,7 +9,7 @@
         "stdin": [ "#!/bin/bash", "python3 -m directory_filter.app" ],
         "env": {
             "OUT_PATH": "/pfs/out",
-            "FILTER_DIR": "uncertainty_fdas",
+            "FILTER_DIR": "uncertainty_data",
             "LOG_LEVEL": "INFO"
         }
     },

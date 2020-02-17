@@ -69,8 +69,10 @@ wrap.cal.conv <- function(data,
   
   # Loop through variables
   for(idxVarCal in FuncConv$var){
-    # Run through each selected calibration and apply the calibration function for the applicable time period
+    
     calSlctIdx <- calSlct[[idxVarCal]]
+
+    # Run through each selected calibration and apply the calibration function for the applicable time period
     for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
       
       # What points in the output correspond to this row?

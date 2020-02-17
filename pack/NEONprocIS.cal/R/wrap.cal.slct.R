@@ -6,11 +6,14 @@
 
 #' @description 
 #' Wrapper function. Select the calibrations and their time ranges that apply for each 
-#' variables for which calibration information is supplied.
+#' selected variable.
 
 #' @param DirCal Character string. Relative or absolute path (minus file name) to the main calibration
 #' directory. Nested within this directory are directories for each variable, each holding
 #' calibration files for that variable. Defaults to "./"
+#' @param NameVarExpc Character vector of minimum variables for which to supply calibration information 
+#' (even if there are no applicable calibrations). Default to character(0), which will return cal info 
+#' for only the variable directories found in DirCal. 
 #' @param TimeBgn A POSIXct timestamp of the start date of interest (inclusive)
 #' @param TimeEnd A POSIXct timestamp of the end date of interest (exclusive)
 #' @param NumDayExpiMax A data frame indicating the max days since expiration that calibration 
@@ -43,6 +46,7 @@
 #     original creation
 ##############################################################################################
 wrap.cal.slct <- function(DirCal="./",
+                          NameVarExpc=character(0),
                           TimeBgn,
                           TimeEnd,
                           NumDayExpiMax,
@@ -53,7 +57,7 @@ wrap.cal.slct <- function(DirCal="./",
   }
   
   # Basic info
-  varCal <- base::dir(DirCal)
+  varCal <- base::unique(c(NameVarExpc,base::dir(DirCal)))
   numVarCal <- base::length(varCal)
   
   # Intialize
@@ -79,7 +83,7 @@ wrap.cal.slct <- function(DirCal="./",
     # Determine the time period for which each calibration file applies (and whether it is expired)
     NumDayExpiMaxIdx <- NumDayExpiMax$NumDayExpiMax[NumDayExpiMax$var == idxVarCal]
     
-    if(base::is.na(NumDayExpiMaxIdx)){
+    if(base::length(NumDayExpiMaxIdx) == 0 || base::is.na(NumDayExpiMaxIdx)){
       calSlct[[idxVarCal]] <- NEONprocIS.cal::def.cal.slct(metaCal=metaCal[[idxVarCal]],TimeBgn=TimeBgn,TimeEnd=TimeEnd,TimeExpiMax=NULL)
     } else {
       calSlct[[idxVarCal]] <- NEONprocIS.cal::def.cal.slct(metaCal=metaCal[[idxVarCal]],TimeBgn=TimeBgn,TimeEnd=TimeEnd,TimeExpiMax=base::as.difftime(NumDayExpiMaxIdx,units='days'))

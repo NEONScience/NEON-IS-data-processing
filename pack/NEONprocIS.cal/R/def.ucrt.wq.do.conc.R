@@ -44,22 +44,17 @@ def.ucrt.wq.do.conc <- function(data, infoCal=NULL,log=NULL) {
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
-  msg <- NULL
-  
+
   #Check that we have more than 0 rows of data
   if (!NEONprocIS.base::def.validate.vector(data,TestEmpty = FALSE,log=log)) {
     msg <-
       base::paste0('       |------ data is empty. Uncertainty will not run\n')
     log$error(msg)
+    stop()
   }
   
   #The cal input is not needed for this function
   #It's just a placeholder input to allow the calibration module to be more generic
-  
-  #Exit if any of the required inputs don't validate
-  if (!(is.null (msg))) {
-    on.exit()
-  }
   
   #Create the output dataframe
   outputNames <- c("ucrtMeas")

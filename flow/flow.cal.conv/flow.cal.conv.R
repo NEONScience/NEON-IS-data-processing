@@ -165,16 +165,16 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.cal.conv.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_validCal.avsc" "TermConv=resistance" "NumDayExpiMax=NA"
+#' Rscript flow.cal.conv.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" "TermConv=resistance" "NumDayExpiMax=NA" "TermUcrt=resistance(R)"
 #'
 #' Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/prt_calibration_filter/prt/2019/01/01')
-#' Rscript flow.cal.conv.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_validCal.avsc" "TermConv=resistance" "NumDayExpiMax=NA" "TermUcrt=resistance(R)"
+#' Rscript flow.cal.conv.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" "TermConv=resistance" "NumDayExpiMax=NA" "TermUcrt=resistance(R)"
 #' 
 #' Stepping through the code in Rstudio 
 #' Sys.setenv(DIR_IN='/scratch/pfs/prt_calibration_filter')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/prt_calibrated.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_validCal.avsc", "Term=resistance", "NumDayExpiMax=NA")
+#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/prt_calibrated.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_calibration.avsc", "TermConv=resistance", "NumDayExpiMax=NA", "TermUcrt=resistance(R)")
 #' # Then copy and paste rest of workflow into the command window
 
 #' @seealso None currently
@@ -237,10 +237,9 @@ Para <-
       "DirSubCopy"
     ),
     ValuParaOptn = base::list(
-      TermConv = base::character(0),
+      TermConv = NULL,
       FuncConv = "def.cal.conv.poly",
-      TermUcrt =
-        base::character(0),
+      TermUcrt = NULL,
       FuncUcrt = "def.ucrt.meas",
       NumDayExpiMax =
         NA
@@ -284,14 +283,18 @@ log$debug(base::paste0(
   'Calibration conversion function(s) to be used: ',
   base::paste0(Para$FuncConv, collapse = ',')
 ))
-FuncConv <-
-  NEONprocIS.base::def.vect.pars.pair(
-    vect = Para$FuncConv,
-    KeyExp = Para$TermConv,
-    ValuDflt = 'def.cal.conv.poly',
-    NameCol = c('var', 'FuncConv'),
-    log = log
-  )
+if (!base::is.null(Para$TermConv) && base::length(Para$TermConv) > 0) {
+  FuncConv <-
+    NEONprocIS.base::def.vect.pars.pair(
+      vect = Para$FuncConv,
+      KeyExp = Para$TermConv,
+      ValuDflt = 'def.cal.conv.poly',
+      NameCol = c('var', 'FuncConv'),
+      log = log
+    )
+} else {
+  FuncConv <- NULL
+}
 
 # Error check & convert NumDayExpiMax for internal use
 log$debug(
@@ -302,7 +305,7 @@ log$debug(
 )
 
 # Parse parameters for individual measurement uncertainty
-if (!base::is.null(Para$TermUcrt)) {
+if (!base::is.null(Para$TermUcrt) && base::length(Para$TermUcrt) > 0) {
   ParaUcrt <- base::lapply(
     Para$TermUcrt,
     FUN = function(argSplt) {
@@ -368,15 +371,19 @@ log$debug(
     base::paste0(Para$FuncUcrt, collapse = ',')
   )
 )
-FuncUcrt <-
-  NEONprocIS.base::def.vect.pars.pair(
-    vect = Para$FuncUcrt,
-    KeyExp = ParaUcrt$var,
-    ValuDflt = 'def.ucrt.meas',
-    NameCol = c('var', 'FuncUcrt'),
-    log = log
-  )
-ParaUcrt <- base::merge(x = ParaUcrt, y = FuncUcrt, by = 'var')
+if (!base::is.null(ParaUcrt)) {
+  FuncUcrt <-
+    NEONprocIS.base::def.vect.pars.pair(
+      vect = Para$FuncUcrt,
+      KeyExp = ParaUcrt$var,
+      ValuDflt = 'def.ucrt.meas',
+      NameCol = c('var', 'FuncUcrt'),
+      log = log
+    )
+  ParaUcrt <- base::merge(x = ParaUcrt, y = FuncUcrt, by = 'var')
+} else {
+  FuncUcrt <- NULL
+}
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <-
@@ -510,6 +517,7 @@ for (idxDirIn in DirIn) {
   calSlct <- NULL
   calSlct <- NEONprocIS.cal::wrap.cal.slct(
     DirCal = idxDirCal,
+    NameVarExpc=base::unique(c(Para$TermConv,ParaUcrt$var)),
     TimeBgn = timeBgn,
     TimeEnd = timeEnd,
     NumDayExpiMax = NumDayExpiMax,
@@ -603,10 +611,12 @@ for (idxDirIn in DirIn) {
       log = log
     )
   
-  # Combine uncertainty data frames for all variables
-  base::names(ucrtData) <- NULL # Preserves column names 
-  ucrtData <- base::do.call(base::cbind, ucrtData)
-  ucrtData <- cbind(data['readout_time'],ucrtData) # Add timestamps
+  if(base::length(ucrtData) > 0){
+    # Combine uncertainty data frames for all variables
+    base::names(ucrtData) <- NULL # Preserves column names 
+    ucrtData <- base::do.call(base::cbind, ucrtData)
+    ucrtData <- cbind(data['readout_time'],ucrtData) # Add timestamps
+  }
   
   
   # ------------ Output ---------------

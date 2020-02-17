@@ -25,8 +25,8 @@
 #'         /data 
 #'         
 #' The data folder holds any number of daily data files for which statistics will be computed. If expUncert
-#' is output (see options in TermStatX), also required is the folder 'uncertainty' at the same level as the
-#' data folder.
+#' is output (see options in TermStatX), also required is the folder 'uncertainty_coef' at the same level 
+#' as the data folder.
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
 #' of DirIn. 
@@ -99,6 +99,8 @@
 #     added fdas uncertainty calculation
 #   Cove Sturtevant (2019-11-07)
 #     sync up missing data values between data and fdas uncertainty
+#   Cove Sturtevant (2020-02-17)
+#     adjust reading of fdas uncertainty data to look within generic uncertainty data file
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -189,7 +191,7 @@ log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSub
 
 # What are the expected subdirectories of each input path
 if("expUncert" %in% stat){
-  dirSub <- c('data','uncertainty')
+  dirSub <- c('data','uncertainty_coef')
 } else {
   dirSub <- c('data')
 }
@@ -235,59 +237,63 @@ for(idxDirIn in DirIn){
     NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
   }  
   
-  # Are we computing uncertainty? If so, load the uncertainty file (there should be only 1)
+  # Are we computing uncertainty? If so, load the uncertainty coefficients file (there should be only 1)
   if("expUncert" %in% stat){
-    idxDirUcrt <- base::paste0(idxDirIn,'/uncertainty')
+    idxDirUcrtCoef <- base::paste0(idxDirIn,'/uncertainty_coef')
     
-    fileUcrt <- base::dir(idxDirUcrt)
+    fileUcrt <- base::dir(idxDirUcrtCoef)
     if(base::length(fileUcrt) != 1){
-      log$warn(base::paste0('There are either zero or more than one uncertainty files in path: ',idxDirUcrt,'... Uncertainty stats will all be NA!'))
-      ucrt <- base::list()
+      log$warn(base::paste0('There are either zero or more than one uncertainty coefficient files in path: ',idxDirUcrtCoef,'... Uncertainty stats will all be NA!'))
+      ucrtCoef <- base::list()
     } else {
-      nameFileUcrt <- base::paste0(idxDirUcrt,'/',fileUcrt) # Full path to file
+      nameFileUcrt <- base::paste0(idxDirUcrtCoef,'/',fileUcrt) # Full path to file
       
       # Open the uncertainty file
-      ucrt  <- base::try(rjson::fromJSON(file=nameFileUcrt,simplify=TRUE),silent=FALSE)
-      if(base::class(ucrt) == 'try-error'){
+      ucrtCoef  <- base::try(rjson::fromJSON(file=nameFileUcrt,simplify=TRUE),silent=FALSE)
+      if(base::class(ucrtCoef) == 'try-error'){
         # Generate error and stop execution
         log$error(base::paste0('File: ', nameFileUcrt, ' is unreadable.')) 
         stop()
       }
       # Turn times to POSIX
-      ucrt <- base::lapply(ucrt,FUN=function(idxUcrt){
+      ucrtCoef <- base::lapply(ucrtCoef,FUN=function(idxUcrt){
         idxUcrt$start_date <- base::strptime(idxUcrt$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
         idxUcrt$end_date <- base::strptime(idxUcrt$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
         return(idxUcrt)
       })
     }
     
-    # Is there a folder for fdas uncertainty data? If so, read it in!
-    dataUcrtFdas <- NULL
+    # Is there a folder for uncertainty data? If so, read it in and search for fdas uncertainty.
+    ucrtData <- NULL
     nameVarUcrtFdas <- NULL
-    if('uncertainty_fdas' %in% base::dir(idxDirIn)){
-      idxDirUcrtFdas <- base::paste0(idxDirIn,'/uncertainty_fdas')
-      log$info(base::paste0('Detected FDAS uncertainty folder in ',idxDirUcrtFdas,'. Will attemp to to include FDAS uncertainty in expUncert for applicable variables.'))
+    if('uncertainty_data' %in% base::dir(idxDirIn)){
+      idxDirUcrtData <- base::paste0(idxDirIn,'/uncertainty_data')
+      log$info(base::paste0('Detected uncertainty data folder in ',idxDirUcrtData,'. Will attemp to to include FDAS uncertainty in expUncert for applicable variables.'))
       
-      fileUcrtFdas <- base::dir(idxDirUcrtFdas)
-      if(base::length(fileUcrtFdas) != 1){
-        log$warn(base::paste0('There are either zero or more than one FDAS uncertainty files in path: ',idxDirUcrt,'... uncertainty for FDAS-applicable variables will be NA!'))
+      fileUcrtData <- base::dir(idxDirUcrtData)
+      if(base::length(fileUcrtData) != 1){
+        log$warn(base::paste0('There are either zero or more than one uncertainty data files in path: ',idxDirUcrtData,'... uncertainty for FDAS-applicable variables will be NA!'))
       } else {
-        nameFileUcrtFdas <- base::paste0(idxDirUcrtFdas,'/',fileUcrtFdas) # Full path to file
+        nameFileUcrtData <- base::paste0(idxDirUcrtData,'/',fileUcrtData) # Full path to file
         
-        # Open the FDAS uncertainty file
-        dataUcrtFdas  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileUcrtFdas,NameLib='/ravro.so',log=log),silent=FALSE)
-        if(base::class(dataUcrtFdas) == 'try-error'){
-          log$error(base::paste0('File ', fileUcrtFdas,' is unreadable.')) 
+        # Open the uncertainty data file
+        ucrtData  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileUcrtData,NameLib='/ravro.so',log=log),silent=FALSE)
+        if(base::class(ucrtData) == 'try-error'){
+          log$error(base::paste0('File ', fileUcrtData,' is unreadable.')) 
           stop()
         } else {
-          log$debug(base::paste0('Successfully read FDAS uncertainty data in file: ',fileUcrtFdas))
+          log$debug(base::paste0('Successfully read uncertainty data in file: ',fileUcrtData))
         }
-        nameColUcrtFdas <- base::names(dataUcrtFdas) # Column names
+        nameColUcrtData <- base::names(ucrtData) # Column names
         
         # Get names of variables that FDAS uncertainty applies
-        nameColVarUcrtFdas <- base::unlist(base::lapply(base::strsplit(utils::tail(nameColUcrtFdas,n=-1),'_'),utils::head,n=1)) # for each column, minus the first (readout_time)
-        nameVarUcrtFdas <- base::unique(nameColVarUcrtFdas) # the vars themselves (no duplicates)
+        nameColUcrtFdas <- nameColUcrtData[base::grepl(pattern='_ucrtFdas',x=nameColUcrtData)] # search for ucrtFdas columns
+        nameVarUcrtFdas <- base::unique(base::unlist(base::lapply(base::strsplit(nameColUcrtFdas,'_'),utils::head,n=1))) # variables
 
+        # Reset uncertainty data to NULL if no FDAS uncertainty columns
+        if(base::length(nameVarUcrtFdas) == 0){
+          ucrtData <- NULL
+        }
       }
     } # End if statement around FDAS uncertainty
   } # End if statement around expUncert
@@ -317,7 +323,7 @@ for(idxDirIn in DirIn){
     if(base::sum(nameVarIn %in% nameVarUcrtFdas) > 0){
       for(idxVar in nameVarIn){
         # Do we have FDAS uncertainty data for this variable? If so, create NAs where they exist in the data
-        dataUcrtFdas[base::is.na(data[[idxVar]]),base::unlist(base::lapply(base::strsplit(nameColUcrtFdas,'_'),utils::head,n=1))==idxVar] <- NA
+        ucrtData[base::is.na(data[[idxVar]]),base::unlist(base::lapply(base::strsplit(nameColUcrtData,'_'),utils::head,n=1))==idxVar] <- NA
       }      
     }
 
@@ -341,8 +347,8 @@ for(idxDirIn in DirIn){
       setTime <- base::.bincode(base::as.numeric(timeMeas),timeBrk,right=FALSE,include.lowest=FALSE) # Which time bin does each measured value fall within?
       
       # Allocate FDAS uncertainty data points to aggregation windows
-      if(!base::is.null(dataUcrtFdas)){
-        setTimeUcrtFdas <- base::.bincode(base::as.numeric(base::as.POSIXlt(dataUcrtFdas$readout_time)),timeBrk,right=FALSE,include.lowest=FALSE) # Which time bin does each measured value fall within?
+      if(!base::is.null(ucrtData)){
+        setTimeUcrtFdas <- base::.bincode(base::as.numeric(base::as.POSIXlt(ucrtData$readout_time)),timeBrk,right=FALSE,include.lowest=FALSE) # Which time bin does each measured value fall within?
       } else {
         setTimeUcrtFdas <- numeric(0)
       }
@@ -375,7 +381,7 @@ for(idxDirIn in DirIn){
             # Calibration uncertainty
             coefUcrtCal <- base::lapply(statTerm[['expUncert']],FUN=function(idxTerm){
               # Which uncertainty entries match this term, time period, and the uncertainty coef we want (U_CVALA3)
-              mtch <- base::unlist(base::lapply(ucrt,FUN=function(idxUcrt){idxUcrt$term == idxTerm && idxUcrt$Name == 'U_CVALA3' && 
+              mtch <- base::unlist(base::lapply(ucrtCoef,FUN=function(idxUcrt){idxUcrt$term == idxTerm && idxUcrt$Name == 'U_CVALA3' && 
                   idxUcrt$start_date < timeAgrEnd[idxWndwTime] && idxUcrt$end_date > timeAgrBgn[idxWndwTime]}))
               
               # Pull the uncertainty coeffiecient
@@ -384,18 +390,18 @@ for(idxDirIn in DirIn){
                 coefUcrtIdx <- base::as.numeric(NA)
               } else {
                 # If there are more than 1, indicating that the averaging period spans two uncertainty application ranges, the coef will be the larger of the two
-                coefUcrtIdx <- base::max(base::as.numeric(base::unlist(base::lapply(ucrt[mtch],FUN=function(idxUcrt){idxUcrt$Value}))))
+                coefUcrtIdx <- base::max(base::as.numeric(base::unlist(base::lapply(ucrtCoef[mtch],FUN=function(idxUcrt){idxUcrt$Value}))))
               }
               return(coefUcrtIdx)
             })
             
             # FDAS uncertainty
-            dataUcrtFdasWndwTime <- base::subset(dataUcrtFdas,subset=setTimeUcrtFdas==idxWndwTime) 
+            dataUcrtFdasWndwTime <- base::subset(ucrtData,subset=setTimeUcrtFdas==idxWndwTime) 
             ucrtFdasValu <- base::lapply(statTerm[['expUncert']],FUN=function(idxTerm){
               
               
               # Which uncertainty entries match this term, time period, and the uncertainty coef we want (U_CVALV3 or U_CVALR3 - only one should be populated)
-              mtch <- base::unlist(base::lapply(ucrt,FUN=function(idxUcrt){idxUcrt$term == idxTerm && 
+              mtch <- base::unlist(base::lapply(ucrtCoef,FUN=function(idxUcrt){idxUcrt$term == idxTerm && 
                   (idxUcrt$Name == 'U_CVALV3' || idxUcrt$Name == 'U_CVALR3') && 
                   idxUcrt$start_date < timeAgrEnd[idxWndwTime] && idxUcrt$end_date > timeAgrBgn[idxWndwTime]}))
               
@@ -405,11 +411,11 @@ for(idxDirIn in DirIn){
                 coefUcrtFdas <- NA
               } else {
                 # If there are more than 1, indicating that the averaging period spans two uncertainty application ranges, the coef will be the larger of the two
-                coefUcrtFdas <- base::max(base::as.numeric(base::unlist(base::lapply(ucrt[mtch],FUN=function(idxUcrt){idxUcrt$Value}))))
+                coefUcrtFdas <- base::max(base::as.numeric(base::unlist(base::lapply(ucrtCoef[mtch],FUN=function(idxUcrt){idxUcrt$Value}))))
               }
 
               # Which uncertainty entries match this term, time period, and the uncertainty coef we want (U_CVALV3 or U_CVALR3 - only one should be populated)
-              mtch <- base::unlist(base::lapply(ucrt,FUN=function(idxUcrt){idxUcrt$term == idxTerm && 
+              mtch <- base::unlist(base::lapply(ucrtCoef,FUN=function(idxUcrt){idxUcrt$term == idxTerm && 
                   (idxUcrt$Name == 'U_CVALV4' || idxUcrt$Name == 'U_CVALR4') && 
                   idxUcrt$start_date < timeAgrEnd[idxWndwTime] && idxUcrt$end_date > timeAgrBgn[idxWndwTime]}))
               
@@ -419,7 +425,7 @@ for(idxDirIn in DirIn){
                 coefUcrtFdasOfst <- NA
               } else {
                 # If there are more than 1, indicating that the averaging period spans two uncertainty application ranges, the coef will be the larger of the two
-                coefUcrtFdasOfst <- base::max(base::as.numeric(base::unlist(base::lapply(ucrt[mtch],FUN=function(idxUcrt){idxUcrt$Value}))))
+                coefUcrtFdasOfst <- base::max(base::as.numeric(base::unlist(base::lapply(ucrtCoef[mtch],FUN=function(idxUcrt){idxUcrt$Value}))))
               }
               
               # Do some error checking

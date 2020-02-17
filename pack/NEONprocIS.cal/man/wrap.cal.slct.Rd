@@ -4,13 +4,17 @@
 \alias{wrap.cal.slct}
 \title{Wrapper for selecting the applicable calibrations and their time ranges for all variables}
 \usage{
-wrap.cal.slct(DirCal = "./", TimeBgn, TimeEnd, NumDayExpiMax,
-  log = NULL)
+wrap.cal.slct(DirCal = "./", NameVarExpc = character(0), TimeBgn,
+  TimeEnd, NumDayExpiMax, log = NULL)
 }
 \arguments{
 \item{DirCal}{Character string. Relative or absolute path (minus file name) to the main calibration
 directory. Nested within this directory are directories for each variable, each holding
 calibration files for that variable. Defaults to "./"}
+
+\item{NameVarExpc}{Character vector of minimum variables for which to supply calibration information 
+(even if there are no applicable calibrations). Default to character(0), which will return cal info 
+for only the variable directories found in DirCal.}
 
 \item{TimeBgn}{A POSIXct timestamp of the start date of interest (inclusive)}
 
@@ -32,7 +36,7 @@ NEONprocIS.cal::def.cal.slct. See that function for details.
 }
 \description{
 Wrapper function. Select the calibrations and their time ranges that apply for each 
-variables for which calibration information is supplied.
+selected variable.
 }
 \examples{
 Currently none

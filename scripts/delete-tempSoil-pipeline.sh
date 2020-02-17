@@ -15,7 +15,7 @@ pachctl delete pipeline tempSoil_qaqc_plausibility
 pachctl delete pipeline tempSoil_regularized_flags
 pachctl delete pipeline tempSoil_padded_timeseries_analyzer
 pachctl delete pipeline tempSoil_timeseries_padder
-pachctl delete pipeline tempSoil_regularized_uncertainty_fdas
+pachctl delete pipeline tempSoil_regularized_uncertainty_data
 pachctl delete pipeline tempSoil_threshold_regularized_group
 pachctl delete pipeline tempSoil_uncertainty_coefficients
 pachctl delete pipeline tempSoil_regularized_data
@@ -23,7 +23,7 @@ pachctl delete pipeline tempSoil_threshold_select
 pachctl delete pipeline tempSoil_calibrated_flags
 pachctl delete pipeline tempSoil_calibrated_data
 pachctl delete pipeline tempSoil_locations
-pachctl delete pipeline tempSoil_uncertainty_fdas
+pachctl delete pipeline tempSoil_uncertainty_data
 pachctl delete pipeline tempSoil_threshold_filter
 pachctl delete pipeline tempSoil_context_group
 
