@@ -13,6 +13,14 @@
 #' which uses system environment variables if available.
 
 #' @param data Dissolved oxygen (DO) concentration data [vector]
+#' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
+#' (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
+#' a data frame of uncertainty coefficents. Columns of this data frame are:\cr
+#' \code{Name} String. The name of the coefficient. \cr
+#' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
+#' created and used within the function.
 
 #' @return dataframe with L0 uncertatinty column(s) [dataframe]
 
@@ -31,7 +39,7 @@
 #   Kaelin Cawley (2020-01-23)
 #     original creation
 ##############################################################################################
-def.ucrt.wq.do.conc <- function(data, cal,log=NULL) {
+def.ucrt.wq.do.conc <- function(data, infoCal=NULL,log=NULL) {
   # Start logging, if needed
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -39,8 +47,7 @@ def.ucrt.wq.do.conc <- function(data, cal,log=NULL) {
   msg <- NULL
   
   #Check that we have more than 0 rows of data
-  if (!(validateVect <-
-        NEONprocIS.base::def.validate.vector.notEmpty (data))) {
+  if (!NEONprocIS.base::def.validate.vector(data,TestEmpty = FALSE,log=log)) {
     msg <-
       base::paste0('       |------ data is empty. Uncertainty will not run\n')
     log$error(msg)
