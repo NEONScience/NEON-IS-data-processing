@@ -170,6 +170,12 @@
 #' Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/prt_calibration_filter/prt/2019/01/01')
 #' Rscript flow.cal.conv.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_validCal.avsc" "TermConv=resistance" "NumDayExpiMax=NA" "TermUcrt=resistance(R)"
+#' 
+#' Stepping through the code in Rstudio 
+#' Sys.setenv(DIR_IN='/scratch/pfs/prt_calibration_filter')
+#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/prt_calibrated.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_validCal.avsc", "Term=resistance", "NumDayExpiMax=NA")
+#' # Then copy and paste rest of workflow into the command window
 
 #' @seealso None currently
 

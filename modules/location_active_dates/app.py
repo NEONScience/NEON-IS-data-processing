@@ -70,27 +70,25 @@ def write(out_path, location):
                 outfile.write(geojson_data)
 
 
-def load(db_url, out_path, context, location_type, cutoff_date):
+def load(db_url, out_path, location_type, cutoff_date):
     """
     Load the locations and write output directories for each location active date.
     :param db_url: A database url.
     :param out_path: The output directory root path.
-    :param context: The context to constrain locations read from the database.
     :param location_type: The location type to read from the database.
     :param cutoff_date: The most recent date to create an output directory and file.
     """
     with closing(cx_Oracle.connect(db_url)) as connection:
-        locations = named_location_finder.get_type_context(connection, location_type, context, cutoff_date)
+        locations = named_location_finder.get_by_type(connection, location_type, cutoff_date=cutoff_date)
         log.debug(f'total locations found: {len(locations)}')
         for location in locations:
             write(out_path, location)
 
 
 def main():
-
     # Read configuration
     env = environs.Env()
-    context = env('CONTEXT')
+    # context = env('CONTEXT')
     location_type = env('LOCATION_TYPE')
     today = env('tick')
     db_url = env('DATABASE_URL')
@@ -107,7 +105,7 @@ def main():
     cutoff_date = datetime.strptime(today, '%Y-%m-%dT%H:%M:%SZ')
 
     # Load location files and create output directories
-    load(db_url, out_path, context, location_type, cutoff_date)
+    load(db_url, out_path, location_type, cutoff_date)
 
 
 if __name__ == "__main__":

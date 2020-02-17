@@ -23,7 +23,6 @@ class AppTest(TestCase):
 
     @unittest.skip('Skip due to long process time.')
     def test_app(self):
-        os.environ['CONTEXT'] = 'soil'
         os.environ['LOCATION_TYPE'] = 'CONFIG'
         os.environ['DATABASE_URL'] = self.database_url
         os.environ['tick'] = '/pfs/tick/2019-11-01T00:00:00Z'
