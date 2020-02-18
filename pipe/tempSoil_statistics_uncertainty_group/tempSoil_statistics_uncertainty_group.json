@@ -8,7 +8,7 @@
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m joiner.app" ],
     "env": {
-      "RELATED_PATHS": "STATISTICS_PATH,UNCERTAINTY_PATH,UNCERTAINTY_FDAS_PATH",
+      "RELATED_PATHS": "STATISTICS_PATH,UNCERTAINTY_COEF_PATH,UNCERTAINTY_DATA_PATH",
       "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out"
     }
@@ -26,18 +26,18 @@
       },
       {
         "pfs": {
-          "name": "UNCERTAINTY_PATH",
+          "name": "UNCERTAINTY_COEF_PATH",
           "repo": "tempSoil_uncertainty_coefficients",
-          "glob": "/prt/*/*/(*)/(*)/uncertainty",
+          "glob": "/prt/*/*/(*)/(*)/uncertainty_coef",
           "joinOn": "$1/$2",
           "empty_files": true
         }
       },
       {
         "pfs": {
-          "name": "UNCERTAINTY_FDAS_PATH",
-          "repo": "tempSoil_regularized_uncertainty_fdas",
-          "glob": "/prt/*/*/(*)/(*)/uncertainty_fdas",
+          "name": "UNCERTAINTY_DATA_PATH",
+          "repo": "tempSoil_regularized_uncertainty_data",
+          "glob": "/prt/*/*/(*)/(*)/uncertainty_data",
           "joinOn": "$1/$2",
           "empty_files": true
         }

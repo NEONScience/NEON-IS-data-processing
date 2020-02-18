@@ -27,9 +27,35 @@
 #     original creation
 ##############################################################################################
 
-
-def.validate.json <- function(jsonIn) {
-  c <- RJSONIO::isValidJSON(jsonIn)
+def.validate.json <- function(jsonIn, log = NULL) {
+  # Initialize log if not input
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
+  #set the default to FALSE
+  c = FALSE
+  #
+  res <- try((RJSONIO::isValidJSON(jsonIn)), silent = TRUE)
+  #
+  # First, check the input json passed on exists
+  #
+  if (class(res) == "try-error") {
+    log$error(base::paste0( 'In def.validate.json::::: Error, the file does not exist, ', jsonIn))
+  }
+  #
+  # Then, check if the jsonIn is a valid json
+  #
+  if (class(res) != "try-error") {
+    if (RJSONIO::isValidJSON(jsonIn))
+    {
+      c = TRUE
+      log$info(base::paste0(jsonIn, ' is valid strictly.'))
+    }
+    else
+    {
+      log$warn(base::paste0(jsonIn, ' is invalid ***** '))
+    }
+  }
   
   return (c)
 }

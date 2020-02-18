@@ -6,7 +6,7 @@ pachctl start transaction
 
 pachctl create pipeline -f ../pipe/tempSoil_context_group/tempSoil_context_group.json
 pachctl create pipeline -f ../pipe/tempSoil_threshold_filter/tempSoil_threshold_filter.json
-pachctl create pipeline -f ../pipe/tempSoil_directory_filter/tempSoil_uncertainty_fdas.json
+pachctl create pipeline -f ../pipe/tempSoil_directory_filter/tempSoil_uncertainty_data.json
 pachctl create pipeline -f ../pipe/tempSoil_directory_filter/tempSoil_locations.json
 pachctl create pipeline -f ../pipe/tempSoil_directory_filter/tempSoil_calibrated_data.json
 pachctl create pipeline -f ../pipe/tempSoil_directory_filter/tempSoil_calibrated_flags.json
@@ -14,7 +14,7 @@ pachctl create pipeline -f ../pipe/tempSoil_threshold_select/tempSoil_threshold_
 pachctl create pipeline -f ../pipe/tempSoil_regularized/tempSoil_regularized_data.json
 pachctl create pipeline -f ../pipe/tempSoil_directory_filter/tempSoil_uncertainty_coefficients.json
 pachctl create pipeline -f ../pipe/tempSoil_threshold_regularized_group/tempSoil_threshold_regularized_group.json
-pachctl create pipeline -f ../pipe/tempSoil_regularized/tempSoil_regularized_uncertainty_fdas.json
+pachctl create pipeline -f ../pipe/tempSoil_regularized/tempSoil_regularized_uncertainty_data.json
 pachctl create pipeline -f ../pipe/tempSoil_timeseries_padder/tempSoil_timeseries_padder.json
 pachctl create pipeline -f ../pipe/tempSoil_padded_timeseries_analyzer/tempSoil_padded_timeseries_analyzer.json
 pachctl create pipeline -f ../pipe/tempSoil_regularized/tempSoil_regularized_flags.json

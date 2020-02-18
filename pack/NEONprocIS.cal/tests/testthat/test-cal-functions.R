@@ -43,6 +43,8 @@
 #     original creation
 #   Mija Choi (2020-01-07)
 #     Added negative testing
+#   Cove Sturtevant (2020-02-17)
+#     Updated tests for function edits
 ##############################################################################################
 # Define test context
 context("\n                       calibration conversion\n")
@@ -50,46 +52,34 @@ context("\n                       calibration conversion\n")
 # Test calibration conversion
 test_that("testing calibration conversion", {
   # Create data to calibrate
-  data <- as.numeric(c("0", "0", "0", "0"))
+  data <- c(1,2,3,4,5,6)
   print(data)
   
   # Create calibration coefficients
   Name = c("CVALA1", "CVALA2", "CVALA3", "CVALA4", "CVALA5", "CVALA6")
   Value = c("1", "1", "1", "1", "1", "1")
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
+  infoCal <- list(cal=cal)
   
   # Calibrate the data
-  # coefUcrtMeas, coefUcrtFdas, coefUcrtFdasOfst need to be passed to def.cal.conv.R
-  # validate the correct values with Cove
-  #  0.3, 0.2, 0.33 are used atm.
   
   ##########
   ##########  Happy path:::: data and cal not empty and have valid values
   ##########
   
   calibrated <-
-    NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
+    NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = infoCal)
   print(calibrated)
   
   # Check the zeroed data and calibrated data are equal
-  expect_equal(data, calibrated$data)
+  testthat::expect_equal(c(6,126,1092,5460,19530,55986), calibrated)
   
   cat("\n       |===========================================================|\n")
   cat("\n       |------ data and cal are not empty and have valid values    |\n")
   cat("\n       |------ Calibration ran successfully!                       |\n")
   cat("\n       |===========================================================|\n")
   ##########
-  ########## Sad path #1 - data (vector) is empty
-  ##########
-  data <- vector(mode = "numeric", length = 0)
-  cat("\n")
-  calibrated <-
-    NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
-  
-  #  expect_equal(data, calibrated$data, tolerance = 10)
-  
-  ##########
-  ########## Sad path #2 - when cal (data frame) is empty
+  ########## Sad path #1 - when infoCal (data frame) is empty
   ##########
   data <- as.numeric(c("1", "0.1", "1", "1"))
   
@@ -97,25 +87,28 @@ test_that("testing calibration conversion", {
   Value <- vector(mode = "numeric", length = 0)
   
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
+  infoCal <- list(cal=cal)
   cat("\n")
   calibrated <-
-    NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
+    NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = cal)
   
-  #expect_equal(data, calibrated$data, tolerance = 10)
+  #testthat::expect_equal(data, calibrated)
   
   ##########
-  ########## Sad path #3 - when cal has invalid values
+  ########## Sad path #2 - when cal has invalid values.
+  ########## Warning issued and calibrated values NA.
   ##########
   data <- as.numeric(c("1", "0.1", "1", "1"))
   
   Name = c("CVALA1", "CVALA2", "CVALA3", "CVALA4", "CVALA5", "CVALA6")
   Value = as.numeric(c("ab.1b", "1", "1", "0.000196", "0.0000229", "0.0067"))
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
+  infoCal <- list(cal=cal)
   cat("\n")
   calibrated <-
-    NEONprocIS.cal::def.cal.conv(data = data, cal = cal, 0.3, 0.2, 0.33)
+    NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = infoCal)
   
-  #expect_equal(data, calibrated$data, tolerance = 10)
+  testthat::expect_equal(data*NA, calibrated)
   
 })
 

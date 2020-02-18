@@ -261,8 +261,7 @@ for(idxDirIn in DirIn){
 
   # Copy with a symbolic link the desired sensor subfolders 
   if(base::length(DirSubCopySens) > 0){
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopySens),idxDirOut))
-    log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopySens,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
+    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopySens),idxDirOut,log=log)
   }  
   
   # Flesh out sensor directories (except for wind, that's below)
@@ -288,7 +287,7 @@ for(idxDirIn in DirIn){
     } else if (numFileTbne > 1){
       log$warn(base::paste0('More than one turbine sensor data file in ',dirDataTbne, '. Using only the first.'))
     } else {
-      dataTbne  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileTbne[1],NameLib='/ravro.so'),silent=FALSE)
+      dataTbne  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileTbne[1],NameLib='/ravro.so',log=log),silent=FALSE)
       if(base::class(data) == 'try-error'){
         log$error(base::paste0('File ', fileTbne[1],' is unreadable.')) 
         stop()
@@ -324,7 +323,7 @@ for(idxDirIn in DirIn){
       } else if (numFileWind > 1){
         log$warn(base::paste0('More than one wind sensor data file in ',dirDataWind, '. Using only the first.'))
       } else {
-        dataWind  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileWind[1],NameLib='/ravro.so'),silent=FALSE)
+        dataWind  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileWind[1],NameLib='/ravro.so',log=log),silent=FALSE)
         if(base::class(data) == 'try-error'){
           log$error(base::paste0('File ', fileWind[1],' is unreadable.')) 
           stop()
@@ -432,8 +431,7 @@ for(idxDirIn in DirIn){
     
     # Copy with a symbolic link the desired subfolders 
     if(base::length(DirSubCopyTemp) > 0){
-      base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirLocTemp,'/',DirSubCopyTemp),idxDirOut))
-      log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopyTemp,collapse=','),' of ',idxDirLocTemp, ' copied to ',idxDirOut))
+      NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirLocTemp,'/',DirSubCopyTemp),idxDirOut,log=log)
     }  
     
     
@@ -445,7 +443,7 @@ for(idxDirIn in DirIn){
     for (idxFileDataTemp in fileDataTemp){
       
       # Load in data
-      dataTemp  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=base::paste0(idxDirDataTemp,'/',idxFileDataTemp),NameLib='/ravro.so'),silent=FALSE)
+      dataTemp  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=base::paste0(idxDirDataTemp,'/',idxFileDataTemp),NameLib='/ravro.so',log=log),silent=FALSE)
       if(base::class(dataTemp) == 'try-error'){
         log$error(base::paste0('File ', base::paste0(idxDirDataTemp,'/',idxFileDataTemp),' is unreadable.')) 
         stop()

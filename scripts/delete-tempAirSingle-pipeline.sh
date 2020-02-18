@@ -17,7 +17,7 @@ pachctl delete pipeline tempAirSingle_qaqc_plausibility_flags
 pachctl delete pipeline tempAirSingle_qaqc_specific_data
 pachctl delete pipeline tempAirSingle_qaqc_specific_flags
 pachctl delete pipeline tempAirSingle_qaqc_plausibility
-pachctl delete pipeline tempAirSingle_regularized_uncertainty_fdas
+pachctl delete pipeline tempAirSingle_regularized_uncertainty_data
 pachctl delete pipeline tempAirSingle_qaqc_specific
 pachctl delete pipeline tempAirSingle_padded_timeseries_analyzer
 pachctl delete pipeline tempAirSingle_uncertainty_coefficients
@@ -28,7 +28,7 @@ pachctl delete pipeline tempAirSingle_windobserverii
 pachctl delete pipeline tempAirSingle_threshold_regularized_group
 pachctl delete pipeline tempAirSingle_regularized_data
 pachctl delete pipeline tempAirSingle_threshold_select
-pachctl delete pipeline tempAirSingle_uncertainty_fdas
+pachctl delete pipeline tempAirSingle_uncertainty_data
 pachctl delete pipeline tempAirSingle_calibrated_flags
 pachctl delete pipeline tempAirSingle_calibrated_data
 pachctl delete pipeline tempAirSingle_locations

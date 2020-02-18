@@ -22,7 +22,7 @@
 #' @keywords Currently none
 
 #' @examples
-#' #Written to potentially plug in line 120 of def.cal.conv.R
+#' #Written to potentially plug in to def.cal.conv.R
 #' ucrt <- def.ucrt.wq.do.conc(data = data, cal = NULL)
 
 #' @seealso None currently
@@ -31,7 +31,7 @@
 #   Kaelin Cawley (2020-01-23)
 #     original creation
 ##############################################################################################
-def.ucrt.wq.do.conc <- function(data, cal) {
+def.ucrt.wq.do.conc <- function(data, cal,log=NULL) {
   # Start logging, if needed
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -55,7 +55,7 @@ def.ucrt.wq.do.conc <- function(data, cal) {
   }
   
   #Create the output dataframe
-  outputNames <- c("dissolveOxygenConcUnc")
+  outputNames <- c("ucrtMeas")
   outputDF <-
     base::as.data.frame(base::matrix(
       nrow = length(data),
@@ -69,11 +69,11 @@ def.ucrt.wq.do.conc <- function(data, cal) {
   #Create an output dataframe with U_CVALA1 based off of the following rules:
   ### U_CVALA1 = 0.01 if DO is > 0 & <= 20 mg/l according to the manual
   ### U_CVALA1 = 0.05 if DO is >20 mg/l & < 50 mg/l according to the manual
-  outputDF$dissolveOxygenConcUnc[data <= 20] <-
+  outputDF$ucrtMeas[data <= 20] <-
     0.01
   log$debug('Low range DO uncertainty populated.')
   
-  outputDF$dissolveOxygenConcUnc[data > 20] <-
+  outputDF$ucrtMeas[data > 20] <-
     0.05
   log$debug('High range DO uncertainty populated.')
   

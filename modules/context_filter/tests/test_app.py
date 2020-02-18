@@ -25,11 +25,11 @@ class AppTest(TestCase):
         data_path = os.path.join(inputs_path, 'data', 'data.avro')
         flags_path = os.path.join(inputs_path, 'flags', 'flags.avro')
         locations_path = os.path.join(inputs_path, 'location', 'locations.json')
-        uncertainty_path = os.path.join(inputs_path, 'uncertainty', 'uncertainty.json')
+        uncertainty_coef_path = os.path.join(inputs_path, 'uncertainty_coef', 'uncertaintyCoef.json')
 
         self.fs.create_file(data_path)
         self.fs.create_file(flags_path)
-        self.fs.create_file(uncertainty_path)
+        self.fs.create_file(uncertainty_coef_path)
 
         # Use real location file for parsing
         actual_location_file_path = os.path.join(os.path.dirname(__file__), 'test-locations.json')
@@ -54,9 +54,9 @@ class AppTest(TestCase):
         data_path = os.path.join(root_path, 'data', 'data.avro')
         flags_path = os.path.join(root_path, 'flags', 'flags.avro')
         locations_path = os.path.join(root_path, 'location', 'locations.json')
-        uncertainty_path = os.path.join(root_path, 'uncertainty', 'uncertainty.json')
+        uncertainty_coef_path = os.path.join(root_path, 'uncertainty_coef', 'uncertaintyCoef.json')
 
         self.assertTrue(os.path.lexists(data_path))
         self.assertTrue(os.path.lexists(flags_path))
         self.assertTrue(os.path.lexists(locations_path))
-        self.assertTrue(os.path.lexists(uncertainty_path))
+        self.assertTrue(os.path.lexists(uncertainty_coef_path))

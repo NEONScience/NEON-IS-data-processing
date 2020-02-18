@@ -27,13 +27,13 @@ class AppTest(TestCase):
         self.prt_data = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'data',
                                      'prt_CFGLOC111066_2019-01-05.avro')
         self.prt_flags = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'flags',
-                                      'prt_CFGLOC111066_2019-01-05_validCal.avro')
+                                      'prt_CFGLOC111066_2019-01-05_flagsCal.avro')
         self.prt_location = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'location',
                                          'prt_31052_locations.json')
-        self.prt_uncertainty = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'uncertainty',
-                                            'prt_CFGLOC111066_2019-01-05_uncertainty.json')
-        self.prt_uncertainty_fdas = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'uncertainty_fdas',
-                                                 'prt_CFGLOC111066_2019-01-05_FDASUncertainty.avro')
+        self.prt_uncertainty_coef = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'uncertainty_coef',
+                                            'prt_CFGLOC111066_2019-01-05_uncertaintyCoef.json')
+        self.prt_uncertainty_data = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'uncertainty_data',
+                                                 'prt_CFGLOC111066_2019-01-05_uncertaintyData.avro')
 
         self.windobserver_data = os.path.join(self.metadata_path, 'windobserverii', 'CFGLOC111062', 'data',
                                               'windobserverii_CFGLOC111062_2019-01-05.avro')
@@ -47,8 +47,8 @@ class AppTest(TestCase):
         self.fs.create_file(os.path.join(self.data_path, self.prt_data))
         self.fs.create_file(os.path.join(self.data_path, self.prt_flags))
         self.fs.create_file(os.path.join(self.data_path, self.prt_location))
-        self.fs.create_file(os.path.join(self.data_path, self.prt_uncertainty))
-        self.fs.create_file(os.path.join(self.data_path, self.prt_uncertainty_fdas))
+        self.fs.create_file(os.path.join(self.data_path, self.prt_uncertainty_coef))
+        self.fs.create_file(os.path.join(self.data_path, self.prt_uncertainty_data))
 
         self.fs.create_file(os.path.join(self.data_path, self.windobserver_data))
         self.fs.create_file(os.path.join(self.data_path, self.windobserver_location))
@@ -81,8 +81,8 @@ class AppTest(TestCase):
         self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.prt_data)))
         self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.prt_flags)))
         self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.prt_location)))
-        self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.prt_uncertainty)))
-        self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.prt_uncertainty_fdas)))
+        self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.prt_uncertainty_coef)))
+        self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.prt_uncertainty_data)))
 
         self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.windobserver_data)))
         self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.windobserver_location)))

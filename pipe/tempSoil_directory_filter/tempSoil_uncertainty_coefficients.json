@@ -9,7 +9,7 @@
         "stdin": [ "#!/bin/bash", "python3 -m directory_filter.app" ],
         "env": {
             "OUT_PATH": "/pfs/out",
-            "FILTER_DIR": "uncertainty",
+            "FILTER_DIR": "uncertainty_coef",
             "LOG_LEVEL": "INFO"
         }
     },

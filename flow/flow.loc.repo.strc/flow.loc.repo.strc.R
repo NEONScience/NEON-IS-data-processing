@@ -200,8 +200,7 @@ for(idxDirIn in DirIn){
                             '. Merged directory contents with any other source-ids at that named location.'))
     
     } else {
-      base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(idxDirIn,idxDirOut))
-      log$info(base::paste0('Restructured path to datum ',idxDirIn,' to ',base::paste0(idxDirOut,'/',idSrc)))
+      NEONprocIS.base::def.dir.copy.symb(idxDirIn,idxDirOut,log=log)
     }
     
   } # End loop around named locations

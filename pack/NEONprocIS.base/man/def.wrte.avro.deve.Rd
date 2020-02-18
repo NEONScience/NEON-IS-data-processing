@@ -41,7 +41,7 @@ Currently none
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }
 \seealso{
-\link[NEONprocIS.cal]{def.read.avro.deve}
+\link[NEONprocIS.base]{def.read.avro.deve}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
