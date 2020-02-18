@@ -1,8 +1,7 @@
 {
-   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "http://example.com/root.json",
   "type": "object",
-  "title": "The Root Schema",
   "required": [
     "type",
     "features",
@@ -11,23 +10,14 @@
   ],
   "properties": {
     "type": {
-      "$id": "#/properties/type",
-      "type": "string",
-      "title": "The Type Schema",
-      "default": "",
       "examples": [
         "FeatureCollection"
-      ],
-      "pattern": "^(.*)$"
+      ]
     },
     "features": {
-      "$id": "#/properties/features",
       "type": "array",
-      "title": "The Features Schema",
       "items": {
-        "$id": "#/properties/features/items",
         "type": "object",
-        "title": "The Items Schema",
         "required": [
           "type",
           "geometry",
@@ -37,28 +27,17 @@
         ],
         "properties": {
           "type": {
-            "$id": "#/properties/features/items/properties/type",
             "type": "string",
-            "title": "The Type Schema",
-            "default": "",
             "examples": [
               "Feature"
-            ],
-            "pattern": "^(.*)$"
+            ]
           },
           "geometry": {
-            "$id": "#/properties/features/items/properties/geometry",
-            "type": "null",
-            "title": "The Geometry Schema",
-            "default": null,
             "examples": [
               null
             ]
           },
           "properties": {
-            "$id": "#/properties/features/items/properties/properties",
-            "type": "object",
-            "title": "The Properties Schema",
             "required": [
               "name",
               "site",
@@ -69,87 +48,62 @@
             ],
             "properties": {
               "name": {
-                "$id": "#/properties/features/items/properties/properties/properties/name",
                 "type": "string",
-                "title": "The Name Schema",
-                "default": "",
                 "examples": [
                   "CFGLOC108440"
-                ],
-                "pattern": "^(.*)$"
+                ]
               },
               "site": {
-                "$id": "#/properties/features/items/properties/properties/properties/site",
                 "type": "string",
-                "title": "The Site Schema",
-                "default": "",
                 "examples": [
                   "HARV"
-                ],
-                "pattern": "^(.*)$"
+                ]
               },
               "install_date": {
-                "$id": "#/properties/features/items/properties/properties/properties/install_date",
                 "type": "string",
-                "title": "The Install_date Schema",
-                "default": "",
+                "format": "date-time",
                 "examples": [
                   "2017-02-07T00:17:20Z"
-                ],
-                "pattern": "^(.*)$"
+                ]
               },
               "remove_date": {
-                "$id": "#/properties/features/items/properties/properties/properties/remove_date",
                 "type": "string",
-                "title": "The Remove_date Schema",
-                "default": "",
+                "format": "date-time",
                 "examples": [
                   "2017-02-07T00:18:28Z"
-                ],
-                "pattern": "^(.*)$"
+                ]
               },
               "context": {
-                "$id": "#/properties/features/items/properties/properties/properties/context",
                 "type": "array",
-                "title": "The Context Schema",
                 "items": {
-                  "$id": "#/properties/features/items/properties/properties/properties/context/items",
+                  "minLength": 1,
                   "type": "string",
-                  "title": "The Items Schema",
-                  "default": "",
                   "examples": [
                     "soil"
-                  ],
-                  "pattern": "^(.*)$"
+                  ]
                 }
               },
               "locations": {
-                "$id": "#/properties/features/items/properties/properties/properties/locations",
                 "type": "object",
-                "title": "The Locations Schema",
+                "minLength": 1,
                 "required": [
                   "type",
                   "features"
                 ],
                 "properties": {
                   "type": {
-                    "$id": "#/properties/features/items/properties/properties/properties/locations/properties/type",
+                    "minLength": 1,
                     "type": "string",
-                    "title": "The Type Schema",
-                    "default": "",
                     "examples": [
                       "FeatureCollection"
-                    ],
-                    "pattern": "^(.*)$"
+                    ]
                   },
                   "features": {
-                    "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features",
+                    "minLength": 1,
                     "type": "array",
-                    "title": "The Features Schema",
                     "items": {
-                      "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items",
+                      "minLength": 1,
                       "type": "object",
-                      "title": "The Items Schema",
                       "required": [
                         "type",
                         "geometry",
@@ -157,28 +111,22 @@
                       ],
                       "properties": {
                         "type": {
-                          "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/type",
+                         "minLength": 1,
                           "type": "string",
-                          "title": "The Type Schema",
-                          "default": "",
                           "examples": [
                             "Feature"
-                          ],
-                          "pattern": "^(.*)$"
+                          ]
                         },
                         "geometry": {
-                          "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/geometry",
+                          "minLength": 1,
                           "type": "null",
-                          "title": "The Geometry Schema",
-                          "default": null,
                           "examples": [
                             null
                           ]
                         },
                         "properties": {
-                          "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties",
+                          "minLength": 1,
                           "type": "object",
-                          "title": "The Properties Schema",
                           "required": [
                             "start_date",
                             "end_date",
@@ -187,37 +135,30 @@
                           ],
                           "properties": {
                             "start_date": {
-                              "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/start_date",
+                              "minLength": 1,
                               "type": "string",
-                              "title": "The Start_date Schema",
-                              "default": "",
+                              "format": "date-time",
                               "examples": [
                                 "2010-01-01T00:00:00Z"
-                              ],
-                              "pattern": "^(.*)$"
+                              ]
                             },
                             "end_date": {
-                              "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/end_date",
+                              "minLength": 1,
                               "type": "null",
-                              "title": "The End_date Schema",
-                              "default": null,
                               "examples": [
                                 null
                               ]
                             },
                             "z_offset": {
-                              "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/z_offset",
+                              "minLength": 1,
                               "type": "number",
-                              "title": "The Z_offset Schema",
-                              "default": 0,
                               "examples": [
                                 -0.02
                               ]
                             },
                             "reference_location": {
-                              "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location",
+                              "minLength": 1,
                               "type": "object",
-                              "title": "The Reference_location Schema",
                               "required": [
                                 "type",
                                 "geometry",
@@ -225,70 +166,55 @@
                               ],
                               "properties": {
                                 "type": {
-                                  "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/type",
+                                  "minLength": 1,
                                   "type": "string",
-                                  "title": "The Type Schema",
-                                  "default": "",
                                   "examples": [
                                     "Feature"
-                                  ],
-                                  "pattern": "^(.*)$"
+                                  ]
                                 },
                                 "geometry": {
-                                  "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/geometry",
+                                  "minLength": 1,
                                   "type": "null",
-                                  "title": "The Geometry Schema",
-                                  "default": null,
                                   "examples": [
                                     null
                                   ]
                                 },
                                 "properties": {
-                                  "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties",
+                                  "minLength": 1,
                                   "type": "object",
-                                  "title": "The Properties Schema",
                                   "required": [
                                     "name",
                                     "locations"
                                   ],
                                   "properties": {
                                     "name": {
-                                      "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/name",
+                                      "minLength": 1,
                                       "type": "string",
-                                      "title": "The Name Schema",
-                                      "default": "",
                                       "examples": [
                                         "SOILPL100441"
-                                      ],
-                                      "pattern": "^(.*)$"
+                                      ]
                                     },
                                     "locations": {
-                                      "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations",
+                                     "minLength": 1,
                                       "type": "object",
-                                      "title": "The Locations Schema",
                                       "required": [
                                         "type",
                                         "features"
                                       ],
                                       "properties": {
                                         "type": {
-                                          "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/type",
+                                          "minLength": 1,
                                           "type": "string",
-                                          "title": "The Type Schema",
-                                          "default": "",
                                           "examples": [
                                             "FeatureCollection"
-                                          ],
-                                          "pattern": "^(.*)$"
+                                          ]
                                         },
                                         "features": {
-                                          "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features",
+                                          "minLength": 1,
                                           "type": "array",
-                                          "title": "The Features Schema",
                                           "items": {
-                                            "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items",
+                                            "minLength": 1,
                                             "type": "object",
-                                            "title": "The Items Schema",
                                             "required": [
                                               "type",
                                               "geometry",
@@ -296,28 +222,21 @@
                                             ],
                                             "properties": {
                                               "type": {
-                                                "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/type",
+                                               "minLength": 1,
                                                 "type": "string",
-                                                "title": "The Type Schema",
-                                                "default": "",
                                                 "examples": [
                                                   "Feature"
-                                                ],
-                                                "pattern": "^(.*)$"
+                                                ]
                                               },
                                               "geometry": {
-                                                "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/geometry",
-                                                "type": "null",
-                                                "title": "The Geometry Schema",
-                                                "default": null,
+                                                "minLength": 1,
                                                 "examples": [
                                                   null
                                                 ]
                                               },
                                               "properties": {
-                                                "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties",
+                                                "minLength": 1,
                                                 "type": "object",
-                                                "title": "The Properties Schema",
                                                 "required": [
                                                   "start_date",
                                                   "end_date",
@@ -326,37 +245,30 @@
                                                 ],
                                                 "properties": {
                                                   "start_date": {
-                                                    "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties/properties/start_date",
                                                     "type": "string",
-                                                    "title": "The Start_date Schema",
-                                                    "default": "",
+                                                    "format": "date-time",
                                                     "examples": [
                                                       "2010-01-01T00:00:00Z"
                                                     ],
                                                     "pattern": "^(.*)$"
                                                   },
                                                   "end_date": {
-                                                    "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties/properties/end_date",
                                                     "type": "null",
-                                                    "title": "The End_date Schema",
-                                                    "default": null,
+                                                    "format": "date-time",
                                                     "examples": [
                                                       null
                                                     ]
                                                   },
                                                   "z_offset": {
-                                                    "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties/properties/z_offset",
+                                                    "minLength": 1,
                                                     "type": "integer",
-                                                    "title": "The Z_offset Schema",
-                                                    "default": 0,
                                                     "examples": [
                                                       0
                                                     ]
                                                   },
                                                   "reference_location": {
-                                                    "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location",
+                                                    "minLength": 1,
                                                     "type": "object",
-                                                    "title": "The Reference_location Schema",
                                                     "required": [
                                                       "type",
                                                       "geometry",
@@ -364,48 +276,35 @@
                                                     ],
                                                     "properties": {
                                                       "type": {
-                                                        "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/type",
+                                                        "minLength": 1,
                                                         "type": "string",
-                                                        "title": "The Type Schema",
-                                                        "default": "",
                                                         "examples": [
                                                           "Feature"
-                                                        ],
-                                                        "pattern": "^(.*)$"
+                                                        ]
                                                       },
                                                       "geometry": {
-                                                        "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/geometry",
-                                                        "type": "null",
-                                                        "title": "The Geometry Schema",
-                                                        "default": null,
+                                                        "minLength": 1,
                                                         "examples": [
                                                           null
                                                         ]
                                                       },
                                                       "properties": {
-                                                        "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties",
+                                                        "minLength": 1,
                                                         "type": "object",
-                                                        "title": "The Properties Schema",
                                                         "required": [
                                                           "name",
                                                           "locations"
                                                         ],
                                                         "properties": {
                                                           "name": {
-                                                            "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/name",
+                                                            "minLength": 1,
                                                             "type": "string",
-                                                            "title": "The Name Schema",
-                                                            "default": "",
                                                             "examples": [
                                                               "SOILPL100441"
-                                                            ],
-                                                            "pattern": "^(.*)$"
+                                                            ]
                                                           },
                                                           "locations": {
-                                                            "$id": "#/properties/features/items/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations/properties/features/items/properties/properties/properties/reference_location/properties/properties/properties/locations",
-                                                            "type": "null",
-                                                            "title": "The Locations Schema",
-                                                            "default": null,
+                                                            "minLength": 1,
                                                             "examples": [
                                                               null
                                                             ]
@@ -435,42 +334,30 @@
             }
           },
           "Required Asset Management Location ID": {
-            "$id": "#/properties/features/items/properties/Required Asset Management Location ID",
+            "minLength": 1,
             "type": "integer",
-            "title": "The Required asset management location id Schema",
-            "default": 0,
             "examples": [
               9915
             ]
           },
           "Required Asset Management Location Code": {
-            "$id": "#/properties/features/items/properties/Required Asset Management Location Code",
+            "minLength": 1,
             "type": "string",
-            "title": "The Required asset management location code Schema",
-            "default": "",
             "examples": [
               "CFGLOC108440"
-            ],
-            "pattern": "^(.*)$"
+            ]
           }
         }
       }
     },
     "source_type": {
-      "$id": "#/properties/source_type",
       "type": "string",
-      "title": "The Source_type Schema",
-      "default": "",
       "examples": [
         "prt"
-      ],
-      "pattern": "^(.*)$"
+      ]
     },
     "source_id": {
-      "$id": "#/properties/source_id",
       "type": "integer",
-      "title": "The Source_id Schema",
-      "default": 0,
       "examples": [
         19963
       ]
