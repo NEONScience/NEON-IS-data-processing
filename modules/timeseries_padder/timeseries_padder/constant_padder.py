@@ -3,9 +3,12 @@ import sys
 import pathlib
 import datetime
 
+import argparse
+import environs
 from structlog import get_logger
 
 import lib.file_linker as file_linker
+import lib.log_config as log_config
 import timeseries_padder.timeseries_padder.padder_util as padder_util
 import timeseries_padder.timeseries_padder.output_writer as output_writer
 
@@ -82,3 +85,32 @@ class ConstantPadder(object):
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             log.error("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
+
+
+def main():
+    env = environs.Env()
+    data_path = env('DATA_PATH')
+    out_path = env('OUT_PATH')
+    log_level = env('LOG_LEVEL')
+    window_size = env('WINDOW_SIZE')
+    log_config.configure(log_level)
+    log = get_logger()
+    log.debug(f'data_dir: {data_path}')
+    log.debug(f'out_dir: {out_path}')
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--yearindex')
+    parser.add_argument('--monthindex')
+    parser.add_argument('--dayindex')
+    parser.add_argument('--locindex')
+    parser.add_argument('--subdirindex')
+
+    args = parser.parse_args()
+
+    padder = ConstantPadder(data_path, out_path, int(args.yearindex), int(args.monthindex),
+                            int(args.dayindex), int(args.locindex), int(args.subdirindex), window_size)
+    padder.pad()
+
+
+if __name__ == '__main__':
+    main()
