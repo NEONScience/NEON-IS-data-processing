@@ -506,7 +506,7 @@ for (idxDirIn in DirIn) {
     nameVarOut <- nameVarIn
   }
   mappNameVar <-
-    NEONprocIS.base::def.mapp.var.in.out(
+    NEONprocIS.base::def.var.mapp.in.out(
       nameVarIn = nameVarIn,
       nameVarOut = nameVarOut,
       nameVarDfltSame = varCal,
