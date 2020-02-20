@@ -30,7 +30,7 @@
 #'                                  nameVarOut=c('A','B'),
 #'                                  stringsAsFactors=FALSE))
 
-#' @seealso \link[NEONprocIS.cal]{def.mapp.var.in.out}
+#' @seealso \link[NEONprocIS.cal]{def.var.mapp.in.out}
 
 #' @export
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/def.ucrt.expn.R
 \name{def.ucrt.expn}
 \alias{def.ucrt.expn}
-\title{Copmute expanded measurement uncertainty (95% confidence)}
+\title{Compute expanded measurement uncertainty (95% confidence)}
 \usage{
 def.ucrt.expn(ucrtComb, log = NULL)
 }
@@ -14,7 +14,7 @@ created and used within the function.}
 \item{ucrt}{Numeric data vector of combined measurement uncertainty (1 sigma)}
 }
 \value{
-A data frame with a single numeric column:\cr
+A data frame with a single numeric column: \cr
 \code{ucrtExpn} - expanded measurement uncertainty
 }
 \description{

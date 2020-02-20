@@ -20,7 +20,7 @@ directory. Nested within this directory are directories for each variable in cal
 calibration files for that variable. Defaults to "./"}
 
 \item{mappNameVar}{A data frame with in/out variable name mapping as produced by 
-NEONprocIS.base::def.mapp.var.in.out. See documentation for that function.}
+NEONprocIS.base::def.var.mapp.in.out. See documentation for that function.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}

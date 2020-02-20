@@ -41,6 +41,12 @@
 #     original creation
 ##############################################################################################
 def.time.miss <- function(TimeBgn,TimeEnd,timeFull,log){
+  
+  # Initialize log if not input
+  if (is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
+  
   # Sort the covered time ranges
   timeFull <- timeFull[base::order(timeFull$timeBgn,decreasing=FALSE),]
   

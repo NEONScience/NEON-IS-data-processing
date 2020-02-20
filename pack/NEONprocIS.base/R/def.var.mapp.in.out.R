@@ -25,7 +25,7 @@
 #' @keywords Currently none
 
 #' @examples 
-#' NEONprocIS.base::def.mapp.var.in.out(nameVarIn=c('varIn1,'varIn2'),
+#' NEONprocIS.base::def.var.mapp.in.out(nameVarIn=c('varIn1,'varIn2'),
 #'                                      nameVarOut=c('nameOut1','nameOut2'),
 #'                                      nameVarDfltSame=c('nameSame1','nameSame2'))
 
@@ -37,7 +37,7 @@
 #   Cove Sturtevant (2020-02-13)
 #     original creation
 ##############################################################################################
-def.mapp.var.in.out <- function(nameVarIn=base::character(0),
+def.var.mapp.in.out <- function(nameVarIn=base::character(0),
                                 nameVarOut=base::character(0),
                                 nameVarDfltSame=base::character(0),
                                 log=NULL){

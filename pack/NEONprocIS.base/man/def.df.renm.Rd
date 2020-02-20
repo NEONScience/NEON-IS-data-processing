@@ -36,7 +36,7 @@ NEONprocIS.base::def.df.renm(df=data.frame(X=c(1,2,3),Y=c(4,5,6)),
 Currently none
 }
 \seealso{
-\link[NEONprocIS.cal]{def.mapp.var.in.out}
+\link[NEONprocIS.cal]{def.var.mapp.in.out}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
