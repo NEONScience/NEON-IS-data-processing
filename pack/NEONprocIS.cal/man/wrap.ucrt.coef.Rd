@@ -36,7 +36,7 @@ Defaults to NULL, in which case no variables in ParaUcrt may indicate that FDAS 
 applies.}
 
 \item{mappNameVar}{A data frame with in/out variable name mapping as produced by 
-NEONprocIS.base::def.mapp.var.in.out. See documentation for that function. If input (default is
+NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is
 NULL), input variable names in the output data frames will be replaced by their corresponding 
 output name.}
 
@@ -62,7 +62,7 @@ Currently none
 
 \link[NEONprocIS.cal]{def.read.cal.xml}
 
-\link[NEONprocIS.base]{def.mapp.var.in.out}
+\link[NEONprocIS.base]{def.var.mapp.in.out}
 
 \link[NEONprocIS.cal]{def.read.ucrt.coef.fdas}
 }

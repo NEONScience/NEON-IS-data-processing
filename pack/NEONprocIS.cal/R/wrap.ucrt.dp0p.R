@@ -44,7 +44,7 @@
 #' directory. Nested within this directory are directories for each variable in calSlct, each holding
 #' calibration files for that variable. Defaults to "./"
 #' @param mappNameVar A data frame with in/out variable name mapping as produced by 
-#' NEONprocIS.base::def.mapp.var.in.out. See documentation for that function. If input (default is NULL),
+#' NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is NULL),
 #' output variable names will be appended as prefixes to the column names in each output data frame. 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
@@ -64,7 +64,7 @@
 
 #' @seealso \link[NEONprocIS.cal]{def.cal.slct}
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
-#' @seealso \link[NEONprocIS.base]{def.mapp.var.in.out}
+#' @seealso \link[NEONprocIS.base]{def.var.mapp.in.out}
 
 #' @export
 

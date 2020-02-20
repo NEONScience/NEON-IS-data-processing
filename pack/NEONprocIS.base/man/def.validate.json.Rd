@@ -4,7 +4,7 @@
 \alias{def.validate.json}
 \title{validate if the JSON content is strictly valid}
 \usage{
-def.validate.json(jsonIn)
+def.validate.json(jsonIn, log = NULL)
 }
 \arguments{
 \item{jsonIn}{Input json to be validated}

@@ -90,6 +90,7 @@ def.wrte.avro.deve <- function(data,
       Schm <- base::paste0(base::readLines(con),collapse='')
       base::close(con)
     }
+    
     rpt <- base::.Call('writeavro_withschema',data,Schm,NameFile,PACKAGE='ravro') 
   }
  

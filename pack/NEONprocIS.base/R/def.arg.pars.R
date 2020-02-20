@@ -59,6 +59,7 @@
 #' # [1] 10 20
 
 
+#' @seealso \code{\link[NEONprocIS.base]{def.vect.pars.pair}}
 #' @seealso \code{\link[NEONprocIS.base]{def.log.init}}
 
 #' @export

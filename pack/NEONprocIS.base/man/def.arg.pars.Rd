@@ -67,6 +67,8 @@ Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=NameParaReqd,NamePara
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }
 \seealso{
+\code{\link[NEONprocIS.base]{def.vect.pars.pair}}
+
 \code{\link[NEONprocIS.base]{def.log.init}}
 }
 \author{
