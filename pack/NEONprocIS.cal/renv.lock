@@ -175,6 +175,13 @@
       "RemoteSha": "21fa2183fe0c617e99074b6deab4b1505a7412cf",
       "Hash": "26979f0007efcd66d5f7888cd8bae178"
     },
+    "rjson": {
+      "Package": "rjson",
+      "Version": "0.2.20",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7d597f982ee6263716b6a2f28efd29fa"
+    },
     "rlang": {
       "Package": "rlang",
       "Version": "0.4.2",

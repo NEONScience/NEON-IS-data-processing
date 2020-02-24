@@ -32,7 +32,7 @@
 #' Defaults to NULL, in which case no variables in ParaUcrt may indicate that FDAS uncertainty 
 #' applies.
 #' @param mappNameVar A data frame with in/out variable name mapping as produced by 
-#' NEONprocIS.base::def.mapp.var.in.out. See documentation for that function. If input (default is
+#' NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is
 #' NULL), input variable names in the output data frames will be replaced by their corresponding 
 #' output name.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -49,7 +49,7 @@
 
 #' @seealso \link[NEONprocIS.cal]{def.cal.slct}
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
-#' @seealso \link[NEONprocIS.base]{def.mapp.var.in.out}
+#' @seealso \link[NEONprocIS.base]{def.var.mapp.in.out}
 #' @seealso \link[NEONprocIS.cal]{def.read.ucrt.coef.fdas}
 
 #' @export

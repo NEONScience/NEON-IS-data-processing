@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Copmute expanded measurement uncertainty (95% confidence)
+#' @title Compute expanded measurement uncertainty (95% confidence)
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
@@ -13,7 +13,7 @@
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
 
-#' @return A data frame with a single numeric column:\cr
+#' @return A data frame with a single numeric column: \cr
 #' \code{ucrtExpn} - expanded measurement uncertainty
 
 #' @references

@@ -49,7 +49,7 @@ def.validate.json <- function(jsonIn, log = NULL) {
     if (RJSONIO::isValidJSON(jsonIn))
     {
       c = TRUE
-      log$info(base::paste0(jsonIn, ' is valid strictly.'))
+      log$debug(base::paste0(jsonIn, ' is valid strictly.'))
     }
     else
     {

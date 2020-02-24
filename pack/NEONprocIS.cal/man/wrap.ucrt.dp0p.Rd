@@ -49,7 +49,7 @@ directory. Nested within this directory are directories for each variable in cal
 calibration files for that variable. Defaults to "./"}
 
 \item{mappNameVar}{A data frame with in/out variable name mapping as produced by 
-NEONprocIS.base::def.mapp.var.in.out. See documentation for that function. If input (default is NULL),
+NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is NULL),
 output variable names will be appended as prefixes to the column names in each output data frame.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -78,7 +78,7 @@ Currently none
 
 \link[NEONprocIS.cal]{def.read.cal.xml}
 
-\link[NEONprocIS.base]{def.mapp.var.in.out}
+\link[NEONprocIS.base]{def.var.mapp.in.out}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
