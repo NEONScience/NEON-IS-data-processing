@@ -110,7 +110,8 @@ def.cal.slct <-
       timeMiss <-
         NEONprocIS.base::def.time.miss(TimeBgn = TimeBgn,
                                        TimeEnd = TimeEnd,
-                                       timeFull = rpt)
+                                       timeFull = rpt,
+                                       log=log)
       
       # Quit early if we've covered the entire range of interest with valid calibrations
       if (base::nrow(timeMiss) == 0) {
@@ -150,7 +151,8 @@ def.cal.slct <-
     timeMiss <-
       NEONprocIS.base::def.time.miss(TimeBgn = TimeBgn,
                                      TimeEnd = TimeEnd,
-                                     timeFull = rpt)
+                                     timeFull = rpt,
+                                     log=log)
     
     # Now run through the remaining periods without a valid calibration.
     # Fill with most recently expired (if available)
