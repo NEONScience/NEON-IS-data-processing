@@ -1,0 +1,5 @@
+^renv$
+^renv\.lock$
+^data-raw$
+^NEONprocIS\.Rproj$
+^\.Rproj\.user$
