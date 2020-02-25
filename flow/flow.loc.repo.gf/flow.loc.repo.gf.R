@@ -15,12 +15,12 @@
 #'      ./location
 #'      ./data
 #'      ./flags
-#'      ./uncertainty
+#'      ./uncertainty_coef
 #' For the filled date gaps, the "location" folder is copied from the correponding folder of the same 
 #' location-ID for the date prior the gap. A single file in the data folder will be populated with the 
 #' schema provided in the arguments and will contain an empty data frame (column headers but no rows). The same 
 #' will occur for the flags directory, using a different schema provided in the arguments. TBD is populated in 
-#' the "uncertainty" folder. 
+#' the "uncertainty_coef" folder. 
 #'
 #' Note: This script does not take into account the active periods for a particular location-ID, as it would
 #' require reading the location files for each filled date, which would require downloading files in some 
@@ -37,7 +37,7 @@
 #' 
 #' 1. "DirIn=value", where value is the path to the parent of the yearly folders, structured as follows: 
 #' #/pfs/BASE_REPO/#, where # indicates any number of parent and child directories of any name, so long as they 
-#' are not 'pfs',data','flags','uncertainty', or 'location'. 
+#' are not 'pfs',data','flags','uncertainty_coef', or 'location'. 
 #'    
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
@@ -73,6 +73,8 @@
 #     added argument for output directory 
 #   Cove Sturtevant (2019-10-30)
 #     added uncertainty_fdas folder
+#   Cove Sturtevant (2020-02-17)
+#     adjusted naming of uncertainty folder(s)
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -135,7 +137,7 @@ for(idxIdLoc in idLoc){
     dirTime <- base::paste0(base::format(idxTimeExst,'%Y'),'/',base::format(idxTimeExst,'%m'),'/',base::format(idxTimeExst,'%d'))
     dirSrc <- base::paste0(DirBgn,'/',dirTime,'/',idxIdLoc)
     dirDest <- base::paste0(DirOut,InfoDirBgn$dirRepo,'/',dirTime)
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(DirSrc=dirSrc,DirDest=dirDest))
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=dirSrc,DirDest=dirDest,log=log)
     
   })
   log$info(base::paste0('Copied existing dates for location-ID: ',idxIdLoc)) 
@@ -176,14 +178,14 @@ for(idxIdLoc in idLoc){
       timeGf <- idxTimeMiss-as.difftime(tim=1,units='days') # Initialize the first date to fill with
     }
     
-    # Fill the gap, intially with the location folder, then we'll fill in the data, flags, and uncertainty folders with empty files
+    # Fill the gap, intially with the location folder, then we'll fill in the data, flags, and uncertainty_coef folders with empty files
     dirSrcBase <- base::paste0(DirBgn,'/',base::format(timeGf,'%Y'),'/',base::format(timeGf,'%m'),'/',base::format(timeGf,'%d'),'/',idxIdLoc)
     dirSrcLoc <- base::paste0(dirSrcBase,'/location')
     dirDest <- base::paste0(DirOut,InfoDirBgn$dirRepo,'/',base::format(idxTimeMiss,'%Y'),'/',base::format(idxTimeMiss,'%m'),'/',base::format(idxTimeMiss,'%d'),'/',idxIdLoc)
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(DirSrc=dirSrcLoc,DirDest=dirDest))
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=dirSrcLoc,DirDest=dirDest,log=log)
     
     # Now create the data, flags, and uncertainty folders
-    nameDirAdd <- c('data','flags','uncertainty','uncertainty_fdas')
+    nameDirAdd <- c('data','flags','uncertainty_coef','uncertainty_data')
     dirAdd <- base::as.list(base::paste0(dirDest,'/',nameDirAdd))
     names(dirAdd) <- nameDirAdd
     rptDirAdd <- base::lapply(dirAdd,base::dir.create,recursive=FALSE)

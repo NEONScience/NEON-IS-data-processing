@@ -44,8 +44,8 @@
 #' delimited fields after the source-id field (e.g. prt_12345_otherdescriptor.avro, where 12345 is the 
 #' source-id).
 #' 
-#' 4. "DirSubCombUcrt=value" (optional), where the value is the name of subfolders holding uncertainty json 
-#' files to be merged, separated by pipes (|). These additional subdirectories must be at the same level as 
+#' 4. "DirSubCombUcrt=value" (optional), where the value is the name of subfolders holding uncertainty coefficient 
+#' json files to be merged, separated by pipes (|). These additional subdirectories must be at the same level as 
 #' the location directory. Within each subfolder are uncertainty json files, one for each source-id. The 
 #' source-id is the identifier for the sensor pertaining to the uncertainty info in the file. The source-id 
 #' of each sensor is taken from the name of the files in the directory. The name of the file must be constructed 
@@ -75,11 +75,11 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.loc.comb.data.R 'DirIn=/pfs/tempSoil_structure_repo_by_location/prt/2018/01/01' 'DirOut=/pfs/out' 'DirSubCombData=data|flags' 'DirSubCombUcrt=uncertainty' 'DirSubCopy=location'
+#' Rscript flow.loc.comb.data.R 'DirIn=/pfs/tempSoil_structure_repo_by_location/prt/2018/01/01' 'DirOut=/pfs/out' 'DirSubCombData=data|flags' 'DirSubCombUcrt=uncertainty_coef' 'DirSubCopy=location'
 #' 
 #' Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/tempSoil_structure_repo_by_location/prt/2018/01/01')
-#' Rscript flow.loc.comb.data.R 'DirIn=$DIR_IN' 'DirOut=/pfs/out' 'DirSubCombData=data|flags' 'DirSubCombUcrt=uncertainty' 'DirSubCopy=location'
+#' Rscript flow.loc.comb.data.R 'DirIn=$DIR_IN' 'DirOut=/pfs/out' 'DirSubCombData=data|flags' 'DirSubCombUcrt=uncertainty_coef' 'DirSubCopy=location'
 
 #' @seealso None
 #' 
@@ -149,8 +149,7 @@ for(idxDirIn in DirIn){
   
   # Copy with a symbolic link the desired subfolders we aren't modifying
   if(base::length(DirSubCopy) > 0){
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
-    log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
+    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
   }  
   
   # Get a list of location files
@@ -192,7 +191,7 @@ for(idxDirIn in DirIn){
       }
       
       # Open the data file
-      data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileData,NameLib='/ravro.so'),silent=FALSE)
+      data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileData,NameLib='/ravro.so',log=log),silent=FALSE)
       if(base::class(data) == 'try-error'){
         # Generate error and stop execution
         log$error(base::paste0('File: ', nameFileData, ' is unreadable.')) 

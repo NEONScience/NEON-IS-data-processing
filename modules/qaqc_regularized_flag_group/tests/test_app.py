@@ -20,7 +20,7 @@ class AppTest(TestCase):
 
         #  regularized file
         self.fs.create_file(os.path.join(self.regularized_path, 'prt', '2018', '01', '01',
-                                         'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_validCal.avro'))
+                                         'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_flagsCal.avro'))
         #  quality file
         self.fs.create_file(os.path.join(self.quality_path, 'prt', '2018', '01', '01',
                                          'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.avro'))
@@ -42,7 +42,7 @@ class AppTest(TestCase):
 
     def check_output(self):
         regularized_path = os.path.join(self.out_path, 'prt', '2018', '01', '01',
-                                        'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_validCal.avro')
+                                        'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_flagsCal.avro')
         quality_path = os.path.join(self.out_path, 'prt', '2018', '01', '01',
                                     'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.avro')
 

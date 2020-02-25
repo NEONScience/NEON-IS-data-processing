@@ -50,11 +50,11 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.loc.filt.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "SubDirCopy=data|flags|uncertainty"
+#' Rscript flow.loc.filt.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "SubDirCopy=data|flags|uncertainty_coef"
 #' 
 #' # Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/prt_calibration/prt/2019/01/01/27134')
-#' Rscript flow.loc.filt.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "SubDirCopy=data|flags|uncertainty"
+#' Rscript flow.loc.filt.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "SubDirCopy=data|flags|uncertainty_coef"
 
 #' @seealso None
 #' 
@@ -110,8 +110,7 @@ for(idxDirIn in DirIn){
   
   # Copy with a symbolic link the desired subfolders 
   if(base::length(DirSubCopy) > 0){
-    base::suppressWarnings(NEONprocIS.base::def.copy.dir.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut))
-    log$info(base::paste0('Unmodified subdirectories ',base::paste0(DirSubCopy,collapse=','),' of ',idxDirIn, ' copied to ',idxDirOut))
+    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
   }  
 
   # Get a list of location files

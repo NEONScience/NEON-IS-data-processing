@@ -32,5 +32,14 @@ class AppTest(TestCase):
             print(f'geojson_data: {geojson_data}')
         self.assertTrue((locations is not None))
 
+    def test_get_site(self):
+        site_name = named_location_finder.get_site(self.connection, 31720)
+        self.assertTrue(site_name == 'ORNL')
+
+    def test_range(self):
+        for i in range(1, 11):
+            print(f'i: {i}')
+        self.assertTrue(i == 10)
+
     def tearDown(self):
         self.connection.close()

@@ -13,6 +13,8 @@
 #' as DirDest, each index corresponding to the same index of DirDest. NOTE: DirDest should be the parent of the 
 #' distination directories. For example, to create a link from source /parent/child/ to /newparent/child, 
 #' DirSrc='/parent/child/' and DirDest='/newparent/'
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output. Defaults to NULL, in which the logger will be created and used within the function.
 
 #' @return No output from this function other than performing the intended action.  
 
@@ -20,8 +22,8 @@
 
 #' @keywords Currently none
 
-#' @examples Currently none
-#' def.copy.dir.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01/01')
+#' @examples 
+#' def.dir.copy.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01/01')
 
 
 #' @seealso Currently none
@@ -31,19 +33,30 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-07-02)
 #     original creation
+#   Cove Sturtevant (2020-02-04)
+#     added logging
 ##############################################################################################
-def.copy.dir.symb <- function(DirSrc,DirDest){
+def.dir.copy.symb <- function(DirSrc,DirDest,log=NULL){
+  # initialize logging if necessary
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
   
   # Do some error checking 
   numDirSrc <- base::length(DirSrc)
   numDirDest <- base::length(DirDest)
   if(numDirDest != 1 && numDirSrc != numDirDest){
-    base::stop('Lengths of DirSrc and DirDest must be equal if length of DirDest is not equal to 1.')
+    log$error('Lengths of DirSrc and DirDest must be equal if length of DirDest is not equal to 1.')
+    base::stop()
   }
 
-  
-  rptDir <- base::lapply(DirDest,base::dir.create,recursive=TRUE) # Create the destination directories
+  rptDir <- base::suppressWarnings(base::lapply(DirDest,base::dir.create,recursive=TRUE)) # Create the destination directories
   cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
   rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
+
+  if(rptCopy == 0){
+    log$info(base::paste0('Unmodified ',base::paste0(DirSrc,collapse=','), ' copied to ',DirDest))
+  }
+  
   
 }

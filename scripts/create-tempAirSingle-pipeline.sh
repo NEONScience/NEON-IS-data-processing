@@ -27,7 +27,7 @@ pachctl create pipeline -f ../pipe/tempAirSingle_threshold_filter/tempAirSingle_
 pachctl create pipeline -f ../pipe/tempAirSingle_directory_filter/tempAirSingle_locations.json
 pachctl create pipeline -f ../pipe/tempAirSingle_directory_filter/tempAirSingle_calibrated_data.json
 pachctl create pipeline -f ../pipe/tempAirSingle_directory_filter/tempAirSingle_calibrated_flags.json
-pachctl create pipeline -f ../pipe/tempAirSingle_directory_filter/tempAirSingle_uncertainty_fdas.json
+pachctl create pipeline -f ../pipe/tempAirSingle_directory_filter/tempAirSingle_uncertainty_data.json
 pachctl create pipeline -f ../pipe/tempAirSingle_threshold_select/tempAirSingle_threshold_select.json
 pachctl create pipeline -f ../pipe/tempAirSingle_regularized/tempAirSingle_regularized_data.json
 pachctl create pipeline -f ../pipe/tempAirSingle_threshold_regularized_group/tempAirSingle_threshold_regularized_group.json
@@ -38,7 +38,7 @@ pachctl create pipeline -f ../pipe/tempAirSingle_qaqc_specific_group/tempAirSing
 pachctl create pipeline -f ../pipe/tempAirSingle_directory_filter/tempAirSingle_uncertainty_coefficients.json
 pachctl create pipeline -f ../pipe/tempAirSingle_padded_timeseries_analyzer/tempAirSingle_padded_timeseries_analyzer.json
 pachctl create pipeline -f ../pipe/tempAirSingle_qaqc_specific/tempAirSingle_qaqc_specific.json
-pachctl create pipeline -f ../pipe/tempAirSingle_regularized/tempAirSingle_regularized_uncertainty_fdas.json
+pachctl create pipeline -f ../pipe/tempAirSingle_regularized/tempAirSingle_regularized_uncertainty_data.json
 pachctl create pipeline -f ../pipe/tempAirSingle_qaqc_plausibility/tempAirSingle_qaqc_plausibility.json
 pachctl create pipeline -f ../pipe/tempAirSingle_directory_filter/tempAirSingle_qaqc_specific_flags.json
 pachctl create pipeline -f ../pipe/tempAirSingle_directory_filter/tempAirSingle_qaqc_specific_data.json

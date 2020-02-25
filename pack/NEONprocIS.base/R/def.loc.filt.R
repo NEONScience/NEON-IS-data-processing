@@ -40,6 +40,8 @@
 #     original creation
 #   Mija Choi (2020-01-14)
 #     Added parameter validations and logging
+#   Mija Choi (2020-01-30)
+#     Added json schema validations
 ##############################################################################################
 def.loc.filt <-
   function(NameFileIn,
@@ -47,22 +49,43 @@ def.loc.filt <-
            TimeBgn,
            TimeEnd = NULL,
            log = NULL) {
+    # Initialize log if not input
     if (is.null(log)) {
       log <- NEONprocIS.base::def.log.init()
     }
-    msg <- NULL
+    #
+    # First, validate the syntax of input json to see if it is valid
+    #
+    validateJson <-
+      NEONprocIS.base::def.validate.json (NameFileIn)
+    #
+    # Second, validate the json against the schema only if the syntax is valid.
+    # Otherwise, validateJsonSchema errors out due to the syntax error
+    #
+    validateJsonSchema <- FALSE
     
-    # validate the input json to see if it is valid
-    if (!(validateJson <-
-          NEONprocIS.base::def.validate.json (NameFileIn)))
-    {
-      msg <-
-        base::paste0('              |------ input json is empty or invalid. loc.filt will not run\n')
-      log$error(msg)
-      on.exit()
+    if (validateJson == TRUE)  {
+      validateJsonSchema <-
+        NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
     }
-    
-    else
+    #
+    #if the validation fails, the function will not be executed returning status code -1
+    #
+    loc <- try(if ((validateJson == FALSE)  ||
+                   (validateJsonSchema == FALSE))
+    {
+      log$error(
+        base::paste0(
+          'In def.loc.filt::: Erred out due to the json validation failure of this file, ',
+          NameFileIn
+        )
+      )
+      stop("In def.loc.filt::::: Erred out due to the validation failure of the input JSON")
+    }, silent = FALSE)
+    #
+    # else run the code below when the input json is correct syntacically and valid against the schema
+    #
+    if ((validateJson) && (validateJsonSchema))
     {
       # If NULL, set TimeEnd to 1 second after TimeBgn
       if (base::is.null(TimeEnd)) {
@@ -299,7 +322,6 @@ def.loc.filt <-
       if (!base::is.null(NameFileOut)) {
         base::write(rjson::toJSON(loc, indent = 4), file = NameFileOut)
       }
-      
-      return(loc)
     }
+    return(loc)
   }

@@ -35,8 +35,19 @@
 #     generalized the conversion to POSIX for variables of type "timestamp-millis"
 ##############################################################################################
 def.read.avro.deve <- function(NameFile,
-                               NameLib='ravro.so'
+                               NameLib='ravro.so',
+                               log=NULL
 ){
+  # initialize logging if necessary
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
+  
+  if(base::length(NameFile) > 1){
+    NameFile <- NameFile[1]
+    log$warn(base::paste0('More than one data file was input. Using only the first: ',NameFile))
+  }
+  
   
   # Load the library
   base::dyn.load(NameLib)

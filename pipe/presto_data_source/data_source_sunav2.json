@@ -53,12 +53,12 @@
       ]
     },
     "parallelism_spec": {
-      "constant": "4"
+      "constant": "2"
     },
     "output_branch": "master",
     "resource_requests": {
       "memory": "175M",
-      "cpu": 1.0
+      "cpu": 0.1
     },
     "input": {
         "pfs": {

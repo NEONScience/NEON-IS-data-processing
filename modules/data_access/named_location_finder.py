@@ -331,3 +331,12 @@ def add_parent(cursor, named_location_id, parents):
         if type_name.lower() == 'site':  # Only include the site.
             parents.append({'id': parent_id, 'name': parent_name, 'type': type_name})
         add_parent(cursor, parent_id, parents)
+
+
+def get_site(connection, named_location_id):
+    parents = get_parents(connection, named_location_id)
+    for parent in parents:
+        if parent.get('type').lower() == 'site':
+            site_name = parent.get('name')
+            return site_name
+    return None
