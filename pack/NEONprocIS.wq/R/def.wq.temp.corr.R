@@ -31,7 +31,7 @@
 #   Kaelin Cawley (2020-01-23)
 #     original creation
 ##############################################################################################
-def.ucrt.wq.do.conc <- function(data, cal) {
+def.wq.temp.corr <- function(data, cal) {
   # Start logging, if needed
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()

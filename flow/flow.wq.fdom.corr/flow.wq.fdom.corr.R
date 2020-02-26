@@ -40,9 +40,12 @@ log <- NEONprocIS.base::def.log.init()
 
 #Read in the L0, regularized fDOM data
 
+#Sub-directories that we expect
+
+
 #Apply temperature corrections (equation 7 in the ATBD)
 #rho_fDOM comes from CVAL
-#temp data comes from PRT
+#temp data comes from PRT or EXO2 conductivity probe (need location context to decide which way to go)
 
 
 #Apply absorbance corrections (equation 6 in the ATBD)
