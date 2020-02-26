@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "exo2_data_calibration_group"
+    "name": "exofdom_data_calibration_group"
   },
   "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -26,7 +26,7 @@
           "name": "CALIBRATION_PATH",
           "repo": "calibration",
           "branch": "master",
-          "glob": "/exo2/(*)",
+          "glob": "/exofdom/(*)",
           "joinOn": "$1",
           "empty_files": true
         }
@@ -34,9 +34,9 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_exo2",
+          "repo": "data_source_exofdom",
           "branch": "master",
-          "glob": "/exo2/*/*/*/exo2_(*)_*-*-*.*",
+          "glob": "/exofdom/*/*/*/exofdom_(*)_*-*-*.*",
           "joinOn": "$1",
           "empty_files": true
         }

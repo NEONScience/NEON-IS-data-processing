@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_calibration_filter"
+    "name": "exodissolvedoxygen_calibration_filter"
   },
   "transform": {
     "cmd": ["Rscript","/flow.cal.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data"],
@@ -13,8 +13,8 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_data_calibration_group",
-      "glob": "/prt/*/*/*/"
+      "repo": "exodissolvedoxygen_data_calibration_group",
+      "glob": "/exodissolvedoxygen/*/*/*/"
     }
   },
   "parallelism_spec": {

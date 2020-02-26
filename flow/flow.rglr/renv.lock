@@ -179,19 +179,6 @@
       "Repository": "CRAN",
       "Hash": "c426258a806b7e69613432b197b9954d"
     },
-    "eddy4R.base": {
-      "Package": "eddy4R.base",
-      "Version": "0.2.20",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "eddy4R",
-      "RemoteUsername": "NEONScience",
-      "RemoteRef": "1.0.1",
-      "RemoteSha": "d77bd677cb54efe986bd8c484b990792690bbd86",
-      "RemoteSubdir": "pack/eddy4R.base",
-      "Hash": "de3121241dce6f953dee42a20b6e038a"
-    },
     "ellipsis": {
       "Package": "ellipsis",
       "Version": "0.3.0",

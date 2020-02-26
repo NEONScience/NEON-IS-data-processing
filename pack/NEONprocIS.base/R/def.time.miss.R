@@ -5,8 +5,8 @@
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description
-#' Definition function. Given overall beginning and ending times and a data frame of time ranges, 
-#' determine the time periods that are missing. 
+#' Definition function. Given overall beginning and ending times and a data frame of time ranges,
+#' determine the time periods that are missing.
 
 #' @param TimeBgn A POSIXct timestamp of the start date of interest (inclusive)
 #' @param TimeEnd A POSIXct timestamp of the end date of interest (exclusive)
@@ -40,54 +40,81 @@
 #   Cove Sturtevant (2020-02-06)
 #     original creation
 ##############################################################################################
-def.time.miss <- function(TimeBgn,TimeEnd,timeFull,log){
-  
+def.time.miss <- function(TimeBgn, TimeEnd, timeFull, log = NULL) {
   # Initialize log if not input
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
   
   # Sort the covered time ranges
-  timeFull <- timeFull[base::order(timeFull$timeBgn,decreasing=FALSE),]
+  timeFull <-
+    timeFull[base::order(timeFull$timeBgn, decreasing = FALSE), ]
   
   # Initialize
   dmmyTime <-
     base::as.POSIXct(x = numeric(0), origin = as.POSIXct('1970-01-01', tz = 'GMT'))
-  base::attr(dmmyTime,'tzone') <- base::attr(TimeBgn,'tzone')
+  base::attr(dmmyTime, 'tzone') <- base::attr(TimeBgn, 'tzone')
   timeMiss <-
-    base::data.frame(
-      timeBgn = dmmyTime,
-      timeEnd = dmmyTime,
-      stringsAsFactors = FALSE
-    )
+    base::data.frame(timeBgn = dmmyTime,
+                     timeEnd = dmmyTime,
+                     stringsAsFactors = FALSE)
   
   # Look for the entire time period being missing
-  if(base::nrow(timeFull) == 0){
-    timeMiss <- base::data.frame(timeBgn=TimeBgn,timeEnd=TimeEnd,stringsAsFactors = FALSE)
+  if (base::nrow(timeFull) == 0) {
+    timeMiss <-
+      base::data.frame(
+        timeBgn = TimeBgn,
+        timeEnd = TimeEnd,
+        stringsAsFactors = FALSE
+      )
     return(timeMiss)
-  } 
+  }
   
   # Look for gap at beginning
-  if(TimeBgn < timeFull$timeBgn[1]){
-    timeMiss <- base::rbind(timeMiss,base::data.frame(timeBgn=TimeBgn,timeEnd=timeFull$timeBgn[1],stringsAsFactors = FALSE))
+  if (TimeBgn < timeFull$timeBgn[1]) {
+    timeMiss <-
+      base::rbind(
+        timeMiss,
+        base::data.frame(
+          timeBgn = TimeBgn,
+          timeEnd = timeFull$timeBgn[1],
+          stringsAsFactors = FALSE
+        )
+      )
   }
   # Look for gap at End
-  if(TimeEnd > utils::tail(timeFull$timeEnd,n=1)){
-    timeMiss <- base::rbind(timeMiss,base::data.frame(timeBgn=utils::tail(timeFull$timeEnd,n=1),timeEnd=TimeEnd,stringsAsFactors = FALSE))
+  if (TimeEnd > utils::tail(timeFull$timeEnd, n = 1)) {
+    timeMiss <-
+      base::rbind(
+        timeMiss,
+        base::data.frame(
+          timeBgn = utils::tail(timeFull$timeEnd, n = 1),
+          timeEnd = TimeEnd,
+          stringsAsFactors = FALSE
+        )
+      )
   }
   
   # Look for gaps between rows
-  if(base::nrow(timeFull) > 1){
-    
-    for(idxRowFull in 2:nrow(timeFull)){
-      if(timeFull$timeBgn[idxRowFull] > timeFull$timeEnd[idxRowFull-1]){
-        timeMiss <- base::rbind(timeMiss,base::data.frame(timeBgn=timeFull$timeEnd[idxRowFull-1],timeEnd=timeFull$timeBgn[idxRowFull],stringsAsFactors = FALSE))
+  if (base::nrow(timeFull) > 1) {
+    for (idxRowFull in 2:nrow(timeFull)) {
+      if (timeFull$timeBgn[idxRowFull] > timeFull$timeEnd[idxRowFull - 1]) {
+        timeMiss <-
+          base::rbind(
+            timeMiss,
+            base::data.frame(
+              timeBgn = timeFull$timeEnd[idxRowFull - 1],
+              timeEnd = timeFull$timeBgn[idxRowFull],
+              stringsAsFactors = FALSE
+            )
+          )
       }
     }
   }
   
   # Sort the missing periods
-  timeMiss <- timeMiss[base::order(timeMiss$timeBgn,decreasing=FALSE),]
+  timeMiss <-
+    timeMiss[base::order(timeMiss$timeBgn, decreasing = FALSE), ]
   
   return(timeMiss)
 }

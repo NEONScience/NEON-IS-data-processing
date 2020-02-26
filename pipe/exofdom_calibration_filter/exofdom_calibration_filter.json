@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_calibration_filter"
+    "name": "exofdom_calibration_filter"
   },
   "transform": {
     "cmd": ["Rscript","/flow.cal.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data"],
@@ -13,8 +13,8 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_data_calibration_group",
-      "glob": "/prt/*/*/*/"
+      "repo": "exofdom_data_calibration_group",
+      "glob": "/exofdom/*/*/*/"
     }
   },
   "parallelism_spec": {
