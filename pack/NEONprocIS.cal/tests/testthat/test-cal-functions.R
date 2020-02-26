@@ -52,14 +52,14 @@ context("\n                       calibration conversion\n")
 # Test calibration conversion
 test_that("testing calibration conversion", {
   # Create data to calibrate
-  data <- c(1,2,3,4,5,6)
+  data <- c(1, 2, 3, 4, 5, 6)
   print(data)
   
   # Create calibration coefficients
   Name = c("CVALA1", "CVALA2", "CVALA3", "CVALA4", "CVALA5", "CVALA6")
   Value = c("1", "1", "1", "1", "1", "1")
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
-  infoCal <- list(cal=cal)
+  infoCal <- list(cal = cal)
   
   # Calibrate the data
   
@@ -72,9 +72,9 @@ test_that("testing calibration conversion", {
   print(calibrated)
   
   # Check the zeroed data and calibrated data are equal
-  testthat::expect_equal(c(6,126,1092,5460,19530,55986), calibrated)
+  testthat::expect_equal(c(6, 126, 1092, 5460, 19530, 55986), calibrated)
   
-  cat("\n       |===========================================================|\n")
+  cat("\n       |====== Positive test 1::                         ==========|\n")
   cat("\n       |------ data and cal are not empty and have valid values    |\n")
   cat("\n       |------ Calibration ran successfully!                       |\n")
   cat("\n       |===========================================================|\n")
@@ -87,11 +87,15 @@ test_that("testing calibration conversion", {
   Value <- vector(mode = "numeric", length = 0)
   
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
-  infoCal <- list(cal=cal)
-  cat("\n")
+  infoCal <- list(cal = cal)
+  #
+  cat("\n       |======= Negative test 1::                      ============|\n")
+  cat("\n       |------ cal is a list but empty                             |\n\n")
+  #
   calibrated <-
     NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = cal)
-  
+  cat("\n       |------ Calibration will not run!                           |\n")
+  cat("\n       |===========================================================|\n")
   #testthat::expect_equal(data, calibrated)
   
   ##########
@@ -103,12 +107,15 @@ test_that("testing calibration conversion", {
   Name = c("CVALA1", "CVALA2", "CVALA3", "CVALA4", "CVALA5", "CVALA6")
   Value = as.numeric(c("ab.1b", "1", "1", "0.000196", "0.0000229", "0.0067"))
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
-  infoCal <- list(cal=cal)
+  infoCal <- list(cal = cal)
   cat("\n")
   calibrated <-
     NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = infoCal)
   
-  testthat::expect_equal(data*NA, calibrated)
+  cat("\n       |======= Negative test 2::                      ============|\n")
+  cat("\n       |------ cal is a list but has invalid values, will be NA    |\n")
+  cat("\n       |------ Calibration will have NAs                           |\n")
+  cat("\n       |===========================================================|\n")
+  testthat::expect_equal(data * NA, calibrated)
   
 })
-
