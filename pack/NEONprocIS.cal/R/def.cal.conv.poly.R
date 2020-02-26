@@ -61,6 +61,11 @@ def.cal.conv.poly <- function(data = base::numeric(0),
   if (!chkNew) {
     chk <- c(chk, chkNew)
   }
+  # Check to see if infoCal is a list and not empty
+  chkList <- NEONprocIS.base::def.validate.list(infoCal, log = log)
+  if (!chkList) {
+    chk <- c(chk, chkList)
+  }
   
   # If infoCal is NULL, return NA data
   if (base::is.null(infoCal)) {
