@@ -36,7 +36,7 @@
       {
         "pfs": {
           "name": "UNCERTAINTY_DATA_PATH",
-          "repo": "tempAirSingle_regularized_uncertainty_fdas",
+          "repo": "tempAirSingle_regularized_uncertainty_data",
           "glob": "/*/*/(*)/(*)/prt/*/uncertainty_data",
           "joinOn": "$1/$2",
           "empty_files": true

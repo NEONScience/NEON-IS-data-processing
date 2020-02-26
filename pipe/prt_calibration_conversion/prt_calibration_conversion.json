@@ -3,8 +3,8 @@
     "name": "prt_calibration_conversion"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_FLAGS","TermConv=resistance","TermUcrt=resistance(R)","FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.17",
+    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_FLAGS","TermConv=resistance","TermQf=resistance","TermUcrt=resistance(R)","FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"],
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.22",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
