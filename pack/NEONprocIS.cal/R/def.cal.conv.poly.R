@@ -8,8 +8,8 @@
 #' Definition function. Apply NEON calibration polynomial function to convert raw data to calibrated data.
 
 #' @param data Numeric vector of raw measurements
-#' @param infoCal A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml. 
-#' One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients. 
+#' @param infoCal A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
+#' One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients.
 #' This data frame must include columns:\cr
 #' \code{Name} String. The name of the coefficient. Must fit regular expression CVALA[0-9]\cr
 #' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
@@ -46,7 +46,7 @@
 #     Removed uncertainty quantification (moved to separate function)
 #     Split out creation of the polynomial model object into a function
 ##############################################################################################
-def.cal.conv.poly <- function(data=base::numeric(0),
+def.cal.conv.poly <- function(data = base::numeric(0),
                               infoCal = NULL,
                               log = NULL) {
   # Intialize logging if needed
@@ -56,24 +56,26 @@ def.cal.conv.poly <- function(data=base::numeric(0),
   chk <- base::logical(0)
   
   # Check to see if data is a numeric array
-  chkNew <- NEONprocIS.base::def.validate.vector(data,TestEmpty = FALSE,log=log)
-  if (!chkNew){
-    chk <- c(chk,chkNew)
+  chkNew <-
+    NEONprocIS.base::def.validate.vector(data, TestEmpty = FALSE, log = log)
+  if (!chkNew) {
+    chk <- c(chk, chkNew)
   }
   
   # If infoCal is NULL, return NA data
-  if(base::is.null(infoCal)){
+  if (base::is.null(infoCal)) {
     log$debug('No calibration information supplied, returning NA values for converted data.')
-    dataConv <- NA*data
+    dataConv <- NA * data
     return(dataConv)
   }
-
-  if(!all(chk)){
-   on.exit() 
+  
+  if (!all(chk)) {
+    on.exit()
   }
   else {
     # Construct the polynomial calibration function
-    func <- NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal,log=log)
+    func <-
+      NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, log = log)
     
     # Convert data using the calibration function
     dataConv <- stats::predict(object = func, newdata = data)
