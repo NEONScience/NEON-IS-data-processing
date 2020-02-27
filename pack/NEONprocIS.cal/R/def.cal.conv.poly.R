@@ -69,7 +69,7 @@ def.cal.conv.poly <- function(data = base::numeric(0),
   
   # If infoCal is NULL, return NA data
   if ((is.null(infoCal)) || any (is.na(unlist((infoCal))))) {
-    log$error('No calibration information supplied, returning NA values for converted data.')
+    log$warn('No calibration information supplied, returning NA values for converted data.')
     dataConv <- NA * data
     return(dataConv)
   }
