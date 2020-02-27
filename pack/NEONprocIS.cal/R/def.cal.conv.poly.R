@@ -45,6 +45,8 @@
 #   Cove Sturtevant (2020-01-31)
 #     Removed uncertainty quantification (moved to separate function)
 #     Split out creation of the polynomial model object into a function
+#   Mija Choi (2020-02-24)
+#     Added list validations 
 ##############################################################################################
 def.cal.conv.poly <- function(data = base::numeric(0),
                               infoCal = NULL,
@@ -61,10 +63,15 @@ def.cal.conv.poly <- function(data = base::numeric(0),
   if (!chkNew) {
     chk <- c(chk, chkNew)
   }
+  # Check to see if infoCal is a list and not empty
+  chkList <- NEONprocIS.base::def.validate.list(infoCal, log = log)
+  if (!chkList) {
+    chk <- c(chk, chkList)
+  }
   
   # If infoCal is NULL, return NA data
-  if (base::is.null(infoCal)) {
-    log$debug('No calibration information supplied, returning NA values for converted data.')
+  if ((is.null(infoCal)) || any (is.na(unlist((infoCal))))) {
+    log$warn('No calibration information supplied, returning NA values for converted data.')
     dataConv <- NA * data
     return(dataConv)
   }
