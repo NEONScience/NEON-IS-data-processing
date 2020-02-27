@@ -45,6 +45,8 @@
 #   Cove Sturtevant (2020-01-31)
 #     Removed uncertainty quantification (moved to separate function)
 #     Split out creation of the polynomial model object into a function
+#   Mija Choi (2020-02-24)
+#     Added list validations 
 ##############################################################################################
 def.cal.conv.poly <- function(data = base::numeric(0),
                               infoCal = NULL,
