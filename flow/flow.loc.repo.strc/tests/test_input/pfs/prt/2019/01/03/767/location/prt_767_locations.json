@@ -1,0 +1,91 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC109344",
+                "site":"NIWO",
+                "install_date":"2018-09-24T22:35:32Z",
+                "remove_date":"2019-08-08T12:42:12Z",
+                "transaction_date":"2018-09-24T22:35:41Z",
+                "context":[
+                    "aspirated-single-169",
+                    "aspirated-single"
+                ],
+                "locations":{
+                    "type":"FeatureCollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "geometry":null,
+                            "properties":{
+                                "start_date":"2010-01-01T00:00:00Z",
+                                "end_date":null,
+                                "transaction_date":"2017-01-31T18:26:38Z",
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "gamma":                                0,
+                                "x_offset":                                5.37,
+                                "y_offset":                                2.41,
+                                "z_offset":                                0.19,
+                                "reference_location":{
+                                    "type":"Feature",
+                                    "geometry":null,
+                                    "properties":{
+                                        "name":"TOWER109340",
+                                        "locations":{
+                                            "type":"FeatureCollection",
+                                            "features":[
+                                                {
+                                                    "type":"Feature",
+                                                    "geometry":{
+                                                        "type":"Point",
+                                                        "coordinates":[
+                                                                                                                        -105.58238,
+                                                                                                                        40.054269,
+                                                                                                                        3489.988
+                                                        ]
+                                                    },
+                                                    "properties":{
+                                                        "start_date":"2010-01-01T00:00:00Z",
+                                                        "end_date":null,
+                                                        "transaction_date":"2017-01-31T18:25:13Z",
+                                                        "alpha":                                                        0,
+                                                        "beta":                                                        0,
+                                                        "gamma":                                                        0,
+                                                        "x_offset":                                                        0,
+                                                        "y_offset":                                                        0,
+                                                        "z_offset":                                                        0,
+                                                        "reference_location":{
+                                                            "type":"Feature",
+                                                            "geometry":null,
+                                                            "properties":{
+                                                                "name":"TOWER109340",
+                                                                "locations":null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "Required Asset Management Location ID":            10835,
+            "Required Asset Management Location Code":"CFGLOC109344",
+            "HOR":"000",
+            "VER":"010",
+            "TMI":"000",
+            "Data Rate":"1"
+        }
+    ],
+    "source_type":"prt",
+    "source_id":    767,
+    "document_generated_date":"2020-02-27T00:00:52Z"
+}
