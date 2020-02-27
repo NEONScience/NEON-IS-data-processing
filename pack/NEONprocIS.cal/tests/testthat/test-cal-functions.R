@@ -108,14 +108,15 @@ test_that("testing calibration conversion", {
   Value = as.numeric(c("ab.1b", "1", "1", "0.000196", "0.0000229", "0.0067"))
   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
   infoCal <- list(cal = cal)
-  cat("\n")
+  
+  cat("\n       |======= Negative test 2::                      ============|\n")
+  cat("\n       |------ cal is a list but has invalid values, converted to NA|\n\n")
+  
   calibrated <-
     NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = infoCal)
   
-  cat("\n       |======= Negative test 2::                      ============|\n")
-  cat("\n       |------ cal is a list but has invalid values, will be NA    |\n")
-  cat("\n       |------ Calibration will have NAs                           |\n")
-  cat("\n       |===========================================================|\n")
   testthat::expect_equal(data * NA, calibrated)
   
+  cat("\n       |------ Calibration will have NAs                           |\n")
+  cat("\n       |===========================================================|\n")
 })
