@@ -1,9 +1,9 @@
 {
   "pipeline": {
-    "name": "sunav2_merge_data_by_location"
+    "name": "exo2_merge_data_by_location"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.loc.data.trnc.comb.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCombData=data","DirSubCopy=location|calibration"],
+    "cmd": ["Rscript","/flow.loc.data.trnc.comb.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCombData=data|flags|uncertainty_data","DirSubCopy=location"],
     "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.13",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
@@ -13,8 +13,8 @@
   "input": {
       "pfs": {
         "name": "DIR_IN",
-        "repo": "sunav2_structure_repo_by_location",
-        "glob": "/sunav2/*/*/*/"
+        "repo": "exo2_structure_repo_by_location",
+        "glob": "/exo2/*/*/*/"
       }
   },
   "enable_stats": false,
