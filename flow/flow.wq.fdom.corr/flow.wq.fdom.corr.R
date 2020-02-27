@@ -144,6 +144,8 @@ if(!is.null(fdom_tempFactor) & !is.null(fdom_absFactor)){
 }
 
 
+#Create the uncertainty data and read in other unceratinty to output the final combined uncertainty
+
 #Maybe we should have two functions and one flow that calls them rather than a big old flow
 #What is the overhead associated with multiple functions versus one larger function?
 #It is harder for other to read/work with larger functions?
