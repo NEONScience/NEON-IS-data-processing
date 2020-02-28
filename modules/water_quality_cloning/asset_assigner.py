@@ -139,13 +139,13 @@ def assign_assets(connection, named_location_id, cloned_locations):
                 connection.commit()
             # The location is now assigned to a sensor type, assign any measurement streams of the same
             # type currently assigned to the old location to the new cloned location.
-            assign_measurement_streams(connection, named_location_id, cloned_location_id, sensor_type)
+            assign_measurement_streams(connection, named_location_id, sensor_type, cloned_location_id)
 
 
 def get_clone_location_index(sensor_type):
     """
     Ensure all sensors of the same type are assigned to the same cloned named location.
-    :param sensor_type: A type the sensor.
+    :param sensor_type: A type of sensor.
     :return: The index number for the sensor type.
     """
     switcher = {
@@ -161,10 +161,30 @@ def get_clone_location_index(sensor_type):
     return index
 
 
+def get_field_names(sensor_type):
+    """
+    Get all the schema field names for a sensor type.
+    :param sensor_type: A type of sensor.
+    :return: The field names for the sensor type.
+    """
+    switcher = {
+        'exo2': ['sensorDepth', 'sondeSurfaceWaterPressure', 'wiperPosition', 'batteryVoltage', 'sensorVoltage'],
+        'exoconductivity': ['conductance', 'specificConductance', 'surfaceWaterTemperature'],
+        'exodissolvedoxygen': ['dissolvedOxygenSaturation', 'dissolvedOxygen'],
+        'exoturbidity': ['turbidityRaw', 'turbidity'],
+        'exophorp': ['pH', 'pHvoltage'],
+        'exototalalgae': ['blueGreenAlgaeRaw', 'blueGreenAlgaePhycocyanin', 'chlorophyllRaw', 'chlorophyll'],
+        'exofdom': ['fDOMRaw', 'fDOM']
+    }
+    index = switcher.get(sensor_type, "Invalid sensor type.")
+    return index
+
+
 def assign_measurement_streams(connection, named_location_id, cloned_location_id, sensor_type):
     """
     Reassign a measurement stream from the named_location_id to the cloned_location_id if the
-    measurement stream schema field name (associated by the term name) matches the cloned named location sensor type.
+    measurement stream schema field name (associated by the term name) matches the cloned
+    named location sensor type.
     :param connection: A database connection.
     :param named_location_id:
     :param cloned_location_id:
@@ -174,8 +194,10 @@ def assign_measurement_streams(connection, named_location_id, cloned_location_id
     print(f'assigning measurement streams')
     streams = measurement_stream_assigner.get_streams(connection, named_location_id)
     for stream in streams:
-        schema_field_name = stream.get('field')
-        print(f'field name: {schema_field_name} sensor type {sensor_type}')
-        if schema_field_name == sensor_type and sensor_type != 'prt':
-            measurement_stream_id = stream.get('stream_id')
-            measurement_stream_assigner.reassign_stream(connection, measurement_stream_id, cloned_location_id)
+        if sensor_type != 'prt':
+            sensor_field_names = get_field_names(sensor_type)
+            stream_field_name = stream.get('field')
+            print(f'stream field name: {stream_field_name} sensor type {sensor_type}')
+            if stream_field_name in sensor_field_names:
+                measurement_stream_id = stream.get('stream_id')
+                measurement_stream_assigner.reassign_stream(connection, measurement_stream_id, cloned_location_id)

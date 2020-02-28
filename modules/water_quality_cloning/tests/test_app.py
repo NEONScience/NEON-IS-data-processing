@@ -54,6 +54,7 @@ class AppTest(unittest.TestCase):
         self.assertTrue(description == 'Oksrukuyik Creek Water Chemistry and Temperature S2')
         self.assertTrue(type_id == 32)
 
+    @unittest.skip('Fails if already loaded in the database.')
     def test_save_clone(self):
 
         source_key = 156303
@@ -103,6 +104,11 @@ class AppTest(unittest.TestCase):
     def test_asset_assigner_sensor_type_index(self):
         index = asset_assigner.get_clone_location_index('exo2')
         self.assertTrue(index == 0)
+
+    def test_get_field_names(self):
+        field_names = asset_assigner.get_field_names('exofdom')
+        expected = ['fDOMRaw', 'fDOM']
+        self.assertTrue(field_names == expected)
 
     def test_location_tree_assign_parent(self):
         named_location_id = 156303

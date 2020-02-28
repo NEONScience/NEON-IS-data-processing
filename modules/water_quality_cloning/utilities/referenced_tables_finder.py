@@ -1,17 +1,17 @@
 from contextlib import closing
 
 
-def show_referenced_tables(db_connection):
+def show_referenced_tables(connection):
     """
     Get all the tables connected to 'nam_locn'
-    :param db_connection:
+    :param connection: A database connection.
     :return:
     """
     sql = '''
         select * from all_constraints where r_constraint_name in
                 (select constraint_name from all_constraints where table_name='NAM_LOCN')
         '''
-    with closing(db_connection.cursor()) as cursor:
+    with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
         rows = cursor.execute(None)
         for row in rows:
