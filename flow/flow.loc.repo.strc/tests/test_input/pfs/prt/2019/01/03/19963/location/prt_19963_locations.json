@@ -1,0 +1,83 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC108440",
+                "site":"HARV",
+                "install_date":"2017-02-07T00:17:20Z",
+                "remove_date":null,
+                "transaction_date":"2017-02-07T00:17:28Z",
+                "context":[
+                    "soil"
+                ],
+                "locations":{
+                    "type":"FeatureCollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "geometry":null,
+                            "properties":{
+                                "start_date":"2010-01-01T00:00:00Z",
+                                "end_date":null,
+                                "transaction_date":"2017-01-17T21:16:05Z",
+                                "alpha":                                1.8,
+                                "beta":                                0,
+                                "gamma":                                205,
+                                "x_offset":                                0.533,
+                                "y_offset":                                2.41,
+                                "z_offset":                                -0.02,
+                                "reference_location":{
+                                    "type":"Feature",
+                                    "geometry":null,
+                                    "properties":{
+                                        "name":"SOILPL100441",
+                                        "locations":{
+                                            "type":"FeatureCollection",
+                                            "features":[
+                                                {
+                                                    "type":"Feature",
+                                                    "geometry":null,
+                                                    "properties":{
+                                                        "start_date":"2010-01-01T00:00:00Z",
+                                                        "end_date":null,
+                                                        "transaction_date":"2014-10-02T15:22:57Z",
+                                                        "alpha":                                                        0,
+                                                        "beta":                                                        0,
+                                                        "gamma":                                                        0,
+                                                        "x_offset":                                                        0,
+                                                        "y_offset":                                                        0,
+                                                        "z_offset":                                                        0,
+                                                        "reference_location":{
+                                                            "type":"Feature",
+                                                            "geometry":null,
+                                                            "properties":{
+                                                                "name":"SOILPL100441",
+                                                                "locations":null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "Required Asset Management Location ID":            9915,
+            "Required Asset Management Location Code":"CFGLOC108440",
+            "HOR":"005",
+            "VER":"501",
+            "TMI":"000",
+            "Data Rate":"0.1"
+        }
+    ],
+    "source_type":"prt",
+    "source_id":    19963,
+    "document_generated_date":"2020-02-25T19:22:18Z"
+}
