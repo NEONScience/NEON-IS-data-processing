@@ -139,7 +139,7 @@ def assign_assets(connection, named_location_id, cloned_locations):
                 connection.commit()
             # The location is now assigned to a sensor type, assign any measurement streams of the same
             # type currently assigned to the old location to the new cloned location.
-            assign_measurement_streams(connection, named_location_id, sensor_type, cloned_location_id)
+            assign_measurement_streams(connection, named_location_id, cloned_location_id, sensor_type)
 
 
 def get_clone_location_index(sensor_type):
