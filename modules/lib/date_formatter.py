@@ -17,4 +17,7 @@ def parse(date_time):
     Return a datetime from an ISO standard string.
     :param date_time A string date time.
     """
-    return datetime.strptime(date_time, '%Y-%m-%dT%H:%M:%SZ')
+    if date_time is not None:
+        return datetime.strptime(date_time, '%Y-%m-%dT%H:%M:%SZ')
+    else:
+        return date_time

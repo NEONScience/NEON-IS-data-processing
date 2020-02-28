@@ -94,7 +94,6 @@ def main():
     log_level = env('LOG_LEVEL')
     window_size = env('WINDOW_SIZE')
     log_config.configure(log_level)
-    log = get_logger()
     log.debug(f'data_dir: {data_path}')
     log.debug(f'out_dir: {out_path}')
 
@@ -107,9 +106,9 @@ def main():
 
     args = parser.parse_args()
 
-    padder = ConstantPadder(data_path, out_path, int(args.yearindex), int(args.monthindex),
-                            int(args.dayindex), int(args.locindex), int(args.subdirindex), window_size)
-    padder.pad()
+    cp = ConstantPadder(data_path, out_path, int(args.yearindex), int(args.monthindex),
+                        int(args.dayindex), int(args.locindex), int(args.subdirindex), window_size)
+    cp.pad()
 
 
 if __name__ == '__main__':
