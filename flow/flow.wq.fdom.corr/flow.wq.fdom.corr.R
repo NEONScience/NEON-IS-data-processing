@@ -1,6 +1,14 @@
+
 ###### For Testing Only ######
+calFile <- NEONprocIS.cal::def.read.cal.xml(NameFile = "/scratch/pfs/waterQuality_fdom_correction_group_test/2019/01/01/water-quality-001/sunav2/CFGLOC23456/calibration/rawNitrateSingleCompressedStream/30000000005365_WO33177_170813.xml",
+                                            Vrbs = TRUE)
+calFileTestTrue <- NEONprocIS.cal::def.read.cal.xml(NameFile = "/scratch/pfs/waterQuality_fdom_correction_group_test/2019/01/01/water-quality-001/exofdom/CFGLOC12345/calibration/fDOM/30000000016628_WO38587_197624.xml",
+                                                Vrbs = FALSE)
+calFileTestTrue$cal$Value[calFileTestTrue$cal$Name == "CVALA1"]
+
 
 ##############################
+
 ##############################################################################################
 #' @title Workflow for correcting fDOM for temperature and absorbance
 
@@ -61,70 +69,40 @@
 # Start logging
 log <- NEONprocIS.base::def.log.init()
 
-# Pull in command line arguments (parameters)
-arg <- base::commandArgs(trailingOnly=TRUE)
+#For testing
+repo <- "/scratch/pfs/waterQuality_fdom_correction_group_test/2019/01/01/water-quality-001/"
 
-# Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut"),
-                                      NameParaOptn=c("FileSchmData","FileSchmQf"),
-                                      log=log)
-# Retrieve datum path. 
-DirBgn <- Para$DirIn # Input directory. 
-log$debug(base::paste0('Input directory: ',DirBgn))
+dataNameSUNA <- "sunav2/CFGLOC23456/data/sunav2_17300_2019-01-01.avro"
+dataNamefDOM <- "exofdom/CFGLOC12345/data/exofdom_45831_2019-01-01.avro"
+dataNameCond <- "exoconductivity/CFGLOC12345/data/exoconductivity_43601_2019-01-01.avro"
+dataNameprt <- "prt/CFGLOC101580/data/prt_CFGLOC101580_2019-01-01.avro"
 
-# Retrieve base output path
-DirOut <- Para$DirOut
-log$debug(base::paste0('Output directory: ',DirOut))
+calNameSUNA <- "sunav2/CFGLOC23456/calibration/rawNitrateSingleCompressedStream/30000000005365_WO33177_170813.xml"
+calNamefDOM <- "exofdom/CFGLOC12345/calibration/fDOM/30000000023496_WO31715_162037.xml"
 
-# Retrieve output schema for data
-FileSchmDataOut <- Para$FileSchmData
-log$debug(base::paste0('Output schema for data: ',base::paste0(FileSchmDataOut,collapse=',')))
+# String constants for CVAL files
+rhoNamefDOM <- "CVALA1"
+pathNamefDOM <- "CVALB1"
+calTableNameSUNA <- "CVALTABLEA1"
 
-# Read in the schema 
-if(base::is.null(FileSchmDataOut) || FileSchmDataOut == 'NA'){
-  SchmDataOut <- NA
-} else {
-  SchmDataOut <- base::paste0(base::readLines(FileSchmDataOut),collapse='')
-}
+#Read in fDOM data
+fdomData <- NEONprocIS.base::def.read.avro.deve(NameFile = paste0(repo,dataNamefDOM),
+                                                NameLib = "/home/NEON/kcawley/NEON-IS-data-processing/pack/NEONprocIS.base/ravro.so")
+#Try to pull prt data if we're at a stream site
 
-# Retrieve output schema for flags
-FileSchmQfOut <- Para$FileSchmQf
-log$debug(base::paste0('Output schema for flags: ',base::paste0(FileSchmQfOut,collapse=',')))
+#If there isn't any prt data or we're at a buoy site (or should this just be whatever reason and we don't even need to pull NL info?), use temp on conductivity probe
+tempData <- NEONprocIS.base::def.read.avro.deve(NameFile = paste0(repo,dataNameCond),
+                                                NameLib = "/home/NEON/kcawley/NEON-IS-data-processing/pack/NEONprocIS.base/ravro.so")
 
-# Read in the schema 
-if(base::is.null(FileSchmQfOut) || FileSchmQfOut == 'NA'){
-  SchmQfOut <- NULL
-} else {
-  SchmQfOut <- base::paste0(base::readLines(FileSchmQfOut),collapse='')
-}
+#Pull rho_fDOM and pathlength from the appropriate cal file (use def.cal.meta.R and def.cal.slct.R to make that happen)
+calFilefDOM <- NEONprocIS.cal::def.read.cal.xml(NameFile = paste0(repo,calNamefDOM),Vrbs = FALSE)
+rho_fDOM <- as.numeric(calFilefDOM$cal$Value[gsub(" ","",calFilefDOM$cal$Name) == rhoNamefDOM])
+pathlength <- as.numeric(calFilefDOM$cal$Value[gsub(" ","",calFilefDOM$cal$Name) == pathNamefDOM])
 
-# Retrieve optional subdirectories to copy over
-DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'data'))
-log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
-
-# What are the expected subdirectories of each input path
-nameDirSub <- base::as.list(base::unique(c(DirSubCopy,'data','threshold')))
-log$debug(base::paste0('Expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
-
-# Find all the input paths (datums). We will process each one.
-DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub,log=log)
-
-#Read in the L0, regularized fDOM data
-file.exists("/scratch/pfs/avro_schemas/dp0p")
-test <- NEONprocIS.base::def.read.avro.deve(NameFile = "/scratch/pfs/data_source/prt/3119/2019/01/01/3119.avro",
-                                            NameLib = "/home/NEON/kcawley/NEON-IS-data-processing/pack/NEONprocIS.base/ravro.so")
-
-#Sub-directories that we expect
-
-#Apply temperature corrections (equation 7 in the ATBD)
-#rho_fdom comes from CVAL
-#temp data comes from PRT or EXO2 conductivity probe (need location context to decide which way to go)
-
+#Determine fDOM temperature correction factor
 fdom_tempFactor <- 1/(1-rho_fdom*(temp-20))
 
-#Apply absorbance corrections (equation 6 in the ATBD)
-#pathlength comes from CVAL
-#Absorbance comes from SUNA cal table and SUNA L0 data
+#Determine fDOM absorbance correction factor
 
 fdom_absFactor <- 10^((Abs_ex + Abs_em) * pathlength)
 
@@ -141,6 +119,7 @@ if(!is.null(fdom_tempFactor) & !is.null(fdom_absFactor)){
 }else{
   fdom_out <- fdom_out
   #Create all the flags
+  
 }
 
 
