@@ -4,7 +4,7 @@
 \alias{def.time.miss}
 \title{Determine missing time periods}
 \usage{
-def.time.miss(TimeBgn, TimeEnd, timeFull, log)
+def.time.miss(TimeBgn, TimeEnd, timeFull, log = NULL)
 }
 \arguments{
 \item{TimeBgn}{A POSIXct timestamp of the start date of interest (inclusive)}
@@ -24,7 +24,7 @@ A data frame of missing time ranges:\cr
 \code{timeEnd} POSIXct. The end date-time (exclusive) of the missing time range \cr
 }
 \description{
-Definition function. Given overall beginning and ending times and a data frame of time ranges, 
+Definition function. Given overall beginning and ending times and a data frame of time ranges,
 determine the time periods that are missing.
 }
 \examples{
