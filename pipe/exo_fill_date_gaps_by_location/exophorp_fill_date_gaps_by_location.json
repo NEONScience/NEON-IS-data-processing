@@ -26,7 +26,7 @@
           "pfs": {
             "name": "FILE_SCHEMA_DATA",
             "repo": "avro_schemas",
-            "glob": "/dp0p/exophorp.avsc"
+            "glob": "/dp0/exophorp.avsc"
           }
         },
         {

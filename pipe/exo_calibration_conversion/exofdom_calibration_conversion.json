@@ -3,7 +3,7 @@
     "name": "exofdom_calibration_conversion"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$FILE_SCHEMA_FLAGS","TermUcrt=fDOM","TermQf=fDOM"],
+    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_FLAGS","TermUcrt=fDOM","TermQf=fDOM","DirSubCopy=calibration"],
     "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.22",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
@@ -20,11 +20,22 @@
         }
       },
       {
-        "pfs": {
-        "name": "FILE_SCHEMA_FLAGS",
-        "repo": "avro_schemas",
-        "glob": "/dp0p/flags_calibration_exofdom.avsc"
-      }
+        "cross": [
+          {
+            "pfs": {
+            "name": "FILE_SCHEMA_DATA",
+            "repo": "avro_schemas",
+            "glob": "/dp0p/exofdom_calibrated.avsc"
+            }
+          },
+          {
+            "pfs": {
+            "name": "FILE_SCHEMA_FLAGS",
+            "repo": "avro_schemas",
+            "glob": "/dp0p/flags_calibration_exofdom.avsc"
+          }
+          }
+        ]
       }
     ]
   },
