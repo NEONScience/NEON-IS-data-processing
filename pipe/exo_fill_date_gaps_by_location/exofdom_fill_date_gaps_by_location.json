@@ -26,7 +26,7 @@
           "pfs": {
             "name": "FILE_SCHEMA_DATA",
             "repo": "avro_schemas",
-            "glob": "/dp0p/exofdom.avsc"
+            "glob": "/dp0/exofdom.avsc"
           }
         },
         {
