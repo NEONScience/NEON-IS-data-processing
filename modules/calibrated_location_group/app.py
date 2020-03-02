@@ -22,16 +22,16 @@ def group(calibrated_path, location_path, out_path):
         day = parts[6]
         source_id = parts[7]
         data_type = parts[8]
-        filename = parts[9]
         log.debug(f'source type: {source_type} source_id: {source_id} data type: {data_type}')
         log.debug(f'year: {year}  month: {month}  day: {day}')
-        log.debug(f'filename: {filename}')
         target_root = os.path.join(out_path, source_type, year, month, day, source_id)
         if i == 0:  # Only link location once.
             link_location(location_path, target_root)
-        target = os.path.join(target_root, data_type, filename)
+        # Grab all directories and files under the common path (after the data type).
+        target = os.path.join(target_root, data_type, *parts[8+1: len(parts)])
+        print(f'target: {target}')
         file_linker.link(file_path, target)
-        i = i + 1
+        i += 1
 
 
 def link_location(location_path, target_root):

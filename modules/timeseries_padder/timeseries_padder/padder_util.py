@@ -37,9 +37,13 @@ def get_dates_in_padded_range(date, pad_size):
     """
     pad_in_days = math.ceil(pad_size)
     padded_range = [date]
-    for day in range(1, pad_in_days + 1):
-        padded_range.append(date - datetime.timedelta(days=day))
-        padded_range.append(date + datetime.timedelta(days=day))
+    if pad_size < 0:  # pad size is negative, only go backward in time by the number of days.
+        for day in range(1, abs(pad_in_days) + 1):
+            padded_range.append(date - datetime.timedelta(days=day))
+    else:  # pad size is positive, go backward and forward in time by the number of days.
+        for day in range(1, pad_in_days + 1):
+            padded_range.append(date - datetime.timedelta(days=day))
+            padded_range.append(date + datetime.timedelta(days=day))
     return sorted(padded_range)
 
 
