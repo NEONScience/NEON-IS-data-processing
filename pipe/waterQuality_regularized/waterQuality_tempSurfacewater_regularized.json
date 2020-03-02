@@ -1,0 +1,29 @@
+{
+  "pipeline": {
+    "name": "waterQuality_tempSurfacewater_regularized"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=data|flags|uncertainty_data","FileSchmRglr=NA", "FreqRglr=1/60","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin","DirSubCopy=uncertainty_coef|location"],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.15",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+      "pfs": {
+        "name": "DIR_IN",
+        "repo": "tempSurfacewater_context_group",
+        "glob": "/*/*/*/"
+      }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}
