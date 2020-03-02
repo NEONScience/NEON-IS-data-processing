@@ -50,13 +50,25 @@ def.dir.copy.symb <- function(DirSrc,DirDest,log=NULL){
     base::stop()
   }
 
-  rptDir <- base::suppressWarnings(base::lapply(DirDest,base::dir.create,recursive=TRUE)) # Create the destination directories
-  cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
-  rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
-
-  if(rptCopy == 0){
-    log$info(base::paste0('Unmodified ',base::paste0(DirSrc,collapse=','), ' copied to ',DirDest))
+  # Check that the source directories exist. Remove those that don't
+  exstDirSrc <- base::unlist(base::lapply(DirSrc,base::dir.exists))
+  if(!base::all(exstDirSrc)){
+    log$warn(base::paste0("The following source directories do not exist and will not be symbolically linked: ",
+                          base::paste0(DirSrc[!exstDirSrc],collapse=',')))
+    DirSrc <- DirSrc[exstDirSrc]
+    
+    if(numDirDest > 1){
+      DirDest <- DirDest[exstDirSrc]
+    }
   }
   
+  # Set up the command to copy
+  cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
+  
+  # perform symbolic link
+  rptDir <- base::suppressWarnings(base::lapply(DirDest,base::dir.create,recursive=TRUE)) # Create the destination directories
+  rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
+  log$info(base::paste0('Unmodified ',base::paste0(DirSrc,collapse=','), ' copied to ',DirDest))
+
   
 }

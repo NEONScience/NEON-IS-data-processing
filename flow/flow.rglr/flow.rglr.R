@@ -297,10 +297,10 @@ log$debug(base::paste0(
 # Determine expected subdirectories of each input path
 if (expcLoc) {
   # At least one regularization frequency will be obtained from the location file
-  nameDirSub <- base::as.list(c(DirSubCopy, Para$DirRglr, 'location'))
+  nameDirSub <- base::as.list(c(Para$DirRglr, 'location'))
 } else {
   # No location directory needed
-  nameDirSub <- base::as.list(c(DirSubCopy, Para$DirRglr))
+  nameDirSub <- base::as.list(c(Para$DirRglr))
 }
 log$debug(base::paste0(
   'Expected subdirectories of each datum path: ',
