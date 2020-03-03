@@ -239,39 +239,6 @@ calibration_filter<- function(DirIn,
   # Start logging
   log <- NEONprocIS.base::def.log.init()
   
-  # Pull in command line arguments (parameters)
-  arg <- base::commandArgs(trailingOnly = TRUE)
-  
-  Para <-
-    NEONprocIS.base::def.arg.pars(
-      arg = arg,
-      NameParaReqd = c("DirIn", "DirOut"),
-      NameParaOptn = c(
-        "FileSchmData",
-        "FileSchmQf",
-        "TermConv",
-        "FuncConv",
-        "NumDayExpiMax",
-        "TermQf",
-        "TermUcrt",
-        "FuncUcrt",
-        "FileUcrtFdas",
-        "DirSubCopy"
-      ),
-      ValuParaOptn = base::list(
-        TermConv = NULL,
-        FuncConv = "def.cal.conv.poly",
-        TermQf = NULL,
-        TermUcrt = NULL,
-        FuncUcrt = "def.ucrt.meas",
-        NumDayExpiMax =
-          NA
-      ),
-      TypePara = base::list(NumDayExpiMax =
-                              'numeric'),
-      log = log
-    )
-  
   # Echo arguments
   log$debug(base::paste0('Input directory: ', DirIn))
   log$debug(base::paste0('Output directory: ', DirOut))
