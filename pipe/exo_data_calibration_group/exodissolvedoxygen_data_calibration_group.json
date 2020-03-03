@@ -4,7 +4,7 @@
   },
   "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-      "image": "quay.io/battelleecology/data_calibration_group:16",
+      "image": "quay.io/battelleecology/data_calibration_group:19",
       "cmd": [ "/bin/bash" ],
       "stdin": [ "#!/bin/bash", "python3 -m data_calibration_group.app" ],
       "env": {
@@ -13,21 +13,20 @@
       }
   },
   "parallelism_spec": {
-    "constant": "1"
+    "constant": "4"
   },
   "output_branch": "master",
   "resource_requests": {
     "memory": "64M"
   },
   "input": {
-    "join": [
+    "cross": [
       {
         "pfs": {
           "name": "CALIBRATION_PATH",
           "repo": "calibration",
           "branch": "master",
-          "glob": "/exodissolvedoxygen/(*)",
-          "joinOn": "$1",
+          "glob": "/exodissolvedoxygen/*",
           "empty_files": true
         }
       },
@@ -36,8 +35,7 @@
           "name": "DATA_PATH",
           "repo": "data_source_exodissolvedoxygen",
           "branch": "master",
-          "glob": "/exodissolvedoxygen/*/*/*/exodissolvedoxygen_(*)_*-*-*.*",
-          "joinOn": "$1",
+          "glob": "/exodissolvedoxygen/*",
           "empty_files": true
         }
       }

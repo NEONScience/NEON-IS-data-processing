@@ -37,6 +37,10 @@ class TestPadderUtil(unittest.TestCase):
         expected_date_range = [datetime.date(2018, 6, 14), datetime.date(2018, 6, 15)]
         date_range = padder_util.get_dates_in_padded_range(datetime.date(2018, 6, 15), -1)
         self.assertEqual(expected_date_range, date_range)
+        # test 1 for day on either side
+        expected_date_range = [datetime.date(2018, 6, 14), datetime.date(2018, 6, 15), datetime.date(2018, 6, 16)]
+        date_range = padder_util.get_dates_in_padded_range(datetime.date(2018, 6, 15), 1)
+        self.assertEqual(expected_date_range, date_range)
 
 
 if __name__ == '__main__':
