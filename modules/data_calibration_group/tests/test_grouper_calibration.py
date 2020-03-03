@@ -7,7 +7,7 @@ import data_calibration_group.grouper as grouper
 from lib import log_config as log_config
 
 
-class AppTest(TestCase):
+class GrouperCalibrationTest(TestCase):
 
     def setUp(self):
 
