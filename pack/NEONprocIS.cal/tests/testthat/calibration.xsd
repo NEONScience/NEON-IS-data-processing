@@ -59,7 +59,7 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="CalibrationCoefficient">
+              <xs:element name="CalibrationCoefficient"  maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element type="xs:string" name="Name"/>
