@@ -49,7 +49,7 @@ def.validate.json.schema <-
     #
     # TRUE if jsonIn is a valid JSON against the schema. FALSE if invalid or error
     #
-    log$info(
+    log$debug(
       base::paste0(
         'Validate.json.schema:  Checking to see if the JSON conforms to the schema.'
       )
