@@ -10,8 +10,8 @@ def.cal.conv.poly(data = base::numeric(0), infoCal = NULL,
 \arguments{
 \item{data}{Numeric vector of raw measurements}
 
-\item{infoCal}{A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml. 
-One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients. 
+\item{infoCal}{A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
+One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients.
 This data frame must include columns:\cr
 \code{Name} String. The name of the coefficient. Must fit regular expression CVALA[0-9]\cr
 \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr

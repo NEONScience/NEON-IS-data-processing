@@ -36,25 +36,34 @@
 ##############################################################################################
 def.read.cal.xml <- function(NameFile,Vrbs=TRUE){
   
+  
+  # --- Mija -> this fails - prob because calibration.xsd in not in the working directory when used outside the Github repository
   # Input XML is valid agains the schema
   # Use the xml schema generated
   #
-  xsd1 = "calibration.xsd"
-  xmlchk <-
-    try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),
-        silent = TRUE)
+  # xsd1 = "calibration.xsd"
+  # xmlchk <-
+  #   try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),
+  #       silent = TRUE)
+  # 
+  # if (xmlchk != TRUE) {
+  #   base::stop(
+  #     base::paste0(
+  #       " ====== def.read.cal.xml will not run due to the error in xml,  ",
+  #       NameFile
+  #     )
+  #   )
+  # }
   
-  if (!xmlchk) {
-    base::stop(
-      base::paste0(
-        " ====== def.read.cal.xml will not run due to the error in xml,  ",
-        NameFile
-      )
-    )
+  # Read contents of xml file 
+  xml <- try(XML::xmlParse(NameFile),silent=TRUE) 
+  if(class(xml)[1] == "try-error") {
+    base::stop(base::paste0("Calibration XML file: ",NameFile," does not exist or is unreadable"))
   }
   
   # XML file as a list
-  listXml <- XML::xmlToList(NameFile)
+  #listXml <- XML::xmlToList(NameFile)
+  listXml <- XML::xmlToList(xml)
   
   # Grab valid date range
   timeVali <- base::lapply(listXml$ValidTimeRange,as.POSIXct,format='%Y-%m-%dT%H:%M:%OS',tz="GMT")
