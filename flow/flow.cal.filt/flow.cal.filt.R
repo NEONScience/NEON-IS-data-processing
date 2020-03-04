@@ -29,6 +29,10 @@
 #'    /calibration/soilPRTResistance
 #'    /calibration/heaterVoltage
 #'
+#' Note that the data directory is required, but the calibration folder may be missing (in the event that there are
+#' no calibrations for the sensor). In this case the output structure will be created and any directories in 
+#' argument DirSubCopy will be copied through.  
+#' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn.
 #'
 #' 3. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at the same level as the
@@ -70,6 +74,8 @@
 #     added arguments for output directory and optional copying of additional subdirectories
 #   Cove Sturtevant (2020-02-10)
 #     pulled out major code functionality into functions
+#   Cove Sturtevant (2020-03-02)
+#     accept data repositories without a calibration folder. Search only for data folder to identify datums.
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -102,7 +108,10 @@ log$debug(base::paste0(
 ))
 
 # What are the expected subdirectories of each input path
-nameDirSub <- base::as.list(c('calibration', DirSubCopy))
+# It's possible that calibration folder will not exist if the
+# sensor has no calibrations. This is okay, as the calibration
+# conversion module handles this accordingly
+nameDirSub <- base::as.list(base::unique(c('data', DirSubCopy)))
 log$debug(base::paste0(
   'Expected subdirectories of each datum path: ',
   base::paste0(nameDirSub, collapse = ',')

@@ -220,6 +220,8 @@
 #     add suspect calibration flag
 #   Cove Sturtevant (2020-02-25)
 #     implement selection of which terms to supply calibration flags for
+#   Cove Sturtevant (2020-03-03)
+#     accept data repositories without a calibration folder and handle accordingly
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -413,7 +415,10 @@ log$debug(base::paste0(
 ))
 
 # What are the expected subdirectories of each input path
-nameDirSub <- base::as.list(c('data', 'calibration', DirSubCopy))
+# It's possible that calibration folder will not exist if the
+# sensor has no calibrations. This is okay, as the flags and
+# conversion handle this.
+nameDirSub <- base::as.list(c('data', DirSubCopy))
 log$debug(base::paste0(
   'Expected subdirectories of each datum path: ',
   base::paste0(nameDirSub, collapse = ',')
@@ -439,7 +444,7 @@ for (idxDirIn in DirIn) {
   NumDayExpiMax <-
     NEONprocIS.base::def.vect.pars.pair(
       vect = Para$NumDayExpiMax,
-      KeyExpc = varCal,
+      KeyExpc = base::unique(c(Para$TermConv,Para$TermQf,ParaUcrt$var)),
       ValuDflt = NA,
       NameCol = c('var', 'NumDayExpiMax'),
       Type = c('character', 'numeric'),
@@ -494,6 +499,7 @@ for (idxDirIn in DirIn) {
   # --------- Load the data ----------
   # Load in data file in AVRO format into data frame 'data'. Grab the first file only, since there should only be one.
   # Note, this AVRO reader is a developmental version.
+  fileData <- fileData[1]
   data  <-
     base::try(NEONprocIS.base::def.read.avro.deve(
       NameFile = base::paste0(idxDirData, '/', fileData),
@@ -501,7 +507,6 @@ for (idxDirIn in DirIn) {
       log = log
     ),
     silent = FALSE)
-  fileData <- fileData[1]
   if (base::class(data) == 'try-error') {
     # Generate error and stop execution
     log$error(base::paste0('File ', idxDirData, '/', fileData, ' is unreadable.'))
@@ -595,30 +600,32 @@ for (idxDirIn in DirIn) {
   # Simplify & make pretty the uncertainty information
   ucrtCoef <-
     base::Reduce(f = base::rbind, x = ucrtCoef) # merge uncertainty coefs for all terms
-  ucrtCoef$timeBgn <-
-    base::format(ucrtCoef$timeBgn, format = '%Y-%m-%dT%H:%M:%OSZ') # Convert POSIX to character
-  ucrtCoef$timeEnd <-
-    base::format(ucrtCoef$timeEnd, format = '%Y-%m-%dT%H:%M:%OSZ')
-  ucrtCoef <-
-    ucrtCoef[c('id',
-               'var',
-               'timeBgn',
-               'timeEnd',
-               'expi',
-               'Name',
-               'Value',
-               '.attrs')] # reorganize columns
-  base::names(ucrtCoef) <-
-    c(
-      'calibration_id',
-      'term',
-      'start_date',
-      'end_date',
-      'expired',
-      'Name',
-      'Value',
-      '.attrs'
-    ) # rename columns
+  if(!base::is.null(ucrtCoef)){
+    ucrtCoef$timeBgn <-
+      base::format(ucrtCoef$timeBgn, format = '%Y-%m-%dT%H:%M:%OSZ') # Convert POSIX to character
+    ucrtCoef$timeEnd <-
+      base::format(ucrtCoef$timeEnd, format = '%Y-%m-%dT%H:%M:%OSZ')
+    ucrtCoef <-
+      ucrtCoef[c('id',
+                 'var',
+                 'timeBgn',
+                 'timeEnd',
+                 'expi',
+                 'Name',
+                 'Value',
+                 '.attrs')] # reorganize columns
+    base::names(ucrtCoef) <-
+      c(
+        'calibration_id',
+        'term',
+        'start_date',
+        'end_date',
+        'expired',
+        'Name',
+        'Value',
+        '.attrs'
+      ) # rename columns
+  }
   
   
   # ------- Apply the uncertainty function to the selected terms ---------
@@ -697,25 +704,27 @@ for (idxDirIn in DirIn) {
   }
   
   # Write uncertainty info to json format
-  ucrtList <-
-    base::split(ucrtCoef, base::seq(base::nrow(ucrtCoef))) # Turn into a list for writing out in json format
-  base::names(ucrtList) <- NULL
-  ucrtList <- base::lapply(ucrtList, base::as.list)
-  
-  NameFileOutUcrtCoef <-
-    NEONprocIS.base::def.file.name.out(nameFileIn = fileData,
-                                       sufx = '_uncertaintyCoef',
-                                       ext = 'json')
-  NameFileOutUcrtCoef <-
-    base::paste0(idxDirOutUcrtCoef, '/', NameFileOutUcrtCoef)
-  rptUcrt <-
-    base::write(rjson::toJSON(ucrtList, indent = 3), file = NameFileOutUcrtCoef)
-  log$info(
-    base::paste0(
-      'Uncertainty coefficients written successfully in ',
-      NameFileOutUcrtCoef
+  if(!base::is.null(ucrtCoef)){
+    ucrtList <-
+      base::split(ucrtCoef, base::seq(base::nrow(ucrtCoef))) # Turn into a list for writing out in json format
+    base::names(ucrtList) <- NULL
+    ucrtList <- base::lapply(ucrtList, base::as.list)
+    
+    NameFileOutUcrtCoef <-
+      NEONprocIS.base::def.file.name.out(nameFileIn = fileData,
+                                         sufx = '_uncertaintyCoef',
+                                         ext = 'json')
+    NameFileOutUcrtCoef <-
+      base::paste0(idxDirOutUcrtCoef, '/', NameFileOutUcrtCoef)
+    rptUcrt <-
+      base::write(rjson::toJSON(ucrtList, indent = 3), file = NameFileOutUcrtCoef)
+    log$info(
+      base::paste0(
+        'Uncertainty coefficients written successfully in ',
+        NameFileOutUcrtCoef
+      )
     )
-  )
+  }
   
   # Write out uncertainty data
   if (!base::is.null(ParaUcrt)) {
