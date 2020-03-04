@@ -42,7 +42,7 @@ test_that("testing Read NEON calibration XML file", {
   ##########
   ########## Happy path #1 - input xml is valid and conforms to the xml schmema
   ##########
-  
+  Sys.setenv(LOG_LEVEL='debug')
   file1 = "calibration.xml"
   xsd1 = "calibration.xsd"
   #

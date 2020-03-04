@@ -41,7 +41,7 @@ def.validate.xml.schema <-
     xml <- try(XML::xmlParse(xmlIn), silent = TRUE)
     
     if (class(xml)[1] == "try-error") {
-      log$warn(base::paste0(xmlIn, ' does not exist or is unreadable  '))
+      log$error(base::paste0(xmlIn, ' does not exist or is unreadable  '))
     }
     else {
       xmlFile <- xml2::read_xml(xmlIn)
@@ -50,18 +50,18 @@ def.validate.xml.schema <-
       #
       # TRUE if xmlIn is a valid xml against the schema. FALSE if invalid or error
       #
-      log$info(
+      log$debug(
         base::paste0(
           'Validate.xml.schema:  Checking to see if the xml conforms to the schema.'
         )
       )
       if (xml2::xml_validate(xmlFile, xmlFileXsd)) {
         d = TRUE
-        log$info(base::paste0(xmlIn, ' conforms to the schema  '))
+        log$debug(base::paste0(xmlIn, ' conforms to the schema  '))
       }
       else
       {
-        log$warn(base::paste0(xmlIn, ' does not conform to the schema  '))
+        log$error(base::paste0(xmlIn, ' does not conform to the schema  '))
       }
     }
     return (d)
