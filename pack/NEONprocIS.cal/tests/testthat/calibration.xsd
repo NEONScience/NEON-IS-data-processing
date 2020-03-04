@@ -12,7 +12,7 @@
         <xs:element name="StreamCalVal">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="CalFixture" maxOccurs="unbounded" minOccurs="0">
+              <xs:element name="CalFixture">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element type="xs:string" name="CalFixtureID"/>
@@ -23,7 +23,7 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="CalEnvironment" maxOccurs="unbounded" minOccurs="0">
+              <xs:element name="CalEnvironment">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="AmbientTemperature">
@@ -46,7 +46,7 @@
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="AmbientHumidity" maxOccurs="unbounded" minOccurs="0">
+                    <xs:element name="AmbientHumidity">
                       <xs:complexType>
                         <xs:sequence>
                           <xs:element type="xs:float" name="Min"/>
@@ -67,7 +67,7 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="CalibrationTable" maxOccurs="unbounded" minOccurs="0">
+              <xs:element name="CalibrationTable">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="Metadata">
@@ -120,7 +120,7 @@
                   <xs:attribute type="xs:string" name="name"/>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="CalibrationStandards"  maxOccurs="unbounded" minOccurs="0>
+              <xs:element name="CalibrationStandards">
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
@@ -168,7 +168,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Comment"  maxOccurs="unbounded" minOccurs="0">
+        <xs:element name="Comment" maxOccurs="unbounded" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
               <xs:element type="xs:string" name="CommentDescription"/>
@@ -177,7 +177,7 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="DATA"  maxOccurs="unbounded" minOccurs="0">
+        <xs:element name="DATA">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="MetaData">
