@@ -1,18 +1,18 @@
 ##############################################################################################
-#' @title Uncertainty for dissolved oxygen (DO) concentration (mg/L) as part of the water
+#' @title Uncertainty for temperature from the conductivity sensor as part of the water
 #' quality transition
 
 #' @author
 #' Kaelin Cawley \email{kcawley@battelleecology.org}
 
 #' @description Alternative calibration uncertainty function. Create file (dataframe) with
-#' uncertainty information based off of the L0 dissolved oxygen (DO) concentration data values
+#' uncertainty information based off of the L0 temperature data values from the conductivity sensor
 #' according to NEON.DOC.004931 - NEON Algorithm Theoretical Basis Document (ATBD): Water Quality.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 
-#' @param data Dissolved oxygen (DO) concentration data [vector]
+#' @param data Temperature data from the conductivity sensor [vector]
 #' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
 #' (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
 #' a data frame of uncertainty coefficents. Columns of this data frame are:\cr
@@ -31,15 +31,15 @@
 
 #' @examples
 #' #Written to potentially plug in to def.cal.conv.R
-#' ucrt <- def.ucrt.wq.do.conc(data = data, cal = NULL)
+#' ucrt <- def.ucrt.wq.temp.conc(data = data, cal = NULL)
 
 #' @seealso None currently
 
 # changelog and author contributions / copyrights
-#   Kaelin Cawley (2020-01-23)
+#   Kaelin Cawley (2020-03-02)
 #     original creation
 ##############################################################################################
-def.ucrt.wq.do.conc <- function(data, infoCal = NULL, log = NULL) {
+def.ucrt.wq.temp.conc <- function(data, infoCal = NULL, log = NULL) {
   # Start logging, if needed
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -58,7 +58,7 @@ def.ucrt.wq.do.conc <- function(data, infoCal = NULL, log = NULL) {
   #It's just a placeholder input to allow the calibration module to be more generic
   
   #Create the output dataframe
-  outputNames <- c("ucrtPercent", "ucrtMeas")
+  outputNames <- c("ucrtMeas")
   outputDF <-
     base::as.data.frame(base::matrix(
       nrow = length(data),
@@ -67,21 +67,18 @@ def.ucrt.wq.do.conc <- function(data, infoCal = NULL, log = NULL) {
     ),
     stringsAsFactors = FALSE)
   names(outputDF) <- outputNames
-  log$debug('Output dataframe for dissolvedOxygenConcUnc created.')
+  log$debug('Output dataframe for tempFromCondUnc created.')
   
   #Create an output dataframe with U_CVALA1 based off of the following rules:
-  ### U_CVALA1 = 0.01 if DO is > 0 & <= 20 mg/l according to the manual
-  ### U_CVALA1 = 0.05 if DO is >20 mg/l & < 50 mg/l according to the manual
-  outputDF$ucrtPercent[data <= 20] <-
+  ### U_CVALA1 = 0.01 if temp is <= 35 Celsius according to the manual
+  ### U_CVALA1 = 0.05 if temp is >35 Celsius according to the manual
+  outputDF$ucrtMeas[data <= 35] <-
     0.01
-  log$debug('Low range DO uncertainty populated.')
+  log$debug('Low range temp uncertainty populated.')
   
-  outputDF$ucrtPercent[data > 20] <-
+  outputDF$ucrtMeas[data > 35] <-
     0.05
-  log$debug('High range DO uncertainty populated.')
-  
-  #Determine uncertainty factor
-  outputDF$uncrtMeas <- outputDF$ucrtPercent * data
+  log$debug('High range temp uncertainty populated.')
   
   return(outputDF)
   
