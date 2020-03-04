@@ -4,7 +4,7 @@
 \alias{def.dir.crea}
 \title{Create output directories}
 \usage{
-def.dir.crea(DirBgn, DirSub, log = log)
+def.dir.crea(DirBgn, DirSub, log = NULL)
 }
 \arguments{
 \item{DirBgn}{String value. Starting path}

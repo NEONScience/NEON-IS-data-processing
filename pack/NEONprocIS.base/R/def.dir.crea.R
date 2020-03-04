@@ -30,7 +30,7 @@
 #   Cove Sturtevant (2020-02-13)
 #     original creation
 ##############################################################################################
-def.dir.crea <- function(DirBgn, DirSub, log = log) {
+def.dir.crea <- function(DirBgn, DirSub, log = NULL) {
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
