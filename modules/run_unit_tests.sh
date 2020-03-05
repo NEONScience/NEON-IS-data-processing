@@ -3,7 +3,8 @@ python3 -B -m unittest \
 calibrated_location_group.tests.test_app \
 context_filter.tests.test_app \
 data_access.tests.test_data_access \
-data_calibration_group.tests.test_app \
+data_calibration_group.tests.test_grouper_calibration \
+data_calibration_group.tests.test_grouper_no_calibration \
 data_location_group.tests.test_app \
 directory_filter.tests.test_app \
 egress.tests.test_app \
