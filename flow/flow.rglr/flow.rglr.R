@@ -335,15 +335,44 @@ for (idxDirIn in DirIn) {
     fileLoc <- fileLoc[1]
     log$warn(base::paste0(
       'There is more than location file in ',
-      DirLoc,
+      idxDirLoc,
       '. Using ',
       fileLoc
     ))
-  } else {
+  } 
+  
+  # Read regularization frequency from location file if
+  if (expcLoc){
     # Grab the named location from the directory structure
     nameLoc <-
       utils::tail(InfoDirIn$dirSplt, 1) # Location identifier from directory path
+    
+    # Find the location we're looking for in the locations file
+    nameFileLoc <- base::paste0(idxDirLoc, '/', fileLoc)
+    locMeta <-
+      NEONprocIS.base::def.loc.meta(
+        NameFile = nameFileLoc,
+        NameLoc = nameLoc,
+        TimeBgn = timeBgn,
+        TimeEnd = timeEnd,
+        log = log
+      )
+    FreqRglrIdxLoc <- base::as.numeric(locMeta$dataRate[1])
+    
+    # Error check
+    if (base::is.na(FreqRglrIdxLoc)) {
+      log$error(
+        base::paste0(
+          'Cannot determine regularization frequency from location file for datum path ',
+          idxDirIn
+        )
+      )
+      stop()
+    }
+    
+    log$debug(base::paste0('Regularization frequency: ',FreqRglrIdxLoc, ' Hz read from location file'))
   }
+  
   
   # Copy with a symbolic link the desired subfolders
   if (base::length(DirSubCopy) > 0) {
@@ -351,38 +380,18 @@ for (idxDirIn in DirIn) {
                                          log)
   }
   
-  
   # Run through each directory to regularize
   for (idxDirRglr in Para$DirRglr) {
     # Row index to parameter set
     idxRowParaRglr <- base::which(ParaRglr$DirRglr == idxDirRglr)
     
-    # Read regularization frequency from the location file if not in input args
+    # Use regularization frequency from the location file if not in input args
     FreqRglrIdx <- ParaRglr$FreqRglr[idxRowParaRglr]
     if (base::is.na(FreqRglrIdx)) {
-      # Find the location we're looking for in the locations file
-      nameFileLoc <- base::paste0(idxDirLoc, '/', fileLoc)
-      locMeta <-
-        NEONprocIS.base::def.loc.meta(
-          NameFile = nameFileLoc,
-          NameLoc = nameLoc,
-          TimeBgn = timeBgn,
-          TimeEnd = timeEnd,
-          log = log
-        )
-      FreqRglrIdx <- base::as.numeric(locMeta$dataRate[1])
-      
-      # Error check
-      if (base::is.na(FreqRglrIdx)) {
-        log$error(
-          base::paste0(
-            'Cannot determine regularization frequency from location file for datum path ',
-            idxDirIn
-          )
-        )
-        stop()
-      }
+      # Use the frequency in the locations file instead
+      FreqRglrIdx <- FreqRglrIdxLoc
     }
+    log$debug(base::paste0('Regularization frequency to be used for ',idxDirRglr,' directory: ',FreqRglrIdx, ' Hz'))
     
     
     # Get directory listing of input directory

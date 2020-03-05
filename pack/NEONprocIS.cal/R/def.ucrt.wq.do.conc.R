@@ -45,7 +45,7 @@ def.ucrt.wq.do.conc <- function(data, infoCal = NULL, log = NULL) {
     log <- NEONprocIS.base::def.log.init()
   }
   
-  #Check that we have more than 0 rows of data
+  #Check that we have a valid vector
   if (!NEONprocIS.base::def.validate.vector(data, TestEmpty = FALSE, log =
                                             log)) {
     msg <-
@@ -81,7 +81,7 @@ def.ucrt.wq.do.conc <- function(data, infoCal = NULL, log = NULL) {
   log$debug('High range DO uncertainty populated.')
   
   #Determine uncertainty factor
-  outputDF$uncrtMeas <- outputDF$ucrtPercent * data
+  outputDF$ucrtMeas <- outputDF$ucrtPercent * data
   
   return(outputDF)
   
