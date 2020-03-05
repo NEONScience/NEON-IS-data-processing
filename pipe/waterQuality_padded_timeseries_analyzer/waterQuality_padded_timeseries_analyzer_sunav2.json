@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/padded_timeseries_analyzer:9",
+    "image": "quay.io/battelleecology/padded_timeseries_analyzer:11",
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app" ],
     "env": {
@@ -15,7 +15,7 @@
     }
   },
   "parallelism_spec": {
-    "constant": "1"
+    "constant": "2"
   },
   "output_branch": "master",
   "resource_requests": {
@@ -26,7 +26,8 @@
       "name": "DATA_PATH",
       "repo": "waterQuality_timeseries_padder_sunav2",
       "branch": "master",
-      "glob": "/sunav2/*"
+      "glob": "/sunav2/*",
+      "lazy": true
     }
   },
   "standby": false,
