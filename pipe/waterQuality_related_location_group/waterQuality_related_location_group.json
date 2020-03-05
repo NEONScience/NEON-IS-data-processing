@@ -1,0 +1,85 @@
+{
+  "pipeline": {
+    "name": "waterQuality_related_location_group"
+  },
+  "transform": {
+    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+    "image": "quay.io/battelleecology/related_location_group:8",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m related_location_group.app" ],
+    "env": {
+      "LOG_LEVEL": "DEBUG",
+      "OUT_PATH": "/pfs/out"
+    }
+  },
+  "input": {
+    "union": [
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exo2_group_path",
+          "glob": "/exo2/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exoconductivity_group_path",
+          "glob": "/exoconductivity/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+        "name": "DATA_PATH",
+        "repo": "waterQuality_exodissolvedoxygen_group_path",
+        "glob": "/exodissolvedoxygen/*/*/*",
+        "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+        "name": "DATA_PATH",
+        "repo": "waterQuality_exofdom_group_path",
+        "glob": "/exofdom/*/*/*",
+        "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+        "name": "DATA_PATH",
+        "repo": "waterQuality_exophorp_group_path",
+        "glob": "/exophorp/*/*/*",
+        "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+        "name": "DATA_PATH",
+        "repo": "waterQuality_exototalalgae_group_path",
+        "glob": "/exototalalgae/*/*/*",
+        "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+        "name": "DATA_PATH",
+        "repo": "waterQuality_exoturbidity_group_path",
+        "glob": "/exoturbidity/*/*/*",
+        "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+        "name": "DATA_PATH",
+        "repo": "waterQuality_sunav2_group_path",
+        "glob": "/sunav2/*/*/*",
+        "empty_files": true
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true 
+}

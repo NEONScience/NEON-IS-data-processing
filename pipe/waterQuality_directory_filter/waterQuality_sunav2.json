@@ -1,0 +1,26 @@
+{
+    "pipeline": {
+        "name": "waterQuality_sunav2"
+    },
+    "transform": {
+        "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+        "image": "quay.io/battelleecology/directory_filter:20",
+        "cmd": [ "/bin/bash" ],
+        "stdin": [ "#!/bin/bash", "python3 -m directory_filter.app" ],
+        "env": {
+            "OUT_PATH": "/pfs/out",
+            "FILTER_DIR": "sunav2",
+            "LOG_LEVEL": "INFO"
+        }
+    },
+    "input": {
+        "pfs": {
+                "name": "IN_PATH",
+                "repo": "waterQuality_related_location_group",
+                "glob": "/*/*/*/*",
+                "empty_files": true
+        }
+    },
+    "enable_stats": false,
+    "standby": true
+}

@@ -12,7 +12,7 @@
     "env": {
       "OUT_PATH": "/pfs/out",
       "WINDOW_SIZE": "1",
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO"
     }
   },
   "parallelism_spec": {
@@ -25,7 +25,7 @@
   "input": {
     "pfs": {
       "name": "DATA_PATH",
-      "repo": "sunav2_structure_repo_by_location",
+      "repo": "sunav2_fill_date_gaps_by_location",
       "branch": "master",
       "glob": "/sunav2/*/*/*"
     }

@@ -54,9 +54,7 @@ def.rcd.fix.miss.na <-
       base::paste0(
         length(setBad),
         ' corrupt records turned to ',
-        valuBad,
-        ' in original file ',
-        nameFileMod
+        valuBad
       )
     )
     
@@ -70,7 +68,7 @@ def.rcd.fix.miss.na <-
     dfAdd$readout_time <- timeAdd
     data <- base::rbind(data, dfAdd)
     data <- data[base::order(data$readout_time), ]
-    log$debug(base::paste0(numAdd, ' missing records added to original data in ', nameFileMod))
+    log$debug(base::paste0(numAdd, ' missing records added'))
     
     return(data)
     

@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "waterQuality_tempSurfacewater_group_path"
+    "name": "waterQuality_exodissolvedoxygen_group_path"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -9,15 +9,15 @@
     "stdin": [ "#!/bin/bash", "python3 -m location_group_path.app" ],
     "env": {
       "GROUP": "water-quality-",
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out"
     }
   },
   "input": {
     "pfs": {
       "name": "SOURCE_PATH",
-      "repo": "sunav2_structure_repo_by_location",
-      "glob": "/sunav2/*/*/*/*"
+      "repo": "exodissolvedoxygen_fill_date_gaps_by_location",
+      "glob": "/exodissolvedoxygen/*/*/*/*"
     }
   },
   "enable_stats": false,

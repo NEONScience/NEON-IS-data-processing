@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "waterQuality_sunav2_group_path"
+    "name": "waterQuality_exoconductivity_group_path"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -9,15 +9,15 @@
     "stdin": [ "#!/bin/bash", "python3 -m location_group_path.app" ],
     "env": {
       "GROUP": "water-quality-",
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out"
     }
   },
   "input": {
     "pfs": {
       "name": "SOURCE_PATH",
-      "repo": "waterQuality_padded_timeseries_analyzer_sunav2",
-      "glob": "/sunav2/*/*/*/*"
+      "repo": "exoconductivity_fill_date_gaps_by_location",
+      "glob": "/exoconductivity/*/*/*/*"
     }
   },
   "enable_stats": false,

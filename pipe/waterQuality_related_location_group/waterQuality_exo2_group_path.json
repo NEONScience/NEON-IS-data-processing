@@ -9,7 +9,7 @@
     "stdin": [ "#!/bin/bash", "python3 -m location_group_path.app" ],
     "env": {
       "GROUP": "water-quality-",
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out"
     }
   },
