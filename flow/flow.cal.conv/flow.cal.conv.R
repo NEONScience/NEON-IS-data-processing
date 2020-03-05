@@ -261,8 +261,8 @@ Para <-
   )
 
 # Process each datum
-source("./calibration_filter.R")
-restructure_location_repo (DirIn = Para$DirIn,
+source("./calibration_conversion.R")
+calibration_conversion(DirIn = Para$DirIn,
                            DirOut = Para$DirOut,
                            FileSchmData = Para$FileSchmData,
                            FileSchmQf = Para$FileSchmQf,

@@ -222,7 +222,7 @@
 #   Cove Sturtevant (2020-02-25)
 #     implement selection of which terms to supply calibration flags for
 ##############################################################################################
-calibration_filter<- function(DirIn,
+calibration_conversion<- function(DirIn,
                               DirOut,
                               FileSchmData = NULL,
                               FileSchmQf = NULL,
@@ -234,10 +234,11 @@ calibration_filter<- function(DirIn,
                               FuncUcrt= NULL,
                               FileUcrtFdas = NULL,
                               DirSubCopy = NULL) {
-
+  options(digits.secs = 3)
   
   # Start logging
   log <- NEONprocIS.base::def.log.init()
+  
   
   # Echo arguments
   log$debug(base::paste0('Input directory: ', DirIn))
@@ -476,7 +477,7 @@ calibration_filter<- function(DirIn,
     data  <-
       base::try(NEONprocIS.base::def.read.avro.deve(
         NameFile = base::paste0(idxDirData, '/', fileData),
-        NameLib = '/ravro.so',
+        NameLib = 'ravro.so',
         log = log
       ),
       silent = FALSE)
@@ -491,7 +492,7 @@ calibration_filter<- function(DirIn,
     valiData <-
       NEONprocIS.base::def.validate.dataframe(
         dfIn = data,
-        TestNameCol = base::unique(c('readout_time', Para$TermConv, ParaUcrt$var, TermQf)),
+        TestNameCol = base::unique(c('readout_time', TermConv, ParaUcrt$var, TermQf)),
         log = log
       )
     if (!valiData) {
@@ -658,7 +659,7 @@ calibration_filter<- function(DirIn,
     }
     
     # Write out the valid calibration flags
-    if(!base::is.null(Para$TermQf)){
+    if(!base::is.null(TermQf)){
       NameFileOutQf <-
         NEONprocIS.base::def.file.name.out(nameFileIn = fileData, sufx = '_flagsCal')
       NameFileOutQf <- base::paste0(idxDirOutQf, '/', NameFileOutQf)
@@ -713,6 +714,11 @@ calibration_filter<- function(DirIn,
         ))
       }
     }
+    
   }
+  
+
+  
+ 
   
   }
