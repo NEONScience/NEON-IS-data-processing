@@ -1,0 +1,40 @@
+{
+  "pipeline": {
+    "name": "waterQuality_exoturbidity_qaqc_plausibility"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.qaqc.plau.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS","TermTest1=turbidity:null|gap|range|step|spike|persistence"],
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.10",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "waterQuality_exoturbidity_padded_timeseries_analyzer",
+          "glob": "/*/*/*/"
+        }
+      },
+      {
+        "pfs": {
+            "name": "SCHEMA_FLAGS",
+            "repo": "avro_schemas",
+            "glob": "/dp0p/flags_plausibility_exoturbidity.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}

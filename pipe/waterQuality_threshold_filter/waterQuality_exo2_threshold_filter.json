@@ -1,0 +1,28 @@
+{
+  "pipeline": {
+    "name": "waterQuality_exo2_threshold_filter"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.thsh.filt.R","DirIn=$threshold","DirOut=/pfs/out","Term=sensorDepth","Ctxt=water-quality"],
+    "image": "quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.5",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "pfs": {
+      "repo": "threshold",
+      "glob": "/"
+    }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}

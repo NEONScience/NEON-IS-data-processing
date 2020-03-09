@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "waterQuality_padded_timeseries_analyzer_sunav2"
+    "name": "waterQuality_sunav2_padded_timeseries_analyzer"
   },
   "transform": {
     "image_pull_secrets": [
@@ -24,13 +24,13 @@
   "input": {
     "pfs": {
       "name": "DATA_PATH",
-      "repo": "waterQuality_timeseries_padder_sunav2",
+      "repo": "waterQuality_sunav2_timeseries_padder",
       "branch": "master",
       "glob": "/sunav2/*",
       "lazy": true
     }
   },
-  "standby": false,
+  "standby": true,
   "cache_size": "64M",
   "max_queue_size": "1"
 }

@@ -1,0 +1,40 @@
+{
+  "pipeline": {
+    "name": "waterQuality_exodissolvedoxygen_thsh_rglr_group"
+  },
+  "transform": {
+    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+    "image": "quay.io/battelleecology/joiner:1",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m joiner.app" ],
+    "env": {
+      "RELATED_PATHS": "REGULARIZED_PATH,THRESHOLD_PATH",
+      "LOG_LEVEL": "INFO",
+      "OUT_PATH": "/pfs/out"
+    }
+  },
+  "input": {
+    "join": [
+      {
+        "pfs": {
+          "name": "REGULARIZED_PATH",
+          "repo": "waterQuality_exodissolvedoxygen_data",
+          "glob": "/*/*/(*)",
+          "joinOn": "$1",
+          "empty_files": true
+        } 
+      },
+      {
+        "pfs": {
+          "name": "THRESHOLD_PATH",
+          "repo": "waterQuality_exodissolvedoxygen_threshold_select",
+          "glob": "/*/*/(*)",
+          "joinOn": "$1",
+          "empty_files": true
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true
+}
