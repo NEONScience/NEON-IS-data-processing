@@ -42,6 +42,8 @@
 #     Added parameter validations and logging
 #   Mija Choi (2020-01-30)
 #     Added json schema validations
+#   Mija Choi (2020-03-09)
+#     Modified json schema validations after adding def.get.loc.json.schema.R
 ##############################################################################################
 def.loc.filt <-
   function(NameFileIn,
@@ -61,12 +63,17 @@ def.loc.filt <-
     #
     # Second, validate the json against the schema only if the syntax is valid.
     # Otherwise, validateJsonSchema errors out due to the syntax error
+    # Get the locations json schema for the schema validation
+    
+    locJsonSchema <- NEONprocIS.base::def.get.loc.json.schema ()
+    #
+    # Default validateJsonSchema to FALSE. This is for the input json stictlty fails, i.e. validateJson = FALSE
     #
     validateJsonSchema <- FALSE
     
     if (validateJson == TRUE)  {
       validateJsonSchema <-
-        NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
+        NEONprocIS.base::def.validate.json.schema (NameFileIn, locJsonSchema)
     }
     #
     #if the validation fails, the function will not be executed returning status code -1
@@ -74,12 +81,6 @@ def.loc.filt <-
     loc <- try(if ((validateJson == FALSE)  ||
                    (validateJsonSchema == FALSE))
     {
-      log$error(
-        base::paste0(
-          'In def.loc.filt::: Erred out due to the json validation failure of this file, ',
-          NameFileIn
-        )
-      )
       stop("In def.loc.filt::::: Erred out due to the validation failure of the input JSON")
     }, silent = FALSE)
     #

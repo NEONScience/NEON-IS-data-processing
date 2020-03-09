@@ -1,6 +1,51 @@
-{
+###################################################################################################
+#' @title generate locations JSON schema
+
+#' @author
+#' Mija Choi \email{choim@battelleecology.org}
+
+#' @description
+#' Generate locations JSON schema
+#' Returns locations JSON schema.
+
+#' @param locJsonSchema Currently none
+
+#' @return locJsonSchema locations JSON schema
+
+#' @references Currently none
+
+#' @keywords Currently none
+
+#' @examples NEONprocIS.base::def.validate.json.schema (jsonIn, jsonSchemaIn)
+
+#' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
+#'
+#' @export
+
+# changelog and author contributions / copyrights
+#   Mija Choi (2020-03-05)
+#     original creation
+##############################################################################################
+def.get.loc.json.schema <- function(locJsonSchema = NULL,
+                                    log = NULL) {
+  # Intialize logging if needed
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
+  
+  locJsonSchema<- '{
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "http://example.com/root.json",
+  "definitions": {
+    "type": {
+      "minLength": 1,
+      "type": "string",
+      "examples": [
+        "Feature",
+        "FeatureCollection"
+      ]
+    }
+  },
   "type": "object",
   "required": [
     "type",
@@ -92,11 +137,7 @@
                 ],
                 "properties": {
                   "type": {
-                    "minLength": 1,
-                    "type": "string",
-                    "examples": [
-                      "FeatureCollection"
-                    ]
+                    "$ref": "#/definitions/type"
                   },
                   "features": {
                     "minLength": 1,
@@ -111,11 +152,7 @@
                       ],
                       "properties": {
                         "type": {
-                         "minLength": 1,
-                          "type": "string",
-                          "examples": [
-                            "Feature"
-                          ]
+                          "$ref": "#/definitions/type"
                         },
                         "geometry": {
                           "minLength": 1,
@@ -166,11 +203,7 @@
                               ],
                               "properties": {
                                 "type": {
-                                  "minLength": 1,
-                                  "type": "string",
-                                  "examples": [
-                                    "Feature"
-                                  ]
+                                  "$ref": "#/definitions/type"
                                 },
                                 "geometry": {
                                   "minLength": 1,
@@ -195,7 +228,7 @@
                                       ]
                                     },
                                     "locations": {
-                                     "minLength": 1,
+                                      "minLength": 1,
                                       "type": "object",
                                       "required": [
                                         "type",
@@ -203,11 +236,7 @@
                                       ],
                                       "properties": {
                                         "type": {
-                                          "minLength": 1,
-                                          "type": "string",
-                                          "examples": [
-                                            "FeatureCollection"
-                                          ]
+                                          "$ref": "#/definitions/type"
                                         },
                                         "features": {
                                           "minLength": 1,
@@ -222,7 +251,7 @@
                                             ],
                                             "properties": {
                                               "type": {
-                                               "minLength": 1,
+                                                "minLength": 1,
                                                 "type": "string",
                                                 "examples": [
                                                   "Feature"
@@ -276,11 +305,7 @@
                                                     ],
                                                     "properties": {
                                                       "type": {
-                                                        "minLength": 1,
-                                                        "type": "string",
-                                                        "examples": [
-                                                          "Feature"
-                                                        ]
+                                                        "$ref": "#/definitions/type"
                                                       },
                                                       "geometry": {
                                                         "minLength": 1,
@@ -363,4 +388,7 @@
       ]
     }
   }
+}'
+  
+  return(locJsonSchema)
 }

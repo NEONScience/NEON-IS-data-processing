@@ -31,17 +31,35 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-02-25)
 #     original creation
+#   Mija Choi (2020-03-03)
+#     Added xml validation
+#   Mija Choi (2020-03-09)
+#     Modified xml schema validations after adding def.get.cal.xsd.R
 ##############################################################################################
 def.read.cal.xml <- function(NameFile,Vrbs=TRUE){
   
-  # Read contents of xml file 
-  xml <- try(XML::xmlParse(NameFile),silent=TRUE) 
-  if(class(xml)[1] == "try-error") {
-    base::stop(base::paste0("Calibration XML file: ",NameFile," does not exist or is unreadable"))
+  # Input XML is valid agains the schema
+  # Use the xml schema generated
+  #
+  # Pass the xml schema
+  
+  calXsd <- NEONprocIS.cal::def.get.cal.xsd ()
+  
+  xmlchk <-
+    try(NEONprocIS.base::def.validate.xml.schema(NameFile, calXsd),
+        silent = TRUE)
+  
+  if (!xmlchk) {
+    base::stop(
+      base::paste0(
+        " ====== def.read.cal.xml will not run due to the error in xml,  ",
+        NameFile
+      )
+    )
   }
   
   # XML file as a list
-  listXml <- XML::xmlToList(xml)
+  listXml <- XML::xmlToList(NameFile)
   
   # Grab valid date range
   timeVali <- base::lapply(listXml$ValidTimeRange,as.POSIXct,format='%Y-%m-%dT%H:%M:%OS',tz="GMT")
