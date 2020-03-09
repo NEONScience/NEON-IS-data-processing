@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Parse SUNA data using data pased in from def.wq.abs.corr.R
+#' @title Parse SUNA data using data pasted in from def.wq.abs.corr.R
 
 #' @author
 #' Kaelin M. Cawley \email{kcawley@battelleecology.org}
