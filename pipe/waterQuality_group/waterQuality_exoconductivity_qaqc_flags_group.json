@@ -1,0 +1,40 @@
+{
+  "pipeline": {
+    "name": "waterQuality_exoconductivity_qaqc_flags_group"
+  },
+  "transform": {
+    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+    "image": "quay.io/battelleecology/joiner:1",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m joiner.app" ],
+    "env": {
+      "RELATED_PATHS": "PLAUSIBILITY_PATH,CAL_NA_PATH",
+      "LOG_LEVEL": "INFO",
+      "OUT_PATH": "/pfs/out"
+    }
+  },
+  "input": {
+    "join": [
+      {
+        "pfs": {
+          "name": "PLAUSIBILITY_PATH",
+          "repo": "waterQuality_exoconductivity_qaqc_plausibility",
+          "glob": "/*/*/(*)/(*)/exoconductivity/*/flags",
+          "joinOn": "$1/$2",
+          "empty_files": true
+        } 
+      },
+      {
+        "pfs": {
+          "name": "CAL_NA_PATH",
+          "repo": "waterQuality_exoconductivity_flags",
+          "glob": "/*/*/(*)/(*)/exoconductivity/*/flags",
+          "joinOn": "$1/$2",
+          "empty_files": true
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true
+}

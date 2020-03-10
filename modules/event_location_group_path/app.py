@@ -44,7 +44,7 @@ def process(source_path, group, out_path):
 
         # Get the full group name from the location file
         if data_type == 'location':
-            group_name = location_file_context.get_matching_item(file_path, group)
+            group_name = location_file_context.get_matching_items(file_path, group)
 
     if group_name is None:
         log.error('No location directory found.')

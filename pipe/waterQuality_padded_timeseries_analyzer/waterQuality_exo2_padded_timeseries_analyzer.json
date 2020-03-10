@@ -1,0 +1,35 @@
+{
+  "pipeline": {
+    "name": "waterQuality_exo2_padded_timeseries_analyzer"
+  },
+  "transform": {
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/padded_timeseries_analyzer:11",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app" ],
+    "env": {
+      "OUT_PATH": "/pfs/out",
+      "LOG_LEVEL": "INFO"
+    }
+  },
+  "parallelism_spec": {
+    "constant": "1"
+  },
+  "output_branch": "master",
+  "resource_requests": {
+    "memory": "64M"
+  },
+  "input": {
+    "pfs": {
+      "name": "DATA_PATH",
+      "repo": "waterQuality_exo2_timeseries_padder",
+      "branch": "master",
+      "glob": "/*/*/*"
+    }
+  },
+  "standby": true,
+  "cache_size": "64M",
+  "max_queue_size": "1"
+}
