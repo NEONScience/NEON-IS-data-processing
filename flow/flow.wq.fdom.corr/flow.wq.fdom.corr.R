@@ -35,7 +35,7 @@
 #' 4. "FileSchmQf=value" (optional), where values is the full path to the avro schema for the output flags file. 
 #' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
-#' nested within term/variable). See below for details. 
+#' nested within term/variable). See below for details.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -51,7 +51,7 @@
 #' Stepping through the code in Rstudio 
 #' Sys.setenv(DIR_IN='/scratch/pfs/waterQuality_exofdom_correction_group')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out_fDOM", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/exofdom_corrected.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_correction_exofdom.avsc")
+#' arg <- c("DirIn=$DIR_IN", "DirOut=scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/exofdom_corrected.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_correction_exofdom.avsc")
 
 #' @seealso None currently
 
@@ -67,13 +67,7 @@ log <- NEONprocIS.base::def.log.init()
 arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Parse the input arguments into parameters
-Para <-
-  NEONprocIS.base::def.arg.pars(
-    arg = arg,
-    NameParaReqd = c("DirIn", "DirOut"),
-    NameParaOptn = c("FileSchmData","FileSchmQf"),
-    log = log
-  )
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut"),NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
@@ -93,17 +87,20 @@ absCorrNameUncrt <- "U_CVALA5" # Combined, standard uncertainty of absorbance co
 ravroLib <- "/ravro.so"
 timestampFormat <- "%Y-%m-%d %H:%M"
 
-#Dafault Values for applying corrections
+#Default Values for applying corrections
 applyTempCorr <- TRUE
 applyAbsCorr <- TRUE
 
-# Read in the schemas so we only have to do it once and not every
-# time in the avro writer.
+# Default values for rho and pathlength, useful for older data where cal files don't have the info yet
+rho_fdom <- -0.01024
+uncrt_rho_fdom <- 0.002458
+pathlength <- 0.330
+uncrt_pathlength <- 0.178
+
+# Read in the schemas so we only have to do it once and not every time in the avro writer.
 if (!base::is.null(Para$FileSchmData)) {
   # Retrieve and interpret the output data schema
-  SchmDataOutAll <-
-    NEONprocIS.base::def.schm.avro.pars(FileSchm = Para$FileSchmData, log =
-                                          log)
+  SchmDataOutAll <- NEONprocIS.base::def.schm.avro.pars(FileSchm = Para$FileSchmData, log = log)
   SchmDataOut <- SchmDataOutAll$schmJson
   SchmDataOutVar <- SchmDataOutAll$var
 } else {
@@ -129,17 +126,22 @@ DirIn <- NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,nameDirSub = nameDirSub
 
 if(base::length(DirIn) < 1){
   log$fatal('No datums found to process.')
-  base::stop()
+  stop()
 }
 
 # Process each datum
 for (idxDirIn in DirIn){
+  ##### Logging and initializing #####
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
   # Create the base output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
-  idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
-  
+  # Need the source ID for the sensor to write out data
+  IdxSensor <- base::dir(base::paste0(idxDirIn,"/exofdom"))
+  if(length(IdxSensor) != 1){
+    log$fatal('More than one source ID for exofdom discovered.')
+    stop()
+  }
   # The time frame of the data is one day, and this day is indicated in the directory structure.
   if (base::is.null(InfoDirIn$time)) {
     # Generate error and stop execution
@@ -149,12 +151,20 @@ for (idxDirIn in DirIn){
         InfoDirIn$dirRepo
       )
     )
-    base::stop()
+    stop()
   }
-  timeBgn <-  InfoDirIn$time
+  timeBgn <- InfoDirIn$time # start date for the data
   timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
+  idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
+  idxDirOutData <- base::paste0(idxDirOut, '/exofdom/data')
+  idxDirOutFlags <- base::paste0(idxDirOut, '/exofdom/flags')
+  NEONprocIS.base::def.dir.crea(
+    DirBgn = '/',
+    DirSub = c(idxDirOutData, idxDirOutFlags),
+    log = log
+  )
   
-  #Read in fdom data
+  ##### Read in fDOM data #####
   fdomDataGlob <- base::file.path(idxDirIn,"exofdom","*","data","*")
   fdomDataPath <- base::Sys.glob(fdomDataGlob)
   if(base::length(fdomDataPath)==1){
@@ -162,6 +172,7 @@ for (idxDirIn in DirIn){
     log$debug(base::paste0("One datum found, reading in: ",fdomDataPath))
   }else{
     log$debug(base::paste0("Zero or more than one datum found for: ",fdomDataGlob))
+    #For some reason I'm getting an error when I use base::next()
     next()
   }
   
@@ -169,7 +180,7 @@ for (idxDirIn in DirIn){
     # Generate error and stop execution
     #log$error(base::paste0('File ', idxDirData, '/', fdomData, ' is unreadable.'))
     log$error(base::paste0('File: ', fdomDataGlob, ' is unreadable.'))
-    base::stop()
+    stop()
   }
   
   # Validate the data
@@ -180,48 +191,8 @@ for (idxDirIn in DirIn){
       log = log
     )
   if (!valiData) {
+    #Move on to the next datum or should I fail at this point?
     next()
-  }
-  
-  #Read in fdom calibration information
-  fdomCalGlob <- base::file.path(idxDirIn,"exofdom","*","calibration","fDOM","*")
-  fdomCalPath <- base::Sys.glob(fdomCalGlob)
-  if(base::length(fdomCalPath)>=1){
-    log$debug("One or mnore fDOM cal file(s) found")
-    #Pull rho_fdom and pathlength from the appropriate cal file (use def.cal.meta.R and def.cal.slct.R to make that happen)
-    metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = fdomCalPath,log = log)
-    # Determine the calibrations that apply for this day
-    calSlct <- NEONprocIS.cal::def.cal.slct(metaCal = metaCal,
-                                            TimeBgn = timeBgn,
-                                            TimeEnd = timeEnd,
-                                            log = log)
-    fileCalSlct <- base::setdiff(base::unique(calSlct$file), 'NA')
-    numFileCalSlct <- base::length(fileCalSlct)
-    calFilefdom <- NEONprocIS.cal::def.read.cal.xml(NameFile = fdomCalPath,Vrbs = FALSE)
-    #CVAL has only on rho_fdom value for all sensors and sites
-    rho_fdom <- try(base::as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == rhoNamefdom]))
-    uncrt_rho_fdom <- try(base::as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == tempCorrNameUncrt]))
-  }else{
-    log$debug(base::paste0("Zero fDOM cal files found for: ",fdomDataGlob))
-    next()
-  }
-  
-  if (base::class(fdomData) == 'try-error') {
-    # Generate error and stop execution
-    #log$error(base::paste0('File ', idxDirData, '/', fdomData, ' is unreadable.'))
-    log$error(base::paste0('File: ', fdomDataGlob, ' is unreadable.'))
-    base::stop()
-  }
-  
-  # Validate the data
-  valiData <-
-    NEONprocIS.base::def.validate.dataframe(
-      dfIn = fdomData,
-      TestNameCol = base::unique(c('readout_time', 'fDOM')),
-      log = log
-    )
-  if (!valiData) {
-    base::stop()
   }
   
   #Default all flags to -1 then change them as the test can be performed
@@ -229,7 +200,7 @@ for (idxDirIn in DirIn){
   fdomData$fDOMAbsQF<- -1
   fdomData$spectrumCount <- -1
   
-  #Default expanded unceratinty to NA until it can be calculated
+  #Default expanded uncertainty to NA until it can be calculated
   fdomData$fDOMExpUncert <- NA
   
   #Default temp and absorbance correction factors
@@ -238,16 +209,20 @@ for (idxDirIn in DirIn){
   fdomData$Abs_em <- NA
   fdomData$absFactor <- NA
   
-  #Try to pull prt data if we're at a stream site? Holding on this.
+  #Populate rawCalibratedfDOM
+  fdomData$rawCalibratedfDOM <- fdomData$fDOM
   
-  #Look for and read in exoconductivity data
+  ##### Temperature Corrections #####
+  # Try to pull prt data if we're at a stream site? Holding on this.
+  # Look for and read in exoconductivity data
   exoconductivityDataGlob <- base::file.path(idxDirIn,"exoconductivity","*","data","*")
   exoconductivityDataPath <- base::Sys.glob(exoconductivityDataGlob)
+  
   if(base::length(exoconductivityDataPath)==1){
     exoconductivityData <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile = base::paste0(exoconductivityDataPath),NameLib = ravroLib,log = log), silent = FALSE)
-    log$debug(base::paste0("One datum found, reading in: ",exoconductivityDataPath))
+    log$debug(base::paste0("One file found, reading in: ",exoconductivityDataPath))
   }else{
-    log$debug(base::paste0("Zero or more than one datum found for: ",exoconductivityDataGlob))
+    log$debug(base::paste0("Zero or more than one file found for: ",exoconductivityDataGlob))
     applyTempCorr <- FALSE
     fdomData$fDOMTempQF <- 1
   }
@@ -272,8 +247,42 @@ for (idxDirIn in DirIn){
     }
   }
   
-  # Only need to read in calibration information for temp corrections if we're going to do them
+  # Only need to read in calibration information for temp corrections if we're able to do them
   if(applyTempCorr){
+    
+    #Read in fdom calibration information
+    fdomCalGlob <- base::file.path(idxDirIn,"exofdom","*","calibration","fDOM","*")
+    fdomCalPath <- base::Sys.glob(fdomCalGlob)
+    if(base::length(fdomCalPath)>=1){
+      log$debug("One or more fDOM cal file(s) found")
+      #Pull rho_fdom and pathlength from the appropriate cal file (use def.cal.meta.R and def.cal.slct.R to make that happen)
+      metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = fdomCalPath,log = log)
+      # Determine the calibrations that apply for this day
+      calSlct <- NEONprocIS.cal::def.cal.slct(metaCal = metaCal,
+                                              TimeBgn = timeBgn,
+                                              TimeEnd = timeEnd,
+                                              log = log)
+      fileCalSlct <- base::setdiff(base::unique(calSlct$file), 'NA')
+      numFileCalSlct <- base::length(fileCalSlct)
+      
+      # Move on without applying corrections if there isn't a valid fDOM cal file
+      if(numFileCalSlct >= 1){
+        # Loop through the cal files to pull out the values we need
+        for(calIdx in calSlct$file){
+          calFilefdom <- NEONprocIS.cal::def.read.cal.xml(NameFile = fdomCalPath,Vrbs = FALSE)
+          #CVAL has only one rho_fdom value for all sensors and sites
+          rho_fdom <- try(base::as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == rhoNamefdom]))
+          uncrt_rho_fdom <- try(base::as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == tempCorrNameUncrt]))
+        }
+      }else{
+        log$debug("Error: No fDOM cal file(s) found that match selected dates.")
+        next()
+      }
+      
+    }else{
+      log$debug(base::paste0("Zero fDOM cal files found for: ",fdomDataGlob))
+      next()
+    }
     
     #rho_fdom may not exist for some older data
     if(base::is.null(rho_fdom)){
@@ -293,35 +302,53 @@ for (idxDirIn in DirIn){
     }
   }
   
+  ##### Absorbance Correction #####
+  # Look for and read in sunav2 data
+  sunav2DataGlob <- base::file.path(idxDirIn,"sunav2","*","data","*")
+  sunav2DataPath <- base::Sys.glob(sunav2DataGlob)
   
-  #Determine fdom absorbance correction factor
-  #Pull pathlength and uncertainties for absorabnce from CVAL files
-  pathlength <- as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == pathNamefdom])
-  
-  #pathlength doesn't exist for some older data, so don't even try to correct it if it isn't there
-  if(base::is.null(pathlength)){
-    fdomData$fDOMAbsQF <- 1
+  if(base::length(sunav2DataPath)==1){
+    sunav2Data <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile = base::paste0(sunav2DataPath),NameLib = ravroLib,log = log), silent = FALSE)
+    log$debug(base::paste0("One file found, reading in: ",sunav2DataPath))
   }else{
-    #Ross suggested that I use code from Guy for Abs_ex and Abs_em
-    absData <- def.wq.abs.corr(NameFileSUNA, 
-                               NameCalSUNA)
-    
-    #Distribute the absorbance data across the fDOM data
-    for(i in length(absData$readout_time)){
-      
-    }
-    
-    #Populate the fdom absorbance QF values
-    fdomData$fDOMAbsQF[!base::is.na(fdomData$Abs_ex)&!base::is.na(fdomData$Abs_em)] <- 0
-    fdomData$fDOMAbsQF[base::is.na(fdomData$Abs_ex)|base::is.na(fdomData$Abs_em)] <- 1
-    
-    #Determine fdom absorbance correction factor
-    fdomData$absFactor <- 10^((Abs_ex + Abs_em) * pathlength)
+    log$debug(base::paste0("Zero or more than one file found for: ",sunav2DataGlob))
+    applyAbsCorr <- FALSE
+    fdomData$fDOMAbsQF <- 1
   }
   
-  #Calulate the fdom output with the factors that exist
-  fdomData$fdom_out <- fdomData$rawCalibratedfDOM * fdomData$tempFactor * fdomData$absFactor
+  #Only need to read in calibration information for abs corrections if we're able to do them
+  if(applyAbsCorr){
+    #Determine fdom absorbance correction factor
+    #Pull pathlength and uncertainties for absorbance from CVAL files
+    pathlength <- as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == pathNamefdom])
+    
+    #pathlength doesn't exist for some older data, so don't even try to correct it if it isn't there
+    if(base::is.null(pathlength)){
+      fdomData$fDOMAbsQF <- 1
+    }else{
+      #Ross suggested that I use code from Guy for Abs_ex and Abs_em
+      absData <- def.wq.abs.corr(NameFileSUNA, 
+                                 NameCalSUNA)
+      
+      #Distribute the absorbance data across the fDOM data
+      for(i in length(absData$readout_time)){
+        
+      }
+      
+      #Populate the fdom absorbance QF values
+      fdomData$fDOMAbsQF[!base::is.na(fdomData$Abs_ex)&!base::is.na(fdomData$Abs_em)] <- 0
+      fdomData$fDOMAbsQF[base::is.na(fdomData$Abs_ex)|base::is.na(fdomData$Abs_em)] <- 1
+      
+      #Determine fdom absorbance correction factor
+      fdomData$absFactor <- 10^((Abs_ex + Abs_em) * pathlength)
+    }
+    
+    #Calulate the fdom output with the factors that exist
+    fdomData$fdom_out <- fdomData$rawCalibratedfDOM * fdomData$tempFactor * fdomData$absFactor
+  }
   
+  
+  ##### Uncertainty Calculations #####
   exoconductivityUncGlob <- base::file.path(idxDirIn,"exoconductivity","*","uncertainty_data","*")
   exoconductivityUncPath <- base::Sys.glob(exoconductivityUncGlob)
   
@@ -338,20 +365,23 @@ for (idxDirIn in DirIn){
   #Uncertainty when both temperature and absorbance corrections are applied
   fdomData$fDOMExpUncert[fdomData$fDOMTempQF == 0 & fdomData$fDOMAbsQF == 0]
   
+  ##### Writing out data and flag files #####
   #Write an AVRO file for data and uncertainty (which get stats)
   #readout_time, fDOM, fDOMExpUncert, spectrumCount
   dataOut <- fdomData[,c(4,19,20,9)]
   names(dataOut) <- c("readout_time", "fDOM", "fDOMExpUncert", "spectrumCount")
-  NEONprocIS.base::def.wrte.avro.deve(data = dataOut)
+  NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
+                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctedData.avro"),
+                                      NameSchm = Para$FileSchmQf,
+                                      NameLib - ravroLib)
   
   #Write an AVRO file for the flags (which get metrics)
   #readout_time, fDOMTempQF, fDOMAbsQF
   flagsOut <- fdomData[,c(4,7,8)]
   names(flagsOut) <- c("readout_time", "fDOMTempQF", "fDOMAbsQF")
-  filepathout <- "exofdom/CFGLOC12345/flags/exofdom_45831_2019-01-01_flags_fDOM.avro"
   NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 
-                                      NameFile = paste0(repo,filepathout), 
-                                      NameSchm = "/scratch/pfs/avro_schemas/dp0p/flags_correction_exofdom.avsc", 
+                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctionFlags.avro"), 
+                                      NameSchm = Para$FileSchmData, 
                                       NameLib = ravroLib )
 }
 
