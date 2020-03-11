@@ -2,13 +2,15 @@
 % Please edit documentation in R/def.wq.abs.corr.R
 \name{def.wq.abs.corr}
 \alias{def.wq.abs.corr}
-\title{Uncertainty for dissolved oxygen (DO) concentration (mg/L) as part of the water
-quality transition}
+\title{Determine excitation (Abs_ex) and emission (Abs_em) correction factors for using 
+SUNA data to correct sonde fDOM data. Also populates spectrumCount.}
 \usage{
-def.wq.abs.corr(data, cal)
+def.wq.abs.corr(NameFileSUNA, NameCalSUNA)
 }
 \arguments{
-\item{data}{Dissolved oxygen (DO) concentration data [vector]}
+\item{NameFileSUNA}{Filename of the SUNA data used to determine absorbance [character]}
+
+\item{NameCalSUNA}{Calibration filename of the SUNA data used to determine absorbance [character]}
 }
 \value{
 dataframe with L0 uncertatinty column(s) [dataframe]

@@ -191,8 +191,9 @@ for (idxDirIn in DirIn){
       log = log
     )
   if (!valiData) {
-    #Move on to the next datum or should I fail at this point?
-    next()
+    # Fail if there isn't valid data so that we can troubleshoot the missing data.
+    log$fatal(base::paste0('File: ', fdomDataGlob, ' is invalid.'))
+    stop()
   }
   
   #Default all flags to -1 then change them as the test can be performed
@@ -208,9 +209,50 @@ for (idxDirIn in DirIn){
   fdomData$Abs_ex <- NA
   fdomData$Abs_em <- NA
   fdomData$absFactor <- NA
+  fdomData$uncrt_A1_fdom <- NA
+  fdomData$rho_fdom <- NA
+  fdomData$uncrt_rho_fdom <- NA
   
   #Populate rawCalibratedfDOM
   fdomData$rawCalibratedfDOM <- fdomData$fDOM
+  
+  ##### Read in fDOM cal and uncertaitnty information #####
+  fdomCalGlob <- base::file.path(idxDirIn,"exofdom","*","calibration","fDOM","*")
+  fdomCalPath <- base::Sys.glob(fdomCalGlob)
+  
+  if(base::length(fdomCalPath)>=1){
+    log$debug("One or more fDOM cal file(s) found")
+    
+    #Pull fDOM A1 uncertainty, rho_fdom, and pathlength from the appropriate cal file
+    metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = fdomCalPath,log = log)
+    # Determine the calibrations that apply for this day
+    calSlct <- NEONprocIS.cal::def.cal.slct(metaCal = metaCal,
+                                            TimeBgn = timeBgn,
+                                            TimeEnd = timeEnd,
+                                            log = log)
+    fileCalSlct <- base::setdiff(base::unique(calSlct$file), 'NA')
+    numFileCalSlct <- base::length(fileCalSlct)
+
+    # Move on without applying corrections if there isn't a valid fDOM cal file
+    if(numFileCalSlct >= 1){
+      # Loop through the cal files to pull out the values we need
+      for(calIdx in calSlct$file[!is.na(calSlct$file)]){
+        calFilefdom <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::Sys.glob(base::file.path(idxDirIn,"exofdom","*","calibration","fDOM",calIdx)),Vrbs = FALSE)
+        #CVAL has only one rho_fdom value for all sensors and sites
+        fdomRangeToApplyCal <- which(fdomData$readout_time.fdom >= calSlct$timeBgn[calSlct$file==calIdx] & fdomData$readout_time.fdom < calSlct$timeEnd[calSlct$file==calIdx])
+        fdomData$uncrt_A1_fdom[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$ucrt$Value[gsub(" ","",calFilefdom$ucrt$Name) == fdomNameUncrt]))
+        fdomData$rho_fdom[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == rhoNamefdom]))
+        fdomData$uncrt_rho_fdom[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$ucrt$Value[gsub(" ","",calFilefdom$ucrt$Name) == tempCorrNameUncrt]))
+      }
+    }else{
+      log$fatal("Error: No fDOM cal file(s) found that match selected dates.")
+      stop()
+    }
+
+  }else{
+    log$fatal(base::paste0("Zero fDOM cal files found for: ",fdomDataGlob))
+    stop()
+  }
   
   ##### Temperature Corrections #####
   # Try to pull prt data if we're at a stream site? Holding on this.
@@ -250,56 +292,26 @@ for (idxDirIn in DirIn){
   # Only need to read in calibration information for temp corrections if we're able to do them
   if(applyTempCorr){
     
-    #Read in fdom calibration information
-    fdomCalGlob <- base::file.path(idxDirIn,"exofdom","*","calibration","fDOM","*")
-    fdomCalPath <- base::Sys.glob(fdomCalGlob)
-    if(base::length(fdomCalPath)>=1){
-      log$debug("One or more fDOM cal file(s) found")
-      #Pull rho_fdom and pathlength from the appropriate cal file (use def.cal.meta.R and def.cal.slct.R to make that happen)
-      metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = fdomCalPath,log = log)
-      # Determine the calibrations that apply for this day
-      calSlct <- NEONprocIS.cal::def.cal.slct(metaCal = metaCal,
-                                              TimeBgn = timeBgn,
-                                              TimeEnd = timeEnd,
-                                              log = log)
-      fileCalSlct <- base::setdiff(base::unique(calSlct$file), 'NA')
-      numFileCalSlct <- base::length(fileCalSlct)
-      
-      # Move on without applying corrections if there isn't a valid fDOM cal file
-      if(numFileCalSlct >= 1){
-        # Loop through the cal files to pull out the values we need
-        for(calIdx in calSlct$file){
-          calFilefdom <- NEONprocIS.cal::def.read.cal.xml(NameFile = fdomCalPath,Vrbs = FALSE)
-          #CVAL has only one rho_fdom value for all sensors and sites
-          rho_fdom <- try(base::as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == rhoNamefdom]))
-          uncrt_rho_fdom <- try(base::as.numeric(calFilefdom$cal$Value[gsub(" ","",calFilefdom$cal$Name) == tempCorrNameUncrt]))
-        }
-      }else{
-        log$debug("Error: No fDOM cal file(s) found that match selected dates.")
-        next()
-      }
-      
-    }else{
-      log$debug(base::paste0("Zero fDOM cal files found for: ",fdomDataGlob))
-      next()
-    }
+    #Combine fdom and temp
+    fdomData$readout_time_min <- base::format(fdomData$readout_time, format = timestampFormat)
+    exoconductivityData$readout_time_min <- base::format(exoconductivityData$readout_time, format = timestampFormat)
+    fdomData <- base::merge(fdomData, exoconductivityData, by = "readout_time_min", all.x = TRUE, suffixes = c(".fdom",".temp"))
     
-    #rho_fdom may not exist for some older data
-    if(base::is.null(rho_fdom)){
-      fdomData$fDOMTempQF <- 1
-    }else{
-      #Combine fdom and temp
-      fdomData$readout_time_min <- base::format(fdomData$readout_time, format = timestampFormat)
-      tempData$readout_time_min <- base::format(tempData$readout_time, format = timestampFormat)
-      fdomData <- base::merge(fdomData, tempData, by = "readout_time_min", all.x = TRUE, suffixes = c(".fdom",".temp"))
-      
-      #Populate the fdom temperature QF values
-      fdomData$fDOMTempQF[!base::is.na(fdomData$surfaceWaterTemperature)] <- 0
-      fdomData$fDOMTempQF[base::is.na(fdomData$surfaceWaterTemperature)] <- 1
-      
-      #Determine fdom temperature correction factor
-      fdomData$tempFactor <- 1/(1+rho_fdom*(fdomData$surfaceWaterTemperature-20))
-    }
+    #Populate the fdom temperature QF values
+    fdomData$fDOMTempQF[!base::is.na(fdomData$surfaceWaterTemperature)] <- 0
+    fdomData$fDOMTempQF[base::is.na(fdomData$surfaceWaterTemperature)] <- 1
+    
+    #Determine fdom temperature correction factor
+    fdomData$tempFactor <- 1/(1+rho_fdom*(fdomData$surfaceWaterTemperature-20))
+    
+    #Pull uncertainty information for temperature data
+    exoconductivityUcrtGlob <- base::file.path(idxDirIn,"exoconductivity","*","uncertainty_data","*")
+    exoconductivityUcrtPath <- base::Sys.glob(exoconductivityUcrtGlob)
+    
+    exoconductivityUcrtData <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile = base::paste0(exoconductivityUcrtPath),NameLib = ravroLib,log = log), silent = FALSE)
+    exoconductivityUcrtData$readout_time_min <- base::format(exoconductivityUcrtData$readout_time, format = timestampFormat)
+    fdomData <- base::merge(fdomData, exoconductivityUcrtData, by = "readout_time_min", all.x = TRUE, suffixes = c(".fdom",".tempUcrt"))
+  
   }
   
   ##### Absorbance Correction #####
@@ -307,11 +319,11 @@ for (idxDirIn in DirIn){
   sunav2DataGlob <- base::file.path(idxDirIn,"sunav2","*","data","*")
   sunav2DataPath <- base::Sys.glob(sunav2DataGlob)
   
-  if(base::length(sunav2DataPath)==1){
+  if(base::length(sunav2DataPath) >= 1){
     sunav2Data <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile = base::paste0(sunav2DataPath),NameLib = ravroLib,log = log), silent = FALSE)
     log$debug(base::paste0("One file found, reading in: ",sunav2DataPath))
   }else{
-    log$debug(base::paste0("Zero or more than one file found for: ",sunav2DataGlob))
+    log$debug(base::paste0("Zero SUNA files found for: ",sunav2DataGlob))
     applyAbsCorr <- FALSE
     fdomData$fDOMAbsQF <- 1
   }
@@ -349,21 +361,17 @@ for (idxDirIn in DirIn){
   
   
   ##### Uncertainty Calculations #####
-  exoconductivityUncGlob <- base::file.path(idxDirIn,"exoconductivity","*","uncertainty_data","*")
-  exoconductivityUncPath <- base::Sys.glob(exoconductivityUncGlob)
-  
-  #Calculate expanded uncertainty according to the ATBD
   #Uncertainty when no corrections can be applied
-  fdomData$fDOMExpUncert[fdomData$fDOMTempQF != 0 & fdomData$fDOMAbsQF != 0] #Cove probably has a function for this, just U_CVALA1
+  fdomData$fDOMExpUncert[fdomData$fDOMTempQF != 0 & fdomData$fDOMAbsQF != 0] <- fdomData$uncrt_A1_fdom * fdomData$fDOM
   
   #Uncertainty when temperature corrections, only, are applied
-  fdomData$fDOMExpUncert[fdomData$fDOMTempQF == 0 & fdomData$fDOMAbsQF != 0]
+  fdomData$fDOMExpUncert[fdomData$fDOMTempQF == 0 & fdomData$fDOMAbsQF != 0] <- sqrt((fdomData$uncrt_A1_fdom * fdomData$fDOM)^2 + (fdomData$surfaceWaterTemperature_ucrtComb * fdomData$fDOM)^2 + (fdomData$uncrt_rho_fdom * fdomData$fDOM)^2)
   
   #Uncertainty when absorbance corrections, only, are applied
-  fdomData$fDOMExpUncert[fdomData$fDOMTempQF != 0 & fdomData$fDOMAbsQF == 0]
+  fdomData$fDOMExpUncert[fdomData$fDOMTempQF != 0 & fdomData$fDOMAbsQF == 0] <- sqrt()
   
   #Uncertainty when both temperature and absorbance corrections are applied
-  fdomData$fDOMExpUncert[fdomData$fDOMTempQF == 0 & fdomData$fDOMAbsQF == 0]
+  fdomData$fDOMExpUncert[fdomData$fDOMTempQF == 0 & fdomData$fDOMAbsQF == 0] <- sqrt()
   
   ##### Writing out data and flag files #####
   #Write an AVRO file for data and uncertainty (which get stats)
