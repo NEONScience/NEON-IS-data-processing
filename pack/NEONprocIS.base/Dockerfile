@@ -52,6 +52,7 @@ RUN apt-get update \
              libpng-dev \
              libhdf5-dev \
              libmysql++-dev \
+             libv8-dev \
              " \
 && apt-get install -y $BUILDDEPS $RUNDEPS && \
    apt-get autoremove -y && \
