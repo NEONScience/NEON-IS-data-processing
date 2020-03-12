@@ -5,12 +5,12 @@
 \title{Determine excitation (Abs_ex) and emission (Abs_em) correction factors for using 
 SUNA data to correct sonde fDOM data. Also populates spectrumCount.}
 \usage{
-def.wq.abs.corr(NameFileSUNA, NameCalSUNA)
+def.wq.abs.corr(sunav2Filenames, sunav2CalFilenames)
 }
 \arguments{
-\item{NameFileSUNA}{Filename of the SUNA data used to determine absorbance [character]}
+\item{sunav2Filenames}{SUNA data filenames used to determine absorbance [character]}
 
-\item{NameCalSUNA}{Calibration filename of the SUNA data used to determine absorbance [character]}
+\item{sunav2CalFilenames}{Calibration filenames for the SUNA data used to determine absorbance [character]}
 }
 \value{
 dataframe with L0 uncertatinty column(s) [dataframe]

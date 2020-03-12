@@ -48,12 +48,16 @@ def.pars.cal.tab.suna <-
     # Parse out the calibration table from the file
     calTable <-
       calFile$file$StreamCalVal$CalibrationTable[calFile$file$StreamCalVal$CalibrationTable$.attrs == calTableName]
-    wavelength <- calTable[2]$Row$Independent$text
-    transmittance <- calTable[2]$Row$Column$Dependent$text
+    
+    calStartIdx <- min(which(names(calTable)=="Row"))
+    calEndIdx <- max(which(names(calTable)=="Row"))
+    
+    wavelength <- calTable[calStartIdx]$Row$Independent$text
+    transmittance <- calTable[calStartIdx]$Row$Column$Dependent$text
     outputDF <-
       base::data.frame(wavelength, transmittance, stringsAsFactors = FALSE)
     
-    for (i in 3:length(base::names(calTable)[base::names(calTable) == "Row"])) {
+    for (i in (calStartIdx+1):calEndIdx) {
       wavelength <- calTable[i]$Row$Independent$text
       transmittance <- calTable[i]$Row$Column$Dependent$text
       newRows <-
