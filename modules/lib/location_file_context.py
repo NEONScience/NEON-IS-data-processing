@@ -22,13 +22,14 @@ def match(location_file, context_match):
         return False
 
 
-def get_matching_item(location_file, context_match):
+def get_matching_items(location_file, context_match):
     """
     Find the given substring in a location file context.
     :param location_file: A location file path to load.
     :param context_match: The context string to find.
     :return The context item containing the matching string.
     """
+    matches = []
     with open(location_file) as f:
         geojson = json.load(f)
         features = geojson['features']
@@ -39,5 +40,5 @@ def get_matching_item(location_file, context_match):
                 return False
             for item in context:
                 if context_match in item:
-                    return item
-        return None
+                    matches.append(item)
+    return matches

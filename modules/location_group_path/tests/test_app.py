@@ -43,15 +43,24 @@ class AppTest(TestCase):
 
     def check_output(self):
 
-        root_path = os.path.join(self.out_path, self.metadata_path, 'aspirated-triple-224', self.location)
+        root_path_1 = os.path.join(self.out_path, self.metadata_path, 'aspirated-triple-224', self.location)
+        root_path_2 = os.path.join(self.out_path, self.metadata_path, 'aspirated-triple-226', self.location)
 
-        data_path = os.path.join(root_path, 'data', 'data.avro')
-        locations_path = os.path.join(root_path, 'location', 'locations.json')
+        data_path_1 = os.path.join(root_path_1, 'data', 'data.avro')
+        locations_path_1 = os.path.join(root_path_2, 'location', 'locations.json')
 
-        print(f'data_path: {data_path}')
-        print(f'locations_path: {locations_path}')
-        check_path = os.path.join(self.out_path, 'dualfan', '2019', '05', '21', 'aspirated-triple-224', self.location)
-        print(os.listdir(check_path))
+        data_path_2 = os.path.join(root_path_1, 'data', 'data.avro')
+        locations_path_2 = os.path.join(root_path_2, 'location', 'locations.json')
 
-        self.assertTrue(os.path.lexists(data_path))
-        self.assertTrue(os.path.lexists(locations_path))
+        print(f'data_path_1: {data_path_1}')
+        print(f'locations_path_1: {locations_path_1}')
+
+        check_path_1 = os.path.join(self.out_path, 'dualfan', '2019', '05', '21', 'aspirated-triple-224', self.location)
+        print(os.listdir(check_path_1))
+        check_path_2 = os.path.join(self.out_path, 'dualfan', '2019', '05', '21', 'aspirated-triple-226', self.location)
+        print(os.listdir(check_path_2))
+
+        self.assertTrue(os.path.lexists(data_path_1))
+        self.assertTrue(os.path.lexists(locations_path_1))
+        self.assertTrue(os.path.lexists(data_path_2))
+        self.assertTrue(os.path.lexists(locations_path_2))

@@ -21,7 +21,7 @@ def process(source_path, group, out_path):
     :param out_path: The output path.
     """
     paths = []
-    group_name = None
+    group_names = []
     for file_path in file_crawler.crawl(source_path):
         # parse path elements
         parts = pathlib.Path(file_path).parts
@@ -47,23 +47,23 @@ def process(source_path, group, out_path):
 
         # get the location context group name from the location file
         if data_type == 'location':
-            group_name = location_file_context.get_matching_item(file_path, group)
+            group_names = location_file_context.get_matching_items(file_path, group)
 
     # location context group name was not found!
-    if group_name is None:
+    if len(group_names) == 0:
         log.error('No location directory found.')
     # context group name found, link all the files into the output directory
     else:
-        link(paths, group_name, out_path)
+        link(paths, group_names, out_path)
 
 
-def link(paths, group_name, out_path):
+def link(paths, group_names, out_path):
     """
     Loop through the files and link into the output directory including the location
     context group name in the path.
-    :param paths:
-    :param group_name:
-    :param out_path:
+    :param paths: File paths to link.
+    :param group_names: A List of associated location context group names.
+    :param out_path: The output directory for writing.
     :return:
     """
     for path in paths:
@@ -80,13 +80,14 @@ def link(paths, group_name, out_path):
         # build the output path
         log.debug(f't: {source_type} Y: {year} M: {month} D: {day} '
                   f'loc: {location} type: {data_type} remainder: {remainder}')
-        target_dir = os.path.join(out_path, source_type, year, month, day, group_name, location, data_type)
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
-        destination = os.path.join(target_dir, *remainder[0:])
-        # link the file
-        log.debug(f'source: {file_path} destination: {destination}')
-        file_linker.link(file_path, destination)
+        for group_name in group_names:
+            target_dir = os.path.join(out_path, source_type, year, month, day, group_name, location, data_type)
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+            destination = os.path.join(target_dir, *remainder[0:])
+            # link the file
+            log.debug(f'source: {file_path} destination: {destination}')
+            file_linker.link(file_path, destination)
 
 
 def main():
