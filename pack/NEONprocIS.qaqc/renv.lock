@@ -263,10 +263,10 @@
     },
     "fansi": {
       "Package": "fansi",
-      "Version": "0.4.0",
+      "Version": "0.4.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b31d9e5d051553d1177083aeba04b5b9"
+      "Hash": "7fce217eaaf8016e72065e85c73027b5"
     },
     "fastmatch": {
       "Package": "fastmatch",
@@ -424,10 +424,10 @@
     },
     "mime": {
       "Package": "mime",
-      "Version": "0.7",
+      "Version": "0.9",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f085cb5d1548336cafa5ee7ec56d7e34"
+      "Hash": "e87a35ec73b157552814869f45a63aa3"
     },
     "munsell": {
       "Package": "munsell",
@@ -466,10 +466,10 @@
     },
     "pillar": {
       "Package": "pillar",
-      "Version": "1.4.2",
+      "Version": "1.4.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "9f20924c27aee3d09296c22fb84bc9de"
+      "Hash": "fa3ed60396b6998d0427c57dab90fba4"
     },
     "pkgbuild": {
       "Package": "pkgbuild",

@@ -13,7 +13,7 @@
   "input": {
       "pfs": {
         "name": "DIR_IN",
-        "repo": "waterQuality_exo",
+        "repo": "waterQuality_qaqc_sensor_na",
         "glob": "/*/*/*"
       }
   },
