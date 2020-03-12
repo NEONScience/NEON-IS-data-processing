@@ -33,7 +33,7 @@
 # ------ Choose options --------
 
 # Module or local package directory
-dirWork <- '/scratch/SOM/Github/RstudioServer/NEON-IS-data-processing/NEON-IS-data-processing/flow/flow.stat.basc'
+dirWork <- '/scratch/SOM/Github/RstudioServer/NEON-IS-data-processing/NEON-IS-data-processing/pack/NEONprocIS.qaqc'
 PackIgnr <- c('NEONprocIS.base','NEONprocIS.cal','NEONprocIS.qaqc') # These should already be in the respective docker containers
 
 # Keep and use the local project that renv creates when creating/updating the lockfile 

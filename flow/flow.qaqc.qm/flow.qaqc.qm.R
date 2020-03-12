@@ -8,8 +8,8 @@
 #' at specified time intervals and computes pass, fail, and na quality metrics in addition to alpha 
 #' and beta summary metrics and the final quality flag.
 #' 
-#' This script is run at the command line with 4+ arguments. Each argument must be a string in 
-#' the format "Para=value", where "Para" is the intended parameter name and "value" is the value of 
+#' This script is run at the command line with the following arguments. Each argument must be a string  
+#' in the format "Para=value", where "Para" is the intended parameter name and "value" is the value of 
 #' the parameter. Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the 
 #' parameter will be assigned from the system environment variable matching the value string.
 #'
