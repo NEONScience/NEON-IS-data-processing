@@ -1,0 +1,47 @@
+{
+  "pipeline": {
+    "name": "waterQuality_exofdom_correction"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.wq.fdom.corr.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$SCHEMA_DATA","FileSchmQf=$SCHEMA_FLAGS"],
+    "image": "quay.io/battelleecology/neon-is-wq-fdom-corr-r:v0.0.01",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "waterQuality_exofdom_correction_group",
+          "glob": "/*/*/*/"
+        }
+      },
+      {
+        "pfs": {
+            "name": "SCHEMA_DATA",
+            "repo": "avro_schemas",
+            "glob": "/dp0p/exofdom_corrected.avsc"
+        }
+      },
+      {
+        "pfs": {
+            "name": "SCHEMA_FLAGS",
+            "repo": "avro_schemas",
+            "glob": "/dp0p/flags_correction_exofdom.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": false,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}

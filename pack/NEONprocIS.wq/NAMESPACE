@@ -2,3 +2,4 @@
 
 export(def.pars.cal.tab.suna)
 export(def.pars.data.suna)
+export(def.wq.abs.corr)

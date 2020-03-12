@@ -24,8 +24,7 @@ Note: This script implements logging described in \code{\link[NEONprocIS.base]{d
 which uses system environment variables if available.
 }
 \examples{
-#Written to potentially plug in line 120 of def.cal.conv.R
-ucrt <- def.ucrt.wq.do.conc(data = data, cal = NULL)
+# TBD
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

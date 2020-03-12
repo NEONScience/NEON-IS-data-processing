@@ -41,6 +41,10 @@ def.pars.cal.tab.suna <-
       log <- NEONprocIS.base::def.log.init()
     }
     
+    # Numeric constants
+    waveRangeStart <- 180
+    waveRangeEnd <- 400
+    
     # Read in the calibration file
     calFile <-
       NEONprocIS.cal::def.read.cal.xml(NameFile = calFilename, Vrbs = TRUE)
@@ -69,6 +73,9 @@ def.pars.cal.tab.suna <-
     outputDF$transmittance <- base::as.numeric(outputDF$transmittance)
     #Eyeball Check
     #plot(outputDF$wavelength,outputDF$transmittance)
+    
+    # Clean up the calibration table in case there is a 0 wavelength value
+    outputDF <- outputDF[outputDF$wavelength > waveRangeStart & outputDF$wavelength < waveRangeEnd,]
     
     return(outputDF)
   }

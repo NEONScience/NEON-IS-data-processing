@@ -20,11 +20,12 @@
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 
+#' @export
+
 #' @keywords Currently none
 
 #' @examples
-#' #Written to potentially plug in line 120 of def.cal.conv.R
-#' ucrt <- def.ucrt.wq.do.conc(data = data, cal = NULL)
+#' # TBD
 
 #' @seealso None currently
 
@@ -39,7 +40,10 @@ def.wq.abs.corr <- function(sunav2Filenames, sunav2CalFilenames) {
   }
   msg <- NULL
   
-  #Numeric Constants
+  # String constants
+  ravroLib <- "/ravro.so"
+  
+  # Numeric Constants
   Abs_ex_start <- 351 #nm
   Abs_ex_end <- 361 #nm
   Abs_em_wav <- 480 #nm
@@ -74,18 +78,29 @@ def.wq.abs.corr <- function(sunav2Filenames, sunav2CalFilenames) {
   #Need to loop through the calibration files in case there are more than one
   for(idxCal in calSlct$file[!base::is.na(calSlct$file)]){
     NameCal <- sunav2CalFilenames[base::grepl(idxCal,sunav2CalFilenames)]
-    calTable <- NEONprocIS.wq::def.pars.cal.tab.suna(calFilename = NameCal)
+    calTable <- try(NEONprocIS.wq::def.pars.cal.tab.suna(calFilename = NameCal))
+    
+    # Fail the transition now when these can't be read, but might just want to keep going if they all seem to be older files
+    if (base::class(calTable) == 'try-error') {
+      # outputDF$Abs_Ex <- NA
+      # outputDF$Abs_Em <- NA
+      # outputDF$spectrumCount <- 0
+      log$error(base::paste0('File: ', NameCal, ' is unreadable.'))
+      stop()
+    }
     
     calTimeBgn <- calSlct$timeBgn[calSlct$file == idxCal]
     calTimeEnd <- calSlct$timeEnd[calSlct$file == idxCal]
     
     outputDFIdxRange <- base::which(outputDF$readout_time >= calTimeBgn & outputDF$readout_time < calTimeEnd)
     
-    #If the cal table has more of less than 256 wavelengths the absorbance corrections shouldn't be performed
+    #If the cal table has more or less than 256 wavelengths the absorbance corrections shouldn't be performed
     if(base::nrow(calTable) != 256){
-      outputDF$Abs_Ex <- NA
-      outputDF$Abs_Em <- NA
-      outputDF$spectrumCount <- 0
+      # outputDF$Abs_Ex <- NA
+      # outputDF$Abs_Em <- NA
+      # outputDF$spectrumCount <- 0
+      log$error(base::paste0('File: ', NameCal, ' has more or less than 256 rows in the cal table.'))
+      stop()
     }else{
       #Start calculating average absorbance values
       for(i in outputDFIdxRange){
@@ -113,7 +128,8 @@ def.wq.abs.corr <- function(sunav2Filenames, sunav2CalFilenames) {
 
           burstEnd <- base::ifelse(maxBurstIdx > 20, 20, maxBurstIdx)
           burstData <- burstData[10:burstEnd,]
-          avgBurst <- def.pars.data.suna(sunaBurst = burstData$spectrum_channels)
+          outputDF$spectrumCount <- burstEnd-(10-1)
+          avgBurst <- NEONprocIS.wq::def.pars.data.suna(sunaBurst = burstData$spectrum_channels)
           #Eyeball Check
           #plot(calTable$wavelength,avgBurst)
           
@@ -125,21 +141,48 @@ def.wq.abs.corr <- function(sunav2Filenames, sunav2CalFilenames) {
             outputDF$spectrumCount[i] <- 0
             next
           }else{
-            #absorbance <- base::log10(avgBurst/calTable$transmittance)
+            # Warning when there are negative data
+            if(any(avgBurst < 0) | any(calTable$transmittance < 0)){
+              log$debug(base::paste0("Absorbance could not be calculated due to negative values."))
+              outputDF$Abs_Ex <- NA
+              outputDF$Abs_Em <- NA
+              outputDF$spectrumCount <- 0
+            }
             absorbance <- base::log10(avgBurst/calTable$transmittance)
+            absorbance[absorbance == -Inf] <- 0
             #Eyeball Check
             #plot(calTable$wavelength,absorbance)
             
-            outputDF$Abs_Ex[i] <- mean(absorbance[calTable$wavelength>351 & calTable$wavelength<361])
-            outputDF$ucrt_A_ex[i] <- sd(absorbance[calTable$wavelength>351 & calTable$wavelength<361])
+            outputDF$Abs_Ex[i] <- base::mean(absorbance[calTable$wavelength>351 & calTable$wavelength<361])
+            outputDF$ucrt_A_ex[i] <- stats::sd(absorbance[calTable$wavelength>351 & calTable$wavelength<361])
             
-            #Looks like an exponential fit might make sense for calculating the Abs_ex and Abs_em
+            test <- log10(absorbance)
+            #Eyeball Check
+            #plot(calTable$wavelength,test)
             
-            #Do like what's in the ATBD
-            absFit <- ""
+            #Perfomr calculations to extrapolate to 480 nm
+            log_abs <- try(base::log10(absorbance), silent = TRUE)
+            log_waves <- try(base::log10(calTable$wavelength), silent = TRUE)
+            abs_model <- try(stats::lm(log_abs[!is.nan(log_abs)&log_abs!=-Inf] ~ log_waves[!is.nan(log_abs)&log_abs!=-Inf]))
             
-            outputDF$Abs_Em[i] <- ""
-            outputDF$ucrt_A_em[i] <- ""
+            if (base::class(abs_model) == 'try-error') {
+              # outputDF$Abs_Ex <- NA
+              # outputDF$Abs_Em <- NA
+              # outputDF$spectrumCount <- 0
+              log$error(base::paste0('Linear fit for extrapolating to 480 nm failed'))
+              stop()
+            }
+            
+            slope <- abs_model$coefficients[2]
+            intercept <- abs_model$coefficients[1]
+            #Eyeball Check
+            #plot(log_waves[!is.nan(log_abs)&log_abs!=-Inf],log_abs[!is.nan(log_abs)&log_abs!=-Inf])
+            #lines(log_waves[!is.nan(log_abs)&log_abs!=-Inf], (slope*log_waves[!is.nan(log_abs)&log_abs!=-Inf]+intercept), col = "blue")
+            #plot(calTable$wavelength, absorbance)
+            #lines(calTable$wavelength, absorbance, col = "red")
+          
+            outputDF$Abs_Em[i] <- 10^(slope*log10(480)+intercept)
+            outputDF$ucrt_A_em[i] <- stats::sd(abs_model$residuals)
           }
         }
 
