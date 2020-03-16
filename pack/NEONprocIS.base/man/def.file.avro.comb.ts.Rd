@@ -19,7 +19,8 @@ A data frame with the merged file contents.
 }
 \description{
 Definition function. Merge the contents of multiple avro files that share a common time 
-variable. Other than the time variable, the files must contain different columns. Any missing
+variable. Other than the time variable, the files should different columns. If any duplicate 
+column names are found, only the first instance found will be retained. Any missing
 timestamps among the files will be filled with NA values.
 }
 \examples{
