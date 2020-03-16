@@ -1,0 +1,69 @@
+{
+  "pipeline": {
+    "name": "waterQuality_level1_group"
+  },
+  "transform": {
+    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+    "image": "quay.io/battelleecology/grouper:4",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m grouper.app" ],
+    "env": {
+      "LOG_LEVEL": "DEBUG",
+      "OUT_PATH": "/pfs/out"
+    }
+  },
+  "input": {
+    "union": [
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exo2_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exoconductivity_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exodissolvedoxygen_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exophorp_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exototalalgae_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exoturbidity_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true 
+}

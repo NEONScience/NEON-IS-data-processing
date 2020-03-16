@@ -24,7 +24,7 @@
   "input": {
     "pfs": {
       "name": "DATA_PATH",
-      "repo": "waterQuality_exototalalgae_threshold_regularized_group",
+      "repo": "waterQuality_exototalalgae_thsh_rglr_group",
       "branch": "master",
       "glob": "/*/*/*"
     }

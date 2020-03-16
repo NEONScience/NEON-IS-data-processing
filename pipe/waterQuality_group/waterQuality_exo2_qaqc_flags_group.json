@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "waterQuality_exototalalgae_threshold_regularized_group"
+    "name": "waterQuality_exo2_qaqc_flags_group"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -8,7 +8,7 @@
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m joiner.app" ],
     "env": {
-      "RELATED_PATHS": "REGULARIZED_PATH,THRESHOLD_PATH",
+      "RELATED_PATHS": "PLAUSIBILITY_PATH,CAL_NA_PATH",
       "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out"
     }
@@ -17,19 +17,19 @@
     "join": [
       {
         "pfs": {
-          "name": "REGULARIZED_PATH",
-          "repo": "waterQuality_exototalalgae_data",
-          "glob": "/*/*/(*)",
-          "joinOn": "$1",
+          "name": "PLAUSIBILITY_PATH",
+          "repo": "waterQuality_exo2_qaqc_plausibility",
+          "glob": "/*/*/(*)/(*)/exo2/*/flags",
+          "joinOn": "$1/$2",
           "empty_files": true
         } 
       },
       {
         "pfs": {
-          "name": "THRESHOLD_PATH",
-          "repo": "waterQuality_exototalalgae_threshold_select",
-          "glob": "/*/*/(*)",
-          "joinOn": "$1",
+          "name": "CAL_NA_PATH",
+          "repo": "waterQuality_exo2",
+          "glob": "/*/*/(*)/(*)/exo2/*/flags",
+          "joinOn": "$1/$2",
           "empty_files": true
         }
       }
