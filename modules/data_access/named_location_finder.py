@@ -40,7 +40,7 @@ def get_active_periods(connection, named_location_id, cutoff_date=None):
 
 def get_by_type(connection, type_name, cutoff_date=None):
     """
-    Get named locations by type and cutoff date for the active time range.
+    Get named locations in GEOJson format by type and cutoff date for the active time range.
     :param connection: A database connection.
     :param type_name: The named location type.
     :param cutoff_date: The maximum active end time to return.
@@ -340,3 +340,37 @@ def get_site(connection, named_location_id):
             site_name = parent.get('name')
             return site_name
     return None
+
+
+def get_schema_name(connection, named_location_name):
+    """
+    Return the schema name for the type of sensor the named location accepts.
+    :param connection: A database connection.
+    :param named_location_name: The named location name.
+    :return:
+    """
+    sql = '''
+        select distinct
+            avro_schema_name
+        from 
+            is_sensor_type, is_asset_definition, is_asset_assignment, is_asset_location, nam_locn
+        where
+            is_sensor_type.sensor_type_name = is_asset_definition.sensor_type_name
+        and 
+            is_asset_definition.asset_definition_uuid = is_asset_assignment.asset_definition_uuid
+        and 
+            is_asset_assignment.asset_uid = is_asset_location.asset_uid
+        and 
+            is_asset_location.nam_locn_id = nam_locn.nam_locn_id
+        and 
+            nam_locn.nam_locn_name = :name
+    '''
+    with closing(connection.cursor()) as cursor:
+        cursor.prepare(sql)
+        cursor.execute(None, name=named_location_name)
+        row = cursor.fetchone()
+        if row is not None:
+            name = row[0]
+            if name is not None:
+                return name
+        return None

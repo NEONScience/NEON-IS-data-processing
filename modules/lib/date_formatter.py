@@ -3,7 +3,7 @@ from datetime import datetime
 
 def convert(date_time):
     """
-    Return a datetime as an ISO standard string.
+    Convert a datetime object to an ISO standard string.
     :param date_time A datetime object.
     """
     if date_time is not None:
@@ -14,7 +14,7 @@ def convert(date_time):
 
 def parse(date_time):
     """
-    Return a datetime from an ISO standard string.
+    Convert an ISO standard string to a datetime object.
     :param date_time A string date time.
     """
     if date_time is not None:
