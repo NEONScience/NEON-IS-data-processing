@@ -38,7 +38,7 @@ class AppTest(TestCase):
         self.assertEqual(len(dates), 8)
 
     def check_output(self):
-        file_path = os.path.join(self.out_path, '2019', '10', '20', 'CFGLOC101740', 'CFGLOC101740.json')
+        file_path = os.path.join(self.out_path, 'prt', '2019', '10', '20', 'CFGLOC101740', 'CFGLOC101740.json')
         self.assertTrue(os.path.exists(file_path))
 
 
