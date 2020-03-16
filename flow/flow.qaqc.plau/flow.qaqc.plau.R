@@ -236,7 +236,7 @@ for(idxDirIn in DirIn){
     fileThsh <- fileThsh[1]
     log$info(base::paste0('There is more than location file in ',idxDirThsh,'. Using ',fileThsh))
   }
-  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.json((NameFile=base::paste0(idxDirThsh,'/',fileThsh)))
+  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile=base::paste0(idxDirThsh,'/',fileThsh)))
   
   # Verify that the terms listed in the input parameters are included in the threshold files
   exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
