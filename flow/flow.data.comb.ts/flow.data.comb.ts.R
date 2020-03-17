@@ -55,13 +55,18 @@
 #' hold the combined file. It may be the same as one of DirComb, but note that the original directory
 #' may be be copied through to the output in argument DirSubCopy.
 #'
-#' 5. "NameVarTime=value", where value is the name of the time variable common across all
+#' 5. "NameFileSufx=value" (optional), where value is a character suffix to add to the output
+#' file name (before any extension). For example, if the shortest file name found in the input files is 
+#' "prt_CFGLOC12345_2019-01-01.avro", and the input argument is "NameFileSufx=_stats_100", then the 
+#' output file will be "prt_CFGLOC12345_2019-01-01_stats_100.avro". Default is no suffix.
+#'  
+#' 6. "NameVarTime=value", where value is the name of the time variable common across all
 #' files. Note that any missing timestamps among the files will be filled with NA values.
 #'
-#' 6. "FileSchmComb=value" (optional), where value is the full path to schema for combined data output by
+#' 7. "FileSchmComb=value" (optional), where value is the full path to schema for combined data output by
 #' this workflow. If not input, the schema will be constructed from the output data frame.
 #'
-#' 7. "ColKeep=value" (optional), value contains the names, in desired order, of the input columns
+#' 8. "ColKeep=value" (optional), value contains the names, in desired order, of the input columns
 #' that should be copied over to the combined output file. The column names indicated here must be a
 #' full or partial set of the union of the column names found in the input files. Use the output
 #' schema in argument FileSchmComb to rename them as desired. Note that column names may be listed
@@ -70,7 +75,7 @@
 #' If this argument is omitted, all columns found in the input files for each directory will be included
 #' in the output file in the order they are encountered in the input files.
 #'
-#' 8. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 9. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the flags folder in the input path that are to be copied with a
 #' symbolic link to the output path.
 #'
@@ -108,7 +113,8 @@ Para <-
     NameParaReqd = c("DirIn", "DirOut", "DirComb", "NameDirCombOut", "NameVarTime"),
     NameParaOptn = c("FileSchmComb",
                      "ColKeep",
-                     "DirSubCopy"),
+                     "DirSubCopy",
+                     "NameFileSufx"),
     log = log
   )
 
@@ -252,12 +258,12 @@ for (idxDirIn in DirIn) {
     
   }
   
-  # Write out the file. Take the shortest file name and tag on "combined".
+  # Write out the file. Take the shortest file name and tag on the suffix.
   fileBase <-
     file[base::nchar(file) == base::min(base::nchar(file))][1]
   fileOut <-
     NEONprocIS.base::def.file.name.out(nameFileIn = fileBase,
-                                       sufx = "_combined",
+                                       sufx = Para$NameFileSufx,
                                        log = log)
   nameFileOut <- base::paste0(idxDirOutComb, '/', fileOut)
   
