@@ -133,12 +133,12 @@
 #' to compute uncertainty for all terms indicated in TermUcrt, or multiple function names in which case the argument
 #' is formatted as term:function|term:function... where term is the term in TermUcrt for which the corresponding
 #' uncertainty function will be used. Multiple term:function pairs are separated by pipes (|). For example,
-#' "FuncUcrt=resistance:def.ucrt.meas|voltage:ucrt.func" indicates that the function def.ucrt.meas will be used for
+#' "FuncUcrt=resistance:def.ucrt.meas.cnst|voltage:ucrt.func" indicates that the function def.ucrt.meas.cnst will be used for
 #' the resistance term, and the function ucrt.func will be used for the voltage term. Another example,
-#' "FuncUrt=def.ucrt.meas" indicates that function def.ucrt.meas will be used for all terms in the TermUcrt argument.
-#' If this argument is not included, the standard uncertainty function def.ucrt.meas will be used for all variables
+#' "FuncUrt=def.ucrt.meas.cnst" indicates that function def.ucrt.meas.cnst will be used for all terms in the TermUcrt argument.
+#' If this argument is not included, the standard uncertainty function def.ucrt.meas.cnst will be used for all variables
 #' in TermUcrt. Note that any alternative function must accept arguments "data", "infoCal", and "log", even if they
-#' are unused in the function. See documentation for NEONprocIS.cal::def.ucrt.meas for input/output format. Note that
+#' are unused in the function. See documentation for NEONprocIS.cal::def.ucrt.meas.cnst for input/output format. Note that
 #' one output column must be labeled "ucrtMeas", corresponding to the individual measurement uncertainty. The
 #' measurement uncertainty (ucrtMeas) returned from the indicated function will be added in quadrature with
 #' FDAS uncertainty if applicable (see TermUcrt). Combined and expanded individual measurement uncertainty are also
@@ -253,7 +253,7 @@ Para <-
       FuncConv = "def.cal.conv.poly",
       TermQf = NULL,
       TermUcrt = NULL,
-      FuncUcrt = "def.ucrt.meas",
+      FuncUcrt = "def.ucrt.meas.cnst",
       NumDayExpiMax =
         NA
     ),
@@ -394,7 +394,7 @@ if (!base::is.null(ParaUcrt)) {
     NEONprocIS.base::def.vect.pars.pair(
       vect = Para$FuncUcrt,
       KeyExp = ParaUcrt$var,
-      ValuDflt = 'def.ucrt.meas',
+      ValuDflt = 'def.ucrt.meas.cnst',
       NameCol = c('var', 'FuncUcrt'),
       log = log
     )

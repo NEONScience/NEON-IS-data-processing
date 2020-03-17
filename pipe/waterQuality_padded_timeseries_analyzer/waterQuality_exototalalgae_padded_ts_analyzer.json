@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "waterQuality_exototalalgae_padded_timeseries_analyzer"
+    "name": "waterQuality_exototalalgae_padded_ts_analyzer"
   },
   "transform": {
     "image_pull_secrets": [

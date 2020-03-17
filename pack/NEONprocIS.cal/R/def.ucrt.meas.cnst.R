@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Compute individual measurement uncertainty using coefficients in NEON calibration file
+#' @title Compute individual measurement uncertainty as a constant from NEON CVAL coefficient
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
@@ -7,8 +7,10 @@
 #' @description
 #' Definition function. Accepts a L0 data vector and NEON uncertainty information as produced
 #' by NEONprocIS.cal::def.read.cal.xml and returns a vector of individual measurement
-#' uncertainties for each data value. Note that all uncertainty functions must take inputs of
-#' data and infoCal (see inputs) to be used within the generic calibration module.
+#' uncertainties for each data value. The uncertainty computed is simply a constant value 
+#' represented by NEON calibration coefficient UCVAL_A1. Note that all uncertainty functions
+#' must take inputs ofdata and infoCal (see inputs) to be used within the generic calibration 
+#' module.
 
 #' @param data Numeric vector of raw measurements
 #' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
@@ -35,7 +37,7 @@
 #' @examples
 #' data <- c(1,6,7,0,10)
 #' infoCal <- list(ucrt = data.frame(Name=c('U_CVALA1','U_CVALA3'),Value=c(0.1,5),stringsAsFactors=FALSE))
-#' def.ucrt.meas(data=data,infoCal=infoCal)
+#' def.ucrt.meas.cnst(data=data,infoCal=infoCal)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.rstc}
@@ -48,7 +50,7 @@
 #   Cove Sturtevant (2020-02-03)
 #     original creation
 ##############################################################################################
-def.ucrt.meas <- function(data=base::numeric(0),
+def.ucrt.meas.cnst <- function(data=base::numeric(0),
                           infoCal = NULL,
                           log = NULL) {
   # Initialize logging if necessary

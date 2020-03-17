@@ -1,4 +1,5 @@
 import os
+from datetime import datetime as datetime
 
 import geojson
 import cx_Oracle
@@ -26,7 +27,7 @@ class AppTest(TestCase):
 
     @unittest.skip('Skip due to long process time.')
     def test_type_context(self):
-        locations = named_location_finder.get_type_context(self.connection, 'CONFIG', 'soil')
+        locations = named_location_finder.get_by_type(self.connection, 'CONFIG', datetime.now())
         for location in locations:
             geojson_data = geojson.dumps(location, indent=4, sort_keys=False, default=str)
             print(f'geojson_data: {geojson_data}')
@@ -36,7 +37,13 @@ class AppTest(TestCase):
         site_name = named_location_finder.get_site(self.connection, 31720)
         self.assertTrue(site_name == 'ORNL')
 
+    def test_get_schema_name(self):
+        name = 'SENSOR000000'
+        schema_name = named_location_finder.get_schema_name(self.connection, name)
+        self.assertTrue(schema_name == 'exo2')
+
     def test_range(self):
+        i = 0
         for i in range(1, 11):
             print(f'i: {i}')
         self.assertTrue(i == 10)
