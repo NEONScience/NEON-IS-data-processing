@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/data_gap_filler:6",
+    "image": "quay.io/battelleecology/data_gap_filler:8",
     "cmd": [
       "/bin/bash"
     ],
@@ -18,14 +18,7 @@
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out",
       "OUTPUT_DIRECTORIES": "data,calibration,location,uncertainty_data,uncertainty_coef,flags"
-    },
-    "secrets": [
-      {
-        "name": "pdr-int-secret",
-        "key": "uri",
-        "env_var": "DATABASE_URL"
-      }
-    ]
+    }
   },
   "parallelism_spec": {
     "constant": "8"
@@ -59,5 +52,5 @@
     ]
   },
   "enable_stats": false,
-  "standby": false
+  "standby": true
 }

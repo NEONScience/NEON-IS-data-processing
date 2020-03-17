@@ -47,7 +47,7 @@ class AppTest(TestCase):
         self.fs.create_file(os.path.join(self.data_path, self.uncertainty_file_1))
 
     def create_location_repo(self):
-        self.location_path = os.path.join('/', 'locations', 'repo_name', '2020', '01')
+        self.location_path = os.path.join('/', 'locations', 'repo_name', 'exo2', '2020', '01')
         self.location_file_1 = os.path.join(self.location_path, '01', self.location_name, self.location_name + '.json')
         self.fs.create_file(self.location_file_1)
         self.location_file_2 = os.path.join(self.location_path, '02', self.location_name, self.location_name + '.json')
