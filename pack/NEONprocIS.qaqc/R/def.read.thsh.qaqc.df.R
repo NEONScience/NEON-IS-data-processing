@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Read QAQC thresholds for NEON instrumented systems data products from JSON file
+#' @title Read QAQC thresholds for NEON instrumented systems data products from JSON file to data frame
 
 #' @author 
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
@@ -11,9 +11,9 @@
 #' @param strJson character string of data in JSON format (as produced by rjson::toJSON()). Note that
 #' only one of NameFile, strJson, or thsh may be entered. If more than one are supplied, the first
 #' valid input will be used.
-#' @param listThsh A list of thresholds already read in (as produced by rjson::fromJSON()). Note that
-#' only one of NameFile, strJson, or listThsh may be entered. If more than one are supplied, the first
-#' valid input will be used.
+#' @param listThsh A list of thresholds already read in (as produced by rjson::fromJSON()) and extracted 
+#' from the main 'thresholds' list. Note that only one of NameFile, strJson, or listThsh may be entered. 
+#' If more than one are supplied, the first valid input will be used.
 
 #' @return A data frame with all thresholds contained in the json file. Note that the context entries
 #' for each threshold have been combined into a single pipe-delimited string.
@@ -25,7 +25,7 @@
 
 #' @examples Currently none
 
-#' @seealso Currently none
+#' @seealso \link[NEONprocIS.qaqc]{def.read.thsh.qaqc.list}
 
 #' @export
 
@@ -33,15 +33,17 @@
 #   Cove Sturtevant (2019-05-16)
 #     original creation
 ##############################################################################################
-def.read.thsh.qaqc.json <- function(NameFile=NULL,
-                                    strJson=NULL,
-                                    listThsh=NULL){
+def.read.thsh.qaqc.df <- function(NameFile=NULL,
+                                  strJson=NULL,
+                                  listThsh=NULL){
   
   # Load in the raw json info
   if(!is.null(NameFile)){
     listThsh <- rjson::fromJSON(file=NameFile,simplify=TRUE)
+    listThsh <- listThsh$thresholds
   } else if(!base::is.null(strJson)){
     listThsh <- rjson::fromJSON(json_str=strJson,simplify=TRUE)
+    listThsh <- listThsh$thresholds
   } else {
     if(base::is.null(listThsh)){
       stop('One of NameFile, strJson, or listThsh must be supplied.')
@@ -49,7 +51,6 @@ def.read.thsh.qaqc.json <- function(NameFile=NULL,
   }
   
   # Turn all the NULLs into NAs
-  listThsh <- listThsh$thresholds
   listThsh <- base::lapply(listThsh,function(list){
             base::lapply(list,function(valu){
               if(base::is.null(valu) || base::length(valu)==0){

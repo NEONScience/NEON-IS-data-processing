@@ -19,7 +19,7 @@ for voltage measurements, or NA (no quotes) for measurements in which FDAS uncer
 not apply (e.g. digital L0 output) \cr
 \code{FuncUcrt} A character string indicating the individual measurement (calibration) uncertainty 
 function within the NEONprocIS.cal package that should be used. Note that this does not include 
-FDAS uncertainty. For most NEON data products, this will be "def.ucrt.meas". Note that any 
+FDAS uncertainty. For most NEON data products, this will be "def.ucrt.meas.cnst". Note that any 
 alternative function must accept arguments "data", "infoCal", and "log", even if they are unused 
 in the function, and must return a data frame, one column of which is labeled "ucrtMeas" which 
 corresponds to the individual measurement uncertainty for the variable. Input "data" to the function
@@ -41,7 +41,7 @@ applies.}
 ParaUcrt. The data frame in each list element holds information about the calibration files and 
 time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
 See documentation for that function. Assign NULL to list elements (variables) for which calibration
-information is not applicable (i.e. a function other than def.ucrt.meas is used to compute its
+information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
 uncertainty).}
 
 \item{DirCal}{Character string. Relative or absolute path (minus file name) to the main calibration

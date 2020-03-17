@@ -30,7 +30,8 @@
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
 #' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.rstc}
 #' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.volt}
-#' @seealso \link[NEONprocIS.cal]{def.ucrt.meas}
+#' @seealso \link[NEONprocIS.cal]{def.ucrt.meas.cnst}
+#' @seealso \link[NEONprocIS.cal]{def.ucrt.meas.mult}
 #' @seealso \link[NEONprocIS.cal]{def.ucrt.comb}
 #' @seealso \link[NEONprocIS.base]{def.log.init}
 

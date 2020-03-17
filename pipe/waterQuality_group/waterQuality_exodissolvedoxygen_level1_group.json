@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "waterQuality_exoturbidity_threshold_regularized_group"
+    "name": "waterQuality_exodissolvedoxygen_level1_group"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -8,7 +8,7 @@
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m joiner.app" ],
     "env": {
-      "RELATED_PATHS": "REGULARIZED_PATH,THRESHOLD_PATH",
+      "RELATED_PATHS": "QUALITY_PATH,STATISTICS_PATH",
       "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out"
     }
@@ -17,19 +17,19 @@
     "join": [
       {
         "pfs": {
-          "name": "REGULARIZED_PATH",
-          "repo": "waterQuality_exoturbidity_data",
-          "glob": "/*/*/(*)",
-          "joinOn": "$1",
+          "name": "QUALITY_PATH",
+          "repo": "waterQuality_exodissolvedoxygen_quality_metrics",
+          "glob": "/*/*/(*)/(*)/exodissolvedoxygen/*/quality_metrics",
+          "joinOn": "$1/$2",
           "empty_files": true
         } 
       },
       {
         "pfs": {
-          "name": "THRESHOLD_PATH",
-          "repo": "waterQuality_exoturbidity_threshold_select",
-          "glob": "/*/*/(*)",
-          "joinOn": "$1",
+          "name": "STATISTICS_PATH",
+          "repo": "waterQuality_exodissolvedoxygen_stats",
+          "glob": "/*/*/(*)/(*)/exodissolvedoxygen/*/stats",
+          "joinOn": "$1/$2",
           "empty_files": true
         }
       }

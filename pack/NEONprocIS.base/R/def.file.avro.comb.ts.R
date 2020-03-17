@@ -6,7 +6,8 @@
 
 #' @description
 #' Definition function. Merge the contents of multiple avro files that share a common time 
-#' variable. Other than the time variable, the files must contain different columns. Any missing
+#' variable. Other than the time variable, the files should different columns. If any duplicate 
+#' column names are found, only the first instance found will be retained. Any missing
 #' timestamps among the files will be filled with NA values.
 
 #' @param file Character vector of full or relative file paths. Must be avro format.
@@ -60,9 +61,10 @@ def.file.avro.comb.ts <- function(file,nameVarTime,log = NULL) {
       data <- idxData
     } else {
       # Make sure there are no duplicate columns
-      if(base::sum(base::names(idxData) %in% base::setdiff(base::names(data),nameVarTime)) > 0){
-        log$error(base::paste0('The non-time column names contained in the files of ', idxDirQf, ' overlap. This is not allowed.'))
-        stop()
+      dupCol <-base::names(idxData) %in% base::setdiff(base::names(data),nameVarTime)
+      if(base::sum(dupCol) > 0){
+        log$warn(base::paste0('The non-time column names contained in the files of ', idxDirQf, ' overlap. Taking the first instance of duplicate column names.'))
+        idxData <- data[!dupCol]
       }
       
       # Issue a warning if the timestamps are not identical
