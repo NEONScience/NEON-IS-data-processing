@@ -401,7 +401,7 @@ for (idxDirIn in DirIn){
   dataOut <- fdomData[,which(names(fdomData)%in%dataOutputs)]
   names(dataOut) <- dataOutputs
   NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
-                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctedData.avro"),
+                                      NameFile = base::paste0("/",idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctedData.avro"),
                                       NameSchm = Para$FileSchmQf,
                                       NameLib = ravroLib)
   
@@ -411,7 +411,7 @@ for (idxDirIn in DirIn){
   flagsOut <- fdomData[,which(names(fdomData)%in%flagOutputs)]
   names(flagsOut) <- flagOutputs
   NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 
-                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctionFlags.avro"), 
+                                      NameFile = base::paste0("/",idxDirOutFlags,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctionFlags.avro"), 
                                       NameSchm = Para$FileSchmData, 
                                       NameLib = ravroLib )
 }
