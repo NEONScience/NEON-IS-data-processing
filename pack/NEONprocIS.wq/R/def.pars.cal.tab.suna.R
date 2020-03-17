@@ -5,8 +5,8 @@
 #' Kaelin M. Cawley \email{kcawley@battelleecology.org}
 
 #' @description
-#' Definition function. Given a calibration filename, the code parses the calibration table 
-#' if it exists. Some older SUNA files do not have a calibration table. As of the development 
+#' Definition function. Given a calibration filename, the code parses the calibration table
+#' if it exists. Some older SUNA files do not have a calibration table. As of the development
 #' of this function no other sensors, besides the SUNA, have a calibraiton table.
 
 #' @param calFilename The filename assiciated with the desired calibration table [character]
@@ -53,15 +53,15 @@ def.pars.cal.tab.suna <-
     calTable <-
       calFile$file$StreamCalVal$CalibrationTable[calFile$file$StreamCalVal$CalibrationTable$.attrs == calTableName]
     
-    calStartIdx <- min(which(names(calTable)=="Row"))
-    calEndIdx <- max(which(names(calTable)=="Row"))
+    calStartIdx <- base::min(base::which(names(calTable) == "Row"))
+    calEndIdx <- base::max(base::which(names(calTable) == "Row"))
     
     wavelength <- calTable[calStartIdx]$Row$Independent$text
     transmittance <- calTable[calStartIdx]$Row$Column$Dependent$text
     outputDF <-
       base::data.frame(wavelength, transmittance, stringsAsFactors = FALSE)
     
-    for (i in (calStartIdx+1):calEndIdx) {
+    for (i in (calStartIdx + 1):calEndIdx) {
       wavelength <- calTable[i]$Row$Independent$text
       transmittance <- calTable[i]$Row$Column$Dependent$text
       newRows <-
@@ -70,12 +70,15 @@ def.pars.cal.tab.suna <-
     }
     
     outputDF$wavelength <- base::as.numeric(outputDF$wavelength)
-    outputDF$transmittance <- base::as.numeric(outputDF$transmittance)
+    outputDF$transmittance <-
+      base::as.numeric(outputDF$transmittance)
     #Eyeball Check
     #plot(outputDF$wavelength,outputDF$transmittance)
     
     # Clean up the calibration table in case there is a 0 wavelength value
-    outputDF <- outputDF[outputDF$wavelength > waveRangeStart & outputDF$wavelength < waveRangeEnd,]
+    outputDF <-
+      outputDF[outputDF$wavelength > waveRangeStart &
+                 outputDF$wavelength < waveRangeEnd, ]
     
     return(outputDF)
   }

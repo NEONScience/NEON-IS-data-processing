@@ -21,8 +21,8 @@ A data frame of \cr
 \code{transmittance} units = unitless. \cr
 }
 \description{
-Definition function. Given a calibration filename, the code parses the calibration table 
-if it exists. Some older SUNA files do not have a calibration table. As of the development 
+Definition function. Given a calibration filename, the code parses the calibration table
+if it exists. Some older SUNA files do not have a calibration table. As of the development
 of this function no other sensors, besides the SUNA, have a calibraiton table.
 }
 \examples{

@@ -5,7 +5,7 @@
 #' Kaelin M. Cawley \email{kcawley@battelleecology.org}
 
 #' @description
-#' Definition function. Given a burst of SUNA data, the code parses the spectrum_channels 
+#' Definition function. Given a burst of SUNA data, the code parses the spectrum_channels
 #' and returns a vector of averaged transimittance intensities.
 
 #' @param sunaBurst The filename assiciated with the desired calibration table [dataframe]
@@ -48,8 +48,9 @@ def.pars.data.suna <-
     }
     
     parsedBurst <- base::apply(parsedBurst, 2, base::as.numeric)
-    avgBurst <- base::apply(parsedBurst, 1, base::mean, na.rm = TRUE)
-    avgBurst <- avgBurst[!is.nan(avgBurst)]
+    avgBurst <-
+      base::apply(parsedBurst, 1, base::mean, na.rm = TRUE)
+    avgBurst <- avgBurst[!base::is.nan(avgBurst)]
     
     return(avgBurst)
   }

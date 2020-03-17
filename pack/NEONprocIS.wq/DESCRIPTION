@@ -10,6 +10,8 @@ Description: Functions for correcting fDOM data for temperature and absorbance i
 Depends:
     R (>= 3.5.0)
 Imports:
+    NEONprocIS.base,
+    NEONprocIS.cal
 License: AGPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true

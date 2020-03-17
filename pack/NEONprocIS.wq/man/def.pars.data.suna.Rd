@@ -16,7 +16,7 @@ output. Defaults to NULL, in which the logger will be created and used within th
 A vector of unitless transmittance values
 }
 \description{
-Definition function. Given a burst of SUNA data, the code parses the spectrum_channels 
+Definition function. Given a burst of SUNA data, the code parses the spectrum_channels
 and returns a vector of averaged transimittance intensities.
 }
 \examples{
