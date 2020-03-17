@@ -34,6 +34,15 @@
 #' argument DirSubCopy will be copied through.  
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 3. "PadDay=value" (optional), where value contains the integer days to "pad" the filtered 
+#' calibration files before/after the current processing day. A negative value indicates # 
+#' of days to pad prior to the current processing day, a positive value indicates # of days to pad after 
+#' the current processing day. Default is 0. For example, if the current processing day is 2019-01-15, "PadDay=-2" 
+#' will return calibration file(s) that are applicable between 2019-01-13 00:00 and 2019-01-15 24:00. 
+#' "PadDay=2" will return calibration file(s) that are applicable between 2019-01-15 00:00 and 2019-01-17 24:00.
+#' To provide both negative and positive pads (a window around the current day), separate the values with pipes (
+#' e.g. "PadDay=-2|2). 
 #'
 #' 3. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at the same level as the
 #' calibration folder in the input path that are to be copied with a symbolic link to the output path.
@@ -91,13 +100,43 @@ Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
     NameParaReqd = c("DirIn", "DirOut"),
-    NameParaOptn = "DirSubCopy",
+    NameParaOptn = c("PadDay","DirSubCopy"),
+    ValuParaOptn = base::list(PadDay=0),
+    TypePara = base::list(PadDay="integer"),
     log = log
   )
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
+
+# Parse the days to pad
+if(base::length(Para$PadDay) == 1 && !base::is.na(Para$PadDay)){
+  # Assign the pads
+  if(Para$PadDay > 0){
+    timePadEnd <- base::as.difftime(Para$PadDay,units='days')
+    timePadBgn <- base::as.difftime(0,units='days')
+  } else {
+    timePadBgn <- base::as.difftime(Para$PadDay,units='days')
+    timePadEnd <- base::as.difftime(0,units='days')
+  }
+} else if(base::length(Para$PadDay) == 2 && !base::any(base::is.na(Para$PadDay))){
+  
+  # Make sure one is negative and one is positive
+  minPadDay <- base::min(Para$PadDay)
+  maxPadDay <- base::max(Para$PadDay)
+  if(minPadDay > 0 || maxPadDay < 0){
+    log$fatal('If two numbers are provided for input argument PadDay, one must be negative, one must be positive. See documentation.')
+    stop()
+  }
+  
+  # Assign the pads
+  timePadBgn <- base::as.difftime(minPadDay,units='days')
+  timePadEnd <- base::as.difftime(maxPadDay,units='days')
+} else {
+  log$fatal('Poorly formed input argument PadDay. See documentation.')
+  stop()
+}
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <-
@@ -153,8 +192,8 @@ for (idxDirIn in DirIn) {
     )
     base::stop()
   }
-  timeBgn <-  InfoDirIn$time
-  timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
+  timeBgn <-  InfoDirIn$time + timePadBgn
+  timeEnd <- InfoDirIn$time + timePadEnd + base::as.difftime(1, units = 'days')
   
   
   # For each data stream, filter the calibration files for the most recent applicable file(s) over the data date range
