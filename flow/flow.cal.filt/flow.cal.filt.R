@@ -44,7 +44,7 @@
 #' To provide both negative and positive pads (a window around the current day), separate the values with pipes (
 #' e.g. "PadDay=-2|2). 
 #'
-#' 3. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at the same level as the
+#' 4. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at the same level as the
 #' calibration folder in the input path that are to be copied with a symbolic link to the output path.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -85,6 +85,8 @@
 #     pulled out major code functionality into functions
 #   Cove Sturtevant (2020-03-02)
 #     accept data repositories without a calibration folder. Search only for data folder to identify datums.
+#   Cove Sturtevant (2020-03-16)
+#     added option to pad the days around the current day for filtering calibrations 
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -137,6 +139,7 @@ if(base::length(Para$PadDay) == 1 && !base::is.na(Para$PadDay)){
   log$fatal('Poorly formed input argument PadDay. See documentation.')
   stop()
 }
+log$debug(base::paste0('Days to pad calibrations: ',base::paste0(Para$PadDay,collapse=',')))
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <-
