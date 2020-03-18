@@ -51,7 +51,8 @@
 #' Stepping through the code in Rstudio 
 #' Sys.setenv(DIR_IN='/scratch/pfs/waterQuality_exofdom_correction_group')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN", "DirOut=scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/exofdom_corrected.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_correction_exofdom.avsc")
+#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/exofdom_corrected.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_correction_exofdom.avsc")
+#' rm(list=setdiff(ls(),c('arg','log'))
 
 #' @seealso None currently
 
@@ -60,11 +61,11 @@
 #     original creation
 ##############################################################################################
 
-# # Start logging
-# log <- NEONprocIS.base::def.log.init()
-# 
-# # Pull in command line arguments (parameters)
-# arg <- base::commandArgs(trailingOnly = TRUE)
+# Start logging
+log <- NEONprocIS.base::def.log.init()
+
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut"),NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
@@ -401,7 +402,7 @@ for (idxDirIn in DirIn){
   dataOut <- fdomData[,which(names(fdomData)%in%dataOutputs)]
   names(dataOut) <- dataOutputs
   NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
-                                      NameFile = base::paste0("/",idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctedData.avro"),
+                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctedData.avro"),
                                       NameSchm = Para$FileSchmQf,
                                       NameLib = ravroLib)
   
@@ -411,7 +412,7 @@ for (idxDirIn in DirIn){
   flagsOut <- fdomData[,which(names(fdomData)%in%flagOutputs)]
   names(flagsOut) <- flagOutputs
   NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 
-                                      NameFile = base::paste0("/",idxDirOutFlags,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctionFlags.avro"), 
+                                      NameFile = base::paste0(idxDirOutFlags,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctionFlags.avro"), 
                                       NameSchm = Para$FileSchmData, 
                                       NameLib = ravroLib )
 }
