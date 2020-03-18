@@ -88,10 +88,10 @@
     },
     "glue": {
       "Package": "glue",
-      "Version": "1.3.1",
+      "Version": "1.3.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "d4e25697c450c01b202c79ef35694a83"
+      "Hash": "af1f47b63d1aa2206c1fe4d3db1d9366"
     },
     "magrittr": {
       "Package": "magrittr",

@@ -60,11 +60,11 @@
 #     original creation
 ##############################################################################################
 
-# Start logging
-log <- NEONprocIS.base::def.log.init()
-
-# Pull in command line arguments (parameters)
-arg <- base::commandArgs(trailingOnly = TRUE)
+# # Start logging
+# log <- NEONprocIS.base::def.log.init()
+# 
+# # Pull in command line arguments (parameters)
+# arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut"),NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
