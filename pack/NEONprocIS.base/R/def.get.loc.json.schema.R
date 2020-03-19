@@ -34,7 +34,7 @@ def.get.loc.json.schema <- function(locJsonSchema = NULL,
   }
   
   locJsonSchema<- '{
-  "$schema": "http://json-schema.org/draft-07/schema#",
+ // "$schema": "http://json-schema.org/schema#",
   "$id": "http://example.com/root.json",
   "definitions": {
     "type": {
