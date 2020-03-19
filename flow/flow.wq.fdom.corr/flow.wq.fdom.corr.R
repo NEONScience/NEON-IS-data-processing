@@ -401,9 +401,14 @@ for (idxDirIn in DirIn){
   dataOutputs <- c("readout_time", "fDOM", "fDOMExpUncert", "spectrumCount")
   dataOut <- fdomData[,which(names(fdomData)%in%dataOutputs)]
   names(dataOut) <- dataOutputs
+  
+  #Turn necessary outputs to integer
+  colInt <- dataOutputs[4]
+  dataOut[colInt] <- base::lapply(dataOut[colInt],base::as.integer) # Turn spectrumCount to integer
+  
   NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
                                       NameFile = base::paste0(idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctedData.avro"),
-                                      NameSchm = Para$FileSchmQf,
+                                      Schm = SchmDataOut,
                                       NameLib = ravroLib)
   
   #Write an AVRO file for the flags (which get metrics)
@@ -411,9 +416,14 @@ for (idxDirIn in DirIn){
   flagOutputs <- c("readout_time", "fDOMTempQF", "fDOMAbsQF")
   flagsOut <- fdomData[,which(names(fdomData)%in%flagOutputs)]
   names(flagsOut) <- flagOutputs
+  
+  #Turn necessary outputs to integer
+  colInt <- flagOutputs[2:3]  
+  flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
+  
   NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 
                                       NameFile = base::paste0(idxDirOutFlags,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctionFlags.avro"), 
-                                      NameSchm = Para$FileSchmData, 
+                                      Schm = SchmQf, 
                                       NameLib = ravroLib )
 }
 
