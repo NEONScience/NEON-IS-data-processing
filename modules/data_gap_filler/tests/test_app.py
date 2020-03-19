@@ -78,6 +78,8 @@ class AppTest(TestCase):
         os.environ['OUTPUT_DIRECTORIES'] = self.output_directories
         os.environ['OUT_PATH'] = self.out_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['START_DATE'] = '2019-12-31'
+        os.environ['END_DATE'] = '2020-01-04'
         app.main()
         self.check_output()
 
@@ -102,8 +104,8 @@ class AppTest(TestCase):
         self.assertTrue(os.path.exists(empty_calibration_path))
         empty_uncertainty_data_path = os.path.join(root_path, '01', self.location_name, 'uncertainty_data')
         self.assertTrue(os.path.exists(empty_uncertainty_data_path))
-        empty_uncertainty_coef_path = os.path.join(root_path, '01', self.location_name, 'uncertainty_coef')
-        self.assertTrue(os.path.exists(empty_uncertainty_coef_path))
+        empty_uncertainty_coefficient_path = os.path.join(root_path, '01', self.location_name, 'uncertainty_coef')
+        self.assertTrue(os.path.exists(empty_uncertainty_coefficient_path))
         empty_flags_path = os.path.join(root_path, '01', self.location_name, 'flags')
         self.assertTrue(os.path.exists(empty_flags_path))
         # second missing day
@@ -115,7 +117,7 @@ class AppTest(TestCase):
         self.assertTrue(os.path.exists(empty_calibration_path))
         empty_uncertainty_data_path = os.path.join(root_path, '03', self.location_name, 'uncertainty_data')
         self.assertTrue(os.path.exists(empty_uncertainty_data_path))
-        empty_uncertainty_coef_path = os.path.join(root_path, '03', self.location_name, 'uncertainty_coef')
-        self.assertTrue(os.path.exists(empty_uncertainty_coef_path))
+        empty_uncertainty_coefficient_path = os.path.join(root_path, '03', self.location_name, 'uncertainty_coef')
+        self.assertTrue(os.path.exists(empty_uncertainty_coefficient_path))
         empty_flags_path = os.path.join(root_path, '03', self.location_name, 'flags')
         self.assertTrue(os.path.exists(empty_flags_path))

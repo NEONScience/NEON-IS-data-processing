@@ -16,7 +16,7 @@
     "input": {
         "pfs": {
                 "name": "IN_PATH",
-                "repo": "waterQuality_exo2",
+                "repo": "waterQuality_exo2_buoyprofiling_context_filter",
                 "glob": "/*/*/*/*",
                 "empty_files": true
         }

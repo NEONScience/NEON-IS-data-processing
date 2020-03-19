@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/data_gap_filler:8",
+    "image": "quay.io/battelleecology/data_gap_filler:9",
     "cmd": [
       "/bin/bash"
     ],
@@ -17,6 +17,8 @@
     "env": {
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out",
+      "START_DATE": "2018-12-31",
+      "END_DATE": "2019-01-06",
       "OUTPUT_DIRECTORIES": "data,calibration,location,uncertainty_data,uncertainty_coef,flags"
     }
   },
@@ -37,7 +39,7 @@
         "pfs": {
           "name": "DATA_PATH",
           "repo": "prt_merge_data_by_location",
-          "glob": "/prt/*/*/*",
+          "glob": "/prt/2019/01/*",
           "empty_files": true
         }
       },
@@ -45,7 +47,7 @@
         "pfs": {
           "name": "LOCATION_PATH",
           "repo": "location_active_dates",
-          "glob": "/prt/*/*",
+          "glob": "/prt/2019/01/*",
           "empty_files": true
         }
       }

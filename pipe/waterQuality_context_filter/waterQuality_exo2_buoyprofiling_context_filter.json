@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempSurfacewater_context_group"
+    "name": "waterQuality_exo2_buoyprofiling_context_filter"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -9,23 +9,23 @@
     "stdin": [ "#!/bin/bash", "python3 -m context_filter.app" ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "CONTEXT": "under-water",
-      "LOG_LEVEL": "INFO",
-      "SOURCE_TYPE_INDEX": "3",
-      "YEAR_INDEX": "4",
-      "MONTH_INDEX": "5",
-      "DAY_INDEX": "6",
-      "SOURCE_ID_INDEX": "7",
-      "DATA_TYPE_INDEX": "8"
+      "CONTEXT": "buoy-profiling",
+      "LOG_LEVEL": "DEBUG",
+      "YEAR_INDEX": "3",
+      "MONTH_INDEX": "4",
+      "DAY_INDEX": "5",
+      "SOURCE_TYPE_INDEX": "7",
+      "SOURCE_ID_INDEX": "8",
+      "DATA_TYPE_INDEX": "9"
     }
   },
   "input": {
       "pfs": {
         "name": "IN_PATH",
-        "repo": "prt_fill_date_gaps_by_location",
-        "glob": "/*/*/*/*"
+        "repo": "waterQuality_exo_regularized",
+        "glob": "/*/*/*/*/exo2/*"
       }
   },
   "enable_stats": false,
-  "standby": true
+  "standby": false 
 }

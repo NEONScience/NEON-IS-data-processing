@@ -1,4 +1,7 @@
 import json
+import structlog
+
+log = structlog.get_logger()
 
 
 def match(location_file, context_match):
@@ -17,6 +20,7 @@ def match(location_file, context_match):
             if not context:
                 return False
             for item in context:
+                log.debug(f'searching for context: {context_match} in {item}')
                 if item == context_match:
                     return True
         return False
