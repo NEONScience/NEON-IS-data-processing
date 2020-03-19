@@ -88,10 +88,6 @@ absCorrNameUncrt <- "U_CVALA5" # Combined, standard uncertainty of absorbance co
 ravroLib <- "/ravro.so"
 timestampFormat <- "%Y-%m-%d %H:%M"
 
-#Default Values for applying corrections
-applyTempCorr <- TRUE
-applyAbsCorr <- TRUE
-
 # Default values for rho and pathlength, useful for older data where cal files don't have the info yet
 rho_fdom <- -0.01024
 uncrt_rho_fdom <- 0.002458
@@ -134,6 +130,10 @@ if(base::length(DirIn) < 1){
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
+  
+  #Default Values for applying corrections
+  applyTempCorr <- TRUE
+  applyAbsCorr <- TRUE
   
   # Create the base output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
@@ -350,29 +350,35 @@ for (idxDirIn in DirIn){
     }
     
     #Determine fdom absorbance correction factor
-    absData <- try(NEONprocIS.wq::def.wq.abs.corr(sunav2Filenames = sunav2DataPath, sunav2CalFilenames = sunav2CalDataPath),silent = TRUE)
+    absData <- try(NEONprocIS.wq::def.wq.abs.corr(sunav2Filenames = sunav2DataPath, sunav2CalFilenames = sunav2CalDataPath, log = log),silent = TRUE)
     
-    # Merge in abs data to the fdomData dataframe and calculate correction factors and flags
-    for(idxAbsData in absData$readout_time){
-      if(idxAbsData <= base::max(fdomData$readout_time)){
-        nextReadout <- base::min(absData$readout_time[absData$readout_time > idxAbsData])
-        fdomData$Abs_ex[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$Abs_ex[absData$readout_time == idxAbsData]
-        fdomData$Abs_em[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$Abs_em[absData$readout_time == idxAbsData]
-        fdomData$ucrt_A_ex[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$ucrt_A_ex[absData$readout_time == idxAbsData]
-        fdomData$ucrt_A_em[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$ucrt_A_em[absData$readout_time == idxAbsData]
-        fdomData$spectrumCount[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$spectrumCount[absData$readout_time == idxAbsData]
-      }else{
-        break
+    # Handle the error when absData is a try-error
+    if (base::class(absData) == 'try-error') {
+      log$debug(base::paste0('File: ', fdomDataGlob, ' is unreadable.'))
+      fdomData$fDOMAbsQF <- 1
+    }else{
+      # Merge in abs data to the fdomData dataframe and calculate correction factors and flags
+      for(idxAbsData in absData$readout_time){
+        if(idxAbsData <= base::max(fdomData$readout_time)){
+          nextReadout <- base::min(absData$readout_time[absData$readout_time > idxAbsData])
+          fdomData$Abs_ex[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$Abs_ex[absData$readout_time == idxAbsData]
+          fdomData$Abs_em[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$Abs_em[absData$readout_time == idxAbsData]
+          fdomData$ucrt_A_ex[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$ucrt_A_ex[absData$readout_time == idxAbsData]
+          fdomData$ucrt_A_em[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$ucrt_A_em[absData$readout_time == idxAbsData]
+          fdomData$spectrumCount[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$spectrumCount[absData$readout_time == idxAbsData]
+        }else{
+          break
+        }
+        
       }
       
+      #Populate the fdom absorbance QF values
+      fdomData$fDOMAbsQF[!base::is.na(fdomData$Abs_ex)&!base::is.na(fdomData$Abs_em)] <- 0
+      fdomData$fDOMAbsQF[base::is.na(fdomData$Abs_ex)|base::is.na(fdomData$Abs_em)] <- 1
+      
+      #Determine fdom absorbance correction factor
+      fdomData$absFactor <- 10^((fdomData$Abs_ex + fdomData$Abs_em) * fdomData$pathlength)
     }
-    
-    #Populate the fdom absorbance QF values
-    fdomData$fDOMAbsQF[!base::is.na(fdomData$Abs_ex)&!base::is.na(fdomData$Abs_em)] <- 0
-    fdomData$fDOMAbsQF[base::is.na(fdomData$Abs_ex)|base::is.na(fdomData$Abs_em)] <- 1
-    
-    #Determine fdom absorbance correction factor
-    fdomData$absFactor <- 10^((fdomData$Abs_ex + fdomData$Abs_em) * fdomData$pathlength)
   }
   
   #Calculate the fdom output with the factors that exist
@@ -407,7 +413,7 @@ for (idxDirIn in DirIn){
   dataOut[colInt] <- base::lapply(dataOut[colInt],base::as.integer) # Turn spectrumCount to integer
   
   NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
-                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctedData.avro"),
+                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_dataCorrected.avro"),
                                       Schm = SchmDataOut,
                                       NameLib = ravroLib)
   
@@ -422,9 +428,9 @@ for (idxDirIn in DirIn){
   flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
   
   NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 
-                                      NameFile = base::paste0(idxDirOutFlags,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_correctionFlags.avro"), 
+                                      NameFile = base::paste0(idxDirOutFlags,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCorrection.avro"), 
                                       Schm = SchmQf, 
-                                      NameLib = ravroLib )
+                                      NameLib = ravroLib)
 }
 
 

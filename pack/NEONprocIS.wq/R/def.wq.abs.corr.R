@@ -62,12 +62,16 @@ def.wq.abs.corr <-
         log = log
       ),
       silent = FALSE)
-    sunav2Data <- try(do.call("rbind", sunav2DataList), silent = FALSE)
+    sunav2Data <-
+      try(do.call("rbind", sunav2DataList), silent = FALSE)
+    
+    #Clean up the SUNA data a little bit since it can be messy
+    sunav2Data <- sunav2Data[!is.na(sunav2Data$header_light_frame), ]
     
     timeBgn <-
-      base::format(base::min(sunav2Data$readout_time), format = "%Y-%m-%d")
+      base::format(base::min(sunav2Data$readout_time, na.rm = TRUE), format = "%Y-%m-%d")
     timeEnd <-
-      base::format(base::max(sunav2Data$readout_time), format = "%Y-%m-%d")
+      base::format(base::max(sunav2Data$readout_time, na.rm = TRUE), format = "%Y-%m-%d")
     
     #Read in all SUNA calibration data
     #Pull fDOM A1 uncertainty, rho_fdom, and pathlength from the appropriate cal file
@@ -95,7 +99,7 @@ def.wq.abs.corr <-
         "spectrumCount")
     outputDF <- base::as.data.frame(base::matrix(
       data = NA,
-      nrow = base::nrow(sunav2Data[sunav2Data$header_light_frame == FALSE, ]),
+      nrow = base::nrow(sunav2Data[sunav2Data$header_light_frame == FALSE,]),
       ncol = base::length(outputNames)
     ))
     base::names(outputDF) <- outputNames
@@ -108,7 +112,7 @@ def.wq.abs.corr <-
       NameCal <-
         sunav2CalFilenames[base::grepl(idxCal, sunav2CalFilenames)]
       calTable <-
-        try(NEONprocIS.wq::def.pars.cal.tab.suna(calFilename = NameCal))
+        try(NEONprocIS.wq::def.pars.cal.tab.suna(calFilename = NameCal, log = log))
       
       # Fail the transition now when these can't be read, but might just want to keep going if they all seem to be older files
       if (base::class(calTable) == 'try-error') {
@@ -150,7 +154,7 @@ def.wq.abs.corr <-
           
           burstData <-
             sunav2Data[sunav2Data$readout_time > burstStartTime &
-                         sunav2Data$readout_time < burstEndTime, ]
+                         sunav2Data$readout_time < burstEndTime,]
           
           #According to the nitrate testing the lamp's data is best for the 10-20th frames, throw the others on the ground
           if (base::nrow(burstData) < 10) {
@@ -181,10 +185,11 @@ def.wq.abs.corr <-
             
             burstEnd <-
               base::ifelse(maxBurstIdx > 20, 20, maxBurstIdx)
-            burstData <- burstData[10:burstEnd, ]
+            burstData <- burstData[10:burstEnd,]
             outputDF$spectrumCount <- burstEnd - (10 - 1)
             avgBurst <-
-              NEONprocIS.wq::def.pars.data.suna(sunaBurst = burstData$spectrum_channels)
+              NEONprocIS.wq::def.pars.data.suna(sunaBurst = burstData$spectrum_channels,
+                                                log = log)
             #Eyeball Check
             #plot(calTable$wavelength,avgBurst)
             
@@ -231,7 +236,8 @@ def.wq.abs.corr <-
                 try(base::log10(calTable$wavelength), silent = TRUE)
               abs_model <-
                 try(stats::lm(log_abs[!is.nan(log_abs) &
-                                        log_abs != -Inf] ~ log_waves[!is.nan(log_abs) & log_abs != -Inf]))
+                                        log_abs != -Inf] ~ log_waves[!is.nan(log_abs) &
+                                                                       log_abs != -Inf]))
               
               if (base::class(abs_model) == 'try-error') {
                 # outputDF$Abs_ex <- NA
@@ -249,8 +255,10 @@ def.wq.abs.corr <-
               #plot(calTable$wavelength, absorbance)
               #lines(calTable$wavelength, absorbance, col = "red")
               
-              outputDF$Abs_em[i] <- 10 ^ (slope * log10(480) + intercept)
-              outputDF$ucrt_A_em[i] <- stats::sd(abs_model$residuals)
+              outputDF$Abs_em[i] <-
+                10 ^ (slope * log10(480) + intercept)
+              outputDF$ucrt_A_em[i] <-
+                stats::sd(abs_model$residuals)
             }
           }
           
