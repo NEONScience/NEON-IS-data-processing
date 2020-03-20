@@ -19,7 +19,7 @@ class GrouperNoCalibrationTest(TestCase):
         self.out_path = os.path.join('/', 'outputs')
         self.calibration_metadata_path = os.path.join('prt', '0001')
 
-        self.data_filename = 'prt_0001_2018-01-03.avro'
+        self.data_filename = 'prt_0001_2018-01-03.ext'
 
         in_path = os.path.join('/', 'inputs')
         data_path = os.path.join(in_path, 'data', self.data_metadata_path, self.data_filename)

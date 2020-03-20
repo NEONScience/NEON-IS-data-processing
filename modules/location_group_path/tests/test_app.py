@@ -24,7 +24,7 @@ class AppTest(TestCase):
 
         inputs_root = os.path.join(self.in_path, 'repo', self.metadata_path)
 
-        data_path = os.path.join(inputs_root, self.location, 'data', 'data.avro')
+        data_path = os.path.join(inputs_root, self.location, 'data', 'data.ext')
         locations_path = os.path.join(inputs_root, self.location, 'location', 'locations.json')
 
         self.fs.create_file(data_path)
@@ -46,10 +46,10 @@ class AppTest(TestCase):
         root_path_1 = os.path.join(self.out_path, self.metadata_path, 'aspirated-triple-224', self.location)
         root_path_2 = os.path.join(self.out_path, self.metadata_path, 'aspirated-triple-226', self.location)
 
-        data_path_1 = os.path.join(root_path_1, 'data', 'data.avro')
+        data_path_1 = os.path.join(root_path_1, 'data', 'data.ext')
         locations_path_1 = os.path.join(root_path_2, 'location', 'locations.json')
 
-        data_path_2 = os.path.join(root_path_1, 'data', 'data.avro')
+        data_path_2 = os.path.join(root_path_1, 'data', 'data.ext')
         locations_path_2 = os.path.join(root_path_2, 'location', 'locations.json')
 
         print(f'data_path_1: {data_path_1}')
