@@ -138,9 +138,9 @@ for (idxDirIn in DirIn){
   # Create the base output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
   # Need the source ID for the sensor to write out data
-  IdxSensor <- base::dir(base::paste0(idxDirIn,"/exofdom"))
-  if(length(IdxSensor) != 1){
-    log$fatal('More than one source ID for exofdom discovered.')
+  cfgLoc <- base::dir(base::paste0(idxDirIn,"/exofdom"))
+  if(length(cfgLoc) != 1){
+    log$fatal('More than one CFGLOC for exofdom discovered.')
     stop()
   }
   # The time frame of the data is one day, and this day is indicated in the directory structure.
@@ -157,8 +157,8 @@ for (idxDirIn in DirIn){
   timeBgn <- InfoDirIn$time # start date for the data
   timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
   idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
-  idxDirOutData <- base::paste0(idxDirOut, '/exofdom/data')
-  idxDirOutFlags <- base::paste0(idxDirOut, '/exofdom/flags')
+  idxDirOutData <- base::paste0(idxDirOut, '/exofdom/', cfgLoc,'/stats')
+  idxDirOutFlags <- base::paste0(idxDirOut, '/exofdom/', cfgLoc,'/flags')
   NEONprocIS.base::def.dir.crea(
     DirBgn = '/',
     DirSub = c(idxDirOutData, idxDirOutFlags),
@@ -413,7 +413,7 @@ for (idxDirIn in DirIn){
   dataOut[colInt] <- base::lapply(dataOut[colInt],base::as.integer) # Turn spectrumCount to integer
   
   NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
-                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_dataCorrected.avro"),
+                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_basicStats.avro"),
                                       Schm = SchmDataOut,
                                       NameLib = ravroLib)
   
@@ -428,7 +428,7 @@ for (idxDirIn in DirIn){
   flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
   
   NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 
-                                      NameFile = base::paste0(idxDirOutFlags,"/exofdom_",IdxSensor,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCorrection.avro"), 
+                                      NameFile = base::paste0(idxDirOutFlags,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCorrection.avro"), 
                                       Schm = SchmQf, 
                                       NameLib = ravroLib)
 }
