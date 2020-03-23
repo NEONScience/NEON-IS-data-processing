@@ -30,8 +30,8 @@ class AppTest(TestCase):
         self.in_path = os.path.join('/', 'inputs')
         inputs_path = os.path.join(self.in_path, 'merged', self.metadata_path)
 
-        data_path = os.path.join(inputs_path, 'data', 'data.avro')
-        flags_path = os.path.join(inputs_path, 'flags', 'flags.avro')
+        data_path = os.path.join(inputs_path, 'data', 'data.ext')
+        flags_path = os.path.join(inputs_path, 'flags', 'flags.ext')
         locations_path = os.path.join(inputs_path, 'location', 'locations.json')
         uncertainty_coefficient_path = os.path.join(inputs_path,
                                                     'uncertainty_coefficient', 'uncertaintyCoefficient.json')
@@ -72,8 +72,8 @@ class AppTest(TestCase):
 
         root_path = os.path.join(self.out_path, self.metadata_path)
 
-        data_path = os.path.join(root_path, 'data', 'data.avro')
-        flags_path = os.path.join(root_path, 'flags', 'flags.avro')
+        data_path = os.path.join(root_path, 'data', 'data.ext')
+        flags_path = os.path.join(root_path, 'flags', 'flags.ext')
         locations_path = os.path.join(root_path, 'location', 'locations.json')
         uncertainty_coefficient_path = os.path.join(root_path,
                                                     'uncertainty_coefficient', 'uncertaintyCoefficient.json')

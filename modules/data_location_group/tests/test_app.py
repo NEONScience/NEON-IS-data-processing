@@ -20,7 +20,7 @@ class AppTest(TestCase):
         self.metadata_path = os.path.join('prt', '2019', '05', '17')
 
         #  Create data file.
-        self.data_file = 'prt_00001_2019-05-17.avro'
+        self.data_file = 'prt_00001_2019-05-17.ext'
         self.input_data_path = os.path.join(self.data_path, self.metadata_path, self.data_file)
         self.fs.create_file(self.input_data_path)
 

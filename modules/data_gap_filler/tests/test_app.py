@@ -30,16 +30,16 @@ class AppTest(TestCase):
     def create_data_repo(self):
         self.data_path = os.path.join('/', 'files', 'repo_name', 'exo2', '2020', '01')
         self.data_file_1 = os.path.join('02', self.location_name, 'data',
-                                        'exo2_' + self.location_name + '_2020-01-02.avro')
+                                        'exo2_' + self.location_name + '_2020-01-02.ext')
         self.flags_file_1 = os.path.join('02', self.location_name, 'flags',
-                                         'exo2_' + self.location_name + '_2020-01-02_flagsCal.avro')
+                                         'exo2_' + self.location_name + '_2020-01-02_flagsCal.ext')
         self.location_file_1 = os.path.join('02', self.location_name, 'location',
                                             'exo2_' + self.location_name + '_locations.json')
         self.uncertainty_coefficient_file_1 = os.path.join('02', self.location_name, 'uncertainty_coef',
                                                            'exo2_' + self.location_name
                                                            + '_2020-01-02_uncertaintyCoef.json')
         self.uncertainty_file_1 = os.path.join('02', self.location_name, 'uncertainty_data',
-                                               'exo2_' + self.location_name + '_2020-01-02_uncertaintyData.avro')
+                                               'exo2_' + self.location_name + '_2020-01-02_uncertaintyData.ext')
         self.fs.create_file(os.path.join(self.data_path, self.data_file_1))
         self.fs.create_file(os.path.join(self.data_path, self.flags_file_1))
         self.fs.create_file(os.path.join(self.data_path, self.location_file_1))
@@ -59,16 +59,16 @@ class AppTest(TestCase):
         self.empty_files_path = os.path.join('/', 'empty_files', 'repo_name', 'exo2')
         # data
         self.empty_data_path = os.path.join(self.empty_files_path, 'data')
-        self.empty_data_file = os.path.join(self.empty_data_path, 'exo2_location_year-month-day.avro')
+        self.empty_data_file = os.path.join(self.empty_data_path, 'exo2_location_year-month-day.ext')
         self.fs.create_file(self.empty_data_file)
         # uncertainty data
         self.empty_uncertainty_data_path = os.path.join(self.empty_files_path, 'uncertainty_data')
         self.empty_uncertainty_data_file = \
-            os.path.join(self.empty_uncertainty_data_path, 'exo2_location_year-month-day_uncertaintyData.avro')
+            os.path.join(self.empty_uncertainty_data_path, 'exo2_location_year-month-day_uncertaintyData.ext')
         self.fs.create_file(self.empty_uncertainty_data_file)
         # flags
         self.empty_flags_path = os.path.join(self.empty_files_path, 'flags')
-        self.empty_flags_file = os.path.join(self.empty_flags_path, 'exo2_location_year-month-day_flagsCal.avro')
+        self.empty_flags_file = os.path.join(self.empty_flags_path, 'exo2_location_year-month-day_flagsCal.ext')
         self.fs.create_file(self.empty_flags_file)
 
     def test_main(self):

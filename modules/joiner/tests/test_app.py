@@ -28,7 +28,7 @@ class AppTest(TestCase):
 
         self.data_dir = 'data'
         self.location_dir = 'location'
-        self.data_file = 'data.avro'
+        self.data_file = 'data.ext'
         self.location_file = 'locations.json'
 
         self.prt_path = os.path.join('prt', self.metadata_path)

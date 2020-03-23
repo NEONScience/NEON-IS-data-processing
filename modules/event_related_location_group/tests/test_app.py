@@ -20,23 +20,23 @@ class AppTest(TestCase):
 
         # Data files.
         self.dualfan_data = os.path.join(self.metadata_path, 'dualfan', 'CFGLOC111066', 'data',
-                                         'dualfan_CFGLOC111066_2019-01-05.avro')
+                                         'dualfan_CFGLOC111066_2019-01-05.ext')
         self.dualfan_location = os.path.join(self.metadata_path, 'dualfan', 'CFGLOC111066', 'location',
                                              'dualfan_38462_locations.json')
 
         self.prt_data = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'data',
-                                     'prt_CFGLOC111066_2019-01-05.avro')
+                                     'prt_CFGLOC111066_2019-01-05.ext')
         self.prt_flags = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'flags',
-                                      'prt_CFGLOC111066_2019-01-05_flagsCal.avro')
+                                      'prt_CFGLOC111066_2019-01-05_flagsCal.ext')
         self.prt_location = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'location',
                                          'prt_31052_locations.json')
         self.prt_uncertainty_coef = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'uncertainty_coef',
                                             'prt_CFGLOC111066_2019-01-05_uncertaintyCoef.json')
         self.prt_uncertainty_data = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'uncertainty_data',
-                                                 'prt_CFGLOC111066_2019-01-05_uncertaintyData.avro')
+                                                 'prt_CFGLOC111066_2019-01-05_uncertaintyData.ext')
 
         self.windobserver_data = os.path.join(self.metadata_path, 'windobserverii', 'CFGLOC111062', 'data',
-                                              'windobserverii_CFGLOC111062_2019-01-05.avro')
+                                              'windobserverii_CFGLOC111062_2019-01-05.ext')
         self.windobserver_location = os.path.join(self.metadata_path, 'windobserverii', 'CFGLOC111062', 'location',
                                                   'windobserverii_3794_locations.json')
 

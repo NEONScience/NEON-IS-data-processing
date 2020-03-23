@@ -6,7 +6,7 @@ from lib.merged_data_filename import MergedDataFilename
 class TestDataFilename(unittest.TestCase):
 
     def setUp(self):
-        filename = 'prt_CFGLOC112154_2018-01-03.avro'
+        filename = 'prt_CFGLOC112154_2018-01-03.ext'
         self.data_filename = MergedDataFilename(filename)
 
     def test_date(self):

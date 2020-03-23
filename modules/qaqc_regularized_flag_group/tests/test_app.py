@@ -20,13 +20,13 @@ class AppTest(TestCase):
 
         #  regularized file
         self.fs.create_file(os.path.join(self.regularized_path, 'prt', '2018', '01', '01',
-                                         'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_flagsCal.avro'))
+                                         'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_flagsCal.ext'))
         #  quality file
         self.fs.create_file(os.path.join(self.quality_path, 'prt', '2018', '01', '01',
-                                         'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.avro'))
+                                         'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.ext'))
         # quality file 2
         self.fs.create_file(os.path.join(self.quality_path, 'prt', '2018', '01', '02',
-                                         'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.avro'))
+                                         'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.ext'))
 
     def test_group(self):
         app.group(self.regularized_path, self.quality_path, self.out_path)
@@ -42,12 +42,12 @@ class AppTest(TestCase):
 
     def check_output(self):
         regularized_path = os.path.join(self.out_path, 'prt', '2018', '01', '01',
-                                        'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_flagsCal.avro')
+                                        'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_flagsCal.ext')
         quality_path = os.path.join(self.out_path, 'prt', '2018', '01', '01',
-                                    'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.avro')
+                                    'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.ext')
 
         quality_path_2 = os.path.join(self.out_path, 'prt', '2018', '01', '02',
-                                      'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.avro')
+                                      'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.ext')
 
         self.assertTrue(os.path.lexists(regularized_path))
         self.assertTrue(os.path.lexists(quality_path))

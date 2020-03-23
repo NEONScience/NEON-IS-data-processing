@@ -21,8 +21,8 @@ class AppTest(TestCase):
 
         #  Create calibrated input files.
         calibrated_root = os.path.join(self.calibrated_path, self.metadata_path)
-        data_path = os.path.join(calibrated_root, 'data', 'data.avro')
-        flags_path = os.path.join(calibrated_root, 'flags', 'flags.avro')
+        data_path = os.path.join(calibrated_root, 'data', 'data.ext')
+        flags_path = os.path.join(calibrated_root, 'flags', 'flags.ext')
         uncertainty_path = os.path.join(calibrated_root, 'uncertainty', 'uncertainty.json')
         test_extra_dir_path = os.path.join(calibrated_root, 'test', 'test_dir', 'test.json')
 
@@ -53,8 +53,8 @@ class AppTest(TestCase):
 
     def check_output(self):
         root_path = os.path.join(self.out_path, self.metadata_path)
-        data_path = os.path.join(root_path, 'data', 'data.avro')
-        flags_path = os.path.join(root_path, 'flags', 'flags.avro')
+        data_path = os.path.join(root_path, 'data', 'data.ext')
+        flags_path = os.path.join(root_path, 'flags', 'flags.ext')
         locations_path = os.path.join(root_path, 'location', 'locations.json')
         uncertainty_path = os.path.join(root_path, 'uncertainty', 'uncertainty.json')
         test_extra_dir_path = os.path.join(root_path, 'test', 'test_dir', 'test.json')

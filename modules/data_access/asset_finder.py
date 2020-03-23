@@ -50,9 +50,9 @@ def find_all(connection):
         results = []
         for row in rows:
             asset_uid = row[0]
-            avro_schema_name = row[1]
+            schema_name = row[1]
             results.append({
                 'asset_id': asset_uid,
-                'asset_type': avro_schema_name
+                'asset_type': schema_name
             })
         return results

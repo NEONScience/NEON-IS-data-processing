@@ -6,7 +6,7 @@ from lib.data_filename import DataFilename
 class TestDataFilename(unittest.TestCase):
 
     def setUp(self):
-        filename = 'prt_769_2018-01-03.avro'
+        filename = 'prt_769_2018-01-03.extension'
         self.data_filename = DataFilename(filename)
 
     def test_source_type(self):

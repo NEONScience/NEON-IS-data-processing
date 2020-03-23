@@ -19,7 +19,7 @@ class GrouperCalibrationTest(TestCase):
         self.out_path = os.path.join('/', 'outputs')
         self.calibration_metadata_path = os.path.join('prt', '0001')
 
-        self.data_filename = 'prt_0001_2018-01-03.avro'
+        self.data_filename = 'prt_0001_2018-01-03.ext'
 
         #  Set input files in mock filesystem.
         in_path = os.path.join('/', 'inputs')
