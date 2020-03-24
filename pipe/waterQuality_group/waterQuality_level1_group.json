@@ -41,6 +41,14 @@
       {
         "pfs": {
           "name": "DATA_PATH",
+          "repo": "waterQuality_exofdom_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
           "repo": "waterQuality_exophorp_level1_group",
           "glob": "/*/*/*",
           "empty_files": true
