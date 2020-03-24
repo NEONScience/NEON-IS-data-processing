@@ -382,7 +382,7 @@ for (idxDirIn in DirIn){
   }
   
   #Calculate the fdom output with the factors that exist
-  fdomData$fdom_out <- fdomData$fDOM * fdomData$tempFactor * fdomData$absFactor
+  fdomData$fDOM <- fdomData$fDOM * fdomData$tempFactor * fdomData$absFactor
   
   ##### Uncertainty Calculations #####
   #Uncertainty when no corrections can be applied
@@ -398,13 +398,13 @@ for (idxDirIn in DirIn){
   fdomData$fDOMExpUncert[absOnlyIdx] <- sqrt((fdomData$uncrt_A1_fdom[absOnlyIdx] * fdomData$fDOM[absOnlyIdx])^2 + (fdomData$ucrt_pathlength[absOnlyIdx] * fdomData$fDOM[absOnlyIdx])^2 + (fdomData$ucrt_A_ex[absOnlyIdx] * fdomData$fDOM[absOnlyIdx])^2 + (fdomData$ucrt_A_em[absOnlyIdx] * fdomData$fDOM[absOnlyIdx])^2)
   
   #Uncertainty when both temperature and absorbance corrections are applied
-  tempAnAbsIdx <- base::which(fdomData$fDOMTempQF == 0 & fdomData$fDOMAbsQF == 0)
-  fdomData$fDOMExpUncert[tempAnAbsIdx] <- sqrt((fdomData$uncrt_A1_fdom[tempAnAbsIdx] * fdomData$fDOM[tempAnAbsIdx])^2 + (fdomData$surfaceWaterTemperature_ucrtComb[tempAnAbsIdx] * fdomData$fDOM[tempAnAbsIdx])^2 + (fdomData$uncrt_rho_fdom[tempAnAbsIdx] * fdomData$fDOM[tempAnAbsIdx])^2 + (fdomData$ucrt_pathlength[tempAnAbsIdx] * fdomData$fDOM[tempAnAbsIdx])^2 + (fdomData$ucrt_A_ex[tempAnAbsIdx] * fdomData$fDOM[tempAnAbsIdx])^2 + (fdomData$ucrt_A_em[tempAnAbsIdx] * fdomData$fDOM[tempAnAbsIdx])^2)
+  tempAndAbsIdx <- base::which(fdomData$fDOMTempQF == 0 & fdomData$fDOMAbsQF == 0)
+  fdomData$fDOMExpUncert[tempAndAbsIdx] <- sqrt((fdomData$uncrt_A1_fdom[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$surfaceWaterTemperature_ucrtComb[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$uncrt_rho_fdom[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$ucrt_pathlength[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$ucrt_A_ex[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$ucrt_A_em[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2)
   
   ##### Writing out data and flag files #####
   #Write an AVRO file for data and uncertainty (which get stats)
   #readout_time, fDOM, fDOMExpUncert, spectrumCount
-  dataOutputs <- c("readout_time", "fDOM", "fDOMExpUncert", "spectrumCount")
+  dataOutputs <- c("readout_time", "fDOM", "rawCalibratedfDOM", "fDOMExpUncert", "spectrumCount")
   dataOut <- fdomData[,which(names(fdomData)%in%dataOutputs)]
   names(dataOut) <- dataOutputs
   
