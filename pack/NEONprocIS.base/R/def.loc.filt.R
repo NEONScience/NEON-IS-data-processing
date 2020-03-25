@@ -43,7 +43,7 @@
 #   Mija Choi (2020-01-30)
 #     Added json schema validations
 #   Mija Choi (2020-03-25)
-#     Modified to add a read-only file, inst/extdata/locations-schema.json 
+#     Modified to add a read-only file, inst/extdata/locations-schema.json, in NEONprocIS.base package 
 ##############################################################################################
 def.loc.filt <-
   function(NameFileIn,
