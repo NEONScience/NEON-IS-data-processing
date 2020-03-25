@@ -64,25 +64,14 @@ def.loc.filt <-
     # Second, validate the json against the schema only if the syntax is valid.
     # Otherwise, validateJsonSchema errors out due to the syntax error
     #
-    #validateJsonSchema <- FALSE
-    # Mija changed this to test inst/extdata
-    #validateJsonSchema <- TRUE
-    
-    # ----------Mija -> same problem here. The schema does not exist in the working directory. 
-    # ----------Also, can you find a different package than jsonvalidate? I cannot seem to install
-    #---------- it in the Docker container (Debian). It requires a package called v8 which will not install.
-    # if (validateJson == TRUE)  {
-    #   validateJsonSchema <-
-    #     NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
-    # }
-    #----- Mija added begin - using inst/extdata
+
     validateJsonSchema <- FALSE
     locJsonSchema <- system.file("extdata", "locations-schema.json", package="NEONprocIS.base")
     if (validateJson == TRUE)  {
       validateJsonSchema <-
         NEONprocIS.base::def.validate.json.schema (NameFileIn, locJsonSchema)
     }
-    #---- Mija added end
+    
     #if the validation fails, the function will not be executed returning status code -1
     #
     loc <- try(if ((validateJson == FALSE)  ||
