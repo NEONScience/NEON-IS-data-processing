@@ -42,6 +42,8 @@
 #     Added parameter validations and logging
 #   Mija Choi (2020-01-30)
 #     Added json schema validations
+#   Mija Choi (2020-03-25)
+#     Modified to add a read-only file, inst/extdata/locations-schema.json 
 ##############################################################################################
 def.loc.filt <-
   function(NameFileIn,
@@ -63,7 +65,8 @@ def.loc.filt <-
     # Otherwise, validateJsonSchema errors out due to the syntax error
     #
     #validateJsonSchema <- FALSE
-    validateJsonSchema <- TRUE
+    # Mija changed this to test inst/extdata
+    #validateJsonSchema <- TRUE
     
     # ----------Mija -> same problem here. The schema does not exist in the working directory. 
     # ----------Also, can you find a different package than jsonvalidate? I cannot seem to install
@@ -72,8 +75,14 @@ def.loc.filt <-
     #   validateJsonSchema <-
     #     NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
     # }
-    
-    #
+    #----- Mija added begin - using inst/extdata
+    validateJsonSchema <- FALSE
+    locJsonSchema <- system.file("extdata", "locations-schema.json", package="NEONprocIS.base")
+    if (validateJson == TRUE)  {
+      validateJsonSchema <-
+        NEONprocIS.base::def.validate.json.schema (NameFileIn, locJsonSchema)
+    }
+    #---- Mija added end
     #if the validation fails, the function will not be executed returning status code -1
     #
     loc <- try(if ((validateJson == FALSE)  ||
