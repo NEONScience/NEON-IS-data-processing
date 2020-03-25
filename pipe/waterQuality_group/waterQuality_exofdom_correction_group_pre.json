@@ -26,9 +26,9 @@
       },
       {
         "pfs": {
-          "name": "EXOFDOM_CAL_UNCERTAINTY_PATH",
-          "repo": "waterQuality_exofdom_cal_and_uncertainty",
-          "glob": "/*/*/(*)/(*)/exofdom/*",
+          "name": "EXOFDOM_CAL_PATH",
+          "repo": "waterQuality_exofdom",
+          "glob": "/*/*/(*)/(*)/exofdom/*/calibration",
           "joinOn": "$1/$2",
           "empty_files": true
         }
