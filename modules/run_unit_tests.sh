@@ -1,5 +1,6 @@
 #!/bin/bash
 python3 -B -m unittest \
+avro_parquet_converter.tests.test_app \
 calibrated_location_group.tests.test_app \
 context_filter.tests.test_app \
 data_access.tests.test_data_access \
