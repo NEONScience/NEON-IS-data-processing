@@ -38,18 +38,17 @@
 ##############################################################################################
 def.read.cal.xml <- function(NameFile,Vrbs=TRUE){
   
-   xsd1 <- system.file("extdata", "calibration.xsd", package="NEONprocIS.cal")
+  xsd1 <-
+    system.file("extdata", "calibration.xsd", package = "NEONprocIS.cal")
   xmlchk <-
     try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),
         silent = TRUE)
-
+  
   if (xmlchk != TRUE) {
-    base::stop(
-      base::paste0(
-        " ====== def.read.cal.xml will not run due to the error in xml,  ",
-        NameFile
-      )
-    )
+    base::stop(base::paste0(
+      " ====== def.read.cal.xml will not run due to the error in xml,  ",
+      NameFile
+    ))
   }
   
   # Read contents of xml file 
