@@ -44,7 +44,7 @@ test_that("testing Read NEON calibration XML file", {
   ##########
   Sys.setenv(LOG_LEVEL='debug')
   file1 = "calibration.xml"
-  xsd1 = "calibration.xsd"
+ 
   #
   cat("\n       |======= Positive test 1:: input xml is valid and conforms to the xml schmema  ================|\n\n")
   
@@ -65,7 +65,7 @@ test_that("testing Read NEON calibration XML file", {
   ##########
   
   file1 = "calibration-doesNotExist.xml"
-  xsd1 = "calibration.xsd"
+  
   #
   cat("\n       |======= Negative test 1:: input xml does not exist  ==========================================|\n\n" )
   #
@@ -84,7 +84,7 @@ test_that("testing Read NEON calibration XML file", {
   ##########
   
   file1 = "calibration-timeMissing.xml"
-  xsd1 = "calibration.xsd"
+  
   #
   cat("\n       |======= Negative test 2:: input xml does not conform to the xml schema  ======================|\n\n")
   #
