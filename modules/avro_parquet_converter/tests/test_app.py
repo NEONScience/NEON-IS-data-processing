@@ -35,4 +35,9 @@ class AppTest(TestCase):
 
     def check_output(self):
         data_path = os.path.join(self.out_path, self.metadata_path, 'prt_767_2019-01-05.gz.parquet')
-        self.assertTrue(os.path.lexists(data_path))
+        self.assertTrue(os.path.exists(data_path))
+
+        import pandas
+        with open(data_path, 'rb') as file:
+            data_frame = pandas.read_parquet(file, engine='pyarrow')
+            self.assertTrue((86400, 4) == data_frame.shape)
