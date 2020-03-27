@@ -146,7 +146,7 @@ for(idxDirIn in DirIn){
   # Get directory listing of input directory. 
   DirLoc <- base::paste0(idxDirIn,'/location')
   fileLoc <- base::dir(DirLoc)
-  numFileLoc <- base::length(DirLoc)
+  numFileLoc <- base::length(fileLoc)
   
   # If there is not at least one file for locations, quit
   if(numFileLoc == 0){
@@ -172,7 +172,6 @@ for(idxDirIn in DirIn){
   
   # The time frame of the data is one day, and this day is indicated in the directory structure. 
   timeBgn <-  InfoDirIn$time
-  timeEnd <-  timeBgn + base::as.difftime(1,units='days')
 
   # Error check
   if(base::is.na(timeBgn)){
@@ -180,8 +179,7 @@ for(idxDirIn in DirIn){
     log$error(base::paste0('Cannot interpret date from directory structure of datum path: ',idxDirIn)) 
     stop()
   }    
-  timeDoy <- lubridate::yday(timeBgn) # Day of year - only need one since data encompasses only 1 day
-    
+
   # Read the location data
   loc <- geojsonsf::geojson_sf(base::paste0(DirLoc,'/',fileLoc))
   
@@ -199,7 +197,8 @@ for(idxDirIn in DirIn){
   # Grab the site
   site <- loc$site[1]
   
-  # Load the thresholds & turn dates to POSIX
+  # Load the thresholds
+  thsh <- NULL
   thshRaw <- base::try(rjson::fromJSON(file=FileThsh,simplify=TRUE),silent=FALSE)
   if(base::class(thshRaw) == 'try-error'){
     # Generate error and stop execution
@@ -207,193 +206,14 @@ for(idxDirIn in DirIn){
     stop()
   }
   thshRaw <- thshRaw$thresholds
-  thsh <- base::lapply(thshRaw,function(idxThsh){
-    if(!base::is.null(idxThsh$start_date)){
-      idxThsh$start_date <- base::as.POSIXct(idxThsh$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
-    }
-    if(!base::is.null(idxThsh$end_date)){
-      idxThsh$end_date <- base::as.POSIXct(idxThsh$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
-    }
-    return(idxThsh)
-  })
-
+  
+  # Turn dates to POSIX
+  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh=thshRaw,log=log) # Turns dates to posixct
+  
   # For each term|context grouping, select the appropriate thresholds
   setThshSlct <- base::lapply(ParaThsh,function(idxParaThsh){
-  
-    # Filter thresholds only for this term, context, location (sensor, site, or REALM), 
-    # date range (absolute and seasonal). Note that seasonal logic assumes start DOY < end DOY. 
-    # Discard all null entries.
-    setFilt <- base::unlist(base::lapply(thsh,function(idxThsh){
-      # This is one giant logical statement
-      idxThsh$term_name == idxParaThsh$Term && # Term
-      base::sum(idxParaThsh$Ctxt %in% base::unlist(idxThsh$context)) == base::length(idxParaThsh$Ctxt) && # Context
-      idxThsh$location_name %in% c(nameLoc,site,'REALM') && # Location
-      (!base::is.null(idxThsh$start_date) && idxThsh$start_date <= timeEnd) && # Hard date range, part 1
-      (base::is.null(idxThsh$end_date) || idxThsh$end_date > timeBgn) && # Hard date range, part 2
-      (base::is.null(idxThsh$start_day_of_year) || idxThsh$start_day_of_year <= timeDoy) && # Seasonal date range, part 1
-      (base::is.null(idxThsh$end_day_of_year) || idxThsh$end_day_of_year >= timeDoy) && # Seasonal date range, part 2
-      (!base::is.null(idxThsh$number_value) || !base::is.null(idxThsh$string_value)) # Threshold needs to have a value!
-    }))
-    
-    # Error check
-    if(base::length(setFilt) == 0){
-      log$error(base::paste0('No thresholds match term: ', idxParaThsh$Term, ' and context(s): ', base::paste0(idxParaThsh$Ctxt,collapse=','),
-          ' for location: ', nameLoc, ' and date: ', timeBgn))
-      stop()
-    }
-    
-    # Make it pretty
-    thshFilt <- NEONprocIS.qaqc::def.read.thsh.qaqc.json(listThsh=base::list(thresholds=thshRaw[setFilt]))
-    
-    # Choose the correct value for each threshold. Note, this assumes that the absolute start/end dates and the 
-    # seasonal start/end dates are on the daily resolution. No splitting days.
-    nameThsh <- base::unique(thshFilt$threshold_name)
-    setFiltUse <- base::numeric(0) # Initialize
-    for(idxNameThsh in nameThsh){
-      # Create some general text for warning messages
-      txtGnl <- base::paste0('term|context=',base::paste0(base::unlist(idxParaThsh),collapse='|'),
-      ', threshold=',idxNameThsh,', named location=',nameLoc, ', site=', site,'. ')
-      
-      # The choice of constraint to use is determined by moving up the hierarchy from finer to 
-      # coarser constraints until one applies. Thus, the finest applicable level of constraint 
-      # is chosen. Threshold selection order is as follows: 
-        # 1. Sensor-specific, seasonal
-        # 2. Sensor-spefific, annual
-        # 3. Site-specific, seasonal
-        # 4. Site-specific, annual
-        # 5. Realm, seasonal
-        # 6. Realm, annual
-      
-      # SENSOR & DOY-specific
-      setTest <- base::which(thshFilt$threshold_name==idxNameThsh & thshFilt$location_name==nameLoc & 
-        !base::is.na(thshFilt$start_day_of_year) & !base::is.na(thshFilt$end_day_of_year))
-      numUse <- base::length(setTest)
-      if (numUse > 1){
-        # There's a problem. There should never be more than one applicable threshold. The logic 
-        # or the threshold information may be flawed.
-        log$warn(base::paste0('There are ',numUse,' valid sensor & DOY specific thresholds for ',
-                              txtGnl,'There is only supposed to be one. Going to take the first, ',
-                              'but you should investigate...'))
-        setTest <- setTest[1]
-        numUse <- base::length(setTest)
-      }
-      if(numUse == 1){
-        # Got it! Record and move on
-        setFiltUse <- c(setFiltUse,setTest)
-        next()
-      } 
-      
-      # SENSOR-specific
-      setTest <- base::which(thshFilt$threshold_name==idxNameThsh & thshFilt$location_name==nameLoc)
-      numUse <- base::length(setTest)
-      if (numUse > 1){
-        # There's a problem. There should never be more than one applicable threshold. The logic 
-        # or the threshold information may be flawed.
-        log$warn(base::paste0('There are ',numUse,' valid sensor-specific annual thresholds for ',
-                              txtGnl,'There is only supposed to be one. Going to take the first, ',
-                              'but you should investigate...'))
-        setTest <- setTest[1]
-        numUse <- base::length(setTest)
-      }
-      if(numUse == 1){
-        # Got it! Record and move on
-        setFiltUse <- c(setFiltUse,setTest)
-        next()
-      }
-      
-      # SITE & DOY-specific
-      setTest <- base::which(thshFilt$threshold_name==idxNameThsh & thshFilt$location_name==site & 
-                               !base::is.na(thshFilt$start_day_of_year) & !base::is.na(thshFilt$end_day_of_year))
-      numUse <- base::length(setTest)
-      if (numUse > 1){
-        # There's a problem. There should never be more than one applicable threshold. The logic 
-        # or the threshold information may be flawed.
-        log$warn(base::paste0('There are ',numUse,' valid site & season-specific thresholds for ',
-                              txtGnl,'There is only supposed to be one. Going to take the first, ',
-                              'but you should investigate...'))
-        setTest <- setTest[1]
-        numUse <- base::length(setTest)
-      }
-      if(numUse == 1){
-        # Got it! Record and move on
-        setFiltUse <- c(setFiltUse,setTest)
-        next()
-      }
-      
-      # SITE-specific
-      setTest <- base::which(thshFilt$threshold_name==idxNameThsh & thshFilt$location_name==site)
-      numUse <- base::length(setTest)
-      if (numUse > 1){
-        # There's a problem. There should never be more than one applicable threshold. The logic 
-        # or the threshold information may be flawed.
-        log$warn(base::paste0('There are ',numUse,' valid site-specific annual thresholds for ',
-                              txtGnl,'There is only supposed to be one. Going to take the first, ',
-                              'but you should investigate...'))
-        setTest <- setTest[1]
-        numUse <- base::length(setTest)
-      }
-      if(numUse == 1){
-        # Got it! Record and move on
-        setFiltUse <- c(setFiltUse,setTest)
-        next()
-      }
-      
-      # REALM & DOY-specific
-      setTest <- base::which(thshFilt$threshold_name==idxNameThsh & thshFilt$location_name=='REALM' & 
-                               !base::is.na(thshFilt$start_day_of_year) & !base::is.na(thshFilt$end_day_of_year))
-      numUse <- base::length(setTest)
-      if (numUse > 1){
-        # There's a problem. There should never be more than one applicable threshold. The logic 
-        # or the threshold information may be flawed.
-        log$warn(base::paste0('There are ',numUse,' valid site & season-specific thresholds for ',
-                              txtGnl,'There is only supposed to be one. Going to take the first, ',
-                              'but you should investigate...'))
-        setTest <- setTest[1]
-        numUse <- base::length(setTest)
-      }
-      if(numUse == 1){
-        # Got it! Record and move on
-        setFiltUse <- c(setFiltUse,setTest)
-        next()
-      }
-      
-      # REALM
-      setTest <- base::which(thshFilt$threshold_name==idxNameThsh & thshFilt$location_name=='REALM')
-      numUse <- base::length(setTest)
-      if (numUse > 1){
-        # There's a problem. There should never be more than one applicable threshold. The logic 
-        # or the threshold information may be flawed.
-        log$warn(base::paste0('There are ',numUse,' valid REALM-level annual thresholds for ',
-                              txtGnl,'There is only supposed to be one. Going to take the first, ',
-                              'but you should investigate...'))
-        setTest <- setTest[1]
-        numUse <- base::length(setTest)
-      }
-      if(numUse == 1){
-        # Got it! Record and move on
-        setFiltUse <- c(setFiltUse,setTest)
-        next()
-      }
-      
-      # If we've reached the end without finding a threshold, error-out
-      log$error(base::paste0('No applicable thresholds found for ',txtGnl,'Downstream quality control may error.'))
-      
-    } # End loop around unique threshold names 
-    
-    # We have the set of thresholds for this term|context group, save it
-    idxSetThshSlct <- base::which(setFilt)[setFiltUse]
-    
-    # Compare what we ended up with in our pretty table with the original json
-    cmpr <- base::all.equal(thshFilt[setFiltUse,],NEONprocIS.qaqc::def.read.thsh.qaqc.json(
-      listThsh=base::list(thresholds=thshRaw[idxSetThshSlct])),check.attributes = FALSE)
-    if(!base::isTRUE(cmpr)){
-      log$fatal(base::paste0('Code error! Thresholds in filtered data frame do not match those from same index of JSON file. Indexing likely incorrect.')) 
-      stop()
-    }
-    
-    return(idxSetThshSlct)
-      
-  }) # End lapply around ParaThsh
+    NEONprocIS.qaqc::def.thsh.slct(thsh=thsh,Time=timeBgn,Term=idxParaThsh$Term,Ctxt=idxParaThsh$Ctxt,Site=site,NameLoc=nameLoc,RptThsh=FALSE,log=log)
+  })
   
   # Combine selected thresholds from all term|context groupings
   setThshSlct <- base::unique(base::unlist(setThshSlct))

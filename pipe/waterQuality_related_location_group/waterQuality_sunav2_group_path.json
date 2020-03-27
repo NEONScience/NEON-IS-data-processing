@@ -1,0 +1,25 @@
+{
+  "pipeline": {
+    "name": "waterQuality_sunav2_group_path"
+  },
+  "transform": {
+    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+    "image": "quay.io/battelleecology/location_group_path:4",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m location_group_path.app" ],
+    "env": {
+      "GROUP": "water-quality-",
+      "LOG_LEVEL": "DEBUG",
+      "OUT_PATH": "/pfs/out"
+    }
+  },
+  "input": {
+    "pfs": {
+      "name": "SOURCE_PATH",
+      "repo": "waterQuality_sunav2_padded_timeseries_analyzer",
+      "glob": "/sunav2/*/*/*/*"
+    }
+  },
+  "enable_stats": false,
+  "standby": true
+}

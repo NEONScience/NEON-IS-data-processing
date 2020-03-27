@@ -33,62 +33,51 @@ def dates_between(start_date, end_date):
     return dates
 
 
-def write(out_path, location):
-    """
-    Write a path and file for each active date '/yyyy/mm/dd/<location name>/<location name>.json'.
-    :param out_path: The path for writing files.
-    :param location: Geojson object containing the active period and location metadata.
-    """
-    # create the output directory if it does not exist.
-    pathlib.Path(out_path).mkdir(parents=True, exist_ok=True)
-
-    # parse the geojson data for the location name and active periods
-    geojson_data = geojson.dumps(location, indent=4, sort_keys=False, default=str)
-    json_data = json.loads(geojson_data)
-    features = json_data['features']
-    properties = features[0]['properties']
-    location_name = properties['name']
-    active_periods = properties['active-periods']
-
-    # loop over active periods and write directories and files for each date
-    for period in active_periods:
-        start_date = period['start_date']
-        end_date = period['end_date']
-        dates = dates_between(date_formatter.parse(start_date), date_formatter.parse(end_date))
-        for date in dates:
-            datetime_obj = datetime(date.year, date.month, date.day)
-            year = datetime_obj.strftime('%Y')
-            month = datetime_obj.strftime('%m')
-            day = datetime_obj.strftime('%d')
-            dir_path = os.path.join(out_path, year, month, day, location_name)
-            # create the output directory
-            if not os.path.exists(dir_path):
-                os.makedirs(dir_path)
-            file_path = os.path.join(dir_path, location_name + '.json')
-            # write the file
-            with open(file_path, 'w') as outfile:
-                outfile.write(geojson_data)
-
-
 def load(db_url, out_path, location_type, cutoff_date):
     """
-    Load the locations and write output directories for each location active date.
+    Write a path and file for each active date '/yyyy/mm/dd/<location name>/<location name>.json'.
     :param db_url: A database url.
     :param out_path: The output directory root path.
     :param location_type: The location type to read from the database.
     :param cutoff_date: The most recent date to create an output directory and file.
     """
     with closing(cx_Oracle.connect(db_url)) as connection:
-        locations = named_location_finder.get_by_type(connection, location_type, cutoff_date=cutoff_date)
-        log.debug(f'total locations found: {len(locations)}')
-        for location in locations:
-            write(out_path, location)
+        named_locations = named_location_finder.get_by_type(connection, location_type, cutoff_date=cutoff_date)
+        log.debug(f'total locations found: {len(named_locations)}')
+        for named_location in named_locations:
+
+            # parse the geojson data for the location name and active periods
+            geojson_data = geojson.dumps(named_location, indent=4, sort_keys=False, default=str)
+            json_data = json.loads(geojson_data)
+            features = json_data['features']
+            properties = features[0]['properties']
+            location_name = properties['name']
+            active_periods = properties['active-periods']
+
+            schema_name = named_location_finder.get_schema_name(connection, location_name)
+            if schema_name is not None:
+                # loop over active periods and write directories and files for each date
+                for period in active_periods:
+                    start_date = period['start_date']
+                    end_date = period['end_date']
+                    dates = dates_between(date_formatter.parse(start_date), date_formatter.parse(end_date))
+                    for date in dates:
+                        datetime_obj = datetime(date.year, date.month, date.day)
+                        year = datetime_obj.strftime('%Y')
+                        month = datetime_obj.strftime('%m')
+                        day = datetime_obj.strftime('%d')
+                        dir_path = os.path.join(out_path, schema_name, year, month, day, location_name)
+                        # create the output directory
+                        if not os.path.exists(dir_path):
+                            os.makedirs(dir_path)
+                        file_path = os.path.join(dir_path, location_name + '.json')
+                        # write the file
+                        with open(file_path, 'w') as outfile:
+                            outfile.write(geojson_data)
 
 
 def main():
-    # Read configuration
     env = environs.Env()
-    # context = env('CONTEXT')
     location_type = env('LOCATION_TYPE')
     today = env('tick')
     db_url = env('DATABASE_URL')

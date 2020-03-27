@@ -24,8 +24,8 @@ created and used within the function.}
 dataframe with L0 uncertatinty column(s) [dataframe]
 }
 \description{
-Alternative calibration uncertainty function. Create file (dataframe) with 
-uncertainty information based off of the L0 dissolved oxygen (DO) concentration data values 
+Alternative calibration uncertainty function. Create file (dataframe) with
+uncertainty information based off of the L0 dissolved oxygen (DO) concentration data values
 according to NEON.DOC.004931 - NEON Algorithm Theoretical Basis Document (ATBD): Water Quality.
 
 Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},

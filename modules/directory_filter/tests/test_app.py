@@ -20,9 +20,9 @@ class BaseTest(TestCase):
         self.dir_2 = 'dir2'
         self.dir_3 = 'dir3'
 
-        self.file_name1 = 'dir1.avro'
-        self.file_name2 = 'dir2.avro'
-        self.file_name3 = 'dir3.avro'
+        self.file_name1 = 'dir1.ext'
+        self.file_name2 = 'dir2.ext'
+        self.file_name3 = 'dir3.ext'
 
         #  Set required files in mock filesystem.
         self.in_dir = os.path.join('/', 'inputs')

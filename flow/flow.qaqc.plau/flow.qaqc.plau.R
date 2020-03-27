@@ -236,7 +236,7 @@ for(idxDirIn in DirIn){
     fileThsh <- fileThsh[1]
     log$info(base::paste0('There is more than location file in ',idxDirThsh,'. Using ',fileThsh))
   }
-  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.json((NameFile=base::paste0(idxDirThsh,'/',fileThsh)))
+  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile=base::paste0(idxDirThsh,'/',fileThsh)))
   
   # Verify that the terms listed in the input parameters are included in the threshold files
   exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
@@ -499,9 +499,9 @@ for(idxDirIn in DirIn){
   # Write out the flags 
   fileDataOutSplt <- base::strsplit(fileDataOut,'[.]')[[1]] # Try to grab the file name without extension
   if(base::length(fileDataOutSplt) > 1){
-    NameFileOutQf <- base::paste0(idxDirOutQf,'/flags_',base::paste0(fileDataOutSplt[-base::length(fileDataOutSplt)],collapse='.'),'_plausibility.',utils::tail(fileDataOutSplt,1))
+    NameFileOutQf <- base::paste0(idxDirOutQf,'/',base::paste0(fileDataOutSplt[-base::length(fileDataOutSplt)],collapse='.'),'_flagsPlausibility.',utils::tail(fileDataOutSplt,1))
   } else {
-    NameFileOutQf <- base::paste0(idxDirOutQf,'/flags_',fileDataOut,'_plausibility')
+    NameFileOutQf <- base::paste0(idxDirOutQf,'/',fileDataOut,'_flagsPlausibility')
   }
   rptQf <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=qf,NameFile=NameFileOutQf,NameFileSchm=NULL,Schm=SchmQfOut,NameLib='/ravro.so'),silent=TRUE)
   if(base::class(rptQf) == 'try-error'){

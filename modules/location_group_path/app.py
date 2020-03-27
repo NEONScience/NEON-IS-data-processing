@@ -21,10 +21,9 @@ def process(source_path, group, out_path):
     :param out_path: The output path.
     """
     paths = []
-    group_name = None
+    group_names = []
     for file_path in file_crawler.crawl(source_path):
-
-        # Parse path elements
+        # parse path elements
         parts = pathlib.Path(file_path).parts
         source_type = parts[3]
         year = parts[4]
@@ -32,8 +31,8 @@ def process(source_path, group, out_path):
         day = parts[6]
         location = parts[7]
         data_type = parts[8]
-        filename = parts[9]
-
+        remainder = parts[9:]  # everything after the data type
+        # put path parts into dictionary
         path_parts = {
             "source_type": source_type,
             "year": year,
@@ -41,51 +40,59 @@ def process(source_path, group, out_path):
             "day": day,
             "location": location,
             "data_type": data_type,
-            "filename": filename
+            "remainder": remainder
         }
-
+        # add the original file path and the path parts to the path list
         paths.append({"file_path": file_path, "path_parts": path_parts})
 
-        # Get the full group name from the location file
+        # get the location context group name from the location file
         if data_type == 'location':
-            group_name = location_file_context.get_matching_item(file_path, group)
+            group_names = location_file_context.get_matching_items(file_path, group)
 
-    if group_name is None:
+    # location context group name was not found!
+    if len(group_names) == 0:
         log.error('No location directory found.')
+    # context group name found, link all the files into the output directory
     else:
-        link(paths, group_name, out_path)
+        link(paths, group_names, out_path)
 
 
-def link(paths, group_name, out_path):
-
+def link(paths, group_names, out_path):
+    """
+    Loop through the files and link into the output directory including the location
+    context group name in the path.
+    :param paths: File paths to link.
+    :param group_names: A List of associated location context group names.
+    :param out_path: The output directory for writing.
+    :return:
+    """
     for path in paths:
-
+        # parse the paths
         file_path = path.get('file_path')
         parts = path.get('path_parts')
-
         source_type = parts.get("source_type")
         year = parts.get("year")
         month = parts.get("month")
         day = parts.get("day")
         location = parts.get("location")
         data_type = parts.get("data_type")
-        filename = parts.get("filename")
-
-        # Build the output path
-        log.debug(f't: {source_type} Y: {year} M: {month} D: {day} loc: {location} type: {data_type} file: {filename}')
-        target_dir = os.path.join(out_path, source_type, year, month, day, group_name, location, data_type)
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
-        destination = os.path.join(target_dir, filename)
-
-        # Link the file
-        log.debug(f'source: {file_path} destination: {destination}')
-        file_linker.link(file_path, destination)
+        remainder = parts.get("remainder")
+        # build the output path
+        log.debug(f't: {source_type} Y: {year} M: {month} D: {day} '
+                  f'loc: {location} type: {data_type} remainder: {remainder}')
+        for group_name in group_names:
+            target_dir = os.path.join(out_path, source_type, year, month, day, group_name, location, data_type)
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+            destination = os.path.join(target_dir, *remainder[0:])
+            # link the file
+            log.debug(f'source: {file_path} destination: {destination}')
+            file_linker.link(file_path, destination)
 
 
 def main():
     """
-    Add the related location group from the location file to the output directory.
+    Add the related location group name stored in the location file to the output path.
     """
     env = environs.Env()
     source_path = env('SOURCE_PATH')

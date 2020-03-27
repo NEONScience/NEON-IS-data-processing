@@ -37,6 +37,13 @@ class AppTest(TestCase):
         self.next_data_file = MergedDataFilename.build('prt', location,  '2018', '01', '04')
         self.outside_range_file = MergedDataFilename.build('prt', location, '2018', '01', '05')
 
+        # Ancillary location file.
+        self.fs.create_file(os.path.join(self.input_root, self.source_dir, 'location', 'locations.json'))
+
+        # Threshold file.
+        threshold_path = os.path.join(self.input_root, self.source_dir, self.threshold_dir, self.threshold_file)
+        self.fs.create_file(threshold_path)
+
         self.data_dir = 'data'
 
         #  Source data file.
@@ -79,12 +86,14 @@ class AppTest(TestCase):
 
     def check_output(self):
         """Check files in the output directory."""
+        location_path = os.path.join(self.out_dir, self.source_dir, 'location', 'locations.json')
         threshold_path = os.path.join(self.out_dir, self.source_dir, self.threshold_dir, self.threshold_file)
         output_root = os.path.join(self.out_dir, self.source_dir)
         data_path = os.path.join(output_root, self.data_dir, self.source_data_file)
         previous_data_path = os.path.join(output_root, self.data_dir, self.previous_data_file)
         next_data_path = os.path.join(output_root, self.data_dir, self.next_data_file)
         outside_range_path = os.path.join(output_root, self.data_dir, self.outside_range_file)
+        self.assertTrue(os.path.lexists(location_path))
         self.assertTrue(os.path.lexists(threshold_path))
         self.assertTrue(os.path.lexists(data_path))
         self.assertTrue(os.path.lexists(previous_data_path))

@@ -97,6 +97,8 @@
 #     added arguments for output directory and optional copying of additional subdirectories
 #   Cove Sturtevant (2019-10-23)
 #     added merging of uncertainty files
+#   Cove Sturtevant (2020-03-04) 
+#     adjust datum identification to allow copied-through directories to be present or not
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -131,7 +133,7 @@ DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,DirSubCombData))
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
 
 # What are the expected subdirectories of each input path
-nameDirSub <- base::as.list(c(DirSubCombData,DirSubCombUcrt,DirSubCopy))
+nameDirSub <- base::as.list('location')
 log$debug(base::paste0('Expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
 
 # Find all the input paths. We will process each one.

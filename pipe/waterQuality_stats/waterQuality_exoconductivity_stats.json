@@ -1,0 +1,40 @@
+{
+  "pipeline": {
+    "name": "waterQuality_exoconductivity_stats"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.data.comb.ts.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmComb=$SCHEMA_COMB","DirComb=data|uncertainty_data","NameDirCombOut=stats","NameVarTime=readout_time","ColKeep=readout_time|readout_time|specificConductance|specificConductance_ucrtExpn","NameFileSufx=_basicStats_100"],
+    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v0.0.2",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "waterQuality_exoconductivity_data_uncertainty_group",
+          "glob": "/*/*/*/"
+        }
+      },
+      {
+        "pfs": {
+            "name": "SCHEMA_COMB",
+            "repo": "avro_schemas",
+            "glob": "/dp01/waterQuality_exoconductivity_dp01_stats.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}

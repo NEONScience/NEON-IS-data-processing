@@ -31,8 +31,29 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-02-25)
 #     original creation
+#   Mija Choi (2020-03-03)
+#     Added xml validation
 ##############################################################################################
 def.read.cal.xml <- function(NameFile,Vrbs=TRUE){
+  
+  
+  # --- Mija -> this fails - prob because calibration.xsd in not in the working directory when used outside the Github repository
+  # Input XML is valid agains the schema
+  # Use the xml schema generated
+  #
+  # xsd1 = "calibration.xsd"
+  # xmlchk <-
+  #   try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),
+  #       silent = TRUE)
+  # 
+  # if (xmlchk != TRUE) {
+  #   base::stop(
+  #     base::paste0(
+  #       " ====== def.read.cal.xml will not run due to the error in xml,  ",
+  #       NameFile
+  #     )
+  #   )
+  # }
   
   # Read contents of xml file 
   xml <- try(XML::xmlParse(NameFile),silent=TRUE) 
@@ -41,6 +62,7 @@ def.read.cal.xml <- function(NameFile,Vrbs=TRUE){
   }
   
   # XML file as a list
+  #listXml <- XML::xmlToList(NameFile)
   listXml <- XML::xmlToList(xml)
   
   # Grab valid date range

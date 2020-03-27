@@ -1,0 +1,40 @@
+{
+  "pipeline": {
+    "name": "waterQuality_exodissolvedoxygen_level1_group"
+  },
+  "transform": {
+    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+    "image": "quay.io/battelleecology/joiner:1",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m joiner.app" ],
+    "env": {
+      "RELATED_PATHS": "QUALITY_PATH,STATISTICS_PATH",
+      "LOG_LEVEL": "INFO",
+      "OUT_PATH": "/pfs/out"
+    }
+  },
+  "input": {
+    "join": [
+      {
+        "pfs": {
+          "name": "QUALITY_PATH",
+          "repo": "waterQuality_exodissolvedoxygen_quality_metrics",
+          "glob": "/*/*/(*)/(*)/exodissolvedoxygen/*/quality_metrics",
+          "joinOn": "$1/$2",
+          "empty_files": true
+        } 
+      },
+      {
+        "pfs": {
+          "name": "STATISTICS_PATH",
+          "repo": "waterQuality_exodissolvedoxygen_stats",
+          "glob": "/*/*/(*)/(*)/exodissolvedoxygen/*/stats",
+          "joinOn": "$1/$2",
+          "empty_files": true
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true
+}

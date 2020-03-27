@@ -67,6 +67,8 @@
 #   Cove Sturtevant (2019-09-26)
 #     re-structured inputs to be more human readable
 #     added arguments for output directory and optional copying of additional subdirectories
+#   Cove Sturtevant (2020-03-04) 
+#     adjust datum identification to allow copied-through directories to be present or not
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -90,7 +92,7 @@ DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,c('location')))
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
 
 # What are the expected subdirectories of each input path
-nameDirSub <- base::as.list(c('location',DirSubCopy))
+nameDirSub <- base::as.list(c('location'))
 log$debug(base::paste0('Expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
 
 # Find all the input paths. We will process each one.

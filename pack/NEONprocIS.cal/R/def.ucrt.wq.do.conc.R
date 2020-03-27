@@ -5,8 +5,8 @@
 #' @author
 #' Kaelin Cawley \email{kcawley@battelleecology.org}
 
-#' @description Alternative calibration uncertainty function. Create file (dataframe) with 
-#' uncertainty information based off of the L0 dissolved oxygen (DO) concentration data values 
+#' @description Alternative calibration uncertainty function. Create file (dataframe) with
+#' uncertainty information based off of the L0 dissolved oxygen (DO) concentration data values
 #' according to NEON.DOC.004931 - NEON Algorithm Theoretical Basis Document (ATBD): Water Quality.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -39,14 +39,15 @@
 #   Kaelin Cawley (2020-01-23)
 #     original creation
 ##############################################################################################
-def.ucrt.wq.do.conc <- function(data, infoCal=NULL,log=NULL) {
+def.ucrt.wq.do.conc <- function(data, infoCal = NULL, log = NULL) {
   # Start logging, if needed
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
-
-  #Check that we have more than 0 rows of data
-  if (!NEONprocIS.base::def.validate.vector(data,TestEmpty = FALSE,log=log)) {
+  
+  #Check that we have a valid vector
+  if (!NEONprocIS.base::def.validate.vector(data, TestEmpty = FALSE, log =
+                                            log)) {
     msg <-
       base::paste0('       |------ data is empty. Uncertainty will not run\n')
     log$error(msg)
@@ -57,7 +58,7 @@ def.ucrt.wq.do.conc <- function(data, infoCal=NULL,log=NULL) {
   #It's just a placeholder input to allow the calibration module to be more generic
   
   #Create the output dataframe
-  outputNames <- c("ucrtMeas")
+  outputNames <- c("ucrtPercent", "ucrtMeas")
   outputDF <-
     base::as.data.frame(base::matrix(
       nrow = length(data),
@@ -71,13 +72,16 @@ def.ucrt.wq.do.conc <- function(data, infoCal=NULL,log=NULL) {
   #Create an output dataframe with U_CVALA1 based off of the following rules:
   ### U_CVALA1 = 0.01 if DO is > 0 & <= 20 mg/l according to the manual
   ### U_CVALA1 = 0.05 if DO is >20 mg/l & < 50 mg/l according to the manual
-  outputDF$ucrtMeas[data <= 20] <-
+  outputDF$ucrtPercent[data <= 20] <-
     0.01
   log$debug('Low range DO uncertainty populated.')
   
-  outputDF$ucrtMeas[data > 20] <-
+  outputDF$ucrtPercent[data > 20] <-
     0.05
   log$debug('High range DO uncertainty populated.')
+  
+  #Determine uncertainty factor
+  outputDF$ucrtMeas <- outputDF$ucrtPercent * data
   
   return(outputDF)
   

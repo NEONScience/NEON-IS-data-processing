@@ -1,0 +1,35 @@
+{
+  "pipeline": {
+    "name": "waterQuality_exodissolvedoxygen_timeseries_padder"
+  },
+  "transform": {
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/timeseries_padder:22",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m timeseries_padder.timeseries_padder.app --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9" ],
+    "env": {
+      "OUT_PATH": "/pfs/out",
+      "LOG_LEVEL": "INFO"
+    }
+  },
+  "parallelism_spec": {
+    "constant": "1"
+  },
+  "output_branch": "master",
+  "resource_requests": {
+    "memory": "64M"
+  },
+  "input": {
+    "pfs": {
+      "name": "DATA_PATH",
+      "repo": "waterQuality_exodissolvedoxygen_thsh_rglr_group",
+      "branch": "master",
+      "glob": "/*/*/*"
+    }
+  },
+  "standby": true,
+  "cache_size": "64M",
+  "max_queue_size": "1"
+}

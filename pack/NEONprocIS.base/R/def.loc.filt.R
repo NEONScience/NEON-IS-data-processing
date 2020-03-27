@@ -62,12 +62,17 @@ def.loc.filt <-
     # Second, validate the json against the schema only if the syntax is valid.
     # Otherwise, validateJsonSchema errors out due to the syntax error
     #
-    validateJsonSchema <- FALSE
+    #validateJsonSchema <- FALSE
+    validateJsonSchema <- TRUE
     
-    if (validateJson == TRUE)  {
-      validateJsonSchema <-
-        NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
-    }
+    # ----------Mija -> same problem here. The schema does not exist in the working directory. 
+    # ----------Also, can you find a different package than jsonvalidate? I cannot seem to install
+    #---------- it in the Docker container (Debian). It requires a package called v8 which will not install.
+    # if (validateJson == TRUE)  {
+    #   validateJsonSchema <-
+    #     NEONprocIS.base::def.validate.json.schema (NameFileIn, "locations-schema.json")
+    # }
+    
     #
     #if the validation fails, the function will not be executed returning status code -1
     #

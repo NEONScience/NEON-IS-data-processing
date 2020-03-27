@@ -16,11 +16,13 @@
 #'      ./data
 #'      ./flags
 #'      ./uncertainty_coef
-#' For the filled date gaps, the "location" folder is copied from the correponding folder of the same 
-#' location-ID for the date prior the gap. A single file in the data folder will be populated with the 
-#' schema provided in the arguments and will contain an empty data frame (column headers but no rows). The same 
-#' will occur for the flags directory, using a different schema provided in the arguments. TBD is populated in 
-#' the "uncertainty_coef" folder. 
+#' At least the 'data' folder must be present.
+#' For the filled date gaps,  any folders specified in argument DirSubCopy are copied 
+#' from the correponding folder of the same location-ID for the date prior to the gap. For data directories 
+#' specified in argument DirSubData, a single file will be populated with the schema of the data in the same 
+#' folder for the date prior to the gap and will contain an empty data frame (column headers but no rows). 
+#' All other directories found in the date prior to the gap will be created in the output but  will remain 
+#' empty.
 #'
 #' Note: This script does not take into account the active periods for a particular location-ID, as it would
 #' require reading the location files for each filled date, which would require downloading files in some 
@@ -28,7 +30,7 @@
 #' in one container). The reading of active periods and removal of filled directories during non-active periods 
 #' is done in a separate step where each daily directory can be passed to the environment individually. 
 #' 
-#' This script is run at the command line with 4 arguments. Each argument must be a string in the 
+#' This script is run at the command line with the following arguments. Each argument must be a string in the 
 #' format "Para=value", where "Para" is the intended parameter name and "value" is the value of the 
 #' parameter. Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the parameter 
 #' will be assigned from the system environment variable matching the value string.
@@ -41,9 +43,12 @@
 #'    
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
-#' 3. "FileSchmData=value", where value is the full path to schema for the empty data file 
+#' 3. "DirSubCopy=value" (optional), where the value is the names of folders which should be copied directly from the date
+#' prior to the gap.
 #' 
-#' 4. "FileSchmQf=value", where value is the full path to schema for empty quality flags file 
+#' 4. "DirSubData=value" (optional), where the value is the names of folders which should be populated with empty data files
+#' using the same schema as the files in the same folders found previous to the gap.
+#' 
 #' 
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}}, 
 #' which uses system environment variables if available.
@@ -57,11 +62,11 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.loc.fill.gap.repo.R 'DirIn=/pfs/proc_group/prt/' 'DirOut=/pfs/out' 'FileSchmData=/outputDataSchema.avsc' 'FileSchmQf=/outputFlagSchema.avsc'
+#' Rscript flow.loc.fill.gap.repo.R 'DirIn=/pfs/proc_group/prt/' 'DirOut=/pfs/out' "DirSubCopy=location|uncertainty_coef" "DirSubData=data|flags|uncertainty_data"
 #' 
 #' Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/proc_group/prt/')
-#' Rscript flow.loc.fill.gap.repo.R 'DirIn=$DIR_IN' 'DirOut=/pfs/out' 'FileSchmData=/outputDataSchema.avsc' 'FileSchmQf=/outputFlagSchema.avsc'
+#' Rscript flow.loc.fill.gap.repo.R 'DirIn=$DIR_IN' 'DirOut=/pfs/out' "DirSubCopy=location|uncertainty_coef" "DirSubData=data|flags|uncertainty_data
 
 #' @seealso Currently nothing.
 
@@ -75,6 +80,9 @@
 #     added uncertainty_fdas folder
 #   Cove Sturtevant (2020-02-17)
 #     adjusted naming of uncertainty folder(s)
+#   Cove Sturtevant (2020-03-04)
+#     refactored to choose which are data folders, which are copied over, and others populated empty
+#     also identify datums only by 'data' folder
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -83,7 +91,12 @@ log <- NEONprocIS.base::def.log.init()
 arg <- base::commandArgs(trailingOnly=TRUE)
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut","FileSchmData","FileSchmQf"),log=log)
+Para <- NEONprocIS.base::def.arg.pars(arg=arg,
+                                      NameParaReqd=c("DirIn",
+                                                      "DirOut"),
+                                      NameParaOptn=c("DirSubCopy",
+                                                     "DirSubData"),
+                                      log=log)
 
 # Retrieve datum path. 
 DirBgn <- Para$DirIn # Input directory. 
@@ -96,14 +109,6 @@ log$debug(base::paste0('Output directory: ',DirOut))
 # Pull info about the parent directory
 InfoDirBgn <- NEONprocIS.base::def.dir.splt.pach.time(DirBgn)
 log$info(base::paste0('Evaluating parent directory: ',base::paste(DirBgn),' for locations with date gaps...')) 
-
-# Retrieve Output schemas
-fileSchmDataOut <- Para$FileSchmData
-fileSchmQfOut <- Para$FileSchmQf
-
-# Read in the schemas
-SchmDataOut <- base::paste0(base::readLines(fileSchmDataOut),collapse='')
-SchmQfOut <- base::paste0(base::readLines(fileSchmQfOut),collapse='')
 
 # ---- Survey the dates present for each location ID ----
 
@@ -178,30 +183,39 @@ for(idxIdLoc in idLoc){
       timeGf <- idxTimeMiss-as.difftime(tim=1,units='days') # Initialize the first date to fill with
     }
     
-    # Fill the gap, intially with the location folder, then we'll fill in the data, flags, and uncertainty_coef folders with empty files
+    # Fill the gap with folders to simply copy over from the date prior to the gap
     dirSrcBase <- base::paste0(DirBgn,'/',base::format(timeGf,'%Y'),'/',base::format(timeGf,'%m'),'/',base::format(timeGf,'%d'),'/',idxIdLoc)
-    dirSrcLoc <- base::paste0(dirSrcBase,'/location')
+    dirSub <- base::dir(dirSrcBase)
+    dirSubCopy <- base::intersect(dirSub,Para$DirSubCopy)
     dirDest <- base::paste0(DirOut,InfoDirBgn$dirRepo,'/',base::format(idxTimeMiss,'%Y'),'/',base::format(idxTimeMiss,'%m'),'/',base::format(idxTimeMiss,'%d'),'/',idxIdLoc)
-    NEONprocIS.base::def.dir.copy.symb(DirSrc=dirSrcLoc,DirDest=dirDest,log=log)
+    if(length(dirSubCopy) > 0){
+      dirSrc <- base::paste0(dirSrcBase,'/',dirSubCopy)
+      NEONprocIS.base::def.dir.copy.symb(DirSrc=dirSrc,DirDest=dirDest,log=log)
+    }
     
-    # Now create the data, flags, and uncertainty folders
-    nameDirAdd <- c('data','flags','uncertainty_coef','uncertainty_data')
-    dirAdd <- base::as.list(base::paste0(dirDest,'/',nameDirAdd))
-    names(dirAdd) <- nameDirAdd
-    rptDirAdd <- base::lapply(dirAdd,base::dir.create,recursive=FALSE)
+    # Now create all other folders
+    dirAdd <- base::setdiff(dirSub,dirSubCopy)
+    NEONprocIS.base::def.dir.crea(DirBgn=dirDest,DirSub=dirAdd)
     
-    # Populate the data folder with an empty data file using the schema provided
-    fileDataSrc <- base::dir(base::paste0(dirSrcBase,'/data')) # filename of the data file in the source directory
-    fileDataOut <- base::sub(pattern=base::format(timeGf,'%Y-%m-%d'),replacement=base::format(idxTimeMiss,'%Y-%m-%d'),x=fileDataSrc) # replace the date in the filename with the missing day
-    rptDataOut <- NEONprocIS.base::def.wrte.avro.deve(data=base::data.frame(),NameFile=base::paste0(dirDest,'/data/',fileDataOut),Schm=SchmDataOut,NameLib='/ravro.so')
+    # Populate the data folders with an empty data file by opening the file from the last gap and using its schema
+    dirSubData <- base::intersect(dirSub,Para$DirSubData)
+    for(idxDirSubData in dirSubData){
+      # Source and destination directories
+      dirSrcData <- base::paste0(dirSrcBase,'/',idxDirSubData)
+      dirDestData <- base::paste0(dirDest,'/',idxDirSubData)
+      
+      # Construct file names
+      fileDataSrc <- base::dir(base::paste0(dirSrcBase,'/',idxDirSubData)) # filename of the data file in the source directory
+      fileDataOut <- base::sub(pattern=base::format(timeGf,'%Y-%m-%d'),replacement=base::format(idxTimeMiss,'%Y-%m-%d'),x=fileDataSrc) # replace the date in the filename with the missing day
+      
+      # Open the file before the gap
+      data <- NEONprocIS.base::def.read.avro.deve(NameFile=base::paste0(dirSrcData,'/',fileDataSrc),NameLib='/ravro.so')
+      schm <- base::attr(data,'schema')
+      rptDataOut <- NEONprocIS.base::def.wrte.avro.deve(data=base::data.frame(),NameFile=base::paste0(dirDestData,'/',fileDataOut),Schm=schm,NameLib='/ravro.so')
+      
+    }
     
-    # Populate the flags folder with an empty data file using the schema provided
-    fileQfSrc <- base::dir(base::paste0(dirSrcBase,'/flags')) # filename of the data file in the source directory
-    fileQfOut <- base::sub(pattern=base::format(timeGf,'%Y-%m-%d'),replacement=base::format(idxTimeMiss,'%Y-%m-%d'),x=fileQfSrc) # replace the date in the filename with the missing day
-    rptQfOut <- NEONprocIS.base::def.wrte.avro.deve(data=base::data.frame(),NameFile=base::paste0(dirDest,'/flags/',fileQfOut),Schm=SchmQfOut,NameLib='/ravro.so')
-    
-    # *************Leave the uncertainty folders empty for now until we know the format of the data in it*********************
-    
+
     log$debug(base::paste0('Filled date gap: ',base::paste(base::format(x=idxTimeMiss,format='%Y-%m-%d'),collapse=','), ' for location-ID: ',idxIdLoc)) 
     
   }

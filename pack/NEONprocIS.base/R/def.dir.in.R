@@ -10,7 +10,8 @@
 
 #' @param DirBgn String. Directory path considered to be zero or more parents above the input directories.
 #' @param nameDirSub String vector. The exact names of expected direct child directories (does not need to 
-#' be a complete list).
+#' be a complete list of the subdirectories, but all must be found in the input directory for it to be 
+#' returned in the output).
 
 #' @return A character vector of input directories (datums)  
 

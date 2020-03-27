@@ -48,7 +48,7 @@ def.validate.info.cal <- function(infoCal,
   
   a <- TRUE
 
-  if (!base::is.list(infoCal)) {
+  if (!base::is.list(infoCal) || (base::is.data.frame(infoCal))) {
     a <- FALSE
     log$error('Input "infoCal" must be a list.')
     

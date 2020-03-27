@@ -61,7 +61,8 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                           location_code=dmmyChar,
                           HOR=dmmyChar,
                           VER=dmmyChar,
-                          dataRate=dmmyNumc)
+                          dataRate=dmmyNumc,
+                          stringsAsFactors = FALSE)
   
   # Validate the json
   if(NEONprocIS.base::def.validate.json(jsonIn=NameFile,log=log) != TRUE){
@@ -134,7 +135,8 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                                             location_code=propFill[['Required Asset Management Location Code']],
                                             HOR=propFill$HOR,
                                             VER=propFill$VER,
-                                            dataRate=propFill[['Data Rate']]))
+                                            dataRate=propFill[['Data Rate']],
+                                            stringsAsFactors = FALSE))
   }
   
   return(rpt)

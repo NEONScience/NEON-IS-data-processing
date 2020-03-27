@@ -37,6 +37,13 @@
       "Repository": "CRAN",
       "Hash": "a0356f14b4a68dd51a67c5d469d40c70"
     },
+    "V8": {
+      "Package": "V8",
+      "Version": "3.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7d1118179f4cb56f5e49e58b166999fe"
+    },
     "XML": {
       "Package": "XML",
       "Version": "3.98-1.20",
@@ -135,6 +142,20 @@
       "Repository": "CRAN",
       "Hash": "0c5abee1088638cbc8b7c35f730dfa12"
     },
+    "jsonlite": {
+      "Package": "jsonlite",
+      "Version": "1.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bc5739654d032acf531356e32e0d0f54"
+    },
+    "jsonvalidate": {
+      "Package": "jsonvalidate",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "81054bf17db72db68871baefcfd209cf"
+    },
     "lgr": {
       "Package": "lgr",
       "Version": "0.3.3",
@@ -156,6 +177,13 @@
       "Repository": "CRAN",
       "Hash": "1bb58822a20301cee84a41678e25d9b7"
     },
+    "pander": {
+      "Package": "pander",
+      "Version": "0.6.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "121198ce37b5a6b5227edc5a38223da4"
+    },
     "pkgbuild": {
       "Package": "pkgbuild",
       "Version": "1.0.2",
@@ -169,6 +197,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "5e655fb54cceead0f095f22d7be33da3"
+    },
+    "plyr": {
+      "Package": "plyr",
+      "Version": "1.8.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3f1b0dbcc503320e6e7aae6c3ff87eaa"
     },
     "polynom": {
       "Package": "polynom",
@@ -212,6 +247,13 @@
       "Repository": "CRAN",
       "Hash": "b5f200577d7364ca16658fc8d1920a3c"
     },
+    "rapportools": {
+      "Package": "rapportools",
+      "Version": "1.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "91e40b68935a214e80ce91b628519253"
+    },
     "renv": {
       "Package": "renv",
       "Version": "0.9.2-20",
@@ -223,6 +265,13 @@
       "RemoteRef": "0.9.2-20",
       "RemoteSha": "21fa2183fe0c617e99074b6deab4b1505a7412cf",
       "Hash": "26979f0007efcd66d5f7888cd8bae178"
+    },
+    "reshape": {
+      "Package": "reshape",
+      "Version": "0.8.8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0f4d941129e00ed34a7d192b1da7ccef"
     },
     "rjson": {
       "Package": "rjson",
@@ -279,6 +328,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "aa57ed55ff2df4bea697a07df528993d"
+    },
+    "xml2": {
+      "Package": "xml2",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "300860f90d5798249a0a8ad9271d4c18"
     }
   }
 }

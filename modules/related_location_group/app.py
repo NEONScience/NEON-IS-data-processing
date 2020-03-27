@@ -28,9 +28,9 @@ def group_related(path, out_path):
         group = parts[4]
         location = parts[5]
         data_type = parts[6]
-        filename = parts[7]
+        remainder = parts[7:]
         base_output_path = os.path.join(out_path, year, month, day, group)
-        target = os.path.join(base_output_path, source_type, location, data_type, filename)
+        target = os.path.join(base_output_path, source_type, location, data_type, *remainder[0:])
         log.debug(f'File target: {target}')
         file_linker.link(file_path, target)
 

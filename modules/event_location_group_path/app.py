@@ -22,7 +22,7 @@ def process(source_path, group, out_path):
     :param out_path: The output path.
     """
     paths = []
-    group_name = None
+    group_names = []
     for file_path in file_crawler.crawl(source_path):
 
         # Parse path elements
@@ -44,15 +44,15 @@ def process(source_path, group, out_path):
 
         # Get the full group name from the location file
         if data_type == 'location':
-            group_name = location_file_context.get_matching_item(file_path, group)
+            group_names = location_file_context.get_matching_items(file_path, group)
 
-    if group_name is None:
+    if len(group_names) == 0:
         log.error('No location directory found.')
     else:
-        link(paths, group_name, out_path)
+        link(paths, group_names, out_path)
 
 
-def link(paths, group_name, out_path):
+def link(paths, group_names, out_path):
 
     for path in paths:
 
@@ -65,15 +65,16 @@ def link(paths, group_name, out_path):
         filename = parts.get("filename")
 
         # Build the output path
-        log.debug(f'source_type: {source_type} id: {source_id} data_type: {data_type} file: {filename}')
-        target_dir = os.path.join(out_path, source_type, group_name, source_id, data_type)
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
-        destination = os.path.join(target_dir, filename)
+        for group_name in group_names:
+            log.debug(f'source_type: {source_type} id: {source_id} data_type: {data_type} file: {filename}')
+            target_dir = os.path.join(out_path, source_type, group_name, source_id, data_type)
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+            destination = os.path.join(target_dir, filename)
 
-        # Link the file
-        log.debug(f'source: {file_path} destination: {destination}')
-        file_linker.link(file_path, destination)
+            # Link the file
+            log.debug(f'source: {file_path} destination: {destination}')
+            file_linker.link(file_path, destination)
 
 
 def main():

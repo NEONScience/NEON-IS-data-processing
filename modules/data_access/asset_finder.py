@@ -6,8 +6,7 @@ import lib.date_formatter as date_formatter
 def find_location_assets(connection, named_location_id):
     with closing(connection.cursor()) as cursor:
         sql = '''
-            select 
-                asset_uid, install_date, remove_date 
+            select asset_uid, install_date, remove_date 
             from is_asset_location 
             where is_asset_location.nam_locn_id = :named_location_id
         '''
@@ -51,9 +50,9 @@ def find_all(connection):
         results = []
         for row in rows:
             asset_uid = row[0]
-            avro_schema_name = row[1]
+            schema_name = row[1]
             results.append({
                 'asset_id': asset_uid,
-                'asset_type': avro_schema_name
+                'asset_type': schema_name
             })
         return results
