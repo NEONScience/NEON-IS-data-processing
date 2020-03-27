@@ -4,7 +4,7 @@
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
-#' @description Workflow. Apply polyomial calibration function to L0 data and save applicable
+#' @description Workflow. Apply calibration and uncertainty functions to L0 data and save applicable
 #' uncertainty coefficients. Optionally compute FDAS (datalogger) uncertainty. Valid date
 #' ranges and certificate numbers in calibration files are used to determine the most relevant
 #' calibration to apply. The most relevant cal follows this choice order (1 chosen first):
