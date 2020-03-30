@@ -46,9 +46,9 @@ def main():
     for date in dates:
         print(f"date: {date}")
         for site in sites:
-            path = date + '/' + site
+            path = f'{date}/{site}'
             print(f'path: {path}')
-            os.system('printf > filename | pachctl put file -o import_trigger@master:' + path)
+            os.system(f'cat filename | pachctl put file -o import_trigger@master:{path}')
 
 
 if __name__ == '__main__':
