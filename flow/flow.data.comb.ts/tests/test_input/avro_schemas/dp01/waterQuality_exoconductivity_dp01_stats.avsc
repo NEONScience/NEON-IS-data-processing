@@ -1,0 +1,44 @@
+{
+  "type": "record",
+  "name": "waterQuality_exoconductivity_dp01_stats",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "L1 statistics for water quality exoconductivity sensor",
+  "fields": [
+    {
+      "name": "startDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is initiated"
+    },
+    {
+      "name": "endDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is completed"
+    },
+    {
+      "name": "specificConductance",
+      "type": [
+          "null",
+          "float"
+      ],
+      "default": null,
+      "doc": "Conductivity auto-corrected to 25 degrees C",
+      "__neon_units": "microsiemensPerCentimeter"
+    },
+    {
+      "name": "specificConductanceExpUncert",
+      "type": [
+          "null",
+          "float"
+      ],
+      "default": null,
+      "doc": "Expanded uncertainty for specific conductance",
+      "__neon_units": "microsiemensPerCentimeter"
+    }
+    ]
+}
