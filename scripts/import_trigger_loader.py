@@ -39,8 +39,8 @@ def main():
     """
     Read all sites and generate dates.
     """
-    start_date = datetime.strptime('2019-01-01', '%Y-%m-%d')
-    end_date = datetime.strptime('2019-01-31', '%Y-%m-%d')
+    start_date = datetime.strptime('2020-01-01', '%Y-%m-%d')
+    end_date = datetime.strptime('2020-01-05', '%Y-%m-%d')
     dates = dates_between(start_date, end_date)
     sites = get_sites()
     for date in dates:
@@ -48,7 +48,6 @@ def main():
         for site in sites:
             path = date + '/' + site
             print(f'path: {path}')
-            # os.system('printf > filename | put file -o ' + repo + '@master:' + path)
             os.system('printf > filename | pachctl put file -o import_trigger@master:' + path)
 
 
