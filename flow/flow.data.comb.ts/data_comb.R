@@ -8,32 +8,32 @@ data_combine<- function(DirIn,
                         DirSubCopy = NULL,
                         NameFileSufx = NULL) {
   # Echo arguments
-  log$debug(base::paste0('Input directory: ', Para$DirIn))
-  log$debug(base::paste0('Output directory: ', Para$DirOut))
+  log$debug(base::paste0('Input directory: ', DirIn))
+  log$debug(base::paste0('Output directory: ', DirOut))
   log$debug(
     base::paste0(
       'All files found in the following directories will be combined: ',
-      base::paste0(Para$DirComb, collapse = ',')
+      base::paste0(DirComb, collapse = ',')
     )
   )
   log$debug(
     base::paste0(
       'A single combined data file will be populated in the directory: ',
-      Para$NameDirCombOut
+      NameDirCombOut
     )
   )
-  log$debug(base::paste0('Common time variable expected in all files: ', Para$NameVarTime))
+  log$debug(base::paste0('Common time variable expected in all files: ', NameVarTime))
   
   # Read in the output schema
   log$debug(base::paste0(
     'Output schema: ',
-    base::paste0(Para$FileSchmComb, collapse = ',')
+    base::paste0(FileSchmComb, collapse = ',')
   ))
-  if (base::is.null(Para$FileSchmComb) || Para$FileSchmComb == 'NA') {
+  if (base::is.null(FileSchmComb) || FileSchmComb == 'NA') {
     SchmComb <- NULL
   } else {
     SchmComb <-
-      base::paste0(base::readLines(Para$FileSchmComb), collapse = '')
+      base::paste0(base::readLines(FileSchmComb), collapse = '')
     
     # Parse the avro schema for output variable names
     nameVarSchmComb <- NEONprocIS.base::def.schm.avro.pars(Schm=SchmComb,log=log)$var$name
@@ -43,14 +43,14 @@ data_combine<- function(DirIn,
   log$debug(
     base::paste0(
       'Input columns (and their order) to populate in the combined output file (all if empty): ',
-      base::paste0(Para$ColKeep, collapse = ',')
+      base::paste0(ColKeep, collapse = ',')
     )
   )
   
   
   # Retrieve optional subdirectories to copy over
   DirSubCopy <-
-    base::unique(base::setdiff(Para$DirSubCopy, Para$NameDirCombOut))
+    base::unique(base::setdiff(DirSubCopy, NameDirCombOut))
   log$debug(base::paste0(
     'Additional subdirectories to copy: ',
     base::paste0(DirSubCopy, collapse = ',')
@@ -59,13 +59,13 @@ data_combine<- function(DirIn,
   # What are the expected subdirectories of each input path
   log$debug(base::paste0(
     'Minimum expected subdirectories of each datum path: ',
-    base::paste0(Para$DirComb, collapse = ',')
+    base::paste0(DirComb, collapse = ',')
   ))
   
   # Find all the input paths (datums). We will process each one.
   DirIn <-
-    NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
-                                nameDirSub =  Para$DirComb,
+    NEONprocIS.base::def.dir.in(DirBgn = DirIn,
+                                nameDirSub =  DirComb,
                                 log = log)
   
   
@@ -75,17 +75,17 @@ data_combine<- function(DirIn,
     
     # Get directory listing of input director(ies). We will combine these files.
     file <-
-      base::list.files(base::paste0(idxDirIn, '/', Para$DirComb))
+      base::list.files(base::paste0(idxDirIn, '/', DirComb))
     filePath <-
-      base::list.files(base::paste0(idxDirIn, '/', Para$DirComb), full.names =
+      base::list.files(base::paste0(idxDirIn, '/', DirComb), full.names =
                          TRUE)
     
     # Gather info about the input directory (including date) and create the output directory.
     InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
-    idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
-    idxDirOutComb <- base::paste0(idxDirOut, '/', Para$NameDirCombOut)
+    idxDirOut <- base::paste0(DirOut, InfoDirIn$dirRepo)
+    idxDirOutComb <- base::paste0(idxDirOut, '/', NameDirCombOut)
     NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
-                                  DirSub = Para$NameDirCombOut,
+                                  DirSub = NameDirCombOut,
                                   log = log)
     
     # Copy with a symbolic link the desired subfolders
@@ -98,7 +98,7 @@ data_combine<- function(DirIn,
     data <- NULL
     data <-
       NEONprocIS.base::def.file.avro.comb.ts(file = filePath,
-                                             nameVarTime = Para$NameVarTime,
+                                             nameVarTime = NameVarTime,
                                              log = log)
     
     # Take stock of the combined data
@@ -109,9 +109,9 @@ data_combine<- function(DirIn,
     ))
     
     # Filter and re-order the output columns
-    if (!base::is.null(Para$ColKeep)) {
+    if (!base::is.null(ColKeep)) {
       # Check whether the desired columns to keep are found in the combined data
-      chkCol <- Para$ColKeep %in% nameCol
+      chkCol <- ColKeep %in% nameCol
       if (base::any(!chkCol)) {
         log$error(
           base::paste0(
@@ -124,7 +124,7 @@ data_combine<- function(DirIn,
       }
       
       # Reorder and filter the output columns
-      data <- data[Para$ColKeep]
+      data <- data[ColKeep]
       
       # Turn any periods in the column names to underscores
       base::names(data) <- base::sub(pattern='[.]',replacement='_',x=base::names(data))
@@ -138,7 +138,7 @@ data_combine<- function(DirIn,
       } else {
         log$debug(base::paste0(
           'Filtered and re-ordered input columns: ',
-          base::paste0(Para$ColKeep, collapse = ','),
+          base::paste0(ColKeep, collapse = ','),
           ' will be respectively output with column names: ',
           base::paste0(nameVarSchmComb, collapse = ',')
         ))      
@@ -151,7 +151,7 @@ data_combine<- function(DirIn,
       file[base::nchar(file) == base::min(base::nchar(file))][1]
     fileOut <-
       NEONprocIS.base::def.file.name.out(nameFileIn = fileBase,
-                                         sufx = Para$NameFileSufx,
+                                         sufx = NameFileSufx,
                                          log = log)
     nameFileOut <- base::paste0(idxDirOutComb, '/', fileOut)
     

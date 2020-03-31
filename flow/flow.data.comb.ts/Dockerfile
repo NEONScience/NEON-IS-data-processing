@@ -13,3 +13,4 @@ RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in calibration filter workflow
 COPY ./flow.data.comb.ts.R /flow.data.comb.ts.R
+COPY ./flow.data.comb.ts.R /data.comb.R

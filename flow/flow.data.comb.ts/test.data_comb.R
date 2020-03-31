@@ -1,23 +1,21 @@
 library(testthat)
-source("calibration_conversion.R")
+source("data_comb.R")
 test_that(
-   "Calibration filter first tests",
+   "Data Comb ts tests",
    {
      DirIn <- "tests/test_input"
      DirOut <- "tests/test_output/pfs/out"
-     FileSchmData <- file.path(DirIn,"avro_schemas/dp0p/prt_calibrated.avsc" )
-     FileSchmQf <- file.path(DirIn,"avro_schemas/dp0p/flags_calibration.avsc" )
-     TermConv <- "resistance"
-     TermQf <- "resistance"
-     TermUcrt <- "resistance(R)"
-     FuncConv  <- "def.cal.conv.poly"
-     FuncUcrt <- "def.ucrt.meas"
-     FileUcrtFdas <-  file.path(DirIn,"uncertainty_fdas/fdas_calibration_uncertainty_general.json" )
-     NumDayExpiMax <- NA
-    calibration_filter(DirIn=DirIn, DirOut=DirOut, FileSchmData=FileSchmData, FileSchmQf=FileSchmQf, TermConv=TermConv, FuncConv=FuncConv,TermQf=TermQf, TermUcrt=TermUcrt, FileUcrtFdas=FileUcrtFdas, FuncUcrt=FuncUcrt, NumDayExpiMax = NumDayExpiMax)
+     FileSchmComb <- file.path(DirIn,"avro_schemas/dp01/waterQuality_exoconductivity_dp01.avsc" )
+     DirComb <- "data|uncertainty_data"
+     NameDirCombOut <- "stats"
+     NameVarTime <- "readout_time"
+     ColKeep <- "readout_time|readout_time|specificConductance|specificConductance_ucrtExpn"
+     NameFileSufx <- "_basicStats_100"
+     
+     data_combine(DirIn = DirIn, DirOut = DirOut, FileSchmComb = FileSchmComb, DirComb = DirComb, NameDirCombOut = NameDirCombOut, NameVarTime = NameVarTime,
+       ColKeep = ColKeep, NameFileSufx = NNameFileSufxULL)
     
    }
 )
 
 
-#path to FDAS uncertainty is empty
