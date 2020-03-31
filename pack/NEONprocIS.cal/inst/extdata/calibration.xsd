@@ -5,7 +5,7 @@
         <xs:element name="SensorID">
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:short" name="MxAssetID"/>
+              <xs:element type="xs:integer" name="MxAssetID"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -186,7 +186,7 @@
                     <xs:element type="xs:string" name="Equipment"/>
                     <xs:element type="xs:string" name="Operator"/>
                     <xs:element type="xs:string" name="WorkOrder"/>
-                    <xs:element type="xs:short" name="MaximoID"/>
+                    <xs:element type="xs:integer" name="MaximoID"/>
                     <xs:element type="xs:long" name="AssetID"/>
                     <xs:element type="xs:string" name="Reference"/>
                     <xs:element type="xs:string" name="Fixture"/>
