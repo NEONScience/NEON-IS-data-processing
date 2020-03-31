@@ -17,7 +17,7 @@ def dates_between(start_date, end_date):
         year = datetime_obj.strftime('%Y')
         month = datetime_obj.strftime('%m')
         day = datetime_obj.strftime('%d')
-        dates.append('/' + year + '/' + month + '/' + day)
+        dates.append(f'/{year}/{month}/{day}')
     return dates
 
 
@@ -44,11 +44,11 @@ def main():
     dates = dates_between(start_date, end_date)
     sites = get_sites()
     for date in dates:
-        print(f"date: {date}")
         for site in sites:
-            path = date + '/' + site
+            path = f'{date}/{site}'
             print(f'path: {path}')
-            os.system('printf > filename | pachctl put file -o import_trigger@master:' + path)
+            os.system(
+                f'printf > filename | pachctl put file -o import_trigger@master:{path}')
 
 
 if __name__ == '__main__':
