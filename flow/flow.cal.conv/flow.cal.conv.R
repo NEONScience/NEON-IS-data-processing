@@ -4,7 +4,7 @@
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
-#' @description Workflow. Apply polyomial calibration function to L0 data and save applicable
+#' @description Workflow. Apply calibration and uncertainty functions to L0 data and save applicable
 #' uncertainty coefficients. Optionally compute FDAS (datalogger) uncertainty. Valid date
 #' ranges and certificate numbers in calibration files are used to determine the most relevant
 #' calibration to apply. The most relevant cal follows this choice order (1 chosen first):
@@ -222,6 +222,8 @@
 #     implement selection of which terms to supply calibration flags for
 #   Cove Sturtevant (2020-03-03)
 #     accept data repositories without a calibration folder and handle accordingly
+#   Cove Sturtevant (2020-03-31)
+#     remove dirSubCopy from mandatory directories to identify datums. Require data folder only.
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -418,7 +420,7 @@ log$debug(base::paste0(
 # It's possible that calibration folder will not exist if the
 # sensor has no calibrations. This is okay, as the flags and
 # conversion handle this.
-nameDirSub <- base::as.list(c('data', DirSubCopy))
+nameDirSub <- base::as.list(c('data'))
 log$debug(base::paste0(
   'Expected subdirectories of each datum path: ',
   base::paste0(nameDirSub, collapse = ',')
