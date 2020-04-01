@@ -1,11 +1,11 @@
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="CalVal">
+ <xs:element name="CalVal">
     <xs:complexType>
       <xs:sequence>
         <xs:element name="SensorID">
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:integer" name="MxAssetID"/>
+              <xs:element name="MxAssetID" type="xs:unsignedLong" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
@@ -16,7 +16,7 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element type="xs:string" name="CalFixtureID"/>
-                    <xs:element type="xs:string" name="ActivityLocation"/>
+					 <xs:element type="xs:string" name="ActivityLocation"/>
                     <xs:element type="xs:string" name="SWVersion"/>
                     <xs:element type="xs:string" name="ProcedureVersion"/>
                     <xs:element type="xs:string" name="Station"/>
@@ -29,30 +29,30 @@
                     <xs:element name="AmbientTemperature">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element type="xs:float" name="Min"/>
-                          <xs:element type="xs:float" name="Max"/>
-                          <xs:element type="xs:float" name="Mean"/>
-                          <xs:element type="xs:float" name="StdDev"/>
+                          <xs:element name="Min" type="xs:decimal" />
+                          <xs:element name="Max" type="xs:decimal" />
+                          <xs:element name="Mean" type="xs:decimal" />
+                          <xs:element name="StdDev" type="xs:decimal" />
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
                     <xs:element name="AmbientPressure">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element type="xs:float" name="Min"/>
-                          <xs:element type="xs:float" name="Max"/>
-                          <xs:element type="xs:float" name="Mean"/>
-                          <xs:element type="xs:float" name="StdDev"/>
+                          <xs:element name="Min" type="xs:decimal" />
+                          <xs:element name="Max" type="xs:decimal" />
+                          <xs:element name="Mean" type="xs:decimal" />
+                          <xs:element name="StdDev" type="xs:decimal" />
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
                     <xs:element name="AmbientHumidity">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element type="xs:float" name="Min"/>
-                          <xs:element type="xs:float" name="Max"/>
-                          <xs:element type="xs:float" name="Mean"/>
-                          <xs:element type="xs:float" name="StdDev"/>
+                          <xs:element name="Min" type="xs:decimal" />
+                          <xs:element name="Max" type="xs:decimal" />
+                          <xs:element name="Mean" type="xs:decimal" />
+                          <xs:element name="StdDev" type="xs:decimal" />
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
@@ -62,12 +62,12 @@
               <xs:element name="CalibrationCoefficient"  maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="Name"/>
-                    <xs:element type="xs:byte" name="Value"/>
+                    <xs:element type="xs:string" name="Name" maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element name="Value" type="xs:string"  maxOccurs="unbounded" minOccurs="0"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="CalibrationTable">
+			  <xs:element name="CalibrationTable" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="Metadata">
@@ -120,30 +120,30 @@
                   <xs:attribute type="xs:string" name="name"/>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="CalibrationStandards">
+		      <xs:element name="CalibrationStandards"  maxOccurs="unbounded" minOccurs="0" >
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
-                      <xs:attribute type="xs:string" name="CertNumber"/>
+                      <xs:attribute name="CertNumber" type="xs:string" use="required" />
                     </xs:extension>
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
-              <xs:element type="xs:byte" name="StreamID"/>
-              <xs:element name="Uncertainty" maxOccurs="unbounded" minOccurs="0">
+	          <xs:element name="StreamID" type="xs:unsignedByte" />
+              <xs:element maxOccurs="unbounded" name="Uncertainty">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="Name"/>
-                    <xs:element type="xs:float" name="Value"/>
+                    <xs:element name="Name" type="xs:string" />
+                    <xs:element name="Value" type="xs:decimal" />
                   </xs:sequence>
-                  <xs:attribute type="xs:string" name="units" use="optional"/>
+                  <xs:attribute name="units" type="xs:string" use="required" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="Trueness">
                 <xs:complexType>
                   <xs:simpleContent>
-                    <xs:extension base="xs:float">
-                      <xs:attribute type="xs:string" name="units"/>
+                    <xs:extension base="xs:decimal">
+                      <xs:attribute name="units" type="xs:string" use="required" />
                     </xs:extension>
                   </xs:simpleContent>
                 </xs:complexType>
@@ -151,28 +151,28 @@
               <xs:element name="ActivityTimeRange">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:dateTime" name="StartTime"/>
-                    <xs:element type="xs:dateTime" name="EndTime"/>
+                    <xs:element name="StartTime" type="xs:dateTime" />
+                    <xs:element name="EndTime" type="xs:dateTime" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element type="xs:int" name="CertificateNumber"/>
+              <xs:element name="CertificateNumber" type="xs:unsignedLong" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="ValidTimeRange">
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:dateTime" name="StartTime"/>
-              <xs:element type="xs:dateTime" name="EndTime"/>
+              <xs:element name="StartTime" type="xs:dateTime" />
+              <xs:element name="EndTime" type="xs:dateTime" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Comment" maxOccurs="unbounded" minOccurs="0">
+        <xs:element name="Comment">
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:string" name="CommentDescription"/>
-              <xs:element type="xs:string" name="CommentCreator"/>
+              <xs:element name="CommentDescription" type="xs:string" />
+              <xs:element name="CommentCreator" type="xs:string" />
               <xs:element type="xs:string" name="CommentDateTime"/>
             </xs:sequence>
           </xs:complexType>
@@ -183,7 +183,27 @@
               <xs:element name="MetaData">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="Equipment"/>
+                   <!--xs:element name="Equipment" type="xs:string" />
+                    <xs:element name="Operator" type="xs:string" />
+                    <xs:element name="WorkOrder" type="xs:string" />
+                    <xs:element name="MaximoID" type="xs:unsignedShort" />
+                    <xs:element name="AssetID" type="xs:unsignedLong" />
+					<xs:element type="xs:string" name="Reference" maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="Fixture" maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="NEONPN" maxOccurs="unbounded" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+			    <xs:element name="SN" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="header"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element-->
+					<xs:element type="xs:string" name="Equipment"/>
                     <xs:element type="xs:string" name="Operator"/>
                     <xs:element type="xs:string" name="WorkOrder"/>
                     <xs:element type="xs:integer" name="MaximoID"/>
@@ -191,7 +211,7 @@
                     <xs:element type="xs:string" name="Reference"/>
                     <xs:element type="xs:string" name="Fixture"/>
                     <xs:element type="xs:string" name="NEONPN"/>
-                    <xs:element name="SN">
+                    <xs:element name="SN" maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
@@ -200,7 +220,7 @@
                         </xs:simpleContent>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="FW">
+                    <xs:element name="FW" maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
@@ -209,7 +229,7 @@
                         </xs:simpleContent>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="SOH">
+                    <xs:element name="SOH" maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
@@ -218,11 +238,11 @@
                         </xs:simpleContent>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element type="xs:string" name="UncertaintyCtl"/>
+                    <xs:element type="xs:string" name="UncertaintyCtl" maxOccurs="unbounded" minOccurs="0"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="PreCALDATA">
+              <xs:element name="PreCALDATA" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
@@ -235,12 +255,12 @@
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
-                      <xs:attribute type="xs:string" name="header"/>
+                      <xs:attribute name="header" type="xs:string" use="required" />
                     </xs:extension>
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="ValidationDATA">
+			  <xs:element name="ValidationDATA" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
@@ -253,30 +273,22 @@
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
-                      <xs:attribute type="xs:string" name="header"/>
+                      <xs:attribute name="header" type="xs:string" use="required" />
                     </xs:extension>
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
               <xs:element name="QCDynamic">
                 <xs:complexType>
-                  <xs:simpleContent>
-                    <xs:extension base="xs:string">
-                      <xs:attribute type="xs:string" name="header"/>
-                    </xs:extension>
-                  </xs:simpleContent>
+                  <xs:attribute name="header" type="xs:string" use="required" />
                 </xs:complexType>
               </xs:element>
               <xs:element name="Precision">
                 <xs:complexType>
-                  <xs:simpleContent>
-                    <xs:extension base="xs:string">
-                      <xs:attribute type="xs:string" name="header"/>
-                    </xs:extension>
-                  </xs:simpleContent>
+                  <xs:attribute name="header" type="xs:string" use="required" />
                 </xs:complexType>
               </xs:element>
-              <xs:element name="AsLeftCFG">
+              <xs:element name="AsLeftCFG" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:string">
@@ -285,10 +297,10 @@
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="AsReceived">
+              <xs:element name="AsReceived" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="ReceivedCFG">
+                    <xs:element name="ReceivedCFG" maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
@@ -297,7 +309,7 @@
                         </xs:simpleContent>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="ReceivedCoefficient">
+                    <xs:element name="ReceivedCoefficient" maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:sequence>
                           <xs:element type="xs:string" name="Name"/>
@@ -305,7 +317,7 @@
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="ReceivedDATA">
+                    <xs:element name="ReceivedDATA" maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:simpleContent>
                           <xs:extension base="xs:string">
@@ -314,7 +326,7 @@
                         </xs:simpleContent>
                       </xs:complexType>
                     </xs:element>
-                  </xs:sequence>
+                 </xs:sequence>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
