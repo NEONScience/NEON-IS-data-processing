@@ -183,34 +183,15 @@
               <xs:element name="MetaData">
                 <xs:complexType>
                   <xs:sequence>
-                   <!--xs:element name="Equipment" type="xs:string" />
-                    <xs:element name="Operator" type="xs:string" />
-                    <xs:element name="WorkOrder" type="xs:string" />
-                    <xs:element name="MaximoID" type="xs:unsignedShort" />
-                    <xs:element name="AssetID" type="xs:unsignedLong" />
-					<xs:element type="xs:string" name="Reference" maxOccurs="unbounded" minOccurs="0"/>
-                    <xs:element type="xs:string" name="Fixture" maxOccurs="unbounded" minOccurs="0"/>
-                    <xs:element type="xs:string" name="NEONPN" maxOccurs="unbounded" minOccurs="0"/>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-			    <xs:element name="SN" maxOccurs="unbounded" minOccurs="0">
-                      <xs:complexType>
-                        <xs:simpleContent>
-                          <xs:extension base="xs:string">
-                            <xs:attribute type="xs:string" name="header"/>
-                          </xs:extension>
-                        </xs:simpleContent>
-                      </xs:complexType>
-                    </xs:element-->
+ 
 					<xs:element type="xs:string" name="Equipment"/>
                     <xs:element type="xs:string" name="Operator"/>
                     <xs:element type="xs:string" name="WorkOrder"/>
                     <xs:element type="xs:integer" name="MaximoID"/>
                     <xs:element type="xs:long" name="AssetID"/>
-                    <xs:element type="xs:string" name="Reference"/>
-                    <xs:element type="xs:string" name="Fixture"/>
-                    <xs:element type="xs:string" name="NEONPN"/>
+                    <xs:element type="xs:string" name="Reference" maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="Fixture" maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="NEONPN" maxOccurs="unbounded" minOccurs="0"/>
                     <xs:element name="SN" maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:simpleContent>
