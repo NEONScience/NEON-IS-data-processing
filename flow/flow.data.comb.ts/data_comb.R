@@ -7,6 +7,8 @@ data_combine<- function(DirIn,
                         ColKeep = NULL,
                         DirSubCopy = NULL,
                         NameFileSufx = NULL) {
+  
+  log <- NEONprocIS.base::def.log.init()
   # Echo arguments
   log$debug(base::paste0('Input directory: ', DirIn))
   log$debug(base::paste0('Output directory: ', DirOut))
