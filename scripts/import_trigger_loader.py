@@ -39,16 +39,21 @@ def main():
     """
     Read all sites and generate dates.
     """
+    command = 'pachctl'
+    repo = 'import_trigger_wq@master'
     start_date = datetime.strptime('2020-01-01', '%Y-%m-%d')
     end_date = datetime.strptime('2020-01-05', '%Y-%m-%d')
     dates = dates_between(start_date, end_date)
     sites = get_sites()
+    print('Starting commit.')
+    os.system(f'{command} start commit {repo}')
     for date in dates:
         for site in sites:
             path = f'{date}/{site}'
             print(f'path: {path}')
-            os.system(
-                f'printf > filename | pachctl put file -o import_trigger@master:{path}')
+            os.system(f'printf > filename | {command} put file -o {repo}:{path}')
+    print('Finishing commit.')
+    os.system(f'{command} finish commit {repo}')
 
 
 if __name__ == '__main__':
