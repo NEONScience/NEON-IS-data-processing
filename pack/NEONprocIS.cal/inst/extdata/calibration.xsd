@@ -84,7 +84,7 @@
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="Row">
+                    <xs:element name="Row"  maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:sequence>
                           <xs:element name="Independent">
@@ -96,7 +96,7 @@
                               </xs:simpleContent>
                             </xs:complexType>
                           </xs:element>
-                          <xs:element name="Column">
+                          <xs:element name="Column"  maxOccurs="unbounded" minOccurs="0">
                             <xs:complexType>
                               <xs:sequence>
                                 <xs:element name="Dependent">
@@ -259,11 +259,17 @@
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="QCDynamic">
+       
+			  <xs:element name="QCDynamic">
                 <xs:complexType>
-                  <xs:attribute name="header" type="xs:string" use="required" />
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="header" type="xs:string" use="required" />
+                    </xs:extension>
+                  </xs:simpleContent>
                 </xs:complexType>
-              </xs:element>
+              </xs:element> 
+			  
               <xs:element name="Precision">
                 <xs:complexType>
                   <xs:attribute name="header" type="xs:string" use="required" />
