@@ -16,7 +16,7 @@
   "input": {
     "pfs": {
       "name": "SOURCE_PATH",
-      "repo": "exodissolvedoxygen_fill_date_gaps_by_location",
+      "repo": "exodissolvedoxygen_merge_data_by_location",
       "glob": "/exodissolvedoxygen/*/*/*/*"
     }
   },

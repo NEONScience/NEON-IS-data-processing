@@ -62,7 +62,8 @@
     },
     "input": {
         "pfs": {
-          "repo": "import_trigger",
+          "name": "import_trigger",
+          "repo": "import_trigger_wq",
           "glob": "/*/*/*/*"
         }
       },

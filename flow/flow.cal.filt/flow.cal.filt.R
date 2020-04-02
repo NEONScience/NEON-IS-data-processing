@@ -87,6 +87,8 @@
 #     accept data repositories without a calibration folder. Search only for data folder to identify datums.
 #   Cove Sturtevant (2020-03-16)
 #     added option to pad the days around the current day for filtering calibrations 
+#   Cove Sturtevant (2020-03-31)
+#     Create calibration directory on output even if there was not one on input
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -177,6 +179,8 @@ for (idxDirIn in DirIn) {
   # Create the base output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
   idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
+  idxDirOutCal <- base::paste0(idxDirOut, '/calibration')
+  base::dir.create(idxDirOutCal, recursive = TRUE)
   
   # Copy with a symbolic link the desired subfolders
   if (base::length(DirSubCopy) > 0) {
