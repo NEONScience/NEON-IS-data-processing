@@ -9,7 +9,7 @@ data_combine <- function(DirIn,
                          NameFileSufx = NULL) {
   
   #uncomment below line for debugging on SOM server. 
-  #browser()
+  browser()
   log <- NEONprocIS.base::def.log.init()
   # Echo arguments
   log$debug(base::paste0('Input directory: ', DirIn))
