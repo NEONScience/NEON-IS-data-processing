@@ -4,7 +4,7 @@ source("data_comb.R")
 # test_that("Data Comb creates combined file",
 #           {
 #             DirIn <-
-#               "tests/test_input/waterQuality_exoconductivity_data_uncertainty_group"
+#               "tests/test_input/waterQuality_exoconductivity_data_uncertainty_group/pfs/combine"
 #             DirOut <- "tests/test_output/pfs/out"
 #             FileSchmComb <-
 #               "tests/test_input/avro_schemas/dp01/waterQuality_exoconductivity_dp01_stats.avsc"
@@ -21,7 +21,7 @@ source("data_comb.R")
 #             NameFileSufx <- "_basicStats_100"
 #             DirEXTENSION <-
 #               "01/02/water-quality-283/exoconductivity/CFGLOC110700/stats/SENSOR000316_2019-01-02_basicStats_100.avro"
-#
+# 
 #             data_combine(
 #               DirIn = DirIn,
 #               DirOut = DirOut,
@@ -33,13 +33,13 @@ source("data_comb.R")
 #               NameFileSufx = NameFileSufx
 #             )
 #             expect_that(file.exists(file.path(DirOut, DirEXTENSION)), is_true())
-#
+# 
 #           })
 
 #test_that("No output directory when there are no datums",
 #          {
 #            DirIn <-
-            #   "tests/test_input/waterQuality_exoconductivity_data_uncertainty_group/no_datums"
+            #   "tests/test_input/waterQuality_exoconductivity_data_uncertainty_group/pfs/no_datums"
             # DirOut <- "tests/test_output/pfs/out"
             # DirComb <- c("data", "uncertainty_data")
             # NameDirCombOut <- "stats"
@@ -70,7 +70,7 @@ source("data_comb.R")
 # test_that("Data Comb creates combined file with shortest name",
 #           {
 #             DirIn <-
-#               "tests/test_input/waterQuality_exoconductivity_data_uncertainty_group/shortest"
+#               "tests/test_input/waterQuality_exoconductivity_data_uncertainty_group/pfs/shortest"
 #             DirOut <- "tests/test_output/pfs/out"
 #             FileSchmComb <-
 #               "tests/test_input/avro_schemas/dp01/waterQuality_exoconductivity_dp01_stats.avsc"
@@ -106,7 +106,7 @@ source("data_comb.R")
 test_that("Data Comb output should have only the columns mentioned in the ColKeep",
           {
             DirIn <-
-              "tests/test_input/waterQuality_exoconductivity_data_uncertainty_group/colkeep"
+              "tests/test_input/waterQuality_exoconductivity_data_uncertainty_group/pfs/colkeep"
             DirOut <- "tests/test_output/pfs/out"
             FileSchmComb <-
               "tests/test_input/avro_schemas/dp01/waterQuality_exoconductivity_dp01_stats.avsc"
@@ -120,7 +120,7 @@ test_that("Data Comb output should have only the columns mentioned in the ColKee
             NameFileSufx <- "_basicStats_100"
             DirEXTENSION <-
               "01/02/water-quality-283/exoconductivity/CFGLOC110700/stats/colkeep_2019-01-02.avro"
-            
+
             data_combine(
               DirIn = DirIn,
               DirOut = DirOut,
@@ -131,6 +131,21 @@ test_that("Data Comb output should have only the columns mentioned in the ColKee
               ColKeep = ColKeep,
               NameFileSufx = NameFileSufx
             )
+            outputfile <- file.path(DirOut, DirEXTENSION)
+            data  <-
+              base::try(NEONprocIS.base::def.read.avro.deve(
+                NameFile = outputfile,
+                NameLib = 'ravro.so',
+                log = log
+              ),
+              silent = FALSE)
+
+            if (base::class(data) == 'try-error') {
+              # Generate error and stop execution
+              log$error(base::paste0('File ', outputfile, ' is unreadable.'))
+              base::stop()
+            }
+            columnNames <- base::names(data)
             expect_that(file.exists(file.path(DirOut, DirEXTENSION)), is_true())
-            
+
           })
