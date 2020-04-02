@@ -15,7 +15,7 @@
       ]
     },
     "features": {
-      "type": "array",
+      "type": ["array", "null"],
       "items": {
         "type": "object",
         "required": [
@@ -197,7 +197,7 @@
                                     },
                                     "locations": {
                                       "minLength": 1,
-                                      "type": "object",
+                                      "type": ["object", "null"],
                                       "required": [
                                         "type",
                                         "features"
