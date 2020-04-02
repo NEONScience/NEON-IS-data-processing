@@ -33,27 +33,23 @@
 #     original creation
 #   Mija Choi (2020-03-03)
 #     Added xml validation
+#   Mija Choi (2020-03-25)
+#     Modified to add a read-only file, inst/extdata/calibration.xsd, in NEONprocIS.cal package 
 ##############################################################################################
 def.read.cal.xml <- function(NameFile,Vrbs=TRUE){
   
+  xsd1 <-
+    system.file("extdata", "calibration.xsd", package = "NEONprocIS.cal")
+  xmlchk <-
+    try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),
+        silent = TRUE)
   
-  # --- Mija -> this fails - prob because calibration.xsd in not in the working directory when used outside the Github repository
-  # Input XML is valid agains the schema
-  # Use the xml schema generated
-  #
-  # xsd1 = "calibration.xsd"
-  # xmlchk <-
-  #   try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),
-  #       silent = TRUE)
-  # 
-  # if (xmlchk != TRUE) {
-  #   base::stop(
-  #     base::paste0(
-  #       " ====== def.read.cal.xml will not run due to the error in xml,  ",
-  #       NameFile
-  #     )
-  #   )
-  # }
+  if (xmlchk != TRUE) {
+    base::stop(base::paste0(
+      " ====== def.read.cal.xml will not run due to the error in xml,  ",
+      NameFile
+    ))
+  }
   
   # Read contents of xml file 
   xml <- try(XML::xmlParse(NameFile),silent=TRUE) 
