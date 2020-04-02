@@ -15,7 +15,7 @@
       "name": "DIR_IN",
       "repo": "exo2_merge_data_by_location",
       "glob": "/exo2/",
-      "empty_files": true
+      "empty_files": false
     }
   },
   "enable_stats": false,
