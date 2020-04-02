@@ -9,68 +9,68 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="StreamCalVal">
+        <xs:element name="StreamCalVal"  maxOccurs="unbounded" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="CalFixture">
+              <xs:element name="CalFixture"  maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="CalFixtureID"/>
-					 <xs:element type="xs:string" name="ActivityLocation"/>
-                    <xs:element type="xs:string" name="SWVersion"/>
-                    <xs:element type="xs:string" name="ProcedureVersion"/>
-                    <xs:element type="xs:string" name="Station"/>
+                    <xs:element type="xs:string" name="CalFixtureID"  maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="ActivityLocation"  maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="SWVersion"  maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="ProcedureVersion"  maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="Station"  maxOccurs="unbounded" minOccurs="0"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="CalEnvironment">
+              <xs:element name="CalEnvironment"  maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="AmbientTemperature">
+                    <xs:element name="AmbientTemperature"  maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="Min" type="xs:decimal" />
-                          <xs:element name="Max" type="xs:decimal" />
-                          <xs:element name="Mean" type="xs:decimal" />
-                          <xs:element name="StdDev" type="xs:decimal" />
+                          <xs:element name="Min" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
+                          <xs:element name="Max" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
+                          <xs:element name="Mean" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
+                          <xs:element name="StdDev" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="AmbientPressure">
+                    <xs:element name="AmbientPressure"  maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="Min" type="xs:decimal" />
-                          <xs:element name="Max" type="xs:decimal" />
-                          <xs:element name="Mean" type="xs:decimal" />
-                          <xs:element name="StdDev" type="xs:decimal" />
+                          <xs:element name="Min" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
+                          <xs:element name="Max" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
+                          <xs:element name="Mean" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
+                          <xs:element name="StdDev" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="AmbientHumidity">
+                    <xs:element name="AmbientHumidity"  maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="Min" type="xs:decimal" />
-                          <xs:element name="Max" type="xs:decimal" />
-                          <xs:element name="Mean" type="xs:decimal" />
-                          <xs:element name="StdDev" type="xs:decimal" />
+                          <xs:element name="Min" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
+                          <xs:element name="Max" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
+                          <xs:element name="Mean" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
+                          <xs:element name="StdDev" type="xs:decimal"  maxOccurs="unbounded" minOccurs="0"/>
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="CalibrationCoefficient"  maxOccurs="unbounded" minOccurs="0">
+              <xs:element name="CalibrationCoefficient" maxOccurs="unbounded" minOccurs="1" >
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="Name" maxOccurs="unbounded" minOccurs="0"/>
-                    <xs:element name="Value" type="xs:string"  maxOccurs="unbounded" minOccurs="0"/>
+                   <xs:element type="xs:string" name="Name" maxOccurs="unbounded" minOccurs="1"/>
+                   <xs:element name="Value" type="xs:string" maxOccurs="unbounded" minOccurs="1"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
 			  <xs:element name="CalibrationTable" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="Metadata">
+                    <xs:element name="Metadata"  maxOccurs="unbounded" minOccurs="0">
                       <xs:complexType>
                         <xs:sequence>
                           <xs:element name="Entry">
@@ -139,7 +139,7 @@
                   <xs:attribute name="units" type="xs:string" use="required" />
                 </xs:complexType>
               </xs:element>
-              <xs:element name="Trueness">
+              <xs:element name="Trueness"  maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:simpleContent>
                     <xs:extension base="xs:decimal">
@@ -148,11 +148,11 @@
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="ActivityTimeRange">
+              <xs:element name="ActivityTimeRange" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="StartTime" type="xs:dateTime" />
-                    <xs:element name="EndTime" type="xs:dateTime" />
+                    <xs:element name="StartTime" type="xs:dateTime" maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element name="EndTime" type="xs:dateTime" maxOccurs="unbounded" minOccurs="0" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -183,10 +183,9 @@
               <xs:element name="MetaData">
                 <xs:complexType>
                   <xs:sequence>
- 
-					<xs:element type="xs:string" name="Equipment"/>
-                    <xs:element type="xs:string" name="Operator"/>
-                    <xs:element type="xs:string" name="WorkOrder"/>
+ 			          		<xs:element type="xs:string" name="Equipment" maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="Operator" maxOccurs="unbounded" minOccurs="0"/>
+                    <xs:element type="xs:string" name="WorkOrder" maxOccurs="unbounded" minOccurs="0"/>
                     <xs:element type="xs:integer" name="MaximoID"/>
                     <xs:element type="xs:long" name="AssetID"/>
                     <xs:element type="xs:string" name="Reference" maxOccurs="unbounded" minOccurs="0"/>
@@ -259,7 +258,6 @@
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
-       
 			  <xs:element name="QCDynamic">
                 <xs:complexType>
                   <xs:simpleContent>
