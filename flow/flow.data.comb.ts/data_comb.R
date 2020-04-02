@@ -1,13 +1,15 @@
-data_combine<- function(DirIn,
-                        DirOut,
-                        DirComb,
-                        NameDirCombOut,
-                        NameVarTime,
-                        FileSchmComb = NULL,
-                        ColKeep = NULL,
-                        DirSubCopy = NULL,
-                        NameFileSufx = NULL) {
+data_combine <- function(DirIn,
+                         DirOut,
+                         DirComb,
+                         NameDirCombOut,
+                         NameVarTime,
+                         FileSchmComb = NULL,
+                         ColKeep = NULL,
+                         DirSubCopy = NULL,
+                         NameFileSufx = NULL) {
   
+  #uncomment below line for debugging on SOM server. 
+  #browser()
   log <- NEONprocIS.base::def.log.init()
   # Echo arguments
   log$debug(base::paste0('Input directory: ', DirIn))
