@@ -128,6 +128,6 @@ def.wrte.parq <- function(data,
     rpt <- arrow::write_parquet(x=data,sink=NameFile) 
   }
   
-  log$info(base::paste0('Wrote parquet file: ',NameFile))
+  log$debug(base::paste0('Wrote parquet file: ',NameFile))
   return(rpt)
 }
