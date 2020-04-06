@@ -52,7 +52,7 @@
 #' Sys.setenv(DIR_IN='/scratch/pfs/waterQuality_exofdom_correction_group')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/exofdom_corrected.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_correction_exofdom.avsc")
-#' rm(list=setdiff(ls(),c('arg','log'))
+#' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
 
@@ -199,11 +199,11 @@ for (idxDirIn in DirIn){
   
   #Default all flags to -1 then change them as the test can be performed
   fdomData$fDOMTempQF <- -1
-  fdomData$fDOMAbsQF<- -1
-  fdomData$spectrumCount <- -1
+  #fdomData$fDOMAbsQF <- -1 #This gets calculated by def.wq.abs.corr.R, if possible
   
-  #Default expanded uncertainty to NA until it can be calculated
+  #Default expanded uncertainty to NA and spectrumCount to 0 until they can be calculated
   fdomData$fDOMExpUncert <- NA
+  #fdomData$spectrumCount <- 0 #This gets calculated by def.wq.abs.corr.R, if possible
   
   #Default temp and absorbance correction factors
   #fdomData$surfaceWaterTemperature <- NA #This gets merged in from exoconductivity data
@@ -253,13 +253,13 @@ for (idxDirIn in DirIn){
         fdomData$ucrt_pathlength[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$ucrt$Value[gsub(" ","",calFilefdom$ucrt$Name) == absCorrNameUncrt]))
       }
     }else{
-      log$fatal("Error: No fDOM cal file(s) found that match selected dates.")
-      stop()
+      log$info("Error: No fDOM cal file(s) found that match selected dates.")
+      next()
     }
 
   }else{
-    log$fatal(base::paste0("Zero fDOM cal files found for: ",fdomDataGlob))
-    stop()
+    log$info(base::paste0("Zero fDOM cal files found for: ",fdomDataGlob))
+    next()
   }
   
   ##### Temperature Corrections #####
@@ -333,6 +333,7 @@ for (idxDirIn in DirIn){
     log$debug(base::paste0("Zero SUNA files found for: ",sunav2DataGlob))
     applyAbsCorr <- FALSE
     fdomData$fDOMAbsQF <- 1
+    fdomData$spectrumCount <- 0
   }
   
   #Only need to read in calibration information for abs corrections if we're able to do them
@@ -350,7 +351,9 @@ for (idxDirIn in DirIn){
     }
     
     #Determine fdom absorbance correction factor
-    absData <- try(NEONprocIS.wq::def.wq.abs.corr(sunav2Filenames = sunav2DataPath, sunav2CalFilenames = sunav2CalDataPath, log = log),silent = TRUE)
+    absData <- try(NEONprocIS.wq::def.wq.abs.corr(sunav2Filenames = sunav2DataPath, 
+                                                  sunav2CalFilenames = sunav2CalDataPath, 
+                                                  log = log),silent = TRUE)
     
     # Handle the error when absData is a try-error
     if (base::class(absData) == 'try-error') {
@@ -366,65 +369,74 @@ for (idxDirIn in DirIn){
           fdomData$ucrt_A_ex[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$ucrt_A_ex[absData$readout_time == idxAbsData]
           fdomData$ucrt_A_em[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$ucrt_A_em[absData$readout_time == idxAbsData]
           fdomData$spectrumCount[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$spectrumCount[absData$readout_time == idxAbsData]
+          fdomData$fDOMAbsQF[fdomData$readout_time >= idxAbsData & fdomData$readout_time < nextReadout] <- absData$fDOMAbsQF[absData$readout_time == idxAbsData]
         }else{
           break
         }
         
       }
       
-      #Populate the fdom absorbance QF values
-      fdomData$fDOMAbsQF[!base::is.na(fdomData$Abs_ex)&!base::is.na(fdomData$Abs_em)] <- 0
-      fdomData$fDOMAbsQF[base::is.na(fdomData$Abs_ex)|base::is.na(fdomData$Abs_em)] <- 1
-      
       #Determine fdom absorbance correction factor
       fdomData$absFactor <- 10^((fdomData$Abs_ex + fdomData$Abs_em) * fdomData$pathlength)
     }
   }
   
-  #Calculate the fdom output with the factors that exist
-  fdomData$fDOM <- fdomData$fDOM * fdomData$tempFactor * fdomData$absFactor
-  
   ##### Uncertainty Calculations #####
   #Uncertainty when no corrections can be applied
-  noCorrIdx <- base::which(fdomData$fDOMTempQF != 0 & fdomData$fDOMAbsQF != 0)
+  noCorrIdx <- base::which(fdomData$fDOMTempQF != 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3))
   fdomData$fDOMExpUncert[noCorrIdx] <- fdomData$uncrt_A1_fdom[noCorrIdx] * fdomData$fDOM[noCorrIdx]
   
   #Uncertainty when temperature corrections, only, are applied
-  tempOnlyIdx <- base::which(fdomData$fDOMTempQF == 0 & fdomData$fDOMAbsQF != 0)
-  fdomData$fDOMExpUncert[tempOnlyIdx] <- sqrt((fdomData$uncrt_A1_fdom[tempOnlyIdx] * fdomData$fDOM[tempOnlyIdx])^2 + (fdomData$surfaceWaterTemperature_ucrtComb[tempOnlyIdx] * fdomData$fDOM[tempOnlyIdx])^2 + (fdomData$uncrt_rho_fdom[tempOnlyIdx] * fdomData$fDOM[tempOnlyIdx])^2)
+  tempOnlyIdx <- base::which(fdomData$fDOMTempQF == 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3))
+  #Calculate the fdom output with the factors that exist
+  fdomData$fDOM[tempOnlyIdx] <- fdomData$fDOM[tempOnlyIdx] * fdomData$tempFactor[tempOnlyIdx]
+  fdomData$fDOMExpUncert[tempOnlyIdx] <- sqrt((fdomData$uncrt_A1_fdom[tempOnlyIdx] * 1/(1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20)) * fdomData$rawCalibratedfDOM[tempOnlyIdx])^2 + 
+                                                (fdomData$surfaceWaterTemperature_ucrtComb[tempOnlyIdx] * fdomData$rawCalibratedfDOM[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20)/((1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20))^2))^2 + 
+                                                (fdomData$uncrt_rho_fdom[tempOnlyIdx] * fdomData$rawCalibratedfDOM[tempOnlyIdx]*fdomData$rho_fdom[tempOnlyIdx]/((1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20))^2))^2)
   
   #Uncertainty when absorbance corrections, only, are applied
-  absOnlyIdx <- base::which(fdomData$fDOMTempQF != 0 & fdomData$fDOMAbsQF == 0)
-  fdomData$fDOMExpUncert[absOnlyIdx] <- sqrt((fdomData$uncrt_A1_fdom[absOnlyIdx] * fdomData$fDOM[absOnlyIdx])^2 + (fdomData$ucrt_pathlength[absOnlyIdx] * fdomData$fDOM[absOnlyIdx])^2 + (fdomData$ucrt_A_ex[absOnlyIdx] * fdomData$fDOM[absOnlyIdx])^2 + (fdomData$ucrt_A_em[absOnlyIdx] * fdomData$fDOM[absOnlyIdx])^2)
+  absOnlyIdx <- base::which(fdomData$fDOMTempQF != 0 & (fdomData$fDOMAbsQF == 0|fdomData$fDOMAbsQF == 2))
+  #Calculate the fdom output with the factors that exist
+  fdomData$fDOM[absOnlyIdx] <- fdomData$fDOM[absOnlyIdx] * fdomData$absFactor[absOnlyIdx]
+  fdomData$fDOMExpUncert[absOnlyIdx] <- sqrt((fdomData$uncrt_A1_fdom[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx]+fdomData$Abs_em[absOnlyIdx])) * fdomData$rawCalibratedfDOM[absOnlyIdx])^2 +
+                                               (fdomData$ucrt_A_ex[absOnlyIdx] * fdomData$pathlength[absOnlyIdx] * fdomData$rawCalibratedfDOM[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx])))^2 + 
+                                               (fdomData$ucrt_A_em[absOnlyIdx] * fdomData$pathlength[absOnlyIdx] * fdomData$rawCalibratedfDOM[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx])))^2 +
+                                               (fdomData$ucrt_pathlength[absOnlyIdx] * fdomData$rawCalibratedfDOM[absOnlyIdx] * (fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx]) * 10 ^ (fdomData$pathlength[absOnlyIdx] * (fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx])))^2)
   
   #Uncertainty when both temperature and absorbance corrections are applied
-  tempAndAbsIdx <- base::which(fdomData$fDOMTempQF == 0 & fdomData$fDOMAbsQF == 0)
-  fdomData$fDOMExpUncert[tempAndAbsIdx] <- sqrt((fdomData$uncrt_A1_fdom[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$surfaceWaterTemperature_ucrtComb[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$uncrt_rho_fdom[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$ucrt_pathlength[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$ucrt_A_ex[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2 + (fdomData$ucrt_A_em[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2)
+  tempAndAbsIdx <- base::which(fdomData$fDOMTempQF == 0 & (fdomData$fDOMAbsQF == 0|fdomData$fDOMAbsQF == 2))
+  fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$pathlength[tempAndAbsIdx] * base::log2(10) * (fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx])*10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)-1)
+  #Calculate the fdom output with the factors that exist
+  fdomData$fDOM[tempAndAbsIdx] <- fdomData$fDOM[tempAndAbsIdx] * fdomData$tempFactor[tempAndAbsIdx] * fdomData$absFactor[tempAndAbsIdx]
+  fdomData$fDOMExpUncert[tempAndAbsIdx] <- sqrt((fdomData$uncrt_A1_fdom[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * 10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx]+fdomData$Abs_em[tempAndAbsIdx]))/(1-fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)))^2 + 
+                                                  (fdomData$surfaceWaterTemperature_ucrtComb[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$rho_fdom[tempAndAbsIdx] * 10^(fdomData$pathlength[tempAndAbsIdx] * (fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/((fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)*fdomData$rho_fdom[tempAndAbsIdx] -1)^2)^2 + 
+                                                  (fdomData$uncrt_rho_fdom[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)*10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(1-(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)*fdomData$rho_fdom[tempAndAbsIdx])^2)^2 + 
+                                                  (fdomData$ucrt_A_ex[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$pathlength[tempAndAbsIdx] * base::log2(10)  * (fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)-1))^2 + 
+                                                  (fdomData$ucrt_A_em[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$pathlength[tempAndAbsIdx] * base::log2(10)  * (fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)-1))^2 + 
+                                                  (fdomData$ucrt_pathlength[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2)
   
   ##### Writing out data and flag files #####
   #Write an AVRO file for data and uncertainty (which get stats)
   #readout_time, fDOM, fDOMExpUncert, spectrumCount
   dataOutputs <- c("readout_time", "fDOM", "rawCalibratedfDOM", "fDOMExpUncert", "spectrumCount")
-  dataOut <- fdomData[,which(names(fdomData)%in%dataOutputs)]
-  names(dataOut) <- dataOutputs
+  dataOut <- fdomData[,dataOutputs]
   
   #Turn necessary outputs to integer
-  colInt <- dataOutputs[4]
+  colInt <- "spectrumCount"
   dataOut[colInt] <- base::lapply(dataOut[colInt],base::as.integer) # Turn spectrumCount to integer
   
   NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
-                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_basicStats.avro"),
+                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_basicStats_100.avro"),
                                       Schm = SchmDataOut,
                                       NameLib = ravroLib)
   
   #Write an AVRO file for the flags (which get metrics)
   #readout_time, fDOMTempQF, fDOMAbsQF
   flagOutputs <- c("readout_time", "fDOMTempQF", "fDOMAbsQF")
-  flagsOut <- fdomData[,which(names(fdomData)%in%flagOutputs)]
-  names(flagsOut) <- flagOutputs
+  flagsOut <- fdomData[,flagOutputs]
   
   #Turn necessary outputs to integer
-  colInt <- flagOutputs[2:3]  
+  colInt <- c("fDOMTempQF", "fDOMAbsQF") 
   flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
   
   NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 

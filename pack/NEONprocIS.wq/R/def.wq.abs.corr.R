@@ -65,7 +65,7 @@ def.wq.abs.corr <-
     sunav2Data <-
       try(do.call("rbind", sunav2DataList), silent = FALSE)
     
-    #Clean up the SUNA data a little bit since it can be messy
+    #Clean up NA SUNA data
     sunav2Data <- sunav2Data[!is.na(sunav2Data$header_light_frame), ]
     
     timeBgn <-
@@ -96,13 +96,18 @@ def.wq.abs.corr <-
         "Abs_em",
         "ucrt_A_ex",
         "ucrt_A_em",
-        "spectrumCount")
+        "spectrumCount",
+        "fDOMAbsQF")
     outputDF <- base::as.data.frame(base::matrix(
       data = NA,
       nrow = base::nrow(sunav2Data[sunav2Data$header_light_frame == FALSE,]),
       ncol = base::length(outputNames)
     ))
     base::names(outputDF) <- outputNames
+    
+    #Default values for fDOMAbsQF and spectrumCount
+    fdomData$fDOMAbsQF <- -1
+    fdomData$spectrumCount <- 0
     
     outputDF$readout_time <-
       sunav2Data$readout_time[sunav2Data$header_light_frame == FALSE]
@@ -265,6 +270,19 @@ def.wq.abs.corr <-
         }
       }
     }
+    
+    #Update flags and correction factors for high and low values
+    
+    #High values...
+    outputDF$fDOMAbsQF[outputDF$Abs_ex > 0.6] <- 2
+    
+    #Low values...
+    outputDF$Abs_ex[outputDF$Abs_ex <= 0] <- 0
+    outputDF$Abs_em[outputDF$Abs_ex <= 0] <- 0
+    outputDF$fDOMAbsQF[outputDF$Abs_ex <= 0] <- 3
+    
+    #Update flags for intermediate values
+    outputDF$fDOMAbsQF[outputDF$Abs_ex > 0 & outputDF$Abs_ex <= 0.6] <- 0
     
     return(outputDF)
     
