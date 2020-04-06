@@ -42,7 +42,7 @@ def.validate.json.schema <-
     tryCatch(
       (jsonvalidate::json_validate(jsonIn, jsonSchemaIn)),
       error = function(cond) {
-        log$error(base::paste0(NameFileIn, ' error in the JSON schema validation '))
+        log$error(base::paste0(jsonin, ' error in the JSON schema validation '))
         stop
       }
     )
