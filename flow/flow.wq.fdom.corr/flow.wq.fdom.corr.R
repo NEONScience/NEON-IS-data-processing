@@ -217,7 +217,7 @@ for (idxDirIn in DirIn){
   #Populate rawCalibratedfDOM
   fdomData$rawCalibratedfDOM <- fdomData$fDOM
   
-  ##### Read in fDOM cal and uncertaitnty information #####
+  ##### Read in fDOM cal and uncertainty information #####
   fdomCalGlob <- base::file.path(idxDirIn,"exofdom","*","calibration","fDOM","*")
   fdomCalPath <- base::Sys.glob(fdomCalGlob)
   
@@ -384,11 +384,11 @@ for (idxDirIn in DirIn){
   
   ##### Uncertainty Calculations #####
   #Uncertainty when no corrections can be applied
-  noCorrIdx <- base::which(fdomData$fDOMTempQF != 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3))
+  noCorrIdx <- base::which(fdomData$fDOMTempQF != 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3|fdomData$fDOMAbsQF == -1))
   fdomData$fDOMExpUncert[noCorrIdx] <- fdomData$uncrt_A1_fdom[noCorrIdx] * fdomData$fDOM[noCorrIdx]
   
   #Uncertainty when temperature corrections, only, are applied
-  tempOnlyIdx <- base::which(fdomData$fDOMTempQF == 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3))
+  tempOnlyIdx <- base::which(fdomData$fDOMTempQF == 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3|fdomData$fDOMAbsQF == -1))
   #Calculate the fdom output with the factors that exist
   fdomData$fDOM[tempOnlyIdx] <- fdomData$fDOM[tempOnlyIdx] * fdomData$tempFactor[tempOnlyIdx]
   fdomData$fDOMExpUncert[tempOnlyIdx] <- sqrt((fdomData$uncrt_A1_fdom[tempOnlyIdx] * 1/(1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20)) * fdomData$rawCalibratedfDOM[tempOnlyIdx])^2 + 

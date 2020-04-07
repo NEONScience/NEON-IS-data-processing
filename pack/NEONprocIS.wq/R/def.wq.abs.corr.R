@@ -106,8 +106,8 @@ def.wq.abs.corr <-
     base::names(outputDF) <- outputNames
     
     #Default values for fDOMAbsQF and spectrumCount
-    fdomData$fDOMAbsQF <- -1
-    fdomData$spectrumCount <- 0
+    outputDF$fDOMAbsQF <- -1
+    outputDF$spectrumCount <- 0
     
     outputDF$readout_time <-
       sunav2Data$readout_time[sunav2Data$header_light_frame == FALSE]
@@ -171,9 +171,9 @@ def.wq.abs.corr <-
                 burstStartTime
               )
             )
-            outputDF$Abs_ex <- NA
-            outputDF$Abs_em <- NA
-            outputDF$spectrumCount <- 0
+            outputDF$Abs_ex[i] <- NA
+            outputDF$Abs_em[i] <- NA
+            outputDF$spectrumCount[i] <- 0
           } else{
             maxBurstIdx <- base::nrow(burstData)
             
@@ -191,7 +191,7 @@ def.wq.abs.corr <-
             burstEnd <-
               base::ifelse(maxBurstIdx > 20, 20, maxBurstIdx)
             burstData <- burstData[10:burstEnd,]
-            outputDF$spectrumCount <- burstEnd - (10 - 1)
+            outputDF$spectrumCount[i] <- burstEnd - (10 - 1)
             avgBurst <-
               NEONprocIS.wq::def.pars.data.suna(sunaBurst = burstData$spectrum_channels,
                                                 log = log)
@@ -204,6 +204,7 @@ def.wq.abs.corr <-
               outputDF$Abs_ex[i] <- NA
               outputDF$Abs_em[i] <- NA
               outputDF$spectrumCount[i] <- 0
+              log$info(base::paste0("Length of the SUNA burst data is not 256, it is ",base::length(avgBurst)))
               next
             } else{
               # Warning when there are negative data
@@ -214,9 +215,9 @@ def.wq.abs.corr <-
                     "Absorbance could not be calculated due to negative values."
                   )
                 )
-                outputDF$Abs_ex <- NA
-                outputDF$Abs_em <- NA
-                outputDF$spectrumCount <- 0
+                outputDF$Abs_ex[i] <- NA
+                outputDF$Abs_em[i] <- NA
+                outputDF$spectrumCount[i] <- 0
               }
               absorbance <-
                 base::log10(avgBurst / calTable$transmittance)
@@ -245,9 +246,6 @@ def.wq.abs.corr <-
                                                                        log_abs != -Inf]))
               
               if (base::class(abs_model) == 'try-error') {
-                # outputDF$Abs_ex <- NA
-                # outputDF$Abs_em <- NA
-                # outputDF$spectrumCount <- 0
                 log$error(base::paste0('Linear fit for extrapolating to 480 nm failed'))
                 stop()
               }
