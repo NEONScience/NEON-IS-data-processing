@@ -159,11 +159,6 @@ for (idxDirIn in DirIn){
   idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
   idxDirOutData <- base::paste0(idxDirOut, '/exofdom/', cfgLoc,'/stats')
   idxDirOutFlags <- base::paste0(idxDirOut, '/exofdom/', cfgLoc,'/flags')
-  NEONprocIS.base::def.dir.crea(
-    DirBgn = '/',
-    DirSub = c(idxDirOutData, idxDirOutFlags),
-    log = log
-  )
   
   ##### Read in fDOM data #####
   fdomDataGlob <- base::file.path(idxDirIn,"exofdom","*","data","*")
@@ -253,13 +248,19 @@ for (idxDirIn in DirIn){
         fdomData$ucrt_pathlength[fdomRangeToApplyCal] <- try(base::as.numeric(calFilefdom$ucrt$Value[gsub(" ","",calFilefdom$ucrt$Name) == absCorrNameUncrt]))
       }
     }else{
-      log$info("Error: No fDOM cal file(s) found that match selected dates.")
-      next()
+      log$error("Error: No fDOM cal file(s) found that match selected dates.")
+      applyAbsCorr <- FALSE
+      applyTempCorr <- FALSE
+      fdomData$spectrumCount <- 0
+      fdomData$fDOMAbsQF <- -1
     }
 
   }else{
-    log$info(base::paste0("Zero fDOM cal files found for: ",fdomDataGlob))
-    next()
+    log$error(base::paste0("Zero fDOM cal files found for: ",fdomDataGlob))
+    applyAbsCorr <- FALSE
+    applyTempCorr <- FALSE
+    fdomData$spectrumCount <- 0
+    fdomData$fDOMAbsQF <- -1
   }
   
   ##### Temperature Corrections #####
@@ -416,6 +417,13 @@ for (idxDirIn in DirIn){
                                                   (fdomData$ucrt_pathlength[tempAndAbsIdx] * fdomData$fDOM[tempAndAbsIdx])^2)
   
   ##### Writing out data and flag files #####
+  #Create output directories
+  NEONprocIS.base::def.dir.crea(
+    DirBgn = '/',
+    DirSub = c(idxDirOutData, idxDirOutFlags),
+    log = log
+  )
+  
   #Write an AVRO file for data and uncertainty (which get stats)
   #readout_time, fDOM, fDOMExpUncert, spectrumCount
   dataOutputs <- c("readout_time", "fDOM", "rawCalibratedfDOM", "fDOMExpUncert", "spectrumCount")
@@ -429,6 +437,7 @@ for (idxDirIn in DirIn){
                                       NameFile = base::paste0(idxDirOutData,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_basicStats_100.avro"),
                                       Schm = SchmDataOut,
                                       NameLib = ravroLib)
+  log$info("Basic stats written out.")
   
   #Write an AVRO file for the flags (which get metrics)
   #readout_time, fDOMTempQF, fDOMAbsQF
@@ -443,6 +452,7 @@ for (idxDirIn in DirIn){
                                       NameFile = base::paste0(idxDirOutFlags,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCorrection.avro"), 
                                       Schm = SchmQf, 
                                       NameLib = ravroLib)
+  log$info("Flags written out.")
 }
 
 
