@@ -385,13 +385,13 @@ for (idxDirIn in DirIn){
   ##### Uncertainty Calculations #####
   #Uncertainty when no corrections can be applied
   noCorrIdx <- base::which(fdomData$fDOMTempQF != 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3|fdomData$fDOMAbsQF == -1))
-  fdomData$fDOMExpUncert[noCorrIdx] <- fdomData$uncrt_A1_fdom[noCorrIdx] * fdomData$fDOM[noCorrIdx]
+  fdomData$fDOMExpUncert[noCorrIdx] <- 2 * fdomData$uncrt_A1_fdom[noCorrIdx] * fdomData$fDOM[noCorrIdx]
   
   #Uncertainty when temperature corrections, only, are applied
   tempOnlyIdx <- base::which(fdomData$fDOMTempQF == 0 & (fdomData$fDOMAbsQF == 1|fdomData$fDOMAbsQF == 3|fdomData$fDOMAbsQF == -1))
   #Calculate the fdom output with the factors that exist
   fdomData$fDOM[tempOnlyIdx] <- fdomData$fDOM[tempOnlyIdx] * fdomData$tempFactor[tempOnlyIdx]
-  fdomData$fDOMExpUncert[tempOnlyIdx] <- sqrt((fdomData$uncrt_A1_fdom[tempOnlyIdx] * 1/(1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20)) * fdomData$rawCalibratedfDOM[tempOnlyIdx])^2 + 
+  fdomData$fDOMExpUncert[tempOnlyIdx] <- 2 * sqrt((fdomData$uncrt_A1_fdom[tempOnlyIdx] * 1/(1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20)) * fdomData$rawCalibratedfDOM[tempOnlyIdx])^2 + 
                                                 (fdomData$surfaceWaterTemperature_ucrtComb[tempOnlyIdx] * fdomData$rawCalibratedfDOM[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20)/((1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20))^2))^2 + 
                                                 (fdomData$uncrt_rho_fdom[tempOnlyIdx] * fdomData$rawCalibratedfDOM[tempOnlyIdx]*fdomData$rho_fdom[tempOnlyIdx]/((1+fdomData$rho_fdom[tempOnlyIdx]*(fdomData$surfaceWaterTemperature[tempOnlyIdx]-20))^2))^2)
   
@@ -399,7 +399,7 @@ for (idxDirIn in DirIn){
   absOnlyIdx <- base::which(fdomData$fDOMTempQF != 0 & (fdomData$fDOMAbsQF == 0|fdomData$fDOMAbsQF == 2))
   #Calculate the fdom output with the factors that exist
   fdomData$fDOM[absOnlyIdx] <- fdomData$fDOM[absOnlyIdx] * fdomData$absFactor[absOnlyIdx]
-  fdomData$fDOMExpUncert[absOnlyIdx] <- sqrt((fdomData$uncrt_A1_fdom[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx]+fdomData$Abs_em[absOnlyIdx])) * fdomData$rawCalibratedfDOM[absOnlyIdx])^2 +
+  fdomData$fDOMExpUncert[absOnlyIdx] <- 2 * sqrt((fdomData$uncrt_A1_fdom[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx]+fdomData$Abs_em[absOnlyIdx])) * fdomData$rawCalibratedfDOM[absOnlyIdx])^2 +
                                                (fdomData$ucrt_A_ex[absOnlyIdx] * fdomData$pathlength[absOnlyIdx] * fdomData$rawCalibratedfDOM[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx])))^2 + 
                                                (fdomData$ucrt_A_em[absOnlyIdx] * fdomData$pathlength[absOnlyIdx] * fdomData$rawCalibratedfDOM[absOnlyIdx] * 10^(fdomData$pathlength[absOnlyIdx]*(fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx])))^2 +
                                                (fdomData$ucrt_pathlength[absOnlyIdx] * fdomData$rawCalibratedfDOM[absOnlyIdx] * (fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx]) * 10 ^ (fdomData$pathlength[absOnlyIdx] * (fdomData$Abs_ex[absOnlyIdx] + fdomData$Abs_em[absOnlyIdx])))^2)
@@ -409,7 +409,7 @@ for (idxDirIn in DirIn){
   fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$pathlength[tempAndAbsIdx] * base::log2(10) * (fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx])*10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)-1)
   #Calculate the fdom output with the factors that exist
   fdomData$fDOM[tempAndAbsIdx] <- fdomData$fDOM[tempAndAbsIdx] * fdomData$tempFactor[tempAndAbsIdx] * fdomData$absFactor[tempAndAbsIdx]
-  fdomData$fDOMExpUncert[tempAndAbsIdx] <- sqrt((fdomData$uncrt_A1_fdom[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * 10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx]+fdomData$Abs_em[tempAndAbsIdx]))/(1-fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)))^2 + 
+  fdomData$fDOMExpUncert[tempAndAbsIdx] <- 2 * sqrt((fdomData$uncrt_A1_fdom[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * 10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx]+fdomData$Abs_em[tempAndAbsIdx]))/(1-fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)))^2 + 
                                                   (fdomData$surfaceWaterTemperature_ucrtComb[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$rho_fdom[tempAndAbsIdx] * 10^(fdomData$pathlength[tempAndAbsIdx] * (fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/((fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)*fdomData$rho_fdom[tempAndAbsIdx] -1)^2)^2 + 
                                                   (fdomData$uncrt_rho_fdom[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)*10^(fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(1-(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)*fdomData$rho_fdom[tempAndAbsIdx])^2)^2 + 
                                                   (fdomData$ucrt_A_ex[tempAndAbsIdx] * fdomData$rawCalibratedfDOM[tempAndAbsIdx] * fdomData$pathlength[tempAndAbsIdx] * base::log2(10)  * (fdomData$pathlength[tempAndAbsIdx]*(fdomData$Abs_ex[tempAndAbsIdx] + fdomData$Abs_em[tempAndAbsIdx]))/(fdomData$rho_fdom[tempAndAbsIdx]*(fdomData$surfaceWaterTemperature[tempAndAbsIdx]-20)-1))^2 + 
@@ -426,8 +426,10 @@ for (idxDirIn in DirIn){
   
   #Write an AVRO file for data and uncertainty (which get stats)
   #readout_time, fDOM, fDOMExpUncert, spectrumCount
-  dataOutputs <- c("readout_time", "fDOM", "rawCalibratedfDOM", "fDOMExpUncert", "spectrumCount")
+  dataOutputs <- c("readout_time", "readout_time", "fDOM", "rawCalibratedfDOM", "fDOMExpUncert", "spectrumCount")
   dataOut <- fdomData[,dataOutputs]
+  #Don't really need to change the names, but just to avoid confusion it doesn't seem like a bad idea
+  names(dataOut) <- c("startDateTime", "endDateTime", "fDOM", "rawCalibratedfDOM", "fDOMExpUncert", "spectrumCount")
   
   #Turn necessary outputs to integer
   colInt <- "spectrumCount"
