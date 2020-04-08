@@ -82,12 +82,31 @@ def.cal.slct <-
         expi = base::logical(0),
         stringsAsFactors = FALSE
       )
-        
     
     # Check inputs: TimeBgn and TimeEnd are POSIXct. TimeEnd > TimeBgn. Validate metaCal is a data frame with columns file, timeValiBgn, timeValiEnd, id. Single difftime value or NULL for TimeExpiMax.
     
+    if (!base::is.null(TimeBgn)) {
+      TimeBgn <-
+        base::as.POSIXct(TimeBgn, format = '%Y-%m-%dT%H:%M:%SZ', tz = 'GMT')
+    }
+    if (!base::is.null(TimeEnd)) {
+      TimeEnd <-
+        base::as.POSIXct(TimeEnd, format = '%Y-%m-%dT%H:%M:%SZ', tz = 'GMT')
+    }
+    
+    if (TimeEnd < TimeBgn)  {
+      stop("In def.cal.slct::::: Check the input, TimeEnd, needs to be later than TimeBgn")
+    }
+    
+    NameList = c('file', 'timeValiBgn', 'timeValiEnd', 'id')
+    
+    if (!(all(NameList %in% colnames(metaCal))))
+    {
+      stop("In def.cal.slct::::: Check the input data frame has columns missing")
+    }
+    
     # What if metaCal is an empty data frame, or empty? Need to return the time period as if there were no applicable cal. Do so by creating a data frame with expected columns but zero rows.
-    if(base::is.null(metaCal)){
+    if ((base::is.null(metaCal)) || (nrow(metaCal) == 0)){
       metaCal <- base::data.frame(file=base::character(0),timeValiBgn=dmmyTime,timeValiEnd=dmmyTime,id=base::numeric(0),stringsAsFactors=FALSE)
     }
     
