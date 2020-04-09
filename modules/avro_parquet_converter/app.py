@@ -32,7 +32,7 @@ def convert(in_path, out_path):
         #  use_dictionary=False is file specific. PRT files are smaller with dictionary encoding off.
         #  Some files will be better with this on and others better with it off on a per column basis
         #  depending on how similar the records are in the column.
-        pq.write_table(table, parquet_file_path, compression='gzip', use_dictionary=False,
+        pq.write_table(table, parquet_file_path, compression='gzip', use_dictionary=['site_id', 'source_id'],
                        compression_level=5, coerce_timestamps='ms', allow_truncated_timestamps=False)
         parquet_file_path.rename(parquet_file_path.with_suffix('.gz.parquet'))
 
