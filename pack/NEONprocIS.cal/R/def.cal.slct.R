@@ -106,7 +106,7 @@ def.cal.slct <-
     }
     
     # What if metaCal is an empty data frame, or empty? Need to return the time period as if there were no applicable cal. Do so by creating a data frame with expected columns but zero rows.
-    if(base::is.null(metaCal)){
+    if ((base::is.null(metaCal)) || (nrow(metaCal) == 0)){
       metaCal <- base::data.frame(file=base::character(0),timeValiBgn=dmmyTime,timeValiEnd=dmmyTime,id=base::numeric(0),stringsAsFactors=FALSE)
     }
     
