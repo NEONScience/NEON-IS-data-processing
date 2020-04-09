@@ -1,0 +1,5 @@
+structlog==19.1.0
+spavro==1.1.23
+pandas==0.24.1
+pyarrow==0.16.0
+environs==6.0.0

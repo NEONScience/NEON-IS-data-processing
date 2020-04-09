@@ -34,7 +34,7 @@ def convert(in_path, out_path):
         #  depending on how similar the records are in the column.
         pq.write_table(table, parquet_file_path, compression='gzip', use_dictionary=False,
                        compression_level=5, coerce_timestamps='ms', allow_truncated_timestamps=False)
-        parquet_file_path.rename(parquet_file_path.with_suffix('.gz.parquet'))
+        parquet_file_path.rename(parquet_file_path.with_suffix('.parquet'))
 
 
 def main():
