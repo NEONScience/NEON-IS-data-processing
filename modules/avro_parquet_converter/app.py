@@ -26,7 +26,7 @@ def convert(in_path, out_path):
         log.debug(avro_data.meta["avro.schema"].decode('utf-8'))
         data_frame = pd.DataFrame(data=avro_data)
         # Find columns with high duplication (> 30%) and use dictionary compression on them
-        dupcols = [x for x in data_frame.columns if (data_frame[x].duplicated().sum() / (int(data_frame[x].size)-1)) > 0.3]
+        dupcols = [x.encode('UTF-8') for x in data_frame.columns if (data_frame[x].duplicated().sum() / (int(data_frame[x].size)-1)) > 0.3]
         table = pa.Table.from_pandas(data_frame.astype({'readout_time': 'datetime64[ms]'})).replace_schema_metadata({
             'parquet.avro.schema': avro_data.meta["avro.schema"].decode('utf-8'),
             'writer.model.name': 'avro'
