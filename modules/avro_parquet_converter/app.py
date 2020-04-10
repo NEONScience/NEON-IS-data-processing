@@ -25,6 +25,8 @@ def convert(in_path, out_path):
         avro_data = DataFileReader(open_file, DatumReader())
         log.debug(avro_data.meta["avro.schema"].decode('utf-8'))
         data_frame = pd.DataFrame(data=avro_data)
+        # Find columns with high duplication (> 30%) and use dictionary compression on them
+        dupcols = [x for x in data_frame.columns if (data_frame[x].duplicated().sum() / (int(data_frame[x].size)-1)) > 0.3]
         table = pa.Table.from_pandas(data_frame.astype({'readout_time': 'datetime64[ms]'})).replace_schema_metadata({
             'parquet.avro.schema': avro_data.meta["avro.schema"].decode('utf-8'),
             'writer.model.name': 'avro'
@@ -32,7 +34,7 @@ def convert(in_path, out_path):
         #  use_dictionary=False is file specific. PRT files are smaller with dictionary encoding off.
         #  Some files will be better with this on and others better with it off on a per column basis
         #  depending on how similar the records are in the column.
-        pq.write_table(table, parquet_file_path, compression='gzip', use_dictionary=['site_id', 'source_id'],
+        pq.write_table(table, parquet_file_path, compression='gzip', use_dictionary=dupcols,
                        compression_level=5, coerce_timestamps='ms', allow_truncated_timestamps=False)
         parquet_file_path.rename(parquet_file_path.with_suffix('.parquet'))
 
