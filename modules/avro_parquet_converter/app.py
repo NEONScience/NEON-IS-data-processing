@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 
 import environs
@@ -20,7 +21,6 @@ log = structlog.get_logger()
 
 def convert(in_path, out_path, dedup_threshold):
     for avro_file_path in file_crawler.crawl(in_path):
-        avro_data = {}
         with open(avro_file_path, "rb") as open_file:
             avro_data = DataFileReader(open_file, DatumReader())
             log.debug(avro_data.meta["avro.schema"].decode('utf-8'))
@@ -37,7 +37,7 @@ def convert(in_path, out_path, dedup_threshold):
                 'readout_time': 'datetime64[ms]'
             })
         # Get a list of columns with hashable types
-        hashable_cols = [x for x in data_frame.columns if isinstance(data_frame[x], Hashable)]
+        hashable_cols = [x for x in data_frame.columns if isinstance(data_frame[x][0], Hashable)]
         # Find columns with high duplication (> 30%) for use with dictionary encoding
         dupcols = [x.encode('UTF-8') for x in hashable_cols
                    if (data_frame[x].duplicated().sum() / (int(data_frame[x].size) - 1)) > dedup_threshold]
