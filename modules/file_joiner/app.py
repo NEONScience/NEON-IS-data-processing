@@ -18,8 +18,9 @@ def join(pathname, out_path):
     :param out_path: The output path for writing results.
     """
     for file in glob.iglob(pathname, recursive=True):
+        log.debug(f'processing path: {file}')
         if os.path.isfile(file):
-            log.debug(f'matching file: {file}')
+            log.debug(f'found matching file: {file}')
             target = target_path.get_path(file, out_path)
             log.debug(f'target: {target}')
             file_linker.link(file, target)
