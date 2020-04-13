@@ -23,18 +23,18 @@ def convert(in_path, out_path, dedup_threshold):
         with open(avro_file_path, "rb") as open_file:
             avro_data = DataFileReader(open_file, DatumReader())
             log.debug(avro_data.meta["avro.schema"].decode('utf-8'))
-        # Get the ordered list of field names from the avro schema
-        avro_file_schema = avro_data.get_meta('avro.schema')
-        avro_schema = spavro.schema.parse(avro_file_schema)
-        # Read Avro file into Pandas dataframe
-        data_frame = pd.DataFrame(
-            data=avro_data,
-            # Preserve column ordering
-            columns=[x.name for x in avro_schema.fields]
-        ).astype({
-            # Cast readout_time to correct pandas time type
-            'readout_time': 'datetime64[ms]'
-        })
+            # Get the ordered list of field names from the avro schema
+            avro_file_schema = avro_data.get_meta('avro.schema')
+            avro_schema = spavro.schema.parse(avro_file_schema)
+            # Read Avro file into Pandas dataframe
+            data_frame = pd.DataFrame(
+                data=avro_data,
+                # Preserve column ordering
+                columns=[x.name for x in avro_schema.fields]
+            ).astype({
+                # Cast readout_time to correct pandas time type
+                'readout_time': 'datetime64[ms]'
+            })
         # Find columns with high duplication (> 30%) for use with dictionary encoding
         dupcols = [x.encode('UTF-8') for x in data_frame.columns
                    if (data_frame[x].duplicated().sum() / (int(data_frame[x].size) - 1)) > dedup_threshold]
