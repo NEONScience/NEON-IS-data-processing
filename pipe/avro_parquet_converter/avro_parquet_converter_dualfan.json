@@ -26,6 +26,9 @@
       "glob": "/dualfan/*/*/*"
     }
   },
+  "parallelism_spec": {
+    "constant": "4"
+  },
   "enable_stats": false,
   "standby": true
 }

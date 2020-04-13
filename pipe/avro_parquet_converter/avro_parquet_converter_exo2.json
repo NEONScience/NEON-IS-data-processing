@@ -26,6 +26,9 @@
       "glob": "/exo2/*/*/*"
     }
   },
+  "parallelism_spec": {
+    "constant": "8"
+  },
   "enable_stats": false,
   "standby": true 
 }

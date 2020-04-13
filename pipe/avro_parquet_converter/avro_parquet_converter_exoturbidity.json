@@ -26,6 +26,9 @@
       "glob": "/exoturbidity/*/*/*"
     }
   },
+  "parallelism_spec": {
+    "constant": "8"
+  },
   "enable_stats": false,
   "standby": true 
 }
