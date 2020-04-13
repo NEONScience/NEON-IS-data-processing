@@ -8,6 +8,7 @@ import pandas as pd
 import spavro.schema
 import structlog
 
+from collections.abc import Hashable
 from spavro.datafile import DataFileReader
 from spavro.io import DatumReader
 
@@ -35,8 +36,10 @@ def convert(in_path, out_path, dedup_threshold):
                 # Cast readout_time to correct pandas time type
                 'readout_time': 'datetime64[ms]'
             })
+        # Get a list of columns with hashable types
+        hashable_cols = [x for x in data_frame.columns if isinstance(data_frame[x], Hashable)]
         # Find columns with high duplication (> 30%) for use with dictionary encoding
-        dupcols = [x.encode('UTF-8') for x in data_frame.columns
+        dupcols = [x.encode('UTF-8') for x in hashable_cols
                    if (data_frame[x].duplicated().sum() / (int(data_frame[x].size) - 1)) > dedup_threshold]
         table = pa.Table.from_pandas(data_frame).replace_schema_metadata({
             'parquet.avro.schema': avro_file_schema,
