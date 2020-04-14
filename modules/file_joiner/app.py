@@ -18,13 +18,14 @@ def join(pathname, out_path):
     :param pathname: The path pattern to match.
     :param out_path: The output path for writing results.
     """
-    for file in glob.iglob(pathname, recursive=True):
+    files = [fn for fn in glob.glob(pathname, recursive=True)
+             if not os.path.basename(fn).startswith(out_path) if os.path.isfile(fn)]
+    for file in files:
         log.debug(f'processing path: {file}')
-        if os.path.isfile(file):
-            log.debug(f'found matching file: {file}')
-            target = target_path.get_path(file, out_path)
-            log.debug(f'target: {target}')
-            file_linker.link(file, target)
+        log.debug(f'found matching file: {file}')
+        target = target_path.get_path(file, out_path)
+        log.debug(f'target: {target}')
+        file_linker.link(file, target)
 
 
 def main():
