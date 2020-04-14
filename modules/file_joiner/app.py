@@ -21,7 +21,6 @@ def join(pathname, out_path):
     files = [fn for fn in glob.glob(pathname, recursive=True)
              if not os.path.basename(fn).startswith(out_path) if os.path.isfile(fn)]
     for file in files:
-        log.debug(f'processing path: {file}')
         log.debug(f'found matching file: {file}')
         target = target_path.get_path(file, out_path)
         log.debug(f'target: {target}')
