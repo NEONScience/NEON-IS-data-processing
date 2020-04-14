@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from contextlib import closing
 
 import lib.date_formatter as date_formatter

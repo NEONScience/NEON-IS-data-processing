@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import unittest
 
 from lib.merged_data_filename import MergedDataFilename

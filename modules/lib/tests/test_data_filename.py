@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import unittest
 
 from lib.data_filename import DataFilename

@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 from contextlib import closing
 
 import data_access.named_location_finder as named_location_finder
