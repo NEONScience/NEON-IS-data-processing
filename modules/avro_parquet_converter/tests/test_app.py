@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -34,7 +35,7 @@ class AppTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        data_path = os.path.join(self.out_path, self.metadata_path, 'prt_767_2019-01-05.gz.parquet')
+        data_path = os.path.join(self.out_path, self.metadata_path, 'prt_767_2019-01-05.parquet')
         self.assertTrue(os.path.exists(data_path))
 
         import pandas

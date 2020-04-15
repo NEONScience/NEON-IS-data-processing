@@ -1,6 +1,7 @@
 .DS_Store
 __pycache__
 *.pyc
+env
 secrets
 .idea
 .Rproj.user
@@ -10,4 +11,3 @@ secrets
 *.Rproj*
 **/renv
 .Rprofile
-

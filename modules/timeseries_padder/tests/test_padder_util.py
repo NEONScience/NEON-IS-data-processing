@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import unittest
 from timeseries_padder.timeseries_padder import padder_util
 import datetime

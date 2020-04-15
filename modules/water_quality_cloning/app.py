@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import environs
 import cx_Oracle
 from contextlib import closing
