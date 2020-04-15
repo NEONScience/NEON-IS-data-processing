@@ -5,12 +5,12 @@
 \title{Write Parquet file}
 \usage{
 def.wrte.parq(data, NameFile, Schm = NULL, NameFileSchm = NULL,
-  log = NULL)
+  CompType = "gzip", CompLvl = 5, Dict = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Data frame. Data to write to file.}
 
-\item{NameFile}{String. Name (including relative or absolute path) of AVRO file.}
+\item{NameFile}{String. Name (including relative or absolute path) of output parquet file.}
 
 \item{Schm}{Optional. Either a Parquet schema of class ArrowObject, or a Json formatted string 
 with an AVRO file schema. Example:\cr
@@ -20,7 +20,12 @@ Defaults to NULL, in which case the schema will be constructed using the argumen
 
 \item{NameFileSchm}{String. Optional. A filename (include relative or aboslute path) of an avro 
 schema file (.avsc format). Defaults to NULL, in which case the schema will be constructed using 
-the Schm argument (if not NULL) or auto-generated from the data frame}
+the Schm argument (if not NULL) or auto-generated from the input data.}
+
+\item{CompType}{String. Compression algorithm. Defaults to 'gzip'. Can also be NULL, in which case
+the arrow::write_parquet default will be used.}
+
+\item{CompLvl}{Numeric. Compression level. See documentation for arrow::write_parquet for details.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}
@@ -41,7 +46,9 @@ dataOut <- NEONprocIS.base::def.wrte.parq(data,NameFile='out.parquet')
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }
 \seealso{
-\link[NEONprocIS.base]{def.read.avro.deve}
+\link[NEONprocIS.base]{def.read.parq}
+
+\link[arrow]{write_parquet}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
