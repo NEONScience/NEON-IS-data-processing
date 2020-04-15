@@ -4,15 +4,25 @@
 #' @author 
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
 
-#' @description Workflow. Restructure the repository to a location focus (from a sensor focus). 
+#' @description Workflow. Restructure the repository to a location focus from a sensor focus. 
 #' The name of the location and its properties will be read from a location file in the 
 #' input repository. The output repository will nest the original sensor-based contents in a folder 
-#' named for the location. If there are multiple location names found in the repository, the original 
-#' contents will be copied to each one. Optionally, the output repository may be filtered for 
-#' locations matching a context property specified in the input arguments, and the repo contents (not 
-#' file contents) from separate sensors at the same location may be combined.
+#' named for the location. If there are multiple location names found in the location file, the original 
+#' contents will be copied to each one. Optionally, 1) the output repository may be filtered for 
+#' locations matching a context property found in the location file, and 2) the repo contents 
+#' (not file contents) from separate sensors at the same location may be combined into a single
+#' folder for the location (this option drops the nested sensor folders).
 #' 
-#' This script is run at the command line with 4 arguments. Each argument must be a string in the 
+#' General code workflow:
+#'    Parse input parameters
+#'    Determine datums to process (set of files/folders to process as a single unit)
+#'    For each datum:
+#'      Read in the location file and determine the locations applicable to the datum
+#'      If selected, ignore any locations not matching the specified context(s)
+#'      Nest the original folder contents into one or more folders named for the location(s) applicable to the datum
+#'      If selected, combine the folder contents for multiple sensors found at the same location
+#'     
+#' This script is run at the command line with the following rguments. Each argument must be a string in the 
 #' format "Para=value", where "Para" is the intended parameter name and "value" is the value of the 
 #' parameter. Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the parameter 
 #' will be assigned from the system environment variable matching the value string.
@@ -26,16 +36,16 @@
 #' the input path. 
 #' 
 #' Nested within the input path path are the nested folders:
-#'         source-id/location  
+#'         source-id/location/  
 #' The source-id is the unique identifier of the sensor. Note that the input directory MUST be at least 
 #' one parent above the source-id directory.
 #' The location folder holds a single json file holding the location data. Any other subfolders 
-#' (at the same level of the location folder) are carried through untouched.
+#' (at the same level of the location folder) are copied to the output untouched.
 #' 
 #' For example, for a source-id of 27134 and additional (optional) data directory:
-#' Input path = /scratch/pfs/proc_group/prt/2019/01/01/27134 with nested folders:
-#'    /location 
-#'    /data
+#' Input path = /scratch/pfs/proc_group/prt/2019/01/01/27134/ with nested folders:
+#'    location/
+#'    data/
 #'    
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
@@ -52,8 +62,18 @@
 #' which uses system environment variables if available.
 #' 
 #' @return A restructured repository in DirOut, where DirOut replaces the input directory structure up to 
-#' #/pfs/BASE_REPO (see inputs above) but otherwise retains the child directory structure of the input path. 
-#' with the exception of inserting the location name in the path according to choices made in Comb. 
+#' #/pfs/BASE_REPO (see inputs above) but otherwise retains the child directory structure of the input path 
+#' with the exception of inserting the location name in the path according to choices made in Comb. For example, 
+#' if Comb is FALSE, DirOut is /pfs/out, and following the example in the DirIn argument, the output repo would contain: 
+#' /pfs/out/prt/2019/1/01/LOCATION_ID/27134/
+#'                                         location/
+#'                                         data/
+#' where LOCATION_ID is a location ID found in the location file. 
+#' If Comb=TRUE, the output repo would contain:
+#' /pfs/out/prt/2019/1/01/LOCATION_ID/
+#'                                   location/
+#'                                   data/
+#'  
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
