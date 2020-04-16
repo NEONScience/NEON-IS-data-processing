@@ -30,5 +30,17 @@
     "constant": "8"
   },
   "enable_stats": false,
-  "standby": true
+  "standby": true,
+  "pod_spec": {
+    "containers": [
+    {
+        "name": "storage",
+        "resources": {
+          "requests": {
+            "cpu": "0.7",
+            "memory": "500M"
+          }
+        },
+    }]
+  }
 }
