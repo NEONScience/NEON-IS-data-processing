@@ -31,16 +31,5 @@
   },
   "enable_stats": false,
   "standby": true,
-  "pod_spec": {
-    "containers": [
-    {
-        "name": "storage",
-        "resources": {
-          "requests": {
-            "cpu": "0.7",
-            "memory": "500M"
-          }
-        },
-    }]
-  }
+  "pod_patch": "[{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/memory\",\"value\":\"500M\"},{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/cpu\",\"value\":\"0.7\"}]"
 }
