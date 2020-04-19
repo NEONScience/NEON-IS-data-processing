@@ -6,7 +6,6 @@ import environs
 import pathlib
 import pyarrow
 import pyarrow.parquet as pq
-import pandas as pd
 import structlog
 
 from collections.abc import Hashable
@@ -44,7 +43,9 @@ def write_merged_parquet(inputfiles, in_path, out_path):
 
     # Figure out the output filename
     inpath_new_filename = '_'.join(inpath.name.split('_')[1:])
-    outpath = pathlib.Path(os.path.join(out_path, inpath.relative_to(in_path).parent, inpath_new_filename))
+    # Strip off / pfs /IN_PATH (3 parts)
+    stripped_inpath = pathlib.PurePosixPath().joinpath(*inpath.parts[3:])
+    outpath = pathlib.Path(os.path.join(out_path, stripped_inpath.parent, inpath_new_filename))
     if not os.path.exists(outpath.parent):
         log.info(f"{outpath.parent} directory not found, creating")
         os.makedirs(outpath.parent)
@@ -74,7 +75,9 @@ def linkmerge(in_path, out_path, dedup_threshold):
         if len(filedict[source_id]) == 1:
             inpath = filedict[source_id][0]
             inpath_new_filename = '_'.join(inpath.name.split('_')[1:])
-            outpath = pathlib.Path(os.path.join(out_path, inpath.relative_to(in_path).parent, inpath_new_filename))
+            # Strip off / pfs /IN_PATH (3 parts)
+            stripped_inpath = pathlib.PurePosixPath().joinpath(*inpath.parts[3:])
+            outpath = pathlib.Path(os.path.join(out_path, stripped_inpath.parent, inpath_new_filename))
             if not os.path.exists(outpath.parent):
                 log.info(f"{outpath.parent} directory not found, creating")
                 os.makedirs(outpath.parent)
