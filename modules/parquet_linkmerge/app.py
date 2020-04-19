@@ -13,7 +13,6 @@ from collections.abc import Hashable
 
 from lib import log_config
 from lib import file_crawler
-from lib import file_linker 
 
 log = structlog.get_logger()
 
