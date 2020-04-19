@@ -22,3 +22,4 @@ secrets
 pyvenv.cfg
 .venv
 pip-selfcheck.json
+__pycache__
