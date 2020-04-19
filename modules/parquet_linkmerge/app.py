@@ -18,15 +18,11 @@ log = structlog.get_logger()
 
 def write_merged_parquet(inputfiles, in_path, out_path):
     inpath = inputfiles[0]
-    fp = open(inpath, 'rb')
-    tb1 = pq.read_table(fp)
-    fp.close()
+    tb1 = pq.read_table(inpath)
     tb1_schema = tb1.schema.metadata['parquet.avro.schema'.encode('UTF-8')] 
     df = tb1.to_pandas()
     for f in inputfiles[1:]:
-        fp = open(f, 'rb')
-        tbf = pq.read_table(fp)
-        fp.close()
+        tbf = pq.read_table(f)
         tbf_schema = tbf.schema.metadata['parquet.avro.schema'.encode('UTF-8')]
         if tbf_schema != tb1_schema:
             log.error(f"{f} schema does not match {inpath} schema")
