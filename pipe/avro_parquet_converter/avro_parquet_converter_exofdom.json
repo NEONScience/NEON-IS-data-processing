@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/avro_parquet_converter:9",
+    "image": "quay.io/battelleecology/avro_parquet_converter:10",
     "cmd": [
       "/bin/bash"
     ],
