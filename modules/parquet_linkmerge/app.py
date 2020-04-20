@@ -25,6 +25,7 @@ def write_merged_parquet(inputfiles, in_path, out_path):
     # Use BytesIO to read the entire file into ram before using it with pyarrow
     # this way pyarrow can seek() the object if it's a named pipe and work
     tb1 = pq.read_table(fio)
+    fio.close()
     tb1_schema = tb1.schema.metadata['parquet.avro.schema'.encode('UTF-8')] 
     df = tb1.to_pandas()
     for f in inputfiles[1:]:
@@ -32,6 +33,7 @@ def write_merged_parquet(inputfiles, in_path, out_path):
         fio = BytesIO(fp.read())
         fp.close()
         tbf = pq.read_table(fio)
+        fio.close()
         tbf_schema = tbf.schema.metadata['parquet.avro.schema'.encode('UTF-8')]
         if tbf_schema != tb1_schema:
             log.error(f"{f} schema does not match {inpath} schema")
