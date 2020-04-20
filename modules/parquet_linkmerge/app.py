@@ -8,6 +8,7 @@ import pyarrow
 import pyarrow.parquet as pq
 import structlog
 
+from io import BytesIO
 from collections.abc import Hashable
 
 from lib import log_config
@@ -19,15 +20,18 @@ log = structlog.get_logger()
 def write_merged_parquet(inputfiles, in_path, out_path):
     inpath = inputfiles[0]
     fp = open(inpath, 'rb')
-    # Use pyarrow.input_stream() to allow us to read from named pipes
-    tb1 = pq.read_table(pyarrow.input_stream(fp))
+    fio = BytesIO(fp.read())
     fp.close()
+    # Use BytesIO to read the entire file into ram before using it with pyarrow
+    # this way pyarrow can seek() the object if it's a named pipe and work
+    tb1 = pq.read_table(fio)
     tb1_schema = tb1.schema.metadata['parquet.avro.schema'.encode('UTF-8')] 
     df = tb1.to_pandas()
     for f in inputfiles[1:]:
         fp = open(f, 'rb')
-        tbf = pq.read_table(pyarrow.input_stream(fp))
+        fio = BytesIO(fp.read())
         fp.close()
+        tbf = pq.read_table(fio)
         tbf_schema = tbf.schema.metadata['parquet.avro.schema'.encode('UTF-8')]
         if tbf_schema != tb1_schema:
             log.error(f"{f} schema does not match {inpath} schema")
