@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import environs
 import argparse
 from structlog import get_logger

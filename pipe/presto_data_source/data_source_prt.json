@@ -4,7 +4,7 @@
     },
     "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-      "image": "quay.io/battelleecology/genavro:v1.0.9",
+      "image": "quay.io/battelleecology/genavro:v1.0.16",
       "cmd": [
         "bash"
       ],
@@ -53,7 +53,7 @@
       ]
     },
     "parallelism_spec": {
-      "constant": "2"
+      "constant": "4"
     },
     "output_branch": "master",
     "resource_requests": {
@@ -62,6 +62,7 @@
     },
     "input": {
         "pfs": {
+          "name": "import_trigger",
           "repo": "import_trigger",
           "glob": "/*/*/*/*"
         }

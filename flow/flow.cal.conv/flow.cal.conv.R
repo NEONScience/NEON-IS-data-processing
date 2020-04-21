@@ -4,7 +4,7 @@
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
-#' @description Workflow. Apply polyomial calibration function to L0 data and save applicable
+#' @description Workflow. Apply calibration and uncertainty functions to L0 data and save applicable
 #' uncertainty coefficients. Optionally compute FDAS (datalogger) uncertainty. Valid date
 #' ranges and certificate numbers in calibration files are used to determine the most relevant
 #' calibration to apply. The most relevant cal follows this choice order (1 chosen first):
@@ -220,6 +220,13 @@
 #     add suspect calibration flag
 #   Cove Sturtevant (2020-02-25)
 #     implement selection of which terms to supply calibration flags for
+<<<<<<< HEAD
+=======
+#   Cove Sturtevant (2020-03-03)
+#     accept data repositories without a calibration folder and handle accordingly
+#   Cove Sturtevant (2020-03-31)
+#     remove dirSubCopy from mandatory directories to identify datums. Require data folder only.
+>>>>>>> master
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -260,6 +267,177 @@ Para <-
     log = log
   )
 
+<<<<<<< HEAD
+=======
+# Echo arguments
+log$debug(base::paste0('Input directory: ', Para$DirIn))
+log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
+log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
+log$debug(base::paste0(
+  'Terms to apply calibration function: ',
+  base::paste0(Para$TermConv, collapse = ',')
+))
+numConv <- base::length(Para$TermConv)
+log$debug(base::paste0(
+  'Terms to output calibration flags: ',
+  base::paste0(Para$TermQf, collapse = ',')
+))
+
+# Read in the schemas so we only have to do it once and not every
+# time in the avro writer.
+if (!base::is.null(Para$FileSchmData)) {
+  # Retrieve and interpret the output data schema
+  SchmDataOutAll <-
+    NEONprocIS.base::def.schm.avro.pars(FileSchm = Para$FileSchmData, log =
+                                          log)
+  SchmDataOut <- SchmDataOutAll$schmJson
+  SchmDataOutVar <- SchmDataOutAll$var
+} else {
+  SchmDataOut <- NULL
+}
+if (!base::is.null(Para$FileSchmQf)) {
+  SchmQf <- base::paste0(base::readLines(Para$FileSchmQf), collapse = '')
+} else {
+  SchmQf <- NULL
+}
+
+# Determine the calibration function to be used for each converted term
+log$debug(base::paste0(
+  'Calibration conversion function(s) to be used: ',
+  base::paste0(Para$FuncConv, collapse = ',')
+))
+if (!base::is.null(Para$TermConv) && base::length(Para$TermConv) > 0) {
+  FuncConv <-
+    NEONprocIS.base::def.vect.pars.pair(
+      vect = Para$FuncConv,
+      KeyExp = Para$TermConv,
+      ValuDflt = 'def.cal.conv.poly',
+      NameCol = c('var', 'FuncConv'),
+      log = log
+    )
+} else {
+  FuncConv <- NULL
+}
+
+# Error check & convert NumDayExpiMax for internal use
+log$debug(
+  base::paste0(
+    'Number of days calibration information may be used past expiration: ',
+    base::paste0(Para$NumDayExpiMax, collapse = ',')
+  )
+)
+
+# Parse parameters for individual measurement uncertainty
+if (!base::is.null(Para$TermUcrt) && base::length(Para$TermUcrt) > 0) {
+  ParaUcrt <- base::lapply(
+    Para$TermUcrt,
+    FUN = function(argSplt) {
+      if (base::grepl(pattern = '(R)', x = argSplt)) {
+        # Terms in which FDAS resistance uncertainty applies
+        return(base::data.frame(
+          var = gsub(
+            pattern = '[(R)]',
+            replacement = '',
+            x = argSplt
+          ),
+          typeFdas = 'R',
+          stringsAsFactors = FALSE
+        ))
+      } else if (base::grepl(pattern = '(V)', x = argSplt)) {
+        return(base::data.frame(
+          var = gsub(
+            pattern = '[(V)]',
+            replacement = '',
+            x = argSplt
+          ),
+          typeFdas = 'V',
+          stringsAsFactors = FALSE
+        ))
+      } else {
+        return(base::data.frame(
+          var = argSplt,
+          typeFdas = NA,
+          stringsAsFactors = FALSE
+        ))
+      }
+    }
+  )
+  ParaUcrt <- base::do.call(base::rbind, ParaUcrt)
+  
+  # Open FDAS uncertainty file
+  if (base::any(!base::is.na(ParaUcrt$typeFdas))){
+    if (base::is.null(Para$FileUcrtFdas)) {
+      log$fatal('Path to FDAS uncertainty file must be input in argument FileUcrtFdas.')
+      stop()
+      
+    } else {
+      ucrtCoefFdas  <-
+        NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = Para$FileUcrtFdas, 
+                                                log = log)
+      
+    }
+  }
+  
+} else {
+  ParaUcrt <- NULL
+}
+log$debug(
+  base::paste0(
+    'Terms for which to compute individual measurement uncertainty: ',
+    base::paste0(Para$TermUcrt, collapse = ',')
+  )
+)
+
+# Which uncertainty function(s) are we using?
+log$debug(
+  base::paste0(
+    'Individual measurement uncertainty function(s) to be used: ',
+    base::paste0(Para$FuncUcrt, collapse = ',')
+  )
+)
+if (!base::is.null(ParaUcrt)) {
+  FuncUcrt <-
+    NEONprocIS.base::def.vect.pars.pair(
+      vect = Para$FuncUcrt,
+      KeyExp = ParaUcrt$var,
+      ValuDflt = 'def.ucrt.meas.cnst',
+      NameCol = c('var', 'FuncUcrt'),
+      log = log
+    )
+  ParaUcrt <- base::merge(x = ParaUcrt, y = FuncUcrt, by = 'var')
+} else {
+  FuncUcrt <- NULL
+}
+
+# Retrieve optional subdirectories to copy over
+DirSubCopy <-
+  base::unique(base::setdiff(
+    Para$DirSubCopy,
+    c('data', 'uncertainty_coef', 'uncertainty_data', 'flags')
+  ))
+log$debug(base::paste0(
+  'Additional subdirectories to copy: ',
+  base::paste0(DirSubCopy, collapse = ',')
+))
+
+# What are the expected subdirectories of each input path
+# It's possible that calibration folder will not exist if the
+# sensor has no calibrations. This is okay, as the flags and
+# conversion handle this.
+nameDirSub <- base::as.list(c('data'))
+log$debug(base::paste0(
+  'Expected subdirectories of each datum path: ',
+  base::paste0(nameDirSub, collapse = ',')
+))
+
+# Find all the input paths (datums). We will process each one.
+DirIn <-
+  NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
+                              nameDirSub = nameDirSub,
+                              log = log)
+
+>>>>>>> master
 # Process each datum
 source("./calibration_conversion.R")
 calibration_conversion(DirIn = Para$DirIn,

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from structlog import get_logger
 import environs
 

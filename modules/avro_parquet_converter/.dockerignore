@@ -1,0 +1,4 @@
+# Docker build files to ignore
+.dockerignore
+tests
+Dockerfile
