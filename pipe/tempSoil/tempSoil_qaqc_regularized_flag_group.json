@@ -18,8 +18,8 @@
         "pfs": {
           "name": "REGULARIZED_PATH",
           "repo": "tempSoil_regularized_flags",
-          "glob": "/prt/*/*/(*)/(*)",
-          "joinOn": "$1/$2",
+          "glob": "/prt/(*)/(*)/(*)/(*)",
+          "joinOn": "$1/$2/$3/$4",
           "empty_files": true
         } 
       },
@@ -27,8 +27,8 @@
         "pfs": {
           "name": "QUALITY_PATH",
           "repo": "tempSoil_qaqc_flags",
-          "glob": "/prt/*/*/(*)/(*)",
-          "joinOn": "$1/$2",
+          "glob": "/prt/(*)/(*)/(*)/(*)",
+          "joinOn": "$1/$2/$3/$4",
           "empty_files": true
         }
       }

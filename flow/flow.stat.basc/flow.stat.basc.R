@@ -61,7 +61,7 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}}, 
 #' which uses system environment variables if available.
 #' 
-#' @return Statistics for each aggregation interval output in AVRO format in DirOut, where the terminal 
+#' @return Statistics for each aggregation interval output in parquet format in DirOut, where the terminal 
 #' directory of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input 
 #' path. Directory 'stats' will automatically populated in the output directory, where the files 
 #' for each aggregation interval will be placed. Any other folders specified in argument DirSubCopy will be 
@@ -277,7 +277,7 @@ for(idxDirIn in DirIn){
         nameFileUcrtData <- base::paste0(idxDirUcrtData,'/',fileUcrtData) # Full path to file
         
         # Open the uncertainty data file
-        ucrtData  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileUcrtData,NameLib='/ravro.so',log=log),silent=FALSE)
+        ucrtData  <- base::try(NEONprocIS.base::def.read.parq(NameFile=nameFileUcrtData,log=log),silent=FALSE)
         if(base::class(ucrtData) == 'try-error'){
           log$error(base::paste0('File ', fileUcrtData,' is unreadable.')) 
           stop()
@@ -301,9 +301,9 @@ for(idxDirIn in DirIn){
   # Run through each file
   for(idxFileData in fileData){
     
-    # Load in data file in AVRO format into data frame 'data'.  
+    # Load in data file in parquet format into data frame 'data'.  
     fileIn <- base::paste0(idxDirData,'/',idxFileData)
-    data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileIn,NameLib='/ravro.so',log=log),silent=FALSE)
+    data  <- base::try(NEONprocIS.base::def.read.parq(NameFile=fileIn,log=log),silent=FALSE)
     if(base::class(data) == 'try-error'){
       log$error(base::paste0('File ', fileIn,' is unreadable.')) 
       stop()
@@ -502,7 +502,7 @@ for(idxDirIn in DirIn){
       } else {
         NameFileOutStat <- base::paste0(idxDirOutStat,'/',idxFileData,'_basicStats_',Para$WndwAgr[idxWndwAgr])
       }
-      rptWrte <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=rpt,NameFile=NameFileOutStat,NameFileSchm=NULL,Schm=SchmStat,NameLib='/ravro.so'),silent=TRUE)
+      rptWrte <- base::try(NEONprocIS.base::def.wrte.parq(data=rpt,NameFile=NameFileOutStat,NameFileSchm=NULL,Schm=SchmStat),silent=TRUE)
       if(base::class(rptWrte) == 'try-error'){
         log$error(base::paste0('Cannot write basic statistics file ', NameFileOutStat,'. ',attr(rptWrte,"condition"))) 
         stop()

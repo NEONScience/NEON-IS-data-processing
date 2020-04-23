@@ -64,7 +64,7 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}}, 
 #' which uses system environment variables if available.
 #' 
-#' @return Filtered data and quality flags output in AVRO format in DirOut, where the terminal directory 
+#' @return Filtered data and quality flags output in Parquet format in DirOut, where the terminal directory 
 #' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
 #' Directories 'data' and 'flags' are automatically populated in the output directory, where the files 
 #' for data and flags will be placed, respectively. The data and flags folders will include only the 

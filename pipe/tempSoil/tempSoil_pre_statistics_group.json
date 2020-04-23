@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempSoil_statistics_uncertainty_group"
+    "name": "tempSoil_pre_statistics_group"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -19,8 +19,8 @@
         "pfs": {
           "name": "STATISTICS_PATH",
           "repo": "tempSoil_qaqc_data",
-          "glob": "/prt/*/*/(*)/(*)/data",
-          "joinOn": "$1/$2",
+          "glob": "/prt/(*)/(*)/(*)",
+          "joinOn": "$1/$2/$3",
           "empty_files": true
         } 
       },
@@ -28,8 +28,8 @@
         "pfs": {
           "name": "UNCERTAINTY_COEF_PATH",
           "repo": "tempSoil_uncertainty_coefficients",
-          "glob": "/prt/*/*/(*)/(*)/uncertainty_coef",
-          "joinOn": "$1/$2",
+          "glob": "/prt/(*)/(*)/(*)",
+          "joinOn": "$1/$2/$3",
           "empty_files": true
         }
       },
@@ -37,8 +37,8 @@
         "pfs": {
           "name": "UNCERTAINTY_DATA_PATH",
           "repo": "tempSoil_regularized_uncertainty_data",
-          "glob": "/prt/*/*/(*)/(*)/uncertainty_data",
-          "joinOn": "$1/$2",
+          "glob": "/prt/(*)/(*)/(*)",
+          "joinOn": "$1/$2/$3",
           "empty_files": true
         }
       }
