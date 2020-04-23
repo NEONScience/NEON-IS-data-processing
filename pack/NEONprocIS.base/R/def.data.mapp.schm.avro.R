@@ -23,7 +23,7 @@
 #' @keywords Currently none
 
 #' @examples 
-#' NEONprocIS.base::def.data.mapp.schma(
+#' NEONprocIS.base::def.data.mapp.schma.avro(
 
 #' @seealso Currently none
 
@@ -33,7 +33,7 @@
 #   Cove Sturtevant (2020-02-20)
 #     original creation
 ##############################################################################################
-def.data.mapp.schm <- function(data,schm,ConvType=FALSE,log=NULL){
+def.data.mapp.schm.avro <- function(data,schm,ConvType=FALSE,log=NULL){
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()

@@ -22,6 +22,10 @@
 #' @param CompType String. Compression algorithm. Defaults to 'gzip'. Can also be NULL, in which case
 #' the arrow::write_parquet default will be used. 
 #' @param CompLvl Numeric. Compression level. See documentation for arrow::write_parquet for details.
+#' @param Dict Logical. Vector either length 1 or the same length as the number of columns in \code{data} 
+#' representing  whether to apply dictionary encoding to each respective data column. If length 1, the 
+#' choice is applied to all data columns. Defaults to NULL, in which case dictionary enconding is 
+#' determined automatically based on the prevalence of repeated values.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -117,31 +121,7 @@ def.wrte.parq <- function(data,
     }
     
     # Assign the data type for each column from the schema
-    for(idxVar in base::seq_len(numVar)){
-      
-      # type indicated by schema
-      typeIdx <- base::strsplit(typeVar$type[idxVar],",")[[1]]
-      
-      # Assign R class from schema-indicated data type
-      if(base::any(c('timestamp-millis','timestamp[ms]') %in% typeIdx)){
-        # Convert to POSIXct. Parquet writer handles this well.
-        data[[idxVar]] <- base::as.POSIXct(data[[idxVar]],tz='GMT')
-      } else if(base::any(c('string','utf8') %in% typeIdx)){
-        # Use as.character rather than class(..) <- 'character'. Converts factors to character without factors as attributes.
-        data[[idxVar]] <- base::as.character(data[[idxVar]])
-      } else if ('boolean' %in% typeIdx){
-        base::class(data[[idxVar]]) <- "logical"
-      } else if (base::any(c("int","long") %in% typeIdx)){
-        base::class(data[[idxVar]]) <- "integer"
-      } else if ("float" %in% typeIdx){
-        base::class(data[[idxVar]]) <- "numeric"
-      } else if ("double" %in% typeIdx){
-        base::class(data[[idxVar]]) <- "double"
-      } else {
-        log$warn(base::paste0("Don't know what to do with data type: ",typeVar$type[idxVar],'. No type conversion will be attempted.'))
-      }
-      
-    }
+    data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
     
   }
   

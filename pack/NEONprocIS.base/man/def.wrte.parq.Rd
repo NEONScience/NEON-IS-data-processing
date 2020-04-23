@@ -27,6 +27,11 @@ the arrow::write_parquet default will be used.}
 
 \item{CompLvl}{Numeric. Compression level. See documentation for arrow::write_parquet for details.}
 
+\item{Dict}{Logical. Vector either length 1 or the same length as the number of columns in \code{data} 
+representing  whether to apply dictionary encoding to each respective data column. If length 1, the 
+choice is applied to all data columns. Defaults to NULL, in which case dictionary enconding is 
+determined automatically based on the prevalence of repeated values.}
+
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}
 }
