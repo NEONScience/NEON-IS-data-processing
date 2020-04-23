@@ -13,9 +13,13 @@ log = structlog.get_logger()
 def get_active_periods(connection, named_location_id, cutoff_date=None):
     """
     Get the active time periods for a named location.
+
     :param connection: A database connection
+    :type connection: database connection object
     :param named_location_id: The ID to search on.
+    :type named_location_id: int
     :param cutoff_date: The end time for periods with no set end time.
+    :type cutoff_date: datetime object
     :return: Dictionary of active periods.
     """
     sql = '''
@@ -42,9 +46,13 @@ def get_active_periods(connection, named_location_id, cutoff_date=None):
 def get_by_type(connection, type_name, cutoff_date=None):
     """
     Get named locations in GEOJson format by type and cutoff date for the active time range.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param type_name: The named location type.
+    :type type_name: str
     :param cutoff_date: The maximum active end time to return.
+    :type cutoff_date: datetime object
     :return: Geojson FeatureCollection of locations.
     """
     sql = '''
@@ -110,9 +118,12 @@ def get_by_type(connection, type_name, cutoff_date=None):
 def get_by_asset(connection, asset_id):
     """
     Find named locations by asset ID.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param asset_id: The asset ID.
-    :return: Dictionary with ID, name, and type of asset's location.
+    :type asset_id: int
+    :return: dict with ID, name, and type of asset's location.
     """
     sql = '''
                 select
@@ -143,8 +154,11 @@ def get_by_asset(connection, asset_id):
 def get_asset_history(connection, asset_id):
     """
     Get an asset's location history.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param asset_id: The asset ID.
+    :type asset_id: int
     :return: Geojson FeatureCollection of history.
     """
     sql = '''
@@ -206,8 +220,11 @@ def get_asset_history(connection, asset_id):
 def add_reference_locations(connection, named_locations):
     """
     Add the named location reference locations to the Dictionary.
+
     :param connection: A database connection.
-    :param named_locations: Dictionary containing named locations.
+    :type connection: connection object
+    :param named_locations: The named locations to add.
+    :type named_locations: dict
     :return:
     """
     for named_location in named_locations:
@@ -222,9 +239,12 @@ def add_reference_locations(connection, named_locations):
 def get_properties(connection, named_location_id):
     """
     Get a list of properties associated with a named location.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param named_location_id: The named location ID to search.
-    :return: Dictionary of properties.
+    :type named_location_id: int
+    :return: dict of properties.
     """
     sql = '''
             select
@@ -263,9 +283,12 @@ def get_properties(connection, named_location_id):
 def get_context(connection, named_location_id):
     """
     Get context entries for a named location.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param named_location_id: The named location ID.
-    :return: List of context entries.
+    :type named_location_id: int
+    :return: list of context entries.
     """
     sql = '''
         select
@@ -293,9 +316,12 @@ def get_context(connection, named_location_id):
 def get_parents(connection, named_location_id):
     """
     Get the parents of a named location.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param named_location_id:
-    :return: List of Dictionaries containing parent data.
+    :type named_location_id: int
+    :return: list of dicts containing parent data.
     """
     sql = '''
             select
@@ -319,9 +345,12 @@ def get_parents(connection, named_location_id):
 def add_parent(cursor, named_location_id, parents):
     """
     Recursively get named location parent IDs, names, and types.
+
     :param cursor: A database cursor object.
+    :type cursor: cursor object
     :param named_location_id: The location ID.
-    :param parents: Dictionary of parents to append to.
+    :type named_location_id: int
+    :param parents: dict of parents to append to.
     """
     res = cursor.execute(None, named_location_id=named_location_id)
     row = res.fetchone()
@@ -335,6 +364,15 @@ def add_parent(cursor, named_location_id, parents):
 
 
 def get_site(connection, named_location_id):
+    """
+    Get the site for a named location.
+
+    :param connection: A database connection.
+    :type connection: connection object
+    :param named_location_id:
+    :type named_location_id: int
+    :return: The site str.
+    """
     parents = get_parents(connection, named_location_id)
     for parent in parents:
         if parent.get('type').lower() == 'site':
@@ -346,9 +384,12 @@ def get_site(connection, named_location_id):
 def get_schema_name(connection, named_location_name):
     """
     Return the schema name for the type of sensor the named location accepts.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param named_location_name: The named location name.
-    :return:
+    :type named_location_name: str
+    :return: The schema name str.
     """
     sql = '''
         select distinct

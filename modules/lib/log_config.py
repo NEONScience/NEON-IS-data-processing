@@ -5,7 +5,13 @@ import sys
 
 
 def configure(log_level):
-    """Configure log for stdout JSON."""
+    """
+    Configure log for stdout JSON.
+
+    :param log_level: The log level to set.
+    :type log_level: str
+    :return:
+    """
     level = get_level(log_level)
     root_logger = logging.getLogger()
     root_logger.setLevel(level)
@@ -27,7 +33,13 @@ def configure(log_level):
 
 
 def get_level(level_name):
-    """Get log level by name."""
+    """
+    Get log level by name.
+
+    :param level_name: The level name.
+    :type level_name: str
+    :return: The level.
+    """
     log_levels = {
         'DEBUG': logging.DEBUG,
         'INFO': logging.INFO,

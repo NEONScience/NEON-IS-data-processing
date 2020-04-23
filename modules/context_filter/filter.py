@@ -14,6 +14,22 @@ log = structlog.get_logger()
 class ContextFilter(object):
 
     def __init__(self, source_type_index, year_index, month_index, day_index, source_id_index, data_type_index):
+        """
+        Constructor.
+
+        :param source_type_index: The index for the source type in the file path.
+        :type source_type_index: int
+        :param year_index: The index for the year in the file path.
+        :type year_index: int
+        :param month_index: The index for the month in the file path.
+        :type month_index: int
+        :param day_index: The index for the day in the file path.
+        :type day_index: int
+        :param source_id_index: The index for the source ID in the file path.
+        :type source_id_index: int
+        :param data_type_index: The index for the data type in the file path.
+        :type data_type_index: int
+        """
         self.source_type_index = source_type_index
         self.year_index = year_index
         self.month_index = month_index
@@ -24,9 +40,13 @@ class ContextFilter(object):
     def filter(self, in_path, out_path, context):
         """
         Group files in the input directory by context.
+
         :param in_path: The input path.
+        :type in_path: str
         :param out_path: The output path.
+        :type out_path: str
         :param context: The context to match.
+        :type context: str
         """
         sources = {}
         for file_path in file_crawler.crawl(in_path):
@@ -44,9 +64,13 @@ class ContextFilter(object):
     def group_sources(self, sources, context, out_path):
         """
         Group the source files from the input directory.
-        :param sources: Dict of file paths by data type.
+
+        :param sources: File paths by data type.
+        :type sources: dict
         :param context: The context to match.
+        :type context: str
         :param out_path: The output path.
+        :type out_path: str
         """
         for source in sources:
             file_paths = sources.get(source)
@@ -60,8 +84,11 @@ class ContextFilter(object):
     def link_source(file_paths_by_type, out_path):
         """
         Get file paths by data type and link into output directory.
-        :param file_paths_by_type: Dict of file paths by data type.
+
+        :param file_paths_by_type: File paths by data type.
+        :type file_paths_by_type dict
         :param out_path: The output path.
+        :type out_path: str
         """
         for path_by_type in file_paths_by_type:
             for data_type in path_by_type:

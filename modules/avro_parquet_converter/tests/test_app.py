@@ -13,7 +13,7 @@ class AppTest(TestCase):
     def setUp(self):
         log_config.configure('DEBUG')
 
-        # self.setUpPyfakefs()
+        self.setUpPyfakefs()
 
         self.out_path = os.path.join('/', 'repo', 'outputs')
         self.in_path = os.path.join('/', 'repo', 'inputs')
@@ -25,12 +25,11 @@ class AppTest(TestCase):
 
         # use real data file to convert
         self.real_path = os.path.join(os.path.dirname(__file__), self.data_filename)
-        # self.fs.add_real_file(self.real_path, target_path=data_path)
+        self.fs.add_real_file(self.real_path, target_path=data_path)
 
-    @unittest.skip('File "pyarrow/types.pxi", line 1530, in pyarrow.lib.tzinfo_to_string Exception: '
-                   'Unable to convert timezone `<fastavro._timezone.UTCTzinfo object at 0x1140ebc18>` to string')
+    @unittest.skip('fastavro._read.is_avro does not work with the mock filesystem.')
     def test_main(self):
-        os.environ['IN_PATH'] = self.real_path
+        os.environ['IN_PATH'] = self.in_path
         os.environ['OUT_PATH'] = self.out_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
         app.main()

@@ -14,9 +14,13 @@ log = get_logger()
 
 def join(pathname, out_path):
     """
-    Link all matching files into the output directory.
+    Join paths according to the given pathname and
+    link all matching files into the output directory.
+
     :param pathname: The path pattern to match.
+    :type pathname: str
     :param out_path: The output path for writing results.
+    :type out_path: str
     """
     files = [fn for fn in glob.glob(pathname, recursive=True)
              if not os.path.basename(fn).startswith(out_path) if os.path.isfile(fn)]
@@ -28,9 +32,6 @@ def join(pathname, out_path):
 
 
 def main():
-    """
-    Join paths according to the given pathname.
-    """
     env = environs.Env()
     pathname = env('PATHNAME')
     out_path = env('OUT_PATH')

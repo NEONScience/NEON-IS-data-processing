@@ -13,6 +13,15 @@ log = structlog.get_logger()
 
 
 def process(data_path, out_path):
+    """
+    Load events from the asset data path.
+
+    :param data_path: The data path.
+    :type data_path: str
+    :param out_path: The output path for writing results.
+    :type out_path: str
+    :return:
+    """
     for file_path in file_crawler.crawl(data_path):
         trimmed_path = target_path.trim_path(file_path)
         parts = trimmed_path.parts

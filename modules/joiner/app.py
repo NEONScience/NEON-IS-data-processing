@@ -15,8 +15,11 @@ log = get_logger()
 def group(paths, out_path):
     """
     Link all files into the output directory.
+
     :param paths: Comma separated list of environment variable names whose values are full directory paths.
+    :type paths: str
     :param out_path: The output path for writing results.
+    :type out_path: str
     """
     if ',' in paths:
         paths = paths.split(',')
@@ -31,9 +34,7 @@ def group(paths, out_path):
 
 
 def main():
-    """
-    Group related paths without modifying the paths.
-    """
+    """Group related paths without modifying the paths."""
     env = environs.Env()
     related_paths = env('RELATED_PATHS')
     out_path = env('OUT_PATH')

@@ -22,9 +22,12 @@ log = structlog.get_logger()
 def dates_between(start_date, end_date):
     """
     Generate the dates between the start and end dates.
+
     :param start_date: Datetime to begin
+    :type start_date: datetime
     :param end_date: Datetime to end
-    :return: List of dates.
+    :type end_date: datetime
+    :return: list of dates.
     """
     delta = end_date - start_date  # as timedelta
     dates = []
@@ -37,10 +40,15 @@ def dates_between(start_date, end_date):
 def load(db_url, out_path, location_type, cutoff_date):
     """
     Write a path and file for each active date '/yyyy/mm/dd/<location name>/<location name>.json'.
+
     :param db_url: A database url.
+    :type db_url: str
     :param out_path: The output directory root path.
+    :type out_path: str
     :param location_type: The location type to read from the database.
+    :type location_type: str
     :param cutoff_date: The most recent date to create an output directory and file.
+    :type cutoff_date: datetime
     """
     with closing(cx_Oracle.connect(db_url)) as connection:
         named_locations = named_location_finder.get_by_type(connection, location_type, cutoff_date=cutoff_date)

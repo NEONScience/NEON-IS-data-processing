@@ -13,7 +13,17 @@ log = structlog.get_logger()
 
 
 def group(calibrated_path, location_path, out_path):
-    """Write calibrated data and location files into output path."""
+    """
+    Write calibrated data and location files into output path.
+
+    :param calibrated_path: The input path for calibrated files.
+    :type calibrated_path: str
+    :param location_path: The input path for location files.
+    :type location_path: str
+    :param out_path: The output path for writing grouped files.
+    :type out_path: str
+    :return:
+    """
     i = 0
     for file_path in file_crawler.crawl(calibrated_path):
         parts = file_path.parts
@@ -36,6 +46,15 @@ def group(calibrated_path, location_path, out_path):
 
 
 def link_location(location_path, target_root):
+    """
+    Link the location file into the target root.
+
+    :param location_path: The location file path.
+    :type location_path: str
+    :param target_root: The target directory to write the location file.
+    :type target_root: str
+    :return:
+    """
     for file in file_crawler.crawl(location_path):
         location_filename = pathlib.Path(file).name
         target = os.path.join(target_root, 'location', location_filename)
