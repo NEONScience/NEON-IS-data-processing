@@ -12,6 +12,7 @@
 #'    Parse input parameters
 #'    Determine datums to process (set of files/folders to process as a single unit)
 #'    For each datum:
+#'      Create output directories and copy over (by symbolic link) unmodified components
 #'      Open each location file and delete location information that does not apply to the data day
 #'         indicated in the file path
 #'      Write out the filtered location file

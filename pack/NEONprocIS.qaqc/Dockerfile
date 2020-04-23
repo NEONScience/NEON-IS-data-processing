@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - QAQC package
 
 # Start with the neon-is-base-r image. # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base & eddy4R.qaqc
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.46 
+FROM quay.io/battelleecology/neon-is-base-r:v0.0.49 
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
