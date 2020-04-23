@@ -41,7 +41,7 @@
 #' follows: SOURCETYPE_SOURCID_OTHERDESCRIPTORS.EXT, where capital words are replaced by applicable text, and 
 #' these terms are separated by underscores (_). The only field that is used by this script is the SOURCEID 
 #' field.  Any additional descriptors may be added to the file name by adding an additional underscore-
-#' delimited fields after the source-id field (e.g. prt_12345_otherdescriptor.avro, where 12345 is the 
+#' delimited fields after the source-id field (e.g. prt_12345_otherdescriptor.parquet, where 12345 is the 
 #' source-id).
 #' 
 #' 4. "DirSubCombUcrt=value" (optional), where the value is the name of subfolders holding uncertainty coefficient 
@@ -52,7 +52,7 @@
 #' as follows: SOURCETYPE_SOURCID_OTHERDESCRIPTORS.EXT, where capital words are replaced by applicable text, and 
 #' these terms are separated by underscores (_). The only field that is used by this script is the SOURCEID 
 #' field.  Any additional descriptors may be added to the file name by adding an additional underscore-delimited 
-#' fields after the source-id field (e.g. prt_12345_otherdescriptor.avro, where 12345 is the source-id).
+#' fields after the source-id field (e.g. prt_12345_otherdescriptor.parquet, where 12345 is the source-id).
 #' 
 #' 5. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
@@ -99,6 +99,8 @@
 #     added merging of uncertainty files
 #   Cove Sturtevant (2020-03-04) 
 #     adjust datum identification to allow copied-through directories to be present or not
+#   Cove Sturtevant (2020-04-15)
+#     switch read/write data from avro to parquet
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -193,7 +195,7 @@ for(idxDirIn in DirIn){
       }
       
       # Open the data file
-      data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileData,NameLib='/ravro.so',log=log),silent=FALSE)
+      data  <- base::try(NEONprocIS.base::def.read.parq(NameFile=nameFileData,log=log),silent=FALSE)
       if(base::class(data) == 'try-error'){
         # Generate error and stop execution
         log$error(base::paste0('File: ', nameFileData, ' is unreadable.')) 
@@ -245,18 +247,12 @@ for(idxDirIn in DirIn){
       fileDataOut <- base::sub(pattern=idSrcIdx,replacement=nameLoc,x=idxFileData)
       nameFileDataOut <- base::paste0(idxDirOut,'/',idxDirSubCombData,'/',fileDataOut) # Full path to output file
       
-      # Read the schema from the input data file
-      SchmOut <- base::attr(dataOut,'schema')
-      rptDataOut <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=dataOut,NameFile=nameFileDataOut,NameFileSchm=NULL,Schm=SchmOut,NameLib='/ravro.so'),silent=TRUE)
+      # Write the data
+      rptDataOut <- base::try(NEONprocIS.base::def.wrte.parq(data=dataOut,NameFile=nameFileDataOut,log=log),silent=TRUE)
       if(base::class(rptDataOut) == 'try-error'){
         log$error(base::paste0('Cannot write Truncated/merged file ', nameFileDataOut,'. ',attr(rptDataOut,"condition"))) 
         stop()
       } else {
-        if(base::is.null(SchmOut)){
-          log$debug(base::paste0('Schema for writing output file ',nameFileDataOut, 'could not be read from input file. Using output data frame to auto-create schema.'))
-        } else {
-          log$debug(base::paste0('Same schema as input data files used to write output file ',nameFileDataOut))
-        }
         log$info(base::paste0('Truncated/merged timeseries data (by location) written successfully in ',nameFileDataOut))
       }
     }

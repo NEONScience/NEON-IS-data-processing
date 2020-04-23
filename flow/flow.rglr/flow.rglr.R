@@ -112,7 +112,7 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #'
-#' @return Regularized data output in AVRO format in DirOut, where DirOut directory
+#' @return Regularized data output in Parquet format in DirOut, where DirOut directory
 #' replaces BASE_REPO but otherwise retains the child directory structure of the input path.
 
 #' @references
@@ -161,6 +161,8 @@
 #     make option to look for regularization frequency within the location file
 #     add instantaneous regularization option (just a parameter input to eddy4R.base::def.rglr)
 #     pulled out some code into functions
+#   Cove Sturtevant (2020-04-15)
+#     switch read/write data from avro to parquet
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -413,12 +415,11 @@ for (idxDirIn in DirIn) {
     
     # Regularize each file
     for (idxFileData in fileData) {
-      # Load in data file in AVRO format into data frame 'data'.
+      # Load data
       fileIn <- base::paste0(idxDirInRglr, '/', idxFileData)
       data  <-
-        base::try(NEONprocIS.base::def.read.avro.deve(NameFile = fileIn,
-                                                      NameLib = '/ravro.so',
-                                                      log = log),
+        base::try(NEONprocIS.base::def.read.parq(NameFile = fileIn,
+                                                 log = log),
                   silent = FALSE)
       if (base::class(data) == 'try-error') {
         log$error(base::paste0('File ', fileIn, ' is unreadable.'))
@@ -477,7 +478,7 @@ for (idxDirIn in DirIn) {
         # Ensure output data has same columns as input data. Note that character columns
         # are dropped in regularized output. NAs will be filled in here.
         rpt <-
-          NEONprocIS.base::def.data.mapp.schm(
+          NEONprocIS.base::def.data.mapp.schm.parq(
             data = rpt,
             schm = idxSchmRglr,
             ConvType = FALSE,
@@ -491,12 +492,11 @@ for (idxDirIn in DirIn) {
       # Write the output
       fileOut <- base::paste0(idxDirOutRglr, '/', idxFileData)
       rptWrte <-
-        base::try(NEONprocIS.base::def.wrte.avro.deve(
+        base::try(NEONprocIS.base::def.wrte.parq(
           data = rpt,
           NameFile = fileOut,
           NameFileSchm = NULL,
-          Schm = idxSchmRglr,
-          NameLib = '/ravro.so'
+          Schm = idxSchmRglr
         ),
         silent = TRUE)
       if (base::class(rptWrte) == 'try-error') {

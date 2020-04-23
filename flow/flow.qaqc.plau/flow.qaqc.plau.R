@@ -106,6 +106,8 @@
 #     fix bug returning all padded data
 #   Cove Sturtevant (2019-11-27)
 #     fix bug when only one test selected
+#   Cove Sturtevant (2020-04-22)
+#     switch read/write data from avro to parquet
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -186,7 +188,7 @@ for(idxDirIn in DirIn){
   idxDirThsh <- base::paste0(idxDirIn,'/threshold')
   fileData <- base::dir(idxDirData)
   fileThsh <- base::dir(idxDirThsh)
-
+  
   # Gather info about the input directory (including date) and create the output directories. 
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
@@ -201,15 +203,14 @@ for(idxDirIn in DirIn){
     NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
   }  
   
-
+  
   # Load in the data files and string together. 
   # Note: The data files are simply loaded in and sorted. There is no checking whether there are missing files
   # or gaps. This should be done in previous steps, along with any desired regularization.
   for (idxFileData in fileData){
-    # Load in data file in AVRO format into data frame 'data'. 
-    # Note, this AVRO reader is a developmental version. 
-    dataIdx  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=base::paste0(idxDirData,'/',idxFileData),NameLib='/ravro.so',log=log),silent=FALSE)
-    if(base::class(data) == 'try-error'){
+    # Load in data file 
+    dataIdx  <- base::try(NEONprocIS.base::def.read.parq(NameFile=base::paste0(idxDirData,'/',idxFileData),log=log),silent=FALSE)
+    if(base::class(dataIdx) == 'try-error'){
       log$error(base::paste0('File ', fileIn,' is unreadable.')) 
       stop()
     }
@@ -244,7 +245,7 @@ for(idxDirIn in DirIn){
     log$error(base::paste0('Thresholds for term(s): ',base::paste(termTest[!exstThsh],collapse=','),' do not exist in the thresholds file. Cannot proceed.')) 
     stop()
   }
-   
+  
   # Intialize output
   qf <- base::list()
   
@@ -276,14 +277,14 @@ for(idxDirIn in DirIn){
     if('gap' %in% ParaTest[[idxTerm]]$test){
       
       argsPlau$NumGap <- thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Gap Test value - # missing points']
-
+      
       # Check that thresholds exist for this test
       if(base::length(argsPlau$NumGap) == 0){
         log$error(base::paste0('"Gap Test value - # missing points" not found in thresholds for term: ',idxTerm,'. Cannot proceed.')) 
         stop()
       }
     }    
-
+    
     # Argument(s) for range test
     if('range' %in% ParaTest[[idxTerm]]$test){
       
@@ -305,7 +306,7 @@ for(idxDirIn in DirIn){
     if('step' %in% ParaTest[[idxTerm]]$test){
       
       argsPlau$DiffStepMax <- thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Step Test value']
-
+      
       # Check that thresholds exist for this test
       if(base::length(argsPlau$DiffStepMax) == 0){
         log$error(base::paste0('"Step Test value" not found in thresholds for term: ',idxTerm,'. Cannot proceed.')) 
@@ -447,11 +448,11 @@ for(idxDirIn in DirIn){
     names(qf[[idxTerm]])<- base::paste0(base::paste(base::toupper(base::substr(mapNameQf$nameTest[setTest],1,1)),
                                                     base::substr(mapNameQf$nameTest[setTest],2,base::nchar(mapNameQf$nameTest[setTest])),sep=""),"QF")
   }
-
+  
   # Combine the output for all terms into a single data frame - this will insert the name of the term in the column name
   qf <- base::do.call(base::rbind.data.frame, base::list(qf,make.row.names = FALSE,stringsAsFactors=FALSE))
   base::names(qf) <- base::sub(pattern='.',replacement='',x=base::names(qf),fixed=TRUE) # Get rid of the '.' between the term name and the flag name
-
+  
   # Add in the time variable
   qf <- base::cbind(base::data.frame(readout_time=base::as.POSIXct(data$readout_time)),qf)
   
@@ -462,7 +463,7 @@ for(idxDirIn in DirIn){
   
   # Use as.integer in order to write out as integer with the avro schema
   qf[,2:base::ncol(qf)] <- base::apply(X=base::subset(x=qf,select=2:base::ncol(qf)),MARGIN=2,FUN=base::as.integer)
-                                       
+  
   
   # Determine the input filename we will base our output filename on - it is the filename with this data day embedded
   fileDataOut <- fileData[base::grepl(pattern=base::format(timeBgn,'%Y-%m-%d'),x=fileData)] 
@@ -488,7 +489,7 @@ for(idxDirIn in DirIn){
   
   # Write the data
   NameFileOut <- base::paste0(idxDirOutData,'/',fileDataOut)
-  rptData <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=dataOut,NameFile=NameFileOut,NameFileSchm=NULL,Schm=idxSchmDataOut,NameLib='/ravro.so'),silent=TRUE)
+  rptData <- base::try(NEONprocIS.base::def.wrte.parq(data=dataOut,NameFile=NameFileOut,NameFileSchm=NULL,Schm=idxSchmDataOut),silent=TRUE)
   if(base::class(rptData) == 'try-error'){
     log$error(base::paste0('Cannot write Quality controlled data in file ', NameFileOut,'. ',attr(rptData,"condition"))) 
     stop()
@@ -503,7 +504,7 @@ for(idxDirIn in DirIn){
   } else {
     NameFileOutQf <- base::paste0(idxDirOutQf,'/',fileDataOut,'_flagsPlausibility')
   }
-  rptQf <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=qf,NameFile=NameFileOutQf,NameFileSchm=NULL,Schm=SchmQfOut,NameLib='/ravro.so'),silent=TRUE)
+  rptQf <- base::try(NEONprocIS.base::def.wrte.parq(data=qf,NameFile=NameFileOutQf,NameFileSchm=NULL,Schm=SchmQfOut),silent=TRUE)
   if(base::class(rptQf) == 'try-error'){
     log$error(base::paste0('Cannot write plausibility flags  in file ', NameFileOutQf,'. ',attr(rptQf,"condition"))) 
     stop()
