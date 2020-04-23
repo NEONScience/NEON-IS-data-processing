@@ -27,6 +27,7 @@ location_asset.tests.test_app \
 location_group_path.tests.test_app \
 location.tests.test_app \
 padded_timeseries_analyzer.tests.test_app \
+parquet_linkmerge.tests.test_app \
 qaqc_regularized_flag_group.tests.test_app \
 related_location_group.tests.test_app \
 timeseries_padder.tests.test_padder_util \

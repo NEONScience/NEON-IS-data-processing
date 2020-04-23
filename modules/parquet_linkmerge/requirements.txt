@@ -1,5 +1,4 @@
-environs==7.3.1
-fastavro==0.23.1
+environs==7.4.0
 marshmallow==3.5.1
 numpy==1.18.2
 pandas==1.0.3
