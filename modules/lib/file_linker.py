@@ -3,6 +3,15 @@ import os
 
 
 def link(source, target):
+    """
+    Link the source into the target.
+
+    :param source: The source path.
+    :type source: str
+    :param target: The target path.
+    :type target: str
+    :return:
+    """
     if not os.path.exists(target):
         try:
             if os.path.isdir(target):

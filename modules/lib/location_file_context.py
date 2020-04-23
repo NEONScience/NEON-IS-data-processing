@@ -8,8 +8,11 @@ log = structlog.get_logger()
 def match(location_file, context_match):
     """
     Match the context to a location file context.
+
     :param location_file: A location file path to load.
+    :type location_file: str
     :param context_match: The context to match.
+    :type context_match: str
     :return True if file: contains an entry for the given context.
     """
     with open(location_file) as f:
@@ -30,8 +33,11 @@ def match(location_file, context_match):
 def get_matching_items(location_file, context_match):
     """
     Find the given substring in a location file context.
+
     :param location_file: A location file path to load.
+    :type location_file: str
     :param context_match: The context string to find.
+    :type context_match: str
     :return The context item containing the matching string.
     """
     matches = []

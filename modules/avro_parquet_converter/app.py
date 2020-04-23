@@ -19,6 +19,17 @@ log = structlog.get_logger()
 
 
 def convert(in_path, out_path, dedup_threshold):
+    """
+    Convert .avro files in in_path into .parquet files in out_path.
+
+    :param in_path: The input path for the .avro files.
+    :type in_path: str
+    :param out_path: The output path to write .parquet files.
+    :type out_path: str
+    :param dedup_threshold: The duplication percentage for dictionary compression.
+    :type dedup_threshold: float
+    :return:
+    """
     for avro_file_path in file_crawler.crawl(in_path):
         log.info(f"Opening Avro file {avro_file_path}")
         if not is_avro(str(avro_file_path)):

@@ -12,6 +12,21 @@ log = structlog.get_logger()
 
 
 def check_date(year, month, day, start_date, end_date):
+    """
+    Check if the year, month, day date is between the start and end dates.
+
+    :param year: The year.
+    :type year: str
+    :param month: The month.
+    :type month: str
+    :param day: The day.
+    :type day: str
+    :param start_date: The start date.
+    :type start_date: datetime object
+    :param end_date: The end date.
+    :type end_date: datetime object
+    :return:
+    """
     if start_date is None and end_date is None:
         return True
     if start_date is not None and end_date is not None:
@@ -22,6 +37,19 @@ def check_date(year, month, day, start_date, end_date):
 
 
 def get_data_files(data_path, out_path, start_date=None, end_date=None):
+    """
+    Get the data file path keys between start and end dates.
+
+    :param data_path: The path to the data file directory.
+    :type data_path: str
+    :param out_path: The path to write results.
+    :type out_path: str
+    :param start_date: The start date.
+    :type start_date: datetime object
+    :param end_date: The end date.
+    :type end_date: datetime object
+    :return: list of data files.
+    """
     keys = []
     for file_path in file_crawler.crawl(data_path):
         parts = file_path.parts
@@ -45,6 +73,29 @@ def get_data_files(data_path, out_path, start_date=None, end_date=None):
 def process_location_files(location_path, keys, out_path, output_directories,
                            empty_data_path, empty_flags_path, empty_uncertainty_data_path,
                            start_date=None, end_date=None):
+    """
+    Process the location files.
+
+    :param location_path: The path to the location file.
+    :type location_path: str
+    :param keys: The path keys to the data files.
+    :type keys: list
+    :param out_path: The path to write results.
+    :type out_path: str
+    :param output_directories: The output directories to write.
+    :type output_directories: list
+    :param empty_data_path: Path to the empty data files.
+    :type empty_data_path: str
+    :param empty_flags_path: Path to the empty flag files.
+    :type empty_flags_path: str
+    :param empty_uncertainty_data_path: Path to the empty uncertainty data file.
+    :type empty_uncertainty_data_path: str
+    :param start_date: The start date.
+    :type start_date datetime object
+    :param end_date: The end date.
+    :type end_date: datetime object
+    :return:
+    """
     for file_path in file_crawler.crawl(location_path):
         parts = file_path.parts
         source_type = parts[3]
@@ -80,6 +131,23 @@ def process_location_files(location_path, keys, out_path, output_directories,
 
 
 def link_path(target_dir, empty_file_path, location_name, year, month, day):
+    """
+    Link the empty file path into the target path.
+
+    :param target_dir: The target directory for writing files.
+    :type target_dir: str
+    :param empty_file_path: The source empty file path.
+    :type empty_file_path: str
+    :param location_name: The location name.
+    :type location_name: str
+    :param year: The file year.
+    :type year: str
+    :param month: The file month.
+    :type month: str
+    :param day: The file day.
+    :type day: str
+    :return:
+    """
     file_name = pathlib.Path(empty_file_path).name
     file_name = file_name.replace('location', location_name)
     file_name = file_name.replace('year', year)

@@ -18,8 +18,11 @@ log = structlog.get_logger()
 def write_file(out_path, location):
     """
     Write a geojson file to the output path.
+
     :param out_path: Path for the output file.
-    :param location: List containing locations.
+    :type out_path: str
+    :param location: The locations.
+    :type location: list
     """
     pathlib.Path(out_path).mkdir(parents=True, exist_ok=True)
     formatted = geojson.dumps(location, indent=4, sort_keys=False, default=str)
@@ -34,7 +37,15 @@ def write_file(out_path, location):
 
 
 def load(db_url, out_path):
-    """Get locations by type and write to file."""
+    """
+    Get locations by type and write to file.
+
+    :param db_url: The database URL.
+    :type db_url: str
+    :param out_path: The output path for writing results.
+    :type out_path: str
+    :return:
+    """
     with closing(cx_Oracle.connect(db_url)) as connection:
         locations = named_location_finder.get_by_type(connection, 'CONFIG')
         for location in locations:

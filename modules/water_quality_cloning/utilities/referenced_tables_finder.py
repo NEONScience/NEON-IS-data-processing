@@ -4,8 +4,10 @@ from contextlib import closing
 
 def show_referenced_tables(connection):
     """
-    Get all the tables connected to 'nam_locn'
+    Get all the tables connected to 'nam_locn'.
+
     :param connection: A database connection.
+    :type connection: connection object
     :return:
     """
     sql = '''

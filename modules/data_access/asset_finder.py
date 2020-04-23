@@ -5,6 +5,15 @@ import lib.date_formatter as date_formatter
 
 
 def find_location_assets(connection, named_location_id):
+    """
+    Find assets associated with a named location.
+
+    :param connection: A database connection.
+    :type connection: database connection object
+    :param named_location_id: The named location ID.
+    :type named_location_id: int
+    :return:
+    """
     with closing(connection.cursor()) as cursor:
         sql = '''
             select asset_uid, install_date, remove_date 
@@ -29,7 +38,10 @@ def find_location_assets(connection, named_location_id):
 def find_all(connection):
     """
     Find all assets in the database.
-    :return: Dictionary of asset data
+
+    :param connection: A database connection.
+    :type connection: database connection object
+    :return: dict of asset data
     """
     with closing(connection.cursor()) as cursor:
         sql = '''

@@ -18,9 +18,14 @@ def process(source_path, group, out_path):
     """
     Link source files into the output directory with the related location group in the path.
     There must be only one location file under the source path.
+
     :param source_path: The input path.
+    :type source_path: str
     :param group: The group to match in the location files.
+    :type group: str
     :param out_path: The output path.
+    :type out_path: str
+    :return
     """
     paths = []
     group_names = []
@@ -54,7 +59,17 @@ def process(source_path, group, out_path):
 
 
 def link(paths, group_names, out_path):
+    """
+    Link the paths into the output directory.
 
+    :param paths: The file paths.
+    :type paths: list
+    :param group_names: The context group names for the location.
+    :type group_names: list
+    :param out_path: The output path for writing results.
+    :type out_path: str
+    :return:
+    """
     for path in paths:
 
         file_path = path.get('file_path')
@@ -79,9 +94,7 @@ def link(paths, group_names, out_path):
 
 
 def main():
-    """
-    Add the related location group from the location file to the output directory.
-    """
+    """Add the related location group from the location file to the output directory."""
     env = environs.Env()
     source_path = env('SOURCE_PATH')
     group = env('GROUP')

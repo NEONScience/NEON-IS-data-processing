@@ -23,6 +23,26 @@ class ConstantPadder(object):
 
     def __init__(self, data_path, out_path, year_index, month_index, day_index,
                  location_index, sub_dir_index, window_size):
+        """
+        Constructor.
+
+        :param data_path: The data path.
+        :type data_path: str
+        :param out_path:  The path for writing results.
+        :type out_path: str
+        :param year_index: The year index in the file path.
+        :type year_index: int
+        :param month_index: The month index in the file path.
+        :type month_index: int
+        :param day_index: The day index in the file path.
+        :type day_index: int
+        :param location_index: The location index in the file path.
+        :type location_index: int
+        :param sub_dir_index: The sub directory index in the file path.
+        :type sub_dir_index: int
+        :param window_size: The window size.
+        :type window_size: int
+        """
         self.data_path = data_path
         self.out_path = out_path
         # date and location indices in file path
@@ -36,6 +56,11 @@ class ConstantPadder(object):
         self.out_dir_parts = list(pathlib.Path(out_path).parts)
 
     def pad(self):
+        """
+        Pad the data for the window size.
+
+        :return:
+        """
         try:
             manifests = {}
             manifest_file_names = {}

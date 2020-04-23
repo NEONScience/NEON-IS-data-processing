@@ -8,9 +8,24 @@ import lib.file_linker as file_linker
 
 log = get_logger()
 
+
 class Egress(object):
 
     def __init__(self, dataPath, outPath, outputName, dateIndex, locIndex):
+        """
+        Constructor.
+
+        :param dataPath: The data path.
+        :type dataPath: str
+        :param outPath: The output path for writing results.
+        :type outPath: str
+        :param outputName: The output name.
+        :type outputName: str
+        :param dateIndex: The date index.
+        :type dateIndex: int
+        :param locIndex: The location index.
+        :type locIndex: int
+        """
         self.outputName = outputName
         self.dataPath = dataPath
         self.outPath = outPath
@@ -20,6 +35,11 @@ class Egress(object):
         self.filenameDelimiter = "_"
 
     def upload(self):
+        """
+        Link the source files into the output directory.
+
+        :return:
+        """
         try:
             for root, dirs, files in os.walk(self.dataPath):
                 for filename in files:

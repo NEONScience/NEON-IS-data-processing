@@ -9,8 +9,11 @@ from lib.date_formatter import convert
 def get_all(connection, named_location_id):
     """
     Find location data for a named location ID.
+
     :param connection: A database connection.
+    :type connection: database connection object
     :param named_location_id: The ID for the named location to search.
+    :type named_location_id: int
     :return: Geojson FeatureCollection object containing location data.
     """
     with closing(connection.cursor()) as cursor:

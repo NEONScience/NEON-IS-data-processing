@@ -9,9 +9,13 @@ def assign_active_periods(connection, named_location_id, clone_id):
     """
     Get all the active periods associated with an existing named location
     and associate those periods with the cloned named location.
-    :param connection:
-    :param named_location_id:
-    :param clone_id:
+
+    :param connection: A database connection.
+    :type connection: connection object
+    :param named_location_id: The named location ID to assign.
+    :type named_location_id: int
+    :param clone_id: The clone ID.
+    :type clone_id: int
     :return:
     """
     sql = '''
