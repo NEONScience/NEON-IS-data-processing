@@ -75,7 +75,7 @@
       <StartTime>2018-12-11T17:47:38.0000</StartTime>
       <EndTime>2018-12-11T17:48:35.0000</EndTime>
     </ActivityTimeRange>
-    <CertificateNumber>162911</CertificateNumber>
+    <CertificateNumber>162901</CertificateNumber>
   </StreamCalVal>
   <ValidTimeRange>
     <StartTime>2018-12-11T17:48:35.0000</StartTime>
@@ -108,9 +108,9 @@ File Created:12/11/2018 11:47:38 AM
 [General]
 Device = "Conductivity/Temp"
 SN = "15L102472"
-Cal Parameter = "SpCond µS/cm"
+Cal Parameter = "SpCond ÂµS/cm"
 Cal Started = TRUE
-Raw Data = "Cond RAW µS/cm"
+Raw Data = "Cond RAW ÂµS/cm"
 Last Cal Time = "11/27/2018 18:38:33"
 Cal Start Time = "12/11/2018 17:47:38"
 Additional Input 1 = "N/A"
@@ -193,4 +193,3 @@ A0 = 1.007182</CALDATA>
 		</AsReceived>
   </DATA>
   </CalVal>
-  
