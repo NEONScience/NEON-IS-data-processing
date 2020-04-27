@@ -14,7 +14,7 @@ log = structlog.get_logger()
 
 def group(calibrated_path, location_path, out_path):
     """
-    Write calibrated data and location files into output path.
+    Write calibrated data and location files into the output path.
 
     :param calibrated_path: The input path for calibrated files.
     :type calibrated_path: str
