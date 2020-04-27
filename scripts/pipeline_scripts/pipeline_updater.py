@@ -50,3 +50,4 @@ if __name__ == '__main__':
         process_files(args.spec_path, args.image, True)
     else:
         process_files(args.spec_path, args.image, False)
+

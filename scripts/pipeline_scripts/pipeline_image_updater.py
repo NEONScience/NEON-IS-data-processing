@@ -36,3 +36,4 @@ if __name__ == '__main__':
     arg_parser.add_argument('--new_image')
     args = arg_parser.parse_args()
     update_image(args.spec_path, args.old_image, args.new_image)
+
