@@ -5,20 +5,28 @@ import argparse
 
 
 def get_files(specification_path):
-    files = []
+    """
+    Get the specification files in the given directory and any subdirectories.
+
+    :param specification_path: A path to a directory or subdirectories
+     containing specification files.
+    :return:
+    """
+    specification_files = []
     for root, dirs, files in os.walk(specification_path):
         for file in files:
             if file.endswith('.json'):
                 specification_file = os.path.join(root, file)
-                files.append(specification_file)
+                specification_files.append(specification_file)
+    return specification_files
 
 
 def process_files(files, image, reprocess):
     """
     Update any pipelines using the image.
 
-    :param specification_path: The path for the specification files to search.
-    :type specification_path: str
+    :param files: The specification files.
+    :type files: list
     :param image: The image string to match.
     :type image: str
     :param reprocess: Set 'True' to reprocess files.
@@ -45,9 +53,8 @@ if __name__ == '__main__':
     arg_parser.add_argument('--image')
     arg_parser.add_argument('--reprocess', default=False)
     args = arg_parser.parse_args()
-    files = get_files(args.spec_path)
+    spec_files = get_files(args.spec_path)
     if args.reprocess == 'true':
-        process_files(args.spec_path, args.image, True)
+        process_files(spec_files, args.image, True)
     else:
-        process_files(args.spec_path, args.image, False)
-
+        process_files(spec_files, args.image, False)
