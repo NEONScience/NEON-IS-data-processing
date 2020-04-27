@@ -101,13 +101,11 @@ test_that("testing calibration conversion", {
   
   wcsList <- NEONprocIS.cal::wrap.cal.slct (DirCal = DirCal,NameVarExpc = character(0),TimeBgn = TimeBgn,
                                             TimeEnd = TimeEnd,NumDayExpiMax = NumDayExpiMax,log = NULL)
-  
   testthat::expect_true (is.list(wcsList))
   
   if (!(length(wcsList) == 0)) {
     testthat::expect_true (wcsList[[1]][4] == ID)
   }
-  
   
   ##########
   ##########  Sad path 2:::: calibrations has no sub folders and empty
