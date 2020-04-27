@@ -3,10 +3,17 @@
     "name": "exoturbidity_calibrated_location_group"
   },
   "transform": {
-    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-    "image": "quay.io/battelleecology/calibrated_location_group:23",
-    "cmd": [ "/bin/bash" ],
-    "stdin": [ "#!/bin/bash", "python3 -m calibrated_location_group.app" ],
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/calibrated_location_group:24",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "python3 -m calibrated_location_group.app"
+    ],
     "env": {
       "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out"
