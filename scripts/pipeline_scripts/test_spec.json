@@ -1,12 +1,12 @@
 {
   "pipeline": {
-    "name": "exoturbidity_calibrated_location_group"
+    "name": "sunav2_data_location_group"
   },
   "transform": {
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/calibrated_location_group:24",
+    "image": "quay.io/battelleecology/calibrated_location_group:25",
     "cmd": [
       "/bin/bash"
     ],
@@ -24,8 +24,8 @@
       {
         "pfs": {
           "name": "CALIBRATED_PATH",
-          "repo": "exoturbidity_calibration_conversion",
-          "glob": "/exoturbidity/*/*/*/(*)",
+          "repo": "sunav2_calibration_filter",
+          "glob": "/sunav2/*/*/*/(*)",
           "joinOn": "$1",
           "empty_files": true
         }
@@ -34,7 +34,7 @@
         "pfs": {
           "name": "LOCATION_PATH",
           "repo": "location_asset",
-          "glob": "/exoturbidity/(*)",
+          "glob": "/sunav2/(*)",
           "joinOn": "$1",
           "empty_files": true
         }
