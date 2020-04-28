@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import pathlib
 import json
@@ -16,9 +17,13 @@ import data_access.threshold_finder as threshold_finder
 def write_file(thresholds, out_dir, date_generated):
     """
     Write a threshold file to the given output directory.
-    :param thresholds:
-    :param out_dir:
-    :param date_generated:
+
+    :param thresholds: The threshold file.
+    :type thresholds: str
+    :param out_dir: The path for writing results.
+    :type out_dir: str
+    :param date_generated: The date generated.
+    :type date_generated: str
     :return:
     """
     pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)

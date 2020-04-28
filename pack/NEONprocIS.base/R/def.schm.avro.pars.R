@@ -74,8 +74,18 @@ def.schm.avro.pars <- function(FileSchm=NULL,
   
   # Turn field list into a data frame
   var <- base::lapply(schmList$fields,FUN=function(idx){
+    if(base::is.null(idx$name)){
+      idx$name <- NA
+    }
+    if(base::is.null(idx$type)){
+      idx$type <- NA
+    }
+    if(base::is.null(idx$dox)){
+      idx$doc <- NA
+    }
+    
     base::data.frame(name=idx$name,type=base::paste0(base::unlist(idx$type),collapse=','),doc=idx$doc,stringsAsFactors=FALSE)
-    })
+  })
   var <- base::do.call(base::rbind,var)
   
   # Output

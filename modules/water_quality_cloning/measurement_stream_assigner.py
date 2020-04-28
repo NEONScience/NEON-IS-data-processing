@@ -1,12 +1,16 @@
+#!/usr/bin/env python3
 from contextlib import closing
 
 
 def get_streams(connection, named_location_id):
     """
     Return the measurement streams associated with a named location ID.
+
     :param connection: A database connection.
+    :type connection: connection object.
     :param named_location_id: The named location ID for finding rows.
-    :return: A List of streams.
+    :type named_location_id: int
+    :return: A list of streams.
     """
     sql = '''
         select 
@@ -42,6 +46,17 @@ def get_streams(connection, named_location_id):
 
 
 def reassign_stream(connection, measurement_stream_id, cloned_name_location_id):
+    """
+    Reassign the measurement streams to the cloned named location ID.
+
+    :param connection: A database connection.
+    :type connection: connection object
+    :param measurement_stream_id: The measurement stream ID.
+    :type measurement_stream_id: int
+    :param cloned_name_location_id: The cloned named location ID.
+    :type cloned_name_location_id: int
+    :return:
+    """
     sql = '''
         update meas_strm set nam_locn_id = :named_location_id where meas_strm_id = :measurement_stream_id
     '''

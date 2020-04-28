@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from contextlib import closing
 
 import lib.date_formatter as date_formatter
@@ -6,7 +7,10 @@ import lib.date_formatter as date_formatter
 def find_thresholds(connection):
     """
     Find all thresholds in the database.
-    :return: Dictionary of threshold data.
+
+    :param connection: A database connection.
+    :type connection: connection object
+    :return: dict of threshold data.
     """
     query = '''
             select
@@ -67,10 +71,13 @@ def find_thresholds(connection):
 
 def find_context(connection, condition_uuid):
     """
-    Find all context entries for a threshold
+    Find all context entries for a threshold.
+
     :param connection: Database connection.
+    :type connection: connection object
     :param condition_uuid: The condition UUID.
-    :return: List of context codes.
+    :type condition_uuid: str
+    :return: list of context codes.
     """
     with closing(connection.cursor()) as cursor:
         query = 'select context_code from condition_context where condition_uuid = :condition_uuid'

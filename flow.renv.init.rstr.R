@@ -80,6 +80,7 @@ if(!("renv" %in% rownames(installed.packages()))) install.packages("renv")
 # Change the working directory to the module/package directory
 # MUST DO THIS - if not the ignored packages are not actually ignored
 base::setwd(dirWork)
+base::suppressWarnings(base::unlink(base::paste0(dirWork,'/renv.lock'))) # For some reason it works best to do a complete rewrite
 
 # Initialize dependency management
 renv::settings$ignored.packages(PackIgnr)

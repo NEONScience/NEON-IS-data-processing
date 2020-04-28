@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import pathlib
 
@@ -16,9 +17,13 @@ def process(source_path, group, out_path):
     """
     Link source files into the output directory with the related location group in the path.
     There must be only one location file under the source path.
+
     :param source_path: The input path.
+    :type source_path: str
     :param group: The group to match in the location files.
+    :type group: str
     :param out_path: The output path.
+    :type out_path: str
     """
     paths = []
     group_names = []
@@ -61,9 +66,13 @@ def link(paths, group_names, out_path):
     """
     Loop through the files and link into the output directory including the location
     context group name in the path.
+
     :param paths: File paths to link.
+    :type paths: list
     :param group_names: A List of associated location context group names.
+    :type group_names: list
     :param out_path: The output directory for writing.
+    :type out_path: str
     :return:
     """
     for path in paths:
@@ -91,9 +100,7 @@ def link(paths, group_names, out_path):
 
 
 def main():
-    """
-    Add the related location group name stored in the location file to the output path.
-    """
+    """Add the related location group name stored in the location file to the output path."""
     env = environs.Env()
     source_path = env('SOURCE_PATH')
     group = env('GROUP')

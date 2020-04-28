@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 
 import environs
@@ -11,6 +12,14 @@ import lib.target_path as target_path
 def filter_directory(in_path, filter_dirs, out_path):
     """
     Link the target directory into the output directory.
+
+    :param in_path: The input path.
+    :type in_path: str
+    :param filter_dirs: The directories to filter.
+    :type filter_dirs: str
+    :param out_path: The output path for writing results.
+    :type out_path: str
+    :return:
     """
     parsed_dirs = parse_dirs(filter_dirs)
     for r, d, f in os.walk(in_path):
@@ -23,8 +32,10 @@ def filter_directory(in_path, filter_dirs, out_path):
 
 def parse_dirs(filter_dirs):
     """
-    Place filter directories into a List.
-    :param filter_dirs:
+    Place filter directories into a list.
+
+    :param filter_dirs: The directories to filter.
+    :type filter_dirs: str
     :return:
     """
     dirs = []

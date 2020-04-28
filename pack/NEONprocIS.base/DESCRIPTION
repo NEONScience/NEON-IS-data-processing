@@ -1,6 +1,6 @@
 Package: NEONprocIS.base
 Title:  Basic functions for NEON IS data processing
-Version: 0.0.16
+Version: 0.0.17
 Authors@R: 
     person(given = "Cove",
            family = "Sturtevant",
@@ -16,7 +16,8 @@ Imports:
     lubridate (>= 1.7.4),
     lgr (>= 0.2.1),
     geojsonsf (>= 1.3.0),
-    testthat (>= 2.3.0)
+    testthat (>= 2.3.0),
+    arrow (>= 0.16.0)
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Encoding: UTF-8
 LazyData: true

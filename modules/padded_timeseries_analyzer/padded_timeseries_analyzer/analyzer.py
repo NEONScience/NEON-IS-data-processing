@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import sys
 import pathlib
@@ -14,8 +15,11 @@ log = get_logger()
 def analyze(data_dir, out_dir):
     """
     Analyze time series data to calculate additional time padding required for processing with thresholds.
-    :param data_dir:
-    :param out_dir:
+
+    :param data_dir: The data directory.
+    :type data_dir: str
+    :param out_dir: The output directory.
+    :type out_dir: str
     :return:
     """
     out_dir_parts = list(pathlib.Path(out_dir).parts)
@@ -66,8 +70,11 @@ def analyze(data_dir, out_dir):
 def write_thresholds(source_path, destination_path):
     """
     Write thresholds if they exist in the source repository.
-    :param source_path:
-    :param destination_path:
+
+    :param source_path: The source path for the threshold file.
+    :type source_path: str
+    :param destination_path: The destination path to write results.
+    :type destination_path: str
     :return:
     """
     threshold_dir = 'threshold'
@@ -85,8 +92,11 @@ def write_ancillary_data(out_dir, root):
     """
     Write any additional files present in the input directory
     beyond data and thresholds into the output directory.
-    :param out_dir:
-    :param root:
+
+    :param out_dir: The output directory for writing results.
+    :type out_dir: str
+    :param root: The threshold root directory.
+    :type root: str
     :return:
     """
     parent_dir = pathlib.Path(root).parent

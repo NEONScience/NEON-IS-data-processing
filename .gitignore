@@ -1,6 +1,7 @@
+.vscode
 .DS_Store
-__pycache__
 *.pyc
+env
 secrets
 .idea
 .Rproj.user
@@ -10,4 +11,14 @@ secrets
 *.Rproj*
 **/renv
 .Rprofile
-
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+.venv
+pip-selfcheck.json
+__pycache__

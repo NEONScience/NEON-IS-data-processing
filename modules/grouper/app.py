@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from structlog import get_logger
 import environs
 
@@ -12,8 +13,11 @@ log = get_logger()
 def group(path, out_path):
     """
     Link files into the output directory.
+
     :param path: File or directory paths.
-    :param out_path: The output path.
+    :type path: str
+    :param out_path: The output path for writing results.
+    :type out_path: str
     """
     for file_path in file_crawler.crawl(path):
         target = target_path.get_path(file_path, out_path)
@@ -22,7 +26,7 @@ def group(path, out_path):
 
 
 def main():
-    """Group input files without modifying file paths."""
+    """Group input data files without modifying the file paths."""
     env = environs.Env()
     data_path = env('DATA_PATH')
     out_path = env('OUT_PATH')

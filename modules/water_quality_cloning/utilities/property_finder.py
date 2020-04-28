@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from contextlib import closing
 
 
@@ -5,8 +6,10 @@ def find_properties_for_cloning(connection):
     """
     NOTE: Properties are all PRT related and do not need to be cloned.
     Find rows that may need cloning (if they apply to WQ) in a table referencing nam_locn
-    (this example looks at the property table)
+    (this example looks at the property table).
+
     :param connection: A database connection.
+    :type connection: connection object
     :return:
     """
     sql = '''

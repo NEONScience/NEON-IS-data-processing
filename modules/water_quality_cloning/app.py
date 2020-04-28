@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import environs
 import cx_Oracle
 from contextlib import closing
@@ -14,6 +15,7 @@ def main():
     Create new named locations by cloning the Water Quality-related aquatic PRT named locations
     and assign the same active periods, the same named location tree parent, the same geo-location, and assign those
     assets (sensors) currently redundantly assigned to the PRT named location to the cloned named locations.
+
     :return:
     """
     clone_count = 0

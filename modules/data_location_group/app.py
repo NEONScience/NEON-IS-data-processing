@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pathlib
 import os
 
@@ -13,7 +14,17 @@ log = structlog.get_logger()
 
 
 def group(data_path, location_path, out_path):
-    """Write data and location files into output path."""
+    """
+    Write data and location files into the output path.
+
+    :param data_path: The path to the data files.
+    :type data_path: str
+    :param location_path: The path to the location files.
+    :type location_path: str
+    :param out_path: The output path to write grouped files.
+    :type out_path: str
+    :return:
+    """
     for file_path in file_crawler.crawl(data_path):
         parts = file_path.parts
         source_type = parts[3]
@@ -35,6 +46,15 @@ def group(data_path, location_path, out_path):
 
 
 def link_location(location_path, target_root):
+    """
+    Link the location file.
+
+    :param location_path: The path to the file.
+    :type location_path str
+    :param target_root: The target directory.
+    :type target_root: str
+    :return:
+    """
     for file in file_crawler.crawl(location_path):
         location_filename = pathlib.Path(file).name
         location_target_path = os.path.join(target_root, 'location', location_filename)

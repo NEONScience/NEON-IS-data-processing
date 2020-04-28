@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import sys
 import pathlib
@@ -16,6 +17,24 @@ log = get_logger()
 class Padder(object):
 
     def __init__(self, data_path, out_path, year_index, month_index, day_index, loc_index, subdir_index):
+        """
+        Constructor.
+
+        :param data_path: The data path.
+        :type data_path: str
+        :param out_path: The output path for writing results.
+        :type out_path: str
+        :param year_index: The year index in the file path.
+        :type year_index: int
+        :param month_index: The month index in the file path.
+        :type month_index: int
+        :param day_index: The day index in the file path.
+        :type day_index: int
+        :param loc_index: The location index in the file path.
+        :type loc_index: int
+        :param subdir_index: The sub directory index in the file path.
+        :type subdir_index: int
+        """
         self.data_path = data_path
         self.out_path = out_path
         # date and location indices in file path
@@ -28,6 +47,11 @@ class Padder(object):
         self.out_dir_parts = list(pathlib.Path(out_path).parts)
 
     def pad(self):
+        """
+        Pad the data to the calculated window size.
+
+        :return:
+        """
         try:
             max_window_size_by_date_and_location = {}
             min_data_rate_by_date_and_location = {}

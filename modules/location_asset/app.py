@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import pathlib
 
@@ -18,9 +19,13 @@ log = structlog.get_logger()
 def write_file(out_path, asset, location_history):
     """
     Write the input asset and location history into a geojson file in the output directory.
+
     :param out_path: Directory to write the file.
-    :param asset: Dictionary containing asset type and ID.
-    :param location_history: Dictionary containing the asset location history.
+    :type out_path: str
+    :param asset: Asset types by ID.
+    :type asset: dict
+    :param location_history: The asset location history.
+    :type location_history: dict
     """
     pathlib.Path(out_path).mkdir(parents=True, exist_ok=True)
 
@@ -38,7 +43,15 @@ def write_file(out_path, asset, location_history):
 
 
 def load(db_url, out_path):
-    """Loop over assets and write the asset and location history to a file."""
+    """
+    Loop over assets and write the asset and location history to a file.
+
+    :param db_url: The database connection URL.
+    :type db_url: str
+    :param out_path: The output path for writing results.
+    :type out_path: str
+    :return:
+    """
     with closing(cx_Oracle.connect(db_url)) as connection:
         assets = asset_finder.find_all(connection)
         for asset in assets:

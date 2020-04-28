@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pathlib
 import os
 
@@ -12,7 +13,17 @@ log = structlog.get_logger()
 
 
 def group(calibrated_path, location_path, out_path):
-    """Write calibrated data and location files into output path."""
+    """
+    Write calibrated data and location files into the output path.
+
+    :param calibrated_path: The input path for calibrated files.
+    :type calibrated_path: str
+    :param location_path: The input path for location files.
+    :type location_path: str
+    :param out_path: The output path for writing grouped files.
+    :type out_path: str
+    :return:
+    """
     i = 0
     for file_path in file_crawler.crawl(calibrated_path):
         parts = file_path.parts
@@ -22,19 +33,28 @@ def group(calibrated_path, location_path, out_path):
         day = parts[6]
         source_id = parts[7]
         data_type = parts[8]
-        log.debug(f'source type: {source_type} source_id: {source_id} data type: {data_type}')
         log.debug(f'year: {year}  month: {month}  day: {day}')
+        log.debug(f'source type: {source_type} source_id: {source_id} data type: {data_type}')
         target_root = os.path.join(out_path, source_type, year, month, day, source_id)
         if i == 0:  # Only link location once.
             link_location(location_path, target_root)
         # Grab all directories and files under the common path (after the data type).
-        target = os.path.join(target_root, data_type, *parts[8+1: len(parts)])
-        print(f'target: {target}')
+        target = os.path.join(target_root, data_type, *parts[9:])
+        log.debug(f'target: {target}')
         file_linker.link(file_path, target)
         i += 1
 
 
 def link_location(location_path, target_root):
+    """
+    Link the location file into the target root.
+
+    :param location_path: The location file path.
+    :type location_path: str
+    :param target_root: The target directory to write the location file.
+    :type target_root: str
+    :return:
+    """
     for file in file_crawler.crawl(location_path):
         location_filename = pathlib.Path(file).name
         target = os.path.join(target_root, 'location', location_filename)
@@ -48,7 +68,8 @@ def main():
     out_path = env('OUT_PATH')
     log_level = env('LOG_LEVEL')
     log_config.configure(log_level)
-    log.debug(f'calibrated_dir: {calibrated_path} location_dir: {location_path} out_dir: {out_path}')
+    log.debug(f'calibrated_dir: {calibrated_path} '
+              f'location_dir: {location_path} out_dir: {out_path}')
     group(calibrated_path, location_path, out_path)
 
 

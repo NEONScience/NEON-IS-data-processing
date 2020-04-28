@@ -11,9 +11,9 @@
 
 #' @param nameFile Character vector of any length, consisting of the full or relative paths to all
 #' the data files to evaluate together for consistent timestamps and any NA-containing records. The
-#' files must be avro files containing tabular data. These files will be read by 
-#' NEONprocIS.base::def.read.avro.deve, which will return a data frame. One column of the data frame
-#' must be readout_time.
+#' files must be avro or parquet files containing tabular data. These files will be read by 
+#' NEONprocIS.base::def.read.avro.deve or NEONprocIS.base::def.read.parq, which will return a data frame. 
+#' One column of the data frame must be readout_time.
 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
@@ -50,14 +50,31 @@ def.rcd.miss.na <- function(fileData,log = NULL) {
   timeBad <- base::data.frame(readout_time=timeDmmy,stringsAsFactors = FALSE) # Initialize 
   for(idxFile in fileData){
     
-    # Open the data file & error check
-    data  <-
-      base::try(NEONprocIS.base::def.read.avro.deve(
-        NameFile = idxFile,
-        NameLib = '/ravro.so',
-        log = log
-      ),
-      silent = FALSE)
+    # What format?
+    fmt <- utils::tail(base::strsplit(idxFile,'[.]')[[1]],1)
+    
+    # Load in file
+    if (fmt == 'avro') {
+      data  <-
+        base::try(NEONprocIS.base::def.read.avro.deve(NameFile = idxFile,
+                                                      NameLib = '/ravro.so',
+                                                      log = log),
+                  silent = FALSE)
+    } else if (fmt == 'parquet') {
+      data  <-
+        base::try(NEONprocIS.base::def.read.parq(NameFile = idxFile, log = log),
+                  silent = FALSE)
+    } else {
+      log$error(
+        base::paste0(
+          'Cannot determine file type for ',
+          idxFile,
+          '. Extension must be .avro or .parquet.'
+        )
+      )
+      stop()
+    }
+    
     if (base::class(data) == 'try-error') {
       # Generate error and stop execution
       log$error(base::paste0('File ', idxFile, ' is unreadable.'))

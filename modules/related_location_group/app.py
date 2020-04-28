@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import pathlib
 
@@ -15,8 +16,11 @@ log = get_logger()
 def group_related(path, out_path):
     """
     Link related data and location files into the output directory.
+
     :param path: Directory or file path.
+    :type path: str
     :param out_path: The output path for related data.
+    :type out_path: str
     """
     for file_path in file_crawler.crawl(path):
         trimmed_path = target_path.trim_path(file_path)
@@ -36,9 +40,7 @@ def group_related(path, out_path):
 
 
 def main():
-    """
-    Group data by related location group.
-    """
+    """Group data by related location group."""
     env = environs.Env()
     data_path = env('DATA_PATH')
     out_path = env('OUT_PATH')

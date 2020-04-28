@@ -76,7 +76,7 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}}, 
 #' which uses system environment variables if available.
 #' 
-#' @return Quality metrics for each aggregation interval output in AVRO format in DirOut, where the terminal 
+#' @return Quality metrics for each aggregation interval output in Parquet format in DirOut, where the terminal 
 #' directory of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input 
 #' path. Directory 'quality_metrics' will automatically populated in the output directory, where the files 
 #' for each aggregation interval will be placed. Any other folders specified in argument DirSubCopy will be 
@@ -91,8 +91,8 @@
 #' will contain the start and end times for the aggregation interval, labeled "startDateTime" and "endDateTime", 
 #' respectively. The quality metrics are calculated for readout times in the interval [startDateTime endDateTime), with 
 #' an open brack on the right (i.e. inclusive of the startDateTime but exclusive of the endDateTime). An example column
-#' ordering: Say there are two input files named outflagsA.avro and outflagsB.avro, where outflagsA.avro contains flag 
-#' tempValidCalQF and outflagsB.avro contains flags tempRangeQF, and the grouping input argument is 
+#' ordering: Say there are two input files named outflagsA.parquet and outflagsB.parquet, where outflagsA.parquet contains flag 
+#' tempValidCalQF and outflagsB.parquet contains flags tempRangeQF, and the grouping input argument is 
 #' "GrpQf1=temp:tempRangeQf|tempValidCalQF". The ordering of the output columns will be startDateTime, endDateTime, 
 #' tempValidCalQFPassQM, tempValidCalQFFailQM, tempValidCalQFNAQM, tempRangeQFPassQM, tempRangeQFFailQM, tempRangeQFNAQM,  
 #' tempAlphaQM, tempBetaQM, and tempFinalQF, in that order. The names of the output columns may be replaced by providing an 
@@ -116,6 +116,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-10-16)
 #     original creation 
+#   Cove Sturtevant (2020-04-23)
+#     switch read/write data from avro to parquet
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -254,9 +256,9 @@ for(idxDirIn in DirIn){
   # Combine flags files
   for(idxFileQf in fileQf){
     
-    # Load in flags file in AVRO format into data frame 'qf'.  
+    # Load in flags file in parquet format into data frame 'qf'.  
     fileIn <- base::paste0(idxDirQf,'/',idxFileQf)
-    idxQf  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileIn,NameLib='/ravro.so'),silent=FALSE)
+    idxQf  <- base::try(NEONprocIS.base::def.read.parq(NameFile=fileIn,log=log),silent=FALSE)
     if(base::class(idxQf) == 'try-error'){
       log$error(base::paste0('File ', fileIn,' is unreadable.')) 
       stop()
@@ -366,7 +368,7 @@ for(idxDirIn in DirIn){
     fileQmOut <- base::paste(fileQmOutSplt,collapse='_')
     NameFileOutQm <- base::paste0(idxDirOutQm,'/',fileQmOut)
 
-    rptWrte <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=rpt,NameFile=NameFileOutQm,NameFileSchm=NULL,Schm=SchmQm,NameLib='/ravro.so'),silent=TRUE)
+    rptWrte <- base::try(NEONprocIS.base::def.wrte.parq(data=rpt,NameFile=NameFileOutQm,NameFileSchm=NULL,Schm=SchmQm),silent=TRUE)
     if(base::class(rptWrte) == 'try-error'){
       log$error(base::paste0('Cannot write quality metrics file ', NameFileOutQm,'. ',attr(rptWrte,"condition"))) 
       stop()

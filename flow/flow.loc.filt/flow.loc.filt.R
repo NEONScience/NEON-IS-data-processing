@@ -8,9 +8,18 @@
 #' the location information relevant to the data day as indicated in the file path, and resaves the 
 #' filtered location file. 
 #' 
-#' This script is run at the command line with 2 or 3 arguments. Each argument must be a string in the 
-#' format "Para=value", where "Para" is the intended parameter name and "value" is the value of the 
-#' parameter. Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the parameter 
+#' General code workflow:
+#'    Parse input parameters
+#'    Determine datums to process (set of files/folders to process as a single unit)
+#'    For each datum:
+#'      Create output directories and copy over (by symbolic link) unmodified components
+#'      Open each location file and delete location information that does not apply to the data day
+#'         indicated in the file path
+#'      Write out the filtered location file
+#'
+#' This script is run at the command line with the following arguments. Each argument must be a string 
+#' in the format "Para=value", where "Para" is the intended parameter name and "value" is the value of 
+#' the parameter. Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the parameter 
 #' will be assigned from the system environment variable matching the value string.
 #'
 #' The arguments are: 

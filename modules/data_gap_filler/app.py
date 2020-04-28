@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 from datetime import datetime
 
@@ -14,6 +15,11 @@ log = structlog.get_logger()
 
 
 def get_date_constraints():
+    """
+    Get the start and end dates from the environment.
+
+    :return: dict of the start and end dates.
+    """
     date_format = '%Y-%m-%d'
     try:
         start_date = os.environ['START_DATE']
@@ -29,6 +35,13 @@ def get_date_constraints():
 
 
 def get_empty_file_paths(empty_files_path):
+    """
+    Get the paths to the collection of empty files.
+
+    :param empty_files_path: The path to the directory containing empty files.
+    :type empty_files_path: str
+    :return: dict of file paths.
+    """
     empty_data_path = None
     empty_flags_path = None
     empty_uncertainty_data_path = None

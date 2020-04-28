@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -47,7 +48,6 @@ class AppTest(TestCase):
         os.environ['LOCATION_PATH'] = self.location_path
         os.environ['OUT_PATH'] = self.out_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
-
         app.main()
         self.check_output()
 
@@ -58,7 +58,6 @@ class AppTest(TestCase):
         locations_path = os.path.join(root_path, 'location', 'locations.json')
         uncertainty_path = os.path.join(root_path, 'uncertainty', 'uncertainty.json')
         test_extra_dir_path = os.path.join(root_path, 'test', 'test_dir', 'test.json')
-
         self.assertTrue(os.path.lexists(data_path))
         self.assertTrue(os.path.lexists(flags_path))
         self.assertTrue(os.path.lexists(locations_path))

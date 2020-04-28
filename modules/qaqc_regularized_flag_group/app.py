@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 
 import environs
@@ -13,6 +14,14 @@ log = get_logger()
 def group(regularized_dir, quality_dir, out_dir):
     """
     Group matching regularized and quality files in the output directory.
+
+    :param regularized_dir: The path containing regularized files.
+    :type regularized_dir: str
+    :param quality_dir: The path containing quality files.
+    :type quality_dir: str
+    :param out_dir: The path for writing results.
+    :type out_dir: str
+    :return:
     """
     regularized_files = load_files(regularized_dir, out_dir)
     quality_files = load_files(quality_dir, out_dir)
@@ -32,9 +41,12 @@ def group(regularized_dir, quality_dir, out_dir):
 def load_files(directory, out_dir):
     """
     Read all files in a directory and load them into a dictionary of source file path and output paths.
+
     :param directory: A directory.
+    :type directory: str
     :param out_dir: The output directory.
-    :return: Dictionary containing source file paths and output paths.
+    :type out_dir: str
+    :return: dict containing source file paths and output paths.
     """
     files = {}
     for r, d, f in os.walk(directory):

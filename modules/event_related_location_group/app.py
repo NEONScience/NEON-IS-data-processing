@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pathlib
 import os
 
@@ -13,7 +14,15 @@ log = structlog.get_logger()
 
 
 def group_data(data_path, out_path):
-    """Write data and event files into output path."""
+    """
+    Write data and event files into output path.
+
+    :param data_path: The path to the data files.
+    :type data_path: str
+    :param out_path: The output path for writing results.
+    :type out_path: str
+    :return:
+    """
     target_root = None
     for file_path in file_crawler.crawl(data_path):
         trimmed_path = target_path.trim_path(file_path)
@@ -33,6 +42,15 @@ def group_data(data_path, out_path):
 
 
 def group_events(event_path, target_root):
+    """
+    Group the event files into the target directory.
+
+    :param event_path: The path to the event files.
+    :type event_path: str
+    :param target_root: The root output path.
+    :type target_root: str
+    :return:
+    """
     reference_group = pathlib.Path(target_root).name
     for file_path in file_crawler.crawl(event_path):
         trimmed_path = target_path.trim_path(file_path)

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import datetime
 
 from contextlib import closing
@@ -8,8 +9,11 @@ import water_quality_cloning.measurement_stream_assigner as measurement_stream_a
 def get_assets_at_location(connection, named_location_id):
     """
     Get all the assets currently assigned to a PRT location.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param named_location_id: A named location ID.
+    :type named_location_id: int
     :return: A list of assets currently assigned to the named location at the given ID.
     """
     sql = '''
@@ -104,9 +108,13 @@ def get_assets_at_location(connection, named_location_id):
 def assign_assets(connection, named_location_id, cloned_locations):
     """
     Reassign assets from the PRT named location to the cloned named location based on the asset (sensor) type.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param named_location_id: A named location ID.
-    :param cloned_locations: A List of new named locations for assigning assets.
+    :type named_location_id: int
+    :param cloned_locations: The new named locations for assigning assets.
+    :type cloned_locations: list
     :return:
     """
     print(f'assigning assets.')
@@ -145,7 +153,9 @@ def assign_assets(connection, named_location_id, cloned_locations):
 def get_clone_location_index(sensor_type):
     """
     Ensure all sensors of the same type are assigned to the same cloned named location.
+
     :param sensor_type: A type of sensor.
+    :type sensor_type: str
     :return: The index number for the sensor type.
     """
     switcher = {
@@ -164,7 +174,9 @@ def get_clone_location_index(sensor_type):
 def get_field_names(sensor_type):
     """
     Get all the schema field names for a sensor type.
+
     :param sensor_type: A type of sensor.
+    :type sensor_type: str
     :return: The field names for the sensor type.
     """
     switcher = {
@@ -185,10 +197,15 @@ def assign_measurement_streams(connection, named_location_id, cloned_location_id
     Reassign a measurement stream from the named_location_id to the cloned_location_id if the
     measurement stream schema field name (associated by the term name) matches the cloned
     named location sensor type.
+
     :param connection: A database connection.
-    :param named_location_id:
-    :param cloned_location_id:
-    :param sensor_type:
+    :type connection: connection object
+    :param named_location_id: The named location ID.
+    :type named_location_id: int
+    :param cloned_location_id: The cloned location ID.
+    :type cloned_location_id: int
+    :param sensor_type: The sensor type.
+    :type sensor_type: str
     :return:
     """
     print(f'assigning measurement streams')

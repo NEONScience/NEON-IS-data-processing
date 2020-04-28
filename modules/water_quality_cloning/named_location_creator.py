@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python3
 from contextlib import closing
 
 import data_access.named_location_finder as named_location_finder
@@ -7,7 +7,9 @@ import data_access.named_location_finder as named_location_finder
 def get_prt_wq_named_locations(connection):
     """
     Find Water Quality named location IDs used by non-Water Quality sensors.
+
     :param connection: A database connection.
+    :type connection: connection object
     :return: A list of named location IDs.
     """
     sql = '''
@@ -36,8 +38,11 @@ def get_prt_wq_named_locations(connection):
 def get_named_location(connection, named_location_id):
     """
     Get an existing named location from the database.
+
     :param connection: A database connection.
+    :type connection: connection object
     :param named_location_id: The named location ID.
+    :type named_location_id: int
     :return: The named location.
     """
     sql = '''
@@ -66,8 +71,11 @@ def get_named_location(connection, named_location_id):
 def get_location(connection, named_location):
     """
     From the database get the geo-location ID assigned to a named location.
+
     :param connection: A database connection.
-    :param named_location:
+    :type connection: connection object
+    :param named_location: The named location object
+    :type named_location: dict
     :return: The location ID.
     """
     sql = '''select locn_id from locn_nam_locn where nam_locn_id = :id'''
@@ -83,8 +91,11 @@ def get_location(connection, named_location):
 def save_clone(connection, cloned_named_location):
     """
     Insert the new named location into the database.
-    :param connection:
-    :param cloned_named_location:
+
+    :param connection: A database connection.
+    :type connection: connection object
+    :param cloned_named_location: The cloned named location.
+    :type cloned_named_location: dict
     :return: The ID of the new named location.
     """
     sql = '''
@@ -109,8 +120,10 @@ def save_clone(connection, cloned_named_location):
 
 def get_clone_name(index):
     """
-    Create a name for the new named location using a consistent format of 'SENOSOR' + an index.
+    Create a name for the new named location using a consistent format of 'SENSOR' + an index.
+
     :param index: The unique index for the new named location.
+    :type index: int
     :return: The name.
     """
     new_name = 'SENSOR'
@@ -128,8 +141,11 @@ def get_clone_name(index):
 def create_clone(named_location, index):
     """
     Create a new named location based on the input location.
-    :param named_location:
+
+    :param named_location: The named location to clone.
+    :type named_location: dict
     :param index: The unique index for the new named location.
+    :type index: int
     :return: The new named location.
     """
     key = named_location.get('key')

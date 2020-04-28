@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import pathlib
 
@@ -13,9 +14,13 @@ log = structlog.get_logger()
 def group(data_path, calibration_path, out_path):
     """
     Group data and calibration files into the output path.
+
     :param data_path: The data path.
+    :type data_path: str
     :param calibration_path: The calibration path.
+    :type calibration_path: str
     :param out_path: The path for writing output.
+    :type out_path: str
     :return:
     """
     for file_path in file_crawler.crawl(data_path):
@@ -37,9 +42,13 @@ def group(data_path, calibration_path, out_path):
 def link_calibrations(calibration_path, common_path, source_id):
     """
     Find calibrations for the source ID. If no files are found create an empty directory.
+
     :param calibration_path: The calibration path.
+    :type calibration_path: str
     :param common_path: The common output directory path for file grouping.
+    :type common_path: str
     :param source_id: The source ID of the data file to match on.
+    :type source_id: str
     :return:
     """
     for file_path in file_crawler.crawl(calibration_path):
@@ -66,9 +75,13 @@ def link_calibrations(calibration_path, common_path, source_id):
 def link_data(common_path, file_path, filename):
     """
     Link the data file into the common directory.
+
     :param common_path: Common output path for writing files.
+    :type common_path: str
     :param file_path: A data file path.
+    :type file_path: str
     :param filename: A data file name.
+    :type filename: str
     :return:
     """
     data_path = pathlib.Path(common_path, 'data')
