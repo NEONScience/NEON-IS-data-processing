@@ -11,15 +11,10 @@
   "Packages": {
     "renv": {
       "Package": "renv",
-      "Version": "0.9.2-20",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "renv",
-      "RemoteUsername": "rstudio",
-      "RemoteRef": "0.9.2-20",
-      "RemoteSha": "21fa2183fe0c617e99074b6deab4b1505a7412cf",
-      "Hash": "26979f0007efcd66d5f7888cd8bae178"
+      "Version": "0.9.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c1a367437d8a8a44bec4b9d4974cb20c"
     }
   }
 }

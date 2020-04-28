@@ -52,7 +52,7 @@
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
 #' of DirIn.
 #'
-#' 3. "FileSchmQf=value" (optional), where value is the full path to schema for the single quality flag
+#' 3. "FileSchmQf=value" (optional), where value is the full path to avro schema for the single quality flag
 #' output by this workflow. If not input, the schema will be created automatically.The default column naming
 #' (and order) is "readout_time", "qfCmpl".
 #'
@@ -98,6 +98,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-03-02)
 #     original creation
+#   Cove Sturtevant (2020-04-28)
+#     switch read/write data from avro to parquet
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -208,12 +210,11 @@ for (idxDirIn in DirIn) {
       NEONprocIS.base::def.file.name.out(nameFileIn = fileData, sufx = '_flagsSensNa')
     NameFileOutQf <- base::paste0(dirOutQf, '/', NameFileOutQf)
     rptQfCal <-
-      NEONprocIS.base::def.wrte.avro.deve(
+      NEONprocIS.base::def.wrte.parq(
         data = qf,
         NameFile = NameFileOutQf,
         NameFileSchm = NULL,
-        Schm = SchmQf,
-        NameLib = '/ravro.so'
+        Schm = SchmQf
       )
     if (rptQfCal == 0) {
       log$info(base::paste0('Sensor NA flags written successfully in ', NameFileOutQf))
@@ -268,9 +269,8 @@ for (idxDirIn in DirIn) {
           nameFileMod <-
             base::paste0(idxDirLocName, '/', idxDirMod, '/', idxFileMod)
           data  <-
-            base::try(NEONprocIS.base::def.read.avro.deve(NameFile = nameFileMod,
-                                                          NameLib = '/ravro.so',
-                                                          log = log),
+            base::try(NEONprocIS.base::def.read.parq(NameFile = nameFileMod,
+                                                     log = log),
                       silent = FALSE)
           
           if (base::class(data) == 'try-error') {
@@ -311,12 +311,11 @@ for (idxDirIn in DirIn) {
           # Write it out
           fileOut <- base::paste0(idxDirOut, '/', fileMod)
           rptWrte <-
-            base::try(NEONprocIS.base::def.wrte.avro.deve(
+            base::try(NEONprocIS.base::def.wrte.parq(
               data = dataMod,
               NameFile = fileOut,
               NameFileSchm = NULL,
-              Schm = base::attr(fileMod, 'schema'),
-              NameLib = '/ravro.so'
+              Schm = base::attr(fileMod, 'schema')
             ),
             silent = TRUE)
           if (base::class(rptWrte) == 'try-error') {

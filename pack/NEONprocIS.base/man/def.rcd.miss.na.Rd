@@ -12,9 +12,9 @@ output. Defaults to NULL, in which the logger will be created and used within th
 
 \item{nameFile}{Character vector of any length, consisting of the full or relative paths to all
 the data files to evaluate together for consistent timestamps and any NA-containing records. The
-files must be avro files containing tabular data. These files will be read by 
-NEONprocIS.base::def.read.avro.deve, which will return a data frame. One column of the data frame
-must be readout_time.}
+files must be avro or parquet files containing tabular data. These files will be read by 
+NEONprocIS.base::def.read.avro.deve or NEONprocIS.base::def.read.parq, which will return a data frame. 
+One column of the data frame must be readout_time.}
 }
 \value{
 A list of \code{timeAll} and \code{timeBad}, each data frames with one column:
