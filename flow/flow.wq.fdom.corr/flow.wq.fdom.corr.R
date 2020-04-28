@@ -59,6 +59,8 @@
 # changelog and author contributions / copyrights
 #   Kaelin Cawley (2020-01-23)
 #     original creation
+#   Cove Sturtevant (2020-04-28)
+#     added support for parquet format
 ##############################################################################################
 
 # Start logging
@@ -270,8 +272,8 @@ for (idxDirIn in DirIn){
   exoconductivityDataPath <- base::Sys.glob(exoconductivityDataGlob)
   
   if(base::length(exoconductivityDataPath)==1){
-    exoconductivityData <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile = base::paste0(exoconductivityDataPath),NameLib = ravroLib,log = log), silent = FALSE)
     log$debug(base::paste0("One file found, reading in: ",exoconductivityDataPath))
+    exoconductivityData <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile = base::paste0(exoconductivityDataPath),NameLib = ravroLib,log = log), silent = FALSE)
   }else{
     log$debug(base::paste0("Zero or more than one file found for: ",exoconductivityDataGlob))
     applyTempCorr <- FALSE
@@ -281,7 +283,7 @@ for (idxDirIn in DirIn){
   if(applyTempCorr && base::class(exoconductivityData) == 'try-error') {
     # Generate error and stop execution
     #log$error(base::paste0('File ', idxDirData, '/', fdomData, ' is unreadable.'))
-    log$error(base::paste0('File: ', exoconductivityData, ' is unreadable, temp corrections will not be applied.'))
+    log$warn(base::paste0('File: ', exoconductivityData, ' is unreadable, temp corrections will not be applied.'))
     applyTempCorr <- FALSE
     fdomData$fDOMTempQF <- 1
   }else if(applyTempCorr){
@@ -354,12 +356,13 @@ for (idxDirIn in DirIn){
     #Determine fdom absorbance correction factor
     absData <- try(NEONprocIS.wq::def.wq.abs.corr(sunav2Filenames = sunav2DataPath, 
                                                   sunav2CalFilenames = sunav2CalDataPath, 
-                                                  log = log),silent = TRUE)
+                                                  log = log),silent = FALSE)
     
     # Handle the error when absData is a try-error
     if (base::class(absData) == 'try-error') {
-      log$debug(base::paste0('File: ', fdomDataGlob, ' is unreadable.'))
+      log$debug(base::paste0('Could not perform absorptance correction.'))
       fdomData$fDOMAbsQF <- 1
+      fdomData$spectrumCount <- 0
     }else{
       # Merge in abs data to the fdomData dataframe and calculate correction factors and flags
       for(idxAbsData in absData$readout_time){
@@ -435,11 +438,16 @@ for (idxDirIn in DirIn){
   colInt <- "spectrumCount"
   dataOut[colInt] <- base::lapply(dataOut[colInt],base::as.integer) # Turn spectrumCount to integer
   
-  NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
+  rptDataOut <- try(NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
                                       NameFile = base::paste0(idxDirOutData,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_basicStats_100.avro"),
                                       Schm = SchmDataOut,
-                                      NameLib = ravroLib)
-  log$info("Basic stats written out.")
+                                      NameLib = ravroLib),silent=FALSE)
+  if(class(rptDataOut) == 'try-error'){
+    log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
+    stop()
+  } else {
+    log$info("Basic stats written out.")
+  }
   
   #Write an AVRO file for the flags (which get metrics)
   #readout_time, fDOMTempQF, fDOMAbsQF
@@ -450,11 +458,16 @@ for (idxDirIn in DirIn){
   colInt <- c("fDOMTempQF", "fDOMAbsQF") 
   flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
   
-  NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 
+  rptQfOut <- try(NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 
                                       NameFile = base::paste0(idxDirOutFlags,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCorrection.avro"), 
                                       Schm = SchmQf, 
-                                      NameLib = ravroLib)
-  log$info("Flags written out.")
+                                      NameLib = ravroLib),silent=FALSE)
+  if(class(rptQfOut) == 'try-error'){
+    log$error(base::paste0('Writing the output flags failed: ',attr(rptQfOut,"condition")))
+    stop()
+  } else {
+    log$info("Flags written out.")
+  }
 }
 
 
