@@ -61,11 +61,9 @@ test_that("testing calibration conversion", {
   values <- c(10, 13)
   
   NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
-  
-  # Calibrate the data
-  
+
   ##########
-  ##########  Happy path:::: data and cal not empty and have valid values
+  ##########  Happy path 1:::: Calibrations folder has cal files and the expirations have valid values
   ##########
   
   wcsList <- NEONprocIS.cal::wrap.cal.slct (DirCal = DirCal,NameVarExpc = character(0),TimeBgn = TimeBgn,
@@ -79,13 +77,13 @@ test_that("testing calibration conversion", {
     testthat::expect_true (wcsList[[1]][4] == ID)
   }
   
-  cat("\n       |====== Positive test 1::                         ==========|\n")
-  
-  cat("\n       |------ Calibration selection ran successfully!             |\n")
-  cat("\n       |===========================================================|\n")
+  cat("\n       |====== Positive test 1::                                    =========================|\n")
+  cat("\n       |------ Calibrations folder has cal files and the expirations have valid values       |\n")
+  cat("\n       |------ Calibration selection ran successfully!                                       |\n")
+  cat("\n       |=====================================================================================|\n")
   
   ##########
-  ##########  Sad path 1:::: calibrations expiration days have NA
+  ##########  Happy path 2:::: calibrations has calibration files but the expiration days have NA
   ##########
   
   DirCal = "./calibrations"
@@ -106,12 +104,16 @@ test_that("testing calibration conversion", {
   if (!(length(wcsList) == 0)) {
     testthat::expect_true (wcsList[[1]][4] == ID)
   }
-  
+  cat("\n       |====== Positive test 2::                                        =====================|\n")
+  cat("\n       |------ calibrations has calibration files but the expiration days have NA            |\n")
+  cat("\n       |------ Calibration selection ran successfully with TimeExpiMax=NULL!                 |\n")
+  cat("\n       |=====================================================================================|\n")
+
   ##########
-  ##########  Sad path 2:::: calibrations has no sub folders and empty
+  ##########  Sad path 1:::: calibrations has sub folders, but no calibration files
   ##########
   
-  DirCal = "./calibrations_empty"
+  DirCal = "./calibrations_noCals"
   NameVarExpc = character(0)
   TimeBgn = base::as.POSIXct('2019-06-12 00:10:20', tz = 'GMT')
   TimeEnd =  base::as.POSIXct('2019-07-07 00:18:28', tz = 'GMT')
@@ -122,9 +124,38 @@ test_that("testing calibration conversion", {
   
   NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
   
-  wcsList <- try(NEONprocIS.cal::wrap.cal.slct (DirCal = DirCal,NameVarExpc = character(0),TimeBgn = TimeBgn, TimeEnd = TimeEnd,
-    NumDayExpiMax = NumDayExpiMax, log = NULL), silent = TRUE)
+  wcsList <- NEONprocIS.cal::wrap.cal.slct (DirCal = DirCal,NameVarExpc = character(0),TimeBgn = TimeBgn, TimeEnd = TimeEnd,
+    NumDayExpiMax = NumDayExpiMax, log = NULL)
   
-  testthat::expect_true ((class(wcsList)[1] == "try-error"))
+  testthat::expect_true ((wcsList[[1]]$timeBgn == TimeBgn) && (wcsList[[1]]$timeEnd == TimeEnd))
+  
+  cat("\n       |====== Negative test 1::                                        =====================|\n")
+  cat("\n       |------ calibrations has no calibration files with expiration days                    |\n")
+  cat("\n       |------ Calibration selection ran successfully, but returns TimeBgn and TineEnd only! |\n")
+  cat("\n       |=====================================================================================|\n")
+  
+  ##########  Sad path 2:::: calibrations has no sub folders
+  
+  DirCal = "./calibrations_noSubFldr"
+  NameVarExpc = character(0)
+  TimeBgn = base::as.POSIXct('2019-06-12 00:10:20', tz = 'GMT')
+  TimeEnd =  base::as.POSIXct('2019-07-07 00:18:28', tz = 'GMT')
+  
+  varCal <- base::unique(c(NameVarExpc, base::dir(DirCal)))
+  
+  values <- c()
+  
+  NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
+  
+  wcsList <- NEONprocIS.cal::wrap.cal.slct (DirCal = DirCal,NameVarExpc = character(0),TimeBgn = TimeBgn, TimeEnd = TimeEnd,
+                                            NumDayExpiMax = NumDayExpiMax, log = NULL)
+  
+  testthat::expect_true (is.list(wcsList) && rapportools::is.empty(unlist(wcsList)))
+  
+  cat("\n       |====== Negative test 2::                                        =====================|\n")
+  cat("\n       |------ calibrations has no sub folders                                               |\n")
+  cat("\n       |------ Calibration selection ran successfully, but returns a null list               |\n")
+  cat("\n       |=====================================================================================|\n")
+  
   
 })
