@@ -7,7 +7,7 @@
 def.pars.data.suna(sunaBurst = NULL, log = NULL)
 }
 \arguments{
-\item{sunaBurst}{The filename assiciated with the desired calibration table [dataframe]}
+\item{sunaBurst}{The spectrum channel data from the suna [list of numeric vectors]}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}

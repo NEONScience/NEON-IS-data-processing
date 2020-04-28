@@ -87,7 +87,6 @@ tempCorrNameUncrt <- "U_CVALA4" # Combined, standard uncertainty of temperature 
 absCorrNameUncrt <- "U_CVALA5" # Combined, standard uncertainty of absorbance correction function for fDOM; provided by CVAL
 
 # Other string constants
-ravroLib <- "/ravro.so"
 timestampFormat <- "%Y-%m-%d %H:%M"
 
 # Default values for rho and pathlength, useful for older data where cal files don't have the info yet
@@ -96,7 +95,7 @@ uncrt_rho_fdom <- 0.002458
 pathlength <- 0.330
 uncrt_pathlength <- 0.178
 
-# Read in the schemas so we only have to do it once and not every time in the avro writer.
+# Read in the schemas
 if (!base::is.null(Para$FileSchmData)) {
   # Retrieve and interpret the output data schema
   SchmDataOutAll <- NEONprocIS.base::def.schm.avro.pars(FileSchm = Para$FileSchmData, log = log)
@@ -166,7 +165,7 @@ for (idxDirIn in DirIn){
   fdomDataGlob <- base::file.path(idxDirIn,"exofdom","*","data","*")
   fdomDataPath <- base::Sys.glob(fdomDataGlob)
   if(base::length(fdomDataPath)==1){
-    fdomData <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile = base::paste0(fdomDataPath),NameLib = ravroLib,log = log), silent = FALSE)
+    fdomData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(fdomDataPath),log = log), silent = FALSE)
     log$debug(base::paste0("One datum found, reading in: ",fdomDataPath))
   }else{
     log$debug(base::paste0("Zero or more than one datum found for: ",fdomDataGlob))
@@ -273,7 +272,7 @@ for (idxDirIn in DirIn){
   
   if(base::length(exoconductivityDataPath)==1){
     log$debug(base::paste0("One file found, reading in: ",exoconductivityDataPath))
-    exoconductivityData <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile = base::paste0(exoconductivityDataPath),NameLib = ravroLib,log = log), silent = FALSE)
+    exoconductivityData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(exoconductivityDataPath),log = log), silent = FALSE)
   }else{
     log$debug(base::paste0("Zero or more than one file found for: ",exoconductivityDataGlob))
     applyTempCorr <- FALSE
@@ -319,7 +318,7 @@ for (idxDirIn in DirIn){
     exoconductivityUcrtGlob <- base::file.path(idxDirIn,"exoconductivity","*","uncertainty_data","*")
     exoconductivityUcrtPath <- base::Sys.glob(exoconductivityUcrtGlob)
     
-    exoconductivityUcrtData <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile = base::paste0(exoconductivityUcrtPath),NameLib = ravroLib,log = log), silent = FALSE)
+    exoconductivityUcrtData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(exoconductivityUcrtPath),log = log), silent = FALSE)
     #exoconductivityUcrtData$readout_time_min <- base::format(exoconductivityUcrtData$readout_time, format = timestampFormat)
     fdomData <- base::merge(fdomData, exoconductivityUcrtData, by = c("readout_time"), all.x = TRUE, suffixes = c(".fdom",".tempUcrt"))
   
@@ -427,7 +426,7 @@ for (idxDirIn in DirIn){
     log = log
   )
   
-  #Write an AVRO file for data and uncertainty (which get stats)
+  #Write data and uncertainty (which get stats)
   #readout_time, fDOM, fDOMExpUncert, spectrumCount
   dataOutputs <- c("readout_time", "readout_time", "fDOM", "rawCalibratedfDOM", "fDOMExpUncert", "spectrumCount")
   dataOut <- fdomData[,dataOutputs]
@@ -438,10 +437,9 @@ for (idxDirIn in DirIn){
   colInt <- "spectrumCount"
   dataOut[colInt] <- base::lapply(dataOut[colInt],base::as.integer) # Turn spectrumCount to integer
   
-  rptDataOut <- try(NEONprocIS.base::def.wrte.avro.deve(data = dataOut,
-                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_basicStats_100.avro"),
-                                      Schm = SchmDataOut,
-                                      NameLib = ravroLib),silent=FALSE)
+  rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
+                                      NameFile = base::paste0(idxDirOutData,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_basicStats_100.parquet"),
+                                      Schm = SchmDataOut),silent=FALSE)
   if(class(rptDataOut) == 'try-error'){
     log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
     stop()
@@ -449,7 +447,7 @@ for (idxDirIn in DirIn){
     log$info("Basic stats written out.")
   }
   
-  #Write an AVRO file for the flags (which get metrics)
+  #Write the flags (which get metrics)
   #readout_time, fDOMTempQF, fDOMAbsQF
   flagOutputs <- c("readout_time", "fDOMTempQF", "fDOMAbsQF")
   flagsOut <- fdomData[,flagOutputs]
@@ -458,10 +456,9 @@ for (idxDirIn in DirIn){
   colInt <- c("fDOMTempQF", "fDOMAbsQF") 
   flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
   
-  rptQfOut <- try(NEONprocIS.base::def.wrte.avro.deve(data = flagsOut, 
-                                      NameFile = base::paste0(idxDirOutFlags,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCorrection.avro"), 
-                                      Schm = SchmQf, 
-                                      NameLib = ravroLib),silent=FALSE)
+  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut, 
+                                      NameFile = base::paste0(idxDirOutFlags,"/exofdom_",cfgLoc,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsCorrection.parquet"), 
+                                      Schm = SchmQf),silent=FALSE)
   if(class(rptQfOut) == 'try-error'){
     log$error(base::paste0('Writing the output flags failed: ',attr(rptQfOut,"condition")))
     stop()

@@ -25,17 +25,17 @@
     },
     "backports": {
       "Package": "backports",
-      "Version": "1.1.5",
+      "Version": "1.1.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "e9f705633dc932bfd5b02b17a5053a06"
+      "Hash": "3997fd62345a616e59e8161ee0a5816f"
     },
     "callr": {
       "Package": "callr",
-      "Version": "3.4.2",
+      "Version": "3.4.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "d16f6e202179e69c1400cc1f845bfc09"
+      "Hash": "643163a00cb536454c624883a10ae0bc"
     },
     "cli": {
       "Package": "cli",
@@ -88,10 +88,10 @@
     },
     "glue": {
       "Package": "glue",
-      "Version": "1.3.2",
+      "Version": "1.4.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "af1f47b63d1aa2206c1fe4d3db1d9366"
+      "Hash": "2aefa994e8df5da17dc09afd80f924d5"
     },
     "magrittr": {
       "Package": "magrittr",
@@ -102,10 +102,10 @@
     },
     "pkgbuild": {
       "Package": "pkgbuild",
-      "Version": "1.0.6",
+      "Version": "1.0.7",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "899835dfe286963471cbdb9591f8f94f"
+      "Hash": "4c2692dda4c30c71209da02ebbfa0258"
     },
     "pkgload": {
       "Package": "pkgload",
@@ -179,10 +179,10 @@
     },
     "withr": {
       "Package": "withr",
-      "Version": "2.1.2",
+      "Version": "2.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "aa57ed55ff2df4bea697a07df528993d"
+      "Hash": "ecd17882a0b4419545691e095b74ee89"
     }
   }
 }
