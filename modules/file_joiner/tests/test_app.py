@@ -15,7 +15,7 @@ class AppTest(TestCase):
         log_config.configure('DEBUG')
         self.setUpPyfakefs()
 
-        self.input_path = os.path.join('/', 'repo', 'inputs')
+        self.input_path = os.path.join('/', 'inputs', 'repo')
         self.output_path = os.path.join('/', 'outputs')
 
         self.path_1 = os.path.join('dir1', 'dir2', 'file_1.txt')
