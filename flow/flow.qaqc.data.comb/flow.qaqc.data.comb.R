@@ -62,6 +62,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-12-20)
 #     original creation
+#   Cove Sturtevant (2020-04-28)
+#     switch read/write data from avro to parquet
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -129,7 +131,7 @@ for(idxDirIn in DirIn){
       nameFileData <- base::paste0(idxDirIn,'/',idxDirSubCombData,'/',idxFileData) # Full path to file
       
       # Open the data file
-      data  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=nameFileData,NameLib='/ravro.so',log=log),silent=FALSE)
+      data  <- base::try(NEONprocIS.base::def.read.parq(NameFile=nameFileData,log=log),silent=FALSE)
       if(base::class(data) == 'try-error'){
         # Generate error and stop execution
         log$error(base::paste0('File: ', nameFileData, ' is unreadable.')) 
@@ -170,7 +172,7 @@ for(idxDirIn in DirIn){
       
     # Read the schema from the input data file
     SchmOut <- base::attr(dataOut,'schema')
-    rptDataOut <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=dataOut,NameFile=nameFileDataOut,NameFileSchm=NULL,Schm=SchmOut,NameLib='/ravro.so'),silent=TRUE)
+    rptDataOut <- base::try(NEONprocIS.base::def.wrte.parq(data=dataOut,NameFile=nameFileDataOut,NameFileSchm=NULL,Schm=SchmOut,log=log),silent=TRUE)
     if(base::class(rptDataOut) == 'try-error'){
       log$error(base::paste0('Cannot write merged file ', nameFileDataOut,'. ',attr(rptDataOut,"condition"))) 
       stop()

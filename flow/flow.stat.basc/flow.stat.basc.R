@@ -101,6 +101,8 @@
 #     sync up missing data values between data and fdas uncertainty
 #   Cove Sturtevant (2020-02-17)
 #     adjust reading of fdas uncertainty data to look within generic uncertainty data file
+#   Cove Sturtevant (2020-04-23)
+#     switch read/write data from avro to parquet
 ##############################################################################################
 options(digits.secs = 3)
 

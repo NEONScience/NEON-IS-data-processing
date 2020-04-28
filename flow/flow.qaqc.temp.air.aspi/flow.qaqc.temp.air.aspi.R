@@ -98,7 +98,7 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}}, 
 #' which uses system environment variables if available.
 #' 
-#' @return Filtered data and quality flags output in AVRO format in DirOut, where the terminal directory 
+#' @return Filtered data and quality flags output in Parquet format in DirOut, where the terminal directory 
 #' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
 #' Directories 'data' and 'flags' are automatically populated in the output directory, where the files 
 #' for data and flags will be placed, respectively. Any other folders specified in argument
@@ -126,6 +126,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-12-18)
 #     initial creation
+#   Cove Sturtevant (2020-04-28)
+#     switch read/write data from avro to parquet
 ##############################################################################################
 options(digits.secs = 3)
 TimeCool <- base::as.difftime(224,units='secs') # Cooling time after heater turns off. See NEON.DOC.000646 & NEON.DOC.000302
@@ -287,7 +289,7 @@ for(idxDirIn in DirIn){
     } else if (numFileTbne > 1){
       log$warn(base::paste0('More than one turbine sensor data file in ',dirDataTbne, '. Using only the first.'))
     } else {
-      dataTbne  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileTbne[1],NameLib='/ravro.so',log=log),silent=FALSE)
+      dataTbne  <- base::try(NEONprocIS.base::def.read.parq(NameFile=fileTbne[1],log=log),silent=FALSE)
       if(base::class(data) == 'try-error'){
         log$error(base::paste0('File ', fileTbne[1],' is unreadable.')) 
         stop()
@@ -323,7 +325,7 @@ for(idxDirIn in DirIn){
       } else if (numFileWind > 1){
         log$warn(base::paste0('More than one wind sensor data file in ',dirDataWind, '. Using only the first.'))
       } else {
-        dataWind  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=fileWind[1],NameLib='/ravro.so',log=log),silent=FALSE)
+        dataWind  <- base::try(NEONprocIS.base::def.read.parq(NameFile=fileWind[1],log=log),silent=FALSE)
         if(base::class(data) == 'try-error'){
           log$error(base::paste0('File ', fileWind[1],' is unreadable.')) 
           stop()
@@ -443,7 +445,7 @@ for(idxDirIn in DirIn){
     for (idxFileDataTemp in fileDataTemp){
       
       # Load in data
-      dataTemp  <- base::try(NEONprocIS.base::def.read.avro.deve(NameFile=base::paste0(idxDirDataTemp,'/',idxFileDataTemp),NameLib='/ravro.so',log=log),silent=FALSE)
+      dataTemp  <- base::try(NEONprocIS.base::def.read.parq(NameFile=base::paste0(idxDirDataTemp,'/',idxFileDataTemp),log=log),silent=FALSE)
       if(base::class(dataTemp) == 'try-error'){
         log$error(base::paste0('File ', base::paste0(idxDirDataTemp,'/',idxFileDataTemp),' is unreadable.')) 
         stop()
@@ -535,7 +537,7 @@ for(idxDirIn in DirIn){
       }
       
       # Write the data
-      rptData <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=dataTemp,NameFile=NameFileOutData,NameFileSchm=NULL,Schm=idxSchmDataOut,NameLib='/ravro.so'),silent=TRUE)
+      rptData <- base::try(NEONprocIS.base::def.wrte.parq(data=dataTemp,NameFile=NameFileOutData,NameFileSchm=NULL,Schm=idxSchmDataOut),silent=TRUE)
       if(base::class(rptData) == 'try-error'){
         log$error(base::paste0('Cannot write Quality controlled data in file ', NameFileOutData,'. ',attr(rptData,"condition"))) 
         stop()
@@ -544,7 +546,7 @@ for(idxDirIn in DirIn){
       }
       
       # Write out the flags 
-      rptQf <- base::try(NEONprocIS.base::def.wrte.avro.deve(data=qf,NameFile=NameFileOutQf,NameFileSchm=NULL,Schm=SchmQfOut,NameLib='/ravro.so'),silent=TRUE)
+      rptQf <- base::try(NEONprocIS.base::def.wrte.parq(data=qf,NameFile=NameFileOutQf,NameFileSchm=NULL,Schm=SchmQfOut),silent=TRUE)
       if(base::class(rptQf) == 'try-error'){
         log$error(base::paste0('Cannot write sensor-specific QC flags  in file ', NameFileOutQf,'. ',attr(rptQf,"condition"))) 
         stop()

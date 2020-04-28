@@ -124,8 +124,8 @@
 #' the same order they were found in the sorted (increasing order) input file list, followed by the alpha QF, betaQF, and
 #' finalQF for each group in the same order as the GrpQfAlphaX inputs. Additionally, the first two columns of the output file
 #' will contain the start and end times (they will be the same) for the measurement, labeled "startDateTime" and "endDateTime",
-#' respectively. Example column ordering: Say there are two input files named outflagsA.avro and outflagsB.avro, where
-#' outflagsA.avro contains flag tempValidCalQF, RHValidCalQF and outflagsB.avro contains flags tempRangeQF, RHRangeQF
+#' respectively. Example column ordering: Say there are two input files named outflagsA.parquet and outflagsB.parquet, where
+#' outflagsA.parquet contains flag tempValidCalQF, RHValidCalQF and outflagsB.parquet contains flags tempRangeQF, RHRangeQF
 #' and the grouping arguments are "GrpQfAlpha1=temp:tempRangeQf|tempValidCalQF", "GrpQfAlpha2=RH:RHRangeQf|RHValidCalQF",
 #' "GrpQfBeta1=temp:tempRangeQf", "GrpQfBeta2=RH:tempRangeQf".
 #' The ordering of the output columns will be startDateTime, endDateTime, tempValidCalQF, RHValidCalQF, tempValidCalQF,
@@ -150,6 +150,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-03-09)
 #     original creation
+#   Cove Sturtevant (2020-04-28)
+#     switch read/write data from avro to parquet
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -447,7 +449,7 @@ for (idxDirIn in DirIn) {
   # Combine flags files
   qf <- NULL
   qf <-
-    NEONprocIS.base::def.file.avro.comb.ts(
+    NEONprocIS.base::def.file.comb.ts(
       file = base::paste0(idxDirQf, '/', fileQf),
       nameVarTime = 'readout_time',
       log = log
@@ -557,12 +559,11 @@ for (idxDirIn in DirIn) {
   NameFileOutQm <- base::paste0(idxDirOutQf, '/', fileQmOut)
   
   rptWrte <-
-    base::try(NEONprocIS.base::def.wrte.avro.deve(
+    base::try(NEONprocIS.base::def.wrte.parq(
       data = qf,
       NameFile = NameFileOutQm,
       NameFileSchm = NULL,
-      Schm = SchmQm,
-      NameLib = '/ravro.so'
+      Schm = SchmQm
     ),
     silent = TRUE)
   if (base::class(rptWrte) == 'try-error') {
