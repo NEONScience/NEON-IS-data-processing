@@ -36,7 +36,7 @@
 #     add log output
 ##############################################################################################
 def.dir.in <- function(DirBgn,nameDirSub,log=NULL){
-  browser()
+  #browser()
 
   # Initialize log if not input
   if(base::is.null(log)){
