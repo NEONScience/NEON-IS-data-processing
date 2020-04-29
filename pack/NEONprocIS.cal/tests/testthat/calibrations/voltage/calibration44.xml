@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><CalVal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../CVALData.xsd ">
+   <SensorID>
+    <MxAssetID>23344</MxAssetID>
+    
+  </SensorID>
+  <StreamCalVal>
+    <CalFixture>
+      <CalFixtureID/>
+      <ActivityLocation/>
+      <SWVersion>1.0.12</SWVersion>
+      <ProcedureVersion/>
+      <Station/>
+    </CalFixture>
+    <CalEnvironment>
+      <AmbientTemperature>
+        <Min>25.0</Min>
+        <Max>25.0</Max>
+        <Mean>25.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientTemperature>
+      <AmbientPressure>
+        <Min>760.0</Min>
+        <Max>760.0</Max>
+        <Mean>760.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientPressure>
+      <AmbientHumidity>
+        <Min>25.0</Min>
+        <Max>25.0</Max>
+        <Mean>25.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientHumidity>
+    </CalEnvironment>
+    <CalibrationCoefficient> 
+		<Name>CVALR1</Name>
+		<Value>0</Value>
+    </CalibrationCoefficient>
+	<CalibrationTable name="">
+    <Metadata>
+        <Entry>
+            <Name> </Name>
+            <Value> </Value>
+        </Entry> 
+    </Metadata>
+	<Row index="">
+    <Independent name=""> </Independent>
+    <Column index="">
+        <Dependent name=""> </Dependent>
+    </Column>
+	</Row>
+	</CalibrationTable>
+    <CalibrationStandards CertNumber=""> </CalibrationStandards>
+    <StreamID>1</StreamID>
+    <Uncertainty units="uS/cm"> 
+		<Name>U_CVALD3</Name>
+		<Value>104</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALD2</Name>
+		<Value>50</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALD1</Name>
+		<Value>104</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALA3</Name>
+		<Value>0.00585</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALA2</Name>
+		<Value>0.000141</Value>
+	</Uncertainty><Uncertainty units="uS/cm"> 
+		<Name>U_CVALA1</Name>
+		<Value>0.00585</Value>
+	</Uncertainty>
+    <Trueness units="uS/cm">0.000000</Trueness>
+    <ActivityTimeRange>
+      <StartTime>2018-12-11T17:47:38.0000</StartTime>
+      <EndTime>2018-12-11T17:48:35.0000</EndTime>
+    </ActivityTimeRange>
+    <CertificateNumber>162944</CertificateNumber>
+  </StreamCalVal>
+  <ValidTimeRange>
+    <StartTime>2020-02-11T17:48:35.0000</StartTime>
+    <EndTime>2020-03-08T17:48:35.0000</EndTime>
+  </ValidTimeRange>
+  <Comment>
+    <CommentDescription/>
+    <CommentCreator/>
+    <CommentDateTime/>
+  </Comment>
+  <DATA>
+		<MetaData>
+			<Equipment> </Equipment>
+			<Operator>MKelley</Operator>
+			<WorkOrder>WO30149</WorkOrder>
+			<MaximoID>23344</MaximoID>
+			<AssetID>30000000011952</AssetID>
+			<Reference/>
+			<Fixture>L3F200</Fixture>
+			<NEONPN>f0320170001</NEONPN>
+			<SN header="">15L102472</SN>
+			<FW header="">3.0.5</FW>
+			<SOH header=""/>
+			<UncertaintyCtl>L3F200</UncertaintyCtl>
+		</MetaData>
+		<PreCALDATA header=""/>
+		<CALDATA header="">EXO User Cal File
+File Created:12/11/2018 11:47:38 AM
+
+[General]
+Device = "Conductivity/Temp"
+SN = "15L102472"
+Cal Parameter = "SpCond µS/cm"
+Cal Started = TRUE
+Raw Data = "Cond RAW µS/cm"
+Last Cal Time = "11/27/2018 18:38:33"
+Cal Start Time = "12/11/2018 17:47:38"
+Additional Input 1 = "N/A"
+Additional Input 2 = "N/A"
+Additional Input 3 = "N/A"
+
+[Device Info]
+Product = 1
+Model = 3
+SubModel = 1
+Firmware Version = "3.0.5"
+
+[Sonde Info]
+Type = "EXO2 Sonde"
+ID = "Sonde 15K101963"
+SN = "15K101963"
+Firmware Version = "1.0.35"
+
+[KOR Info]
+Hardware = "EXO Desktop"
+KOR Version = "1.0.12"
+Worksheet Version = "1"
+
+[Additional Info]
+Cond Factory Gain = "5.10"
+ODO Membrane SN = ""
+ODO Last Updated = ""
+Wiper Factory Home = ""
+Depth Mounting = ""
+Depth Offset = ""
+Depth Altitude = ""
+Depth Latitude = ""
+Cal Points Used = ""
+
+[Current Coeffs]
+A0 = 1.008114
+
+[Cal Point 1]
+Standard = 1000.000000
+Type = ""
+Manuf = "YSI"
+Lot No = "060907"
+Cal Point Accepted = TRUE
+Temperature = 11.041000
+Pre Value = 1000.900000
+Post Value = 1000.000000
+Raw Value = 728.164368
+Additional Input 1 = NaN
+Additional Input 2 = NaN
+Additional Input 3 = NaN
+Stable = TRUE
+
+[Results]
+Cal Completed = TRUE    
+Cal Applied = TRUE
+Cal Valid = TRUE
+Device Removed = FALSE
+Uncalibrated = FALSE
+QC Score = 2
+Cal Time = "12/11/2018 17:48:35"
+
+[New Coeffs]
+A0 = 1.007182</CALDATA>
+		<ValidationDATA header=""/>
+		<QCStatic header="">2.000000,2.000000,10.000000,0.950000,0.000000,0.000000,3,uS/cm</QCStatic>
+		<QCDynamic header=""/>
+		<Precision header=""/>
+		<AsLeftCFG header="">New polys
+1.007182
+</AsLeftCFG>
+		<AsReceived>
+			<ReceivedCFG header="">Old polys
+1.008114
+</ReceivedCFG>
+			<ReceivedCoefficient> 
+				<Name> </Name>
+				<Value> </Value>
+			</ReceivedCoefficient>
+			<ReceivedDATA header=""/>
+		</AsReceived>
+  </DATA>
+  </CalVal>
