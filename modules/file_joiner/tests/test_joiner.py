@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-import json
+import yaml
 
 import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -30,14 +30,14 @@ class AppTest(TestCase):
         self.fs.create_file(self.input_path_3)
 
         # Use real location file for parsing
-        config_file_path = os.path.join(os.path.dirname(__file__), 'config.json')
-        self.fs.add_real_file(config_file_path, target_path='/config.json')
+        config_file_path = os.path.join(os.path.dirname(__file__), 'config.yaml')
+        self.fs.add_real_file(config_file_path, target_path='/config.yaml')
 
     def test_main(self):
-        with open('/config.json') as f:
-            json_data = json.load(f)
-        json_str = json.dumps(json_data)
-        os.environ['CONFIG'] = json_str
+        with open('/config.yaml') as f:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+            config = yaml.dump(data, sort_keys=True)
+        os.environ['CONFIG'] = config
         os.environ['OUT_PATH'] = self.output_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
         joiner.main()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import glob
-import json
+import yaml
 import pathlib
 
 from structlog import get_logger
@@ -42,12 +42,16 @@ def filter_files(pattern, out_path):
 def join(config, out_path):
     file_key_dict = DictList()
     file_key_sets = []
-    json_data = json.loads(config)
-    for input_path in json_data['input_paths']:
-        input_name = input_path['name']
-        log.debug(f'input_name: {input_name}')
-        path_pattern = input_path['path_pattern']
-        path_join_indices = input_path['path_join_indices']
+
+    config_data = yaml.load(config, Loader=yaml.FullLoader)
+    paths = config_data['paths']
+    for each_path in paths:
+        path = each_path['path']
+        path_name = path['name']
+        log.debug(f'path_name: {path_name}')
+        path_pattern = path['path_pattern']
+        path_join_indices = path['path_join_indices']
+
         filtered_files = filter_files(path_pattern, out_path)
         file_key_set = set()
         for file in filtered_files:
