@@ -1,5 +1,5 @@
 Package: NEONprocIS.wq
-Title: Functions to support the Water Quality data processing pipeline.
+Title: Functions to support the Water Quality data processing pipeline
 Version: 0.0.1
 Authors@R: 
     person(given = "Kaelin",
@@ -8,9 +8,11 @@ Authors@R:
            email = "kcawley@battelleecology.org")
 Description: Functions for correcting fDOM data for temperature and absorbance impacts to in situ sensor readings.
 Depends:
-    R (>= 3.5.1)
+    R (>= 3.5.0)
 Imports:
-License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+    NEONprocIS.base,
+    NEONprocIS.cal
+License: AGPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1

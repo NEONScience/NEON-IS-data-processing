@@ -1,14 +1,14 @@
 ##############################################################################################
-#' @title Parse SUNA data using data pased in from def.wq.abs.corr.R
+#' @title Parse SUNA data using data pasted in from def.wq.abs.corr.R
 
 #' @author
 #' Kaelin M. Cawley \email{kcawley@battelleecology.org}
 
 #' @description
-#' Definition function. Given a burst of SUNA data, the code parses the spectrum_channels 
+#' Definition function. Given a burst of SUNA data, the code parses the spectrum_channels
 #' and returns a vector of averaged transimittance intensities.
 
-#' @param sunaBurst The filename assiciated with the desired calibration table [dataframe]
+#' @param sunaBurst The spectrum channel data from the suna [list of numeric vectors]
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -27,6 +27,8 @@
 # changelog and author contributions / copyrights
 #   Kaelin M. Cawley (2020-03-04)
 #     original creation
+#   Cove Sturtevant (2020-04-28)
+#     adjusted to support data returned by parquet reader
 ##############################################################################################
 def.pars.data.suna <-
   function(sunaBurst = NULL,
@@ -36,20 +38,16 @@ def.pars.data.suna <-
       log <- NEONprocIS.base::def.log.init()
     }
     
-    splitBurst <-
-      base::lapply(sunaBurst, base::strsplit, split = '\\[\\{\"int\": |\\}, \\{\"int\": |\\}\\]')
-    
+    # Merge the burst data from all observations into one data frame
     parsedBurst <-
-      base::as.data.frame(splitBurst[[1]], stringsAsFactors = FALSE)
-    for (i in 2:base::length(parsedBurst)) {
-      parsedBurst <-
-        base::cbind(parsedBurst,
-                    base::as.data.frame(splitBurst[[i]], stringsAsFactors = FALSE))
-    }
+      base::lapply(sunaBurstParq, base::as.data.frame, stringsAsFactors = FALSE)
+    parsedBurst <- base::do.call(base::cbind, parsedBurst)
+    parsedBurst <-
+      base::as.data.frame(base::lapply(parsedBurst, base::as.numeric))
     
-    parsedBurst <- base::apply(parsedBurst, 2, base::as.numeric)
-    avgBurst <- base::apply(parsedBurst, 1, base::mean, na.rm = TRUE)
-    avgBurst <- avgBurst[!is.nan(avgBurst)]
+    # Average observations for each channel
+    avgBurst <- base::rowMeans(parsedBurst, na.rm = TRUE)
+    avgBurst <- avgBurst[!base::is.nan(avgBurst)]
     
     return(avgBurst)
   }

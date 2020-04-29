@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Water Quality package
 
 # Start with the neon-is-base-r image. 
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.35
+FROM quay.io/battelleecology/neon-is-pack-cal-r:v0.0.23
 
 # maintainer handle
 MAINTAINER "Kaelin Cawley" kcawley@battelleecology.org

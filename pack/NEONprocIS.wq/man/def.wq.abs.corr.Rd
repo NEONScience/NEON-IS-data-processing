@@ -2,28 +2,32 @@
 % Please edit documentation in R/def.wq.abs.corr.R
 \name{def.wq.abs.corr}
 \alias{def.wq.abs.corr}
-\title{Uncertainty for dissolved oxygen (DO) concentration (mg/L) as part of the water
-quality transition}
+\title{Determine excitation (Abs_ex) and emission (Abs_em) correction factors for using
+SUNA data to correct sonde fDOM data. Also populates spectrumCount.}
 \usage{
-def.wq.abs.corr(data, cal)
+def.wq.abs.corr(sunav2Filenames, sunav2CalFilenames, log = NULL)
 }
 \arguments{
-\item{data}{Dissolved oxygen (DO) concentration data [vector]}
+\item{sunav2Filenames}{SUNA data filenames used to determine absorbance [character]}
+
+\item{sunav2CalFilenames}{Calibration filenames for the SUNA data used to determine absorbance [character]}
+
+\item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+output. Defaults to NULL, in which the logger will be created and used within the function.}
 }
 \value{
 dataframe with L0 uncertatinty column(s) [dataframe]
 }
 \description{
-Alternative calibration uncertainty function. Create file (dataframe) with 
-uncertainty information based off of the L0 dissolved oxygen (DO) concentration data values 
+Alternative calibration uncertainty function. Create file (dataframe) with
+uncertainty information based off of the L0 dissolved oxygen (DO) concentration data values
 according to NEON.DOC.004931 - NEON Algorithm Theoretical Basis Document (ATBD): Water Quality.
 
 Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 which uses system environment variables if available.
 }
 \examples{
-#Written to potentially plug in line 120 of def.cal.conv.R
-ucrt <- def.ucrt.wq.do.conc(data = data, cal = NULL)
+# TBD
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

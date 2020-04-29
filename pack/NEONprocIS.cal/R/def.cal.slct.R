@@ -100,7 +100,7 @@ def.cal.slct <-
     
     NameList = c('file', 'timeValiBgn', 'timeValiEnd', 'id')
     
-    if (!(all(NameList %in% colnames(metaCal))))
+    if (!base::is.null(metaCal) && !(all(NameList %in% colnames(metaCal))))
     {
       stop("In def.cal.slct::::: Check the input data frame has columns missing")
     }
