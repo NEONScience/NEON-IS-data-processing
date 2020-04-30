@@ -35,16 +35,38 @@ class PipelineSpecificationParser(object):
                     self.parse_json(file_path, pipeline_input_repos)
 
     def parse_yaml(self, specification_file, pipeline_input_repos):
+        """
+        Parse a YAML specification file.
+
+        :param specification_file: The file path.
+        :param pipeline_input_repos: A list to hold the pipeline inputs.
+        :return:
+        """
         with open(specification_file) as yaml_file:
             file_data = yaml.load(yaml_file, Loader=yaml.FullLoader)
             self.parse_file_data(specification_file, file_data, pipeline_input_repos)
 
     def parse_json(self, specification_file, pipeline_input_repos):
+        """
+        Parse a JSON specification file.
+
+        :param specification_file: The file path.
+        :param pipeline_input_repos: A list to hold the pipeline inputs.
+        :return:
+        """
         with open(specification_file) as json_file:
             file_data = json.load(json_file)
             self.parse_file_data(specification_file, file_data, pipeline_input_repos)
 
     def parse_file_data(self, specification_file, file_data, pipeline_input_repos):
+        """
+        Parse the specification file data.
+
+        :param specification_file: The file path.
+        :param file_data: The file data.
+        :param pipeline_input_repos: A list for appending the pipeline inputs.
+        :return:
+        """
         pipeline_name = file_data['pipeline']['name']
         self.pipeline_files[pipeline_name] = specification_file
         has_input_repo = False
@@ -87,10 +109,23 @@ class PipelineSpecificationParser(object):
         return has_input_repo
 
     def get_end_node_pipeline(self):
+        """Return the last pipeline in the DAG.
+
+        :return: str of the pipeline name
+        """
         return self.end_node_pipeline_name
 
     def get_pipeline_files(self):
+        """Return all the pipeline files in the DAG.
+
+        :return: dict of files organized by pipeline
+        """
         return self.pipeline_files
 
     def get_pipeline_inputs(self):
+        """
+        Return inputs by pipeline
+
+        :return: dict of inputs organized by pipeline
+        """
         return self.pipeline_inputs
