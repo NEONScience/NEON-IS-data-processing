@@ -2,6 +2,7 @@
 import os
 import json
 import argparse
+import yaml
 
 
 def get_files(specification_path):
@@ -15,7 +16,7 @@ def get_files(specification_path):
     specification_files = []
     for root, dirs, files in os.walk(specification_path):
         for file in files:
-            if file.endswith('.json'):
+            if file.endswith('.json') or file.endswith('.yaml'):
                 specification_file = os.path.join(root, file)
                 specification_files.append(specification_file)
     return specification_files
@@ -34,17 +35,24 @@ def process_files(files, image, reprocess):
     :return:
     """
     for file in files:
-        with open(file) as json_file:
-            json_data = json.load(json_file)
-            specification_image = json_data['transform']['image']
-            if specification_image == image:
-                print(f'updating pipeline {file}')
-                if reprocess:
-                    command = f'pachctl update pipeline --reprocess -f {file}'
-                else:
-                    command = f'pachctl update pipeline -f {file}'
-                print(f'executing: {command}')
-                os.system(command)
+        with open(file) as open_file:
+            if file.endswith('.json'):
+                file_data = json.load(open_file)
+            elif file.endswith('.yaml'):
+                file_data = yaml.load(open_file, Loader=yaml.FullLoader)
+            process_file(image, file, file_data, reprocess)
+
+
+def process_file(image, file, file_data, reprocess):
+    specification_image = file_data['transform']['image']
+    if specification_image == image:
+        print(f'updating pipeline {file}')
+        if reprocess:
+            command = f'pachctl update pipeline --reprocess -f {file}'
+        else:
+            command = f'pachctl update pipeline -f {file}'
+        print(f'executing: {command}')
+        os.system(command)
 
 
 if __name__ == '__main__':
