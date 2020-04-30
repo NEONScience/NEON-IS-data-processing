@@ -1,0 +1,47 @@
+---
+pipeline:
+  name: file_joiner_test
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/file_joiner:7
+  cmd: ["/bin/bash"]
+  stdin:
+    - "#!/bin/bash"
+    - "python3 -m file_joiner.joiner"
+  env:
+    PATHNAME: /pfs/*/exo2/2019/01/01/**
+    CONFIG: |
+      ---
+      paths:
+        - path:
+            name: INPUT_1
+            path_pattern: /pfs/INPUT_1/*/*/**
+            path_join_indices: [3, 4]
+        - path:
+            name: INPUT_2
+            path_pattern: /pfs/INPUT_2/*/*/**
+            path_join_indices: [3, 4]
+        - path:
+            name: INPUT_3
+            path_pattern: /pfs/INPUT_3/*/*/**
+            path_join_indices: [3, 4]
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: DEBUG
+input:
+  union:
+    - pfs:
+        name: INPUT_1
+        repo: data_source_exo2_linkmerge
+        glob: /exo2/2019/01/01
+    - pfs:
+        name: INPUT_2
+        repo: data_source_exo2_linkmerge
+        glob: /exo2/2019/01/01
+    - pfs:
+        name: INPUT_3
+        repo: data_source_exo2_linkmerge
+        glob: /exo2/2019/01/01
+parallelism_spec:
+  constant: 4
+enable_stats: true
+standby: true

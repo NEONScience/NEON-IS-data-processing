@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import os
+import yaml
 
 import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import file_joiner.app as app
+import file_joiner.joiner as joiner
 
 
 class AppTest(TestCase):
@@ -13,32 +14,33 @@ class AppTest(TestCase):
         """Create files to join in fake filesystem."""
         self.setUpPyfakefs()
 
-        self.input_path = os.path.join('/', 'inputs', 'repo')
+        self.input_path = os.path.join('/', 'pfs')
         self.output_path = os.path.join('/', 'outputs')
 
         self.path_1 = os.path.join('dir1', 'dir2', 'file_1.txt')
         self.path_2 = os.path.join('dir1', 'dir2', 'file_2.txt')
-        self.path_3 = os.path.join('dir1', 'dir3', 'file_3.txt')
+        self.path_3 = os.path.join('dir1', 'dir2', 'file_3.txt')
 
-        self.input_path_1 = os.path.join(self.input_path, self.path_1)
-        self.input_path_2 = os.path.join(self.input_path, self.path_2)
-        self.input_path_3 = os.path.join(self.input_path, self.path_3)
+        self.input_path_1 = os.path.join(self.input_path, 'INPUT_1', self.path_1)
+        self.input_path_2 = os.path.join(self.input_path, 'INPUT_2', self.path_2)
+        self.input_path_3 = os.path.join(self.input_path, 'INPUT_3', self.path_3)
 
         self.fs.create_file(self.input_path_1)
         self.fs.create_file(self.input_path_2)
         self.fs.create_file(self.input_path_3)
 
-        self.pathname = str(os.path.join('/', '*', '*', 'dir1', 'dir2', '**'))
-
-    def test_join(self):
-        app.join(self.pathname, self.output_path)
-        self.check_output()
+        # Use real location file for parsing
+        config_file_path = os.path.join(os.path.dirname(__file__), 'config.yaml')
+        self.fs.add_real_file(config_file_path, target_path='/config.yaml')
 
     def test_main(self):
-        os.environ['PATHNAME'] = self.pathname
+        with open('/config.yaml') as f:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+            config = yaml.dump(data, sort_keys=True)
+        os.environ['CONFIG'] = config
         os.environ['OUT_PATH'] = self.output_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        app.main()
+        joiner.main()
         self.check_output()
 
     def check_output(self):
@@ -47,7 +49,7 @@ class AppTest(TestCase):
         path_3 = os.path.join(self.output_path, self.path_3)
         self.assertTrue(os.path.lexists(path_1))
         self.assertTrue(os.path.lexists(path_2))
-        self.assertFalse(os.path.lexists(path_3))
+        self.assertTrue(os.path.lexists(path_3))
 
 
 if __name__ == '__main__':
