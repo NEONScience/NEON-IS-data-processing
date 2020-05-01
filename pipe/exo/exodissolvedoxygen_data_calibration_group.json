@@ -33,7 +33,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_exodissolvedoxygen",
+          "repo": "data_source_exodissolvedoxygen_linkmerge",
           "branch": "master",
           "glob": "/exodissolvedoxygen/*",
           "empty_files": true

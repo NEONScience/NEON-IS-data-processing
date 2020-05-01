@@ -33,7 +33,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_exoconductivity",
+          "repo": "data_source_exoconductivity_linkmerge",
           "branch": "master",
           "glob": "/exoconductivity/*",
           "empty_files": true

@@ -33,7 +33,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_exophorp",
+          "repo": "data_source_exophorp_linkmerge",
           "branch": "master",
           "glob": "/exophorp/*",
           "empty_files": true

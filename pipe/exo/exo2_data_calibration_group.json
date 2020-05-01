@@ -33,7 +33,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_exo2",
+          "repo": "data_source_exo2_linkmerge",
           "branch": "master",
           "glob": "/exo2/*",
           "empty_files": true
