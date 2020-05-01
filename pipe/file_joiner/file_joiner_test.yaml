@@ -26,7 +26,7 @@ transform:
             path_pattern: /pfs/INPUT_3/*/*/**
             path_join_indices: [4, 5]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
 input:
   cross:
     - pfs:
