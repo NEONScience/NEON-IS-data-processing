@@ -63,7 +63,8 @@ def join(config, out_path):
             file_key_dict[key] = file  # store keys with related files
         # if not len(file_key_set) == 0:
         file_key_sets.append(file_key_set)  # add all the file keys for the input
-    joined_keys = set.intersection(*file_key_sets)  # join_keys(file_key_sets)
+    first_set = file_key_sets[0]
+    joined_keys = first_set.intersection(*file_key_sets[1:])  # join_keys(file_key_sets)
     write_files(joined_keys, file_key_dict, out_path)
 
 
