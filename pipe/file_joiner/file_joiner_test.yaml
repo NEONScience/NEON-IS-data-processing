@@ -3,7 +3,7 @@ pipeline:
   name: file_joiner_test
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/file_joiner:7
+  image: quay.io/battelleecology/file_joiner:8
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
@@ -28,7 +28,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
 input:
-  union:
+  cross:
     - pfs:
         name: INPUT_1
         repo: data_source_exo2_linkmerge
