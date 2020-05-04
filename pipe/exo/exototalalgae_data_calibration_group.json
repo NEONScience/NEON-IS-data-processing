@@ -33,7 +33,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_exototalalgae",
+          "repo": "data_source_exototalalgae_linkmerge",
           "branch": "master",
           "glob": "/exototalalgae/*",
           "empty_files": true

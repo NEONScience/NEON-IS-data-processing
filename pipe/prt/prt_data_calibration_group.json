@@ -33,7 +33,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "avro_parquet_converter_prt",
+          "repo": "data_source_prt_linkmerge",
           "branch": "master",
           "glob": "/prt/*",
           "empty_files": true

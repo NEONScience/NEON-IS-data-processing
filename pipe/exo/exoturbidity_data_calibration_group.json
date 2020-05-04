@@ -33,7 +33,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_exoturbidity",
+          "repo": "data_source_exoturbidity_linkmerge",
           "branch": "master",
           "glob": "/exoturbidity/*",
           "empty_files": true
