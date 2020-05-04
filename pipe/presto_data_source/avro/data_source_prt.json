@@ -1,75 +1,76 @@
 {
-    "pipeline": {
-      "name": "data_source_prt"
+  "pipeline": {
+    "name": "data_source_prt"
+  },
+  "transform": {
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/genavro:v1.0.28",
+    "cmd": [
+      "bash"
+    ],
+    "stdin": [
+      "#!/usr/bin/env bash",
+      "# Split data source path",
+      "echo \"Checking $presto_data_source files\"",
+      "for path in $(find -L $import_trigger -type f); do",
+      "  echo \"Processing $path\"",
+      "  p=${path#/pfs}",
+      "  IFS=\"/\"; arr=($p); unset IFS;",
+      "  year=${arr[2]}",
+      "  month=${arr[3]}",
+      "  day=${arr[4]}",
+      "  site=${arr[5]}",
+      "  export GEN_DATE=$year-$month-$day",
+      "  export GEN_SITE_NAME=$site",
+      "  export GEN_OUTPUT_DIR=/pfs/out/prt/$year/$month/$day",
+      "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem",
+      "  mkdir -p $GEN_OUTPUT_DIR",
+      "  /usr/src/app/genscript/gen.py --codec deflate",
+      "done"
+    ],
+    "env": {
+      "GEN_YAML_CONF": "/usr/src/app/genscript/configs/prt_streams.yaml",
+      "GEN_SCHEMA_FILE": "/usr/src/app/schemas/prt/prt.avsc",
+      "LOG_LEVEL": "info",
+      "REQUESTS_CA_BUNDLE": "/etc/pki/tls/cert.pem"
     },
-    "transform": {
-      "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-      "image": "quay.io/battelleecology/genavro:v1.0.27",
-      "cmd": [
-        "bash"
-      ],
-      "stdin": [
-        "#!/usr/bin/env bash",
-        "# Split data source path",
-        "echo \"Checking $presto_data_source files\"",
-        "for path in $(find -L $import_trigger -type f); do",
-        "  echo \"Processing $path\"",
-        "  p=${path#/pfs}",
-        "  IFS=\"/\"; arr=($p); unset IFS;",
-        "  year=${arr[2]}",
-        "  month=${arr[3]}",
-        "  day=${arr[4]}",
-        "  site=${arr[5]}",
-        "  export GEN_DATE=$year-$month-$day",
-        "  export GEN_SITE_NAME=$site",
-        "  export GEN_OUTPUT_DIR=/pfs/out/prt/$year/$month/$day",
-        "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem",
-        "  mkdir -p $GEN_OUTPUT_DIR",
-        "  /usr/src/app/genscript/gen.py --codec deflate",
-        "done"
-      ],
-      "env": {
-        "GEN_YAML_CONF": "/usr/src/app/genscript/configs/prt_streams.yaml",
-        "GEN_SCHEMA_FILE": "/usr/src/app/schemas/prt/prt.avsc",
-        "LOG_LEVEL": "info",
-        "REQUESTS_CA_BUNDLE": "/etc/pki/tls/cert.pem"
+    "secrets": [
+      {
+        "name": "pachd-presto-secret",
+        "key": "PRESTO_HOST",
+        "env_var": "PRESTO_HOST"
       },
-      "secrets": [
-        {
-            "name": "pachd-presto-secret",
-            "key": "PRESTO_HOST",
-            "env_var": "PRESTO_HOST"
-        },
-        {
-            "name": "pachd-presto-secret",
-            "key": "PRESTO_PASSWORD",
-            "env_var": "PRESTO_PASSWORD"
-        },
-        {
-            "name": "pachd-presto-secret",
-            "key": "PRESTO_USER",
-            "env_var": "PRESTO_USER"
-        }
-      ]
-    },
-    "parallelism_spec": {
-      "constant": "4"
-    },
-    "output_branch": "master",
-    "resource_requests": {
-      "memory": "175M",
-      "cpu": 0.1
-    },
-    "input": {
-        "pfs": {
-          "name": "import_trigger",
-          "repo": "import_trigger",
-          "glob": "/*/*/*"
-        }
+      {
+        "name": "pachd-presto-secret",
+        "key": "PRESTO_PASSWORD",
+        "env_var": "PRESTO_PASSWORD"
       },
-    "cache_size": "64M",
-    "max_queue_size": "1",
-    "enable_stats": true,
-    "standby": true
-  }
-  
+      {
+        "name": "pachd-presto-secret",
+        "key": "PRESTO_USER",
+        "env_var": "PRESTO_USER"
+      }
+    ]
+  },
+  "parallelism_spec": {
+    "constant": "4"
+  },
+  "output_branch": "master",
+  "resource_requests": {
+    "memory": "175M",
+    "cpu": 0.1
+  },
+  "input": {
+    "pfs": {
+      "name": "import_trigger",
+      "repo": "import_trigger",
+      "glob": "/*/*/*"
+    }
+  },
+  "cache_size": "64M",
+  "max_queue_size": "1",
+  "enable_stats": true,
+  "standby": true
+}
