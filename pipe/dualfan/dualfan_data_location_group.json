@@ -17,7 +17,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_dualfan",
+          "repo": "data_source_dualfan_linkmerge",
           "glob": "/dualfan/*/*/*/dualfan_(*)_*-*-*.*",
           "joinOn": "$1",
           "empty_files": true

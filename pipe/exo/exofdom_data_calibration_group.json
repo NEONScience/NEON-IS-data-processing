@@ -33,7 +33,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_exofdom",
+          "repo": "data_source_exofdom_linkmerge",
           "branch": "master",
           "glob": "/exofdom/*",
           "empty_files": true

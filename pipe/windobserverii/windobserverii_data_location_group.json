@@ -17,7 +17,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_windobserverii",
+          "repo": "data_source_windobserverii_linkmerge",
           "glob": "/windobserverii/*/*/*/windobserverii_(*)_*-*-*.*",
           "joinOn": "$1",
           "empty_files": true

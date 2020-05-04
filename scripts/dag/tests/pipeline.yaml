@@ -3,7 +3,7 @@ pipeline:
   name: file_joiner_test
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/file_joiner:8
+  image: quay.io/battelleecology/file_joiner:7
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
@@ -16,22 +16,19 @@ transform:
         - path:
             name: INPUT_1
             path_pattern: /pfs/INPUT_1/*/*/**
-            # Join on year and month
-            path_join_indices: [4, 5]
+            path_join_indices: [3, 4]
         - path:
             name: INPUT_2
             path_pattern: /pfs/INPUT_2/*/*/**
-            # Join on year and month
-            path_join_indices: [4, 5]
+            path_join_indices: [3, 4]
         - path:
             name: INPUT_3
             path_pattern: /pfs/INPUT_3/*/*/**
-            # Join on year and month
-            path_join_indices: [4, 5]
+            path_join_indices: [3, 4]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
 input:
-  cross:
+  union:
     - pfs:
         name: INPUT_1
         repo: data_source_exo2_linkmerge

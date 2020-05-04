@@ -1,10 +1,10 @@
 {
     "pipeline": {
-      "name": "data_source_exototalalgae"
+      "name": "data_source_exo2"
     },
     "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-      "image": "quay.io/battelleecology/genavro:v1.0.16",
+      "image": "quay.io/battelleecology/genavro:v1.0.27",
       "cmd": [
         "bash"
       ],
@@ -22,15 +22,15 @@
         "  site=${arr[5]}",
         "  export GEN_DATE=$year-$month-$day",
         "  export GEN_SITE_NAME=$site",
-        "  export GEN_OUTPUT_DIR=/pfs/out/exototalalgae/$year/$month/$day",
+        "  export GEN_OUTPUT_DIR=/pfs/out/exo2/$year/$month/$day",
         "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem",
         "  mkdir -p $GEN_OUTPUT_DIR",
         "  /usr/src/app/genscript/gen.py --truncsecond --codec deflate",
         "done"
       ],
       "env": {
-        "GEN_YAML_CONF": "/usr/src/app/genscript/configs/exototalalgae_streams.yaml",
-        "GEN_SCHEMA_FILE": "/usr/src/app/schemas/exototalalgae/exototalalgae.avsc",
+        "GEN_YAML_CONF": "/usr/src/app/genscript/configs/exo2_streams.yaml",
+        "GEN_SCHEMA_FILE": "/usr/src/app/schemas/exo2/exo2.avsc",
         "LOG_LEVEL": "info",
         "REQUESTS_CA_BUNDLE": "/etc/pki/tls/cert.pem"
       },
@@ -59,12 +59,12 @@
     "resource_requests": {
       "memory": "175M",
       "cpu": 0.1
-    },
+    },    
     "input": {
         "pfs": {
           "name": "import_trigger",
           "repo": "import_trigger",
-          "glob": "/*/*/*/*"
+          "glob": "/*/*/*"
         }
       },
     "cache_size": "64M",
