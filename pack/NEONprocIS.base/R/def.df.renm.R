@@ -42,6 +42,7 @@ def.df.renm <- function(df,
                         mappNameVar = NULL,
                         log = NULL) {
   # initialize logging if necessary
+  #browser()
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
