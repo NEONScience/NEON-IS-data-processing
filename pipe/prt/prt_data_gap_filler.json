@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/data_gap_filler:9",
+    "image": "quay.io/battelleecology/data_gap_filler:10",
     "cmd": [
       "/bin/bash"
     ],
@@ -19,7 +19,21 @@
       "OUT_PATH": "/pfs/out",
       "START_DATE": "2018-12-31",
       "END_DATE": "2019-01-06",
-      "OUTPUT_DIRECTORIES": "data,calibration,location,uncertainty_data,uncertainty_coef,flags"
+      "OUTPUT_DIRECTORIES": "data,calibration,location,uncertainty_data,uncertainty_coef,flags",
+      "DATA_SOURCE_TYPE_INDEX": 3,
+      "DATA_YEAR_INDEX": 4,
+      "DATA_MONTH_INDEX": 5,
+      "DATA_DAY_INDEX": 6,
+      "DATA_LOCATION_INDEX": 7,
+      "DATA_TYPE_INDEX": 8,
+      "DATA_FILENAME_INDEX": 9,
+      "LOCATION_SOURCE_TYPE_INDEX": 3,
+      "LOCATION_YEAR_INDEX": 4,
+      "LOCATION_MONTH_INDEX": 5,
+      "LOCATION_DAY_INDEX": 6,
+      "LOCATION_INDEX": 7,
+      "LOCATION_FILENAME_INDEX": 8,
+      "EMPTY_FILE_TYPE_INDEX": 4
     }
   },
   "parallelism_spec": {
@@ -36,20 +50,24 @@
         }
       },
       {
-        "pfs": {
-          "name": "DATA_PATH",
-          "repo": "prt_merge_data_by_location",
-          "glob": "/prt/2019/01/*",
-          "empty_files": true
-        }
-      },
-      {
-        "pfs": {
-          "name": "LOCATION_PATH",
-          "repo": "location_active_dates",
-          "glob": "/prt/2019/01/*",
-          "empty_files": true
-        }
+        "union": [
+          {
+            "pfs": {
+              "name": "DATA_PATH",
+              "repo": "prt_merge_data_by_location",
+              "glob": "/prt/2019/01/*",
+              "empty_files": true
+            }
+          },
+          {
+            "pfs": {
+              "name": "LOCATION_PATH",
+              "repo": "location_active_dates",
+              "glob": "/prt/2019/01/*",
+              "empty_files": true
+            }
+          }
+        ]
       }
     ]
   },

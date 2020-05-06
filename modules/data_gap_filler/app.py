@@ -1,106 +1,97 @@
 #!/usr/bin/env python3
-import os
+import sys
 from datetime import datetime
 
 import environs
 import structlog
-import pathlib
 
 import lib.log_config as log_config
-import lib.file_crawler as file_crawler
 
-from data_gap_filler import gap_filler as gap_filler
+from data_gap_filler.data_file_handler import write_data_files
+from data_gap_filler.location_file_handler import write_location_files
+from data_gap_filler import empty_file_handler as empty_file_handler
 
 log = structlog.get_logger()
 
 
-def get_date_constraints():
-    """
-    Get the start and end dates from the environment.
+def main():
+    env = environs.Env()
+    data_path = env.str('DATA_PATH')
+    location_path = env.str('LOCATION_PATH')
+    empty_files_path = env.str('EMPTY_FILES_PATH')
+    output_directories = env.str('OUTPUT_DIRECTORIES')
+    start_date = env.str('START_DATE', None)
+    end_date = env.str('END_DATE', None)
+    out_path = env.str('OUT_PATH')
+    log_level = env.str('LOG_LEVEL', 'INFO')
+    data_source_type_index = env.int('DATA_SOURCE_TYPE_INDEX')
+    data_year_index = env.int('DATA_YEAR_INDEX')
+    data_month_index = env.int('DATA_MONTH_INDEX')
+    data_day_index = env.int('DATA_DAY_INDEX')
+    data_location_index = env.int('DATA_LOCATION_INDEX')
+    data_type_index = env.int('DATA_TYPE_INDEX')
+    data_filename_index = env.int('DATA_FILENAME_INDEX')
+    location_source_type_index = env.int('LOCATION_SOURCE_TYPE_INDEX')
+    location_year_index = env.int('LOCATION_YEAR_INDEX')
+    location_month_index = env.int('LOCATION_MONTH_INDEX')
+    location_day_index = env.int('LOCATION_DAY_INDEX')
+    location_index = env.int('LOCATION_INDEX')
+    location_filename_index = env.int('LOCATION_FILENAME_INDEX')
+    empty_file_type_index = env.int('EMPTY_FILE_TYPE_INDEX')
 
-    :return: dict of the start and end dates.
-    """
+    log_config.configure(log_level)
+
+    # directory names to output are a comma separated string
+    if ',' in output_directories:
+        output_directories = output_directories.split(',')
+
+    # parse dates from strings
     date_format = '%Y-%m-%d'
-    try:
-        start_date = os.environ['START_DATE']
-        end_date = os.environ['END_DATE']
-    except KeyError:
-        print(f'Proceeding without start and end dates.')
-        return None
     if start_date is not None:
         start_date = datetime.strptime(start_date, date_format)
     if end_date is not None:
         end_date = datetime.strptime(end_date, date_format)
-    return {'start_date': start_date, 'end_date': end_date}
-
-
-def get_empty_file_paths(empty_files_path):
-    """
-    Get the paths to the collection of empty files.
-
-    :param empty_files_path: The path to the directory containing empty files.
-    :type empty_files_path: str
-    :return: dict of file paths.
-    """
-    empty_data_path = None
-    empty_flags_path = None
-    empty_uncertainty_data_path = None
-    for file_path in file_crawler.crawl(empty_files_path):
-        parts = pathlib.Path(file_path).parts
-        trimmed = parts[3:]
-        directory_name = trimmed[1]
-        if 'data' == directory_name:
-            empty_data_path = file_path
-        elif 'flags' == directory_name:
-            empty_flags_path = file_path
-        elif 'uncertainty_data' == directory_name:
-            empty_uncertainty_data_path = file_path
-    if empty_data_path is None:
-        log.error('Empty data file not found.')
-        exit(1)
-    if empty_flags_path is None:
-        log.error('Empty flags file not found.')
-        exit(1)
-    if empty_uncertainty_data_path is None:
-        log.error('Empty uncertainty data file not found.')
-        exit(1)
-    return {'empty_data_path': empty_data_path,
-            'empty_flags_path': empty_flags_path,
-            'empty_uncertainty_data_path': empty_uncertainty_data_path}
-
-
-def main():
-    env = environs.Env()
-    data_path = env('DATA_PATH')
-    location_path = env('LOCATION_PATH')
-    empty_files_path = env('EMPTY_FILES_PATH')
-    output_directories = env('OUTPUT_DIRECTORIES')
-    out_path = env('OUT_PATH')
-    log_level = env('LOG_LEVEL')
-    log_config.configure(log_level)
-
-    # directory names to output should be a comma separated string.
-    if ',' in output_directories:
-        output_directories = output_directories.split(',')
 
     # empty file paths
-    empty_files_paths = get_empty_file_paths(empty_files_path)
+    empty_files_paths = empty_file_handler.get_paths(empty_files_path, empty_file_type_index)
     empty_data_path = empty_files_paths.get('empty_data_path')
     empty_flags_path = empty_files_paths.get('empty_flags_path')
     empty_uncertainty_data_path = empty_files_paths.get('empty_uncertainty_data_path')
+    if empty_data_path is None:
+        log.error('Empty data file not found.')
+        sys.exit(1)
+    if empty_flags_path is None:
+        log.error('Empty flags file not found.')
+        sys.exit(1)
+    if empty_uncertainty_data_path is None:
+        log.error('Empty uncertainty data file not found.')
+        sys.exit(1)
 
-    date_constraints = get_date_constraints()
-    if date_constraints is not None:
-        start_date = date_constraints.get('start_date')
-        end_date = date_constraints.get('end_date')
-        keys = gap_filler.get_data_files(data_path, out_path, start_date=start_date, end_date=end_date)
-        gap_filler.process_location_files(location_path, keys, out_path, output_directories,
-                                          empty_data_path, empty_flags_path, empty_uncertainty_data_path,
-                                          start_date=start_date, end_date=end_date)
-    else:
-        keys = gap_filler.get_data_files(data_path, out_path)
-        gap_filler.process_location_files(location_path, keys, out_path, output_directories,
-                                          empty_data_path, empty_flags_path, empty_uncertainty_data_path)
+    write_data_files(data_path,
+                     out_path,
+                     data_source_type_index,
+                     data_year_index,
+                     data_month_index,
+                     data_day_index,
+                     data_location_index,
+                     data_type_index,
+                     data_filename_index,
+                     start_date=start_date,
+                     end_date=end_date)
+    write_location_files(location_path,
+                         out_path,
+                         output_directories,
+                         empty_data_path,
+                         empty_flags_path,
+                         empty_uncertainty_data_path,
+                         location_source_type_index,
+                         location_year_index,
+                         location_month_index,
+                         location_day_index,
+                         location_index,
+                         location_filename_index,
+                         start_date=start_date,
+                         end_date=end_date)
 
 
 if __name__ == '__main__':

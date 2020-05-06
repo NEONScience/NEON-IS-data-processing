@@ -4,14 +4,12 @@ import os
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import data_calibration_group.app as app
-import data_calibration_group.grouper as grouper
 from lib import log_config as log_config
 
 
 class GrouperCalibrationTest(TestCase):
 
     def setUp(self):
-
         log_config.configure('DEBUG')
 
         self.setUpPyfakefs()
@@ -41,15 +39,26 @@ class GrouperCalibrationTest(TestCase):
         self.data_path = os.path.join(in_path, 'data')
         self.calibration_path = os.path.join(in_path, 'calibration')
 
-    def test_grouper(self):
-        grouper.group(self.data_path, self.calibration_path, self.out_path)
-        self.check_output()
+        self.data_source_type_index = '3'
+        self.data_year_index = '4'
+        self.data_month_index = '5'
+        self.data_day_index = '6'
+        self.calibration_source_type_index = '3'
+        self.calibration_source_id_index = '4'
+        self.calibration_stream_index = '5'
 
     def test_main(self):
         os.environ['DATA_PATH'] = self.data_path
         os.environ['CALIBRATION_PATH'] = self.calibration_path
         os.environ['OUT_PATH'] = self.out_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['DATA_SOURCE_TYPE_INDEX'] = self.data_source_type_index
+        os.environ['DATA_YEAR_INDEX'] = self.data_year_index
+        os.environ['DATA_MONTH_INDEX'] = self.data_month_index
+        os.environ['DATA_DAY_INDEX'] = self.data_day_index
+        os.environ['CALIBRATION_SOURCE_TYPE_INDEX'] = self.calibration_source_type_index
+        os.environ['CALIBRATION_SOURCE_ID_INDEX'] = self.calibration_source_id_index
+        os.environ['CALIBRATION_STREAM_INDEX'] = self.calibration_stream_index
         app.main()
         self.check_output()
 

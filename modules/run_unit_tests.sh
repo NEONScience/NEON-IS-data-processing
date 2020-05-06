@@ -1,6 +1,5 @@
 #!/bin/bash
 python3 -B -m unittest \
-avro_parquet_converter.tests.test_app \
 calibrated_location_group.tests.test_app \
 context_filter.tests.test_app \
 data_access.tests.test_data_access \
@@ -27,7 +26,6 @@ lib.tests.test_target_path \
 location_active_dates.tests.test_app \
 location_asset.tests.test_app \
 location_group_path.tests.test_app \
-location.tests.test_app \
 padded_timeseries_analyzer.tests.test_app \
 parquet_linkmerge.tests.test_app \
 qaqc_regularized_flag_group.tests.test_app \
