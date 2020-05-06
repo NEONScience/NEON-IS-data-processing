@@ -25,17 +25,19 @@ def update(specification_path, old_image, new_image):
                     json_data = json.load(json_file)
                     image = json_data['transform']['image']
                     if image == old_image:
-                        print(f'updating file {file}')
+                        print(f'updating file {file_path}')
                         json_data['transform']['image'] = new_image
                         json.dump(json_data, open(file_path, 'w'), indent=2)
             elif file.endswith('.yaml'):
                 with open(file_path, 'r') as open_file:
-                    data, indent, block_seq_indent = load_yaml_guess_indent(open_file, preserve_quotes=True)
+                    data, indent, block_seq_indent = load_yaml_guess_indent(
+                        open_file, preserve_quotes=True)
                     image = data['transform']['image']
                     if image == old_image:
                         print(f'updating file {file}')
                         data['transform']['image'] = new_image
-                        ruamel.yaml.round_trip_dump(data, open(file_path, 'w'), explicit_start=True)
+                        ruamel.yaml.round_trip_dump(data, open(
+                            file_path, 'w'), explicit_start=True)
 
 
 if __name__ == '__main__':
