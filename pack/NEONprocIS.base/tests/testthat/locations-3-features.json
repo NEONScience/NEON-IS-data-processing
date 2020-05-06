@@ -1,0 +1,618 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC104072",
+                "site": "PRIN",
+                "install_date": "2018-08-21T20:07:30Z",
+                "remove_date": "2019-08-21T15:40:27Z",
+                "transaction_date": "2019-08-21T15:40:46Z",
+                "context": [
+                    "surfacewater",
+                    "water-quality-281",
+                    "water-quality"
+                ],
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -97.781507,
+                                    33.378433,
+                                    251.048
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2018-04-01T00:00:00Z",
+                                "end_date": "2018-11-07T23:59:59Z",
+                                "transaction_date": "2019-06-05T21:40:36Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.067,
+                                "y_offset": 0.11,
+                                "z_offset": 0.13,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "S2LOC104069",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -97.781495,
+                                                            33.378426,
+                                                            251.027
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2018-11-08T00:00:00Z",
+                                                        "end_date": null,
+                                                        "transaction_date": "2019-06-05T21:27:33Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC104069",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -97.781507,
+                                                            33.37843,
+                                                            251.049
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": "2018-03-31T23:59:59Z",
+                                                        "transaction_date": "2018-04-24T16:24:16Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC104069",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -97.781507,
+                                                            33.378433,
+                                                            251.048
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2018-04-01T00:00:00Z",
+                                                        "end_date": "2018-11-07T23:59:59Z",
+                                                        "transaction_date": "2019-06-05T21:27:33Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC104069",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -97.781507,
+                                    33.37843,
+                                    251.049
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2010-01-01T00:00:00Z",
+                                "end_date": "2018-03-31T23:59:59Z",
+                                "transaction_date": "2018-04-24T16:26:24Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.06731,
+                                "y_offset": 0.1,
+                                "z_offset": 0.08,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "S2LOC104069",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -97.781495,
+                                                            33.378426,
+                                                            251.027
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2018-11-08T00:00:00Z",
+                                                        "end_date": null,
+                                                        "transaction_date": "2019-06-05T21:27:33Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC104069",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -97.781507,
+                                                            33.37843,
+                                                            251.049
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": "2018-03-31T23:59:59Z",
+                                                        "transaction_date": "2018-04-24T16:24:16Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC104069",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -97.781507,
+                                                            33.378433,
+                                                            251.048
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2018-04-01T00:00:00Z",
+                                                        "end_date": "2018-11-07T23:59:59Z",
+                                                        "transaction_date": "2019-06-05T21:27:33Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC104069",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -97.781496,
+                                    33.378425,
+                                    252.014
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2018-11-08T00:00:00Z",
+                                "end_date": null,
+                                "transaction_date": "2019-06-05T21:40:36Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.067,
+                                "y_offset": 0.1,
+                                "z_offset": -0.895,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "S2LOC104069",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -97.781495,
+                                                            33.378426,
+                                                            251.027
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2018-11-08T00:00:00Z",
+                                                        "end_date": null,
+                                                        "transaction_date": "2019-06-05T21:27:33Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC104069",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -97.781507,
+                                                            33.37843,
+                                                            251.049
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": "2018-03-31T23:59:59Z",
+                                                        "transaction_date": "2018-04-24T16:24:16Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC104069",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -97.781507,
+                                                            33.378433,
+                                                            251.048
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2018-04-01T00:00:00Z",
+                                                        "end_date": "2018-11-07T23:59:59Z",
+                                                        "transaction_date": "2019-06-05T21:27:33Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC104069",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "HOR": "102",
+            "VER": "100",
+            "TMI": "000",
+            "Data Rate": "1",
+            "Required Asset Management Location Code": "CFGLOC104072",
+            "Required Asset Management Location ID": 5498
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC111057",
+                "site": "TECR",
+                "install_date": "2019-11-25T18:07:48Z",
+                "remove_date": "2019-11-25T18:13:11Z",
+                "transaction_date": "2019-11-25T18:13:17Z",
+                "context": [
+                    "surfacewater",
+                    "water-quality-286",
+                    "water-quality"
+                ],
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -119.023553,
+                                    36.955224,
+                                    2004.494
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2010-01-01T00:00:00Z",
+                                "end_date": null,
+                                "transaction_date": "2017-05-01T16:36:42Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.06731,
+                                "y_offset": 0.09,
+                                "z_offset": -2.065,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "CFGLOC111057",
+                                        "locations": null
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "Required Asset Management Location Code": "CFGLOC111057",
+            "Required Asset Management Location ID": 12585,
+            "HOR": "102",
+            "VER": "100",
+            "TMI": "000",
+            "Data Rate": "1"
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC101444",
+                "site": "MAYF",
+                "install_date": "2017-07-06T14:37:07Z",
+                "remove_date": "2017-07-10T16:59:07Z",
+                "transaction_date": "2017-07-06T14:37:52Z",
+                "context": [
+                    "surfacewater",
+                    "water-quality-248",
+                    "water-quality"
+                ],
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -87.408222,
+                                    32.961589,
+                                    70.839
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2010-01-01T00:00:00Z",
+                                "end_date": "2019-07-17T23:59:59Z",
+                                "transaction_date": "2019-10-03T18:26:47Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.067,
+                                "y_offset": 0.067,
+                                "z_offset": -0.895,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "S2LOC101441",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -87.408223,
+                                                            32.961588,
+                                                            70.028
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": null,
+                                                        "transaction_date": "2015-12-11T20:47:24Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC101441",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -87.408217,
+                                    32.961592,
+                                    70.103
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2019-07-18T00:00:00Z",
+                                "end_date": null,
+                                "transaction_date": "2019-10-03T18:26:47Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.05,
+                                "y_offset": 0,
+                                "z_offset": -0.057,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "S2LOC101441",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -87.408223,
+                                                            32.961588,
+                                                            70.028
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": null,
+                                                        "transaction_date": "2015-12-11T20:47:24Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC101441",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "HOR": "102",
+            "VER": "100",
+            "TMI": "000",
+            "Data Rate": "1",
+            "Required Asset Management Location ID": 2709,
+            "Required Asset Management Location Code": "CFGLOC101444"
+        }
+    ],
+    "source_type": "prt",
+    "source_id": 39800
+}

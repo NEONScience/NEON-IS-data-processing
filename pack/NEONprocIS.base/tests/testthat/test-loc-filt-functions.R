@@ -43,6 +43,8 @@
 #     original creation
 #   Mija Choi (2020-01-30)
 #     Added json and json schema validations
+#   Mija Choi (2020-05-6)
+#     Added more tests to get the test coverage over 95%
 ##############################################################################################
 # Define test context
 #context("\n       | Filter named location information by date-time range\n")
@@ -50,53 +52,135 @@
 # Test Filter named location information by date-time range for NEON instrumented systems sensors
 test_that("   Testing Filter named location information by date-time range", {
   ##########
-  ##########  Happy path:::: Named location(s) filtered by date-time range
+  ##########  Tests to have Named location(s) filtered by date-time range
   ##########
   #        "name": "CFGLOC108440"
   #        "site": "HARV",
   #        "install_date": "2017-02-07T00:17:20Z",
   #        "remove_date": "2017-02-07T00:18:28Z"
   
-  
   NameFileIn = 'locations.json'
   
   NameFileOut = 'locations-out.json'
   
-  # Happy path test 1:  No features and locations in the time range by sending today's date as the Begin and NULL as End date
+  # Happy path #1:  No features and locations in the time range by sending today's date as the Begin and NULL as End date
   
-  cat(
-    "\n       |=====================================   Test Summary   ====================================|\n"
-  )
+  cat("\n       |=====================================   Test Summary   ====================================|\n")
   
   TimeBgn <- Sys.Date()
   TimeEnd <- NULL
   cat("\n       |------ Positive test 1:: Input JSON is valid and conforms to the schema                    |\n")
   cat("\n       |------                   timeBgn is now and timeEnd is NULL                                |\n\n")
-  locReturned <-
-    NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+ 
+  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   expect_true (length(locReturned$features) == 0)
   
   cat("\n       |------                   No features returned in this time range                           |\n")
-  cat(
-    "\n       |===========================================================================================|\n"
-  )
+  cat("\n       |===========================================================================================|\n")
   
-  # Happy path test 2: will have features in the time range
+  # Happy path #2: will have features in the time range
   
   cat("\n       |------ Positive test 2:: Input JSON is valid and conforms to the schema                    |\n")
   cat("\n       |------                   between '2017-02-06T00:10:20Z' and '2017-02-07T00:18:28Z'         |\n\n")
+  
   TimeBgn <- base::as.POSIXct('2017-02-06T00:10:20Z')
   TimeEnd <- base::as.POSIXct('2017-02-07T00:18:28Z')
+  
+  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  expect_true (length(locReturned$features) > 0)
+  
+  cat("\n       |------                   Will have features returned in the time range                     |\n")
+  cat("\n       |===========================================================================================|\n")
+ 
+ # Happy path #3-a: locations json has 3 features with 1 level ref locations, will have features returned in the time range
+  
+  cat("\n       |------ Positive test 3-a:: Input JSON is valid and conforms to the schema                  |\n")
+  cat("\n       |------                   locations json has 3 features with 1 level ref locations          |\n\n")
+  cat("\n       |------                   will return 3 features                                            |\n")
+  cat("\n       |------                   between '2017-02-06T00:10:20Z' and '2017-02-07T00:18:28Z'         |\n\n")
+  
+  NameFileIn = 'locations-3-features.json'
+ 
+  TimeBgn <- base::as.POSIXct('2017-05-01 00:10:20', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
+ 
+  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  expect_true (length(locReturned$features) == 3)
+  
+  cat("\n       |------                   Will have 2 features returned in the time range                     |\n")
+  cat("\n       |===========================================================================================|\n")
+  # Happy path #3-b: locations json has 3 features with 1 level ref locations, will have features returned in the time range
+  
+  cat("\n       |------ Positive test 3-b:: Input JSON is valid and conforms to the schema                    |\n")
+  cat("\n       |------                   locations json has 3 features with 1 level ref locations            |\n\n")
+  cat("\n       |------                   will return 2 features (note that timeBgn to filter 1 feture out    |\n")
+  cat("\n       |------                   between '2018-05-01 00:10:20Z' and '2020-03-09 00:18:28Z'           |\n\n")
+  
+  NameFileIn = 'locations-3-features.json'
+  
+  TimeBgn <- base::as.POSIXct('2018-05-01 00:10:20', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
+  
+  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  expect_true (length(locReturned$features) == 2)
+  
+  cat("\n       |------                   Will have 3 features returned in the time range                     |\n")
+  cat("\n       |===========================================================================================|\n")
+  
+  #
+  # Happy path #4: locations json has 2 lvl nested reference_locations and will have features returned in the time range
+  
+  cat("\n       |------ Positive test 4:: Input JSON is valid and conforms to the schema                    |\n")
+  cat("\n       |------                   locations json has 2 level nested reference_locations             |\n\n")
+  cat("\n       |------                   between '2019-05-01 00:10:20Z' and '2020-03-09 00:18:28Z'         |\n\n")
+  
+  NameFileIn = 'locations-2lvl-ref-locs.json'
+ 
+  TimeBgn <- base::as.POSIXct('2019-05-01 00:10:20', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
+  
+  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  expect_true (length(locReturned$features) > 0)
+  
+  cat("\n       |------                   Will have features returned in the time range                     |\n")
+  cat("\n       |===========================================================================================|\n")
+  #
+  # Happy path #5: will have features in the time range
+  
+  cat("\n       |------ Positive test 5:: Input JSON is valid and conforms to the schema                    |\n")
+  cat("\n       |------                   locations json has 3 lvl nested reference_locations                    |\n\n")
+  cat("\n       |------                   between '2017-02-06T00:10:20Z' and '2017-02-07T00:18:28Z'         |\n\n")
+  
+  NameFileIn = 'locations-3lvl-ref-locs.json'
+  
+  NameFileOut = 'locations-out.json'
+  
+  TimeBgn <- base::as.POSIXct('2019-05-01 00:10:20', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
   
   locReturned <-
     NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   expect_true (length(locReturned$features) > 0)
   
   cat("\n       |------                   Will have features returned in the time range                     |\n")
-  cat(
-    "\n       |===========================================================================================|\n"
-  )
+  cat("\n       |===========================================================================================|\n")
+  #  
+  # Happy path test 6: will have features in the time range
   
+  cat("\n       |------ Positive test 6:: Input JSON is valid and conforms to the schema                    |\n")
+  cat("\n       |------                   locations json has 0 nested reference_locations                   |\n\n")
+  cat("\n       |------                   between '2019-05-01 00:10:20Z' and '2020-03-09 00:18:28Z'         |\n\n")
+  
+  NameFileIn = 'locations-0lvl-ref-locs.json'
+  
+  TimeBgn <- base::as.POSIXct('2019-05-01 00:10:20', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
+  
+  locReturned <-NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  expect_true (length(locReturned$features) > 0)
+  
+  cat("\n       |------                   Will have features returned in the time range                     |\n")
+  cat("\n       |===========================================================================================|\n")
   #
   # Sad path test 1:  A blank json is passed on to def.loc.filt
   
@@ -107,13 +191,10 @@ test_that("   Testing Filter named location information by date-time range", {
   
   cat("\n       |------ Negative test 1::A blank json is passed on to def.loc.filt                          |\n")
   cat("\n       |------                  A blank Json is not strictly valid.                                |\n\n")
-  locReturned <-
-    NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   
   cat("\n       |----------- Return error, log the message and exit                                         |\n")
-  cat(
-    "\n       |===========================================================================================|\n"
-  )
+  cat("\n       |===========================================================================================|\n")
   
   expect_true (class(locReturned) == 'try-error')
   #
@@ -127,9 +208,7 @@ test_that("   Testing Filter named location information by date-time range", {
     try (NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
   
   cat("\n       |----------- Return error, log the message and exit                                         |\n")
-  cat(
-    "\n       |===========================================================================================|\n"
-  )
+  cat("\n       |===========================================================================================|\n")
   
   expect_true (class(locReturned) == 'try-error')
   
@@ -141,13 +220,11 @@ test_that("   Testing Filter named location information by date-time range", {
   
   NameFileIn = 'locations-emptyContents.json'
   
-  locReturned <-
-    try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
+  locReturned <- try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
   
   cat("\n       |----------- Return error, log the message and exit                                         |\n")
-  cat(
-    "\n       |===========================================================================================|\n"
-  )
+  cat("\n       |===========================================================================================|\n")
+ 
   expect_true (class(locReturned) == 'try-error')
   #
   # A json has no syntax errors, but does not conform to the schema
@@ -184,13 +261,12 @@ test_that("   Testing Filter named location information by date-time range", {
     try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
   
   cat("\n       |----------- Return error, log the message and exit                                         |\n")
-  cat(
-    "\n       |===========================================================================================|\n"
-  )
+  cat("\n       |===========================================================================================|\n")
   
   expect_true (class(locReturned) == 'try-error')
   # Or check to see if the output file is generated and then remove it after testing
   if (file.exists("locations-out.json")) {
     file.remove("locations-out.json")
   }
-})
+}
+)
