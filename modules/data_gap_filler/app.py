@@ -16,8 +16,8 @@ log = structlog.get_logger()
 
 def main():
     env = environs.Env()
-    data_path = env.str('DATA_PATH')
-    location_path = env.str('LOCATION_PATH')
+    data_path = env.str('DATA_PATH', None)
+    location_path = env.str('LOCATION_PATH', None)
     empty_files_path = env.str('EMPTY_FILES_PATH')
     output_directories = env.str('OUTPUT_DIRECTORIES')
     start_date = env.str('START_DATE', None)
@@ -67,31 +67,33 @@ def main():
         log.error('Empty uncertainty data file not found.')
         sys.exit(1)
 
-    write_data_files(data_path,
-                     out_path,
-                     data_source_type_index,
-                     data_year_index,
-                     data_month_index,
-                     data_day_index,
-                     data_location_index,
-                     data_type_index,
-                     data_filename_index,
-                     start_date=start_date,
-                     end_date=end_date)
-    write_location_files(location_path,
+    if data_path is not None:
+        write_data_files(data_path,
                          out_path,
-                         output_directories,
-                         empty_data_path,
-                         empty_flags_path,
-                         empty_uncertainty_data_path,
-                         location_source_type_index,
-                         location_year_index,
-                         location_month_index,
-                         location_day_index,
-                         location_index,
-                         location_filename_index,
+                         data_source_type_index,
+                         data_year_index,
+                         data_month_index,
+                         data_day_index,
+                         data_location_index,
+                         data_type_index,
+                         data_filename_index,
                          start_date=start_date,
                          end_date=end_date)
+    if location_path is not None:
+        write_location_files(location_path,
+                             out_path,
+                             output_directories,
+                             empty_data_path,
+                             empty_flags_path,
+                             empty_uncertainty_data_path,
+                             location_source_type_index,
+                             location_year_index,
+                             location_month_index,
+                             location_day_index,
+                             location_index,
+                             location_filename_index,
+                             start_date=start_date,
+                             end_date=end_date)
 
 
 if __name__ == '__main__':
