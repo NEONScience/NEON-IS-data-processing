@@ -4,13 +4,13 @@ import os
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import data_location_group.app as app
+from data_location_group.data_location_grouper import link_data, link_location
 from lib import log_config as log_config
 
 
 class AppTest(TestCase):
 
     def setUp(self):
-
         log_config.configure('DEBUG')
 
         self.setUpPyfakefs()
@@ -33,8 +33,21 @@ class AppTest(TestCase):
         #  Create output directory.
         self.fs.create_dir(self.out_path)
 
+        self.source_type_index = '3'
+        self.year_index = '4'
+        self.month_index = '5'
+        self.day_index = '6'
+        self.file_index = '7'
+
     def test_group(self):
-        app.group(self.data_path, self.location_path, self.out_path)
+        for output_dir in link_data(self.data_path,
+                                    self.out_path,
+                                    int(self.source_type_index),
+                                    int(self.year_index),
+                                    int(self.month_index),
+                                    int(self.day_index),
+                                    int(self.file_index)):
+            link_location(self.location_path, output_dir)
         self.check_output()
 
     def test_main(self):
@@ -42,7 +55,11 @@ class AppTest(TestCase):
         os.environ['LOCATION_PATH'] = self.location_path
         os.environ['OUT_PATH'] = self.out_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
-
+        os.environ['SOURCE_TYPE_INDEX'] = self.source_type_index
+        os.environ['YEAR_INDEX'] = self.year_index
+        os.environ['MONTH_INDEX'] = self.month_index
+        os.environ['DAY_INDEX'] = self.day_index
+        os.environ['FILE_INDEX'] = self.file_index
         app.main()
         self.check_output()
 

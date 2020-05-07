@@ -48,7 +48,7 @@ def link_empty_file(target_dir, empty_file_path, file_name):
     :return:
     """
     target_path = os.path.join(target_dir, file_name)
-    # log.debug(f'target_path: {target_path}')
+    log.debug(f'target_path: {target_path}')
     link(empty_file_path, target_path)
 
 
