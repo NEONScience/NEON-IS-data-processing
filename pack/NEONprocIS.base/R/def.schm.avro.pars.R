@@ -84,7 +84,7 @@ def.schm.avro.pars <- function(FileSchm=NULL,
       idx$doc <- NA
     }
     
-    base::data.frame(name=idx$name,type=base::paste0(base::unlist(idx$type),collapse=','),doc=idx$doc,stringsAsFactors=FALSE)
+    base::data.frame(name=idx$name,type=base::paste0(base::unlist(idx$type),collapse='|'),doc=idx$doc,stringsAsFactors=FALSE)
   })
   var <- base::do.call(base::rbind,var)
   
