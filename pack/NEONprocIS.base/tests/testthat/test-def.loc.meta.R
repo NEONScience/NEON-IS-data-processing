@@ -1,5 +1,5 @@
-# library(testthat)
-# source("R/def.loc.meta.R")
+library(testthat)
+source("R/def.loc.meta.R")
 
 
 test_that("When No restriction, get all locations",
@@ -8,6 +8,7 @@ test_that("When No restriction, get all locations",
 
             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile)
             expect_true (length(locationMetaData$site) > 0)
+            expect_true (locationMetaData$site[1] == "CARI")
 
           })
 
@@ -48,8 +49,8 @@ test_that("location that have removal date before time Begin",
             timeBgn <- base::as.POSIXct('2019-09-05',tz='GMT')
             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn)
             expect_true (length(locationMetaData$site) == 1)
-            
-            
+
+
           })
 
 
