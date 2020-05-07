@@ -92,7 +92,9 @@ def write_location_files(location_path,
                 link_empty_file(uncertainty_dir, empty_uncertainty_data_file_path, filename)
         if 'uncertainty_coef' in output_directories:
             coefficient_dir = os.path.join(target_root, 'uncertainty_coef')
+            log.debug(f'Writing uncertainty_coef directory: {coefficient_dir}.')
             os.makedirs(coefficient_dir, exist_ok=True)
         if 'calibration' in output_directories:
             calibration_dir = os.path.join(target_root, 'calibration')
+            log.debug(f'Writing calibration directory: {calibration_dir}.')
             os.makedirs(calibration_dir, exist_ok=True)
