@@ -33,6 +33,7 @@ class AppTest(TestCase):
         #  Create output directory.
         self.fs.create_dir(self.out_path)
 
+        #  File path indices.
         self.source_type_index = '3'
         self.year_index = '4'
         self.month_index = '5'

@@ -7,9 +7,9 @@ import structlog
 
 import lib.log_config as log_config
 
-from data_gap_filler.data_file_handler import write_data_files
-from data_gap_filler.location_file_handler import write_location_files
-from data_gap_filler import empty_file_handler as empty_file_handler
+from date_gap_filler.data_file_handler import write_data_files
+from date_gap_filler.location_file_handler import write_location_files
+from date_gap_filler import empty_file_handler as empty_file_handler
 
 log = structlog.get_logger()
 

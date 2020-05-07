@@ -3,7 +3,7 @@ import os
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import data_gap_filler.app as app
+import date_gap_filler.app as app
 
 
 class AppTest(TestCase):

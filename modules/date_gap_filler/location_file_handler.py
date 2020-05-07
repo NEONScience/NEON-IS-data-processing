@@ -7,8 +7,8 @@ import pathlib
 from lib.file_linker import link
 from lib.file_crawler import crawl
 
-from data_gap_filler.date_between import is_date_between
-from data_gap_filler.empty_file_handler import render_empty_file_name, link_empty_file
+from date_gap_filler.date_between import is_date_between
+from date_gap_filler.empty_file_handler import render_empty_file_name, link_empty_file
 
 log = structlog.get_logger()
 

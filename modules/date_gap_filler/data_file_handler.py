@@ -6,7 +6,7 @@ import structlog
 from lib.file_linker import link
 from lib.file_crawler import crawl
 
-from data_gap_filler.date_between import is_date_between
+from date_gap_filler.date_between import is_date_between
 
 log = structlog.get_logger()
 
