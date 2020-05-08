@@ -107,13 +107,12 @@ test_that("   Testing Filter named location information by date-time range", {
   locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   expect_true (length(locReturned$features) == 3)
   
-  cat("\n       |------                   Will have 2 features returned in the time range                     |\n")
-  cat("\n       |===========================================================================================|\n")
+  #
   # Happy path #3-b: locations json has 3 features with 1 level ref locations, will have features returned in the time range
   
   cat("\n       |------ Positive test 3-b:: Input JSON is valid and conforms to the schema                    |\n")
   cat("\n       |------                   locations json has 3 features with 1 level ref locations            |\n\n")
-  cat("\n       |------                   will return 2 features (note that timeBgn to filter 1 feture out    |\n")
+  cat("\n       |------                   will return 2 features (note that timeBgn to filter 1 feature out   |\n")
   cat("\n       |------                   between '2018-05-01 00:10:20Z' and '2020-03-09 00:18:28Z'           |\n\n")
   
   NameFileIn = 'locations-3-features.json'
@@ -124,10 +123,45 @@ test_that("   Testing Filter named location information by date-time range", {
   locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   expect_true (length(locReturned$features) == 2)
   
-  cat("\n       |------                   Will have 3 features returned in the time range                     |\n")
+  cat("\n       |------                   Will have 2 features returned in the time range                     |\n")
   cat("\n       |===========================================================================================|\n")
   
   #
+  # Happy path #3-c: locations json has 1 feature with 3 level ref locations. 
+  #                  No ref geolocations will  be marked for deletion during the time range given
+  #
+  cat("\n       |------ Positive test 3-c:: Input JSON is valid and conforms to the schema                  |\n")
+  cat("\n       |------                   locations json has 1 feature with 3 levels ref locations          |\n")
+  cat("\n       |------                   No reference geolocations will be marked for deletion             |\n")
+  cat("\n       |------                   between '2009-03-01 00:10:20Z' and '2020-03-09 00:18:28Z'         |\n")
+  cat("\n       |------                   The feature in the input json will be returned                   |\n\n")
+  
+  NameFileIn = 'locations-3lvl-ref-locs-out-of-range.json'
+  
+  TimeBgn <- base::as.POSIXct('2009-03-01 00:10:20', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
+  
+  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  
+  expect_true (length(locReturned$features) == 1)
+  #
+  # Happy path #3-d: locations json has 1 feature with 3 level ref locations. 
+  #                  All ref geolocations will  be marked for deletion during the time range given
+  cat("\n       |------ Positive test 3-d:: Input JSON is valid and conforms to the schema                  |\n")
+  cat("\n       |------                   locations json has 1 feature with 3 levels ref locations          |\n")
+  cat("\n       |------                   All reference geolocations will be marked for deletion            |\n")
+  cat("\n       |------                   between '2011-03-01 00:10:20Z' and '2019-03-09 00:18:28Z'         |\n")
+  cat("\n       |------                   No feature in the input json will be returned                     |\n\n")
+  
+  NameFileIn = 'locations-3lvl-ref-locs-out-of-range.json'
+  
+  TimeBgn <- base::as.POSIXct('2011-03-01 00:10:20', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2019-03-09 00:18:28', tz = 'GMT')
+  
+  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  
+  expect_true (length(locReturned$features) == 0)
+
   # Happy path #4: locations json has 2 lvl nested reference_locations and will have features returned in the time range
   
   cat("\n       |------ Positive test 4:: Input JSON is valid and conforms to the schema                    |\n")
