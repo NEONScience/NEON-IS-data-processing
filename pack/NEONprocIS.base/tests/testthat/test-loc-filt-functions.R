@@ -160,7 +160,8 @@ test_that("   Testing Filter named location information by date-time range", {
   
   locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   
-  expect_true (length(locReturned$features) == 1)
+  lstReturned <- locReturned$features[[1]]$properties$locations$features[[1]]$properties$reference_location$properties$locations$features
+  rapportools::is.empty(unlist(lstReturned))
 
   # Happy path #4: locations json has 2 lvl nested reference_locations and will have features returned in the time range
   
