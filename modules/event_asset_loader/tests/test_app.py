@@ -24,14 +24,26 @@ class AppTest(TestCase):
         #  Create output directory.
         self.fs.create_dir(self.out_path)
 
+        self.source_type_index = 3
+        self.source_id_index = 4
+        self.filename_index = 5
+
     def test_group(self):
-        app.process(self.source_path, self.out_path)
+        app.process(self.source_path,
+                    self.out_path,
+                    self.source_type_index,
+                    self.source_id_index,
+                    self.filename_index)
         self.check_output()
 
     def test_main(self):
         os.environ['SOURCE_PATH'] = self.source_path
         os.environ['OUT_PATH'] = self.out_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
+        os.environ['SOURCE_ID_INDEX'] = str(self.source_id_index)
+        os.environ['FILENAME_INDEX'] = str(self.filename_index)
+
         app.main()
         self.check_output()
 

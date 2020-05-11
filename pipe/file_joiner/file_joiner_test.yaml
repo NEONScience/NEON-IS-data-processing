@@ -30,7 +30,7 @@ transform:
             path_join_indices: [4, 5]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: 3
+    RELATIVE_PATH_INDEX: "3"
 input:
   cross:
     - pfs:
