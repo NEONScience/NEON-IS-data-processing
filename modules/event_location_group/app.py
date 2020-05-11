@@ -6,14 +6,21 @@ import environs
 import structlog
 
 import lib.log_config as log_config
-import lib.file_linker as file_linker
-import lib.file_crawler as file_crawler
-import lib.target_path as target_path
+from lib.file_linker import link
+from lib.file_crawler import crawl
 
 log = structlog.get_logger()
 
 
-def group(data_path, location_path, out_path):
+def group(data_path,
+          location_path,
+          out_path,
+          source_type_index,
+          year_index,
+          month_index,
+          day_index,
+          source_id_index,
+          filename_index):
     """
     Write event data and location files into output path.
 
@@ -23,25 +30,34 @@ def group(data_path, location_path, out_path):
     :type location_path: str
     :param out_path: The path for writing results.
     :type out_path: str
+    :param source_type_index: The input file path index of the source type.
+    :type source_type_index: int
+    :param year_index: The input file path index of the year.
+    :type year_index: int
+    :param month_index: The input file path index of the month.
+    :type month_index: int
+    :param day_index: The input file path index of the day.
+    :type day_index: int
+    :param source_id_index: The input file path index of the source ID.
+    :type source_id_index: int
+    :param filename_index: The input file path index of the filename.
+    :type filename_index: int
     :return:
     """
-    for file_path in file_crawler.crawl(data_path):
-        trimmed_path = target_path.trim_path(file_path)
-        log.debug(f'trimmed_path: {trimmed_path}')
-        parts = trimmed_path.parts
-        source_type = parts[0]
-        year = parts[1]
-        month = parts[2]
-        day = parts[3]
-        source_id = parts[4]
-        filename = parts[5]
-        log.debug(f'filename: {filename}')
-        log.debug(f'source type: {source_type} source_id: {source_id}')
+    for file_path in crawl(data_path):
+        parts = pathlib.Path(file_path).parts
+        source_type = parts[source_type_index]
+        year = parts[year_index]
+        month = parts[month_index]
+        day = parts[day_index]
+        source_id = parts[source_id_index]
+        filename = parts[filename_index]
+        log.debug(f'filename: {filename} source type: {source_type} source_id: {source_id}')
         target_root = os.path.join(out_path, source_type, year, month, day, source_id)
         link_location(location_path, target_root)
         data_target_path = os.path.join(target_root, 'data', filename)
         log.debug(f'data_target_path: {data_target_path}')
-        file_linker.link(file_path, data_target_path)
+        link(file_path, data_target_path)
 
 
 def link_location(location_path, target_root):
@@ -54,22 +70,36 @@ def link_location(location_path, target_root):
     :type target_root: str
     :return:
     """
-    for file in file_crawler.crawl(location_path):
+    for file in crawl(location_path):
         location_filename = pathlib.Path(file).name
         location_target_path = os.path.join(target_root, 'location', location_filename)
         log.debug(f'location_target_path: {location_target_path}')
-        file_linker.link(file, location_target_path)
+        link(file, location_target_path)
 
 
 def main():
     env = environs.Env()
-    data_path = env('DATA_PATH')
-    location_path = env('LOCATION_PATH')
-    out_path = env('OUT_PATH')
-    log_level = env('LOG_LEVEL')
+    data_path = env.str('DATA_PATH')
+    location_path = env.str('LOCATION_PATH')
+    out_path = env.str('OUT_PATH')
+    log_level = env.str('LOG_LEVEL')
+    source_type_index = env.int('SOURCE_TYPE_INDEX')
+    year_index = env.int('YEAR_INDEX')
+    month_index = env.int('MONTH_INDEX')
+    day_index = env.int('DAY_INDEX')
+    source_id_index = env.int('SOURCE_ID_INDEX')
+    filename_index = env.int('FILENAME_INDEX')
     log_config.configure(log_level)
     log.debug(f'data_dir: {data_path} location_dir: {location_path} out_dir: {out_path}')
-    group(data_path, location_path, out_path)
+    group(data_path,
+          location_path,
+          out_path,
+          source_type_index,
+          year_index,
+          month_index,
+          day_index,
+          source_id_index,
+          filename_index)
 
 
 if __name__ == '__main__':
