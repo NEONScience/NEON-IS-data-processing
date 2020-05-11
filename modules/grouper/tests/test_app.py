@@ -37,14 +37,17 @@ class AppTest(TestCase):
         self.fs.create_file(self.in_data_path)
         self.fs.create_file(self.in_location_path)
 
+        self.relative_path_index = 3
+
     def test_group(self):
-        app.group(self.base_path, self.output_path)
+        app.group(self.base_path, self.output_path, self.relative_path_index)
         self.check_output()
 
     def test_main(self):
         os.environ['DATA_PATH'] = self.base_path
         os.environ['OUT_PATH'] = self.output_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
         app.main()
         self.check_output()
 

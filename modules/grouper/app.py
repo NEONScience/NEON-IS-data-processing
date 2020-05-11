@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
+import os
+import pathlib
+
 from structlog import get_logger
 import environs
 
 import lib.log_config as log_config
-import lib.file_linker as file_linker
-import lib.file_crawler as file_crawler
-import lib.target_path as target_path
+from lib.file_linker import link
+from lib.file_crawler import crawl
 
 log = get_logger()
 
 
-def group(path, out_path):
+def group(path, out_path, relative_path_index):
     """
     Link files into the output directory.
 
@@ -18,22 +20,26 @@ def group(path, out_path):
     :type path: str
     :param out_path: The output path for writing results.
     :type out_path: str
+    :param relative_path_index: Trim path components before this index.
+    :type relative_path_index: int
     """
-    for file_path in file_crawler.crawl(path):
-        target = target_path.get_path(file_path, out_path)
+    for file_path in crawl(path):
+        parts = pathlib.Path(file_path).parts
+        target = os.path.join(out_path, *parts[relative_path_index:])
         log.debug(f'target: {target}')
-        file_linker.link(file_path, target)
+        link(file_path, target)
 
 
 def main():
     """Group input data files without modifying the file paths."""
     env = environs.Env()
-    data_path = env('DATA_PATH')
-    out_path = env('OUT_PATH')
-    log_level = env('LOG_LEVEL')
+    data_path = env.str('DATA_PATH')
+    out_path = env.str('OUT_PATH')
+    log_level = env.str('LOG_LEVEL', 'INFO')
+    relative_path_index = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
     log.debug(f'data_path: {data_path} out_path: {out_path}')
-    group(data_path, out_path)
+    group(data_path, out_path, relative_path_index)
 
 
 if __name__ == '__main__':
