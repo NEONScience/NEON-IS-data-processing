@@ -30,7 +30,6 @@ def process(source_path, group, out_path):
     paths = []
     group_names = []
     for file_path in file_crawler.crawl(source_path):
-
         # Parse path elements
         trimmed_path = target_path.trim_path(file_path)
         parts = pathlib.Path(trimmed_path).parts

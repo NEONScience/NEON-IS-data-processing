@@ -44,9 +44,8 @@ def join(config, out_path):
     file_key_sets = []
 
     config_data = yaml.load(config, Loader=yaml.FullLoader)
-    paths = config_data['paths']
-    for each_path in paths:
-        path = each_path['path']
+    for paths in config_data['paths']:
+        path = paths['path']
         path_name = path['name']
         log.debug(f'path_name: {path_name}')
         path_pattern = path['path_pattern']
@@ -61,10 +60,9 @@ def join(config, out_path):
                 key += parts[int(index)]  # generate the file key
             file_key_set.add(key)  # add the key
             file_key_dict[key] = file  # store keys with related files
-        # if not len(file_key_set) == 0:
         file_key_sets.append(file_key_set)  # add all the file keys for the input
     first_set = file_key_sets[0]
-    joined_keys = first_set.intersection(*file_key_sets[1:])  # join_keys(file_key_sets)
+    joined_keys = first_set.intersection(*file_key_sets[1:])
     write_files(joined_keys, file_key_dict, out_path)
 
 
