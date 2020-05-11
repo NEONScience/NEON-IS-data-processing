@@ -38,11 +38,20 @@ class AppTest(TestCase):
         actual_location_file_path = os.path.join(os.path.dirname(__file__), 'test-locations.json')
         self.fs.add_real_file(actual_location_file_path, target_path=locations_path)
 
+        self.source_type_index = 3
+        self.source_id_index = 4
+        self.data_type_index = 5
+        self.filename_index = 6
+
     def test_main(self):
         os.environ['SOURCE_PATH'] = self.in_path
         os.environ['OUT_PATH'] = self.out_path
         os.environ['GROUP'] = self.group
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
+        os.environ['SOURCE_ID_INDEX'] = str(self.source_id_index)
+        os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
+        os.environ['FILENAME_INDEX'] = str(self.filename_index)
         app.main()
         self.check_output()
 
