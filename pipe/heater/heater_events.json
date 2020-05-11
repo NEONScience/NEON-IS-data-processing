@@ -9,7 +9,10 @@
         "stdin": [ "#!/bin/bash", "python3 -m event_asset_loader.app" ],
         "env": {
             "OUT_PATH": "/pfs/out",
-            "LOG_LEVEL": "DEBUG"
+            "LOG_LEVEL": "INFO",
+            "SOURCE_TYPE_INDEX": "3",
+            "SOURCE_ID_INDEX": "4",
+            "FILENAME_INDEX": "5"
         }
     },
     "input": {
