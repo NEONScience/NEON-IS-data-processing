@@ -9,7 +9,6 @@ import event_related_location_group.app as app
 class AppTest(TestCase):
 
     def setUp(self):
-
         self.setUpPyfakefs()
 
         self.group = 'aspirated-single-169'
@@ -32,7 +31,7 @@ class AppTest(TestCase):
         self.prt_location = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'location',
                                          'prt_31052_locations.json')
         self.prt_uncertainty_coef = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'uncertainty_coef',
-                                            'prt_CFGLOC111066_2019-01-05_uncertaintyCoef.json')
+                                                 'prt_CFGLOC111066_2019-01-05_uncertaintyCoef.json')
         self.prt_uncertainty_data = os.path.join(self.metadata_path, 'prt', 'CFGLOC111066', 'uncertainty_data',
                                                  'prt_CFGLOC111066_2019-01-05_uncertaintyData.ext')
 
@@ -65,17 +64,43 @@ class AppTest(TestCase):
         #  Create output directory.
         self.fs.create_dir(self.out_path)
 
+        self.data_year_index = 3
+        self.data_month_index = 4
+        self.data_day_index = 5
+        self.data_group_name_index = 6
+        self.data_source_type_index = 7
+        self.data_location_index = 8
+        self.data_type_index = 9
+        self.data_filename_index = 10
+        self.event_source_type_index = 3
+        self.event_group_name_index = 4
+        self.event_source_id_index = 5
+        self.event_data_type_index = 6
+        self.event_filename_index = 7
+
     def test_main(self):
         os.environ['DATA_PATH'] = self.data_path
         os.environ['EVENT_PATH'] = self.event_path
         os.environ['OUT_PATH'] = self.out_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['DATA_YEAR_INDEX'] = str(self.data_year_index)
+        os.environ['DATA_MONTH_INDEX'] = str(self.data_month_index)
+        os.environ['DATA_DAY_INDEX'] = str(self.data_day_index)
+        os.environ['DATA_GROUP_NAME_INDEX'] = str(self.data_group_name_index)
+        os.environ['DATA_SOURCE_TYPE_INDEX'] = str(self.data_source_type_index)
+        os.environ['DATA_LOCATION_INDEX'] = str(self.data_location_index)
+        os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
+        os.environ['DATA_FILENAME_INDEX'] = str(self.data_filename_index)
+        os.environ['EVENT_SOURCE_TYPE_INDEX'] = str(self.event_source_type_index)
+        os.environ['EVENT_GROUP_NAME_INDEX'] = str(self.event_group_name_index)
+        os.environ['EVENT_SOURCE_ID_INDEX'] = str(self.event_source_id_index)
+        os.environ['EVENT_DATA_TYPE_INDEX'] = str(self.event_data_type_index)
+        os.environ['EVENT_FILENAME_INDEX'] = str(self.event_filename_index)
 
         app.main()
         self.check_output()
 
     def check_output(self):
-
         self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.dualfan_data)))
         self.assertTrue(os.path.lexists(os.path.join(self.out_path, self.dualfan_location)))
 
