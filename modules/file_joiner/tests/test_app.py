@@ -30,14 +30,17 @@ class AppTest(TestCase):
 
         self.pathname = str(os.path.join('/', '*', '*', 'dir1', 'dir2', '**'))
 
+        self.relative_path_index = 3
+
     def test_join(self):
-        app.join(self.pathname, self.output_path)
+        app.join(self.pathname, self.output_path, self.relative_path_index)
         self.check_output()
 
     def test_main(self):
         os.environ['PATHNAME'] = self.pathname
         os.environ['OUT_PATH'] = self.output_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
         app.main()
         self.check_output()
 

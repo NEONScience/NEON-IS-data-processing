@@ -33,6 +33,8 @@ class AppTest(TestCase):
         config_file_path = os.path.join(os.path.dirname(__file__), 'config.yaml')
         self.fs.add_real_file(config_file_path, target_path='/config.yaml')
 
+        self.relative_path_index = 3
+
     def test_main(self):
         with open('/config.yaml') as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
@@ -40,6 +42,7 @@ class AppTest(TestCase):
         os.environ['CONFIG'] = config
         os.environ['OUT_PATH'] = self.output_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
         joiner.main()
         self.check_output()
 
