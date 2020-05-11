@@ -3,7 +3,7 @@ pipeline:
   name: file_joiner_test
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/file_joiner:8
+  image: quay.io/battelleecology/file_joiner:9
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
@@ -30,6 +30,7 @@ transform:
             path_join_indices: [4, 5]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: 3
 input:
   cross:
     - pfs:

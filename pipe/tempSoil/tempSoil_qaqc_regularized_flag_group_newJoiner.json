@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
       ],
-    "image": "quay.io/battelleecology/file_joiner:5",
+    "image": "quay.io/battelleecology/file_joiner:9",
     "cmd": [
       "/bin/bash"
       ],
@@ -17,7 +17,8 @@
     "env": {
       "PATHNAME": "/pfs/*/prt/*/*/*/**",
       "OUT_PATH": "/pfs/out",
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "DEBUG",
+      "RELATIVE_PATH_INDEX": "3"
     }
   },
   "input": {
