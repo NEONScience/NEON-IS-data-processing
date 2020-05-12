@@ -4,7 +4,7 @@
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-    "image": "quay.io/battelleecology/qaqc_regularized_flag_group:7",
+    "image": "quay.io/battelleecology/qaqc_regularized_flag_group:8",
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "/usr/bin/python3 -m qaqc_regularized_flag_group.app" ],
     "env": {
