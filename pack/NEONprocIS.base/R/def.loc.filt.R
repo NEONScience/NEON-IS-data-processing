@@ -100,7 +100,7 @@ def.loc.filt <-
       
       # Filter the named locations
       setKeepLoc <- base::numeric(0)
-      for (idxLoc in 1:base::length(loc$features)) {
+      for (idxLoc in base::seq_len(length(loc$features))) {
         timeInst <- loc$features[[idxLoc]]$properties$install_date
         if (!base::is.null(timeInst)) {
           timeInst <-
