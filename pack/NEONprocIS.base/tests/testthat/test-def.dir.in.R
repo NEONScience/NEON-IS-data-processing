@@ -1,6 +1,6 @@
 test_that("Data directory multiple input paths",
           {
-            dirBgn <- "def.dir.in/test_input/pfs"
+            dirBgn <- "def.dir.in/test_input/pfs/27134"
             subDir <- c("data", "calibration")
             dirIn <-  NEONprocIS.base::def.dir.in(DirBgn = dirBgn, nameDirSub =subDir)
             print("printing value of dirIn:")
