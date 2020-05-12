@@ -9,7 +9,8 @@
     "stdin": [ "#!/bin/bash", "/usr/bin/python3 -m qaqc_regularized_flag_group.app" ],
     "env": {
       "LOG_LEVEL": "INFO",
-      "OUT_PATH": "/pfs/out"
+      "OUT_PATH": "/pfs/out",
+      "RELATIVE_PATH_INDEX": "3"
     }
   },
   "input": {
