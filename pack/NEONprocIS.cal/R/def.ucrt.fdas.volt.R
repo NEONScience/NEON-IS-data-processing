@@ -41,6 +41,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-02-04)
 #     original creation
+#   Cove Sturtevant (2020-05-12)
+#     Bug fix - allow code to produce NAs if infoCal$cal is NULL but infoCal$ucrt is not NULL
 ##############################################################################################
 def.ucrt.fdas.volt <- function(data = base::numeric(0),
                                infoCal = NULL,
@@ -63,7 +65,7 @@ def.ucrt.fdas.volt <- function(data = base::numeric(0),
                      ucrtFdas = NA * data)
   
   # If infoCal is NULL, return NA data
-  if (base::is.null(infoCal)) {
+  if (base::is.null(infoCal$cal)) {
     log$debug('No calibration information supplied, returning NA values for FDAS uncertainty.')
     return(ucrt)
   }

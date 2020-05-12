@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_FLAGS","TermConv=resistance","TermQf=resistance","TermUcrt=resistance(R)","FuncUcrt=resistance:def.ucrt.meas.cnst","FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.28",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.29",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -20,33 +20,25 @@
         }
       },
       {
-        "cross": [
-        {
-          "pfs": {
-            "name": "FILE_SCHEMA_DATA",
-            "repo": "avro_schemas",
-            "glob": "/dp0p/prt_calibrated.avsc"
-          }
-        },
-        {
-          "cross": [
-          {
-              "pfs": {
-              "name": "FILE_SCHEMA_FLAGS",
-              "repo": "avro_schemas",
-              "glob": "/dp0p/flags_calibration.avsc"
-            }
-          },
-          {
-              "pfs": {
-              "name": "FILE_UNCERTAINTY_FDAS",
-              "repo": "uncertainty_fdas",
-              "glob": "/fdas_calibration_uncertainty_general.json"
-            }
-          }
-          ]
+        "pfs": {
+          "name": "FILE_SCHEMA_DATA",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/prt_calibrated.avsc"
         }
-        ]
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_FLAGS",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/flags_calibration.avsc"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_UNCERTAINTY_FDAS",
+          "repo": "uncertainty_fdas",
+          "glob": "/fdas_calibration_uncertainty_general.json"
+        }
       }
     ]
   },
