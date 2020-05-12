@@ -25,20 +25,3 @@ def filter_directory(in_path, filter_dirs, out_path, relative_path_index):
                 source = os.path.join(root, name)
                 target = os.path.join(out_path, *Path(source).parts[relative_path_index:])
                 link(source, target)
-
-
-def parse_dirs(filter_dirs):
-    """
-    Parse the comma separated string into a list of directory names.
-
-    :param filter_dirs: A comma separated string of the directories to filter.
-    :type filter_dirs: str
-    :return: A list of directory names to pass through the filter.
-    """
-    dirs = []
-    if ',' in filter_dirs:
-        dirs = filter_dirs.split(',')
-        return dirs
-    else:
-        dirs.append(filter_dirs)
-        return dirs

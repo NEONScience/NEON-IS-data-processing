@@ -33,8 +33,7 @@ def process(data_path, out_path, source_type_index, source_id_index, filename_in
         source_type = parts[source_type_index]
         source_id = parts[source_id_index]
         filename = parts[filename_index]
-        log.debug(f'source filename: {filename}')
-        log.debug(f'source type: {source_type} source_id: {source_id}')
+        log.debug(f'source filename: {filename} type: {source_type} source_id: {source_id}')
         output_filename = source_type + '_' + source_id + '_events.json'
         output_path = os.path.join(out_path, source_type, source_id, output_filename)
         log.debug(f'output_path: {output_path}')
@@ -44,9 +43,9 @@ def process(data_path, out_path, source_type_index, source_id_index, filename_in
 
 def main():
     env = environs.Env()
-    source_path = env('SOURCE_PATH')
-    out_path = env('OUT_PATH')
-    log_level = env('LOG_LEVEL')
+    source_path = env.str('SOURCE_PATH')
+    out_path = env.str('OUT_PATH')
+    log_level = env.log_level('LOG_LEVEL')
     source_type_index = env.int('SOURCE_TYPE_INDEX')
     source_id_index = env.int('SOURCE_ID_INDEX')
     filename_index = env.int('FILENAME_INDEX')

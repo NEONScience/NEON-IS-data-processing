@@ -109,7 +109,7 @@ def main():
     data_path = env.str('DATA_PATH')
     event_path = env.str('EVENT_PATH')
     out_path = env.str('OUT_PATH')
-    log_level = env.str('LOG_LEVEL')
+    log_level = env.log_level('LOG_LEVEL')
     data_year_index = env.int('DATA_YEAR_INDEX')
     data_month_index = env.int('DATA_MONTH_INDEX')
     data_day_index = env.int('DATA_DAY_INDEX')

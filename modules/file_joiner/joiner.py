@@ -59,9 +59,11 @@ def get_join_keys(config, out_path):
         log.debug(f'path_name: {path_name}')
         path_pattern = path['path_pattern']
         path_join_indices = path['path_join_indices']
-
+        # filter files to join based on given path pattern
         filtered_files = filter_files(path_pattern, out_path)
+        # use set to avoid duplicate keys
         file_key_set = set()
+        # loop over files
         for file in filtered_files:
             parts = pathlib.Path(file).parts
             key = ''
@@ -101,7 +103,7 @@ def main():
     env = environs.Env()
     config = env.str('CONFIG')
     out_path = env.str('OUT_PATH')
-    log_level = env.str('LOG_LEVEL', 'INFO')
+    log_level = env.log_level('LOG_LEVEL', 'INFO')
     relative_path_index = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
     results = get_join_keys(config, out_path)

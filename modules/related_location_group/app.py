@@ -62,9 +62,9 @@ def group_related(path,
 def main():
     """Group data by related location group."""
     env = environs.Env()
-    data_path = env('DATA_PATH')
-    out_path = env('OUT_PATH')
-    log_level = env('LOG_LEVEL')
+    data_path = env.str('DATA_PATH')
+    out_path = env.str('OUT_PATH')
+    log_level = env.log_level('LOG_LEVEL')
     source_type_index = env.int('SOURCE_TYPE_INDEX')
     year_index = env.int('YEAR_INDEX')
     month_index = env.int('MONTH_INDEX')

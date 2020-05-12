@@ -26,7 +26,7 @@ def main():
     not_used_count = 0
 
     env = environs.Env()
-    db_url = env('DATABASE_URL')
+    db_url = env.str('DATABASE_URL')
     with closing(cx_Oracle.connect(db_url)) as connection:
         named_location_ids = named_location_creator.get_prt_wq_named_locations(connection)
         for named_location_id in named_location_ids:

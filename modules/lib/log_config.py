@@ -9,12 +9,11 @@ def configure(log_level):
     Configure log for stdout JSON.
 
     :param log_level: The log level to set.
-    :type log_level: str
+    :type log_level: log_level
     :return:
     """
-    level = get_level(log_level)
     root_logger = logging.getLogger()
-    root_logger.setLevel(level)
+    root_logger.setLevel(log_level)
     handler = logging.StreamHandler(sys.stdout)
     root_logger.addHandler(handler)
 
@@ -30,21 +29,3 @@ def configure(log_level):
         wrapper_class=structlog.stdlib.BoundLogger,
         cache_logger_on_first_use=True,
     )
-
-
-def get_level(level_name):
-    """
-    Get log level by name.
-
-    :param level_name: The level name.
-    :type level_name: str
-    :return: The level.
-    """
-    log_levels = {
-        'DEBUG': logging.DEBUG,
-        'INFO': logging.INFO,
-        'WARN': logging.WARN,
-        'ERROR': logging.ERROR,
-        'CRITICAL': logging.CRITICAL
-    }
-    return log_levels[level_name]

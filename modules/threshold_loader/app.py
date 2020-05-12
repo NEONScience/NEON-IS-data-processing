@@ -37,9 +37,9 @@ def write_file(thresholds, out_dir, date_generated):
 
 def main():
     env = environs.Env()
-    db_url = env('DATABASE_URL')
-    out_path = env('OUT_PATH')
-    log_level_name = env('LOG_LEVEL')
+    db_url = env.str('DATABASE_URL')
+    out_path = env.str('OUT_PATH')
+    log_level_name = env.log_level('LOG_LEVEL')
 
     log_config.configure(log_level_name)
     log = get_logger()
