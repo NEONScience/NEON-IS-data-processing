@@ -4,7 +4,6 @@ import os
 import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from lib import log_config as log_config
 import joiner.app as app
 
 
@@ -12,8 +11,6 @@ class AppTest(TestCase):
 
     def setUp(self):
         """Create data and location files for prt, dual_fan, and heater in fake filesystem."""
-
-        log_config.configure('DEBUG')
 
         self.setUpPyfakefs()
 
@@ -75,19 +72,17 @@ class AppTest(TestCase):
         os.environ['DUAL_FAN_PATH'] = os.path.join(self.input_path, self.dual_fan_path)
         os.environ['HEATER_PATH'] = os.path.join(self.input_path, self.heater_path)
 
-    def test_group(self):
-        app.group(self.related_paths, self.output_path)
-        self.check_output()
+        self.relative_path_index = 3
 
     def test_main(self):
         os.environ['RELATED_PATHS'] = self.related_paths
         os.environ['OUT_PATH'] = self.output_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
         app.main()
         self.check_output()
 
     def check_output(self):
-
         prt_data_path = os.path.join(self.output_path, self.prt_data_file_1)
         prt_location_path = os.path.join(self.output_path, self.prt_location_file_1)
         print(f'prt_data_path: {prt_data_path}')
