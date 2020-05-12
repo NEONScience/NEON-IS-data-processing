@@ -209,7 +209,7 @@ for (idxDirIn in DirIn) {
   # Combine data files
   data <- NULL
   data <-
-    NEONprocIS.base::def.file.avro.comb.ts(file = filePath,
+    NEONprocIS.base::def.file.comb.ts(file = filePath,
                                            nameVarTime = Para$NameVarTime,
                                            log = log)
   
