@@ -4,14 +4,12 @@ import os
 import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from lib import log_config as log_config
 import related_location_group.app as app
 
 
 class AppTest(TestCase):
 
     def setUp(self):
-        log_config.configure('DEBUG')
         self.setUpPyfakefs()
 
         self.input_path = os.path.join('/', 'repo', 'inputs')
@@ -34,14 +32,37 @@ class AppTest(TestCase):
         self.fs.create_file(os.path.join(self.prt_path, self.prt_location, self.data_dir, self.data_file))
         self.fs.create_file(os.path.join(self.prt_path, self.prt_location, self.location_dir, self.location_file))
 
+        self.source_type_index = 3
+        self.year_index = 4
+        self.month_index = 5
+        self.day_index = 6
+        self.group_index = 7
+        self.location_index = 8
+        self.data_type_index = 9
+
     def test_group_related(self):
-        app.group_related(self.prt_path, self.output_path)
+        app.group_related(self.prt_path,
+                          self.output_path,
+                          self.source_type_index,
+                          self.year_index,
+                          self.month_index,
+                          self.day_index,
+                          self.group_index,
+                          self.location_index,
+                          self.data_type_index)
         self.check_output()
 
     def test_main(self):
         os.environ['DATA_PATH'] = self.prt_path
         os.environ['OUT_PATH'] = self.output_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
+        os.environ['YEAR_INDEX'] = str(self.year_index)
+        os.environ['MONTH_INDEX'] = str(self.month_index)
+        os.environ['DAY_INDEX'] = str(self.day_index)
+        os.environ['GROUP_INDEX'] = str(self.group_index)
+        os.environ['LOCATION_INDEX'] = str(self.location_index)
+        os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
         app.main()
         self.check_output()
 
