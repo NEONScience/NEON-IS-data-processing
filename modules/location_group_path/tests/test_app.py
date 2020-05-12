@@ -34,11 +34,24 @@ class AppTest(TestCase):
         actual_location_file_path = os.path.join(os.path.dirname(__file__), 'test-locations.json')
         self.fs.add_real_file(actual_location_file_path, target_path=locations_path)
 
+        self.source_type_index = 3
+        self.year_index = 4
+        self.month_index = 5
+        self.day_index = 6
+        self.location_index = 7
+        self.data_type_index = 8
+
     def test_main(self):
         os.environ['SOURCE_PATH'] = self.in_path
         os.environ['OUT_PATH'] = self.out_path
         os.environ['GROUP'] = self.group
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
+        os.environ['YEAR_INDEX'] = str(self.year_index)
+        os.environ['MONTH_INDEX'] = str(self.month_index)
+        os.environ['DAY_INDEX'] = str(self.day_index)
+        os.environ['LOCATION_INDEX'] = str(self.location_index)
+        os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
         app.main()
         self.check_output()
 
