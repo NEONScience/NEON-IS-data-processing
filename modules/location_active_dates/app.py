@@ -87,11 +87,11 @@ def load(db_url, out_path, location_type, cutoff_date):
 
 def main():
     env = environs.Env()
-    location_type = env('LOCATION_TYPE')
-    today = env('tick')
-    db_url = env('DATABASE_URL')
-    out_path = env('OUT_PATH')
-    log_level = env('LOG_LEVEL')
+    location_type = env.str('LOCATION_TYPE')
+    today = env.str('tick')
+    db_url = env.str('DATABASE_URL')
+    out_path = env.str('OUT_PATH')
+    log_level = env.log_level('LOG_LEVEL')
     log_config.configure(log_level)
     log.debug(f'Out path: {out_path}')
 

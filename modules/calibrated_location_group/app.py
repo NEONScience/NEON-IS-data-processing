@@ -79,7 +79,7 @@ def main():
     calibrated_path = env.str('CALIBRATED_PATH')
     location_path = env.str('LOCATION_PATH')
     out_path = env.str('OUT_PATH')
-    log_level = env.str('LOG_LEVEL', 'INFO')
+    log_level = env.log_level('LOG_LEVEL', 'INFO')
     source_type_index = env.int('SOURCE_TYPE_INDEX')
     year_index = env.int('YEAR_INDEX')
     month_index = env.int('MONTH_INDEX')

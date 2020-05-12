@@ -102,7 +102,7 @@ def main():
     env = environs.Env()
     in_path = env.str('IN_PATH')
     out_path = env.str('OUT_PATH')
-    log_level = env.str('LOG_LEVEL', 'INFO')
+    log_level = env.log_level('LOG_LEVEL', 'INFO')
     # 30 percent duplication threshold for dedup by default
     dedup_threshold = env.float('DEDUP_THRESHOLD', 0.3)
     log_config.configure(log_level)

@@ -9,9 +9,9 @@ import padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer as analyze
 def main():
     """Analyze padded time series data"""
     env = environs.Env()
-    data_path = env('DATA_PATH')
-    out_path = env('OUT_PATH')
-    log_level = env('LOG_LEVEL')
+    data_path = env.str('DATA_PATH')
+    out_path = env.str('OUT_PATH')
+    log_level = env.log_level('LOG_LEVEL')
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'data_path: {data_path}')

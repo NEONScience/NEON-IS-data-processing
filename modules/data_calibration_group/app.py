@@ -19,7 +19,7 @@ def main():
     data_path = env.str('DATA_PATH')
     calibration_path = env.str('CALIBRATION_PATH')
     out_path = env.str('OUT_PATH')
-    log_level = env.str('LOG_LEVEL')
+    log_level = env.log_level('LOG_LEVEL')
     data_source_type_index = env.int('DATA_SOURCE_TYPE_INDEX')
     data_year_index = env.int('DATA_YEAR_INDEX')
     data_month_index = env.int('DATA_MONTH_INDEX')

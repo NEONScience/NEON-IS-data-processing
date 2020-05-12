@@ -35,7 +35,7 @@ def main():
     env = environs.Env()
     data_path = env.str('DATA_PATH')
     out_path = env.str('OUT_PATH')
-    log_level = env.str('LOG_LEVEL', 'INFO')
+    log_level = env.log_level('LOG_LEVEL', 'INFO')
     relative_path_index = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
     log.debug(f'data_path: {data_path} out_path: {out_path}')

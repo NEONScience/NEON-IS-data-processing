@@ -63,7 +63,7 @@ def main():
     regularized_path = env.str('REGULARIZED_PATH')
     quality_path = env.str('QUALITY_PATH')
     out_path = env.str('OUT_PATH')
-    log_level = env.str('LOG_LEVEL', 'INFO')
+    log_level = env.log_level('LOG_LEVEL', 'INFO')
     relative_path_index = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
 

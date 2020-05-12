@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys
-from datetime import datetime
 
 import environs
 import structlog
@@ -19,11 +18,11 @@ def main():
     data_path = env.str('DATA_PATH', None)
     location_path = env.str('LOCATION_PATH', None)
     empty_files_path = env.str('EMPTY_FILES_PATH')
-    output_directories = env.str('OUTPUT_DIRECTORIES')
-    start_date = env.str('START_DATE', None)
-    end_date = env.str('END_DATE', None)
+    output_directories = env.list('OUTPUT_DIRECTORIES')
+    start_date = env.date('START_DATE', None)
+    end_date = env.date('END_DATE', None)
     out_path = env.str('OUT_PATH')
-    log_level = env.str('LOG_LEVEL', 'INFO')
+    log_level = env.log_level('LOG_LEVEL', 'INFO')
     data_source_type_index = env.int('DATA_SOURCE_TYPE_INDEX')
     data_year_index = env.int('DATA_YEAR_INDEX')
     data_month_index = env.int('DATA_MONTH_INDEX')
@@ -40,17 +39,6 @@ def main():
     empty_file_type_index = env.int('EMPTY_FILE_TYPE_INDEX')
 
     log_config.configure(log_level)
-
-    # directory names to output are a comma separated string
-    if ',' in output_directories:
-        output_directories = output_directories.split(',')
-
-    # parse dates from strings
-    date_format = '%Y-%m-%d'
-    if start_date is not None:
-        start_date = datetime.strptime(start_date, date_format)
-    if end_date is not None:
-        end_date = datetime.strptime(end_date, date_format)
 
     # empty file paths
     empty_files_paths = empty_file_handler.get_paths(empty_files_path, empty_file_type_index)

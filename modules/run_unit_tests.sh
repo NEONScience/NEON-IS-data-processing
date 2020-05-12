@@ -17,7 +17,6 @@ file_joiner.tests.test_app \
 file_joiner.tests.test_joiner \
 grouper.tests.test_app \
 joiner.tests.test_app \
-lib.tests.test_log_config \
 lib.tests.test_data_filename \
 lib.tests.test_date_formatter \
 lib.tests.test_file_linker \

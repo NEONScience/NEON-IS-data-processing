@@ -102,10 +102,10 @@ def group_paths(paths, group_names, out_path):
 def main():
     """Add the related location group from the location file to the output directory."""
     env = environs.Env()
-    source_path = env('SOURCE_PATH')
-    group = env('GROUP')
-    out_path = env('OUT_PATH')
-    log_level = env('LOG_LEVEL')
+    source_path = env.str('SOURCE_PATH')
+    group = env.str('GROUP')
+    out_path = env.str('OUT_PATH')
+    log_level = env.log_level('LOG_LEVEL')
     source_type_index = env.int('SOURCE_TYPE_INDEX')
     source_id_index = env.int('SOURCE_ID_INDEX')
     data_type_index = env.int('DATA_TYPE_INDEX')

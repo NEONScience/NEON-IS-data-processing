@@ -68,9 +68,9 @@ def load(db_url, out_path):
 
 def main():
     env = environs.Env()
-    out_path = env('OUT_PATH')
-    db_url = env('DATABASE_URL')
-    log_level = env('LOG_LEVEL')
+    out_path = env.str('OUT_PATH')
+    db_url = env.str('DATABASE_URL')
+    log_level = env.log_level('LOG_LEVEL')
     log_config.configure(log_level)
     log.debug(f'Out path: {out_path}')
     load(db_url, out_path)
