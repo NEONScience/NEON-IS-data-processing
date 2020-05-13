@@ -26,6 +26,7 @@ class AppTest(TestCase):
         self.input_data_dir = os.path.join(self.input_root, source_month, '03')
         self.source_dir = os.path.join(source_month, '03', self.location)
 
+        self.relative_path_index = 3
         self.year_index = 4
         self.month_index = 5
         self.day_index = 6
@@ -64,7 +65,8 @@ class AppTest(TestCase):
     def test_constant_padder(self):
         window_size = 1
         padder = ConstantPadder(self.input_data_dir, self.out_dir, self.year_index, self.month_index,
-                                self.day_index, self.loc_index, self.subdir_index, window_size)
+                                self.day_index, self.loc_index, self.subdir_index, self.relative_path_index,
+                                window_size)
         padder.pad()
         self.check_output()
 

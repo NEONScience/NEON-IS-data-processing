@@ -11,8 +11,6 @@ directory_filter.tests.test_app \
 egress.tests.test_app \
 event_asset_loader.tests.test_app \
 event_location_group.tests.test_app \
-event_location_group_path.tests.test_app \
-event_related_location_group.tests.test_app \
 file_joiner.tests.test_app \
 file_joiner.tests.test_joiner \
 grouper.tests.test_app \
@@ -21,7 +19,6 @@ lib.tests.test_data_filename \
 lib.tests.test_date_formatter \
 lib.tests.test_file_linker \
 lib.tests.test_merged_data_filename \
-lib.tests.test_target_path \
 location_active_dates.tests.test_app \
 location_asset.tests.test_app \
 location_group_path.tests.test_app \

@@ -74,14 +74,17 @@ class AppTest(TestCase):
         print(f'next_data_path: {next_data_path}')
         print(f'outside_range_path: {outside_range_path}')
 
+        self.relative_path_index = 3
+
     def test_analyzer(self):
-        analyzer.analyze(self.input_data_dir, self.out_dir)
+        analyzer.analyze(self.input_data_dir, self.out_dir, self.relative_path_index)
         self.check_output()
 
     def test_main(self):
         os.environ['DATA_PATH'] = self.input_data_dir
         os.environ['OUT_PATH'] = self.out_dir
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
         app.main()
         self.check_output()
 

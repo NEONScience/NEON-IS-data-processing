@@ -4,13 +4,12 @@ import sys
 import pathlib
 import datetime
 
-import argparse
 import environs
 from structlog import get_logger
 
-import lib.file_linker as file_linker
+from lib.file_linker import link
+from lib.file_crawler import crawl
 import lib.log_config as log_config
-import lib.file_crawler as file_crawler
 
 import timeseries_padder.timeseries_padder.padder_util as padder_util
 import timeseries_padder.timeseries_padder.output_writer as output_writer
@@ -22,7 +21,7 @@ log = get_logger()
 class ConstantPadder(object):
 
     def __init__(self, data_path, out_path, year_index, month_index, day_index,
-                 location_index, sub_dir_index, window_size):
+                 location_index, sub_dir_index, relative_path_index, window_size):
         """
         Constructor.
 
@@ -40,6 +39,8 @@ class ConstantPadder(object):
         :type location_index: int
         :param sub_dir_index: The sub directory index in the file path.
         :type sub_dir_index: int
+        :param relative_path_index: Trim file paths to this index.
+        :type relative_path_index: int
         :param window_size: The window size.
         :type window_size: int
         """
@@ -51,6 +52,7 @@ class ConstantPadder(object):
         self.day_index = day_index
         self.location_index = location_index
         self.sub_dir_index = sub_dir_index
+        self.relative_path_index = relative_path_index
         self.window_size = window_size
         self.sub_dirs_to_process = ['data']
         self.out_dir_parts = list(pathlib.Path(out_path).parts)
@@ -64,7 +66,7 @@ class ConstantPadder(object):
         try:
             manifests = {}
             manifest_file_names = {}
-            for file_path in file_crawler.crawl(self.data_path):
+            for file_path in crawl(self.data_path):
                 parts = pathlib.Path(file_path).parts
                 year = parts[self.year_index]
                 month = parts[self.month_index]
@@ -91,7 +93,7 @@ class ConstantPadder(object):
                         destination_path = os.path.join(*destination_parts)
                         log.debug(f'source: {file_path}')
                         log.debug(f'destination: {destination_path}')
-                        file_linker.link(file_path, destination_path)
+                        link(file_path, destination_path)
                         manifests[location].append(date_in_padded_range)
                         if date_in_padded_range == date:
                             # construct manifest filename
@@ -99,8 +101,8 @@ class ConstantPadder(object):
                             manifest_file_names[location] = os.path.join(manifest_path, 'manifest.txt')
                         output_writer.write_thresholds(location_path, destination_path)
                 else:
-                    destination_path = os.path.join(self.out_path, *parts[3:len(parts) + 1])
-                    file_linker.link(file_path, destination_path)
+                    destination_path = os.path.join(self.out_path, *parts[self.relative_path_index:])
+                    link(file_path, destination_path)
             output_writer.write_manifests(manifests, manifest_file_names)  # write manifest files
         except Exception:
             exception_type, exception_obj, exception_tb = sys.exc_info()
@@ -109,22 +111,20 @@ class ConstantPadder(object):
 
 def main():
     env = environs.Env()
-    data_path = env('DATA_PATH')
-    out_path = env('OUT_PATH')
-    log_level = env('LOG_LEVEL')
-    window_size = env('WINDOW_SIZE')
+    data_path = env.str('DATA_PATH')
+    out_path = env.str('OUT_PATH')
+    log_level = env.log_level('LOG_LEVEL')
+    window_size = env.int('WINDOW_SIZE')
+    year_index = env.int('YEAR_INDEX')
+    month_index = env.int('MONTH_INDEX')
+    day_index = env.int('DAY_INDEX')
+    location_index = env.int('LOCATION_INDEX')
+    data_type_index = env.int('DATA_TYPE_INDEX')
+    relative_path_index = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
-    log.debug(f'data_dir: {data_path}')
-    log.debug(f'out_dir: {out_path}')
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--yearindex')
-    parser.add_argument('--monthindex')
-    parser.add_argument('--dayindex')
-    parser.add_argument('--locindex')
-    parser.add_argument('--subdirindex')
-    args = parser.parse_args()
-    cp = ConstantPadder(data_path, out_path, int(args.yearindex), int(args.monthindex),
-                        int(args.dayindex), int(args.locindex), int(args.subdirindex), int(window_size))
+    cp = ConstantPadder(data_path, out_path, year_index, month_index,
+                        day_index, location_index, data_type_index,
+                        relative_path_index, window_size)
     cp.pad()
 
 

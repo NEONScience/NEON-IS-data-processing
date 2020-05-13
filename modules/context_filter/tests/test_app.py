@@ -3,9 +3,9 @@ import os
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import context_filter.app as app
-from context_filter.filter import ContextFilter
 from lib import log_config as log_config
+
+import context_filter.app as app
 
 
 class AppTest(TestCase):
@@ -45,16 +45,6 @@ class AppTest(TestCase):
         actual_location_file_path = os.path.join(os.path.dirname(__file__), 'test-locations.json')
         self.fs.add_real_file(actual_location_file_path, target_path=locations_path)
 
-    def test_filter(self):
-        context_filter = ContextFilter(self.source_type_index,
-                                       self.year_index,
-                                       self.month_index,
-                                       self.day_index,
-                                       self.source_id_index,
-                                       self.data_type_index)
-        context_filter.filter(self.in_path, self.out_path, self.context)
-        self.check_output()
-
     def test_main(self):
         os.environ['IN_PATH'] = self.in_path
         os.environ['OUT_PATH'] = self.out_path
@@ -76,10 +66,9 @@ class AppTest(TestCase):
         data_path = os.path.join(root_path, 'data', 'data.ext')
         flags_path = os.path.join(root_path, 'flags', 'flags.ext')
         locations_path = os.path.join(root_path, 'location', 'locations.json')
-        uncertainty_coefficient_path = os.path.join(root_path,
-                                                    'uncertainty_coefficient', 'uncertaintyCoefficient.json')
+        uncertainty_path = os.path.join(root_path, 'uncertainty_coefficient', 'uncertaintyCoefficient.json')
 
         self.assertTrue(os.path.lexists(data_path))
         self.assertTrue(os.path.lexists(flags_path))
         self.assertTrue(os.path.lexists(locations_path))
-        self.assertTrue(os.path.lexists(uncertainty_coefficient_path))
+        self.assertTrue(os.path.lexists(uncertainty_path))

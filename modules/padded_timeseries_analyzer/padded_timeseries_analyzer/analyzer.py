@@ -5,14 +5,14 @@ import pathlib
 
 from structlog import get_logger
 
-import lib.file_linker as file_linker
-import lib.file_crawler as file_crawler
+from lib.file_linker import link
+from lib.file_crawler import crawl
 from lib.merged_data_filename import MergedDataFilename
 
 log = get_logger()
 
 
-def analyze(data_dir, out_dir):
+def analyze(data_dir, out_dir, relative_path_index):
     """
     Analyze time series data to calculate additional time padding required for processing with thresholds.
 
@@ -20,6 +20,8 @@ def analyze(data_dir, out_dir):
     :type data_dir: str
     :param out_dir: The output directory.
     :type out_dir: str
+    :param relative_path_index: Trim file path components to this index.
+    :type relative_path_index: int
     :return:
     """
     out_dir_parts = list(pathlib.Path(out_dir).parts)
@@ -56,10 +58,10 @@ def analyze(data_dir, out_dir):
                                     destination_parts[index] = out_dir_parts[index]
                                 destination_path = os.path.join(*destination_parts)
                                 log.debug(f'linking {source_path} to {destination_path}')
-                                file_linker.link(source_path, destination_path)
+                                link(source_path, destination_path)
                                 write_thresholds(source_path, destination_path)
                         # Go up one directory and get any ancillary files to write.
-                        write_ancillary_data(out_dir, root)
+                        write_ancillary_data(out_dir, root, relative_path_index)
 
 
     except Exception:
@@ -85,10 +87,10 @@ def write_thresholds(source_path, destination_path):
     if os.path.exists(source):
         destination = os.path.join(destination_dir, threshold_dir, threshold_filename)
         log.debug(f'linking {source} to {destination}')
-        file_linker.link(source, destination)
+        link(source, destination)
 
 
-def write_ancillary_data(out_dir, root):
+def write_ancillary_data(out_dir, root, relative_path_index):
     """
     Write any additional files present in the input directory
     beyond data and thresholds into the output directory.
@@ -97,13 +99,15 @@ def write_ancillary_data(out_dir, root):
     :type out_dir: str
     :param root: The threshold root directory.
     :type root: str
+    :param relative_path_index: Trim file path components to this index.
+    :type relative_path_index: int
     :return:
     """
     parent_dir = pathlib.Path(root).parent
-    for file_path in file_crawler.crawl(parent_dir):
+    for file_path in crawl(parent_dir):
         file_path = str(file_path)
         if 'data' not in file_path and 'threshold' not in file_path:
             parts = pathlib.Path(file_path).parts
-            trimmed_path = os.path.join(*parts[3:])
+            trimmed_path = os.path.join(*parts[relative_path_index:])
             output_path = os.path.join(out_dir, trimmed_path)
-            file_linker.link(file_path, output_path)
+            link(file_path, output_path)

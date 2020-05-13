@@ -3,11 +3,10 @@ test_that("Data directory multiple input paths",
             dirBgn <- "def.dir.in/test_input/pfs/27134"
             subDir <- c("data", "calibration")
             dirIn <-  NEONprocIS.base::def.dir.in(DirBgn = dirBgn, nameDirSub =subDir)
-            print("printing value of dirIn:")
+            print("printing value of dirIn in test 1:")
             print(dirIn)
             dirOut1 <- "def.dir.in/test_input/pfs/27134/2019/01/01"
-            dirOut2 <- "def.dir.in/test_input/pfs/27134/2019/01/02/outer"
-            testthat::expect_equal(c(dirOut1,dirOut2), dirIn)
+            testthat::expect_equal(c(dirOut1), dirIn)
 
           })
 
@@ -17,7 +16,7 @@ test_that("Input directory path is returned only if all the subDir are in the sa
             dirBgn <- "def.dir.in/test_input/pfs/27135"
             subDir <- c("data", "calibration")
             dirIn <-  NEONprocIS.base::def.dir.in(DirBgn = dirBgn, nameDirSub =subDir)
-            print("printing value of dirIn:")
+            print("printing value of dirIn in test 2:")
             print(dirIn)
             testthat::expect_equal(0, length(dirIn))
           })
