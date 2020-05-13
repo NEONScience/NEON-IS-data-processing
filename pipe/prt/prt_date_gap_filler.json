@@ -54,7 +54,7 @@
           {
             "pfs": {
               "name": "DATA_PATH",
-              "repo": "prt_merge_data_by_location_test",
+              "repo": "prt_merge_data_by_location",
               "glob": "/prt/*/*",
               "empty_files": true
             }
@@ -72,5 +72,5 @@
     ]
   },
   "enable_stats": false,
-  "standby": false
+  "standby": true
 }
