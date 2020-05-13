@@ -16,8 +16,7 @@ def main():
     relative_path_index = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
     log = get_logger()
-    log.debug(f'data_path: {data_path}')
-    log.debug(f'out_path: {out_path}')
+    log.debug(f'data_path: {data_path} out_path: {out_path}')
     analyzer.analyze(data_path, out_path, relative_path_index)
 
 
