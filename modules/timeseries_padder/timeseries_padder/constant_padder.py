@@ -99,7 +99,7 @@ class ConstantPadder(object):
                             manifest_file_names[location] = os.path.join(manifest_path, 'manifest.txt')
                         output_writer.write_thresholds(location_path, destination_path)
                 else:
-                    destination_path = os.path.join(self.out_path, *parts[3:len(parts) + 1])
+                    destination_path = os.path.join(self.out_path, *parts[3:])
                     file_linker.link(file_path, destination_path)
             output_writer.write_manifests(manifests, manifest_file_names)  # write manifest files
         except Exception:
