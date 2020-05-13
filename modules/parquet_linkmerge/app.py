@@ -42,7 +42,7 @@ def write_merged_parquet(inputfiles, in_path, out_path):
         df = df.append(tbf.to_pandas())
 
     df = df.sort_values('readout_time')
-    # Check which columns in the dataframe are hashable
+    # Check which columns in the data frame are hashable
     hashable_cols = [x for x in df.columns if isinstance(df[x][0], Hashable)]
     # For all the hashable columns, see if over 30% of the columns are duplicated
     dupcols = [x.encode('UTF-8') for x in hashable_cols if (df[x].duplicated().sum() / (int(df[x].size) - 1)) > 0.3]
@@ -103,7 +103,7 @@ def main():
     in_path = env.str('IN_PATH')
     out_path = env.str('OUT_PATH')
     log_level = env.log_level('LOG_LEVEL', 'INFO')
-    # 30 percent duplication threshold for dedup by default
+    # default 30 percent duplication threshold
     dedup_threshold = env.float('DEDUP_THRESHOLD', 0.3)
     log_config.configure(log_level)
     linkmerge(in_path, out_path, dedup_threshold)

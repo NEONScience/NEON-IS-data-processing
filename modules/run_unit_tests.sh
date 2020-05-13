@@ -11,8 +11,6 @@ directory_filter.tests.test_app \
 egress.tests.test_app \
 event_asset_loader.tests.test_app \
 event_location_group.tests.test_app \
-event_location_group_path.tests.test_app \
-event_related_location_group.tests.test_app \
 file_joiner.tests.test_app \
 file_joiner.tests.test_joiner \
 grouper.tests.test_app \
