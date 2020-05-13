@@ -6,8 +6,8 @@ import environs
 import structlog
 
 import lib.log_config as log_config
-import lib.file_linker as file_linker
-import lib.file_crawler as file_crawler
+from lib.file_linker import link
+from lib.file_crawler import crawl
 
 log = structlog.get_logger()
 
@@ -38,7 +38,7 @@ def group(calibrated_path, location_path, out_path, source_type_index, year_inde
     :return:
     """
     i = 0
-    for file_path in file_crawler.crawl(calibrated_path):
+    for file_path in crawl(calibrated_path):
         parts = file_path.parts
         source_type = parts[source_type_index]
         year = parts[year_index]
@@ -46,15 +46,15 @@ def group(calibrated_path, location_path, out_path, source_type_index, year_inde
         day = parts[day_index]
         source_id = parts[source_id_index]
         data_type = parts[data_type_index]
-        log.debug(f'year: {year}  month: {month}  day: {day}')
-        log.debug(f'source type: {source_type} source_id: {source_id} data type: {data_type}')
+        log.debug(f'year: {year}  month: {month}  day: {day} source type: {source_type} '
+                  f'source_id: {source_id} data type: {data_type}')
         target_root = os.path.join(out_path, source_type, year, month, day, source_id)
-        if i == 0:  # only link location once
+        if i == 0:  # only link location files once
             link_location(location_path, target_root)
         # pass remainder of file path after the data type
-        target = os.path.join(target_root, data_type, *parts[9:])
+        target = os.path.join(target_root, data_type, *parts[data_type_index+1:])
         log.debug(f'target: {target}')
-        file_linker.link(file_path, target)
+        link(file_path, target)
         i += 1
 
 
@@ -68,17 +68,17 @@ def link_location(location_path, target_root):
     :type target_root: str
     :return:
     """
-    for file in file_crawler.crawl(location_path):
+    for file in crawl(location_path):
         location_filename = pathlib.Path(file).name
         target = os.path.join(target_root, 'location', location_filename)
-        file_linker.link(file, target)
+        link(file, target)
 
 
 def main():
     env = environs.Env()
-    calibrated_path = env.str('CALIBRATED_PATH')
-    location_path = env.str('LOCATION_PATH')
-    out_path = env.str('OUT_PATH')
+    calibrated_path = env.path('CALIBRATED_PATH')
+    location_path = env.path('LOCATION_PATH')
+    out_path = env.path('OUT_PATH')
     log_level = env.log_level('LOG_LEVEL', 'INFO')
     source_type_index = env.int('SOURCE_TYPE_INDEX')
     year_index = env.int('YEAR_INDEX')

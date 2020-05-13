@@ -21,7 +21,6 @@ lib.tests.test_data_filename \
 lib.tests.test_date_formatter \
 lib.tests.test_file_linker \
 lib.tests.test_merged_data_filename \
-lib.tests.test_target_path \
 location_active_dates.tests.test_app \
 location_asset.tests.test_app \
 location_group_path.tests.test_app \
