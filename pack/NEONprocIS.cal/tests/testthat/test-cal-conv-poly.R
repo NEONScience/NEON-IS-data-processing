@@ -92,12 +92,13 @@ test_that("testing calibration conversion", {
   cat("\n       |======= Negative test 1::                      ============|\n")
   cat("\n       |------ cal is a list but empty                             |\n\n")
   #
-  calibrated <-
-    NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = cal)
+  calibrated <- try (NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = cal), silent = TRUE)
+  
+  testthat::expect_true((class(calibrated)[1] == "try-error"))
+  
   cat("\n       |------ Calibration will not run!                           |\n")
   cat("\n       |===========================================================|\n")
-  #testthat::expect_equal(data, calibrated)
-  
+ 
   ##########
   ########## Sad path #2 - when cal has invalid values.
   ########## Warning issued and calibrated values NA.

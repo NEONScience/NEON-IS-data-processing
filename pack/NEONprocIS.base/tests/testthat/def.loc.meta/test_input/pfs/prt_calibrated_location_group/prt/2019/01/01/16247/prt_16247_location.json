@@ -1,0 +1,344 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC103459",
+                "site": "CARI",
+                "install_date": "2018-05-18T04:30:18Z",
+                "remove_date": "2019-05-04T01:07:18Z",
+                "transaction_date": "2018-05-18T04:30:44Z",
+                "context": [
+                    "surfacewater",
+                    "water-quality-274",
+                    "water-quality"
+                ],
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -147.502,
+                                    65.153078,
+                                    226.241608
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2010-01-01T00:00:00Z",
+                                "end_date": null,
+                                "transaction_date": "2016-09-12T20:26:17Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.06731,
+                                "y_offset": 0.12,
+                                "z_offset": -0.895,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "S2LOC103456",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -147.501999,
+                                                            65.153073,
+                                                            225.442
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": null,
+                                                        "transaction_date": "2016-09-12T20:25:27Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S2LOC103456",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "HOR": "102",
+            "VER": "100",
+            "TMI": "000",
+            "Data Rate": "1",
+            "Required Asset Management Location Code": "CFGLOC103459",
+            "Required Asset Management Location ID": 4866
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC101663",
+                "site": "POSE",
+                "install_date": "2019-09-04T15:10:48Z",
+                "remove_date": null,
+                "transaction_date": "2019-09-04T15:10:53Z",
+                "context": [
+                    "surfacewater",
+                    "water-quality-237",
+                    "water-quality"
+                ],
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -78.147286,
+                                    38.894397,
+                                    275.79
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2010-01-01T00:00:00Z",
+                                "end_date": null,
+                                "transaction_date": "2016-02-17T18:05:39Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.06731,
+                                "y_offset": 0.12,
+                                "z_offset": 0.06,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "S1LOC101258",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -78.147286,
+                                                            38.894397,
+                                                            275.79
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": null,
+                                                        "transaction_date": "2015-06-01T17:40:30Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S1LOC101258",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "Required Asset Management Location ID": 2988,
+            "Required Asset Management Location Code": "CFGLOC101663",
+            "HOR": "101",
+            "VER": "100",
+            "TMI": "000",
+            "Data Rate": "1"
+        },
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC101440",
+                "site": "MAYF",
+                "install_date": "2016-08-17T19:07:30Z",
+                "remove_date": "2017-02-10T16:38:23Z",
+                "transaction_date": "2016-08-17T19:07:54Z",
+                "context": [
+                    "surfacewater",
+                    "water-quality-247",
+                    "water-quality"
+                ],
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -87.407856,
+                                    32.9604,
+                                    71.469
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2010-01-01T00:00:00Z",
+                                "end_date": "2019-07-17T23:59:59Z",
+                                "transaction_date": "2019-10-03T18:25:50Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.067,
+                                "y_offset": 0.067,
+                                "z_offset": -0.895,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "S1LOC101437",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -87.407854,
+                                                            32.960401,
+                                                            70.82
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": null,
+                                                        "transaction_date": "2015-12-11T20:45:59Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S1LOC101437",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    -87.407808,
+                                    32.960401,
+                                    70.7261
+                                ]
+                            },
+                            "properties": {
+                                "start_date": "2019-07-18T00:00:00Z",
+                                "end_date": null,
+                                "transaction_date": "2019-10-03T18:25:50Z",
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 0.05,
+                                "y_offset": 0,
+                                "z_offset": -0.057,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "S1LOC101437",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Point",
+                                                        "coordinates": [
+                                                            -87.407854,
+                                                            32.960401,
+                                                            70.82
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": null,
+                                                        "transaction_date": "2015-12-11T20:45:59Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "S1LOC101437",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "HOR": "101",
+            "VER": "100",
+            "TMI": "000",
+            "Data Rate": "1",
+            "Required Asset Management Location Code": "CFGLOC101440",
+            "Required Asset Management Location ID": 2705
+        }
+    ],
+    "source_type": "prt",
+    "source_id": 16247
+}

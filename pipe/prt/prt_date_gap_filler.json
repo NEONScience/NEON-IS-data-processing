@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_date_gap_filler_test"
+    "name": "prt_date_gap_filler"
   },
   "transform": {
     "image_pull_secrets": [
@@ -19,7 +19,7 @@
       "OUT_PATH": "/pfs/out",
       "START_DATE": "2018-12-31",
       "END_DATE": "2019-01-07",
-      "OUTPUT_DIRECTORIES": "data,calibration,location,uncertainty_data,uncertainty_coef,flags",
+      "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags",
       "DATA_SOURCE_TYPE_INDEX": "3",
       "DATA_YEAR_INDEX": "4",
       "DATA_MONTH_INDEX": "5",

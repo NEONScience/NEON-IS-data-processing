@@ -46,7 +46,9 @@
 #     Removed uncertainty quantification (moved to separate function)
 #     Split out creation of the polynomial model object into a function
 #   Mija Choi (2020-02-24)
-#     Added list validations 
+#     Added list validations
+#   Cove Sturtevant (2020-05-12)
+#     Bug fix - incorrectly stopping when infoCal is NULL
 ##############################################################################################
 def.cal.conv.poly <- function(data = base::numeric(0),
                               infoCal = NULL,
@@ -63,30 +65,33 @@ def.cal.conv.poly <- function(data = base::numeric(0),
   if (!chkNew) {
     chk <- c(chk, chkNew)
   }
-  # Check to see if infoCal is a list and not empty
-  chkList <- NEONprocIS.base::def.validate.list(infoCal, log = log)
-  if (!chkList) {
-    chk <- c(chk, chkList)
-  }
   
   # If infoCal is NULL, return NA data
   if ((is.null(infoCal)) || any (is.na(unlist((infoCal))))) {
     log$warn('No calibration information supplied, returning NA values for converted data.')
     dataConv <- NA * data
     return(dataConv)
+  } else {
+    # Check to see if infoCal is a list
+    chkList <-
+      NEONprocIS.base::def.validate.list(infoCal, log = log)
+    if (!chkList) {
+      chk <- c(chk, chkList)
+    }
+    
   }
   
   if (!all(chk)) {
-    on.exit()
+    stop()
   }
-  else {
-    # Construct the polynomial calibration function
-    func <-
-      NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, log = log)
-    
-    # Convert data using the calibration function
-    dataConv <- stats::predict(object = func, newdata = data)
-    
-    return(dataConv)
-  }
+  
+  # Construct the polynomial calibration function
+  func <-
+    NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, log = log)
+  
+  # Convert data using the calibration function
+  dataConv <- stats::predict(object = func, newdata = data)
+  
+  return(dataConv)
+  
 }
