@@ -91,7 +91,7 @@ test_that("   Test of def.cal.slct.R, determine applicable date ranges for calib
             
             idList = c('162901', '162902', '162922', '162903', '162904')
             
-            expect_true ((is.data.frame(dfReturned)) &&  all(metaCal$id %in% idList))
+            expect_true ((is.data.frame(dfReturned)) &&  all(dfReturned$id %in% idList))
             
             cat("\n       |------                   The test ran successfully, a correct Data frame is returned       |\n")
             
