@@ -3,7 +3,7 @@ pipeline:
   name: file_joiner_test
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/file_joiner:9
+  image: quay.io/battelleecology/file_joiner:10
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
@@ -12,26 +12,26 @@ transform:
     PATHNAME: /pfs/*/exo2/2019/01/01/**
     CONFIG: |
       ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
             name: INPUT_1
             glob_pattern: /pfs/INPUT_1/*/*/**
             # Join on year and month
             join_indices: [4, 5]
-            output_indices: [3]
         - path:
             name: INPUT_2
             glob_pattern: /pfs/INPUT_2/*/*/**
             # Join on year and month
             join_indices: [4, 5]
-            output_indices: [3]
         - path:
             name: INPUT_3
             glob_pattern: /pfs/INPUT_3/*/*/**
             # Join on year and month
             join_indices: [4, 5]
-            output_indices: [3]
     OUT_PATH: /pfs/out
+    RELATIVE_PATH_INDEX: "3"
     LOG_LEVEL: INFO
 input:
   cross:
