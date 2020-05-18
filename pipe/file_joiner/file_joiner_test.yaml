@@ -12,25 +12,27 @@ transform:
     PATHNAME: /pfs/*/exo2/2019/01/01/**
     CONFIG: |
       ---
-      paths:
+      input_paths:
         - path:
             name: INPUT_1
-            path_pattern: /pfs/INPUT_1/*/*/**
+            glob_pattern: /pfs/INPUT_1/*/*/**
             # Join on year and month
-            path_join_indices: [4, 5]
+            join_indices: [4, 5]
+            output_indices: [3]
         - path:
             name: INPUT_2
-            path_pattern: /pfs/INPUT_2/*/*/**
+            glob_pattern: /pfs/INPUT_2/*/*/**
             # Join on year and month
-            path_join_indices: [4, 5]
+            join_indices: [4, 5]
+            output_indices: [3]
         - path:
             name: INPUT_3
-            path_pattern: /pfs/INPUT_3/*/*/**
+            glob_pattern: /pfs/INPUT_3/*/*/**
             # Join on year and month
-            path_join_indices: [4, 5]
+            join_indices: [4, 5]
+            output_indices: [3]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: "3"
 input:
   cross:
     - pfs:

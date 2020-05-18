@@ -16,7 +16,7 @@
   "input": {
     "pfs": {
       "name": "DATA_PATH",
-      "repo": "data_source_sunav2_linkmerge",
+      "repo": "data_source_sunav2",
       "glob": "/sunav2/2019/01/05/*",
       "empty_files": true
     }
