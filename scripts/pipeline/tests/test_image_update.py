@@ -6,6 +6,7 @@ import json
 import unittest
 
 import image_update
+import edit_test
 
 
 class ParserTest(unittest.TestCase):
@@ -38,6 +39,34 @@ class ParserTest(unittest.TestCase):
             file_data = yaml.load(open_file, Loader=yaml.FullLoader)
             image = file_data['transform']['image']
             self.assertTrue(image == old_image)
+
+    def test_edit(self):
+        image = 'quay.io/battelleecology/file_joiner:7'
+        # update files to new image
+        edit_test.add(self.pipeline_root, image)
+        with open(self.json_path) as json_file:
+            json_data = json.load(json_file)
+            new_setting = json_data['transform']['env']['NEW_SETTING']
+            self.assertTrue(new_setting == 'value')
+        with open(self.yaml_path) as open_file:
+            file_data = yaml.load(open_file, Loader=yaml.FullLoader)
+            new_setting = file_data['transform']['env']['NEW_SETTING']
+            self.assertTrue(new_setting == 'value')
+
+    def test_undo(self):
+        image = 'quay.io/battelleecology/file_joiner:7'
+        # update files to new image
+        edit_test.remove(self.pipeline_root, image)
+        with open(self.json_path) as json_file:
+            json_data = json.load(json_file)
+            new_setting = json_data['transform']['env'].get('NEW_SETTING')
+            print(f'new_setting: {new_setting}')
+            self.assertTrue(new_setting is None)
+        with open(self.yaml_path) as open_file:
+            file_data = yaml.load(open_file, Loader=yaml.FullLoader)
+            new_setting = file_data['transform']['env'].get('NEW_SETTING')
+            print(f'new_setting: {new_setting}')
+            self.assertTrue(new_setting is None)
 
 
 if __name__ == '__main__':

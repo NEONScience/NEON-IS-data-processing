@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 import os
 import json
@@ -7,13 +8,13 @@ from ruamel.yaml.util import load_yaml_guess_indent
 
 def update(specification_path, old_image, new_image):
     """
-    Update to the new image any pipeline specifications using the old image.
+    Update to the new image all pipeline specifications using the old image.
 
-    :param specification_path: The path for the specification files to search.
+    :param specification_path: The specification file path.
     :type specification_path: str
-    :param old_image: The old image to replace.
+    :param old_image: The image to replace.
     :type old_image: str
-    :param new_image: The new image.
+    :param new_image: The replacement image.
     :type new_image: str
     :return:
     """

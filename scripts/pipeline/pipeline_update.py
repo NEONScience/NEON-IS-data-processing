@@ -7,10 +7,9 @@ import yaml
 
 def get_files(specification_path):
     """
-    Get the specification files in the given directory and any subdirectories.
+    Get specification files in the given directory and its subdirectories.
 
-    :param specification_path: A path to a directory or subdirectories
-     containing specification files.
+    :param specification_path: The path to a directory containing specification files.
     :return:
     """
     specification_files = []
