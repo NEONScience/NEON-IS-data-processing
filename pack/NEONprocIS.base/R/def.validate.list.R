@@ -45,7 +45,7 @@ def.validate.list <-
       log$error('Input is not a list.')
     }
     
-    else if (rapportools::is.empty(unlist(listIn)))  {
+    else if (length(listIn) ==0)  {
       b <- FALSE
       log$error('List is empty.')
       
