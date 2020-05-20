@@ -31,6 +31,7 @@ def main():
 
     for file in crawl(in_path):
         parts = Path(file).parts
+        root = os.path.join(*parts[:source_type_index])
         source = parts[source_type_index]
         year = parts[year_index]
         month = parts[month_index]
@@ -43,7 +44,7 @@ def main():
                 continue  # a real file exists, do not link the empty file
             else:
                 filename = filename.replace(suffix, '')  # no real file exists, trim the suffix
-        pathname = f'{in_path}/{source}/{year}/{month}/{day}/{location}/*/*{suffix}'
+        pathname = f'{root}/{source}/{year}/{month}/{day}/{location}/*/*{suffix}'
         if glob.glob(pathname):  # if empty file exists location is active, link the file
             link_path = os.path.join(out_path, source, year, month, day, location, data_type, filename)
             log.debug(f'file: {file} link: {link_path}')

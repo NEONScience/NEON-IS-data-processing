@@ -7,6 +7,7 @@ data_calibration_group.tests.test_grouper_calibration \
 data_calibration_group.tests.test_grouper_no_calibration \
 data_location_group.tests.test_app \
 date_gap_filler.tests.test_app \
+date_gap_filler_linker.tests.test_app \
 directory_filter.tests.test_app \
 egress.tests.test_app \
 event_asset_loader.tests.test_app \
