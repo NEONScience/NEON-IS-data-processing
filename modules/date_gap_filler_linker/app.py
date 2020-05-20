@@ -40,12 +40,12 @@ def main():
         data_type = parts[data_type_index]
         filename = parts[filename_index]
         if file.suffix == suffix:
-            if os.path.exists(file.stem):
+            real_data_path = os.path.join(root, source, year, month, day, location, data_type, file.stem)
+            if os.path.exists(real_data_path):
                 continue  # a real file exists, do not link the empty file
             else:
                 filename = filename.replace(suffix, '')  # no real file exists, trim the suffix
-        pathname = f'{root}/{source}/{year}/{month}/{day}/{location}/*/*{suffix}'
-        if glob.glob(pathname):  # if empty file exists location is active, link the file
+        if glob.glob(f'{root}/{source}/{year}/{month}/{day}/{location}/*/*{suffix}'):
             link_path = os.path.join(out_path, source, year, month, day, location, data_type, filename)
             log.debug(f'file: {file} link: {link_path}')
             link(file, link_path)
