@@ -1,0 +1,2 @@
+structlog==20.1.0
+environs==7.3.1
