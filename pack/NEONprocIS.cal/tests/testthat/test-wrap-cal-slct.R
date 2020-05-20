@@ -5,7 +5,7 @@
 #' Mija Choi \email{choim@battelleecology.org}
 
 #' @description
-#' Run unit tests for def.wrap.cal.slct.R,wrapper function.
+#' Run unit tests for wrap.cal.slct.R,wrapper function.
 #' Select the calibrations and their time ranges that apply for each selected variable.
 #' The tests include positive and negative scenarios.
 #' The positive test is for a case when all the params to the function are valid
