@@ -123,32 +123,40 @@ class AppTest(TestCase):
         location_path = os.path.join(root_path, '02', self.location_name, 'location', self.location_name + '.json')
         self.assertTrue(os.path.lexists(location_path))
 
-        # check output for data gaps
+        # check output for filled-in data gaps
 
-        # first missing day data
+        # first missing day
         empty_location_path = os.path.join(root_path, '01', self.location_name, 'location')
         self.assertTrue(os.path.exists(empty_location_path))
-        empty_data_path = os.path.join(root_path, '01', self.location_name, 'data')
+        empty_data_path = os.path.join(root_path, '01', self.location_name, 'data',
+                                       'exo2_' + self.location_name + '_2020-01-01.ext.empty')
         self.assertTrue(os.path.exists(empty_data_path))
         empty_calibration_path = os.path.join(root_path, '01', self.location_name, 'calibration')
         self.assertTrue(os.path.exists(empty_calibration_path))
-        empty_uncertainty_data_path = os.path.join(root_path, '01', self.location_name, 'uncertainty_data')
+        empty_uncertainty_data_path = os.path.join(root_path, '01', self.location_name, 'uncertainty_data',
+                                                   'exo2_' + self.location_name
+                                                   + '_2020-01-01_uncertaintyData.ext.empty')
         self.assertTrue(os.path.exists(empty_uncertainty_data_path))
         empty_uncertainty_coefficient_path = os.path.join(root_path, '01', self.location_name, 'uncertainty_coef')
         self.assertTrue(os.path.exists(empty_uncertainty_coefficient_path))
-        empty_flags_path = os.path.join(root_path, '01', self.location_name, 'flags')
+        empty_flags_path = os.path.join(root_path, '01', self.location_name, 'flags', 'exo2_' + self.location_name
+                                        + '_2020-01-01_flagsCal.ext.empty')
         self.assertTrue(os.path.exists(empty_flags_path))
 
         # second missing day
         empty_location_path = os.path.join(root_path, '03', self.location_name, 'location')
         self.assertTrue(os.path.exists(empty_location_path))
-        empty_data_path = os.path.join(root_path, '03', self.location_name, 'data')
+        empty_data_path = os.path.join(root_path, '03', self.location_name, 'data',
+                                       'exo2_' + self.location_name + '_2020-01-03.ext.empty')
         self.assertTrue(os.path.exists(empty_data_path))
         empty_calibration_path = os.path.join(root_path, '03', self.location_name, 'calibration')
         self.assertTrue(os.path.exists(empty_calibration_path))
-        empty_uncertainty_data_path = os.path.join(root_path, '03', self.location_name, 'uncertainty_data')
+        empty_uncertainty_data_path = os.path.join(root_path, '03', self.location_name, 'uncertainty_data',
+                                                   'exo2_' + self.location_name
+                                                   + '_2020-01-03_uncertaintyData.ext.empty')
         self.assertTrue(os.path.exists(empty_uncertainty_data_path))
         empty_uncertainty_coefficient_path = os.path.join(root_path, '03', self.location_name, 'uncertainty_coef')
         self.assertTrue(os.path.exists(empty_uncertainty_coefficient_path))
-        empty_flags_path = os.path.join(root_path, '03', self.location_name, 'flags')
+        empty_flags_path = os.path.join(root_path, '03', self.location_name, 'flags',
+                                        'exo2_' + self.location_name + '_2020-01-03_flagsCal.ext.empty')
         self.assertTrue(os.path.exists(empty_flags_path))

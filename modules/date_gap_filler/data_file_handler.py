@@ -6,51 +6,36 @@ import structlog
 from lib.file_linker import link
 from lib.file_crawler import crawl
 
-from date_gap_filler.date_between import is_date_between
+from date_gap_filler.date_between import date_between
 
 log = structlog.get_logger()
 
 
-def write_data_files(data_path,
-                     out_path,
-                     source_type_index,
-                     year_index,
-                     month_index,
-                     day_index,
-                     location_index,
-                     data_type_index,
-                     filename_index,
-                     start_date=None,
-                     end_date=None):
+def link_data_files(config):
     """
-    Return all data file path keys between the start and end dates.
+    Link all files between the start and end dates.
 
-    :param data_path: The path to the data file directory.
-    :type data_path: str
-    :param out_path: The path to write results.
-    :type out_path: str
-    :param source_type_index: The source type index in the file path.
-    :type source_type_index: int
-    :param year_index: The year index in the file path.
-    :type year_index: int
-    :param month_index: The month index in the file path.
-    :type month_index: int
-    :param day_index: The dah index in the file path.
-    :type day_index: int
-    :param location_index: The location index in the file path.
-    :type location_index: int
-    :param data_type_index: The data type index in the file path.
-    :type data_type_index: int
-    :param filename_index: The filename index in the file path.
-    :type filename_index: int
-    :param start_date: The start date.
-    :type start_date: datetime object
-    :param end_date: The end date.
-    :type end_date: datetime object
+    :param config: The path to the data file directory.
+    :type config: date_gap_filler.app_config.AppConfig
     :return: list of data files.
     """
-    for file_path in crawl(data_path):
-        parts = file_path.parts
+    # input/output
+    data_path = config.data_path
+    out_path = config.out_path
+    # path indices
+    source_type_index = config.data_source_type_index
+    year_index = config.data_year_index
+    month_index = config.data_month_index
+    day_index = config.data_day_index
+    location_index = config.data_location_index
+    data_type_index = config.data_type_index
+    filename_index = config.data_filename_index
+    # dates
+    start_date = config.start_date
+    end_date = config.end_date
+
+    for file in crawl(data_path):
+        parts = file.parts
         source_type = parts[source_type_index]
         year = parts[year_index]
         month = parts[month_index]
@@ -58,7 +43,7 @@ def write_data_files(data_path,
         location = parts[location_index]
         data_type = parts[data_type_index]
         filename = parts[filename_index]
-        if not is_date_between(year, month, day, start_date, end_date):
+        if not date_between(int(year), int(month), int(day), start_date, end_date):
             continue
-        path = os.path.join(out_path, source_type, year, month, day, location, data_type, filename)
-        link(file_path, path)
+        link_path = os.path.join(out_path, source_type, year, month, day, location, data_type, filename)
+        link(file, link_path)

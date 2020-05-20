@@ -56,6 +56,7 @@
               "name": "DATA_PATH",
               "repo": "prt_merge_data_by_location",
               "glob": "/prt/*/*",
+              "joinOn": "$1$2",
               "empty_files": true
             }
           },
@@ -64,6 +65,7 @@
               "name": "LOCATION_PATH",
               "repo": "location_active_dates",
               "glob": "/prt/*/*",
+              "joinOn": "$1$2",
               "empty_files": true
             }
           }

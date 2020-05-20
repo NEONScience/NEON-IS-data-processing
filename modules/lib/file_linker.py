@@ -4,7 +4,7 @@ import os
 
 def link(source, target):
     """
-    Link the source into the target.
+    Link source to target.
 
     :param source: The source path.
     :type source: str
