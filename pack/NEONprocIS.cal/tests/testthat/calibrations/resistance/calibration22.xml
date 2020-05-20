@@ -33,7 +33,7 @@
     </CalEnvironment>
     <CalibrationCoefficient> 
 		<Name>CVALA1</Name>
-		<Value>0</Value>
+		<Value>0.7</Value>
     </CalibrationCoefficient>
 	<CalibrationTable name="">
     <Metadata>
@@ -75,11 +75,11 @@
       <StartTime>2018-12-11T17:47:38.0000</StartTime>
       <EndTime>2018-12-11T17:48:35.0000</EndTime>
     </ActivityTimeRange>
-    <CertificateNumber>162911</CertificateNumber>
+    <CertificateNumber>162922</CertificateNumber>
   </StreamCalVal>
   <ValidTimeRange>
-    <StartTime>2018-12-11T17:48:35.0000</StartTime>
-    <EndTime>2019-01-08T17:48:35.0000</EndTime>
+    <StartTime>2019-06-11T17:48:35.0000</StartTime>
+    <EndTime>2019-07-08T17:48:35.0000</EndTime>
   </ValidTimeRange>
   <Comment>
     <CommentDescription/>
