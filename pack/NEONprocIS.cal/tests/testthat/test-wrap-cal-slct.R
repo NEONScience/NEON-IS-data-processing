@@ -44,12 +44,14 @@
 #'
 #   Mija Choi (2020-04-14)
 #     original creation
+#   Mija Choi (2020-05-20)
+#     modified the text of context and test_that
 ##############################################################################################
 # Define test context
-context("\n                       calibration conversion\n")
+context("\n       testing the applicable calibrations selection and their time ranges for all variables\n")
 
 # Test calibration conversion
-test_that("testing calibration conversion", {
+test_that("testing calibration selection", {
   # Create data to calibrate
   DirCal = "./calibrations"
   NameVarExpc = character(0)
