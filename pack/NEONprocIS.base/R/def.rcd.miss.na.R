@@ -39,7 +39,7 @@
 #     original creation
 ##############################################################################################
 def.rcd.miss.na <- function(fileData,log = NULL) {
-  
+  browser()
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
