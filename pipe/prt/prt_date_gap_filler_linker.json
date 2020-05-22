@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/date_gap_filler_linker:4",
+    "image": "quay.io/battelleecology/date_gap_filler_linker:5",
     "cmd": [
       "/bin/bash"
     ],
@@ -18,6 +18,7 @@
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out",
       "RELATIVE_PATH_INDEX": "3",
+      "LOCATION_INDEX": "7",
       "EMPTY_FILE_SUFFIX": ".empty"
     }
   },
