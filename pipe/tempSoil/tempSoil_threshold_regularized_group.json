@@ -20,8 +20,8 @@
         "pfs": {
           "name": "REGULARIZED_PATH",
           "repo": "tempSoil_regularized_data",
-          "glob": "/prt/*/*/(*)",
-          "joinOn": "$1",
+          "glob": "/prt/(*)/(*)/(*)",
+          "joinOn": "$1/$2/$3",
           "empty_files": true
         } 
       },
@@ -29,8 +29,8 @@
         "pfs": {
           "name": "THRESHOLD_PATH",
           "repo": "tempSoil_threshold_select",
-          "glob": "/prt/*/*/(*)",
-          "joinOn": "$1",
+          "glob": "/prt/(*)/(*)/(*)",
+          "joinOn": "$1/$2/$3",
           "empty_files": true
         }
       }

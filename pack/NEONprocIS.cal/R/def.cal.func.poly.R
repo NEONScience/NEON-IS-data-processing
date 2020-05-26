@@ -51,6 +51,13 @@ def.cal.func.poly <- function(infoCal, log = NULL) {
   cal <- infoCal$cal
   cal <- cal[grep('CVALA[0-9]', cal$Name), ]
   
+  # Error out if there aren't any calibration coefficients
+  if(base::nrow(cal) == 0){
+    log$error('No polynomial calibration coefficients found in infoCal')
+    stop()
+  }
+  
+  
   # Pull out the numeric polynomial level of each coefficient (a0,a1,a2,...)
   levlPoly <-
     base::as.numeric(base::unlist(base::lapply(

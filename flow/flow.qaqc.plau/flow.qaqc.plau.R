@@ -183,7 +183,7 @@ for(idxDirIn in DirIn){
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
-  # Get directory listing of input directory. Expect subdirectories for data, location, and threshold
+  # Get directory listing of input directory. Expect subdirectories for data and threshold
   idxDirData <- base::paste0(idxDirIn,'/data')
   idxDirThsh <- base::paste0(idxDirIn,'/threshold')
   fileData <- base::dir(idxDirData)
@@ -235,7 +235,7 @@ for(idxDirIn in DirIn){
   # Read in the thresholds file (read first file only, there should only be 1)
   if(base::length(fileThsh) > 1){
     fileThsh <- fileThsh[1]
-    log$info(base::paste0('There is more than location file in ',idxDirThsh,'. Using ',fileThsh))
+    log$info(base::paste0('There is more than one threshold file in ',idxDirThsh,'. Using ',fileThsh))
   }
   thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile=base::paste0(idxDirThsh,'/',fileThsh)))
   
