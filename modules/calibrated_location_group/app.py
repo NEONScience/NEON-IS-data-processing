@@ -1,77 +1,73 @@
 #!/usr/bin/env python3
-import pathlib
-import os
+from pathlib import Path
 
 import environs
 import structlog
 
 import lib.log_config as log_config
-from lib.file_linker import link
-from lib.file_crawler import crawl
 
 log = structlog.get_logger()
 
 
-def group(calibrated_path, location_path, out_path, source_type_index, year_index,
-          month_index, day_index, source_id_index, data_type_index):
+def group(calibrated_path: Path,
+          location_path: Path,
+          out_path: Path,
+          source_type_index: int,
+          year_index: int,
+          month_index: int,
+          day_index: int,
+          source_id_index: int,
+          data_type_index: int):
     """
     Write calibrated data and location files into the output path.
 
     :param calibrated_path: Path to the calibration files to process.
-    :type calibrated_path: str
     :param location_path: Path to the calibration files to process.
-    :type location_path: str
     :param out_path: Directory path to write output.
-    :type out_path: str
     :param source_type_index: The source type index in the calibrated file path.
-    :type source_type_index: int
     :param year_index: The year index in the calibrated file path.
-    :type year_index: int
     :param month_index: The month index in the calibrated file path.
-    :type month_index: int
     :param day_index: The day index in the calibrated file path.
-    :type day_index: int
     :param source_id_index: The source ID index in the calibrated file path.
-    :type source_id_index: int
     :param data_type_index: The data type index in the calibrated file path.
-    :type data_type_index: int
-    :return:
     """
     i = 0
-    for file_path in crawl(calibrated_path):
-        parts = file_path.parts
-        source_type = parts[source_type_index]
-        year = parts[year_index]
-        month = parts[month_index]
-        day = parts[day_index]
-        source_id = parts[source_id_index]
-        data_type = parts[data_type_index]
-        log.debug(f'year: {year}  month: {month}  day: {day} source type: {source_type} '
-                  f'source_id: {source_id} data type: {data_type}')
-        target_root = os.path.join(out_path, source_type, year, month, day, source_id)
-        if i == 0:  # only link location files once
-            link_location(location_path, target_root)
-        # pass remainder of file path after the data type
-        target = os.path.join(target_root, data_type, *parts[data_type_index+1:])
-        log.debug(f'target: {target}')
-        link(file_path, target)
-        i += 1
+    for path in calibrated_path.rglob('*'):
+        if path.is_file():
+            parts = path.parts
+            source_type = parts[source_type_index]
+            year = parts[year_index]
+            month = parts[month_index]
+            day = parts[day_index]
+            source_id = parts[source_id_index]
+            data_type = parts[data_type_index]
+            log.debug(f'year: {year}  month: {month}  day: {day} source type: {source_type} '
+                      f'source_id: {source_id} data type: {data_type}')
+            root_link_path = Path(out_path, source_type, year, month, day, source_id)
+            if i == 0:  # only link location files once
+                link_location(location_path, root_link_path)
+            # pass remainder of file path after the data type
+            link_path = Path(root_link_path, data_type, *parts[data_type_index+1:])
+            link_path.parent.mkdir(parents=True, exist_ok=True)
+            log.debug(f'link_path: {link_path}')
+            link_path.symlink_to(path)
+            i += 1
 
 
-def link_location(location_path, target_root):
+def link_location(location_path: Path, root_link_path: Path):
     """
     Link the location file into the target root.
 
     :param location_path: The location file path.
-    :type location_path: str
-    :param target_root: The target directory to write the location file.
-    :type target_root: str
+    :param root_link_path: The target directory to write the location file.
     :return:
     """
-    for file in crawl(location_path):
-        location_filename = pathlib.Path(file).name
-        target = os.path.join(target_root, 'location', location_filename)
-        link(file, target)
+    for path in location_path.rglob('*'):
+        if path.is_file():
+            filename = path.name
+            link_path = Path(root_link_path, 'location', filename)
+            link_path.parent.mkdir(parents=True, exist_ok=True)
+            link_path.symlink_to(path)
 
 
 def main():
