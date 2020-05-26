@@ -1,23 +1,19 @@
 #!/usr/bin/env python3
-import os
-
 import structlog
-
-from lib.file_linker import link
-from lib.file_crawler import crawl
+from pathlib import Path
 
 from date_gap_filler.date_between import date_between
+from date_gap_filler.app_config import AppConfig
 
 log = structlog.get_logger()
 
 
-def link_data_files(config):
+def link_data_files(config: AppConfig):
     """
     Link all files between the start and end dates.
 
     :param config: The path to the data file directory.
-    :type config: date_gap_filler.app_config.AppConfig
-    :return: list of data files.
+    :return: The data files.
     """
     # input/output
     data_path = config.data_path
@@ -34,16 +30,19 @@ def link_data_files(config):
     start_date = config.start_date
     end_date = config.end_date
 
-    for file in crawl(data_path):
-        parts = file.parts
-        source_type = parts[source_type_index]
-        year = parts[year_index]
-        month = parts[month_index]
-        day = parts[day_index]
-        location = parts[location_index]
-        data_type = parts[data_type_index]
-        filename = parts[filename_index]
-        if not date_between(int(year), int(month), int(day), start_date, end_date):
-            continue
-        link_path = os.path.join(out_path, source_type, year, month, day, location, data_type, filename)
-        link(file, link_path)
+    for path in data_path.rglob('*'):
+        if path.is_file():
+            parts = path.parts
+            source_type = parts[source_type_index]
+            year = parts[year_index]
+            month = parts[month_index]
+            day = parts[day_index]
+            location = parts[location_index]
+            data_type = parts[data_type_index]
+            filename = parts[filename_index]
+            if not date_between(int(year), int(month), int(day), start_date, end_date):
+                continue
+            link_dir = Path(out_path, source_type, year, month, day, location, data_type)
+            link_dir.mkdir(parents=True, exist_ok=True)
+            link_path = Path(link_dir, filename)
+            link_path.symlink_to(path)

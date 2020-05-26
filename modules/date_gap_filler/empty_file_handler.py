@@ -1,56 +1,63 @@
-import os
-import pathlib
+from pathlib import Path
 import structlog
-
-from lib.file_crawler import crawl
-from lib.file_linker import link
 
 log = structlog.get_logger()
 
 
-def get_paths(empty_files_path, file_type_index):
-    """
-    Get a path for each type of empty file.
+class EmptyFiles(object):
+    """Class to hold empty file paths."""
 
-    :param empty_files_path: The directory containing empty files.
-    :type empty_files_path: str
-    :param file_type_index: The index of the file type (e.g. 'flags') in the file path.
-    :type file_type_index: int
-    :return: dict of file paths.
-    """
-    paths = {}
-    for file_path in crawl(empty_files_path):
-        file_type = pathlib.Path(file_path).parts[file_type_index]
-        if 'data' == file_type:
-            paths.update(data_path=file_path)
-        elif 'flags' == file_type:
-            paths.update(flags_path=file_path)
-        elif 'uncertainty_data' == file_type:
-            paths.update(uncertainty_path=file_path)
-    return paths
+    def __init__(self, empty_files_path: Path, file_type_index: int):
+        """
+        Constructor.
+
+        :param empty_files_path: The directory containing empty files.
+        :param file_type_index: The index of the file type (e.g. 'flags') in the file path.
+        """
+        for path in empty_files_path.rglob('*'):
+            if path.is_file():
+                file_type = path.parts[file_type_index]
+                if 'data' == file_type:
+                    self.data_path = path
+                elif 'flags' == file_type:
+                    self.flags_path = path
+                elif 'uncertainty_data' == file_type:
+                    self.uncertainty_path = path
 
 
-def link_empty_file(output_dir, file, location, year, month, day):
-    """
-    Link the file into the output directory.
+class EmptyFileLinker(object):
+    """Class to handle linking empty files."""
 
-    :param output_dir: The target directory for linking files.
-    :type output_dir: str
-    :param file: The source empty file path.
-    :type file: str
-    :param location: The location.
-    :type location: str
-    :param year: The year.
-    :type year: str
-    :param month: The month.
-    :type month: str
-    :param day: The day.
-    :type day: str
-    :return:
-    """
-    filename = pathlib.Path(file).name
-    filename = filename.replace('location', location).replace('year', year).replace('month', month).replace('day', day)
-    filename += '.empty'  # add extension to distinguish from real data files.
-    link_path = os.path.join(output_dir, filename)
-    log.debug(f'source: {file}, link: {link_path}')
-    link(file, link_path)
+    def __init__(self, empty_files: EmptyFiles, location: str, year: str, month: str, day: str):
+        self.empty_files = empty_files
+        self.location = location
+        self.year = year
+        self.month = month
+        self.day = day
+
+    def link_data_file(self, out_dir: Path):
+        self.link_empty_file(out_dir, self.empty_files.data_path)
+
+    def link_flags_file(self, out_dir: Path):
+        self.link_empty_file(out_dir, self.empty_files.flags_path)
+
+    def link_uncertainty_file(self, out_dir: Path):
+        self.link_empty_file(out_dir, self.empty_files.uncertainty_path)
+
+    def link_empty_file(self, output_dir: Path, file: Path):
+        """
+        Link the file into the output directory.
+
+        :param output_dir: The target directory for linking files.
+        :param file: The source empty file path.
+        """
+        filename = file.name
+        filename = filename.replace('location', self.location)
+        filename = filename.replace('year', self.year)
+        filename = filename.replace('month', self.month)
+        filename = filename.replace('day', self.day)
+        filename += '.empty'  # add extension to distinguish from real data files.
+        output_dir.mkdir(parents=True, exist_ok=True)
+        link_path = Path(output_dir, filename)
+        log.debug(f'source: {file}, link: {link_path}')
+        link_path.symlink_to(file)
