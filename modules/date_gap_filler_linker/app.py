@@ -10,7 +10,11 @@ log = structlog.get_logger()
 
 class Linker(object):
 
-    def __init__(self, in_path: Path, out_path: Path, relative_path_index: int, location_index: int,
+    def __init__(self,
+                 in_path: Path,
+                 out_path: Path,
+                 relative_path_index: int,
+                 location_index: int,
                  empty_file_suffix: str):
         """
         Constructor.

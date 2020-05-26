@@ -42,7 +42,6 @@ def link_data_files(config: AppConfig):
             filename = parts[filename_index]
             if not date_between(int(year), int(month), int(day), start_date, end_date):
                 continue
-            link_dir = Path(out_path, source_type, year, month, day, location, data_type)
-            link_dir.mkdir(parents=True, exist_ok=True)
-            link_path = Path(link_dir, filename)
+            link_path = Path(out_path, source_type, year, month, day, location, data_type, filename)
+            link_path.parent.mkdir(parents=True, exist_ok=True)
             link_path.symlink_to(path)

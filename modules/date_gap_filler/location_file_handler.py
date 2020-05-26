@@ -50,9 +50,8 @@ def link_location_files(config: AppConfig):
             if not date_between(int(year), int(month), int(day), start_date, end_date):
                 continue
             root_output_path = Path(out_path, source_type, year, month, day, location)
-            location_dir = Path(root_output_path, 'location')
-            location_dir.mkdir(parents=True, exist_ok=True)
-            location_link = Path(location_dir, filename)
+            location_link = Path(root_output_path, 'location', filename)
+            location_link.parent.mkdir(parents=True, exist_ok=True)
             location_link.symlink_to(path)
             empty_file_linker = EmptyFileLinker(empty_files, location, year, month, day)
             if write_data:
