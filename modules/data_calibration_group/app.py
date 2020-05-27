@@ -16,9 +16,9 @@ def group(data_grouper, calibration_grouper):
 
 def main():
     env = environs.Env()
-    data_path = env.str('DATA_PATH')
-    calibration_path = env.str('CALIBRATION_PATH')
-    out_path = env.str('OUT_PATH')
+    data_path = env.path('DATA_PATH')
+    calibration_path = env.path('CALIBRATION_PATH')
+    out_path = env.path('OUT_PATH')
     log_level = env.log_level('LOG_LEVEL')
     data_source_type_index = env.int('DATA_SOURCE_TYPE_INDEX')
     data_year_index = env.int('DATA_YEAR_INDEX')

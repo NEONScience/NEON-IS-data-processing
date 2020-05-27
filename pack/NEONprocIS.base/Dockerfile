@@ -93,7 +93,7 @@ ENV LIBARROW_BINARY=true
 RUN R -e 'utils::install.packages(c("devtools"))' && \
     R -e 'remotes::install_github("rstudio/renv@0.9.2-20")' && \
     R -e 'renv::consent(provided=TRUE); renv::restore("pack/NEONprocIS.base/")' && \
-    R -e 'remotes::install_github("apache/arrow/r@apache-arrow-0.17.0")' && \
+#    R -e 'remotes::install_github("apache/arrow/r@apache-arrow-0.17.0")' && \
     R -e 'renv::install("/pack/NEONprocIS.base")' && \
     rm -rf /pack
 

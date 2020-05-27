@@ -155,7 +155,7 @@ for(idxDirIn in DirIn){
   }
   
   if(numFileLoc > 1){
-    log$info(base::paste0('There is more than location file in ',DirLoc,'. Using ',fileLoc[1]))
+    log$debug(base::paste0('There is more than location file in ',DirLoc,'. Using ',fileLoc[1]))
     fileLoc <- fileLoc[1]
   }
   

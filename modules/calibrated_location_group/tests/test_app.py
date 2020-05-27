@@ -46,18 +46,6 @@ class AppTest(TestCase):
         self.source_id_index = '7'
         self.data_type_index = '8'
 
-    def test_group(self):
-        app.group(self.calibrated_path,
-                  self.location_path,
-                  self.out_path,
-                  int(self.source_type_index),
-                  int(self.year_index),
-                  int(self.month_index),
-                  int(self.day_index),
-                  int(self.source_id_index),
-                  int(self.data_type_index))
-        self.check_output()
-
     def test_main(self):
         os.environ['CALIBRATED_PATH'] = self.calibrated_path
         os.environ['LOCATION_PATH'] = self.location_path

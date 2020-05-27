@@ -343,7 +343,7 @@ for (idxDirIn in DirIn) {
     ))
   } 
   
-  # Read regularization frequency from location file if
+  # Read regularization frequency from location file if expected
   if (expcLoc){
     # Grab the named location from the directory structure
     nameLoc <-

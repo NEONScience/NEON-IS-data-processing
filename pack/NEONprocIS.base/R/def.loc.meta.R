@@ -6,15 +6,20 @@
 
 #' @description
 #' Definition function. Read sensor locations json file and return a data frame of metadata/properties 
-#' filtered for a selected named location and/or install time range of interest
+#' filtered for a selected named location and/or install time range of interest. This function also
+#' reads location-based location files (no sensor install information)
 
 #' @param NameFile Filename (including relative or absolute path). Must be json format.
 #' @param NameLoc Character value of the named location to restrict output to. Defaults to NULL, 
 #' in which case no filtering is done for named location
 #' @param TimeBgn POSIXct timestamp of the start time of interest (inclusive). Defaults to NULL, 
-#' in which case no filtering is done for installed time range
+#' in which case no filtering is done for installed time range. Note that 
+#' no time filtering is performed for location-based location files, since there is no sensor install 
+#' information included, and only one location is included in the location-based location files.
 #' @param TimeEnd POSIXct timestamp of the end time of interest (non-inclusive). Defaults to NULL, in 
-#' which case the location information will be filtered for the exact time of TimeBgn.
+#' which case the location information will be filtered for the exact time of TimeBgn. Note that 
+#' no time filtering is performed for location-based location files, since there is no sensor install 
+#' information included, and only one location is included in the location-based location files.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -56,6 +61,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                           install_date=dmmyPosx,
                           remove_date=dmmyPosx,
                           transaction_date=dmmyPosx,
+                          active_periods=dmmyChar,
                           context=dmmyChar,
                           location_id=dmmyChar,
                           location_code=dmmyChar,
@@ -75,18 +81,31 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   # Properties of each named location listed in the locations file
   # Lists the named location, site, install_date, remove_date
   locProp <- geojsonsf::geojson_sf(NameFile) # data frame
-  locProp$install_date <- base::as.POSIXct(locProp$install_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
-  locProp$remove_date <- base::as.POSIXct(locProp$remove_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
-  locProp$transaction_date <- base::as.POSIXct(locProp$transaction_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
+  if(!base::is.null(locProp$install_date)){
+    locProp$install_date <- base::as.POSIXct(locProp$install_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
+  } else {
+    locProp$install_date <- NA
+  }
+  if(!base::is.null(locProp$remove_date)){
+    locProp$remove_date <- base::as.POSIXct(locProp$remove_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
+  } else {
+    locProp$remove_date <- NA
+  }
+  if(!base::is.null(locProp$transaction_date)){
+    locProp$transaction_date <- base::as.POSIXct(locProp$transaction_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
+  } else {
+    locProp$transaction_date <- NA
+  }
   
   # Is there a named location and/or date range we want to restrict location info to?
   setLocProp <- base::seq_len(base::nrow(locProp))
+  testTime <- base::any(!base::is.na(locProp$install_date))
   if(!base::is.null(NameLoc)){
     setLocProp <- base::intersect(setLocProp,base::which(locProp$name == NameLoc))
   }
-  if(!base::is.null(TimeBgn) && (base::is.null(TimeEnd) || TimeBgn == TimeEnd)){
+  if(testTime && !base::is.null(TimeBgn) && (base::is.null(TimeEnd) || TimeBgn == TimeEnd)){
     setLocProp <- base::intersect(setLocProp,base::which(locProp$install_date <= TimeBgn & (base::is.na(locProp$remove_date) | locProp$remove_date > TimeBgn)))
-  } else if (!base::is.null(TimeBgn) && !base::is.null(TimeEnd)){
+  } else if (testTime && !base::is.null(TimeBgn) && !base::is.null(TimeEnd)){
     setLocProp <- base::intersect(setLocProp,base::which(locProp$install_date <= TimeEnd & (base::is.na(locProp$remove_date) | locProp$remove_date > TimeBgn)))
   }
   locProp <- locProp[setLocProp,]
@@ -95,7 +114,8 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   locPropMore <- locFull$features[setLocProp]
   
   # Expected property names that might not be there
-  nameProp <- c('Required Asset Management Location ID',
+  nameProp <- c('active-periods',
+                'Required Asset Management Location ID',
                 'Required Asset Management Location Code',
                 'HOR',
                 'VER',
@@ -131,6 +151,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                                             remove_date=locProp$remove_date[idxLoc],
                                             transaction_date=locProp$transaction_date[idxLoc],
                                             context=ctxt,
+                                            active_periods=propFill[['active-periods']],
                                             location_id=propFill[['Required Asset Management Location ID']],
                                             location_code=propFill[['Required Asset Management Location Code']],
                                             HOR=propFill$HOR,

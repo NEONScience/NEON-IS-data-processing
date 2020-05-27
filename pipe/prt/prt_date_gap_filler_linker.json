@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/date_gap_filler_linker:1",
+    "image": "quay.io/battelleecology/date_gap_filler_linker:5",
     "cmd": [
       "/bin/bash"
     ],
@@ -17,13 +17,9 @@
     "env": {
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out",
-      "SOURCE_TYPE_INDEX": "3",
-      "YEAR_INDEX": "4",
-      "MONTH_INDEX": "5",
-      "DAY_INDEX": "6",
+      "RELATIVE_PATH_INDEX": "3",
       "LOCATION_INDEX": "7",
-      "DATA_TYPE_INDEX": "8",
-      "FILENAME_INDEX": "9"
+      "EMPTY_FILE_SUFFIX": ".empty"
     }
   },
   "parallelism_spec": {
@@ -38,5 +34,5 @@
     }
   },
   "enable_stats": false,
-  "standby": false
+  "standby": true
 }

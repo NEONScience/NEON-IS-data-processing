@@ -1,50 +1,43 @@
 #!/usr/bin/env python3
-import os
-import pathlib
+from pathlib import Path
 
 import structlog
 
-from lib.file_linker import link
-from lib.file_crawler import crawl
 import lib.location_file_context as location_file_context
 
 log = structlog.get_logger()
 
 
-def get_files_by_source(in_path, source_id_index, data_type_index):
+def get_files_by_source(in_path: Path, source_id_index: int, data_type_index: int):
     """
     Organize all files in the input directory by source (sensor).
 
     :param in_path: The input path.
-    :type in_path: str
     :param source_id_index: The path index for the source ID.
-    :type source_id_index: int
     :param data_type_index: The path index for the data type.
-    :type data_type_index: int
     """
     source_files = {}
-    for file in crawl(in_path):
-        parts = pathlib.Path(file).parts
-        source_id = parts[source_id_index]
-        data_type = parts[data_type_index]
-        log.debug(f'source_id: {source_id} data_type: {data_type}')
-        files = source_files.get(source_id)
-        if files is None:  # first iteration for this source (sensor)
-            files = []
-        files.append({data_type: file})
-        source_files.update({source_id: files})
+    for path in in_path.rglob('*'):
+        if path.is_file():
+            parts = path.parts
+            source_id = parts[source_id_index]
+            data_type = parts[data_type_index]
+            log.debug(f'source_id: {source_id} data_type: {data_type}')
+            files = source_files.get(source_id)
+            if files is None:  # first iteration for this source (sensor)
+                files = []
+            files.append({data_type: path})
+            source_files.update({source_id: files})
     return source_files
 
 
-def match_files_by_context(source_files, context):
+def match_files_by_context(source_files: dict, context: str):
     """
     Group files by location context group and write to output if the
     location file context matches the given context.
 
     :param source_files: File paths by data type.
-    :type source_files: dict
     :param context: The context to match.
-    :type context: str
     """
     matching_file_paths = []
     for source in source_files:
@@ -57,46 +50,39 @@ def match_files_by_context(source_files, context):
     return matching_file_paths
 
 
-def link_matching_files(matching_file_paths,
-                        out_path,
-                        source_type_index,
-                        year_index,
-                        month_index,
-                        day_index,
-                        source_id_index,
-                        data_type_index):
+def link_matching_files(matching_file_paths: dict,
+                        out_path: Path,
+                        source_type_index: int,
+                        year_index: int,
+                        month_index: int,
+                        day_index: int,
+                        source_id_index: int,
+                        data_type_index: int):
     """
     Pull files by the data type and link into output directory.
 
     :param matching_file_paths: Files organized by data type.
-    :type matching_file_paths dict
     :param out_path: The output path.
-    :type out_path: str
     :param source_type_index: The path index for the source type.
-    :type source_type_index: int
     :param year_index: The path index for the year.
-    :type year_index: int
     :param month_index: The path index for the month.
-    :type month_index: int
     :param day_index: The path index for the day.
-    :type day_index: int
     :param source_id_index: The path index for the source ID.
-    :type source_id_index: int
     :param data_type_index: The path index for the data type.
-    :type data_type_index: int
     """
     for file_paths in matching_file_paths:
         for data_type_files in file_paths:
             for data_type in data_type_files:
-                file = data_type_files.get(data_type)
-                parts = pathlib.Path(file).parts
+                path = data_type_files.get(data_type)
+                parts = path.parts
                 source_type = parts[source_type_index]
                 year = parts[year_index]
                 month = parts[month_index]
                 day = parts[day_index]
                 source_id = parts[source_id_index]
                 file_data_type = parts[data_type_index]
-                destination = os.path.join(out_path, source_type, year, month, day,
-                                           source_id, file_data_type, *parts[data_type_index + 1:])
-                log.debug(f'file: {file} destination: {destination}')
-                link(file, destination)
+                link_path = Path(out_path, source_type, year, month, day,
+                                 source_id, file_data_type, *parts[data_type_index + 1:])
+                link_path.parent.mkdir(parents=True, exist_ok=True)
+                log.debug(f'file: {path} link_path: {link_path}')
+                link_path.symlink_to(path)
