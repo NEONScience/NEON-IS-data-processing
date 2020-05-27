@@ -63,7 +63,7 @@
           {
             "pfs": {
               "name": "LOCATION_PATH",
-              "repo": "location_active_dates",
+              "repo": "location_active_dates_subset",
               "glob": "/prt/*/*",
               "joinOn": "$1$2",
               "empty_files": true

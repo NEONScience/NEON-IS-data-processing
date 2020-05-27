@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.thsh.filt.R","DirIn=$threshold","DirOut=/pfs/out","Term=temp","Ctxt=soil"],
-    "image": "quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.5",
+    "image": "quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.6",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -18,7 +18,8 @@
   },
   "enable_stats": false,
   "standby": true,
-  "parallelism_spec": {
-    "constant": "2"
+  "resource_requests": {
+    "memory": "13M",
+    "cpu": 0.01
   }
 }

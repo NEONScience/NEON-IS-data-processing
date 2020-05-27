@@ -14,10 +14,14 @@ def.loc.meta(NameFile, NameLoc = NULL, TimeBgn = NULL,
 in which case no filtering is done for named location}
 
 \item{TimeBgn}{POSIXct timestamp of the start time of interest (inclusive). Defaults to NULL, 
-in which case no filtering is done for installed time range}
+in which case no filtering is done for installed time range. Note that 
+no time filtering is performed for location-based location files, since there is no sensor install 
+information included, and only one location is included in the location-based location files.}
 
 \item{TimeEnd}{POSIXct timestamp of the end time of interest (non-inclusive). Defaults to NULL, in 
-which case the location information will be filtered for the exact time of TimeBgn.}
+which case the location information will be filtered for the exact time of TimeBgn. Note that 
+no time filtering is performed for location-based location files, since there is no sensor install 
+information included, and only one location is included in the location-based location files.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}
@@ -27,7 +31,8 @@ output. Defaults to NULL, in which the logger will be created and used within th
 }
 \description{
 Definition function. Read sensor locations json file and return a data frame of metadata/properties 
-filtered for a selected named location and/or install time range of interest
+filtered for a selected named location and/or install time range of interest. This function also
+reads location-based location files (no sensor install information)
 }
 \examples{
 # Not run
