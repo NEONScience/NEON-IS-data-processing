@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "prt_calibrated_location_group",
-      "glob": "/prt/*/*/*/"
+      "glob": "/prt/*/*"
       }
   },
   "enable_stats": false,

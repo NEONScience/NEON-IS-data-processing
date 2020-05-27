@@ -29,7 +29,7 @@
         "pfs": {
           "name": "IN_PATH",
           "repo": "data_source_year_exofdom_site",
-          "glob": "/*/*/*/*",
+          "glob": "/*/*/*",
           "lazy": true
         }
       },

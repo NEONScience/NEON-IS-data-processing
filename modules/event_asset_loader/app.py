@@ -1,50 +1,43 @@
 #!/usr/bin/env python3
-import os
-import pathlib
+from pathlib import Path
 
 import environs
 import structlog
 
-import lib.log_config as log_config
-from lib.file_linker import link
 from lib.file_crawler import crawl
+import lib.log_config as log_config
 
 log = structlog.get_logger()
 
 
-def process(data_path, out_path, source_type_index, source_id_index, filename_index):
+def process(data_path: Path, out_path: Path, source_type_index: int, source_id_index: int, filename_index: int):
     """
     Load events from the asset data path.
 
     :param data_path: The data path.
-    :type data_path: str
     :param out_path: The output path for writing results.
-    :type out_path: str
-    :param source_type_index: The souce type index in file paths.
-    :type source_type_index: int
-    :param source_id_index: The source ID index in input file paths.
-    :type source_id_index: int
-    :param filename_index: The filename index in input file paths.
-    :type filename_index: int
+    :param source_type_index: The file path source type index.
+    :param source_id_index: The file path source ID index.
+    :param filename_index: The file path filename index.
     :return:
     """
-    for file_path in crawl(data_path):
-        parts = pathlib.Path(file_path).parts
+    for path in crawl(data_path):
+        parts = path.parts
         source_type = parts[source_type_index]
         source_id = parts[source_id_index]
         filename = parts[filename_index]
-        log.debug(f'source filename: {filename} type: {source_type} source_id: {source_id}')
-        output_filename = source_type + '_' + source_id + '_events.json'
-        output_path = os.path.join(out_path, source_type, source_id, output_filename)
-        log.debug(f'output_path: {output_path}')
-        if not os.path.exists(output_path):
-            link(file_path, output_path)
+        log.debug(f'file: {filename} type: {source_type} source_id: {source_id}')
+        link_filename = f'{source_type}_{source_id}_events.json'
+        link_path = Path(out_path, source_type, source_id, link_filename)
+        log.debug(f'link_path: {link_path}')
+        link_path.parent.mkdir(parents=True, exist_ok=True)
+        link_path.symlink_to(path)
 
 
 def main():
     env = environs.Env()
-    source_path = env.str('SOURCE_PATH')
-    out_path = env.str('OUT_PATH')
+    source_path = env.path('SOURCE_PATH')
+    out_path = env.path('OUT_PATH')
     log_level = env.log_level('LOG_LEVEL')
     source_type_index = env.int('SOURCE_TYPE_INDEX')
     source_id_index = env.int('SOURCE_ID_INDEX')

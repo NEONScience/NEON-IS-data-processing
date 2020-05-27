@@ -23,7 +23,7 @@
     "pfs": {
       "name": "SOURCE_PATH",
       "repo": "heater_data_location_group",
-      "glob": "/heater/*/*/*"
+      "glob": "/heater/*/*"
     }
   },
   "enable_stats": false,

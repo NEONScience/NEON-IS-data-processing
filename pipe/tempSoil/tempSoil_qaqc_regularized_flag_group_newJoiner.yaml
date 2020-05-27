@@ -33,12 +33,12 @@ pipeline:
       - pfs:
           name: REGULARIZED_PATH
           repo: tempSoil_regularized_flags
-          glob: /prt/*/*/*
+          glob: /prt/*/*
           empty_files: true
       - pfs:
           name: QAQC_PATH
           repo: tempSoil_qaqc_flags
-          glob: /prt/*/*/*
+          glob: /prt/*/*
           empty_files: true
   parallelism_spec:
     constant: 4

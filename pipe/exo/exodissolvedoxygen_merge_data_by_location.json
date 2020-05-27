@@ -14,7 +14,7 @@
       "pfs": {
         "name": "DIR_IN",
         "repo": "exodissolvedoxygen_structure_repo_by_location",
-        "glob": "/exodissolvedoxygen/*/*/*/"
+        "glob": "/exodissolvedoxygen/*/*"
       }
   },
   "enable_stats": false,

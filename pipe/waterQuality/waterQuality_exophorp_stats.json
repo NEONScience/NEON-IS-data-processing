@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "waterQuality_exophorp_data_uncertainty_group",
-          "glob": "/*/*/*/"
+          "glob": "/*/*/*"
         }
       },
       {

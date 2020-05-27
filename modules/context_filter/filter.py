@@ -4,6 +4,7 @@ from pathlib import Path
 import structlog
 
 import lib.location_file_context as location_file_context
+from lib.file_crawler import crawl
 
 log = structlog.get_logger()
 
@@ -17,17 +18,16 @@ def get_files_by_source(in_path: Path, source_id_index: int, data_type_index: in
     :param data_type_index: The path index for the data type.
     """
     source_files = {}
-    for path in in_path.rglob('*'):
-        if path.is_file():
-            parts = path.parts
-            source_id = parts[source_id_index]
-            data_type = parts[data_type_index]
-            log.debug(f'source_id: {source_id} data_type: {data_type}')
-            files = source_files.get(source_id)
-            if files is None:  # first iteration for this source (sensor)
-                files = []
-            files.append({data_type: path})
-            source_files.update({source_id: files})
+    for path in crawl(in_path):
+        parts = path.parts
+        source_id = parts[source_id_index]
+        data_type = parts[data_type_index]
+        log.debug(f'source_id: {source_id} data_type: {data_type}')
+        files = source_files.get(source_id)
+        if files is None:  # first iteration for this source (sensor)
+            files = []
+        files.append({data_type: path})
+        source_files.update({source_id: files})
     return source_files
 
 
