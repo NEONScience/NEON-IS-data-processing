@@ -23,7 +23,7 @@
     "pfs": {
       "name": "SOURCE_PATH",
       "repo": "exodissolvedoxygen_merge_data_by_location",
-      "glob": "/exodissolvedoxygen/*/*/*/*"
+      "glob": "/exodissolvedoxygen/*/*/*"
     }
   },
   "enable_stats": false,

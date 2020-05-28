@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "exodissolvedoxygen_data_calibration_group",
-      "glob": "/exodissolvedoxygen/*/*/*/"
+      "glob": "/exodissolvedoxygen/*/*"
     }
   },
   "parallelism_spec": {

@@ -5,6 +5,7 @@ import environs
 import structlog
 
 import lib.log_config as log_config
+from lib.file_crawler import crawl
 
 log = structlog.get_logger()
 
@@ -32,26 +33,25 @@ def group(calibrated_path: Path,
     :param data_type_index: The data type index in the calibrated file path.
     """
     i = 0
-    for path in calibrated_path.rglob('*'):
-        if path.is_file():
-            parts = path.parts
-            source_type = parts[source_type_index]
-            year = parts[year_index]
-            month = parts[month_index]
-            day = parts[day_index]
-            source_id = parts[source_id_index]
-            data_type = parts[data_type_index]
-            log.debug(f'year: {year}  month: {month}  day: {day} source type: {source_type} '
-                      f'source_id: {source_id} data type: {data_type}')
-            root_link_path = Path(out_path, source_type, year, month, day, source_id)
-            if i == 0:  # only link location files once
-                link_location(location_path, root_link_path)
-            # pass remainder of file path after the data type
-            link_path = Path(root_link_path, data_type, *parts[data_type_index+1:])
-            link_path.parent.mkdir(parents=True, exist_ok=True)
-            log.debug(f'link_path: {link_path}')
-            link_path.symlink_to(path)
-            i += 1
+    for path in crawl(calibrated_path):
+        parts = path.parts
+        source_type = parts[source_type_index]
+        year = parts[year_index]
+        month = parts[month_index]
+        day = parts[day_index]
+        source_id = parts[source_id_index]
+        data_type = parts[data_type_index]
+        log.debug(f'year: {year}  month: {month}  day: {day} source type: {source_type} '
+                  f'source_id: {source_id} data type: {data_type}')
+        root_link_path = Path(out_path, source_type, year, month, day, source_id)
+        if i == 0:  # only link location files once
+            link_location(location_path, root_link_path)
+        # pass remainder of file path after the data type
+        link_path = Path(root_link_path, data_type, *parts[data_type_index+1:])
+        link_path.parent.mkdir(parents=True, exist_ok=True)
+        log.debug(f'link_path: {link_path}')
+        link_path.symlink_to(path)
+        i += 1
 
 
 def link_location(location_path: Path, root_link_path: Path):
@@ -62,12 +62,10 @@ def link_location(location_path: Path, root_link_path: Path):
     :param root_link_path: The target directory to write the location file.
     :return:
     """
-    for path in location_path.rglob('*'):
-        if path.is_file():
-            filename = path.name
-            link_path = Path(root_link_path, 'location', filename)
-            link_path.parent.mkdir(parents=True, exist_ok=True)
-            link_path.symlink_to(path)
+    for path in crawl(location_path):
+        link_path = Path(root_link_path, 'location', path.name)
+        link_path.parent.mkdir(parents=True, exist_ok=True)
+        link_path.symlink_to(path)
 
 
 def main():
@@ -83,8 +81,7 @@ def main():
     source_id_index = env.int('SOURCE_ID_INDEX')
     data_type_index = env.int('DATA_TYPE_INDEX')
     log_config.configure(log_level)
-    log.debug(f'calibrated_dir: {calibrated_path} '
-              f'location_dir: {location_path} out_dir: {out_path}')
+    log.debug(f'calibrated_dir: {calibrated_path} location_dir: {location_path} out_dir: {out_path}')
     group(calibrated_path, location_path, out_path, source_type_index, year_index,
           month_index, day_index, source_id_index, data_type_index)
 

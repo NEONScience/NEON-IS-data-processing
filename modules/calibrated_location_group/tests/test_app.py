@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -15,17 +16,17 @@ class AppTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.out_path = os.path.join('/', 'outputs')
-        self.metadata_path = os.path.join('prt', '2019', '05', '17', '00001')
-        self.calibrated_path = os.path.join('/', 'inputs', 'calibrated')
-        self.location_path = os.path.join('/', 'inputs', 'location')
+        self.out_path = Path('/', 'outputs')
+        self.metadata_path = Path('prt', '2019', '05', '17', '00001')
+        self.calibrated_path = Path('/', 'inputs', 'calibrated')
+        self.location_path = Path('/', 'inputs', 'location')
 
         #  Create calibrated input files.
-        calibrated_root = os.path.join(self.calibrated_path, self.metadata_path)
-        data_path = os.path.join(calibrated_root, 'data', 'data.ext')
-        flags_path = os.path.join(calibrated_root, 'flags', 'flags.ext')
-        uncertainty_path = os.path.join(calibrated_root, 'uncertainty', 'uncertainty.json')
-        test_extra_dir_path = os.path.join(calibrated_root, 'test', 'test_dir', 'test.json')
+        calibrated_root = self.calibrated_path.joinpath(self.metadata_path)
+        data_path = calibrated_root.joinpath('data', 'data.ext')
+        flags_path = calibrated_root.joinpath('flags', 'flags.ext')
+        uncertainty_path = calibrated_root.joinpath('uncertainty', 'uncertainty.json')
+        test_extra_dir_path = calibrated_root.joinpath('test', 'test_dir', 'test.json')
 
         self.fs.create_file(data_path)
         self.fs.create_file(flags_path)
@@ -33,7 +34,7 @@ class AppTest(TestCase):
         self.fs.create_file(test_extra_dir_path)
 
         #  Create location input file.
-        locations_path = os.path.join(self.location_path, 'prt', '00001', 'locations.json')
+        locations_path = Path(self.location_path, 'prt', '00001', 'locations.json')
         self.fs.create_file(locations_path)
 
         #  Create output dir
@@ -47,28 +48,28 @@ class AppTest(TestCase):
         self.data_type_index = '8'
 
     def test_main(self):
-        os.environ['CALIBRATED_PATH'] = self.calibrated_path
-        os.environ['LOCATION_PATH'] = self.location_path
+        os.environ['CALIBRATED_PATH'] = str(self.calibrated_path)
+        os.environ['LOCATION_PATH'] = str(self.location_path)
+        os.environ['OUT_PATH'] = str(self.out_path)
+        os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['SOURCE_TYPE_INDEX'] = self.source_type_index
         os.environ['YEAR_INDEX'] = self.year_index
         os.environ['MONTH_INDEX'] = self.month_index
         os.environ['DAY_INDEX'] = self.day_index
         os.environ['SOURCE_ID_INDEX'] = self.source_id_index
         os.environ['DATA_TYPE_INDEX'] = self.data_type_index
-        os.environ['OUT_PATH'] = self.out_path
-        os.environ['LOG_LEVEL'] = 'DEBUG'
         app.main()
         self.check_output()
 
     def check_output(self):
-        root_path = os.path.join(self.out_path, self.metadata_path)
-        data_path = os.path.join(root_path, 'data', 'data.ext')
-        flags_path = os.path.join(root_path, 'flags', 'flags.ext')
-        locations_path = os.path.join(root_path, 'location', 'locations.json')
-        uncertainty_path = os.path.join(root_path, 'uncertainty', 'uncertainty.json')
-        test_extra_dir_path = os.path.join(root_path, 'test', 'test_dir', 'test.json')
-        self.assertTrue(os.path.lexists(data_path))
-        self.assertTrue(os.path.lexists(flags_path))
-        self.assertTrue(os.path.lexists(locations_path))
-        self.assertTrue(os.path.lexists(uncertainty_path))
-        self.assertTrue(os.path.lexists(test_extra_dir_path))
+        root_path = Path(self.out_path, self.metadata_path)
+        data_path = root_path.joinpath('data', 'data.ext')
+        flags_path = root_path.joinpath('flags', 'flags.ext')
+        locations_path = root_path.joinpath('location', 'locations.json')
+        uncertainty_path = root_path.joinpath('uncertainty', 'uncertainty.json')
+        test_extra_dir_path = root_path.joinpath('test', 'test_dir', 'test.json')
+        self.assertTrue(data_path.exists())
+        self.assertTrue(flags_path.exists())
+        self.assertTrue(locations_path.exists())
+        self.assertTrue(uncertainty_path.exists())
+        self.assertTrue(test_extra_dir_path.exists())

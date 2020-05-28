@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -15,19 +16,19 @@ class AppTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.out_path = os.path.join('/', 'repo', 'outputs')
-        self.data_path = os.path.join('/', 'repo', 'data')
-        self.location_path = os.path.join('/', 'location')
-        self.metadata_path = os.path.join('prt', '2019', '05', '17')
+        self.out_path = Path('/', 'repo', 'outputs')
+        self.data_path = Path('/', 'repo', 'data')
+        self.location_path = Path('/', 'location')
+        self.metadata_path = Path('prt', '2019', '05', '17')
 
         #  Create data file.
         self.data_file = 'prt_00001_2019-05-17.ext'
-        self.input_data_path = os.path.join(self.data_path, self.metadata_path, self.data_file)
+        self.input_data_path = self.data_path.joinpath(self.metadata_path, self.data_file)
         self.fs.create_file(self.input_data_path)
 
         #  Create location file.
         self.location_file = 'prt_00001_locations.json'
-        self.input_location_path = os.path.join(self.location_path, 'prt', '00001', self.location_file)
+        self.input_location_path = self.location_path.joinpath('prt', '00001', self.location_file)
         self.fs.create_file(self.input_location_path)
 
         #  Create output directory.
@@ -52,9 +53,9 @@ class AppTest(TestCase):
         self.check_output()
 
     def test_main(self):
-        os.environ['DATA_PATH'] = self.data_path
-        os.environ['LOCATION_PATH'] = self.location_path
-        os.environ['OUT_PATH'] = self.out_path
+        os.environ['DATA_PATH'] = str(self.data_path)
+        os.environ['LOCATION_PATH'] = str(self.location_path)
+        os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['SOURCE_TYPE_INDEX'] = self.source_type_index
         os.environ['YEAR_INDEX'] = self.year_index
@@ -68,13 +69,13 @@ class AppTest(TestCase):
         print(f'input_data_path: {self.input_data_path}')
         print(f'input_location_path: {self.input_location_path}')
 
-        root_path = os.path.join(self.out_path, self.metadata_path, '00001')
+        root_path = Path(self.out_path, self.metadata_path, '00001')
 
-        self.output_data_path = os.path.join(root_path, 'data', self.data_file)
-        self.output_location_path = os.path.join(root_path, 'location', self.location_file)
+        output_data_path = root_path.joinpath('data', self.data_file)
+        output_location_path = root_path.joinpath('location', self.location_file)
 
-        print(f'output_data_path: {self.output_data_path}')
-        print(f'output_location_path: {self.output_location_path}')
+        print(f'output_data_path: {output_data_path}')
+        print(f'output_location_path: {output_location_path}')
 
-        self.assertTrue(os.path.lexists(self.output_data_path))
-        self.assertTrue(os.path.lexists(self.output_location_path))
+        self.assertTrue(output_data_path.exists())
+        self.assertTrue(output_location_path.exists())

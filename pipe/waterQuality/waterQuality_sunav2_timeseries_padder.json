@@ -33,7 +33,7 @@
       "name": "DATA_PATH",
       "repo": "sunav2_fill_date_gaps_by_location",
       "branch": "master",
-      "glob": "/sunav2/*/*/*"
+      "glob": "/sunav2/*/*"
     }
   },
   "standby": true,

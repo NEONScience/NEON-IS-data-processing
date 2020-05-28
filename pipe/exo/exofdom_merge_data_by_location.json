@@ -14,7 +14,7 @@
       "pfs": {
         "name": "DIR_IN",
         "repo": "exofdom_structure_repo_by_location",
-        "glob": "/exofdom/*/*/*/"
+        "glob": "/exofdom/*/*"
       }
   },
   "enable_stats": false,

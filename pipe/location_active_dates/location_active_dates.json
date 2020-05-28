@@ -10,7 +10,7 @@
         "env": {
             "LOCATION_TYPE": "CONFIG",
             "OUT_PATH": "/pfs/out",
-            "LOG_LEVEL": "DEBUG"
+            "LOG_LEVEL": "INFO"
         },
         "secrets": [
             {
@@ -26,6 +26,9 @@
             "spec": "@daily",
             "overwrite": true
         }
+    },
+    "resource_requests": {
+       "disk": "2G"
     },
     "enable_stats": true,
     "standby": true

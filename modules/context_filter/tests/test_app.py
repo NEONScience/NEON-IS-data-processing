@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -23,31 +24,30 @@ class AppTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.out_path = os.path.join('/', 'outputs')
-        self.metadata_path = os.path.join('prt', '2019', '05', '21', '00001')
+        self.out_path = Path('/', 'outputs')
+        self.metadata_path = Path('prt', '2019', '05', '21', '00001')
 
         self.context = 'aspirated-triple'  # The context to find in the location file.
 
-        self.in_path = os.path.join('/', 'inputs')
-        inputs_path = os.path.join(self.in_path, 'merged', self.metadata_path)
+        self.in_path = Path('/', 'inputs')
+        inputs_path = self.in_path.joinpath('merged', self.metadata_path)
 
-        data_path = os.path.join(inputs_path, 'data', 'data.ext')
-        flags_path = os.path.join(inputs_path, 'flags', 'flags.ext')
-        locations_path = os.path.join(inputs_path, 'location', 'locations.json')
-        uncertainty_coefficient_path = os.path.join(inputs_path,
-                                                    'uncertainty_coefficient', 'uncertaintyCoefficient.json')
+        data_path = inputs_path.joinpath('data', 'data.ext')
+        flags_path = inputs_path.joinpath('flags', 'flags.ext')
+        locations_path = inputs_path.joinpath('location', 'locations.json')
+        uncertainty_coefficient_path = inputs_path.joinpath('uncertainty_coefficient', 'uncertaintyCoefficient.json')
 
         self.fs.create_file(data_path)
         self.fs.create_file(flags_path)
         self.fs.create_file(uncertainty_coefficient_path)
 
         # Use real location file for parsing
-        actual_location_file_path = os.path.join(os.path.dirname(__file__), 'test-locations.json')
+        actual_location_file_path = Path(os.path.dirname(__file__), 'test-locations.json')
         self.fs.add_real_file(actual_location_file_path, target_path=locations_path)
 
     def test_main(self):
-        os.environ['IN_PATH'] = self.in_path
-        os.environ['OUT_PATH'] = self.out_path
+        os.environ['IN_PATH'] = str(self.in_path)
+        os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['CONTEXT'] = self.context
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
@@ -61,14 +61,14 @@ class AppTest(TestCase):
 
     def check_output(self):
 
-        root_path = os.path.join(self.out_path, self.metadata_path)
+        root_path = Path(self.out_path, self.metadata_path)
 
-        data_path = os.path.join(root_path, 'data', 'data.ext')
-        flags_path = os.path.join(root_path, 'flags', 'flags.ext')
-        locations_path = os.path.join(root_path, 'location', 'locations.json')
-        uncertainty_path = os.path.join(root_path, 'uncertainty_coefficient', 'uncertaintyCoefficient.json')
+        data_path = root_path.joinpath('data', 'data.ext')
+        flags_path = root_path.joinpath('flags', 'flags.ext')
+        locations_path = root_path.joinpath('location', 'locations.json')
+        uncertainty_path = root_path.joinpath('uncertainty_coefficient', 'uncertaintyCoefficient.json')
 
-        self.assertTrue(os.path.lexists(data_path))
-        self.assertTrue(os.path.lexists(flags_path))
-        self.assertTrue(os.path.lexists(locations_path))
-        self.assertTrue(os.path.lexists(uncertainty_path))
+        self.assertTrue(data_path.exists())
+        self.assertTrue(flags_path.exists())
+        self.assertTrue(locations_path.exists())
+        self.assertTrue(uncertainty_path.exists())

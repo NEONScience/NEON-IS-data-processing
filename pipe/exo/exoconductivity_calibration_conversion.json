@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "exoconductivity_calibration_filter",
-          "glob": "/exoconductivity/*/*/*/"
+          "glob": "/exoconductivity/*/*"
         }
       },
       {

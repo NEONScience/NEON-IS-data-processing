@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "dualfan_data_location_group",
-      "glob": "/dualfan/*/*/*/"
+      "glob": "/dualfan/*/*"
       }
   },
   "enable_stats": false,
