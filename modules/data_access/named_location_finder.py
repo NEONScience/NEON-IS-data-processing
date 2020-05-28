@@ -56,51 +56,42 @@ def get_by_type(connection, type_name, cutoff_date=None):
     :return: Geojson FeatureCollection of locations.
     """
     sql = '''
-            select
-                nam_locn.nam_locn_id,
-                nam_locn.nam_locn_name,
-                nam_locn.nam_locn_desc,
-                type.type_name
-            from
-                nam_locn, type, nam_locn_context
-            where
-                type.type_id = nam_locn.type_id
-            and
-                type.type_name = :type_name
-            and 
-                nam_locn.nam_locn_id = nam_locn_context.nam_locn_id 
-            /*
-            and 
-                nam_locn_context.context_code = :context
-            */
-            /* fetch first 1 rows only */
+        select
+            nam_locn.nam_locn_id,
+            nam_locn.nam_locn_name,
+            nam_locn.nam_locn_desc,
+            type.type_name
+        from
+            nam_locn, type, nam_locn_context
+        where
+            type.type_id = nam_locn.type_id
+        and
+            type.type_name = :type_name
+        and 
+            nam_locn.nam_locn_id = nam_locn_context.nam_locn_id 
+        /* fetch first 1 rows only */
         '''
     with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
         rows = cursor.execute(None, type_name=type_name)
-        named_locations = []
         for row in rows:
             features = []
             named_location_id = row[0]
             name = row[1]
             description = row[2]
             log.debug(f'named_location name: {name} description {description}')
-
             location_properties = get_properties(connection, named_location_id)
             parents = get_parents(connection, named_location_id)
             context = get_context(connection, named_location_id)
             active_periods = get_active_periods(connection, named_location_id, cutoff_date=cutoff_date)
-
             # The parent value contains only site
             site = parents[0]['name']
-
             feature = Feature(properties={'name': name,
                                           'type': type_name,
                                           'description': description,
                                           'site': site,
                                           'context': context,
                                           'active-periods': active_periods})
-
             for prop in location_properties:
                 non_null_field = 'string_value'
                 if prop['number_value'] is not None:
@@ -108,11 +99,8 @@ def get_by_type(connection, type_name, cutoff_date=None):
                 if prop['date_value'] is not None:
                     non_null_field = 'date_value'
                 feature.update({prop['name']: prop[non_null_field]})
-
             features.append(feature)
-            feature_collection = FeatureCollection(features)
-            named_locations.append(feature_collection)
-    return named_locations
+            yield FeatureCollection(features)
 
 
 def get_by_asset(connection, asset_id):
@@ -126,20 +114,20 @@ def get_by_asset(connection, asset_id):
     :return: dict with ID, name, and type of asset's location.
     """
     sql = '''
-                select
-                    is_asset_location.nam_locn_id,
-                    nam_locn.nam_locn_name,
-                    type.type_name
-                from
-                    is_asset_location
-                join
-                    is_asset on is_asset.asset_uid = is_asset_location.asset_uid
-                        and is_asset.asset_uid = :asset_id
-                join
-                    nam_locn on is_asset_location.nam_locn_id = nam_locn.nam_locn_id
-                join
-                    type on nam_locn.type_id = type.type_id
-            '''
+            select
+                is_asset_location.nam_locn_id,
+                nam_locn.nam_locn_name,
+                type.type_name
+            from
+                is_asset_location
+            join
+                is_asset on is_asset.asset_uid = is_asset_location.asset_uid
+                    and is_asset.asset_uid = :asset_id
+            join
+                nam_locn on is_asset_location.nam_locn_id = nam_locn.nam_locn_id
+            join
+                type on nam_locn.type_id = type.type_id
+           '''
     with closing(connection.cursor()) as cursor:
         res = cursor.execute(sql, asset_id=asset_id)
         row = res.fetchone()
@@ -181,12 +169,12 @@ def get_asset_history(connection, asset_id):
     with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
         rows = cursor.execute(None, asset_id=asset_id)
-        named_locations = []
+        features = []
         for row in rows:
             named_location_id = row[0]
             install_date = date_formatter.convert(row[1])
             remove_date = date_formatter.convert(row[2])
-            tran_date = date_formatter.convert(row[3])
+            transaction_date = date_formatter.convert(row[3])
             named_location_name = row[4]
 
             locations = location_finder.get_all(connection, named_location_id)
@@ -196,25 +184,22 @@ def get_asset_history(connection, asset_id):
 
             # The parent value only contains site
             site = parents[0]['name']
-
-            named_location = Feature(properties={'name': named_location_name,
-                                                 'site': site,
-                                                 'install_date': install_date,
-                                                 'remove_date': remove_date,
-                                                 'transaction_date': tran_date,
-                                                 'context': context,
-                                                 'locations': locations})
+            feature = Feature(properties={'name': named_location_name,
+                                          'site': site,
+                                          'install_date': install_date,
+                                          'remove_date': remove_date,
+                                          'transaction_date': transaction_date,
+                                          'context': context,
+                                          'locations': locations})
             for prop in properties:
                 non_null_field = 'string_value'
                 if prop['number_value'] is not None:
                     non_null_field = 'number_value'
                 if prop['date_value'] is not None:
                     non_null_field = 'date_value'
-                named_location.update({prop['name']: prop[non_null_field]})
-
-            named_locations.append(named_location)
-
-    return FeatureCollection(named_locations)
+                feature.update({prop['name']: prop[non_null_field]})
+            features.append(feature)
+    return FeatureCollection(features)
 
 
 def add_reference_locations(connection, named_locations):

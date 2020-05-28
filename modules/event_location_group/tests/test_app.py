@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -17,18 +18,18 @@ class AppTest(TestCase):
 
         self.source_id = '00001'
 
-        self.out_path = os.path.join('/', 'repo', 'outputs')
-        self.data_path = os.path.join('/', 'repo', 'events', 'heater', '2019', '01', '01', self.source_id)
-        self.location_path = os.path.join('/', 'location')
+        self.out_path = Path('/', 'repo', 'outputs')
+        self.data_path = Path('/', 'repo', 'events', 'heater', '2019', '01', '01', self.source_id)
+        self.location_path = Path('/', 'location')
 
         #  Create data file.
-        self.data_file = 'heater_' + self.source_id + '_events_2019-01-01.json'
-        self.input_data_path = os.path.join(self.data_path, self.data_file)
+        self.data_file = f'heater_{self.source_id}_events_2019-01-01.json'
+        self.input_data_path = Path(self.data_path, self.data_file)
         self.fs.create_file(self.input_data_path)
 
         #  Create location file.
-        self.location_file = 'heater_' + self.source_id + '_locations.json'
-        self.input_location_path = os.path.join(self.location_path, 'heater', self.source_id, self.location_file)
+        self.location_file = f'heater_{self.source_id}_locations.json'
+        self.input_location_path = Path(self.location_path, 'heater', self.source_id, self.location_file)
         self.fs.create_file(self.input_location_path)
 
         #  Create output directory.
@@ -54,9 +55,9 @@ class AppTest(TestCase):
         self.check_output()
 
     def test_main(self):
-        os.environ['DATA_PATH'] = self.data_path
-        os.environ['LOCATION_PATH'] = self.location_path
-        os.environ['OUT_PATH'] = self.out_path
+        os.environ['DATA_PATH'] = str(self.data_path)
+        os.environ['LOCATION_PATH'] = str(self.location_path)
+        os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
         os.environ['YEAR_INDEX'] = str(self.year_index)
@@ -72,13 +73,13 @@ class AppTest(TestCase):
         print(f'input_data_path: {self.input_data_path}')
         print(f'input_location_path: {self.input_location_path}')
 
-        root_path = os.path.join(self.out_path, 'heater', '2019', '01', '01', '00001')
+        root_path = Path(self.out_path, 'heater', '2019', '01', '01', '00001')
 
-        self.output_data_path = os.path.join(root_path, 'data', self.data_file)
-        self.output_location_path = os.path.join(root_path, 'location', self.location_file)
+        output_data_path = Path(root_path, 'data', self.data_file)
+        output_location_path = Path(root_path, 'location', self.location_file)
 
-        print(f'output_data_path: {self.output_data_path}')
-        print(f'output_location_path: {self.output_location_path}')
+        print(f'output_data_path: {output_data_path}')
+        print(f'output_location_path: {output_location_path}')
 
-        self.assertTrue(os.path.lexists(self.output_data_path))
-        self.assertTrue(os.path.lexists(self.output_location_path))
+        self.assertTrue(output_data_path.exists())
+        self.assertTrue(output_location_path.exists())

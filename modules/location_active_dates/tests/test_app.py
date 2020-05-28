@@ -7,9 +7,6 @@ import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import location_active_dates.app as app
-import lib.log_config as log_config
-
-log = log_config.configure('DEBUG')
 
 
 class AppTest(TestCase):
@@ -26,7 +23,7 @@ class AppTest(TestCase):
     def test_app(self):
         os.environ['LOCATION_TYPE'] = 'CONFIG'
         os.environ['DATABASE_URL'] = self.database_url
-        os.environ['tick'] = '/pfs/tick/2019-11-01T00:00:00Z'
+        os.environ['tick'] = '/pfs/tick/2015-11-01T00:00:00Z'
         os.environ['OUT_PATH'] = self.out_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
         app.main()
@@ -35,7 +32,9 @@ class AppTest(TestCase):
     def test_date_generator(self):
         start_date = date(2019, 2, 24)
         end_date = date(2019, 3, 3)
-        dates = app.dates_between(start_date, end_date)
+        dates = []
+        for returned_date in app.find_dates_between(start_date, end_date):
+            dates.append(returned_date)
         self.assertEqual(len(dates), 8)
 
     def check_output(self):
