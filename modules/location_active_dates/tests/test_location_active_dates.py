@@ -9,7 +9,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import location_active_dates.app as app
 
 
-class AppTest(TestCase):
+class LocationActiveDatesTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()

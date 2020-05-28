@@ -10,7 +10,7 @@ import water_quality_cloning.asset_assigner as asset_assigner
 import water_quality_cloning.location_tree_assigner as location_tree_assigner
 
 
-class AppTest(unittest.TestCase):
+class WaterQualityCloningTest(unittest.TestCase):
 
     def setUp(self):
         #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]

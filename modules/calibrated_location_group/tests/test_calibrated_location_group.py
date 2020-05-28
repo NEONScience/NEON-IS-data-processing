@@ -8,7 +8,7 @@ import calibrated_location_group.app as app
 from lib import log_config as log_config
 
 
-class AppTest(TestCase):
+class CalibratedLocationGroupTest(TestCase):
 
     def setUp(self):
 

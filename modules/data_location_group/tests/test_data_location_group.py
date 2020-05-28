@@ -9,7 +9,7 @@ from data_location_group.data_location_grouper import link_data, link_location
 from lib import log_config as log_config
 
 
-class AppTest(TestCase):
+class DataLocationGroupTest(TestCase):
 
     def setUp(self):
         log_config.configure('DEBUG')

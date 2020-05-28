@@ -9,7 +9,7 @@ from directory_filter.filter import filter_directory
 import lib.log_config as log_config
 
 
-class BaseTest(TestCase):
+class DirectoryFilterTest(TestCase):
 
     def setUp(self):
         log_config.configure('DEBUG')

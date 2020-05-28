@@ -4,7 +4,7 @@ from timeseries_padder.timeseries_padder import padder_util
 import datetime
 
 
-class TestPadderUtil(unittest.TestCase):
+class PadderUtilTest(unittest.TestCase):
 
     def test_convertWindowSize(self):
         self.assertEqual(padder_util.convert_window_size(10, 0.1), 100)

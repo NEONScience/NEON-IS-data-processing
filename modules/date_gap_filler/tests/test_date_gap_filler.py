@@ -7,7 +7,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import date_gap_filler.app as app
 
 
-class AppTest(TestCase):
+class DateGapFillerTest(TestCase):
 
     def setUp(self):
         # location

@@ -9,7 +9,7 @@ from timeseries_padder.timeseries_padder.padder import Padder
 from timeseries_padder.timeseries_padder.constant_padder import ConstantPadder
 
 
-class AppTest(TestCase):
+class TimeseriesPadderTest(TestCase):
 
     def setUp(self):
         """Set required files in mock filesystem."""

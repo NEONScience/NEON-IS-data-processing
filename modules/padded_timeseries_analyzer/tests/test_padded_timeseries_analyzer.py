@@ -9,7 +9,7 @@ import lib.log_config as log_config
 from lib.merged_data_filename import MergedDataFilename
 
 
-class AppTest(TestCase):
+class PaddedTimeseriesAnalyzerTest(TestCase):
 
     def setUp(self):
         """Set required files in mock filesystem."""

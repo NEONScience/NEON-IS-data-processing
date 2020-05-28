@@ -7,7 +7,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import related_location_group.app as app
 
 
-class AppTest(TestCase):
+class RelatedLocationGroupTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()

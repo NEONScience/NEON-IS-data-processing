@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import qaqc_regularized_flag_group.app as app
 
 
-class AppTest(TestCase):
+class QaqcRegularizedFlagGroupTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()

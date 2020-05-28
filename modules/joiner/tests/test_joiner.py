@@ -7,7 +7,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import joiner.app as app
 
 
-class AppTest(TestCase):
+class JoinerTest(TestCase):
 
     def setUp(self):
         """Create data and location files for prt, dual_fan, and heater in fake filesystem."""

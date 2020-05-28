@@ -11,7 +11,7 @@ import data_access.asset_finder as asset_finder
 import data_access.named_location_finder as named_location_finder
 
 
-class AppTest(TestCase):
+class DataAccessTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()

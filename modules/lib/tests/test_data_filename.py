@@ -4,7 +4,7 @@ import unittest
 from lib.data_filename import DataFilename
 
 
-class TestDataFilename(unittest.TestCase):
+class DataFilenameTest(unittest.TestCase):
 
     def setUp(self):
         filename = 'prt_769_2018-01-03.extension'

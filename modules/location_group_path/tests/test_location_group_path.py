@@ -7,7 +7,7 @@ import location_group_path.app as app
 from lib import log_config as log_config
 
 
-class AppTest(TestCase):
+class LocationGroupPathTest(TestCase):
 
     def setUp(self):
         log_config.configure('DEBUG')

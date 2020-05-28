@@ -9,7 +9,7 @@ from lib import log_config as log_config
 import context_filter.app as app
 
 
-class AppTest(TestCase):
+class ContextFilterTest(TestCase):
 
     def setUp(self):
         log_config.configure('DEBUG')

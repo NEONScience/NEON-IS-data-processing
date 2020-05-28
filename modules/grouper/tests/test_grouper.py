@@ -8,7 +8,7 @@ from lib import log_config as log_config
 import grouper.app as app
 
 
-class AppTest(TestCase):
+class GrouperTest(TestCase):
 
     def setUp(self):
         log_config.configure('DEBUG')

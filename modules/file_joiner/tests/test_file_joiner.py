@@ -8,7 +8,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import file_joiner.joiner as joiner
 
 
-class AppTest(TestCase):
+class FileJoinerTest(TestCase):
 
     def setUp(self):
         """Create files to join in fake filesystem."""

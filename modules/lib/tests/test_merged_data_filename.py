@@ -4,7 +4,7 @@ import unittest
 from lib.merged_data_filename import MergedDataFilename
 
 
-class TestDataFilename(unittest.TestCase):
+class MergedDataFilenameTest(unittest.TestCase):
 
     def setUp(self):
         filename = 'prt_CFGLOC112154_2018-01-03.ext'

@@ -7,7 +7,7 @@ import parquet_linkmerge.app as app
 from lib import log_config as log_config
 
 
-class AppTest(TestCase):
+class ParquetLinkMergeTest(TestCase):
 
     def setUp(self):
         log_config.configure('DEBUG')

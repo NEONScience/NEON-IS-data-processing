@@ -7,7 +7,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import data_calibration_group.app as app
 
 
-class GrouperCalibrationTest(TestCase):
+class DataCalibrationGroupTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()

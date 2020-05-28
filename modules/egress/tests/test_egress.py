@@ -7,7 +7,7 @@ from egress.egress.egress import Egress
 import lib.log_config as log_config
 
 
-class AppTest(TestCase):
+class EgressTest(TestCase):
 
     def setUp(self):
         """Set required files in mock filesystem."""

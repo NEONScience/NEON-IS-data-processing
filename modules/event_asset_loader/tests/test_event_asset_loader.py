@@ -8,7 +8,7 @@ import event_asset_loader.app as app
 from lib import log_config as log_config
 
 
-class AppTest(TestCase):
+class EventAssetLoaderTest(TestCase):
 
     def setUp(self):
 
