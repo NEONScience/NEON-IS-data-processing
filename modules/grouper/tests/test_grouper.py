@@ -54,16 +54,8 @@ class GrouperTest(TestCase):
 
     def check_output(self):
         root_path = Path(self.output_path, 'prt', self.metadata_path, self.location)
-
         out_data_path = Path(root_path, self.data_dir, self.data_file)
         out_location_path = Path(root_path, self.location_dir, self.location_file)
-
-        print(f'in_data_path: {self.in_data_path}')
-        print(f'in_location_path: {self.in_location_path}')
-
-        print(f'out_data_path: {out_data_path}')
-        print(f'out_location_path: {out_location_path}')
-
         self.assertTrue(out_data_path.exists())
         self.assertTrue(out_location_path.exists())
 

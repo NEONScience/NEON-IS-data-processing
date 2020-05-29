@@ -47,8 +47,6 @@ class FileJoinerTest(TestCase):
 
     def check_output(self):
         path_1 = Path(self.output_path, self.path_1)
-        # Test output indices in config file with path_1
-        # path_1 = os.path.join(self.output_path, 'dir2', 'file_1.txt')
         path_2 = Path(self.output_path, self.path_2)
         path_3 = Path(self.output_path, self.path_3)
         self.assertTrue(path_1.exists())

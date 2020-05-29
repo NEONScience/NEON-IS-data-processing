@@ -80,23 +80,15 @@ class JoinerTest(TestCase):
     def check_output(self):
         prt_data_path = Path(self.output_path, self.prt_data_file_1)
         prt_location_path = Path(self.output_path, self.prt_location_file_1)
-        print(f'prt_data_path: {prt_data_path}')
-        print(f'prt_location_path: {prt_location_path}')
 
         prt_data_path_2 = Path(self.output_path, self.prt_data_file_2)
         prt_location_path_2 = Path(self.output_path, self.prt_location_file_2)
-        print(f'prt_data_path_2: {prt_data_path_2}')
-        print(f'prt_location_path_2: {prt_location_path_2}')
 
         dual_fan_path = Path(self.output_path, self.dualfan_data_file)
         dual_fan_location_path = Path(self.output_path, self.dualfan_location_file)
-        print(f'dual_fan_data_path: {dual_fan_path}')
-        print(f'dual_fan_location_path: {dual_fan_location_path}')
 
         heater_path = Path(self.output_path, self.heater_data_file)
         heater_location_path = Path(self.output_path, self.heater_location_file)
-        print(f'heater_data_path: {heater_path}')
-        print(f'heater_location_path: {heater_location_path}')
 
         self.assertTrue(prt_data_path.exists())
         self.assertTrue(prt_location_path.exists())
