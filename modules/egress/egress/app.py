@@ -9,8 +9,8 @@ from egress.egress.egress import Egress
 
 def main():
     env = environs.Env()
-    dataPath = env.str('DATA_PATH')
-    outPath = env.str('OUT_PATH')
+    dataPath = env.path('DATA_PATH')
+    outPath = env.path('OUT_PATH')
     logLevel = env.log_level('LOG_LEVEL')
     log_config.configure(logLevel)
     log = get_logger()

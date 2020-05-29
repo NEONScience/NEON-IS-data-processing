@@ -6,14 +6,12 @@ import yaml
 from yaml import Loader
 
 
-def convert_window_size(window_size, data_rate):
+def convert_window_size(window_size: int, data_rate: float):
     """
-    Convert the window size by the data rate.
+    Divide the window size by the data rate.
 
     :param window_size: window size in number of data points
-    :type window_size: int
     :param data_rate: the data rate in Hz
-    :type data_rate: float
     :returns: window size in seconds
     """
     if window_size < 0:
@@ -23,12 +21,11 @@ def convert_window_size(window_size, data_rate):
     return window_size / data_rate
 
 
-def calculate_pad_size(window_size):
+def calculate_pad_size(window_size: int):
     """
     Calculate the data pad size in days.
 
     :param window_size: window size in seconds
-    :type window_size: int
     :returns: padSize in days
     """
     if window_size < 0:
@@ -59,14 +56,12 @@ def get_dates_in_padded_range(date, pad_size):
     return sorted(padded_range)
 
 
-def get_max_window_size(threshold_file, data_rate):
+def get_max_window_size(threshold_file: str, data_rate: int):
     """
     Get the maximum window size.
 
     :param threshold_file: json file containing window sizes in either points or seconds
-    :type threshold_file: str
     :param data_rate: the data rate in Hz
-    :type data_rate: int
     :returns: max window size
     """
     with open('timeseries_padder/config/windowSizeNames.yaml', 'r') as file:
@@ -84,13 +79,12 @@ def get_max_window_size(threshold_file, data_rate):
     return max_window_size
 
 
-def get_min_data_rate(location_file):
+def get_min_data_rate(location_file: str):
     """
     This should be refactored to extract from engineering metadata
     the actual rate(s) at which the sensor produced data.
 
     :param location_file: yaml file containing location metadata
-    :type location_file: str
     :returns: The data rate.
     """
     with open(location_file, "r") as jsonFile:

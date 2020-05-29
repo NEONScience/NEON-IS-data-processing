@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import unittest
-import os
+from pathlib import Path
 
 from pyfakefs import fake_filesystem_unittest
 from lib import file_linker
@@ -12,13 +12,13 @@ class FileUtilTest(fake_filesystem_unittest.TestCase):
         self.setUpPyfakefs()
 
     def test_link(self):
-        source = '/test/input/file.foo'
-        target = '/test/output/file.foo'
-        self.fs.create_file(source)
-        self.assertTrue(os.path.isfile(source))
-        self.assertFalse(os.path.isfile(target))
-        file_linker.link(source, target)
-        self.assertTrue(os.path.isfile(target))
+        file_path = Path('/test/input/file.foo')
+        link_path = Path('/test/output/file.foo')
+        self.fs.create_file(file_path)
+        self.assertTrue(file_path.exists())
+        self.assertFalse(link_path.exists())
+        file_linker.link(file_path, link_path)
+        self.assertTrue(link_path.exists())
 
 
 if __name__ == '__main__':

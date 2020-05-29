@@ -9,8 +9,8 @@ from timeseries_padder.timeseries_padder.padder import Padder
 
 def main():
     env = environs.Env()
-    data_path = env.str('DATA_PATH')
-    out_path = env.str('OUT_PATH')
+    data_path = env.path('DATA_PATH')
+    out_path = env.path('OUT_PATH')
     log_level = env.log_level('LOG_LEVEL')
     log_config.configure(log_level)
     log = get_logger()
@@ -25,10 +25,8 @@ def main():
     parser.add_argument('--subdirindex')
 
     args = parser.parse_args()
-
     padder = Padder(data_path, out_path, int(args.yearindex), int(args.monthindex),
                     int(args.dayindex), int(args.locindex), int(args.subdirindex))
-
     padder.pad()
 
 

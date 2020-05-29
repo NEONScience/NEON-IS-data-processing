@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-import os
-import pathlib
+from pathlib import Path
 
 from structlog import get_logger
 import environs
 
-from lib.file_linker import link
 from lib.file_crawler import crawl
 import lib.location_file_context as location_file_context
 import lib.log_config as log_config
@@ -13,39 +11,31 @@ import lib.log_config as log_config
 log = get_logger()
 
 
-def get_paths(source_path,
-              group,
-              source_type_index,
-              year_index,
-              month_index,
-              day_index,
-              location_index,
-              data_type_index):
+def get_paths(source_path: Path,
+              group: str,
+              source_type_index: int,
+              year_index: int,
+              month_index: int,
+              day_index: int,
+              location_index: int,
+              data_type_index: int):
     """
     Link source files into the output directory with the related location group in the path.
     There must be only one location file under the source path.
 
     :param source_path: The input path.
-    :type source_path: str
     :param group: The group to match in the location files.
-    :type group: str
     :param source_type_index: The input path index of the source type.
-    :type source_type_index: int
     :param year_index: The input path index of the year.
-    :type year_index: int
     :param month_index: The input path index of the month.
-    :type month_index: int
     :param day_index: The input path index of the day.
-    :type day_index: int
     :param location_index: The input path index of the location.
-    :type location_index: int
     :param data_type_index: The input path index of the data type.
-    :type data_type_index: int
     """
     paths = []
     group_names = []
     for file_path in crawl(source_path):
-        parts = pathlib.Path(file_path).parts
+        parts = file_path.parts
         source_type = parts[source_type_index]
         year = parts[year_index]
         month = parts[month_index]
@@ -77,17 +67,14 @@ def get_paths(source_path,
     return {'paths': paths, 'group_names': group_names}
 
 
-def link_paths(paths, group_names, out_path):
+def link_paths(paths: list, group_names: list, out_path: Path):
     """
-    Loop through the files and link into the output directory including the location
-    context group name in the path.
+    Loop through the files and link into the output path adding the location
+    context group name into the path.
 
     :param paths: File paths to link.
-    :type paths: list
-    :param group_names: A List of associated location context group names.
-    :type group_names: list
-    :param out_path: The output directory for writing.
-    :type out_path: str
+    :param group_names: Associated location context group names.
+    :param out_path: The output path for linking files.
     :return:
     """
     for path in paths:
@@ -101,20 +88,18 @@ def link_paths(paths, group_names, out_path):
         data_type = parts.get("data_type")
         remainder = parts.get("remainder")
         for group_name in group_names:
-            target_dir = os.path.join(out_path, source_type, year, month, day, group_name, location, data_type)
-            if not os.path.exists(target_dir):
-                os.makedirs(target_dir)
-            destination = os.path.join(target_dir, *remainder[0:])
-            log.debug(f'source: {file_path} destination: {destination}')
-            link(file_path, destination)
+            link_path = Path(out_path, source_type, year, month, day, group_name, location, data_type, *remainder[0:])
+            link_path.parent.mkdir(parents=True, exist_ok=True)
+            log.debug(f'file: {file_path} link: {link_path}')
+            link_path.symlink_to(file_path)
 
 
 def main():
     """Add the related location group name stored in the location file to the output path."""
     env = environs.Env()
-    source_path = env.str('SOURCE_PATH')
+    source_path = env.path('SOURCE_PATH')
     group = env.str('GROUP')
-    out_path = env.str('OUT_PATH')
+    out_path = env.path('OUT_PATH')
     log_level = env.log_level('LOG_LEVEL', 'INFO')
     source_type_index = env.int('SOURCE_TYPE_INDEX')
     year_index = env.int('YEAR_INDEX')

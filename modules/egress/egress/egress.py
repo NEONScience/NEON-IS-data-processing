@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
-import pathlib
+from pathlib import Path
 
 from structlog import get_logger
 import lib.file_linker as file_linker
@@ -11,59 +11,41 @@ log = get_logger()
 
 class Egress(object):
 
-    def __init__(self, dataPath, outPath, outputName, dateIndex, locIndex):
+    def __init__(self, data_path: Path, out_path: Path, output_name: str, date_index: int, location_index: int):
         """
         Constructor.
 
-        :param dataPath: The data path.
-        :type dataPath: str
-        :param outPath: The output path for writing results.
-        :type outPath: str
-        :param outputName: The output name.
-        :type outputName: str
-        :param dateIndex: The date index.
-        :type dateIndex: int
-        :param locIndex: The location index.
-        :type locIndex: int
+        :param data_path: The data path.
+        :param out_path: The output path for writing results.
+        :param output_name: The output name.
+        :param date_index: The date index.
+        :param location_index: The location index.
         """
-        self.outputName = outputName
-        self.dataPath = dataPath
-        self.outPath = outPath
-        # date and loc indices refer to locations within the filename (not the path)
-        self.dateIndex = dateIndex
-        self.locIndex = locIndex
-        self.filenameDelimiter = "_"
+        self.output_name = output_name
+        self.data_path = data_path
+        self.out_path = out_path
+        # date and location indices refer to locations within the filename (not the path)
+        self.date_index = date_index
+        self.location_index = location_index
+        self.filename_delimiter = "_"
 
     def upload(self):
-        """
-        Link the source files into the output directory.
-
-        :return:
-        """
+        """Link the source files into the output directory."""
         try:
-            for root, dirs, files in os.walk(self.dataPath):
+            for root, dirs, files in os.walk(str(self.data_path)):
                 for filename in files:
-                    if not filename.startswith('.'):
-
-                        sourcePath = os.path.join(root, filename)
-                        parts = pathlib.Path(sourcePath).parts
-                        
-                        # date
-                        filenameParts = filename.split(self.filenameDelimiter)
-                        dateTime = filenameParts[self.dateIndex]
-                        # loc
-                        loc = filenameParts[self.locIndex]
-
-                        # construct target filename
-                        targetParts = [self.outPath, self.outputName, dateTime, loc, filenameParts[len(filenameParts)-2], filenameParts[len(filenameParts)-1]]
-                        targetFilename = self.filenameDelimiter.join(targetParts[1:])
-                        targetPath = os.path.join(*targetParts[:len(targetParts)-2], targetFilename)
-
-                        # symlink to target
-                        print("sourcepath = " + sourcePath)
-                        print("targetpath = " + targetPath)
-                        file_linker.link(sourcePath, targetPath)
-
+                    file_path = Path(root, filename)
+                    filename_parts = filename.split(self.filename_delimiter)
+                    date_time = filename_parts[self.date_index]
+                    location = filename_parts[self.location_index]
+                    # construct link filename
+                    link_parts = [self.out_path, self.output_name, date_time, location,
+                                  filename_parts[len(filename_parts) - 2],
+                                  filename_parts[len(filename_parts) - 1]]
+                    link_filename = self.filename_delimiter.join(link_parts[1:])
+                    link_path = Path(*link_parts[:len(link_parts) - 2], link_filename)
+                    log.debug(f'source_path: {file_path} link_path: {link_path}')
+                    file_linker.link(file_path, link_path)
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             log.error("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))

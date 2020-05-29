@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 import os
+from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer as analyzer
+from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer import PaddedTimeSeriesAnalyzer
 import padded_timeseries_analyzer.padded_timeseries_analyzer.app as app
 import lib.log_config as log_config
 from lib.merged_data_filename import MergedDataFilename
 
 
-class PaddedTimeseriesAnalyzerTest(TestCase):
+class PaddedTimeSeriesAnalyzerTest(TestCase):
 
     def setUp(self):
         """Set required files in mock filesystem."""
@@ -21,17 +22,17 @@ class PaddedTimeseriesAnalyzerTest(TestCase):
         self.threshold_dir = 'threshold'
         self.threshold_file = 'thresholds.json'
 
-        self.out_dir = os.path.join('/', 'tmp', 'outputs')
-        self.input_root = os.path.join('/', 'tmp', 'inputs',)
+        self.out_dir = Path('/', 'tmp', 'outputs')
+        self.input_root = Path('/', 'tmp', 'inputs',)
 
-        source_root = os.path.join('prt', '2018', '01')
-        self.input_data_dir = os.path.join(self.input_root, source_root, '03')
+        source_root = Path('prt', '2018', '01')
+        self.input_data_dir = Path(self.input_root, source_root, '03')
 
         location = 'CFGLOC112154'
-        self.source_dir = os.path.join(source_root, '03', location)
-        self.previous_dir = os.path.join(source_root, '02', location)
-        self.next_dir = os.path.join(source_root, '04', location)
-        self.outside_range_dir = os.path.join(source_root, '05', location)
+        self.source_dir = Path(source_root, '03', location)
+        self.previous_dir = Path(source_root, '02', location)
+        self.next_dir = Path(source_root, '04', location)
+        self.outside_range_dir = Path(source_root, '05', location)
 
         self.previous_data_file = MergedDataFilename.build('prt', location, '2018', '01', '02')
         self.source_data_file = MergedDataFilename.build('prt', location, '2018', '01', '03')
@@ -39,50 +40,45 @@ class PaddedTimeseriesAnalyzerTest(TestCase):
         self.outside_range_file = MergedDataFilename.build('prt', location, '2018', '01', '05')
 
         # Ancillary location file.
-        self.fs.create_file(os.path.join(self.input_root, self.source_dir, 'location', 'locations.json'))
+        self.fs.create_file(Path(self.input_root, self.source_dir, 'location', 'locations.json'))
 
         # Threshold file.
-        threshold_path = os.path.join(self.input_root, self.source_dir, self.threshold_dir, self.threshold_file)
+        threshold_path = Path(self.input_root, self.source_dir, self.threshold_dir, self.threshold_file)
         self.fs.create_file(threshold_path)
 
         self.data_dir = 'data'
 
         #  Source data file.
-        data_root = os.path.join(self.input_root, self.source_dir, self.data_dir)
-        source_data_path = os.path.join(data_root, self.source_data_file)
+        data_root = Path(self.input_root, self.source_dir, self.data_dir)
+        source_data_path = Path(data_root, self.source_data_file)
         self.fs.create_file(source_data_path)
 
         #  Manifest file.
-        manifest_path = os.path.join(data_root, 'manifest.txt')
-        test_manifest = os.path.join(os.path.dirname(__file__), 'test_manifest.txt')
+        manifest_path = Path(data_root, 'manifest.txt')
+        test_manifest = Path(os.path.dirname(__file__), 'test_manifest.txt')
         self.fs.add_real_file(test_manifest, target_path=manifest_path)
 
         #  Previous data file.
-        previous_data_path = os.path.join(data_root, self.previous_data_file)
+        previous_data_path = Path(data_root, self.previous_data_file)
         self.fs.create_file(previous_data_path)
 
         #  Next data file.
-        next_data_path = os.path.join(data_root, self.next_data_file)
+        next_data_path = Path(data_root, self.next_data_file)
         self.fs.create_file(next_data_path)
 
-        outside_range_path = os.path.join(self.outside_range_dir, self.outside_range_file)
+        outside_range_path = Path(self.outside_range_dir, self.outside_range_file)
         self.fs.create_file(outside_range_path)
-
-        print(f'source_data_path: {source_data_path}')
-        print(f'manifest: {manifest_path}')
-        print(f'previous_data_path: {previous_data_path}')
-        print(f'next_data_path: {next_data_path}')
-        print(f'outside_range_path: {outside_range_path}')
 
         self.relative_path_index = 3
 
     def test_analyzer(self):
-        analyzer.analyze(self.input_data_dir, self.out_dir, self.relative_path_index)
+        analyzer = PaddedTimeSeriesAnalyzer(self.input_data_dir, self.out_dir, self.relative_path_index)
+        analyzer.analyze()
         self.check_output()
 
     def test_main(self):
-        os.environ['DATA_PATH'] = self.input_data_dir
-        os.environ['OUT_PATH'] = self.out_dir
+        os.environ['DATA_PATH'] = str(self.input_data_dir)
+        os.environ['OUT_PATH'] = str(self.out_dir)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
         app.main()
@@ -90,16 +86,16 @@ class PaddedTimeseriesAnalyzerTest(TestCase):
 
     def check_output(self):
         """Check files in the output directory."""
-        location_path = os.path.join(self.out_dir, self.source_dir, 'location', 'locations.json')
-        threshold_path = os.path.join(self.out_dir, self.source_dir, self.threshold_dir, self.threshold_file)
-        output_root = os.path.join(self.out_dir, self.source_dir)
-        data_path = os.path.join(output_root, self.data_dir, self.source_data_file)
-        previous_data_path = os.path.join(output_root, self.data_dir, self.previous_data_file)
-        next_data_path = os.path.join(output_root, self.data_dir, self.next_data_file)
-        outside_range_path = os.path.join(output_root, self.data_dir, self.outside_range_file)
-        self.assertTrue(os.path.lexists(location_path))
-        self.assertTrue(os.path.lexists(threshold_path))
-        self.assertTrue(os.path.lexists(data_path))
-        self.assertTrue(os.path.lexists(previous_data_path))
-        self.assertTrue(os.path.lexists(next_data_path))
-        self.assertFalse(os.path.lexists(outside_range_path))
+        location_path = Path(self.out_dir, self.source_dir, 'location', 'locations.json')
+        threshold_path = Path(self.out_dir, self.source_dir, self.threshold_dir, self.threshold_file)
+        output_root = Path(self.out_dir, self.source_dir)
+        data_path = Path(output_root, self.data_dir, self.source_data_file)
+        previous_data_path = Path(output_root, self.data_dir, self.previous_data_file)
+        next_data_path = Path(output_root, self.data_dir, self.next_data_file)
+        outside_range_path = Path(output_root, self.data_dir, self.outside_range_file)
+        self.assertTrue(location_path.exists())
+        self.assertTrue(threshold_path.exists())
+        self.assertTrue(data_path.exists())
+        self.assertTrue(previous_data_path.exists())
+        self.assertTrue(next_data_path.exists())
+        self.assertFalse(outside_range_path.exists())
