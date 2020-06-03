@@ -109,5 +109,4 @@ test_that("Unit test of wrap.ucrt.coef.R", {
    
    expect_true ((is.list(wucList_returned)) && !(is.null(wucList_returned)) && all((names(wucList_returned$resistance) == elementsList))) 
    
-   
-})
+ })
