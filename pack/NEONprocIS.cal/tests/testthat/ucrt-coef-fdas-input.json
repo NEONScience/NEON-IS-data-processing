@@ -1,16 +1,16 @@
 [
    {
-      "Name":"U_CVALF3",
+      "Name":"U_CVALD3",
       "Value":"139",
       ".attrs":"unitless"
    },
    {
-      "Name":"U_CVALF2",
+      "Name":"U_CVALD2",
       "Value":"240",
       ".attrs":"unitless"
    },
    {
-      "Name":"U_CVALF1",
+      "Name":"U_CVALD1",
       "Value":"139",
       ".attrs":"unitless"
    },
