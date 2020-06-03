@@ -43,11 +43,5 @@ class DataAccessTest(TestCase):
         schema_name = named_location_finder.get_schema_name(self.connection, name)
         self.assertTrue(schema_name == 'exo2')
 
-    def test_range(self):
-        i = 0
-        for i in range(1, 11):
-            print(f'i: {i}')
-        self.assertTrue(i == 10)
-
     def tearDown(self):
         self.connection.close()

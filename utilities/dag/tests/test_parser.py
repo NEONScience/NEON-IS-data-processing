@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 import os
 
-import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from pipeline_specification_parser import PipelineSpecificationParser
+from dag.pipeline_specification_parser import PipelineSpecificationParser
 
 
 class ParserTest(TestCase):
@@ -31,7 +30,3 @@ class ParserTest(TestCase):
     def test_parse_json(self):
         parser = PipelineSpecificationParser(self.json_path, self.json_root)
         self.assertTrue(len(parser.get_pipeline_files()) == 1)
-
-
-if __name__ == '__main__':
-    unittest.main()

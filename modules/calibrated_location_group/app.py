@@ -6,6 +6,7 @@ import structlog
 
 import lib.log_config as log_config
 from lib.file_crawler import crawl
+from lib.file_linker import link
 
 log = structlog.get_logger()
 
@@ -32,7 +33,7 @@ def group(calibrated_path: Path,
     :param source_id_index: The source ID index in the calibrated file path.
     :param data_type_index: The data type index in the calibrated file path.
     """
-    i = 0
+    make_location_link = True
     for path in crawl(calibrated_path):
         parts = path.parts
         source_type = parts[source_type_index]
@@ -44,14 +45,13 @@ def group(calibrated_path: Path,
         log.debug(f'year: {year}  month: {month}  day: {day} source type: {source_type} '
                   f'source_id: {source_id} data type: {data_type}')
         root_link_path = Path(out_path, source_type, year, month, day, source_id)
-        if i == 0:  # only link location files once
+        # only link location files once
+        if make_location_link:
             link_location(location_path, root_link_path)
+            make_location_link = False
         # pass remainder of file path after the data type
         link_path = Path(root_link_path, data_type, *parts[data_type_index+1:])
-        link_path.parent.mkdir(parents=True, exist_ok=True)
-        log.debug(f'link_path: {link_path}')
-        link_path.symlink_to(path)
-        i += 1
+        link(path, link_path)
 
 
 def link_location(location_path: Path, root_link_path: Path):
@@ -60,12 +60,10 @@ def link_location(location_path: Path, root_link_path: Path):
 
     :param location_path: The location file path.
     :param root_link_path: The target directory to write the location file.
-    :return:
     """
     for path in crawl(location_path):
         link_path = Path(root_link_path, 'location', path.name)
-        link_path.parent.mkdir(parents=True, exist_ok=True)
-        link_path.symlink_to(path)
+        link(path, link_path)
 
 
 def main():
@@ -81,7 +79,7 @@ def main():
     source_id_index = env.int('SOURCE_ID_INDEX')
     data_type_index = env.int('DATA_TYPE_INDEX')
     log_config.configure(log_level)
-    log.debug(f'calibrated_dir: {calibrated_path} location_dir: {location_path} out_dir: {out_path}')
+    log.debug(f'calibrated_path: {calibrated_path} location_path: {location_path} out_path: {out_path}')
     group(calibrated_path, location_path, out_path, source_type_index, year_index,
           month_index, day_index, source_id_index, data_type_index)
 

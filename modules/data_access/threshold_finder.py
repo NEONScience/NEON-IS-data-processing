@@ -6,11 +6,11 @@ import lib.date_formatter as date_formatter
 
 def find_thresholds(connection):
     """
-    Find all thresholds in the database.
+    Return all thresholds.
 
     :param connection: A database connection.
     :type connection: connection object
-    :return: dict of threshold data.
+    :return: Threshold data.
     """
     query = '''
             select
@@ -69,15 +69,14 @@ def find_thresholds(connection):
     return thresholds
 
 
-def find_context(connection, condition_uuid):
+def find_context(connection, condition_uuid: str):
     """
     Find all context entries for a threshold.
 
     :param connection: Database connection.
     :type connection: connection object
     :param condition_uuid: The condition UUID.
-    :type condition_uuid: str
-    :return: list of context codes.
+    :return: The context codes.
     """
     with closing(connection.cursor()) as cursor:
         query = 'select context_code from condition_context where condition_uuid = :condition_uuid'

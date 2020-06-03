@@ -4,15 +4,14 @@ from contextlib import closing
 import lib.date_formatter as date_formatter
 
 
-def find_location_assets(connection, named_location_id):
+def find_location_assets(connection, named_location_id: int):
     """
     Find assets associated with a named location.
 
     :param connection: A database connection.
     :type connection: database connection object
     :param named_location_id: The named location ID.
-    :type named_location_id: int
-    :return:
+    :return: Asset UID, install and remove dates.
     """
     with closing(connection.cursor()) as cursor:
         sql = '''
@@ -41,7 +40,7 @@ def find_all(connection):
 
     :param connection: A database connection.
     :type connection: database connection object
-    :return: dict of asset data
+    :return: Asset data
     """
     with closing(connection.cursor()) as cursor:
         sql = '''

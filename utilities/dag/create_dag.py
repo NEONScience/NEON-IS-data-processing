@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 import argparse
+from pathlib import Path
 
-from dag_manager import DagManager
+from .dag_manager import DagManager
 
 
-def main(end_node_specification, specification_dir):
+def main(end_node_specification: str, specification_dir: str):
     """
     Create a DAG from the given end node up to the root nodes.
 
     :param end_node_specification: The end node pipeline specification file.
-    :type end_node_specification: str
     :param specification_dir: A directory containing the DAG pipeline specification files.
-    :type specification_dir: str
-    :return:
     """
-    manager = DagManager(end_node_specification, specification_dir)
+    manager = DagManager(Path(end_node_specification), Path(specification_dir))
     manager.create_dag()
 
 

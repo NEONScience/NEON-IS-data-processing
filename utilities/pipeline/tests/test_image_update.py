@@ -5,8 +5,8 @@ import json
 
 import unittest
 
-import image_update
-import edit_test
+import pipeline.image_update as image_update
+import pipeline.edit_test as edit_test
 
 
 class ParserTest(unittest.TestCase):
@@ -67,7 +67,3 @@ class ParserTest(unittest.TestCase):
             new_setting = file_data['transform']['env'].get('NEW_SETTING')
             print(f'new_setting: {new_setting}')
             self.assertTrue(new_setting is None)
-
-
-if __name__ == '__main__':
-    unittest.main()
