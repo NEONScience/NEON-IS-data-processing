@@ -27,26 +27,27 @@ def link_files(location_path: Path, out_path: Path, schema_index: int):
     for path in crawl(location_path):
         parts = path.parts
         schema_name = parts[schema_index]
-        geojson_data = geojson.load(path)
-        json_data = json.loads(geojson_data)
-        features = json_data['features']
-        properties = features[0]['properties']
-        location_name = properties['name']
-        active_periods = properties['active-periods']
-        # link file for each active date
-        for period in active_periods:
-            start_date = period['start_date']
-            end_date = period['end_date']
-            if start_date is not None:
-                start_date = date_formatter.parse(start_date)
-            if end_date is not None:
-                end_date = date_formatter.parse(end_date)
-            for date in date_formatter.dates_between(start_date, end_date):
-                dt = datetime(date.year, date.month, date.day)
-                year, month, day = date_formatter.parse_date(dt)
-                link_path = Path(out_path, schema_name, year, month, day,
-                                 location_name, path.name)
-                link(path, link_path)
+        with open(path, 'r') as file:
+            geojson_data = geojson.load(file)
+            json_data = json.loads(geojson_data)
+            features = json_data['features']
+            properties = features[0]['properties']
+            location_name = properties['name']
+            active_periods = properties['active-periods']
+            # link file for each active date
+            for period in active_periods:
+                start_date = period['start_date']
+                end_date = period['end_date']
+                if start_date is not None:
+                    start_date = date_formatter.parse(start_date)
+                if end_date is not None:
+                    end_date = date_formatter.parse(end_date)
+                for date in date_formatter.dates_between(start_date, end_date):
+                    dt = datetime(date.year, date.month, date.day)
+                    year, month, day = date_formatter.parse_date(dt)
+                    link_path = Path(out_path, schema_name, year, month, day,
+                                     location_name, path.name)
+                    link(path, link_path)
 
 
 def main():
