@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import json
 from datetime import datetime
 
 import geojson
@@ -29,8 +28,7 @@ def link_files(location_path: Path, out_path: Path, schema_index: int):
         schema_name = parts[schema_index]
         with open(path, 'r') as file:
             geojson_data = geojson.load(file)
-            json_data = json.loads(geojson_data)
-            features = json_data['features']
+            features = geojson_data['features']
             properties = features[0]['properties']
             location_name = properties['name']
             active_periods = properties['active-periods']
@@ -38,6 +36,7 @@ def link_files(location_path: Path, out_path: Path, schema_index: int):
             for period in active_periods:
                 start_date = period['start_date']
                 end_date = period['end_date']
+                log.debug(f'start_date: {start_date} end_date: {end_date}')
                 if start_date is not None:
                     start_date = date_formatter.parse(start_date)
                 if end_date is not None:
@@ -47,6 +46,7 @@ def link_files(location_path: Path, out_path: Path, schema_index: int):
                     year, month, day = date_formatter.parse_date(dt)
                     link_path = Path(out_path, schema_name, year, month, day,
                                      location_name, path.name)
+                    log.debug(f'link_path: {link_path}')
                     link(path, link_path)
 
 
@@ -57,6 +57,7 @@ def main():
     schema_index = env.int('SCHEMA_INDEX')
     log_level = env.log_level('LOG_LEVEL')
     log_config.configure(log_level)
+    log.info('Processing.')
     link_files(location_path, out_path, schema_index)
 
 
