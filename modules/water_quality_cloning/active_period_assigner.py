@@ -28,11 +28,17 @@ def assign_active_periods(connection, named_location_id, clone_id):
     for period in periods:
         start_date = period.get('start_date')
         end_date = period.get('end_date')
+
+        if start_date is not None:
+            start_date = date_formatter.parse(start_date)
+        if end_date is not None:
+            end_date = date_formatter.parse(end_date)
+
         with closing(connection.cursor()) as cursor:
             cursor.prepare(sql)
             cursor.execute(None,
                            named_location_id=clone_id,
-                           start_date=date_formatter.parse(start_date),
-                           end_date=date_formatter.parse(end_date),
+                           start_date=start_date,
+                           end_date=end_date,
                            change_by='water quality prototype')
             connection.commit()

@@ -44,27 +44,44 @@ def find_thresholds(connection):
     with closing(connection.cursor()) as cursor:
         rows = cursor.execute(query)
         for row in rows:
-            threshold = {}
-            threshold.update({'threshold_name': row[0]})
+            threshold_name = row[0]
+            term_name = row[1]
+            location_name = row[2]
+            condition_uuid = row[3]
+            start_date = row[4]
+            end_date = row[5]
+            is_date_constrained = row[6]
+            start_day_of_year = row[7]
+            end_day_of_year = row[8]
+            number_value = row[9]
+            string_value = row[10]
+
             '''
             Change term name for soil temp thresholds from 'soilPRTResistance' to 'temp'. 
             The Avro schema for calibrated prt data changes the term name to 'temp' 
             and the term name in the data file must match the term name in the thresholds
             to apply QA/QC.
             '''
-            term_name = row[1]
             if term_name == 'soilPRTResistance':
                 term_name = 'temp'
+
+            if start_date is not None:
+                start_date = date_formatter.convert(start_date)
+            if end_date is not None:
+                end_date = date_formatter.convert(end_date)
+
+            threshold = {}
+            threshold.update({'threshold_name': threshold_name})
             threshold.update({'term_name': term_name})
-            threshold.update({'location_name': row[2]})
-            threshold.update({'context': find_context(connection, row[3])})
-            threshold.update({'start_date': date_formatter.convert(row[4])})
-            threshold.update({'end_date': date_formatter.convert(row[5])})
-            threshold.update({'is_date_constrained': row[6]})
-            threshold.update({'start_day_of_year': row[7]})
-            threshold.update({'end_day_of_year': row[8]})
-            threshold.update({'number_value': row[9]})
-            threshold.update({'string_value': row[10]})
+            threshold.update({'location_name': location_name})
+            threshold.update({'context': find_context(connection, condition_uuid)})
+            threshold.update({'start_date': start_date})
+            threshold.update({'end_date': end_date})
+            threshold.update({'is_date_constrained': is_date_constrained})
+            threshold.update({'start_day_of_year': start_day_of_year})
+            threshold.update({'end_day_of_year': end_day_of_year})
+            threshold.update({'number_value': number_value})
+            threshold.update({'string_value': string_value})
             thresholds.append(threshold)
     return thresholds
 

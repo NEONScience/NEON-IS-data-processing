@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import unittest
 from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -14,6 +15,7 @@ class ActivePeriodLoaderTest(TestCase):
         self.out_path = Path('/', 'output')
         self.fs.create_dir(self.out_path)
 
+    @unittest.skip('Not yet complete.')
     def test_active_period_loader(self):
         os.environ['LOCATION_PATH'] = 'CONFIG'
         os.environ['SCHEMA_INDEX'] = str(4)

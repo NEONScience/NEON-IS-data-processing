@@ -3,7 +3,7 @@ from contextlib import closing
 
 from geojson import Point, Feature, FeatureCollection
 
-from lib.date_formatter import convert
+import lib.date_formatter as date_formatter
 
 
 def get_all(connection, named_location_id: int):
@@ -52,6 +52,13 @@ def get_all(connection, named_location_id: int):
             named_location_id_offset = row[10]
             named_location_offset = row[11]
 
+            if start_date is not None:
+                start_date = date_formatter.convert(start_date)
+            if end_date is not None:
+                end_date = date_formatter.convert(end_date)
+            if transaction_date is not None:
+                transaction_date = date_formatter.convert(transaction_date)
+
             geometry = None
             if location_geometry is not None:
                 ordinates = location_geometry.SDO_ORDINATES
@@ -69,9 +76,9 @@ def get_all(connection, named_location_id: int):
                                          properties={'name': named_location_offset, 'locations': reference_locations})
 
             location = Feature(geometry=geometry,
-                               properties={'start_date': convert(start_date),
-                                           'end_date': convert(end_date),
-                                           'transaction_date': convert(transaction_date),
+                               properties={'start_date': start_date,
+                                           'end_date': end_date,
+                                           'transaction_date': transaction_date,
                                            'alpha': alpha,
                                            'beta': beta,
                                            'gamma': gamma,

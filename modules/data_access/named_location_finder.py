@@ -18,7 +18,6 @@ def get_active_periods(connection, named_location_id: int, cutoff_date=None):
     :type connection: database connection object
     :param named_location_id: The ID to search for.
     :param cutoff_date: The end time for periods with no set end time.
-    :type cutoff_date: datetime
     :return: The active periods.
     """
     sql = 'select start_date, end_date from active_period where named_location_id = :id'
@@ -35,8 +34,12 @@ def get_active_periods(connection, named_location_id: int, cutoff_date=None):
                         end_date = cutoff_date
                     elif end_date > cutoff_date:
                         end_date = cutoff_date
-                periods.append({'start_date': date_formatter.convert(start_date),
-                                'end_date': date_formatter.convert(end_date)})
+                if start_date is not None:
+                    start_date = date_formatter.convert(start_date)
+                if end_date is not None:
+                    end_date = date_formatter.convert(end_date)
+                periods.append({'start_date': start_date,
+                                'end_date': end_date})
         return periods
 
 
@@ -166,10 +169,17 @@ def get_asset_history(connection, asset_id: int):
         features = []
         for row in rows:
             named_location_id = row[0]
-            install_date = date_formatter.convert(row[1])
-            remove_date = date_formatter.convert(row[2])
-            transaction_date = date_formatter.convert(row[3])
+            install_date = row[1]
+            remove_date = row[2]
+            transaction_date = row[3]
             named_location_name = row[4]
+
+            if install_date is not None:
+                install_date = date_formatter.convert(install_date)
+            if remove_date is not None:
+                remove_date = date_formatter.convert(remove_date)
+            if transaction_date is not None:
+                transaction_date = date_formatter.convert(transaction_date)
 
             locations = location_finder.get_all(connection, named_location_id)
             properties = get_properties(connection, named_location_id)
@@ -244,7 +254,11 @@ def get_properties(connection, named_location_id: int):
             description = row[1]
             string_value = row[2]
             number_value = row[3]
-            date_value = date_formatter.convert(row[4])
+            date_value = row[4]
+
+            if date_value is not None:
+                date_value = date_formatter.convert(date_value)
+
             prop = {
                 'name': name,
                 'description': description,
