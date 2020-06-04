@@ -27,7 +27,7 @@ def link_files(location_path: Path, out_path: Path, schema_index: int):
     for path in crawl(location_path):
         parts = path.parts
         schema_name = parts[schema_index]
-        geojson_data = geojson.dumps(path, indent=4, sort_keys=False, default=str)
+        geojson_data = geojson.load(path)
         json_data = json.loads(geojson_data)
         features = json_data['features']
         properties = features[0]['properties']

@@ -1,0 +1,27 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC113836",
+                "type": "CONFIG",
+                "description": "LeConte Creek Water Chemistry and Temperature S2 Overhang",
+                "site": "LECO",
+                "context": [
+                    "surfacewater",
+                    "water-quality-300",
+                    "water-quality"
+                ],
+                "active-periods": []
+            },
+            "Required Asset Management Location ID": 15722,
+            "Required Asset Management Location Code": "CFGLOC113836",
+            "HOR": "112",
+            "VER": "100",
+            "TMI": "000",
+            "Data Rate": "1"
+        }
+    ]
+}
