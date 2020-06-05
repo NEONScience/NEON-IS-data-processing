@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from contextlib import closing
 
-import lib.date_formatter as date_formatter
+import common.date_formatter as date_formatter
 
 
 class AssetRepository(object):

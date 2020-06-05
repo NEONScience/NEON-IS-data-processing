@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 
-from lib.merged_data_filename import MergedDataFilename
+from common.merged_data_filename import MergedDataFilename
 
 
 class MergedDataFilenameTest(unittest.TestCase):

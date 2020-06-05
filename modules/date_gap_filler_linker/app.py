@@ -3,7 +3,7 @@ import structlog
 import environs
 from pathlib import Path
 
-import lib.log_config as log_config
+import common.log_config as log_config
 
 log = structlog.get_logger()
 

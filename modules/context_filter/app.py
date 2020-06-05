@@ -2,8 +2,8 @@
 import environs
 import structlog
 
-from lib import log_config as log_config
-from context_filter.filter import get_files_by_source, \
+from common import log_config as log_config
+from context_filter.context_filter import get_files_by_source, \
     match_files_by_context, link_matching_files
 
 

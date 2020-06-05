@@ -3,7 +3,7 @@
 import environs
 import structlog
 
-import lib.log_config as log_config
+import common.log_config as log_config
 
 from directory_filter.filter import filter_directory
 

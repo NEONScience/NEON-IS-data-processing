@@ -5,9 +5,9 @@ from pathlib import Path
 
 from structlog import get_logger
 
-from lib.file_linker import link
-from lib.file_crawler import crawl
-from lib.merged_data_filename import MergedDataFilename
+from common.file_linker import link
+from common.file_crawler import crawl
+from common.merged_data_filename import MergedDataFilename
 
 log = get_logger()
 

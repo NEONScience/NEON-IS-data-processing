@@ -7,7 +7,7 @@ import structlog
 import cx_Oracle
 from contextlib import closing
 
-import lib.log_config as log_config
+import common.log_config as log_config
 from data_access.named_location_repository import NamedLocationRepository
 from data_access.asset_repository import AssetRepository
 
@@ -35,7 +35,7 @@ def process(db_url: str, out_path):
                 log.error(f'Asset {asset_id} has no type defined.')
 
 
-def write_file(asset: dict, asset_location_history: dict, out_path: Path):
+def write_file(asset: dict, asset_location_history: geojson.FeatureCollection, out_path: Path):
     asset_id = asset['asset_id']
     asset_type = asset['asset_type']
     # add the asset to the location history

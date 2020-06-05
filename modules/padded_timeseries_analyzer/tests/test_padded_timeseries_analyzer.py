@@ -6,8 +6,8 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer import PaddedTimeSeriesAnalyzer
 import padded_timeseries_analyzer.padded_timeseries_analyzer.app as app
-import lib.log_config as log_config
-from lib.merged_data_filename import MergedDataFilename
+import common.log_config as log_config
+from common.merged_data_filename import MergedDataFilename
 
 
 class PaddedTimeSeriesAnalyzerTest(TestCase):

@@ -5,7 +5,7 @@ from pathlib import Path
 import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from lib import log_config as log_config
+from common import log_config as log_config
 import grouper.app as app
 
 

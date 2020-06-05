@@ -1,7 +1,7 @@
 FROM centos:7
 
 ARG APP_DIR="location_active_dates"
-ARG LIB_DIR="lib"
+ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
 ARG ORACLE_INSTANT_PKGNAME="oracle-instantclient19.3-basiclite-19.3.0.0.0-1.x86_64.rpm"
 ARG ORACLE_INSTANT_URI="https://neon-ci-software.s3.data.neonscience.org/oracle-instant/$ORACLE_INSTANT_PKGNAME"
@@ -28,7 +28,7 @@ RUN yum update -y && \
     useradd -r -u 9999 -g appuser appuser
 
 COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${LIB_DIR} ${CONTAINER_APP_DIR}/${LIB_DIR}
+COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 COPY ${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
 
 USER appuser

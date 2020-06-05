@@ -10,8 +10,8 @@ import cx_Oracle
 from contextlib import closing
 
 from data_access.named_location_repository import NamedLocationRepository
-import lib.date_formatter as date_formatter
-import lib.log_config as log_config
+import common.date_formatter as date_formatter
+import common.log_config as log_config
 
 
 log = structlog.get_logger()

@@ -17,11 +17,11 @@
         "pfs": {
             "name": "LOCATION_PATH",
             "repo": "location_loader",
-            "glob": "/*"
+            "glob": "/*/*"
         }
     },
     "parallelism_spec": {
-        "constant": "6"
+        "constant": "8"
     },
     "enable_stats": true,
     "standby": true

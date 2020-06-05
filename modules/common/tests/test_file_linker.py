@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 from pyfakefs import fake_filesystem_unittest
-from lib import file_linker
+from common import file_linker
 
 
 class FileUtilTest(fake_filesystem_unittest.TestCase):

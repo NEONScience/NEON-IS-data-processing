@@ -2,7 +2,7 @@
 import environs
 import structlog
 
-import lib.log_config as log_config
+import common.log_config as log_config
 from data_calibration_group.data_grouper import DataGrouper
 from data_calibration_group.calibration_grouper import CalibrationGrouper
 

@@ -4,9 +4,9 @@ from pathlib import Path
 from structlog import get_logger
 import environs
 
-from lib.file_crawler import crawl
-import lib.location_file_context as location_file_context
-import lib.log_config as log_config
+from common.file_crawler import crawl
+from common.location_file_parser import LocationFileParser
+import common.log_config as log_config
 
 log = get_logger()
 
@@ -24,7 +24,7 @@ def get_paths(source_path: Path,
     There must be only one location file under the source path.
 
     :param source_path: The input path.
-    :param group: The group to match in the location files.
+    :param group: The group to contains_match in the location files.
     :param source_type_index: The input path index of the source type.
     :param year_index: The input path index of the year.
     :param month_index: The input path index of the month.
@@ -58,7 +58,8 @@ def get_paths(source_path: Path,
 
         # get the location context group name from the location file
         if data_type == 'location':
-            group_names = location_file_context.get_matching_items(file_path, group)
+            location_file_parser = LocationFileParser(file_path)
+            group_names = location_file_parser.matching_context_items(group)
 
     # location context group name was not found!
     if len(group_names) == 0:

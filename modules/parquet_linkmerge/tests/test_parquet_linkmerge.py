@@ -5,7 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import parquet_linkmerge.app as app
-from lib import log_config as log_config
+from common import log_config as log_config
 
 
 class ParquetLinkMergeTest(TestCase):

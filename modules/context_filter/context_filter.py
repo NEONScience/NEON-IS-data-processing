@@ -3,8 +3,8 @@ from pathlib import Path
 
 import structlog
 
-import lib.location_file_context as location_file_context
-from lib.file_crawler import crawl
+from common.location_file_parser import LocationFileParser
+from common.file_crawler import crawl
 
 log = structlog.get_logger()
 
@@ -37,7 +37,7 @@ def match_files_by_context(source_files: dict, context: str):
     location file context matches the given context.
 
     :param source_files: File paths by data type.
-    :param context: The context to match.
+    :param context: The context to contains_match.
     """
     matching_file_paths = []
     for source in source_files:
@@ -45,8 +45,10 @@ def match_files_by_context(source_files: dict, context: str):
         for path in file_paths:
             for data_type in path:
                 file = path.get(data_type)
-                if data_type == 'location' and location_file_context.match(file, context):
-                    matching_file_paths.append(file_paths)
+                if data_type == 'location':
+                    location_file_parser = LocationFileParser(file)
+                    if location_file_parser.contains_context(context):
+                        matching_file_paths.append(file_paths)
     return matching_file_paths
 
 

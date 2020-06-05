@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 
-from lib.data_filename import DataFilename
+from common.data_filename import DataFilename
 
 
 class DataFilenameTest(unittest.TestCase):

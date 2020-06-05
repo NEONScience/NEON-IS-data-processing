@@ -4,7 +4,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from egress.egress.egress import Egress
-import lib.log_config as log_config
+import common.log_config as log_config
 
 
 class EgressTest(TestCase):

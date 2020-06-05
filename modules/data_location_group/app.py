@@ -2,7 +2,7 @@
 import environs
 import structlog
 
-import lib.log_config
+import common.log_config
 
 from data_location_group.data_location_grouper import link_data, link_location
 
@@ -22,7 +22,7 @@ def main():
     file_index = env.int('FILE_INDEX')
     log.debug(f'data_dir: {data_path} location_dir: {location_path} out_dir: {out_path}')
 
-    lib.log_config.configure(log_level)
+    common.log_config.configure(log_level)
 
     for output_dir in link_data(data_path,
                                 out_path,

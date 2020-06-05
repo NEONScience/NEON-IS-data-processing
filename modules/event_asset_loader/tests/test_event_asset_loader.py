@@ -5,7 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import event_asset_loader.app as app
-from lib import log_config as log_config
+from common import log_config as log_config
 
 
 class EventAssetLoaderTest(TestCase):

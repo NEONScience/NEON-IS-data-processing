@@ -3,7 +3,7 @@ from contextlib import closing
 
 import structlog
 
-import lib.date_formatter as date_formatter
+import common.date_formatter as date_formatter
 
 log = structlog.get_logger()
 

@@ -3,7 +3,7 @@ from contextlib import closing
 
 from geojson import Point, Feature, FeatureCollection
 
-import lib.date_formatter as date_formatter
+import common.date_formatter as date_formatter
 
 
 class LocationRepository(object):

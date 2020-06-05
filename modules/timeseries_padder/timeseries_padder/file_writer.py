@@ -2,7 +2,7 @@
 from pathlib import Path
 from structlog import get_logger
 
-from lib.file_linker import link
+from common.file_linker import link
 
 
 log = get_logger()

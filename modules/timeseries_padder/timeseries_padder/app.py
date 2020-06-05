@@ -3,7 +3,7 @@ import environs
 import argparse
 from structlog import get_logger
 
-from lib import log_config as log_config
+from common import log_config as log_config
 from timeseries_padder.timeseries_padder.padder import Padder
 
 

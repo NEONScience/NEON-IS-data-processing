@@ -7,7 +7,7 @@ from structlog import get_logger
 import cx_Oracle
 import environs
 
-import lib.log_config as log_config
+import common.log_config as log_config
 from data_access.threshold_repository import ThresholdRepository
 
 

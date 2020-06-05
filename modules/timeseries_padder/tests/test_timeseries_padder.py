@@ -4,8 +4,8 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import lib.log_config as log_config
-from lib.merged_data_filename import MergedDataFilename
+import common.log_config as log_config
+from common.merged_data_filename import MergedDataFilename
 from timeseries_padder.timeseries_padder.padder import Padder
 from timeseries_padder.timeseries_padder.constant_padder import ConstantPadder
 

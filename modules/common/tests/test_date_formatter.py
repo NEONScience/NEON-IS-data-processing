@@ -3,7 +3,7 @@ import unittest
 from datetime import datetime, date
 from pathlib import Path
 
-import lib.date_formatter as date_formatter
+import common.date_formatter as date_formatter
 
 
 class DateFormatterTest(unittest.TestCase):

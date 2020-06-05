@@ -5,7 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import location_group_path.app as app
-from lib import log_config as log_config
+from common import log_config as log_config
 
 
 class LocationGroupPathTest(TestCase):
@@ -14,7 +14,7 @@ class LocationGroupPathTest(TestCase):
         log_config.configure('DEBUG')
 
         self.location = 'CFGLOC113507'
-        # The context group to find in the location file should match the existing file entry 'aspirated-single-224'.
+        # The context group to find in the location file should contains_match the existing file entry 'aspirated-single-224'.
         self.group = 'aspirated-triple-'
 
         self.setUpPyfakefs()

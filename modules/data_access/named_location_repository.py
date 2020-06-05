@@ -10,7 +10,7 @@ from data_access.named_location_context_repository import NamedLocationContextRe
 from data_access.named_location_parent_repository import NamedLocationParentRepository
 from data_access.property_repository import PropertyRepository
 
-import lib.date_formatter as date_formatter
+import common.date_formatter as date_formatter
 
 log = structlog.get_logger()
 
@@ -120,7 +120,7 @@ class NamedLocationRepository(object):
         Get an asset's location history.
 
         :param asset_id: The asset ID.
-        :return: Geojson FeatureCollection of historical data.
+        :return: The asset's location history.
         """
         sql = '''
             select
@@ -203,7 +203,8 @@ class NamedLocationRepository(object):
         :return: The schema name.
         """
         sql = '''
-            select distinct avro_schema_name
+            select distinct 
+                avro_schema_name
             from 
                 is_sensor_type, is_asset_definition, is_asset_assignment, is_asset_location, nam_locn
             where

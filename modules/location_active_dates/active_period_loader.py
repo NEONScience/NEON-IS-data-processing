@@ -6,10 +6,10 @@ import geojson
 import environs
 import structlog
 
-import lib.date_formatter as date_formatter
-import lib.log_config as log_config
-from lib.file_crawler import crawl
-from lib.file_linker import link
+import common.date_formatter as date_formatter
+import common.log_config as log_config
+from common.file_crawler import crawl
+from common.file_linker import link
 
 
 log = structlog.get_logger()

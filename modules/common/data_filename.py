@@ -2,15 +2,9 @@
 
 
 class DataFilename(object):
-    """Parse data file names of the form prt_769_2018-01-03.<extension>"""
+    """Parse data file names in format [source type]_[source ID]_YYYY-MM-DD.[extension]"""
 
-    def __init__(self, filename):
-        """
-        Constructor.
-
-        :param filename: The filename.
-        :type filename: str
-        """
+    def __init__(self, filename: str):
         self.filename = filename.split('.')[0]
 
     def source_type(self):

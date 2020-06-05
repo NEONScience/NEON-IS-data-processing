@@ -5,7 +5,7 @@ from pathlib import Path
 from structlog import get_logger
 import environs
 
-import lib.log_config as log_config
+import common.log_config as log_config
 
 from file_joiner.dictionary_list import DictionaryList
 from file_joiner.file_filter import filter_files

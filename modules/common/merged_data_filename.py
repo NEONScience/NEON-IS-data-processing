@@ -2,15 +2,9 @@
 
 
 class MergedDataFilename(object):
-    """Parse file names of the form prt_CFGLOC112154_2018-01-03.extension"""
+    """Class to parse file names in format [source type]_[location]_[YYYY]-[MM]-[DD].[extension]"""
 
-    def __init__(self, filename):
-        """
-        Constructor.
-
-        :param filename: The filename.
-        :type filename: str
-        """
+    def __init__(self, filename: str):
         self.filename = filename.split('.')[0]
 
     def date(self):
@@ -20,21 +14,16 @@ class MergedDataFilename(object):
         return self.filename.split('_')[1]
 
     @staticmethod
-    def build(source_type, year, month, day, location):
+    def build(source_type: str, year: str, month: str, day: str, location: str):
         """
-        Build a merged filename.
+        Build a merged filename for testing.
 
         :param source_type: The source type.
-        :type source_type: str
         :param year: The year.
-        :type year: str
         :param month: The month.
-        :type month: str
         :param day: The day.
-        :type day: str
         :param location: The location.
-        :type location: str
-        :return: The filename str.
+        :return: The filename.
         """
         filename_format = '{}_{}_{}-{}-{}.extension'
         return filename_format.format(source_type, year, month, day, location)

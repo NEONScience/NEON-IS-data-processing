@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 import directory_filter.app as app
 from directory_filter.filter import filter_directory
-import lib.log_config as log_config
+import common.log_config as log_config
 
 
 class DirectoryFilterTest(TestCase):
