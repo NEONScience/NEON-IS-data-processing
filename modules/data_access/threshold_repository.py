@@ -12,33 +12,33 @@ class ThresholdRepository(object):
 
     def get_thresholds(self):
         query = '''
-                select
-                    attr.column_name,
-                    threshold.term_name,
-                    nam_locn.nam_locn_name,
-                    condition.condition_uuid,
-                    condition.start_date,
-                    condition.end_date,
-                    condition.is_date_constrained,
-                    condition.start_day_of_year,
-                    condition.end_day_of_year,
-                    property.number_value,
-                    property.string_value
-                from
-                    pdr.condition
-                join
-                    pdr.threshold on condition.threshold_uuid = threshold.threshold_uuid
-                join
-                    pdr.property on condition.condition_uuid = property.condition_uuid
-                join
-                    pdr.attr on attr.attr_id = property.attr_id
-                join
-                    pdr.nam_locn on pdr.nam_locn.nam_locn_id = pdr.condition.nam_locn_id
-                where
-                    property.condition_uuid is not null
-                order by
-                    nam_locn.nam_locn_name
-            '''
+            select
+                attr.column_name,
+                threshold.term_name,
+                nam_locn.nam_locn_name,
+                condition.condition_uuid,
+                condition.start_date,
+                condition.end_date,
+                condition.is_date_constrained,
+                condition.start_day_of_year,
+                condition.end_day_of_year,
+                property.number_value,
+                property.string_value
+            from
+                pdr.condition
+            join
+                pdr.threshold on condition.threshold_uuid = threshold.threshold_uuid
+            join
+                pdr.property on condition.condition_uuid = property.condition_uuid
+            join
+                pdr.attr on attr.attr_id = property.attr_id
+            join
+                pdr.nam_locn on pdr.nam_locn.nam_locn_id = pdr.condition.nam_locn_id
+            where
+                property.condition_uuid is not null
+            order by
+                nam_locn.nam_locn_name
+        '''
         thresholds = []
         with closing(self.connection.cursor()) as cursor:
             rows = cursor.execute(query)
