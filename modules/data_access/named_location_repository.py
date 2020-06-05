@@ -72,7 +72,7 @@ class NamedLocationRepository(object):
                                               'description': description,
                                               'site': site,
                                               'context': context,
-                                              'active-periods': active_periods})
+                                              'active_periods': active_periods})
                 for prop in location_properties:
                     non_null_field = 'string_value'
                     if prop['number_value'] is not None:
