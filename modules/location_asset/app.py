@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-import os
-import pathlib
+from pathlib import Path
 
 import geojson
 import environs
@@ -8,72 +7,58 @@ import structlog
 import cx_Oracle
 from contextlib import closing
 
-import data_access.named_location_finder as named_location_finder
-import data_access.asset_finder as asset_finder
 import lib.log_config as log_config
-
+from data_access.named_location_repository import NamedLocationRepository
+from data_access.asset_repository import AssetRepository
 
 log = structlog.get_logger()
 
 
-def write_file(out_path, asset, location_history):
+def process(db_url: str, out_path):
     """
-    Write the input asset and location history into a geojson file in the output directory.
+    Loop over assets and write the asset's location history to a file.
 
-    :param out_path: Directory to write the file.
-    :type out_path: str
-    :param asset: Asset types by ID.
-    :type asset: dict
-    :param location_history: The asset location history.
-    :type location_history: dict
-    """
-    pathlib.Path(out_path).mkdir(parents=True, exist_ok=True)
-
-    source_type = asset.get('asset_type')
-    source_id = str(asset.get('asset_id'))
-
-    location_history.update({"source_type": asset.get('asset_type')})
-    location_history.update({"source_id": asset.get('asset_id')})
-
-    geojson_data = geojson.dumps(location_history, indent=4, sort_keys=False, default=str)
-    file_name = source_type + '_' + source_id + '_' + 'locations.json'
-    file_path = os.path.join(out_path, file_name)
-    with open(file_path, 'w') as outfile:
-        outfile.write(geojson_data)
-
-
-def load(db_url, out_path):
-    """
-    Loop over assets and write the asset and location history to a file.
-
+    :param out_path: The output path for writing files.
     :param db_url: The database connection URL.
-    :type db_url: str
-    :param out_path: The output path for writing results.
-    :type out_path: str
-    :return:
     """
     with closing(cx_Oracle.connect(db_url)) as connection:
-        assets = asset_finder.find_all(connection)
+        named_location_repository = NamedLocationRepository(connection)
+        asset_repository = AssetRepository(connection)
+        assets = asset_repository.get_all()
         for asset in assets:
-            log.debug(f'Processing asset {asset}')
-            asset_type = asset['asset_type']
-            asset_id = asset['asset_id']
-            if asset_type is not None:
-                asset_out_dir = os.path.join(out_path, asset_type, str(asset_id))
-                location_history = named_location_finder.get_asset_history(connection, asset_id)
-                write_file(asset_out_dir, asset, location_history)
+            log.debug(f'Processing asset: {asset}')
+            if asset['asset_type'] is not None:
+                asset_location_history = named_location_repository.get_asset_history(asset_id)
+                write_file(asset, asset_location_history, out_path)
             else:
-                log.error(f'Type for asset {asset_id} is not defined.')
+                asset_id = asset['asset_id']
+                log.error(f'Asset {asset_id} has no type defined.')
+
+
+def write_file(asset: dict, asset_location_history: dict, out_path: Path):
+    asset_id = asset['asset_id']
+    asset_type = asset['asset_type']
+    # add the asset to the location history
+    asset_location_history.update({"source_type": asset_type})
+    asset_location_history.update({"source_id": asset_id})
+    # write geojson file
+    geojson_data = geojson.dumps(asset_location_history, indent=4, sort_keys=False, default=str)
+    file_name = f'{asset_type}_{str(asset_id)}_locations.json'
+    file_path = Path(out_path, asset_type, str(asset_id), file_name)
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(file_path, 'w') as location_file:
+        location_file.write(geojson_data)
 
 
 def main():
     env = environs.Env()
-    out_path = env.str('OUT_PATH')
+    out_path = env.path('OUT_PATH')
     db_url = env.str('DATABASE_URL')
-    log_level = env.log_level('LOG_LEVEL')
+    log_level = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
-    log.debug(f'Out path: {out_path}')
-    load(db_url, out_path)
+    log.info('Processing.')
+    log.debug(f'out_path: {out_path}')
+    process(db_url, out_path)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+from pathlib import Path
 
 import unittest
 
@@ -12,12 +13,8 @@ class LocationAssetTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-
-        self.out_path = os.path.join('/', 'output')
-
-        #  Set output directory in mock filesystem.
+        self.out_path = Path('/output')
         self.fs.create_dir(self.out_path)
-
         #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]
         self.database_url = os.getenv('DATABASE_URL')
 
@@ -30,9 +27,5 @@ class LocationAssetTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        location_file_path = os.path.join(self.out_path, 'prt', '2201', 'prt_2201_locations.json')
-        self.assertTrue(os.path.exists(location_file_path))
-
-
-if __name__ == '__main__':
-    unittest.main()
+        expected_path = self.out_path.joinpath('prt/2201/prt_2201_locations.json')
+        self.assertTrue(expected_path.exists())

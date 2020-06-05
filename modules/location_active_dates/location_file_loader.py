@@ -9,7 +9,7 @@ import structlog
 import cx_Oracle
 from contextlib import closing
 
-from data_access.named_location_finder import get_by_type, get_schema_name
+from data_access.named_location_repository import NamedLocationRepository
 import lib.date_formatter as date_formatter
 import lib.log_config as log_config
 
@@ -27,13 +27,15 @@ def load(db_url: str, out_path: Path, location_type: str, cutoff_date: datetime)
     :param cutoff_date: The last date to create a file.
     """
     with closing(cx_Oracle.connect(db_url)) as connection:
-        for named_location in get_by_type(connection, location_type, cutoff_date=cutoff_date):
+        named_location_repository = NamedLocationRepository(connection)
+        named_locations = named_location_repository.get_by_type(location_type, cutoff_date=cutoff_date)
+        for named_location in named_locations:
             geojson_data = geojson.dumps(named_location, indent=4, sort_keys=False, default=str)
             json_data = json.loads(geojson_data)
             features = json_data['features']
             properties = features[0]['properties']
             location_name = properties['name']
-            schema_name = get_schema_name(connection, location_name)
+            schema_name = named_location_repository.get_schema_name(location_name)
             if schema_name is not None:
                 path = Path(out_path, schema_name, location_name, f'{location_name}.json')
                 path.parent.mkdir(parents=True, exist_ok=True)

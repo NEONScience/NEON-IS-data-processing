@@ -44,8 +44,7 @@ def link_files(location_path: Path, out_path: Path, schema_index: int):
                 for date in date_formatter.dates_between(start_date, end_date):
                     dt = datetime(date.year, date.month, date.day)
                     year, month, day = date_formatter.parse_date(dt)
-                    link_path = Path(out_path, schema_name, year, month, day,
-                                     location_name, path.name)
+                    link_path = Path(out_path, schema_name, year, month, day, location_name, path.name)
                     log.debug(f'link_path: {link_path}')
                     link(path, link_path)
 

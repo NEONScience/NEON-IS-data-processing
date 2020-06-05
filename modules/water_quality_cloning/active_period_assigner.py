@@ -2,7 +2,7 @@
 from contextlib import closing
 
 import lib.date_formatter as date_formatter
-import data_access.named_location_finder as named_location_finder
+from data_access.active_period_repository import ActivePeriodRepository
 
 
 def assign_active_periods(connection, named_location_id, clone_id):
@@ -24,7 +24,8 @@ def assign_active_periods(connection, named_location_id, clone_id):
         values
             (active_period_id_seq1.nextval, :named_location_id, :start_date, :end_date, :change_by, CURRENT_TIMESTAMP)
     '''
-    periods = named_location_finder.get_active_periods(connection, named_location_id)
+    active_period_repository = ActivePeriodRepository(connection)
+    periods = active_period_repository.get_active_periods(named_location_id)
     for period in periods:
         start_date = period.get('start_date')
         end_date = period.get('end_date')
