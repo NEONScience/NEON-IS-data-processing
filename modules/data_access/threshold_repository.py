@@ -93,10 +93,10 @@ class ThresholdRepository(object):
         :param condition_uuid: The condition UUID.
         :return: The context codes.
         """
+        context_codes = []
         with closing(self.connection.cursor()) as cursor:
             query = 'select context_code from condition_context where condition_uuid = :condition_uuid'
             rows = cursor.execute(query, condition_uuid=condition_uuid)
-            context_codes = []
             for row in rows:
                 context_codes.append(row[0])
-            return context_codes
+        return context_codes
