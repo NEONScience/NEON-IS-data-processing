@@ -6,9 +6,10 @@ test_that("When complete time range is missing",
           {
             timeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
             timeEnd <- base::as.POSIXct('2019-01-10',tz='GMT')
-          
-            timeMiss <- NEONprocIS.base::def.time.miss(TimeBgn = timeBgn, TimeEnd=timeEnd, timeFull= NULL)
-            testthat::expect_true(length(timeMiss) == 1)
+            timeFull <- base::data.frame(timeBgn=as.POSIXct(c('2019-01-11','2019-01-12'),tz='GMT'),
+                                         timeEnd=as.POSIXct(c('2019-01-13','2019-01-14'),tz='GMT'))
+            timeMiss <- NEONprocIS.base::def.time.miss(TimeBgn = timeBgn, TimeEnd=timeEnd, timeFull= timeFull)
+            testthat::expect_true(length(timeMiss) == 2)
 
           })
 
