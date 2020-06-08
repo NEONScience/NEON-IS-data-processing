@@ -80,7 +80,7 @@ def.arg.pars <- function(arg,
                      ValuParaOptn=NULL,
                      TypePara=NULL, # Named list of intended class for each parameter. Conversion will be attempted
                      log=NULL){
-  browser()
+  #browser()
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
