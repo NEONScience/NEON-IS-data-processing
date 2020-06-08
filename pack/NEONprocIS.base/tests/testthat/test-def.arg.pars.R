@@ -1,5 +1,5 @@
-library(testthat)
-source("R/def.arg.pars.R")
+#library(testthat)
+#source("R/def.arg.pars.R")
 
 
 test_that("When one of the arguments is not passed as a character, processing stops",
@@ -14,7 +14,6 @@ test_that("When one of the arguments is not passed as a character, processing st
 
 
           })
-
 
 test_that("When the Optional value Parameter name is not in the NameParaOptn, thow an exception ",
           {
@@ -45,3 +44,27 @@ test_that("When one of the Parameter value is from system environment variables 
                                silent = TRUE)
             testthat::expect_true((class(returnedPara)[1] == "try-error"))
           })
+
+
+test_that("When one of the Required Parameters value is missing, throw an exception",
+          {
+            inputargs <- c("DirIn=/scratch/test","DirOut=DIR_OUT","Freq=10|20")
+            NameParaReqd <- "MissingReqTest"
+            NameParaOptn <- "Freq"
+            ValuParaOptn <-  c(Freq = 20)
+            returnedPara <-try(NEONprocIS.base::def.arg.pars(arg = inputargs, NameParaReqd = NameParaReqd, NameParaOptn = NameParaOptn, ValuParaOptn = ValuParaOptn),
+                               silent = TRUE)
+            testthat::expect_true((class(returnedPara)[1] == "try-error"))
+          })
+
+test_that("When one of the Required Parameters value is missing, throw an exception",
+          {
+            inputargs <- c("DirIn=/scratch/test","DirOut=DIR_OUT","Freq=10|20")
+            NameParaReqd <- "DirIn"
+            NameParaOptn <- "Freq"
+            ValuParaOptn <-  c(Freq = 20)
+            returnedPara <-try(NEONprocIS.base::def.arg.pars(arg = inputargs, NameParaReqd = NameParaReqd, NameParaOptn = NameParaOptn, ValuParaOptn = ValuParaOptn),
+                               silent = TRUE)
+            testthat::expect_true((class(returnedPara)[1] == "try-error"))
+          })
+
