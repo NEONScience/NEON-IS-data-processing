@@ -4,7 +4,7 @@
 test_that("When one of the arguments is not passed as a character, processing stops",
           {
 
-            inputargs <- c('/scratch/test','DIR_OUT', 10)
+            inputargs <- c('/scratch/test','DIR_OUT', numeric(10))
             names(inputargs) <- c("DirIn", "DirOut", "Freq")
 
             returnedPara <-try(NEONprocIS.base::def.arg.pars(arg = inputargs),
