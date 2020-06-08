@@ -16,8 +16,8 @@ class DirectoryFilterTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.in_dir = Path('/', 'inputs')
-        self.out_path = Path('/', 'outputs')
+        self.in_dir = Path('/inputs')
+        self.out_path = Path('/outputs')
 
         self.dir_1 = 'dir1'
         self.dir_2 = 'dir2'

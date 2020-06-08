@@ -7,11 +7,11 @@ import structlog
 log = structlog.get_logger()
 
 
-class PathTransformer(object):
+class FileRepository(object):
 
-    def __init__(self, input_path: Path, root_output_path: Path):
+    def __init__(self, input_path: Path, output_path: Path):
         self.input_path = input_path
-        self.root_output_path = root_output_path
+        self.output_path = output_path
         self.transform = singledispatch(self.transform)
         self.transform.register(int, self._transform_int)
         self.transform.register(list, self._transform_list)
@@ -21,7 +21,7 @@ class PathTransformer(object):
 
     def crawl(self):
         """
-        Yield all files in the input path.
+        Recursively yield all files in the input path.
 
         :return: All files in the path.
         """
@@ -36,9 +36,9 @@ class PathTransformer(object):
         Symbolically link the given paths.
 
         :param path: The existing path to be linked.
-        :param link_path: The link path to create by prepending with the root output path.
+        :param link_path: The link path to create by prepending the output path.
         """
-        link_path = Path(self.root_output_path, link_path)
+        link_path = Path(self.output_path, link_path)
         link_path.parent.mkdir(parents=True, exist_ok=True)
         if not link_path.exists():
             log.debug(f'linking {link_path} to {path}')
@@ -46,14 +46,13 @@ class PathTransformer(object):
 
     def filter_files(self, glob_pattern: str):
         """
-        Filter input files from the filesystem according to the given
-        Unix style path glob pattern while ignoring any files in the given output path.
+        Filter input files from the filesystem according to the given Unix style path glob pattern.
 
         :param glob_pattern: The path pattern to contains_match.
         :return File paths matching the given glob pattern.
         """
         files = [file_path for file_path in glob.glob(glob_pattern, recursive=True)
-                 if not os.path.basename(file_path).startswith(str(self.root_output_path))
+                 if not os.path.basename(file_path).startswith(str(self.output_path))
                  if os.path.isfile(file_path)]
         return files
 
@@ -65,9 +64,10 @@ class PathTransformer(object):
         """
         pass
 
+    @staticmethod
     def _transform_int(self, index: int):
         """
-        Create links from the path elements past the index for all files in the input path.
+        Create links from path elements beginning at the index for all files.
 
         :param index: The index to begin extracting path elements.
         """
@@ -77,7 +77,7 @@ class PathTransformer(object):
 
     def _transform_list(self, indices: list):
         """
-        Create links from the indexed elements for all files in the input path.
+        Create links from the index path elements for all files.
 
         :param indices: The path elements to extract to create links.
         """
@@ -99,11 +99,11 @@ class PathTransformer(object):
     @staticmethod
     def _transform_path_int(index: int, path: Path):
         """
-        Return a new path of all path elements past the given index.
+        Return a new path of path elements beginning at the given index.
 
         :param index: The index to begin extracting path elements.
         :param path: The source path to extract elements.
-        :return:
+        :return: A new path of the path elements after the index.
         """
         new_path = Path(*path.parts[index:])
         return new_path
@@ -111,7 +111,7 @@ class PathTransformer(object):
     @staticmethod
     def _transform_path_list(indices: list, path: Path):
         """
-        Return a new path consisting of path elements at each given index.
+        Return a new path of indexed path elements.
 
         :param indices: The indices of path elements to include in the new path.
         :param path: The source path to extract elements.

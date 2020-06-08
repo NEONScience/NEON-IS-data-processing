@@ -3,10 +3,10 @@ from pathlib import Path
 
 from pyfakefs import fake_filesystem_unittest
 
-from common.path_transformer import PathTransformer
+from data_access.file_repository import FileRepository
 
 
-class PathTransformerTest(fake_filesystem_unittest.TestCase):
+class FileRepositoryTest(fake_filesystem_unittest.TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -18,7 +18,7 @@ class PathTransformerTest(fake_filesystem_unittest.TestCase):
         self.fs.create_file(file_path)
         expected_path = Path('/test/output/stuff/file.foo')
         relative_path_index = 3
-        transformer = PathTransformer(input_path, output_path)
+        transformer = FileRepository(input_path, output_path)
         transformer.transform(relative_path_index)
         self.assertTrue(expected_path.exists())
 
@@ -32,6 +32,6 @@ class PathTransformerTest(fake_filesystem_unittest.TestCase):
         stuff_dir_index = 3
         filename_index = 4
         indices = [stuff_dir_index, filename_index]
-        transformer = PathTransformer(input_path, output_path)
+        transformer = FileRepository(input_path, output_path)
         transformer.transform(indices)
         self.assertTrue(expected_path.exists())

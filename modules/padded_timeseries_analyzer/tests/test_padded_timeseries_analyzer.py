@@ -22,10 +22,10 @@ class PaddedTimeSeriesAnalyzerTest(TestCase):
         self.threshold_dir = 'threshold'
         self.threshold_file = 'thresholds.json'
 
-        self.out_dir = Path('/', 'tmp', 'outputs')
-        self.input_root = Path('/', 'tmp', 'inputs',)
+        self.out_dir = Path('/tmp/outputs')
+        self.input_root = Path('/tmp/inputs')
 
-        source_root = Path('prt', '2018', '01')
+        source_root = Path('prt/2018/01')
         self.input_data_dir = Path(self.input_root, source_root, '03')
 
         location = 'CFGLOC112154'

@@ -15,14 +15,14 @@ class GrouperTest(TestCase):
         log_config.configure('DEBUG')
         self.setUpPyfakefs()
 
-        self.input_path = Path('/', 'repo', 'inputs')
-        self.output_path = Path('/', 'outputs')
+        self.input_path = Path('/repo/inputs')
+        self.output_path = Path('/outputs')
 
         self.group = 'aspirated-single-121'
 
         self.location = 'CFGLOC123'
 
-        self.metadata_path = Path('2019', '05', '24', self.group)
+        self.metadata_path = Path('2019/05/24', self.group)
 
         self.data_dir = 'data'
         self.location_dir = 'location'

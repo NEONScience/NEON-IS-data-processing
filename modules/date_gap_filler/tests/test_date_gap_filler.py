@@ -15,7 +15,7 @@ class DateGapFillerTest(TestCase):
         # initialize fake file system
         self.setUpPyfakefs()
         #  create output directory
-        self.out_path = Path('/', 'outputs', 'repo')
+        self.out_path = Path('/outputs/repo')
         self.fs.create_dir(self.out_path)
         #  create data repo
         self.create_data_repo()
@@ -43,7 +43,7 @@ class DateGapFillerTest(TestCase):
         self.empty_file_type_index = '4'
 
     def create_data_repo(self):
-        self.data_path = Path('/', 'files', 'repo_name', 'exo2', '2020', '01')
+        self.data_path = Path('/files/repo_name/exo2/2020/01')
         self.data_file_1 = Path('02', self.location_name, 'data', f'exo2_{self.location_name}_2020-01-02.ext')
         self.flags_file_1 = Path('02', self.location_name, 'flags',
                                  f'exo2_{self.location_name}_2020-01-02_flagsCal.ext')
@@ -60,7 +60,7 @@ class DateGapFillerTest(TestCase):
         self.fs.create_file(self.data_path.joinpath(self.uncertainty_file_1))
 
     def create_location_repo(self):
-        self.location_path = Path('/', 'locations', 'repo_name', 'exo2', '2020', '01')
+        self.location_path = Path('/locations/repo_name/exo2/2020/01')
         self.location_file_1 = self.location_path.joinpath('01', self.location_name, f'{self.location_name}.json')
         self.location_file_2 = self.location_path.joinpath('02', self.location_name, f'{self.location_name}.json')
         self.location_file_3 = self.location_path.joinpath('03', self.location_name, f'{self.location_name}.json')
@@ -69,7 +69,7 @@ class DateGapFillerTest(TestCase):
         self.fs.create_file(self.location_file_3)
 
     def create_empty_files_repo(self):
-        self.empty_files_path = Path('/', 'empty', 'empty_files', 'exo2')
+        self.empty_files_path = Path('/empty/empty_files/exo2')
         # data
         self.empty_data_path = self.empty_files_path.joinpath('data')
         self.empty_data_file = self.empty_data_path.joinpath('exo2_location_year-month-day.ext')
@@ -111,7 +111,7 @@ class DateGapFillerTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        root_path = Path(self.out_path, 'exo2', '2020', '01')
+        root_path = Path(self.out_path, 'exo2/2020/01')
 
         # non-missing day
         self.assertTrue(Path(root_path, self.data_file_1).exists())

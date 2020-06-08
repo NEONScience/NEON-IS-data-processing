@@ -14,11 +14,11 @@ class EgressTest(TestCase):
 
         log_config.configure('DEBUG')
 
-        self.out_dir = Path('/', 'tmp', 'outputs')
+        self.out_dir = Path('/tmp/outputs')
         self.location = 'CFGLOC112154'
-        input_root = Path('/', 'tmp', 'inputs')
+        input_root = Path('/tmp/inputs')
 
-        source_month = Path('prt', '2019', '01')
+        source_month = Path('prt/2019/01')
         self.input_data_dir = Path(input_root, source_month, '03')
         self.source_dir = Path(source_month, '03', self.location)
 

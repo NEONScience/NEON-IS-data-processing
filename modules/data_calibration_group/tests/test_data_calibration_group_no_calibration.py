@@ -12,14 +12,14 @@ class DataCalibrationGroupNoCalibrationTest(TestCase):
     def setUp(self):
         self.setUpPyfakefs()
 
-        in_path = Path('/', 'inputs')
-        self.out_path = Path('/', 'outputs')
+        in_path = Path('/inputs')
+        self.out_path = Path('/outputs')
 
         self.calibration_input_path = in_path.joinpath('calibration')
         self.data_input_path = in_path.joinpath('data')
 
-        self.data_metadata_path = Path('prt', '2019', '07', '23', '0001')
-        self.calibration_metadata_path = Path('prt', '0001')
+        self.data_metadata_path = Path('prt/2019/07/23/0001')
+        self.calibration_metadata_path = Path('prt/0001')
 
         self.data_filename = 'prt_0001_2018-01-03.ext'
 

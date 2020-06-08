@@ -9,6 +9,6 @@ def link(path: Path, link_path: Path):
     :param path: The source path.
     :param link_path: The link path.
     """
-    link_path.parent.mkdir(parents=True, exist_ok=True)
     if not link_path.exists():
+        link_path.parent.mkdir(parents=True, exist_ok=True)
         link_path.symlink_to(path)

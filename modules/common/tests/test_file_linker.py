@@ -6,7 +6,7 @@ from pyfakefs import fake_filesystem_unittest
 from common import file_linker
 
 
-class FileUtilTest(fake_filesystem_unittest.TestCase):
+class FileLinkerTest(fake_filesystem_unittest.TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()

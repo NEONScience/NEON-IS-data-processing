@@ -32,7 +32,7 @@ class ActivePeriodLoaderTest(TestCase):
     def check_output(self):
         expected_input_path = Path(self.input_path.joinpath(self.location_path))
         self.assertTrue(expected_input_path.exists())
-        expected_path_1 = self.out_path.joinpath('prt/2020/06/03/CFGLOC113836/location.json')
-        expected_path_2 = self.out_path.joinpath('prt/2020/06/04/CFGLOC113836/location.json')
+        expected_path_1 = self.out_path.joinpath('prt/2020/06/CFGLOC113836/location.json')
+        expected_path_2 = self.out_path.joinpath('prt/2020/07/CFGLOC113836/location.json')
         self.assertTrue(expected_path_1.exists())
         self.assertTrue(expected_path_2.exists())

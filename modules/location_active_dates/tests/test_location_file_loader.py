@@ -29,5 +29,5 @@ class LocationActiveDatesTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        file_path = Path(self.out_path, 'prt', '2019', '10', '20', 'CFGLOC101740', 'CFGLOC101740.json')
+        file_path = Path(self.out_path, 'prt/2019/10/20/CFGLOC101740/CFGLOC101740.json')
         self.assertTrue(file_path.exists())
