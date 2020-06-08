@@ -4,10 +4,10 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import location_active_dates.active_period_loader as active_period_loader
+import location_active_dates.location_active_dates as location_active_dates
 
 
-class ActivePeriodLoaderTest(TestCase):
+class LocationActiveDatesTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -26,7 +26,7 @@ class ActivePeriodLoaderTest(TestCase):
         os.environ['SCHEMA_INDEX'] = str(3)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        active_period_loader.main()
+        location_active_dates.main()
         self.check_output()
 
     def check_output(self):

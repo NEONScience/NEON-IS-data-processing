@@ -1,5 +1,4 @@
 from pathlib import Path
-from functools import singledispatch
 import glob
 import os
 import structlog
@@ -12,12 +11,6 @@ class FileRepository(object):
     def __init__(self, input_path: Path, output_path: Path):
         self.input_path = input_path
         self.output_path = output_path
-        self.transform = singledispatch(self.transform)
-        self.transform.register(int, self._transform_int)
-        self.transform.register(list, self._transform_list)
-        self.transform_path = singledispatch(self.transform_path)
-        self.transform_path.register(int, self._transform_path_int)
-        self.transform_path.register(list, self._transform_path_list)
 
     def crawl(self):
         """
@@ -39,12 +32,12 @@ class FileRepository(object):
         :param link_path: The link path to create by prepending the output path.
         """
         link_path = Path(self.output_path, link_path)
-        link_path.parent.mkdir(parents=True, exist_ok=True)
         if not link_path.exists():
+            link_path.parent.mkdir(parents=True, exist_ok=True)
             log.debug(f'linking {link_path} to {path}')
             link_path.symlink_to(path)
 
-    def filter_files(self, glob_pattern: str):
+    def filter(self, glob_pattern: str) -> list:
         """
         Filter input files from the filesystem according to the given Unix style path glob pattern.
 
@@ -56,47 +49,28 @@ class FileRepository(object):
                  if os.path.isfile(file_path)]
         return files
 
-    def transform(self, arg):
-        """
-        Overloaded for specific argument types.
-
-        :param arg: Placeholder argument.
-        """
-        pass
-
-    def _transform_int(self, index: int):
+    def link_all(self, index: int):
         """
         Create links from path elements beginning at the index for all files.
 
         :param index: The index to begin extracting path elements.
         """
         for path in self.crawl():
-            link_path = self.transform_path(index, path)
+            link_path = self.sub_path(path, index)
             self.link(path, link_path)
 
-    def _transform_list(self, indices: list):
+    def link_all_elements(self, indices: list):
         """
         Create links from the index path elements for all files.
 
         :param indices: The path elements to extract to create links.
         """
         for path in self.crawl():
-            link_path = self.transform_path(indices, path)
+            link_path = self.sub_path_elements(path, indices)
             self.link(path, link_path)
 
     @staticmethod
-    def transform_path(arg, path: Path):
-        """
-        Overloaded for specific argument types.
-
-        :param arg: Placeholder argument.
-        :param path: The source path to extract elements.
-        :return: A new path of the extracted elements.
-        """
-        pass
-
-    @staticmethod
-    def _transform_path_int(index: int, path: Path):
+    def sub_path(path: Path, index: int):
         """
         Return a new path of path elements beginning at the given index.
 
@@ -108,7 +82,7 @@ class FileRepository(object):
         return new_path
 
     @staticmethod
-    def _transform_path_list(indices: list, path: Path):
+    def sub_path_elements(path: Path, indices: list):
         """
         Return a new path of indexed path elements.
 

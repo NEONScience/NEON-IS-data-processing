@@ -6,7 +6,7 @@ import unittest
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import location_active_dates.location_file_loader as location_file_loader
+import location_loader.location_loader as location_loader
 
 
 class LocationActiveDatesTest(TestCase):
@@ -25,7 +25,7 @@ class LocationActiveDatesTest(TestCase):
         os.environ['tick'] = '/pfs/tick/2015-11-01T00:00:00Z'
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        location_file_loader.main()
+        location_loader.main()
         self.check_output()
 
     def check_output(self):
