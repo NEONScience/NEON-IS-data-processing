@@ -1,5 +1,5 @@
-library(testthat)
-source("R/def.time.miss.R")
+#library(testthat)
+#source("R/def.time.miss.R")
 
 
 test_that("When complete time range is missing",
