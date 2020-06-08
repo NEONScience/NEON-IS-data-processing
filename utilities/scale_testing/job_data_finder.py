@@ -5,7 +5,7 @@ from python_pachyderm import Client
 from python_pachyderm.proto.pps.pps_pb2 import JobInfo
 
 
-def get_most_recent_job_info(client: Client, pipeline_name: str):
+def get_most_recent_job_stats(client: Client, pipeline_name: str):
     max_milliseconds = 0
     most_recent_job = None
     for job_info in client.list_job(pipeline_name=pipeline_name, history=0, full=False):
@@ -18,13 +18,11 @@ def get_most_recent_job_info(client: Client, pipeline_name: str):
     return most_recent_job
 
 
-def get_job_run_data(job_info: JobInfo):
+def get_job_run_times(job_info: JobInfo):
     started_milliseconds = job_info.started.seconds
     started_nanos = job_info.started.nanos
-    print(f'started_millis: {started_milliseconds}.{started_nanos}')
     finished_milliseconds = job_info.finished.seconds
     finished_nanos = job_info.finished.nanos
-    print(f'finished_millis: {finished_milliseconds}.{finished_nanos}')
     job_stats = job_info.stats
     if job_stats is not None:
         download_time = job_stats.download_time
@@ -36,10 +34,18 @@ def get_job_run_data(job_info: JobInfo):
         upload_time = job_stats.upload_time
         upload_seconds = upload_time.seconds
         upload_nanos = upload_time.nanos
-        print(f'download: {download_seconds}.{download_nanos} \
-            upload: {upload_seconds}.{upload_nanos} \
-            process: {process_seconds}.{process_nanos}')
-        times = {'download': download_seconds, 'upload': upload_seconds, 'process': process_seconds}
+        times = {
+            'started': started_milliseconds,
+            'started_nanos': started_nanos,
+            'finished': finished_milliseconds,
+            'finished_nanos': finished_nanos,
+            'download': download_seconds,
+            'download_nanos': download_nanos,
+            'upload': upload_seconds,
+            'upload_nanos': upload_nanos,
+            'process': process_seconds,
+            'process_nanos': process_nanos
+        }
         return times
 
 
@@ -53,8 +59,8 @@ def main():
     port = int(args.port)
     pipeline_name = args.pipeline
     client = python_pachyderm.Client(host=host, port=port)
-    job = get_most_recent_job_info(client, pipeline_name)
-    get_job_run_data(job)
+    job = get_most_recent_job_stats(client, pipeline_name)
+    get_job_run_times(job)
 
 
 if __name__ == '__main__':

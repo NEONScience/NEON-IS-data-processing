@@ -58,13 +58,12 @@ class FileRepository(object):
 
     def transform(self, arg):
         """
-        Overloaded method for specific argument types.
+        Overloaded for specific argument types.
 
         :param arg: Placeholder argument.
         """
         pass
 
-    @staticmethod
     def _transform_int(self, index: int):
         """
         Create links from path elements beginning at the index for all files.
@@ -88,7 +87,7 @@ class FileRepository(object):
     @staticmethod
     def transform_path(arg, path: Path):
         """
-        Overloaded method for specific argument types.
+        Overloaded for specific argument types.
 
         :param arg: Placeholder argument.
         :param path: The source path to extract elements.

@@ -30,45 +30,45 @@ class PipelineSpecificationParser(object):
                 if path.suffix == '.json':
                     self.parse_json(path, pipeline_input_repos)
 
-    def parse_yaml(self, specification_file: Path, pipeline_input_repos: list):
+    def parse_yaml(self, path: Path, pipeline_input_repos: list):
         """
         Parse a YAML specification file.
 
-        :param specification_file: The file path.
+        :param path: The specification file path.
         :param pipeline_input_repos: A list to hold the pipeline inputs.
         """
-        with open(str(specification_file)) as yaml_file:
+        with open(str(path)) as yaml_file:
             file_data = yaml.load(yaml_file, Loader=yaml.FullLoader)
-            self.parse_file_data(specification_file, file_data, pipeline_input_repos)
+            self.parse_file_data(path, file_data, pipeline_input_repos)
 
-    def parse_json(self, specification_file: Path, pipeline_input_repos: list):
+    def parse_json(self, path: Path, pipeline_input_repos: list):
         """
         Parse a JSON specification file.
 
-        :param specification_file: The file path.
+        :param path: The file path.
         :param pipeline_input_repos: A list to hold the pipeline inputs.
         """
-        with open(str(specification_file)) as json_file:
+        with open(str(path)) as json_file:
             file_data = json.load(json_file)
-            self.parse_file_data(specification_file, file_data, pipeline_input_repos)
+            self.parse_file_data(path, file_data, pipeline_input_repos)
 
-    def parse_file_data(self, specification_file: Path, file_data: dict, pipeline_input_repos: list):
+    def parse_file_data(self, path: Path, file_data: dict, pipeline_input_repos: list):
         """
         Parse the specification file data.
 
-        :param specification_file: The file path.
+        :param path: The file path.
         :param file_data: The file data.
         :param pipeline_input_repos: A list for appending the pipeline inputs.
         """
         pipeline_name = file_data['pipeline']['name']
-        print(f'pipeline name: {pipeline_name}')
-        self.pipeline_files[pipeline_name] = specification_file
+        print(f'adding {path} to pipeline: {pipeline_name}')
+        self.pipeline_files[pipeline_name] = path
+
         has_input_repo = False
-        if specification_file.samefile(self.end_node_specification):
+        if path.samefile(self.end_node_specification):
             self.end_node_pipeline_name = pipeline_name
         for key, value in file_data['input'].items():
-            has_input_repo = self.parse_pipeline_input(
-                key, value, pipeline_input_repos, has_input_repo)
+            has_input_repo = self.parse_pipeline_input(key, value, pipeline_input_repos, has_input_repo)
         if has_input_repo:
             self.pipeline_inputs[pipeline_name] = pipeline_input_repos
 
@@ -91,12 +91,12 @@ class PipelineSpecificationParser(object):
             if isinstance(value, list):
                 for value2 in value:
                     for key3, value3 in value2.items():
-                        has_input_repo = self.parse_pipeline_input(
-                            key3, value3, input_repos, has_input_repo)  # recurse
+                        # recurse
+                        has_input_repo = self.parse_pipeline_input(key3, value3, input_repos, has_input_repo)
             if isinstance(value, dict):
                 for key3, value3 in value.items():
-                    has_input_repo = self.parse_pipeline_input(
-                        key3, value3, input_repos, has_input_repo)  # recurse
+                    # recurse
+                    has_input_repo = self.parse_pipeline_input(key3, value3, input_repos, has_input_repo)
         return has_input_repo
 
     def get_end_node_pipeline(self) -> str:
