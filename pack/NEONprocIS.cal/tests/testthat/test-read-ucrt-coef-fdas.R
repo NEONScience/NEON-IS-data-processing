@@ -41,16 +41,26 @@ context("\n                       Unit test of def.read.ucrt.coef.fdas.R\n")
 
 # Unit test of def.read.ucrt.coef.fdas.R
 test_that("Unit test of def.read.ucrt.coef.fdas.R", {
-  
-  # The input json has Name, Value, and .attrs
+  # Happy path
+  #
+  # The input is a json with elements of Name, Value, and .attrs
   
   NameFile = "ucrt-coef-fdas-input.json"
   
   #===================================================================
-  dfUcrtCoef_returned <-
-    NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = NameFile, log =
-                                               NULL)
-  # The output data frame has Name, Value, and .attrs
-  expect_true ((is.data.frame(dfUcrtCoef_returned)) &&
-                 !(is.null(dfUcrtCoef_returned)))
+  ucrtDf_returned <-
+    NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = NameFile, log = NULL)
+  # The output is a data frame having Name, Value, and .attrs
+  expect_true ((is.data.frame(ucrtDf_returned)) &&
+                 !(is.null(ucrtDf_returned)))
+  
+  # Sad path - test with a bad json
+  
+  NameFile = "ucrt-coef-fdas-input-bad.json"
+  
+  #===================================================================
+  ucrtDf_returned <- try(NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = NameFile, log = NULL),
+                         silent = TRUE)
+  
+  expect_true (base::class(ucrtDf_returned) == 'try-error')
 })
