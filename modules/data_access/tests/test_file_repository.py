@@ -19,7 +19,7 @@ class FileRepositoryTest(fake_filesystem_unittest.TestCase):
         expected_path = Path('/test/output/stuff/file.foo')
         relative_path_index = 3
         file_repo = FileRepository(input_path, output_path)
-        file_repo.transform(relative_path_index)
+        file_repo.link_all(relative_path_index)
         self.assertTrue(expected_path.exists())
 
     def test_transform_list(self):
@@ -33,5 +33,5 @@ class FileRepositoryTest(fake_filesystem_unittest.TestCase):
         filename_index = 4
         indices = [stuff_dir_index, filename_index]
         file_repo = FileRepository(input_path, output_path)
-        file_repo.transform(indices)
+        file_repo.link_all_elements(indices)
         self.assertTrue(expected_path.exists())
