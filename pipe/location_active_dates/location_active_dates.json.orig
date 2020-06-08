@@ -1,0 +1,35 @@
+{
+    "pipeline": {
+        "name": "location_active_dates"
+    },
+    "transform": {
+        "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+        "image": "quay.io/battelleecology/location_active_dates:16",
+        "cmd": [ "/bin/bash" ],
+        "stdin": [ "#!/bin/bash", "python3 -m location_active_dates.app" ],
+        "env": {
+            "LOCATION_TYPE": "CONFIG",
+            "OUT_PATH": "/pfs/out",
+            "LOG_LEVEL": "INFO"
+        },
+        "secrets": [
+            {
+                "name": "pdr-int-secret",
+                "key": "uri",
+                "env_var": "DATABASE_URL"
+            }
+        ]
+    },
+    "input": {
+        "cron": {
+            "name": "tick",
+            "spec": "@daily",
+            "overwrite": true
+        }
+    },
+    "resource_requests": {
+       "disk": "1G"
+    },
+    "enable_stats": true,
+    "standby": true
+}

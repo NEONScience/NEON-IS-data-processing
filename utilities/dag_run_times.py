@@ -25,6 +25,7 @@ def main():
     print(f'specifications: {specifications}')
 
     client = python_pachyderm.Client(host=host, port=port)
+    client.commit()
 
     dag_manager = DagManager(Path(specification), Path(specifications))
     dag_builder = dag_manager.get_dag_builder()
