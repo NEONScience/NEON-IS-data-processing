@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from lib.file_linker import link
+from common.file_linker import link
 
 
 def filter_directory(in_path: Path, out_path: Path, filter_dirs: list, relative_path_index: int):

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import structlog
 
-from lib.data_filename import DataFilename
+from common.data_filename import DataFilename
 
 log = structlog.get_logger()
 

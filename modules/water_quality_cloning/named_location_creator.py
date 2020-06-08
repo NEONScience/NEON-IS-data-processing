@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from contextlib import closing
 
-import data_access.named_location_finder as named_location_finder
+from data_access.named_location_repository import NamedLocationRepository
 
 
 def get_prt_wq_named_locations(connection):
@@ -49,6 +49,7 @@ def get_named_location(connection, named_location_id):
         select nam_locn_id, nam_locn_name, nam_locn_desc, type_id from nam_locn where nam_locn_id = :id
     '''
     named_location = None
+    named_location_repository = NamedLocationRepository(connection)
     with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
         rows = cursor.execute(None, id=named_location_id)
@@ -59,7 +60,7 @@ def get_named_location(connection, named_location_id):
                 name = row[1]
                 desc = row[2]
                 type_id = row[3]
-                site_name = named_location_finder.get_site(connection, key)
+                site_name = named_location_repository.get_site(key)
                 named_location = {'key': key,
                                   'name': name,
                                   'description': desc,

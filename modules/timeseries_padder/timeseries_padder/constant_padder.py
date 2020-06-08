@@ -6,9 +6,9 @@ import datetime
 import environs
 from structlog import get_logger
 
-from lib.file_linker import link
-from lib.file_crawler import crawl
-import lib.log_config as log_config
+from common.file_linker import link
+from common.file_crawler import crawl
+import common.log_config as log_config
 
 import timeseries_padder.timeseries_padder.padder_util as padder_util
 import timeseries_padder.timeseries_padder.file_writer as file_writer

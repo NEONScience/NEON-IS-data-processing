@@ -11,19 +11,19 @@ class QaqcRegularizedFlagGroupTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-        self.in_path = Path('/', 'inputs')
-        self.out_path = Path('/', 'outputs')
+        self.in_path = Path('/inputs')
+        self.out_path = Path('/outputs')
         self.regularized_path = Path(self.in_path, 'regularized')
         self.quality_path = Path(self.in_path, 'quality')
         #  regularized file
-        self.fs.create_file(Path(self.regularized_path, 'prt', '2018', '01', '01',
-                                 'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_flagsCal.ext'))
+        self.fs.create_file(Path(self.regularized_path, 'prt/2018/01/01/CFGLOC112154/flags/',
+                                 'prt_CFGLOC112154_2018-01-01_flagsCal.ext'))
         #  quality file
-        self.fs.create_file(Path(self.quality_path, 'prt', '2018', '01', '01',
-                                 'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.ext'))
+        self.fs.create_file(Path(self.quality_path, 'prt/2018/01/01/CFGLOC112154/flags',
+                                 'prt_CFGLOC112154_2018-01-01_plausibility.ext'))
         # quality file 2
-        self.fs.create_file(Path(self.quality_path, 'prt', '2018', '01', '02',
-                                 'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.ext'))
+        self.fs.create_file(Path(self.quality_path, 'prt/2018/01/02/CFGLOC112154/flags',
+                                 'prt_CFGLOC112154_2018-01-01_plausibility.ext'))
         self.relative_path_index = 3
 
     def test_main(self):
@@ -36,12 +36,12 @@ class QaqcRegularizedFlagGroupTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        regularized_path = Path(self.out_path, 'prt', '2018', '01', '01',
-                                'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_flagsCal.ext')
-        quality_path = Path(self.out_path, 'prt', '2018', '01', '01',
-                            'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.ext')
-        quality_path_2 = Path(self.out_path, 'prt', '2018', '01', '02',
-                              'CFGLOC112154', 'flags', 'prt_CFGLOC112154_2018-01-01_plausibility.ext')
+        regularized_path = Path(self.out_path, 'prt/2018/01/01/CFGLOC112154/flags',
+                                'prt_CFGLOC112154_2018-01-01_flagsCal.ext')
+        quality_path = Path(self.out_path, 'prt/2018/01/01/CFGLOC112154/flags',
+                            'prt_CFGLOC112154_2018-01-01_plausibility.ext')
+        quality_path_2 = Path(self.out_path, 'prt/2018/01/02/CFGLOC112154/flags',
+                              'prt_CFGLOC112154_2018-01-01_plausibility.ext')
         self.assertTrue(regularized_path.exists())
         self.assertTrue(quality_path.exists())
         # file on different day should be excluded from output

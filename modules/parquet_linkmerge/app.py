@@ -11,8 +11,7 @@ import structlog
 from io import BytesIO
 from collections.abc import Hashable
 
-from lib import log_config
-from lib import file_crawler
+from common import file_crawler, log_config
 
 log = structlog.get_logger()
 
@@ -36,7 +35,7 @@ def write_merged_parquet(input_files, out_path):
         fio.close()
         tbf_schema = tbf.schema.metadata['parquet.avro.schema'.encode('UTF-8')]
         if tbf_schema != tb1_schema:
-            log.error(f"{f} schema does not match {in_path} schema")
+            log.error(f"{f} schema does not contains_match {in_path} schema")
             sys.exit(1)
         log.info(f"Merging {f} with {in_path}")
         df = df.append(tbf.to_pandas())

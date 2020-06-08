@@ -5,7 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import event_location_group.app as app
-from lib import log_config as log_config
+from common import log_config as log_config
 
 
 class EventLocationGroupTest(TestCase):
@@ -18,9 +18,9 @@ class EventLocationGroupTest(TestCase):
 
         self.source_id = '00001'
 
-        self.out_path = Path('/', 'repo', 'outputs')
-        self.data_path = Path('/', 'repo', 'events', 'heater', '2019', '01', '01', self.source_id)
-        self.location_path = Path('/', 'location')
+        self.out_path = Path('/repo/outputs')
+        self.data_path = Path('/repo/events/heater/2019/01/01', self.source_id)
+        self.location_path = Path('/location')
 
         #  Create data file.
         self.data_file = f'heater_{self.source_id}_events_2019-01-01.json'
@@ -73,7 +73,7 @@ class EventLocationGroupTest(TestCase):
         print(f'input_data_path: {self.input_data_path}')
         print(f'input_location_path: {self.input_location_path}')
 
-        root_path = Path(self.out_path, 'heater', '2019', '01', '01', '00001')
+        root_path = Path(self.out_path, 'heater/2019/01/01/00001')
 
         output_data_path = Path(root_path, 'data', self.data_file)
         output_location_path = Path(root_path, 'location', self.location_file)

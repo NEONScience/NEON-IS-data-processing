@@ -30,7 +30,7 @@ class CalibrationGrouper(object):
         """
         Find calibrations for the source ID. If no files are found create an empty directory.
 
-        :param source_id: The source ID of the data file to match on.
+        :param source_id: The source ID of the data file to contains_match on.
         :param output_path: The common output directory path for file grouping.
         :return:
         """

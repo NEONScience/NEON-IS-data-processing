@@ -5,8 +5,8 @@ from pathlib import Path
 import environs
 from structlog import get_logger
 
-import lib.log_config as log_config
-from lib.file_linker import link
+import common.log_config as log_config
+from common.file_linker import link
 
 log = get_logger()
 

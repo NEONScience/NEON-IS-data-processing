@@ -4,9 +4,9 @@ from pathlib import Path
 from structlog import get_logger
 import environs
 
-import lib.log_config as log_config
-from lib.file_linker import link
-from lib.file_crawler import crawl
+import common.log_config as log_config
+from common.file_linker import link
+from common.file_crawler import crawl
 
 log = get_logger()
 

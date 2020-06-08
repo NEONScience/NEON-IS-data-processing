@@ -15,12 +15,12 @@ class FileJoinerTest(TestCase):
         """Create files to join in fake filesystem."""
         self.setUpPyfakefs()
 
-        self.input_path = Path('/', 'pfs')
-        self.output_path = Path('/', 'outputs')
+        self.input_path = Path('/pfs')
+        self.output_path = Path('/outputs')
 
-        self.path_1 = Path('dir1', 'dir2', 'file_1.txt')
-        self.path_2 = Path('dir1', 'dir2', 'file_2.txt')
-        self.path_3 = Path('dir1', 'dir2', 'file_3.txt')
+        self.path_1 = Path('dir1/dir2/file_1.txt')
+        self.path_2 = Path('dir1/dir2/file_2.txt')
+        self.path_3 = Path('dir1/dir2/file_3.txt')
 
         self.input_path_1 = Path(self.input_path, 'INPUT_1', self.path_1)
         self.input_path_2 = Path(self.input_path, 'INPUT_2', self.path_2)

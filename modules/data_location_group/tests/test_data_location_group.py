@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 import data_location_group.app as app
 from data_location_group.data_location_grouper import link_data, link_location
-from lib import log_config as log_config
+from common import log_config as log_config
 
 
 class DataLocationGroupTest(TestCase):
@@ -16,10 +16,10 @@ class DataLocationGroupTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.out_path = Path('/', 'repo', 'outputs')
-        self.data_path = Path('/', 'repo', 'data')
-        self.location_path = Path('/', 'location')
-        self.metadata_path = Path('prt', '2019', '05', '17')
+        self.out_path = Path('/repo/outputs')
+        self.data_path = Path('/repo/data')
+        self.location_path = Path('/location')
+        self.metadata_path = Path('prt/2019/05/17')
 
         #  Create data file.
         self.data_file = 'prt_00001_2019-05-17.ext'

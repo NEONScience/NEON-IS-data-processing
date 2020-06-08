@@ -5,7 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import location_group_path.app as app
-from lib import log_config as log_config
+from common import log_config as log_config
 
 
 class LocationGroupPathTest(TestCase):
@@ -14,20 +14,21 @@ class LocationGroupPathTest(TestCase):
         log_config.configure('DEBUG')
 
         self.location = 'CFGLOC113507'
-        # The context group to find in the location file should match the existing file entry 'aspirated-single-224'.
+        # The context group to find in the location file should contains_
+        # match the existing file entry 'aspirated-single-224'.
         self.group = 'aspirated-triple-'
 
         self.setUpPyfakefs()
 
-        self.in_path = Path('/', 'inputs')
-        self.out_path = Path('/', 'outputs')
+        self.in_path = Path('/inputs')
+        self.out_path = Path('/outputs')
 
-        self.metadata_path = Path('dualfan', '2019', '05', '21')
+        self.metadata_path = Path('dualfan/2019/05/21')
 
         inputs_root = Path(self.in_path, 'repo', self.metadata_path)
 
-        data_path = Path(inputs_root, self.location, 'data', 'data.ext')
-        locations_path = Path(inputs_root, self.location, 'location', 'locations.json')
+        data_path = Path(inputs_root, self.location, 'data/data.ext')
+        locations_path = Path(inputs_root, self.location, 'location/locations.json')
 
         self.fs.create_file(data_path)
 
@@ -61,18 +62,18 @@ class LocationGroupPathTest(TestCase):
         root_path_1 = Path(self.out_path, self.metadata_path, 'aspirated-triple-224', self.location)
         root_path_2 = Path(self.out_path, self.metadata_path, 'aspirated-triple-226', self.location)
 
-        data_path_1 = Path(root_path_1, 'data', 'data.ext')
-        locations_path_1 = Path(root_path_2, 'location', 'locations.json')
+        data_path_1 = Path(root_path_1, 'data/data.ext')
+        locations_path_1 = Path(root_path_2, 'location/locations.json')
 
-        data_path_2 = Path(root_path_1, 'data', 'data.ext')
-        locations_path_2 = Path(root_path_2, 'location', 'locations.json')
+        data_path_2 = Path(root_path_1, 'data/data.ext')
+        locations_path_2 = Path(root_path_2, 'location/locations.json')
 
         print(f'data_path_1: {data_path_1}')
         print(f'locations_path_1: {locations_path_1}')
 
-        check_path_1 = Path(self.out_path, 'dualfan', '2019', '05', '21', 'aspirated-triple-224', self.location)
+        check_path_1 = Path(self.out_path, 'dualfan/2019/05/21/aspirated-triple-224', self.location)
         print(os.listdir(check_path_1))
-        check_path_2 = Path(self.out_path, 'dualfan', '2019', '05', '21', 'aspirated-triple-226', self.location)
+        check_path_2 = Path(self.out_path, 'dualfan/2019/05/21/aspirated-triple-226', self.location)
         print(os.listdir(check_path_2))
 
         self.assertTrue(data_path_1.exists())

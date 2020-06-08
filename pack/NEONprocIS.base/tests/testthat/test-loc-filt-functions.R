@@ -83,8 +83,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------ Positive test 2:: Input JSON is valid and conforms to the schema                    |\n")
   cat("\n       |------                   between '2017-02-06T00:10:20Z' and '2017-02-07T00:18:28Z'         |\n\n")
   
-  TimeBgn <- base::as.POSIXct('2017-02-06T00:10:20Z')
-  TimeEnd <- base::as.POSIXct('2017-02-07T00:18:28Z')
+  TimeBgn <- base::as.POSIXct('2017-02-05T00:10:20Z', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2017-02-08T00:18:28Z', tz = 'GMT')
   
   locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
   expect_true (length(locReturned$features) > 0)

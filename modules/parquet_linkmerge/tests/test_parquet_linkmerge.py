@@ -5,7 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import parquet_linkmerge.app as app
-from lib import log_config as log_config
+from common import log_config as log_config
 
 
 class ParquetLinkMergeTest(TestCase):
@@ -15,9 +15,9 @@ class ParquetLinkMergeTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.out_path = Path('/', 'repo', 'outputs')
-        self.in_path = Path('/', 'repo', 'inputs')
-        self.metadata_path = Path('prt', '2019', '10', '02')
+        self.out_path = Path('/repo/outputs')
+        self.in_path = Path('/repo/inputs')
+        self.metadata_path = Path('prt/2019/10/02')
 
         self.data_files = [
             'GRSM_prt_6974_2019-10-02.parquet',

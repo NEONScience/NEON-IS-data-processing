@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 import directory_filter.app as app
 from directory_filter.filter import filter_directory
-import lib.log_config as log_config
+import common.log_config as log_config
 
 
 class DirectoryFilterTest(TestCase):
@@ -16,8 +16,8 @@ class DirectoryFilterTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.in_dir = Path('/', 'inputs')
-        self.out_path = Path('/', 'outputs')
+        self.in_dir = Path('/inputs')
+        self.out_path = Path('/outputs')
 
         self.dir_1 = 'dir1'
         self.dir_2 = 'dir2'

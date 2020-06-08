@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from structlog import get_logger
-import lib.file_linker as file_linker
+import common.file_linker as file_linker
 
 log = get_logger()
 

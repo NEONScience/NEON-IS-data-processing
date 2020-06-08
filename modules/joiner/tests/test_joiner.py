@@ -15,15 +15,15 @@ class JoinerTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.input_path = Path('/', 'repo', 'inputs')
-        self.output_path = Path('/', 'outputs')
+        self.input_path = Path('/repo/inputs')
+        self.output_path = Path('/outputs')
 
         self.prt_location_1 = 'CFGLOC123'
         self.prt_location_2 = 'CFGLOC321'
         self.dual_fan_location = 'CFGLOC789'
         self.heater_location = 'CFGLOC456'
 
-        self.metadata_path = Path('2019', '05', '24', 'aspirated-single-121')
+        self.metadata_path = Path('2019/05/24/aspirated-single-121')
 
         self.data_dir = 'data'
         self.location_dir = 'location'

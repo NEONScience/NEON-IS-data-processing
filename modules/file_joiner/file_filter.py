@@ -9,7 +9,7 @@ def filter_files(glob_pattern: str, out_path: Path):
     Filter input files from the filesystem according to the given
     Unix style path glob pattern while ignoring any files in the given output path.
 
-    :param glob_pattern: The path pattern to match.
+    :param glob_pattern: The path pattern to contains_match.
     :param out_path: The output path so it can be ignored when evaluating files.
     :return File paths matching the given glob pattern.
     """

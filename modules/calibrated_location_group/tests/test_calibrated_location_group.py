@@ -5,21 +5,18 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import calibrated_location_group.app as app
-from lib import log_config as log_config
+from common import log_config as log_config
 
 
 class CalibratedLocationGroupTest(TestCase):
 
     def setUp(self):
-
-        log_config.configure('DEBUG')
-
         self.setUpPyfakefs()
 
-        self.out_path = Path('/', 'outputs')
-        self.metadata_path = Path('prt', '2019', '05', '17', '00001')
-        self.calibrated_path = Path('/', 'inputs', 'calibrated')
-        self.location_path = Path('/', 'inputs', 'location')
+        self.out_path = Path('/outputs')
+        self.metadata_path = Path('prt/2019/05/17/00001')
+        self.calibrated_path = Path('/inputs/calibrated')
+        self.location_path = Path('/inputs/location')
 
         #  Create calibrated input files.
         calibrated_root = self.calibrated_path.joinpath(self.metadata_path)
@@ -34,7 +31,7 @@ class CalibratedLocationGroupTest(TestCase):
         self.fs.create_file(test_extra_dir_path)
 
         #  Create location input file.
-        locations_path = Path(self.location_path, 'prt', '00001', 'locations.json')
+        locations_path = Path(self.location_path, 'prt/00001/locations.json')
         self.fs.create_file(locations_path)
 
         #  Create output dir

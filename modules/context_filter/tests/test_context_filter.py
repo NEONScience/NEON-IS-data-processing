@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from lib import log_config as log_config
+from common import log_config as log_config
 
 import context_filter.app as app
 
@@ -24,12 +24,12 @@ class ContextFilterTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.out_path = Path('/', 'outputs')
-        self.metadata_path = Path('prt', '2019', '05', '21', '00001')
+        self.out_path = Path('/outputs')
+        self.metadata_path = Path('prt/2019/05/21/00001')
 
         self.context = 'aspirated-triple'  # The context to find in the location file.
 
-        self.in_path = Path('/', 'inputs')
+        self.in_path = Path('/inputs')
         inputs_path = self.in_path.joinpath('merged', self.metadata_path)
 
         data_path = inputs_path.joinpath('data', 'data.ext')
