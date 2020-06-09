@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_date_gap_filler_linker"
+    "name": "prt_date_gap_filler_linker_cs"
   },
   "transform": {
     "image_pull_secrets": [
@@ -28,7 +28,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "prt_date_gap_filler",
+      "repo": "prt_date_gap_filler_cs",
       "glob": "/prt/*/*",
       "empty_files": true
     }

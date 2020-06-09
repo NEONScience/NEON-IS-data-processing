@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_calibration_filter"
+    "name": "prt_calibration_filter_cs"
   },
   "transform": {
     "cmd": ["Rscript","/flow.cal.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data"],
@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_data_calibration_group",
+      "repo": "prt_data_calibration_group_cs",
       "glob": "/prt/*/*/*/"
     }
   },

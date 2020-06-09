@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_calibration_conversion"
+    "name": "prt_calibration_conversion_cs"
   },
   "transform": {
     "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_FLAGS","TermConv=resistance","TermQf=resistance","TermUcrt=resistance(R)","FuncUcrt=resistance:def.ucrt.meas.cnst","FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"],
@@ -15,7 +15,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "prt_calibration_filter",
+          "repo": "prt_calibration_filter_cs",
           "glob": "/prt/*/*/*/"
         }
       },

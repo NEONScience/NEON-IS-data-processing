@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_data_calibration_group"
+    "name": "prt_data_calibration_group_cs"
   },
   "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -20,7 +20,7 @@
       }
   },
   "parallelism_spec": {
-    "constant": "4"
+    "constant": "1"
   },
   "output_branch": "master",
   "resource_requests": {
@@ -40,7 +40,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_prt_subset",
+          "repo": "data_source_prt",
           "branch": "master",
           "glob": "/prt/*",
           "empty_files": true

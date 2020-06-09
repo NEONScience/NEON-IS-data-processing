@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_structure_repo_by_location"
+    "name": "prt_structure_repo_by_location_cs"
   },
   "transform": {
     "cmd": ["Rscript","/flow.loc.repo.strc.R","DirIn=$DIR_IN","DirOut=/pfs/out","Comb=TRUE"],
@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_location_filter",
+      "repo": "prt_location_filter_cs",
       "glob": "/prt/*/*/*/"
       }
   },

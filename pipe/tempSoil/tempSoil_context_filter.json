@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempSoil_context_filter"
+    "name": "tempSoil_context_filter_cs"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -22,7 +22,7 @@
   "input": {
       "pfs": {
         "name": "IN_PATH",
-        "repo": "prt_date_gap_filler_linker",
+        "repo": "prt_merge_data_by_location_cs",
         "glob": "/*/*/*/*"
       }
   },

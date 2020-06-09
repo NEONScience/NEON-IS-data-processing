@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_location_filter"
+    "name": "prt_location_filter_cs"
   },
   "transform": {
     "cmd": ["Rscript","/flow.loc.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data|flags|uncertainty_coef|uncertainty_data"],
@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_calibrated_location_group",
+      "repo": "prt_calibrated_location_group_cs",
       "glob": "/prt/*/*/*/"
       }
   },

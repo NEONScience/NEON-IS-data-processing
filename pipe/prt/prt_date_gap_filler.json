@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_date_gap_filler"
+    "name": "prt_date_gap_filler_cs"
   },
   "transform": {
     "image_pull_secrets": [
@@ -54,7 +54,7 @@
           {
             "pfs": {
               "name": "DATA_PATH",
-              "repo": "prt_merge_data_by_location",
+              "repo": "prt_merge_data_by_location_cs",
               "glob": "/prt/*/*",
               "joinOn": "$1$2",
               "empty_files": true
@@ -63,7 +63,7 @@
           {
             "pfs": {
               "name": "LOCATION_PATH",
-              "repo": "location_active_dates_subset",
+              "repo": "location_active_dates",
               "glob": "/prt/*/*",
               "joinOn": "$1$2",
               "empty_files": true
