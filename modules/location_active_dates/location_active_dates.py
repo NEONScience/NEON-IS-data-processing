@@ -31,7 +31,7 @@ def link_files(location_path: Path, out_path: Path, schema_index: int):
             features = geojson_data['features']
             properties = features[0]['properties']
             location_name = properties['name']
-            active_periods = properties['active-periods']
+            active_periods = properties['active_periods']
             # link file for each active date
             for period in active_periods:
                 start_date = period['start_date']

@@ -4,31 +4,24 @@
     },
     "transform": {
         "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-        "image": "quay.io/battelleecology/location_active_dates:16",
+        "image": "quay.io/battelleecology/location_active_dates:23",
         "cmd": [ "/bin/bash" ],
-        "stdin": [ "#!/bin/bash", "python3 -m location_active_dates.app" ],
+        "stdin": [ "#!/bin/bash", "python3 -m location_active_dates.active_period_loader" ],
         "env": {
-            "LOCATION_TYPE": "CONFIG",
+            "SCHEMA_INDEX": "3",
             "OUT_PATH": "/pfs/out",
-            "LOG_LEVEL": "INFO"
-        },
-        "secrets": [
-            {
-                "name": "pdr-int-secret",
-                "key": "uri",
-                "env_var": "DATABASE_URL"
-            }
-        ]
-    },
-    "input": {
-        "cron": {
-            "name": "tick",
-            "spec": "@daily",
-            "overwrite": true
+            "LOG_LEVEL": "DEBUG"
         }
     },
-    "resource_requests": {
-       "disk": "1G"
+    "input": {
+        "pfs": {
+            "name": "LOCATION_PATH",
+            "repo": "location_loader",
+            "glob": "/*/*"
+        }
+    },
+    "parallelism_spec": {
+        "constant": "8"
     },
     "enable_stats": true,
     "standby": true

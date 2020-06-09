@@ -14,7 +14,7 @@
                     "water-quality-300",
                     "water-quality"
                 ],
-                "active-periods": [
+                "active_periods": [
                     {
                         "start_date": "2020-06-30T00:00:00Z",
                         "end_date": "2020-07-01T15:00:00Z"

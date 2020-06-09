@@ -4,16 +4,16 @@ from graphviz import Digraph
 
 class DagBuilder(object):
 
-    def __init__(self, end_node_pipeline: str, files_by_pipeline: dict, inputs_by_pipeline: dict):
+    def __init__(self, end_node_pipeline: str, pipeline_files: dict, pipeline_inputs: dict):
         """
         Constructor.
 
         :param end_node_pipeline: The DAG end node pipeline name.
-        :param files_by_pipeline: All specification files organized by pipeline name.
-        :param inputs_by_pipeline: Repo inputs organized by pipeline name.
+        :param pipeline_files: All specification files organized by pipeline name.
+        :param pipeline_inputs: Repo inputs organized by pipeline name.
         """
-        self.files_by_pipeline = files_by_pipeline
-        self.inputs = inputs_by_pipeline
+        self.pipeline_files = pipeline_files
+        self.pipeline_inputs = pipeline_inputs
         # Populated with all nodes for the DAG (pipelines and source repos).
         self.nodes = []
         # Populated with pipeline specification files for the DAG.
@@ -23,40 +23,42 @@ class DagBuilder(object):
         self.dag = Digraph()
         self._build(end_node_pipeline)
 
-    def _build(self, pipeline: str):
+    def _build(self, end_node_pipeline: str):
         """
         Populate the DAG from the given pipeline end node.
 
-        :param pipeline: The end node for the pipeline.
+        :param end_node_pipeline: The end node for the pipeline.
         """
-        if not self.nodes:  # if first call and no nodes exist, add the pipeline as a DAG node
-            self.dag.node(pipeline, label=pipeline, shape='box')
-            self.nodes.append(pipeline)
-            self.dag_pipelines.append(pipeline)
-            specification_file = self.files_by_pipeline[pipeline]
+        # add the end node pipeline to the DAG
+        if not self.nodes:
+            self.dag.node(end_node_pipeline, label=end_node_pipeline, shape='box')
+            self.nodes.append(end_node_pipeline)
+            self.dag_pipelines.append(end_node_pipeline)
+            specification_file = self.pipeline_files[end_node_pipeline]
             self.dag_pipeline_files.append(specification_file)
         # loop over pipeline inputs
-        for input_pipeline in self.inputs[pipeline]:
-            if input_pipeline in self.inputs:  # pipeline is part of this DAG
+        for input_pipeline in self.pipeline_inputs[end_node_pipeline]:
+            specification_file = self.pipeline_files.get(input_pipeline)
+            # pipeline is part of this DAG
+            if input_pipeline in self.pipeline_inputs:
                 shape = 'box'
-                if 'data_source' not in input_pipeline:  # exclude data source repos
+                # exclude data source repos
+                if 'data_source' not in input_pipeline:
                     self.dag_pipelines.append(input_pipeline)
-                    specification_file = self.files_by_pipeline[input_pipeline]
                     self.dag_pipeline_files.append(specification_file)
-                    print(f'input pipeline: {input_pipeline}')
-            else:  # a source repository, do not include in pipeline files
+            # pipeline is a source repository, do not include in DAG pipeline files
+            else:
                 shape = 'oval'
                 print(f'source repo: {input_pipeline}')
-                specification_file = self.files_by_pipeline[input_pipeline]
                 self.source_repos.update({'pipeline': input_pipeline, 'file': specification_file})
             if input_pipeline not in self.nodes:
-                self.dag.node(input_pipeline,
-                              label=input_pipeline, shape=shape)
+                self.dag.node(input_pipeline, label=input_pipeline, shape=shape)
                 self.nodes.append(input_pipeline)
-            self.dag.edge(input_pipeline, pipeline)
-            if input_pipeline in self.inputs:
+            self.dag.edge(input_pipeline, end_node_pipeline)
+            if input_pipeline in self.pipeline_inputs:
                 self._build(input_pipeline)
-        del self.inputs[pipeline]  # omit duplicate renderings
+        # omit duplicate renderings
+        del self.pipeline_inputs[end_node_pipeline]
 
     def get_dag(self) -> Digraph:
         return self.dag
