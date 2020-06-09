@@ -10,31 +10,31 @@
 #' Refer to wrap.ucrt.coef.R for the details of the function.
 
 #' @param calSlct Required for the unit test. A named list of data frames, list element corresponding to the variable for which
-#' uncertainty coefficients are to be compiled. The data frame in each list element holds 
-#' information about the calibration files and time periods that apply to the variable, as returned 
-#' from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
+#' uncertainty coefficients are to be compiled. The data frame in each list element holds
+#' information about the calibration files and time periods that apply to the variable, as returned
+#' from NEONprocIS.cal::def.cal.slct. See documentation for that function.
 #' @param DirCal Required for the unit test. Character string. Relative or absolute path (minus file name) to the main calibration
 #' directory. Nested within this directory are directories for each variable in calSlct, each holding
 #' calibration files for that variable. Defaults to "./"
-#' @param ParaUcrt A data frame indicating which (if any) type of FDAS uncertainty coefficients 
+#' @param ParaUcrt A data frame indicating which (if any) type of FDAS uncertainty coefficients
 #' apply to each variable. Columns must include:\cr
 #' \code{var} Character. The variable/term name (same as those in calSlct)\cr
-#' \code{typeFdas} A single character indicating the type of measurement made by NEON's field 
-#' data acquisision system (GRAPE). Acceptable values are "R" for resistance measurements, "V" 
+#' \code{typeFdas} A single character indicating the type of measurement made by NEON's field
+#' data acquisision system (GRAPE). Acceptable values are "R" for resistance measurements, "V"
 #' for voltage measurements, or NA (no quotes) for measurements in which FDAS uncertainty does
 #' not apply (e.g. digital L0 output). \cr
-#' A NULL entry for ParaUcrt (default) or variables missing from ParaUcrt indicate that FDAS 
-#' uncertainty does not apply. 
-#' @param ucrtCoefFdas Required for the unit test. A data frame of FDAS uncertainty coefficients, as read by 
+#' A NULL entry for ParaUcrt (default) or variables missing from ParaUcrt indicate that FDAS
+#' uncertainty does not apply.
+#' @param ucrtCoefFdas Required for the unit test. A data frame of FDAS uncertainty coefficients, as read by
 #' NEONprocIS.cal::def.read.ucrt.coef.fdas. Columns include:\cr
 #' \code{Name} Character. Name of the coefficient.\cr
 #' \code{Value} Character. Value of the coefficient.\cr
 #' \code{.attrs} Character. Relevant attribute (i.e. units)\cr
-#' Defaults to NULL, in which case no variables in ParaUcrt may indicate that FDAS uncertainty 
+#' Defaults to NULL, in which case no variables in ParaUcrt may indicate that FDAS uncertainty
 #' applies.
-#' @param mappNameVar A data frame with in/out variable name mapping as produced by 
+#' @param mappNameVar A data frame with in/out variable name mapping as produced by
 #' NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is
-#' NULL), input variable names in the output data frames will be replaced by their corresponding 
+#' NULL), input variable names in the output data frames will be replaced by their corresponding
 #' output name.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
@@ -65,28 +65,23 @@ context("\n                       Unit test of wrap.ucrt.coef.R\n")
 
 # Unit test of wrap.ucrt.coef.R
 test_that("Unit test of wrap.ucrt.coef.R", {
-  
-  # The input json has Name, Value, and .attrs
-  
-  NameFile = "ucrt-coef-fdas-input.json"
-  
-   rucfDf_returned <-
-    NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = NameFile,log=NULL)
- 
-   data <- read.csv("L0_data.csv", sep=",",header = TRUE)
-   data$readout_time <- as.POSIXct(data$readout_time,tz='GMT')
+   # The input json has Name, Value, and .attrs
+   
+   NameFile = "ucrt-coef-fdas-input.json"
+   
+   rucfDf_returned <- NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = NameFile, log =  NULL)
+   
+   data <- read.csv("L0_data.csv", sep = ",", header = TRUE)
+   data$readout_time <- as.POSIXct(data$readout_time, tz = 'GMT')
    # FuncConv
    FuncConv = "def.cal.conv.poly"
    var = c("resistance")
-   FuncConv <- data.frame(var = var, FuncConv= FuncConv, stringsAsFactors = FALSE)
-   data <- NULL 
+   FuncConv <- data.frame(var = var, FuncConv = FuncConv, stringsAsFactors = FALSE)
    #
    Name = c("CVALA1", "CVALA2", "CVALA3")
    Value = c("0.9", "0.88", "0.77")
    cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
    infoCal <- list(cal = cal)
-   #infoCal <- NULL
-   #
    
    DirCal = "./calibrations"
    NameVarExpc = character(0)
@@ -99,14 +94,59 @@ test_that("Unit test of wrap.ucrt.coef.R", {
    
    NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
    #
-   calSlct <- NEONprocIS.cal::wrap.cal.slct (DirCal = DirCal,NameVarExpc = character(0),TimeBgn = TimeBgn,
-                                             TimeEnd = TimeEnd,NumDayExpiMax = NumDayExpiMax,log = NULL)
+   calSlct <- NEONprocIS.cal::wrap.cal.slct (
+         DirCal = DirCal,
+         NameVarExpc = character(0),
+         TimeBgn = TimeBgn,
+         TimeEnd = TimeEnd,
+         NumDayExpiMax = NumDayExpiMax,
+         log = NULL
+      )
    
+   # Test 1 - pass minimun parameters, i.e., NULL for ParaUcr and mappNameVar
    wucList_returned <-
-     NEONprocIS.cal::wrap.ucrt.coef (calSlct, DirCal= DirCal, ucrtCoefFdas=rucfDf_returned)
+      NEONprocIS.cal::wrap.ucrt.coef (calSlct, 
+                                      DirCal = DirCal,
+                                      ucrtCoefFdas = rucfDf_returned
+                                      )
    
-   elementsList = c('id', 'timeBgn', 'timeEnd', 'file', 'expi', 'Name', 'Value', '.attrs',  'var')
+   elementsList = c('id', 'timeBgn','timeEnd', 'file', 'expi', 'Name', 'Value', '.attrs', 'var')
    
-   expect_true ((is.list(wucList_returned)) && !(is.null(wucList_returned)) && all((names(wucList_returned$resistance) == elementsList))) 
+   expect_true ((is.list(wucList_returned)) &&
+                   !(is.null(wucList_returned)) &&
+                   all((
+                      names(wucList_returned$resistance) == elementsList
+                   ))
+                )
    
- })
+   # Test 2 - pass non NULL for all parameters except log
+   
+   fdas = c("R", "V")
+   var2 = c("resistance", "voltage")
+   ParaUcrt <- data.frame(var = var2, typeFdas = fdas, stringsAsFactors = FALSE)
+   
+   nameVarIn = c('resistance', 'voltage')
+   nameVarOut = c('resistance', 'voltage')
+   nameVarDfltSame = c('resistance', 'voltage')
+   
+   mappNameVar <- base::data.frame(nameVarIn = nameVarIn, nameVarOut = nameVarOut, stringsAsFactors = FALSE)
+   newVar <- nameVarDfltSame[!(nameVarDfltSame %in% nameVarIn)]
+   mappNameVar <- base::rbind(mappNameVar, base::data.frame( nameVarIn = newVar, nameVarOut = newVar, stringsAsFactors = FALSE))
+   
+   #
+   wucList_returned <-
+      NEONprocIS.cal::wrap.ucrt.coef (
+         calSlct,
+         DirCal = DirCal,
+         ParaUcrt = ParaUcrt,
+         ucrtCoefFdas = rucfDf_returned,
+         mappNameVar = mappNameVar
+      )
+   
+   expect_true ((is.list(wucList_returned)) &&
+                   !(is.null(wucList_returned)) &&
+                   all((
+                      names(wucList_returned$resistance) == elementsList
+                   )))
+   
+})
