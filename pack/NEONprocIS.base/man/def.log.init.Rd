@@ -4,8 +4,7 @@
 \alias{def.log.init}
 \title{Initialize logging for NEON IS Data Processing}
 \usage{
-def.log.init(Name = NULL, To = NULL, NameFile = NULL, Fmt = NULL,
-  Lvl = NULL)
+def.log.init(Name = NULL, To = NULL, NameFile = NULL, Fmt = NULL, Lvl = NULL)
 }
 \arguments{
 \item{Name}{String (optional). Name of logger. Defaults to root if environment variable 

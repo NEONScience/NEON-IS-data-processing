@@ -4,8 +4,12 @@
 \alias{def.vect.pars.one.many}
 \title{Parse vectors into key:multi-value sets}
 \usage{
-def.vect.pars.one.many(listVect, NameList = c("key", "value"),
-  Type = rep(base::class(listVect[[1]]), 2), log = NULL)
+def.vect.pars.one.many(
+  listVect,
+  NameList = c("key", "value"),
+  Type = rep(base::class(listVect[[1]]), 2),
+  log = NULL
+)
 }
 \arguments{
 \item{listVect}{A list of vectors of class numeric or character. Each vector must be length 2 or greater.}

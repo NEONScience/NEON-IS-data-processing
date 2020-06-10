@@ -50,6 +50,10 @@ def.time.miss <- function(TimeBgn, TimeEnd, timeFull, log = NULL) {
   timeFull <-
     timeFull[base::order(timeFull$timeBgn, decreasing = FALSE), ]
   
+  # Get rid of any ranges beginning and ending outside our range of interest
+  setKeep <- !(timeFull$timeBgn >= TimeEnd | timeFull$timeEnd <= TimeBgn)
+  timeFull <- base::subset(timeFull,subset=setKeep)
+  
   # Initialize
   dmmyTime <-
     base::as.POSIXct(x = numeric(0), origin = as.POSIXct('1970-01-01', tz = 'GMT'))
@@ -77,7 +81,7 @@ def.time.miss <- function(TimeBgn, TimeEnd, timeFull, log = NULL) {
         timeMiss,
         base::data.frame(
           timeBgn = TimeBgn,
-          timeEnd = timeFull$timeBgn[1],
+          timeEnd = TimeEnd,
           stringsAsFactors = FALSE
         )
       )

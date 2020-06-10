@@ -4,8 +4,7 @@
 \alias{def.file.name.out}
 \title{Construct an output file name from an input file name}
 \usage{
-def.file.name.out(nameFileIn, prfx = NULL, sufx = NULL, ext = NULL,
-  log = NULL)
+def.file.name.out(nameFileIn, prfx = NULL, sufx = NULL, ext = NULL, log = NULL)
 }
 \arguments{
 \item{nameFileIn}{Character value. Input file name serving as a basis for the output file name.}
