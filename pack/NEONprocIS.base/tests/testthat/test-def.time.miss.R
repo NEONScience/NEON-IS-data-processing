@@ -2,84 +2,71 @@
 #source("R/def.time.miss.R")
 
 
-test_that("When complete time range is missing",
+# test_that("When complete time range is missing",
+#           {
+#             timeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
+#             timeEnd <- base::as.POSIXct('2019-01-10',tz='GMT')
+#             timeFull <- base::data.frame(timeBgn=as.POSIXct(c('2019-01-11','2019-01-13'),tz='GMT'),
+#                                          timeEnd=as.POSIXct(c('2019-01-12','2019-01-14'),tz='GMT'))
+#             timeMiss <- NEONprocIS.base::def.time.miss(TimeBgn = timeBgn, TimeEnd=timeEnd, timeFull= timeFull)
+#             testthat::expect_true(length(timeMiss) == 1)
+# 
+#           })
+
+
+test_that("When beginning time range is missing",
           {
             timeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
             timeEnd <- base::as.POSIXct('2019-01-10',tz='GMT')
-            timeFull <- base::data.frame(timeBgn=as.POSIXct(c('2019-01-11','2019-01-12'),tz='GMT'),
-                                         timeEnd=as.POSIXct(c('2019-01-13','2019-01-14'),tz='GMT'))
+            timeFull <- base::data.frame(timeBgn=as.POSIXct(c('2019-01-05','2019-01-08'),tz='GMT'),
+                                         timeEnd=as.POSIXct(c('2019-01-09','2019-01-14'),tz='GMT'))
             timeMiss <- NEONprocIS.base::def.time.miss(TimeBgn = timeBgn, TimeEnd=timeEnd, timeFull= timeFull)
-            testthat::expect_true(length(timeMiss) == 2)
+            expect_true (length(timeMiss) == 2)
+            testthat::equals(timeMiss$timeBgn, "2019-01-01")
+            testthat::equals(timeMiss$timeEnd, "2019-01-05")
+
+          })
+
+test_that("When end time range is missing",
+          {
+            timeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
+            timeEnd <- base::as.POSIXct('2019-01-10',tz='GMT')
+            timeFull <- base::data.frame(timeBgn=as.POSIXct(c('2019-01-01','2019-01-04'),tz='GMT'),
+                                         timeEnd=as.POSIXct(c('2019-01-05','2019-01-09'),tz='GMT'))
+            timeMiss <- NEONprocIS.base::def.time.miss(TimeBgn = timeBgn, TimeEnd=timeEnd, timeFull= timeFull)
+            expect_true (length(timeMiss) == 2)
+            testthat::equals(timeMiss$timeBgn, "2019-01-09")
+            testthat::equals(timeMiss$timeEnd, "2019-01-10")
+
+          })
+
+test_that("When middle time range is missing",
+          {
+            timeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
+            timeEnd <- base::as.POSIXct('2019-01-10',tz='GMT')
+            timeFull <- base::data.frame(timeBgn=as.POSIXct(c('2019-01-01','2019-01-07'),tz='GMT'),
+                                         timeEnd=as.POSIXct(c('2019-01-04','2019-01-09'),tz='GMT'))
+            timeMiss <- NEONprocIS.base::def.time.miss(TimeBgn = timeBgn, TimeEnd=timeEnd, timeFull= timeFull)
+            expect_true (length(timeMiss) == 2)
+            testthat::equals(timeMiss$timeBgn[1], "2019-01-04")
+            testthat::equals(timeMiss$timeEnd[1], "2019-01-07")
+            testthat::equals(timeMiss$timeBgn[2], "2019-01-09")
+            testthat::equals(timeMiss$timeEnd[2], "2019-01-10")
 
           })
 
 
-# test_that("When restricted to location, then return only that locaiton",
-#           {
-#             nameFile <- "def.loc.meta/test_input/pfs/prt_calibrated_location_group/prt/2019/01/01/16247/prt_16247_location.json"
-#             nameLoc <- "CFGLOC101663"
-#             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, NameLoc = nameLoc)
-#             expect_true (length(locationMetaData$site) == 1)
-#            # expect_true (locationMetaData[1], equals("POSE"))
-# 
-#           })
-
-# test_that("location that are install before or equal to time Begin ",
-#           {
-#             nameFile <- "def.loc.meta/test_input/pfs/prt_calibrated_location_group/prt/2019/01/01/16247/prt_16247_location.json"
-#             timeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
-#             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn)
-#             expect_true (length(locationMetaData$site) == 1)
-# 
-# 
-#           })
-
-# test_that("location that have removal date before time Begin",
-#           {
-#             nameFile <- "def.loc.meta/test_input/pfs/prt_calibrated_location_group/prt/2019/01/01/16247/prt_16247_location.json"
-#             timeBgn <- base::as.POSIXct('2019-05-05',tz='GMT')
-#             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn)
-#             expect_true (length(locationMetaData$site) == 0)
-# 
-# 
-#           })
-
-# test_that("location that have removal date before time Begin",
-#           {
-#             nameFile <- "def.loc.meta/test_input/pfs/prt_calibrated_location_group/prt/2019/01/01/16247/prt_16247_location.json"
-#             timeBgn <- base::as.POSIXct('2019-09-05',tz='GMT')
-#             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn)
-#             expect_true (length(locationMetaData$site) == 1)
-# 
-# 
-#           })
-# 
-# 
-# test_that("location that have install, removal, transaction dates null",
-#           {
-#             nameFile <- "def.loc.meta/test_input/pfs/2019/01/02/CFGLOC101580/location/prt_20208_locations_alldates_null.json"
-#             timeBgn <- base::as.POSIXct('2019-09-05',tz='GMT')
-#             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn)
-#             expect_true (length(locationMetaData$site) == 1)
-#             testthat::equals(locationMetaData$install_date, "NA")
-#             testthat::equals(locationMetaData$remove_date, "NA")
-#             testthat::equals(locationMetaData$transaction_date, "NA")
-#             expect_true (length(locationMetaData$active_periods) == 1)
-# 
-#           })
-# 
-# test_that("location that have install, removal, and remove data after timeBgn",
-#           {
-#             nameFile <- "def.loc.meta/test_input/pfs/2019/01/02/CFGLOC101580/location/prt_20208_locations.json"
-#             timeBgn <- base::as.POSIXct('2018-09-05',tz='GMT')
-#             timeEnd <- base::as.POSIXct('2019-09-05',tz='GMT')
-#             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn, TimeEnd=timeEnd)
-#             expect_true (length(locationMetaData$site) == 1)
-#             expect_true (length(locationMetaData$active_periods) == 1)
-#             
-#           })
-
-
-
-
+test_that("When timeFull is empty",
+          {
+            timeBgn <- base::as.POSIXct('2019-01-01',tz='GMT')
+            timeEnd <- base::as.POSIXct('2019-01-10',tz='GMT')
+            timeFull <- data.frame(timeBgn=as.Date(character()),
+                                   timeEnd=as.Date(character()), 
+                                   stringsAsFactors=FALSE) 
+            
+            timeMiss <- NEONprocIS.base::def.time.miss(TimeBgn = timeBgn, TimeEnd=timeEnd, timeFull= timeFull)
+            expect_true (length(timeMiss) == 2)
+            testthat::equals(timeMiss$timeBgn[1], "2019-01-01")
+            testthat::equals(timeMiss$timeEnd[1], "2019-01-10")
+          })
 
