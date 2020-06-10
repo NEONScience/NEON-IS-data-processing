@@ -4,8 +4,13 @@
 \alias{def.loc.meta}
 \title{Get metadata/properties from sensor locations json file}
 \usage{
-def.loc.meta(NameFile, NameLoc = NULL, TimeBgn = NULL,
-  TimeEnd = NULL, log = NULL)
+def.loc.meta(
+  NameFile,
+  NameLoc = NULL,
+  TimeBgn = NULL,
+  TimeEnd = NULL,
+  log = NULL
+)
 }
 \arguments{
 \item{NameFile}{Filename (including relative or absolute path). Must be json format.}

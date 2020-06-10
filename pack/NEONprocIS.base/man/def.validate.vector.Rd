@@ -4,8 +4,7 @@
 \alias{def.validate.vector}
 \title{Validate vector}
 \usage{
-def.validate.vector(vectIn, TestEmpty = TRUE, TestNumc = TRUE,
-  log = NULL)
+def.validate.vector(vectIn, TestEmpty = TRUE, TestNumc = TRUE, log = NULL)
 }
 \arguments{
 \item{vectIn}{Input vector to be validated}
