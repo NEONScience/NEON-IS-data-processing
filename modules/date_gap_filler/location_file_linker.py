@@ -1,30 +1,21 @@
 #!/usr/bin/env python3
 from pathlib import Path
-
 import structlog
 
-from date_gap_filler.date_between import date_is_between
 from date_gap_filler.empty_files import EmptyFiles
 from date_gap_filler.empty_file_linker import EmptyFileLinker
-from date_gap_filler.app_config import AppConfig
+from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
+from date_gap_filler.location_file_path_config import LocationFilePathConfig
 
 log = structlog.get_logger()
 
 
 class LocationFileLinker(object):
 
-    def __init__(self, config: AppConfig):
+    def __init__(self, config: DateGapFillerConfig, location_file_path_config: LocationFilePathConfig):
         self.out_path = config.out_path
         self.output_dirs = config.output_directories
         self.location_path = config.location_path
-        self.source_type_index = config.location_source_type_index
-        self.year_index = config.location_year_index
-        self.month_index = config.location_month_index
-        self.day_index = config.location_day_index
-        self.location_index = config.location_index
-        self.filename_index = config.location_filename_index
-        self.start_date = config.start_date
-        self.end_date = config.end_date
         self.calibration_dir = config.calibration_dir
         self.data_dir = config.data_dir
         self.flags_dir = config.flags_dir
@@ -32,6 +23,12 @@ class LocationFileLinker(object):
         self.uncertainty_coefficient_dir = config.uncertainty_coefficient_dir
         self.uncertainty_data_dir = config.uncertainty_data_dir
         self.empty_files = EmptyFiles(config)
+        self.source_type_index = location_file_path_config.source_type_index
+        self.year_index = location_file_path_config.year_index
+        self.month_index = location_file_path_config.month_index
+        self.day_index = location_file_path_config.day_index
+        self.location_index = location_file_path_config.location_index
+        self.filename_index = location_file_path_config.filename_index
 
     def link_files(self):
         """Process the location files and fill date gaps with empty files."""
@@ -50,9 +47,6 @@ class LocationFileLinker(object):
                 day = parts[self.day_index]
                 location = parts[self.location_index]
                 filename = parts[self.filename_index]
-                if not date_is_between(year=int(year), month=int(month), day=int(day),
-                                       start_date=self.start_date, end_date=self.end_date):
-                    continue
                 root_link_path = Path(self.out_path, source_type, year, month, day, location)
                 location_link = Path(root_link_path, self.location_dir, filename)
                 location_link.parent.mkdir(parents=True, exist_ok=True)

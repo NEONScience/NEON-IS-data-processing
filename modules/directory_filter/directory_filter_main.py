@@ -5,7 +5,7 @@ import structlog
 
 import common.log_config as log_config
 
-from directory_filter.filter import filter_directory
+from directory_filter.directory_filter import filter_directory
 
 
 def main():

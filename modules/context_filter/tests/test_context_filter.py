@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from common import log_config as log_config
 
-import context_filter.app as app
+import context_filter.context_filter_main as app
 
 
 class ContextFilterTest(TestCase):

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import calibrated_location_group.app as app
+import calibrated_location_group.calibrated_location_group_main as app
 from common import log_config as log_config
 
 

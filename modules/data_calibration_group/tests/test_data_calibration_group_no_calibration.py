@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import data_calibration_group.app as app
+import data_calibration_group.data_calibration_group_main as app
 
 
 class DataCalibrationGroupNoCalibrationTest(TestCase):
