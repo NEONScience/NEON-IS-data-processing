@@ -6,7 +6,8 @@ from pathlib import Path
 import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import file_joiner.file_joiner as joiner
+from file_joiner.file_joiner import FileJoiner
+import file_joiner.file_joiner_main as file_joiner_main
 
 
 class FileJoinerTest(TestCase):
@@ -34,6 +35,18 @@ class FileJoinerTest(TestCase):
         config_file_path = Path(os.path.dirname(__file__), 'config.yaml')
         self.fs.add_real_file(config_file_path, target_path='/config.yaml')
 
+        self.relative_path_index = 3
+
+    def test_joiner(self):
+        with open('/config.yaml') as f:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+            config = yaml.dump(data, sort_keys=True)
+        file_joiner = FileJoiner(config=config,
+                                 out_path=self.output_path,
+                                 relative_path_index=self.relative_path_index)
+        file_joiner.join_files()
+        self.check_output()
+
     def test_main(self):
         with open('/config.yaml') as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
@@ -41,8 +54,8 @@ class FileJoinerTest(TestCase):
         os.environ['CONFIG'] = config
         os.environ['OUT_PATH'] = str(self.output_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        os.environ['RELATIVE_PATH_INDEX'] = '3'
-        joiner.main()
+        os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
+        file_joiner_main.main()
         self.check_output()
 
     def check_output(self):
