@@ -4,7 +4,7 @@ import structlog
 
 import common.log_config
 
-from data_location_group.data_location_grouper import link_data, link_location
+from data_location_group.data_location_grouper import DataLocationGrouper
 
 log = structlog.get_logger()
 
@@ -24,14 +24,13 @@ def main():
 
     common.log_config.configure(log_level)
 
-    for output_dir in link_data(data_path,
-                                out_path,
-                                source_type_index,
-                                year_index,
-                                month_index,
-                                day_index,
-                                file_index):
-        link_location(location_path, output_dir)
+    data_location_grouper = DataLocationGrouper(data_path=data_path, location_path=location_path, out_path=out_path,
+                                                source_type_index=source_type_index,
+                                                year_index=year_index,
+                                                month_index=month_index,
+                                                day_index=day_index,
+                                                file_index=file_index)
+    data_location_grouper.group_files()
 
 
 if __name__ == '__main__':

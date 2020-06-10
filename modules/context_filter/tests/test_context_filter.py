@@ -60,14 +60,11 @@ class ContextFilterTest(TestCase):
         self.check_output()
 
     def check_output(self):
-
         root_path = Path(self.out_path, self.metadata_path)
-
         data_path = root_path.joinpath('data', 'data.ext')
         flags_path = root_path.joinpath('flags', 'flags.ext')
         locations_path = root_path.joinpath('location', 'locations.json')
         uncertainty_path = root_path.joinpath('uncertainty_coefficient', 'uncertaintyCoefficient.json')
-
         self.assertTrue(data_path.exists())
         self.assertTrue(flags_path.exists())
         self.assertTrue(locations_path.exists())

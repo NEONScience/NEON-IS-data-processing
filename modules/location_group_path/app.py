@@ -24,7 +24,7 @@ def get_paths(source_path: Path,
     There must be only one location file under the source path.
 
     :param source_path: The input path.
-    :param group: The group to contains_match in the location files.
+    :param group: The group to match in the location files.
     :param source_type_index: The input path index of the source type.
     :param year_index: The input path index of the year.
     :param month_index: The input path index of the month.

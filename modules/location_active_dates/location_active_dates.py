@@ -8,8 +8,7 @@ import structlog
 
 import common.date_formatter as date_formatter
 import common.log_config as log_config
-from common.file_crawler import crawl
-from common.file_linker import link
+from common.file_repository import walk, link
 
 
 log = structlog.get_logger()
@@ -23,7 +22,7 @@ def link_files(location_path: Path, out_path: Path, schema_index: int):
     :param out_path: The output directory root path.
     :param schema_index: The file path index of the schema name.
     """
-    for path in crawl(location_path):
+    for path in walk(location_path):
         parts = path.parts
         schema_name = parts[schema_index]
         with open(path, 'r') as file:
@@ -45,7 +44,7 @@ def link_files(location_path: Path, out_path: Path, schema_index: int):
                     dt = datetime(date.year, date.month, date.day)
                     year, month, day = date_formatter.parse_date(dt)
                     link_path = Path(out_path, schema_name, year, month, location_name, path.name)
-                    link(path, link_path)
+                    link(path=path, link_path=link_path)
 
 
 def main():

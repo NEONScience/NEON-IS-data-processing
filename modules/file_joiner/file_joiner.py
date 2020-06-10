@@ -6,9 +6,9 @@ from structlog import get_logger
 import environs
 
 import common.log_config as log_config
+from common.file_repository import link, filter_files
 
 from file_joiner.dictionary_list import DictionaryList
-from file_joiner.file_filter import filter_files
 
 log = get_logger()
 
@@ -37,7 +37,7 @@ def get_join_keys(config: dict, out_path: Path, relative_path_index: int):
         # use a set for the joining keys to avoid duplicates
         path_join_keys = set()
         # loop over the filtered files
-        for file in filter_files(glob_pattern, out_path):
+        for file in filter_files(glob_pattern=glob_pattern, output_path=out_path):
             file = Path(file)
             # create the join key for the file
             join_key = create_join_key(file, join_indices)
@@ -70,23 +70,18 @@ def create_join_key(file: Path, path_join_indices: list):
     return join_key
 
 
-def link_joined_files(joined_keys, file_key_paths):
+def link_joined_files(joined_keys: set, file_key_paths: DictionaryList):
     """
     Loop over the joined keys, get the files and link them to the output path.
 
     :param joined_keys: The joined file keys.
-    :type joined_keys: set
     :param file_key_paths: The keys and file paths.
-    :type file_key_paths: DictionaryList
-    :return:
     """
     for key in joined_keys:
         for file_paths in file_key_paths[key]:
             path = file_paths['file_path']
             link_path = file_paths['link_path']
-            log.debug(f'file: {path}, link: {link_path}')
-            link_path.parent.mkdir(parents=True, exist_ok=True)
-            link_path.symlink_to(path)
+            link(path=path, link_path=link_path)
 
 
 def build_output_path(file: Path, out_path: Path, output_indices: list):
@@ -97,7 +92,7 @@ def build_output_path(file: Path, out_path: Path, output_indices: list):
     :param file: The full file path.
     :param out_path: The root output path.
     :param output_indices: Pull file path elements at these indices.
-    :return:
+    :return: The output path.
     """
     parts = file.parts
     output_path = out_path
