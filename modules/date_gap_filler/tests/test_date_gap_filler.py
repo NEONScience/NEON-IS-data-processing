@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import os
 from pathlib import Path
+from datetime import date
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import date_gap_filler.app as app
+import date_gap_filler.date_gap_filler as date_gap_filler
+from date_gap_filler.date_between import date_is_between
 
 
 class DateGapFillerTest(TestCase):
@@ -84,6 +86,16 @@ class DateGapFillerTest(TestCase):
         self.empty_flags_file = self.empty_flags_path.joinpath('exo2_location_year-month-day_flagsCal.ext')
         self.fs.create_file(self.empty_flags_file)
 
+    def test_date_between(self):
+        start_date = date(2020, 1, 1)
+        end_date = date(2020, 3, 3)
+        result = date_is_between(year=2020, month=2, day=1, start_date=start_date, end_date=end_date)
+        self.assertTrue(result)
+        start_date = date(2020, 1, 1)
+        end_date = date(2020, 3, 31)
+        result = date_is_between(year=2020, month=2, day=1, start_date=start_date, end_date=end_date)
+        self.assertTrue(result)
+
     def test_main(self):
         os.environ['DATA_PATH'] = str(self.data_path)
         os.environ['LOCATION_PATH'] = str(self.location_path)
@@ -107,7 +119,7 @@ class DateGapFillerTest(TestCase):
         os.environ['LOCATION_INDEX'] = self.location_index
         os.environ['LOCATION_FILENAME_INDEX'] = self.location_filename_index
         os.environ['EMPTY_FILE_TYPE_INDEX'] = self.empty_file_type_index
-        app.main()
+        date_gap_filler.main()
         self.check_output()
 
     def check_output(self):

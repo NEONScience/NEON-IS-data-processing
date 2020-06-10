@@ -1,20 +1,16 @@
+#!/usr/bin/env python3
 from datetime import date
 
 
-def date_between(year, month, day, start_date, end_date):
+def date_is_between(year: int, month: int, day: int, start_date: date, end_date: date):
     """
     Is the date represented by year, month, and day between the start and end dates.
 
     :param year: The date year.
-    :type year: int
     :param month: The date month.
-    :type month: int
     :param day: The date day.
-    :type day: int
-    :param start_date: The start date.
-    :type start_date: date
-    :param end_date: The end date.
-    :type end_date: date
+    :param start_date: A start date.
+    :param end_date: An end date.
     :return: True if between, False otherwise.
     """
     if start_date is None and end_date is None:

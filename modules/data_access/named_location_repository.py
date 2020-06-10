@@ -83,38 +83,6 @@ class NamedLocationRepository(object):
                 features.append(feature)
                 yield FeatureCollection(features)
 
-    def get_by_asset(self, asset_id: int):
-        """
-        Find named locations by asset ID.
-
-        :param asset_id: The asset ID.
-        :return: ID, name, and type of asset's location.
-        """
-        sql = '''
-            select
-                is_asset_location.nam_locn_id,
-                nam_locn.nam_locn_name,
-                type.type_name
-            from
-                is_asset_location
-            join
-                is_asset on is_asset.asset_uid = is_asset_location.asset_uid
-                    and is_asset.asset_uid = :asset_id
-            join
-                nam_locn on is_asset_location.nam_locn_id = nam_locn.nam_locn_id
-            join
-                type on nam_locn.type_id = type.type_id
-        '''
-        with closing(self.connection.cursor()) as cursor:
-            res = cursor.execute(sql, asset_id=asset_id)
-            row = res.fetchone()
-            if row is not None:
-                named_location_id = row[0]
-                named_location_name = row[1]
-                type_name = row[2]
-                return {'id': named_location_id, 'name': named_location_name, 'type': type_name}
-            return None
-
     def get_asset_history(self, asset_id: int):
         """
         Get an asset's location history.
@@ -188,12 +156,12 @@ class NamedLocationRepository(object):
         :param named_location_id: A named location ID.
         :return: The site name.
         """
+        site_name = None
         parents = self.named_location_parent_repository.get_parents(named_location_id)
         for parent in parents:
             if parent.get('type').lower() == 'site':
                 site_name = parent.get('name')
-                return site_name
-        return None
+        return site_name
 
     def get_schema_name(self, named_location_name: str):
         """
@@ -218,12 +186,11 @@ class NamedLocationRepository(object):
             and 
                 nam_locn.nam_locn_name = :name
         '''
+        schema_name = None
         with closing(self.connection.cursor()) as cursor:
             cursor.prepare(sql)
             cursor.execute(None, name=named_location_name)
             row = cursor.fetchone()
             if row is not None:
-                name = row[0]
-                if name is not None:
-                    return name
-            return None
+                schema_name = row[0]
+        return schema_name

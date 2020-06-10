@@ -3,15 +3,7 @@ import environs
 import structlog
 
 import common.log_config as log_config
-from data_calibration_group.data_grouper import DataGrouper
-from data_calibration_group.calibration_grouper import CalibrationGrouper
-
-
-def group(data_grouper, calibration_grouper):
-    for source in data_grouper.link_data():
-        output_path = source.get('output_path')
-        source_id = source.get('source_id')
-        calibration_grouper.link_calibrations(source_id, output_path)
+from data_calibration_group.data_calibration_grouper import DataCalibrationGrouper
 
 
 def main():
@@ -34,17 +26,17 @@ def main():
     log.debug(f'calibration_path: {calibration_path}')
     log.debug(f'out_path: {out_path}')
 
-    data_grouper = DataGrouper(data_path,
-                               out_path,
-                               data_source_type_index,
-                               data_year_index,
-                               data_month_index,
-                               data_day_index)
-    calibration_grouper = CalibrationGrouper(calibration_path,
-                                             calibration_source_type_index,
-                                             calibration_source_id_index,
-                                             calibration_stream_index)
-    group(data_grouper, calibration_grouper)
+    data_calibration_grouper = DataCalibrationGrouper(data_path=data_path,
+                                                      calibration_path=calibration_path,
+                                                      out_path=out_path,
+                                                      data_source_type_index=data_source_type_index,
+                                                      data_year_index=data_year_index,
+                                                      data_month_index=data_month_index,
+                                                      data_day_index=data_day_index,
+                                                      calibration_source_type_index=calibration_source_type_index,
+                                                      calibration_source_id_index=calibration_source_id_index,
+                                                      calibration_stream_index=calibration_stream_index)
+    data_calibration_grouper.group()
 
 
 if __name__ == '__main__':

@@ -28,3 +28,9 @@ class AppConfig(object):
         self.location_index = env.int('LOCATION_INDEX')
         self.location_filename_index = env.int('LOCATION_FILENAME_INDEX')
         self.empty_file_type_index = env.int('EMPTY_FILE_TYPE_INDEX')
+        self.calibration_dir = 'calibration'
+        self.data_dir = 'data'
+        self.flags_dir = 'flags'
+        self.location_dir = 'location'
+        self.uncertainty_coefficient_dir = 'uncertainty_coef'
+        self.uncertainty_data_dir = 'uncertainty_data'
