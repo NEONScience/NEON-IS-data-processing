@@ -3,7 +3,7 @@ import structlog
 import environs
 
 import common.log_config as log_config
-from date_gap_filler_linker.data_gap_filler_linker import DataGapFillerLinker
+from date_gap_filler_linker.date_gap_filler_linker import DataGapFillerLinker
 
 log = structlog.get_logger()
 

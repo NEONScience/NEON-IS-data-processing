@@ -4,7 +4,8 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import date_gap_filler_linker.app as app
+import date_gap_filler_linker.date_gap_filler_linker_main as date_gap_filler_linker_main
+from date_gap_filler_linker.date_gap_filler_linker import DataGapFillerLinker
 
 
 class DateGapFillerTest(TestCase):
@@ -62,14 +63,27 @@ class DateGapFillerTest(TestCase):
         self.fs.create_file(calibration_3)
         self.fs.create_file(uncertainty_3)
 
+        self.relative_path_index = 3
+        self.location_index = 7
+        self.empty_file_suffix = '.empty'
+
+    def test_linker(self):
+        linker = DataGapFillerLinker(self.in_path,
+                                     self.out_path,
+                                     self.relative_path_index,
+                                     self.location_index,
+                                     self.empty_file_suffix)
+        linker.link()
+        self.check_output()
+
     def test_main(self):
         os.environ['IN_PATH'] = str(self.in_path)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        os.environ['RELATIVE_PATH_INDEX'] = '3'
-        os.environ['LOCATION_INDEX'] = '7'
-        os.environ['EMPTY_FILE_SUFFIX'] = '.empty'
-        app.main()
+        os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
+        os.environ['LOCATION_INDEX'] = str(self.location_index)
+        os.environ['EMPTY_FILE_SUFFIX'] = self.empty_file_suffix
+        date_gap_filler_linker_main.main()
         self.check_output()
 
     def check_output(self):
