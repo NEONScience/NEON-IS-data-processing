@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-from date_gap_filler.app_config import AppConfig
+from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 
 
 class EmptyFiles(object):
     """Class to store empty file paths."""
 
-    def __init__(self, config: AppConfig):
+    def __init__(self, config: DateGapFillerConfig):
         empty_files_path = config.empty_files_path
         empty_file_type_index = config.empty_file_type_index
         calibration_dir = config.calibration_dir

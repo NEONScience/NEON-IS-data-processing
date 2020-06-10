@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
-import common.log_config
 
+from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
+from date_gap_filler.data_file_path_config import DataFilePathConfig
+from date_gap_filler.location_file_path_config import LocationFilePathConfig
 from date_gap_filler.data_file_linker import DataFileLinker
 from date_gap_filler.location_file_linker import LocationFileLinker
-from date_gap_filler.app_config import AppConfig
 
 
-def main():
-    config = AppConfig()
+class DateGapFiller(object):
 
-    common.log_config.configure(config.log_level)
+    def __init__(self, *,
+                 config: DateGapFillerConfig,
+                 data_file_path_config: DataFilePathConfig,
+                 location_file_path_config: LocationFilePathConfig):
+        self.config = config
+        self.data_file_path_config = data_file_path_config
+        self.location_file_path_config = location_file_path_config
 
-    if config.data_path is not None:
-        data_file_linker = DataFileLinker(config)
-        data_file_linker.link_files()
-
-    if config.location_path is not None:
-        location_file_linker = LocationFileLinker(config)
-        location_file_linker.link_files()
-
-
-if __name__ == '__main__':
-    main()
+    def fill_gaps(self):
+        if self.config.data_path is not None:
+            data_file_linker = DataFileLinker(self.config, self.data_file_path_config)
+            data_file_linker.link_files()
+        if self.config.location_path is not None:
+            location_file_linker = LocationFileLinker(self.config, self.location_file_path_config)
+            location_file_linker.link_files()

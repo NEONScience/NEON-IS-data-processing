@@ -5,44 +5,41 @@ from datetime import date
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import date_gap_filler.date_gap_filler as date_gap_filler
 from date_gap_filler.date_between import date_is_between
+import date_gap_filler.date_gap_filler_main as date_gap_filler_main
+from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
+from date_gap_filler.data_file_path_config import DataFilePathConfig
+from date_gap_filler.location_file_path_config import LocationFilePathConfig
+from date_gap_filler.date_gap_filler import DateGapFiller
 
 
 class DateGapFillerTest(TestCase):
 
     def setUp(self):
-        # location
         self.location_name = 'SENSOR000000'
-        # initialize fake file system
         self.setUpPyfakefs()
-        #  create output directory
         self.out_path = Path('/outputs/repo')
         self.fs.create_dir(self.out_path)
-        #  create data repo
         self.create_data_repo()
-        #  create location by date repo
         self.create_location_repo()
-        # create empty files repo
         self.create_empty_files_repo()
-        # directory names to output
         self.output_directories = 'data,location,calibration,uncertainty_data,uncertainty_coef,flags'
 
         # path indices
-        self.data_source_type_index = '3'
-        self.data_year_index = '4'
-        self.data_month_index = '5'
-        self.data_day_index = '6'
-        self.data_location_index = '7'
-        self.data_type_index = '8'
-        self.data_filename_index = '9'
-        self.location_source_type_index = '3'
-        self.location_year_index = '4'
-        self.location_month_index = '5'
-        self.location_day_index = '6'
-        self.location_index = '7'
-        self.location_filename_index = '8'
-        self.empty_file_type_index = '4'
+        self.data_source_type_index = 3
+        self.data_year_index = 4
+        self.data_month_index = 5
+        self.data_day_index = 6
+        self.data_location_index = 7
+        self.data_type_index = 8
+        self.data_filename_index = 9
+        self.location_source_type_index = 3
+        self.location_year_index = 4
+        self.location_month_index = 5
+        self.location_day_index = 6
+        self.location_index = 7
+        self.location_filename_index = 8
+        self.empty_file_type_index = 4
 
     def create_data_repo(self):
         self.data_path = Path('/files/repo_name/exo2/2020/01')
@@ -96,6 +93,32 @@ class DateGapFillerTest(TestCase):
         result = date_is_between(year=2020, month=2, day=1, start_date=start_date, end_date=end_date)
         self.assertTrue(result)
 
+    def test_date_gap_filler(self):
+        data_file_path_config = DataFilePathConfig(source_type_index=self.data_source_type_index,
+                                                   year_index=self.data_year_index,
+                                                   month_index=self.data_month_index,
+                                                   day_index=self.data_day_index,
+                                                   location_index=self.data_location_index,
+                                                   data_type_index=self.data_type_index,
+                                                   filename_index=self.data_filename_index)
+        location_file_path_config = LocationFilePathConfig(source_type_index=self.location_source_type_index,
+                                                           year_index=self.location_year_index,
+                                                           month_index=self.location_month_index,
+                                                           day_index=self.location_day_index,
+                                                           location_index=self.location_index,
+                                                           filename_index=self.location_filename_index)
+        config = DateGapFillerConfig(data_path=self.data_path,
+                                     location_path=self.location_path,
+                                     empty_file_path=self.empty_files_path,
+                                     out_path=self.out_path,
+                                     output_directories=self.output_directories.split(','),
+                                     empty_file_type_index=self.empty_file_type_index)
+        date_gap_filler = DateGapFiller(config=config,
+                                        data_file_path_config=data_file_path_config,
+                                        location_file_path_config=location_file_path_config)
+        date_gap_filler.fill_gaps()
+        self.check_output()
+
     def test_main(self):
         os.environ['DATA_PATH'] = str(self.data_path)
         os.environ['LOCATION_PATH'] = str(self.location_path)
@@ -103,29 +126,30 @@ class DateGapFillerTest(TestCase):
         os.environ['OUTPUT_DIRECTORIES'] = self.output_directories
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        os.environ['START_DATE'] = '2019-12-31'
-        os.environ['END_DATE'] = '2020-01-04'
-        os.environ['DATA_SOURCE_TYPE_INDEX'] = self.data_source_type_index
-        os.environ['DATA_YEAR_INDEX'] = self.data_year_index
-        os.environ['DATA_MONTH_INDEX'] = self.data_month_index
-        os.environ['DATA_DAY_INDEX'] = self.data_day_index
-        os.environ['DATA_LOCATION_INDEX'] = self.data_location_index
-        os.environ['DATA_TYPE_INDEX'] = self.data_type_index
-        os.environ['DATA_FILENAME_INDEX'] = self.data_filename_index
-        os.environ['LOCATION_SOURCE_TYPE_INDEX'] = self.location_source_type_index
-        os.environ['LOCATION_YEAR_INDEX'] = self.location_year_index
-        os.environ['LOCATION_MONTH_INDEX'] = self.location_month_index
-        os.environ['LOCATION_DAY_INDEX'] = self.location_day_index
-        os.environ['LOCATION_INDEX'] = self.location_index
-        os.environ['LOCATION_FILENAME_INDEX'] = self.location_filename_index
-        os.environ['EMPTY_FILE_TYPE_INDEX'] = self.empty_file_type_index
-        date_gap_filler.main()
+        os.environ['DATA_SOURCE_TYPE_INDEX'] = str(self.data_source_type_index)
+        os.environ['DATA_YEAR_INDEX'] = str(self.data_year_index)
+        os.environ['DATA_MONTH_INDEX'] = str(self.data_month_index)
+        os.environ['DATA_DAY_INDEX'] = str(self.data_day_index)
+        os.environ['DATA_LOCATION_INDEX'] = str(self.data_location_index)
+        os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
+        os.environ['DATA_FILENAME_INDEX'] = str(self.data_filename_index)
+        os.environ['LOCATION_SOURCE_TYPE_INDEX'] = str(self.location_source_type_index)
+        os.environ['LOCATION_YEAR_INDEX'] = str(self.location_year_index)
+        os.environ['LOCATION_MONTH_INDEX'] = str(self.location_month_index)
+        os.environ['LOCATION_DAY_INDEX'] = str(self.location_day_index)
+        os.environ['LOCATION_INDEX'] = str(self.location_index)
+        os.environ['LOCATION_FILENAME_INDEX'] = str(self.location_filename_index)
+        os.environ['EMPTY_FILE_TYPE_INDEX'] = str(self.empty_file_type_index)
+        date_gap_filler_main.main()
         self.check_output()
 
     def check_output(self):
         root_path = Path(self.out_path, 'exo2/2020/01')
+        self.check_active_day(root_path)
+        self.check_first_missing_day(root_path)
+        self.check_second_missing_day(root_path)
 
-        # non-missing day
+    def check_active_day(self, root_path):
         self.assertTrue(Path(root_path, self.data_file_1).exists())
         self.assertTrue(Path(root_path, self.flags_file_1).exists())
         self.assertTrue(Path(root_path, self.location_file_1).exists())
@@ -134,9 +158,7 @@ class DateGapFillerTest(TestCase):
         location_path = Path(root_path, '02', self.location_name, 'location', f'{self.location_name}.json')
         self.assertTrue(location_path.exists())
 
-        # check output for filled-in data gaps
-
-        # first missing day
+    def check_first_missing_day(self, root_path):
         empty_location_path = Path(root_path, '01', self.location_name, 'location')
         empty_data_path = Path(root_path, '01', self.location_name, 'data',
                                f'exo2_{self.location_name}_2020-01-01.ext.empty')
@@ -153,7 +175,7 @@ class DateGapFillerTest(TestCase):
         self.assertTrue(empty_uncertainty_coefficient_path.exists())
         self.assertTrue(empty_flags_path.exists())
 
-        # second missing day
+    def check_second_missing_day(self, root_path):
         empty_location_path = Path(root_path, '03', self.location_name, 'location')
         empty_data_path = Path(root_path, '03', self.location_name, 'data',
                                f'exo2_{self.location_name}_2020-01-03.ext.empty')

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import data_location_group.app as app
+import data_location_group.data_location_group_main as app
 from data_location_group.data_location_grouper import DataLocationGrouper
 
 
