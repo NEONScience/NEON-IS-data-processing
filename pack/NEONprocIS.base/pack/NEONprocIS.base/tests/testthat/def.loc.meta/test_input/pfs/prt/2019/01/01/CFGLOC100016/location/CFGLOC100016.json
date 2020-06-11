@@ -1,0 +1,31 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC100016",
+                "type": "CONFIG",
+                "description": "Sterling Single Aspirated Air Temperature L1",
+                "site": "STER",
+                "context": [
+                    "aspirated-single-16",
+                    "aspirated-single"
+                ],
+                "active-periods": [
+                    {
+                        "start_date": "2013-09-12T00:00:00Z",
+                        "end_date": "2020-05-13T00:00:00Z"
+                    }
+                ]
+            },
+            "Required Asset Management Location ID": 317,
+            "Required Asset Management Location Code": "CFGLOC100016",
+            "HOR": "000",
+            "VER": "010",
+            "TMI": "000",
+            "Data Rate": "1"
+        }
+    ]
+}
