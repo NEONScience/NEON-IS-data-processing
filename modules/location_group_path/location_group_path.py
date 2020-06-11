@@ -18,7 +18,7 @@ def get_paths(source_path: Path,
               location_index: int,
               data_type_index: int):
     """
-    Link source files into the output directory with the related location group_files in the path.
+    Link source files into the output directory with the related location group in the path.
     There must be only one location file under the source path.
 
     :param source_path: The input path.
@@ -53,11 +53,11 @@ def get_paths(source_path: Path,
         }
         # add the original file path and path parts to paths
         paths.append({"file_path": file_path, "path_parts": path_parts})
-        # get the location context group_files name from the location file
+        # get the location context group name from the location file
         if data_type == 'location':
             location_file_parser = LocationFileParser(file_path)
             group_names = location_file_parser.matching_context_items(group)
-    # location context group_files name was not found!
+    # location context group name was not found!
     if len(group_names) == 0:
         log.error(f'No location directory found for groups {group_names}.')
     return {'paths': paths, 'group_names': group_names}

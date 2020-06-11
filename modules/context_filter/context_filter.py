@@ -63,7 +63,7 @@ class ContextFilter(object):
 
     def get_matching_files(self, source_files: dict):
         """
-        Group files by location context group_files and write to output if the
+        Group files by location context group and write to output if the
         location file context matches the given context.
 
         :param source_files: File paths by data type.

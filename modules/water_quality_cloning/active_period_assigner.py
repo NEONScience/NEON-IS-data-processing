@@ -5,18 +5,14 @@ import common.date_formatter as date_formatter
 from data_access.active_period_repository import ActivePeriodRepository
 
 
-def assign_active_periods(connection, named_location_id, clone_id):
+def assign_active_periods(connection, named_location_id: int, clone_id: int):
     """
     Get all the active periods associated with an existing named location
     and associate those periods with the cloned named location.
 
     :param connection: A database connection.
-    :type connection: connection object
     :param named_location_id: The named location ID to assign.
-    :type named_location_id: int
     :param clone_id: The clone ID.
-    :type clone_id: int
-    :return:
     """
     sql = '''
         insert into active_period

@@ -32,7 +32,6 @@ class LocationFileLinker(object):
         self.source_type_index = location_file_path_config.source_type_index
         self.year_index = location_file_path_config.year_index
         self.month_index = location_file_path_config.month_index
-        # self.day_index = location_file_path_config.day_index
         self.location_index = location_file_path_config.location_index
 
     def link_files(self):
@@ -49,7 +48,6 @@ class LocationFileLinker(object):
                 source_type = parts[self.source_type_index]
                 year = parts[self.year_index]
                 month = parts[self.month_index]
-                # day = parts[self.day_index]
                 location = parts[self.location_index]
                 days = monthrange(int(year), int(month))[1]
                 for day in range(1, days + 1):

@@ -6,7 +6,7 @@ from data_calibration_group.calibration_file_linker import CalibrationFileLinker
 
 
 class DataCalibrationGrouper(object):
-    """Class to group_files data and calibration files."""
+    """Class to group data and calibration files."""
 
     def __init__(self, *,
                  data_path: Path,

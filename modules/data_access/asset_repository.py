@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
 
-import common.date_formatter as date_formatter
-
 
 class AssetRepository(object):
     """Class to represent an asset repository backed by a database."""
@@ -34,30 +32,3 @@ class AssetRepository(object):
                 schema_name = row[1]
                 assets.append({'asset_id': asset_uid, 'asset_type': schema_name})
             return assets
-
-    def get_location_assets(self, named_location_id: int):
-        """
-        Get assets associated with a named location.
-
-        :param named_location_id: The named location ID.
-        :return: Asset UID, install and remove dates.
-        """
-        sql = '''
-            select asset_uid, install_date, remove_date 
-            from is_asset_location 
-            where is_asset_location.nam_locn_id = :named_location_id
-        '''
-        with closing(self.connection.cursor()) as cursor:
-            cursor.prepare(sql)
-            rows = cursor.execute(None, named_location_id=named_location_id)
-            results = []
-            for row in rows:
-                asset_uid = row[0]
-                install_date = row[1]
-                remove_date = row[2]
-                if install_date is not None:
-                    install_date = date_formatter.convert(install_date)
-                if remove_date is not None:
-                    remove_date = date_formatter.convert(remove_date)
-                results.append({'asset_uid': asset_uid, 'install_date': install_date, 'remove_date': remove_date})
-            return results

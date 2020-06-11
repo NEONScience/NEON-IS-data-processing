@@ -4,14 +4,12 @@ import datetime
 from contextlib import closing
 
 
-def get_locations(connection, named_location_id):
+def get_locations(connection, named_location_id: int):
     """
     Get all the geo-locations assigned over time to a particular named location.
 
     :param connection: A database connection.
-    :type connection: connection object
     :param named_location_id: The named location ID.
-    :type named_location_id: int
     :return: A list of geo-locations IDs with start and end dates.
     """
     sql = '''
@@ -29,18 +27,14 @@ def get_locations(connection, named_location_id):
     return locations
 
 
-def assign_locations(connection, named_location_id, clone_id):
+def assign_locations(connection, named_location_id: int, clone_id: int):
     """
     Get the geo-location history for an existing named location and assign this history
     to the given cloned named location.
 
     :param connection: A database connection.
-    :type connection: connection object
     :param named_location_id: The existing named location used as the source location.
-    :type named_location_id: int
     :param clone_id: A new named location ID to assign to the location history of the existing named location ID.
-    :type clone_id: int
-    :return:
     """
     sql = '''
         insert into locn_nam_locn (

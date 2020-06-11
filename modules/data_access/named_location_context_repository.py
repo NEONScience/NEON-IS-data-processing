@@ -21,7 +21,8 @@ class NamedLocationContextRepository(object):
         :return: The context entries.
         """
         sql = '''
-            select context_code, context_group_id
+            select 
+                context_code, context_group_id
             from 
                 nam_locn_context 
             where 

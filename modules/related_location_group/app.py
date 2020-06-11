@@ -27,7 +27,7 @@ def group_related(data_path: Path,
     :param year_index: The input path index of the year.
     :param month_index: The input path index of the month.
     :param day_index: The input path index of the day.
-    :param group_index: The input path index of the group_files.
+    :param group_index: The input path index of the group.
     :param location_index: The input path index of the location.
     :param data_type_index: The input path index of the data type.
     """
@@ -49,7 +49,7 @@ def group_related(data_path: Path,
 
 
 def main():
-    """Group data by related location group_files."""
+    """Group data by related location groups."""
     env = environs.Env()
     data_path = env.path('DATA_PATH')
     out_path = env.path('OUT_PATH')

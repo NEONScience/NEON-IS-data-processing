@@ -38,7 +38,7 @@ class DateGapFillerTest(TestCase):
         self.location_month_index = 5
         self.location_index = 6
         self.empty_file_type_index = 4
-        # dirs and files
+        # directories and files
         self.setUpPyfakefs()
         self.out_path = Path('/out')
         self.fs.create_dir(self.out_path)

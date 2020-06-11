@@ -11,7 +11,7 @@ class LocationGroupPathTest(TestCase):
 
     def setUp(self):
         self.location = 'CFGLOC113507'
-        # The context group_files to find in the location file should contain
+        # The context group to find in the location file should contain
         # the existing file entry 'aspirated-single-224'.
         self.group = 'aspirated-triple-'
 
