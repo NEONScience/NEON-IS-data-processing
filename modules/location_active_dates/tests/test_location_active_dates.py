@@ -4,7 +4,8 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import location_active_dates.location_active_dates as location_active_dates
+import location_active_dates.location_active_dates_main as location_active_dates_main
+from location_active_dates.location_active_dates import link_location_files
 
 
 class LocationActiveDatesTest(TestCase):
@@ -21,12 +22,18 @@ class LocationActiveDatesTest(TestCase):
         actual_location_file_path = Path(os.path.dirname(__file__), 'test-location.json')
         self.fs.add_real_file(actual_location_file_path, target_path=self.location_path)
 
-    def test_active_period_loader(self):
+        self.schema_index = 3
+
+    def test_link_location_files(self):
+        link_location_files(location_path=self.input_path, out_path=self.out_path, schema_index=self.schema_index)
+        self.check_output()
+
+    def test_main(self):
         os.environ['LOCATION_PATH'] = str(self.input_path)
-        os.environ['SCHEMA_INDEX'] = str(3)
+        os.environ['SCHEMA_INDEX'] = str(self.schema_index)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        location_active_dates.main()
+        location_active_dates_main.main()
         self.check_output()
 
     def check_output(self):

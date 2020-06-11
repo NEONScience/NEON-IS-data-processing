@@ -2,11 +2,9 @@
 from pathlib import Path
 
 from structlog import get_logger
-import environs
 
 from common.file_crawler import crawl
 from common.location_file_parser import LocationFileParser
-import common.log_config as log_config
 
 log = get_logger()
 
@@ -20,7 +18,7 @@ def get_paths(source_path: Path,
               location_index: int,
               data_type_index: int):
     """
-    Link source files into the output directory with the related location group in the path.
+    Link source files into the output directory with the related location group_files in the path.
     There must be only one location file under the source path.
 
     :param source_path: The input path.
@@ -55,16 +53,13 @@ def get_paths(source_path: Path,
         }
         # add the original file path and path parts to paths
         paths.append({"file_path": file_path, "path_parts": path_parts})
-
-        # get the location context group name from the location file
+        # get the location context group_files name from the location file
         if data_type == 'location':
             location_file_parser = LocationFileParser(file_path)
             group_names = location_file_parser.matching_context_items(group)
-
-    # location context group name was not found!
+    # location context group_files name was not found!
     if len(group_names) == 0:
         log.error(f'No location directory found for groups {group_names}.')
-
     return {'paths': paths, 'group_names': group_names}
 
 
@@ -76,7 +71,6 @@ def link_paths(paths: list, group_names: list, out_path: Path):
     :param paths: File paths to link.
     :param group_names: Associated location context group names.
     :param out_path: The output path for linking files.
-    :return:
     """
     for path in paths:
         file_path = path.get('file_path')
@@ -93,35 +87,3 @@ def link_paths(paths: list, group_names: list, out_path: Path):
             link_path.parent.mkdir(parents=True, exist_ok=True)
             log.debug(f'file: {file_path} link: {link_path}')
             link_path.symlink_to(file_path)
-
-
-def main():
-    """Add the related location group name stored in the location file to the output path."""
-    env = environs.Env()
-    source_path = env.path('SOURCE_PATH')
-    group = env.str('GROUP')
-    out_path = env.path('OUT_PATH')
-    log_level = env.log_level('LOG_LEVEL', 'INFO')
-    source_type_index = env.int('SOURCE_TYPE_INDEX')
-    year_index = env.int('YEAR_INDEX')
-    month_index = env.int('MONTH_INDEX')
-    day_index = env.int('DAY_INDEX')
-    location_index = env.int('LOCATION_INDEX')
-    data_type_index = env.int('DATA_TYPE_INDEX')
-    log_config.configure(log_level)
-    log.debug(f'source_path: {source_path} group: {group} out_path: {out_path}')
-    results = get_paths(source_path,
-                        group,
-                        source_type_index,
-                        year_index,
-                        month_index,
-                        day_index,
-                        location_index,
-                        data_type_index)
-    paths = results.get('paths')
-    group_names = results.get('group_names')
-    link_paths(paths, group_names, out_path)
-
-
-if __name__ == '__main__':
-    main()

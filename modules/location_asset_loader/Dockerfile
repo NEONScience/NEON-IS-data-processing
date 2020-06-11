@@ -1,6 +1,6 @@
 FROM centos:7
 
-ARG APP_DIR="location_asset"
+ARG APP_DIR="location_asset_loader"
 ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
 ARG ORACLE_INSTANT_PKGNAME="oracle-instantclient19.3-basiclite-19.3.0.0.0-1.x86_64.rpm"

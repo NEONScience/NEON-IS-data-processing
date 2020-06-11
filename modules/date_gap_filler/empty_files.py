@@ -10,7 +10,7 @@ class EmptyFiles(object):
         empty_file_type_index = config.empty_file_type_index
         calibration_dir = config.calibration_dir
         data_dir = config.data_dir
-        flags_dir = config.flags_dir
+        flags_dir = config.flag_dir
         uncertainty_coefficient_dir = config.uncertainty_coefficient_dir
         uncertainty_data_dir = config.uncertainty_data_dir
         self.calibration_path = None

@@ -5,7 +5,8 @@ from pathlib import Path
 import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import joiner.app as app
+import joiner.joiner_main as joiner_main
+from joiner.joiner import join_files
 
 
 class JoinerTest(TestCase):
@@ -69,12 +70,24 @@ class JoinerTest(TestCase):
 
         self.relative_path_index = 3
 
+    def test_joiner(self):
+        related_paths = [
+            Path(self.input_path, self.prt_path),
+            Path(self.input_path, self.prt_path),
+            Path(self.input_path, self.dual_fan_path),
+            Path(self.input_path, self.heater_path)
+        ]
+        join_files(related_paths=related_paths,
+                   out_path=self.output_path,
+                   relative_path_index=self.relative_path_index)
+        self.check_output()
+
     def test_main(self):
         os.environ['RELATED_PATHS'] = self.related_paths
         os.environ['OUT_PATH'] = str(self.output_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
-        app.main()
+        joiner_main.main()
         self.check_output()
 
     def check_output(self):

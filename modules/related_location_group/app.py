@@ -5,13 +5,11 @@ from structlog import get_logger
 import environs
 
 import common.log_config as log_config
-from common.file_linker import link
-from common.file_crawler import crawl
 
 log = get_logger()
 
 
-def group_related(path: Path,
+def group_related(data_path: Path,
                   out_path: Path,
                   source_type_index: int,
                   year_index: int,
@@ -23,36 +21,38 @@ def group_related(path: Path,
     """
     Link related data and location files into the output path.
 
-    :param path: Directory or file path.
-    :param out_path: The output path for related data.
+    :param data_path: Path for reading files.
+    :param out_path: The output path for linking files into.
     :param source_type_index: The input path index of the source type.
     :param year_index: The input path index of the year.
     :param month_index: The input path index of the month.
     :param day_index: The input path index of the day.
-    :param group_index: The input path index of the group.
+    :param group_index: The input path index of the group_files.
     :param location_index: The input path index of the location.
     :param data_type_index: The input path index of the data type.
     """
-    for file_path in crawl(path):
-        parts = file_path.parts
-        source_type = parts[source_type_index]
-        year = parts[year_index]
-        month = parts[month_index]
-        day = parts[day_index]
-        group = parts[group_index]
-        location = parts[location_index]
-        data_type = parts[data_type_index]
-        remainder = parts[data_type_index + 1:]
-        link_path = Path(out_path, year, month, day, group, source_type,
-                         location, data_type, *remainder)
-        link(file_path, link_path)
+    for path in data_path.rglob('*'):
+        if path.is_file():
+            parts = path.parts
+            source_type = parts[source_type_index]
+            year = parts[year_index]
+            month = parts[month_index]
+            day = parts[day_index]
+            group = parts[group_index]
+            location = parts[location_index]
+            data_type = parts[data_type_index]
+            remainder = parts[data_type_index + 1:]
+            link_path = Path(out_path, year, month, day, group, source_type,
+                             location, data_type, *remainder)
+            link_path.parent.mkdir(parents=True, exist_ok=True)
+            link_path.symlink_to(path)
 
 
 def main():
-    """Group data by related location group."""
+    """Group data by related location group_files."""
     env = environs.Env()
-    data_path = env.str('DATA_PATH')
-    out_path = env.str('OUT_PATH')
+    data_path = env.path('DATA_PATH')
+    out_path = env.path('OUT_PATH')
     log_level = env.log_level('LOG_LEVEL')
     source_type_index = env.int('SOURCE_TYPE_INDEX')
     year_index = env.int('YEAR_INDEX')

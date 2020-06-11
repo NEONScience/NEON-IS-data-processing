@@ -39,6 +39,7 @@ class EmptyFileLinker(object):
         filename = filename.replace('day', self.day)
         filename += '.empty'  # add extension to distinguish from real data files.
         link_path = Path(out_path, filename)
-        link_path.parent.mkdir(parents=True, exist_ok=True)
         log.debug(f'source: {file}, link: {link_path}')
-        link_path.symlink_to(file)
+        link_path.parent.mkdir(parents=True, exist_ok=True)
+        if not link_path.exists():
+            link_path.symlink_to(file)

@@ -43,6 +43,16 @@ class DateFormatterTest(unittest.TestCase):
         date_result = date_formatter.parse_date_path(date_path)
         self.assertEqual(date_expected, date_result)
 
+    def test_date_between(self):
+        start_date = date(2020, 1, 1)
+        end_date = date(2020, 3, 3)
+        result = date_formatter.date_is_between(year=2020, month=2, day=1, start_date=start_date, end_date=end_date)
+        self.assertTrue(result)
+        start_date = date(2020, 1, 1)
+        end_date = date(2020, 3, 31)
+        result = date_formatter.date_is_between(year=2020, month=2, day=1, start_date=start_date, end_date=end_date)
+        self.assertTrue(result)
+
 
 if __name__ == '__main__':
     unittest.main()

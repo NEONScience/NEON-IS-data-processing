@@ -17,6 +17,8 @@
     "env": {
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out",
+      "START_DATE": "2018-12-31",
+      "END_DATE": "2019-01-07",
       "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags",
       "DATA_SOURCE_TYPE_INDEX": "3",
       "DATA_YEAR_INDEX": "4",
@@ -24,13 +26,11 @@
       "DATA_DAY_INDEX": "6",
       "DATA_LOCATION_INDEX": "7",
       "DATA_TYPE_INDEX": "8",
-      "DATA_FILENAME_INDEX": "9",
       "LOCATION_SOURCE_TYPE_INDEX": "3",
       "LOCATION_YEAR_INDEX": "4",
       "LOCATION_MONTH_INDEX": "5",
       "LOCATION_DAY_INDEX": "6",
       "LOCATION_INDEX": "7",
-      "LOCATION_FILENAME_INDEX": "8",
       "EMPTY_FILE_TYPE_INDEX": "4"
     }
   },

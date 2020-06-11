@@ -6,7 +6,7 @@ log = structlog.get_logger()
 
 
 class CalibratedLocationFileGrouper(object):
-    """Class to group calibrated data files and associated location files."""
+    """Class to group_files calibrated data files and associated location files."""
 
     def __init__(self, *, calibrated_path: Path, location_path: Path, out_path: Path,
                  source_type_index: int,

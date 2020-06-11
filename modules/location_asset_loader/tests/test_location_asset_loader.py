@@ -7,10 +7,11 @@ import unittest
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import location_asset.app as app
+import location_asset_loader.location_asset_loader_main as location_asset_loader_main
+from location_asset_loader.location_asset_loader import LocationAssetLoader
 
 
-class LocationAssetTest(TestCase):
+class LocationAssetLoaderTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -24,7 +25,7 @@ class LocationAssetTest(TestCase):
         os.environ['DATABASE_URL'] = self.database_url
         os.environ['OUT_PATH'] = self.out_path
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        app.main()
+        location_asset_loader_main.main()
         self.check_output()
 
     def test_write_file(self):
@@ -49,7 +50,7 @@ class LocationAssetTest(TestCase):
                                       'locations': location})
         features = [feature]
         asset_location_history = FeatureCollection(features)
-        app.write_file(asset, asset_location_history, self.out_path)
+        LocationAssetLoader.write_file(asset, asset_location_history, self.out_path)
         self.check_output()
 
     def check_output(self):

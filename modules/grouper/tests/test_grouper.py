@@ -6,7 +6,8 @@ import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from common import log_config as log_config
-import grouper.app as app
+from grouper.grouper import group_files
+import grouper.grouper_main as grouper_main
 
 
 class GrouperTest(TestCase):
@@ -41,7 +42,7 @@ class GrouperTest(TestCase):
         self.relative_path_index = 3
 
     def test_group(self):
-        app.group(self.base_path, self.output_path, self.relative_path_index)
+        group_files(path=self.base_path, out_path=self.output_path, relative_path_index=self.relative_path_index)
         self.check_output()
 
     def test_main(self):
@@ -49,7 +50,7 @@ class GrouperTest(TestCase):
         os.environ['OUT_PATH'] = str(self.output_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
-        app.main()
+        grouper_main.main()
         self.check_output()
 
     def check_output(self):
