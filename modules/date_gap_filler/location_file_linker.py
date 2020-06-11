@@ -6,7 +6,7 @@ import structlog
 
 from common.date_formatter import parse_date, date_is_between
 
-from date_gap_filler.empty_files import EmptyFiles
+from date_gap_filler.empty_file_paths import EmptyFilePaths
 from date_gap_filler.empty_file_linker import EmptyFileLinker
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 from date_gap_filler.location_file_path_config import LocationFilePathConfig
@@ -28,7 +28,7 @@ class LocationFileLinker(object):
         self.location_dir = config.location_dir
         self.uncertainty_coefficient_dir = config.uncertainty_coefficient_dir
         self.uncertainty_data_dir = config.uncertainty_data_dir
-        self.empty_files = EmptyFiles(config)
+        self.empty_file_paths = EmptyFilePaths(config)
         self.source_type_index = location_file_path_config.source_type_index
         self.year_index = location_file_path_config.year_index
         self.month_index = location_file_path_config.month_index
@@ -61,7 +61,7 @@ class LocationFileLinker(object):
                     location_link.parent.mkdir(parents=True, exist_ok=True)
                     if not location_link.exists():
                         location_link.symlink_to(path)
-                    empty_file_linker = EmptyFileLinker(self.empty_files, location, year, month, day)
+                    empty_file_linker = EmptyFileLinker(self.empty_file_paths, location, year, month, day)
                     if link_calibration:
                         Path(root_link_path, self.calibration_dir).mkdir(parents=True, exist_ok=True)
                     if link_data:

@@ -1,6 +1,6 @@
 FROM centos:7
 
-ARG APP_DIR="qaqc_regularized_flag_group"
+ARG APP_DIR="quality_regularized_flag_group"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"

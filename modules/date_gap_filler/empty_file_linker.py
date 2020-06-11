@@ -1,7 +1,7 @@
 from pathlib import Path
 import structlog
 
-from date_gap_filler.empty_files import EmptyFiles
+from date_gap_filler.empty_file_paths import EmptyFilePaths
 
 log = structlog.get_logger()
 
@@ -9,7 +9,7 @@ log = structlog.get_logger()
 class EmptyFileLinker(object):
     """Class to link empty files."""
 
-    def __init__(self, empty_files: EmptyFiles, location: str, year: str, month: str, day: str):
+    def __init__(self, empty_files: EmptyFilePaths, location: str, year: str, month: str, day: str):
         self.empty_files = empty_files
         self.location = location
         self.year = year

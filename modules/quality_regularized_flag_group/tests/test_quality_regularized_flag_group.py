@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import qaqc_regularized_flag_group.app as app
+import quality_regularized_flag_group.quality_regularized_flag_group_main as quality_regularized_flag_group_main
 
 
 class QaqcRegularizedFlagGroupTest(TestCase):
@@ -32,7 +32,7 @@ class QaqcRegularizedFlagGroupTest(TestCase):
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
-        app.main()
+        quality_regularized_flag_group_main.main()
         self.check_output()
 
     def check_output(self):

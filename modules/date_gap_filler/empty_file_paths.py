@@ -2,7 +2,7 @@
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 
 
-class EmptyFiles(object):
+class EmptyFilePaths(object):
     """Class to store empty file paths."""
 
     def __init__(self, config: DateGapFillerConfig):

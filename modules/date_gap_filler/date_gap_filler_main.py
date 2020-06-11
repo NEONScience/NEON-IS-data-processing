@@ -13,7 +13,7 @@ def main():
     env = environs.Env()
     data_path = env.path('DATA_PATH', None)
     location_path = env.path('LOCATION_PATH', None)
-    empty_files_path = env.path('EMPTY_FILES_PATH')
+    empty_file_path = env.path('EMPTY_FILE_PATH')
     out_path = env.path('OUT_PATH')
     start_date = env.date('START_DATE', None)
     end_date = env.date('END_DATE', None)
@@ -45,7 +45,7 @@ def main():
                                                        location_index=location_index)
     config = DateGapFillerConfig(data_path=data_path,
                                  location_path=location_path,
-                                 empty_file_path=empty_files_path,
+                                 empty_file_path=empty_file_path,
                                  out_path=out_path,
                                  start_date=start_date,
                                  end_date=end_date,
