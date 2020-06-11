@@ -80,7 +80,7 @@ def.arg.pars <- function(arg,
                      ValuParaOptn=NULL,
                      TypePara=NULL, # Named list of intended class for each parameter. Conversion will be attempted
                      log=NULL){
-  #browser()
+
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -89,7 +89,6 @@ def.arg.pars <- function(arg,
   # Error check
   if(base::class(arg) != "character"){
     msg <- "Input argument vector must be of class character."
-    print(msg)
     log$fatal(msg)
     stop()
   }

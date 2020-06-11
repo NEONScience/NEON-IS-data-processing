@@ -39,6 +39,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-02-06)
 #     original creation
+#   Cove Sturtevant (2020-06-10)
+#     bug fix when entry in timeFull is completely outside the range of TimeBgn and TimeEnd
 ##############################################################################################
 def.time.miss <- function(TimeBgn, TimeEnd, timeFull, log = NULL) {
   # Initialize log if not input
@@ -81,7 +83,7 @@ def.time.miss <- function(TimeBgn, TimeEnd, timeFull, log = NULL) {
         timeMiss,
         base::data.frame(
           timeBgn = TimeBgn,
-          timeEnd = TimeEnd,
+          timeEnd = timeFull$timeBgn[1],
           stringsAsFactors = FALSE
         )
       )
