@@ -24,6 +24,7 @@ class ConstantWindowPad(object):
         :param out_path:  The path for writing results.
         :param relative_path_index: Trim file paths to this index.
         :param window_size: The window size.
+        :param data_file_path: The data file path parser.
         """
         self.data_path = data_path
         self.out_path = out_path

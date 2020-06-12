@@ -23,7 +23,7 @@ class VariableWindowPad(object):
 
         :param data_path: The data path.
         :param out_path: The output path for writing results.
-        :param data_file_path: The data file path parser
+        :param data_file_path: The data file path parser.
         """
         self.data_path = data_path
         self.out_path = out_path
