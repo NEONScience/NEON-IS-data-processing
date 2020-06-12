@@ -5,8 +5,6 @@ from pathlib import Path
 
 from structlog import get_logger
 
-from common.file_linker import link
-from common.file_crawler import crawl
 from common.merged_data_filename import MergedDataFilename
 
 log = get_logger()
@@ -62,7 +60,9 @@ class PaddedTimeSeriesAnalyzer(object):
                                         link_parts[index] = out_path_parts[index]
                                     link_path = Path(*link_parts)
                                     log.debug(f'linking {file_path} to {link_path}')
-                                    link(file_path, link_path)
+                                    link_path.parent.mkdir(parents=True, exist_ok=True)
+                                    if not link_path.exists():
+                                        link_path.symlink_to(file_path)
                                     self.link_thresholds(file_path, link_path)
                             # go up one directory and get any ancillary files to link
                             self.link_ancillary_files(Path(root))
@@ -86,7 +86,9 @@ class PaddedTimeSeriesAnalyzer(object):
         if file_path.exists():
             link_path = Path(link_root, threshold_dir, threshold_filename)
             log.debug(f'linking {file_path} to {link_path}')
-            link(file_path, link_path)
+            link_path.parent.mkdir(parents=True, exist_ok=True)
+            if not link_path.exists():
+                link_path.symlink_to(file_path)
 
     def link_ancillary_files(self, root: Path):
         """
@@ -94,9 +96,12 @@ class PaddedTimeSeriesAnalyzer(object):
         into the output path.
         :param root: The threshold root directory.
         """
-        for file_path in crawl(root.parent):
-            file_path = str(file_path)
-            if 'data' not in file_path and 'threshold' not in file_path:
-                file_path = Path(file_path)
-                link_path = Path(self.out_path, *file_path.parts[self.relative_path_index:])
-                link(file_path, link_path)
+        for file_path in root.parent.rglob('*'):
+            if file_path.is_file():
+                file_path = str(file_path)
+                if 'data' not in file_path and 'threshold' not in file_path:
+                    file_path = Path(file_path)
+                    link_path = Path(self.out_path, *file_path.parts[self.relative_path_index:])
+                    link_path.parent.mkdir(parents=True, exist_ok=True)
+                    if not link_path.exists():
+                        link_path.symlink_to(file_path)

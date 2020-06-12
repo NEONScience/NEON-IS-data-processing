@@ -4,79 +4,69 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import common.log_config as log_config
-from common.merged_data_filename import MergedDataFilename
-from timeseries_padder.timeseries_padder.padder import Padder
-from timeseries_padder.timeseries_padder.constant_padder import ConstantPadder
+from timeseries_padder.timeseries_padder.pad_config import PadConfig
+from timeseries_padder.timeseries_padder.data_file_path import DataFilePath
+from timeseries_padder.timeseries_padder.variable_window_pad import VariableWindowPad
+from timeseries_padder.timeseries_padder.constant_window_pad import ConstantWindowPad
 
 
 class TimeSeriesPadTest(TestCase):
 
     def setUp(self):
         """Set required files in mock filesystem."""
-
-        log_config.configure('DEBUG')
-
-        self.threshold_dir = 'threshold'
-
-        self.out_dir = Path('/tmp/outputs')
-        self.location = 'CFGLOC112154'
-        self.input_root = Path('/tmp/inputs')
-
-        source_month = Path('prt/2018/01')
-        self.input_data_dir = Path(self.input_root, source_month, '03')
-        self.source_dir = Path(source_month, '03', self.location)
-
-        self.relative_path_index = 3
-        self.year_index = 4
-        self.month_index = 5
-        self.day_index = 6
-        self.location_index = 7
-        self.data_type_index = 8
-
         self.setUpPyfakefs()
+        self.location = 'CFGLOC112154'
 
-        self.data_dir = 'data'
+        input_root = Path('/tmp/in')
+        self.out_path = Path('/tmp/out')
 
-        #  Data file.
-        self.source_data_file_name = MergedDataFilename.build('prt', '2018', '01', '03', self.location)
-        data_path = Path(self.input_root, self.source_dir, self.data_dir, self.source_data_file_name)
+        month_path = Path('prt/2018/01')
+        day = '03'
+        self.input_path = Path(input_root, month_path, day)
+        self.fs.create_dir(self.input_path)
+
+        self.metadata_path = Path(month_path, day, self.location)
+        #  data file
+        self.data_filename = f'prt_{self.location}_2018-01-{day}.ext'
+        data_path = Path(input_root, self.metadata_path, PadConfig.data_dir, self.data_filename)
         self.fs.create_file(data_path)
-
-        # Config file (real file for parsing)
+        # config file (real file for parsing)
         config_path = Path('timeseries_padder/config/windowSizeNames.yaml')
         test_config = Path(os.path.dirname(__file__), '../config/windowSizeNames.yaml')
         self.fs.add_real_file(test_config, target_path=config_path)
-
-        # Location file (real file for parsing)
-        location_path = Path(self.input_root, self.source_dir, 'location/prt_40202_locations.json')
+        # location file (real file for parsing)
+        location_path = Path(input_root, self.metadata_path, 'location/prt_40202_locations.json')
         test_locations = Path(os.path.dirname(__file__), 'test-locations.json')
         self.fs.add_real_file(test_locations, target_path=location_path)
-
-        # Threshold file (real file for parsing)
-        threshold_path = Path(self.input_root, self.source_dir, self.threshold_dir, 'thresholds.json')
+        # threshold file (real file for parsing)
+        threshold_path = Path(input_root, self.metadata_path, PadConfig.threshold_dir, PadConfig.threshold_filename)
         test_thresholds = Path(os.path.dirname(__file__), 'test-thresholds.json')
         self.fs.add_real_file(test_thresholds, target_path=threshold_path)
+        # path indices
+        self.relative_path_index = 3
+        self.data_file_path = DataFilePath(year_index=4, month_index=5, day_index=6, location_index=7,
+                                           data_type_index=8)
 
-    def test_constant_padder(self):
+    def test_constant_window(self):
         window_size = 1
-        padder = ConstantPadder(self.input_data_dir, self.out_dir, self.year_index, self.month_index,
-                                self.day_index, self.location_index, self.data_type_index, self.relative_path_index,
-                                window_size)
-        padder.pad()
+        constant_window_pad = ConstantWindowPad(data_path=self.input_path,
+                                                out_path=self.out_path,
+                                                relative_path_index=self.relative_path_index,
+                                                window_size=window_size,
+                                                data_file_path=self.data_file_path)
+        constant_window_pad.pad()
         self.check_output()
 
-    def test_padder(self):
-        padder = Padder(self.input_data_dir, self.out_dir, self.year_index, self.month_index,
-                        self.day_index, self.location_index, self.data_type_index)
-        padder.pad()
+    def test_variable_window(self):
+        variable_pad = VariableWindowPad(self.input_path, self.out_path, self.data_file_path)
+        variable_pad.pad()
         self.check_output()
 
     def check_output(self):
-        """Check data files are in the output directory."""
-        data_path = Path(self.out_dir, self.source_dir, self.data_dir, self.source_data_file_name)
-        manifest_path = Path(self.out_dir, self.source_dir, self.data_dir, 'manifest.txt')
-        threshold_path = Path(self.out_dir, self.source_dir, self.threshold_dir, 'thresholds.json')
+        """Ensure the expected files are in the output directory."""
+        data_path = Path(self.out_path, self.metadata_path, PadConfig.data_dir, self.data_filename)
+        manifest_path = Path(self.out_path, self.metadata_path, PadConfig.data_dir, PadConfig.manifest_filename)
+        threshold_path = Path(self.out_path, self.metadata_path, PadConfig.threshold_dir, PadConfig.threshold_filename)
         self.assertTrue(data_path.exists())
         self.assertTrue(manifest_path.exists())
         self.assertTrue(threshold_path.exists())

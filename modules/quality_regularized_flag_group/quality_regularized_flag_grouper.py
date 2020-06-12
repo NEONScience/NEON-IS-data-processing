@@ -9,6 +9,14 @@ log = get_logger()
 class QualityRegularizedFlagGrouper(object):
 
     def __init__(self, *, regularized_path: Path, quality_path: Path, out_path: Path, relative_path_index: int):
+        """
+        Constructor.
+
+        :param regularized_path: The path to read regularized flag files.
+        :param quality_path: The path to read quality flag files.
+        :param out_path: The path to link grouped files into.
+        :param relative_path_index: Include the path elements after this index in the output paths.
+        """
         self.regularized_path = regularized_path
         self.quality_path = quality_path
         self.out_path = out_path

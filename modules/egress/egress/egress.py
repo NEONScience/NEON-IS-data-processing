@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 from structlog import get_logger
-import common.file_linker as file_linker
 
 log = get_logger()
 
@@ -45,7 +44,9 @@ class Egress(object):
                     link_filename = self.filename_delimiter.join(link_parts[1:])
                     link_path = Path(*link_parts[:len(link_parts) - 2], link_filename)
                     log.debug(f'source_path: {file_path} link_path: {link_path}')
-                    file_linker.link(file_path, link_path)
+                    link_path.parent.mkdir(parents=True, exist_ok=True)
+                    if not link_path.exists():
+                        link_path.symlink_to(file_path)
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             log.error("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))

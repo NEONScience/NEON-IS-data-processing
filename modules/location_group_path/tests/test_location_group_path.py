@@ -5,6 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import location_group_path.location_group_path_main as location_group_path_main
+from location_group_path.location_group_path import LocationGroupPath
 
 
 class LocationGroupPathTest(TestCase):
@@ -17,12 +18,12 @@ class LocationGroupPathTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.in_path = Path('/inputs')
+        self.source_path = Path('/inputs')
         self.out_path = Path('/outputs')
 
         self.metadata_path = Path('dualfan/2019/05/21')
 
-        inputs_root = Path(self.in_path, 'repo', self.metadata_path)
+        inputs_root = Path(self.source_path, 'repo', self.metadata_path)
 
         data_path = Path(inputs_root, self.location, 'data/data.ext')
         locations_path = Path(inputs_root, self.location, 'location/locations.json')
@@ -40,8 +41,21 @@ class LocationGroupPathTest(TestCase):
         self.location_index = 7
         self.data_type_index = 8
 
+    def test_add_groups_to_paths(self):
+        location_group_path = LocationGroupPath(source_path=self.source_path,
+                                                out_path=self.out_path,
+                                                group=self.group,
+                                                source_type_index=self.source_type_index,
+                                                year_index=self.year_index,
+                                                month_index=self.month_index,
+                                                day_index=self.day_index,
+                                                location_index=self.location_index,
+                                                data_type_index=self.data_type_index)
+        location_group_path.add_groups_to_paths()
+        self.check_output()
+
     def test_main(self):
-        os.environ['SOURCE_PATH'] = str(self.in_path)
+        os.environ['SOURCE_PATH'] = str(self.source_path)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['GROUP'] = self.group
         os.environ['LOG_LEVEL'] = 'DEBUG'

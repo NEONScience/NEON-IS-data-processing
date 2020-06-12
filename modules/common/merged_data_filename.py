@@ -12,18 +12,3 @@ class MergedDataFilename(object):
 
     def location(self):
         return self.filename.split('_')[1]
-
-    @staticmethod
-    def build(source_type: str, year: str, month: str, day: str, location: str):
-        """
-        Build a merged filename for testing.
-
-        :param source_type: The source type.
-        :param year: The year.
-        :param month: The month.
-        :param day: The day.
-        :param location: The location.
-        :return: The filename.
-        """
-        filename_format = '{}_{}_{}-{}-{}.extension'
-        return filename_format.format(source_type, year, month, day, location)

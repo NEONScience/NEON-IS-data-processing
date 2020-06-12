@@ -3,7 +3,7 @@ from structlog import get_logger
 import environs
 
 import common.log_config as log_config
-from location_group_path.location_group_path import get_paths, link_paths
+from location_group_path.location_group_path import LocationGroupPath
 
 log = get_logger()
 
@@ -23,17 +23,17 @@ def main():
     data_type_index = env.int('DATA_TYPE_INDEX')
     log_config.configure(log_level)
     log.debug(f'source_path: {source_path} group: {group} out_path: {out_path}')
-    results = get_paths(source_path,
-                        group,
-                        source_type_index,
-                        year_index,
-                        month_index,
-                        day_index,
-                        location_index,
-                        data_type_index)
-    paths = results.get('paths')
-    group_names = results.get('group_names')
-    link_paths(paths, group_names, out_path)
+
+    location_group_path = LocationGroupPath(source_path=source_path,
+                                            out_path=out_path,
+                                            group=group,
+                                            source_type_index=source_type_index,
+                                            year_index=year_index,
+                                            month_index=month_index,
+                                            day_index=day_index,
+                                            location_index=location_index,
+                                            data_type_index=data_type_index)
+    location_group_path.add_groups_to_paths()
 
 
 if __name__ == '__main__':

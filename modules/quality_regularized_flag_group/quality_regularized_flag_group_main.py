@@ -9,7 +9,7 @@ log = get_logger()
 
 
 def main():
-    """Group quality and calibration flags."""
+    """Group quality and regularized data flags."""
     env = environs.Env()
     regularized_path = env.path('REGULARIZED_PATH')
     quality_path = env.path('QUALITY_PATH')

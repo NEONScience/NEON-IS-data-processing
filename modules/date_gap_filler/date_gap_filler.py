@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
-from date_gap_filler.data_file_path_config import DataFilePathConfig
-from date_gap_filler.location_file_path_config import LocationFilePathConfig
+from date_gap_filler.data_file_path import DataFilePath
+from date_gap_filler.location_file_path import LocationFilePath
 from date_gap_filler.data_file_linker import DataFileLinker
 from date_gap_filler.location_file_linker import LocationFileLinker
 
@@ -11,8 +11,8 @@ class DateGapFiller(object):
 
     def __init__(self, *,
                  config: DateGapFillerConfig,
-                 data_file_path_config: DataFilePathConfig,
-                 location_file_path_config: LocationFilePathConfig):
+                 data_file_path_config: DataFilePath,
+                 location_file_path_config: LocationFilePath):
         self.config = config
         self.data_file_path_config = data_file_path_config
         self.location_file_path_config = location_file_path_config

@@ -34,14 +34,12 @@ def calculate_pad_size(window_size: int):
     return math.ceil(window_size / seconds_per_day)
 
 
-def get_dates_in_padded_range(date, pad_size):
+def get_dates_in_padded_range(date: datetime, pad_size: float):
     """
     Get all the dates in the padded date range.
 
     :param date: date to pad
-    :type date: datetime
     :param pad_size: pad size in days
-    :type pad_size: float
     :returns: Sorted array of dates whose padded ranges include date.
     """
     pad_in_days = math.ceil(pad_size)

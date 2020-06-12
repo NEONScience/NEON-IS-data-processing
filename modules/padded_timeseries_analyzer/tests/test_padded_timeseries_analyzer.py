@@ -6,17 +6,12 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer import PaddedTimeSeriesAnalyzer
 import padded_timeseries_analyzer.padded_timeseries_analyzer.app as app
-import common.log_config as log_config
-from common.merged_data_filename import MergedDataFilename
 
 
 class PaddedTimeSeriesAnalyzerTest(TestCase):
 
     def setUp(self):
         """Set required files in mock filesystem."""
-
-        log_config.configure('DEBUG')
-
         self.setUpPyfakefs()
 
         self.threshold_dir = 'threshold'
@@ -34,10 +29,10 @@ class PaddedTimeSeriesAnalyzerTest(TestCase):
         self.next_dir = Path(source_root, '04', location)
         self.outside_range_dir = Path(source_root, '05', location)
 
-        self.previous_data_file = MergedDataFilename.build('prt', location, '2018', '01', '02')
-        self.source_data_file = MergedDataFilename.build('prt', location, '2018', '01', '03')
-        self.next_data_file = MergedDataFilename.build('prt', location,  '2018', '01', '04')
-        self.outside_range_file = MergedDataFilename.build('prt', location, '2018', '01', '05')
+        self.previous_data_file = f'prt_{location}_2018-01-02.ext'
+        self.source_data_file = f'prt_{location}_2018-01-03.ext'
+        self.next_data_file = f'prt_{location}_2018-01-04.ext'
+        self.outside_range_file = f'prt_{location}_2018-01-05.ext'
 
         # Ancillary location file.
         self.fs.create_file(Path(self.input_root, self.source_dir, 'location', 'locations.json'))

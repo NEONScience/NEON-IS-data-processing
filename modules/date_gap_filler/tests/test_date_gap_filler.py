@@ -7,8 +7,8 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 import date_gap_filler.date_gap_filler_main as date_gap_filler_main
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
-from date_gap_filler.data_file_path_config import DataFilePathConfig
-from date_gap_filler.location_file_path_config import LocationFilePathConfig
+from date_gap_filler.data_file_path import DataFilePath
+from date_gap_filler.location_file_path import LocationFilePath
 from date_gap_filler.date_gap_filler import DateGapFiller
 
 
@@ -81,16 +81,16 @@ class DateGapFillerTest(TestCase):
         self.fs.create_file(self.empty_flag_file)
 
     def test_fill_gaps(self):
-        data_file_path_config = DataFilePathConfig(source_type_index=self.data_source_type_index,
-                                                   year_index=self.data_year_index,
-                                                   month_index=self.data_month_index,
-                                                   day_index=self.data_day_index,
-                                                   location_index=self.data_location_index,
-                                                   data_type_index=self.data_type_index)
-        location_file_path_config = LocationFilePathConfig(source_type_index=self.location_source_type_index,
-                                                           year_index=self.location_year_index,
-                                                           month_index=self.location_month_index,
-                                                           location_index=self.location_index)
+        data_file_path_config = DataFilePath(source_type_index=self.data_source_type_index,
+                                             year_index=self.data_year_index,
+                                             month_index=self.data_month_index,
+                                             day_index=self.data_day_index,
+                                             location_index=self.data_location_index,
+                                             data_type_index=self.data_type_index)
+        location_file_path_config = LocationFilePath(source_type_index=self.location_source_type_index,
+                                                     year_index=self.location_year_index,
+                                                     month_index=self.location_month_index,
+                                                     location_index=self.location_index)
         config = DateGapFillerConfig(data_path=self.data_path,
                                      location_path=self.location_path,
                                      empty_file_path=self.empty_path,

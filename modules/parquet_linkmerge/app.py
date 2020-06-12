@@ -11,7 +11,7 @@ import structlog
 from io import BytesIO
 from collections.abc import Hashable
 
-from common import file_crawler, log_config
+from common import log_config
 
 log = structlog.get_logger()
 
@@ -72,9 +72,9 @@ def write_merged_parquet(input_files, out_path):
     )
 
 
-def link_merge(in_path, out_path):
+def link_merge(in_path: Path, out_path: Path):
     filedict = {}
-    for parquet_file_path in file_crawler.crawl(in_path):
+    for parquet_file_path in in_path.rglob('*.parquet'):
         file_source_id = parquet_file_path.name.split('_')[2]
         if file_source_id not in filedict:
             filedict[file_source_id] = [parquet_file_path]

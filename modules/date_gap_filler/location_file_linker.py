@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 from pathlib import Path
 from calendar import monthrange
-from datetime import date
 import structlog
 
-from common.date_formatter import parse_date, date_is_between
+from common.date_formatter import date_is_between
 
 from date_gap_filler.empty_file_paths import EmptyFilePaths
 from date_gap_filler.empty_file_linker import EmptyFileLinker
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
-from date_gap_filler.location_file_path_config import LocationFilePathConfig
+from date_gap_filler.location_file_path import LocationFilePath
 
 log = structlog.get_logger()
 
 
 class LocationFileLinker(object):
 
-    def __init__(self, config: DateGapFillerConfig, location_file_path_config: LocationFilePathConfig):
+    def __init__(self, config: DateGapFillerConfig, location_file_path: LocationFilePath):
         self.out_path = config.out_path
         self.output_dirs = config.output_directories
         self.location_path = config.location_path
@@ -29,10 +28,7 @@ class LocationFileLinker(object):
         self.uncertainty_coefficient_dir = config.uncertainty_coefficient_dir
         self.uncertainty_data_dir = config.uncertainty_data_dir
         self.empty_file_paths = EmptyFilePaths(config)
-        self.source_type_index = location_file_path_config.source_type_index
-        self.year_index = location_file_path_config.year_index
-        self.month_index = location_file_path_config.month_index
-        self.location_index = location_file_path_config.location_index
+        self.location_file_path = location_file_path
 
     def link_files(self):
         """Process the location files and fill date gaps with empty files."""
@@ -44,24 +40,19 @@ class LocationFileLinker(object):
         for path in self.location_path.rglob('*'):
             if path.is_file():
                 log.debug(f'processing location file: {path}')
-                parts = path.parts
-                source_type = parts[self.source_type_index]
-                year = parts[self.year_index]
-                month = parts[self.month_index]
-                location = parts[self.location_index]
+                source_type, year, month, location = self.location_file_path.parse(path)
                 days = monthrange(int(year), int(month))[1]
                 for day in range(1, days + 1):
-                    date_obj = date(int(year), int(month), day)
-                    (year, month, day) = parse_date(date_obj)
                     if not date_is_between(year=int(year), month=int(month), day=int(day),
                                            start_date=self.start_date, end_date=self.end_date):
                         continue
-                    root_link_path = Path(self.out_path, source_type, year, month, day, location)
+                    day_string = str(day).zfill(2)
+                    root_link_path = Path(self.out_path, source_type, year, month, day_string, location)
                     location_link = Path(root_link_path, self.location_dir, path.name)
                     location_link.parent.mkdir(parents=True, exist_ok=True)
                     if not location_link.exists():
                         location_link.symlink_to(path)
-                    empty_file_linker = EmptyFileLinker(self.empty_file_paths, location, year, month, day)
+                    empty_file_linker = EmptyFileLinker(self.empty_file_paths, location, year, month, day_string)
                     if link_calibration:
                         Path(root_link_path, self.calibration_dir).mkdir(parents=True, exist_ok=True)
                     if link_data:
