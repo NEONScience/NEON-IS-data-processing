@@ -13,7 +13,7 @@ def main():
     env = environs.Env()
     data_path = env.path('DATA_PATH', None)
     location_path = env.path('LOCATION_PATH', None)
-    empty_file_path = env.path('EMPTY_FILES_PATH')
+    empty_file_path = env.path('EMPTY_FILE_PATH')
     out_path = env.path('OUT_PATH')
     start_date = env.date('START_DATE', None)
     end_date = env.date('END_DATE', None)

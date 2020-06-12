@@ -108,7 +108,7 @@ class DateGapFillerTest(TestCase):
     def test_main(self):
         os.environ['DATA_PATH'] = str(self.data_path)
         os.environ['LOCATION_PATH'] = str(self.location_path)
-        os.environ['EMPTY_FILES_PATH'] = str(self.empty_path)
+        os.environ['EMPTY_FILE_PATH'] = str(self.empty_path)
         os.environ['OUTPUT_DIRECTORIES'] = self.output_directories
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
