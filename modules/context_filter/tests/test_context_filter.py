@@ -4,16 +4,14 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from common import log_config as log_config
-
-import context_filter.context_filter_main as app
+from context_filter.data_file_path import DataFilePath
+from context_filter.context_filter import ContextFilter
+import context_filter.context_filter_main as context_filter_main
 
 
 class ContextFilterTest(TestCase):
 
     def setUp(self):
-        log_config.configure('DEBUG')
-
         # File path indices.
         self.source_type_index = 3
         self.year_index = 4
@@ -23,27 +21,34 @@ class ContextFilterTest(TestCase):
         self.data_type_index = 8
 
         self.setUpPyfakefs()
-
         self.out_path = Path('/outputs')
         self.metadata_path = Path('prt/2019/05/21/00001')
-
         self.context = 'aspirated-triple'  # The context to find in the location file.
-
         self.in_path = Path('/inputs')
         inputs_path = self.in_path.joinpath('merged', self.metadata_path)
-
         data_path = inputs_path.joinpath('data', 'data.ext')
         flags_path = inputs_path.joinpath('flags', 'flags.ext')
         locations_path = inputs_path.joinpath('location', 'locations.json')
         uncertainty_coefficient_path = inputs_path.joinpath('uncertainty_coefficient', 'uncertaintyCoefficient.json')
-
         self.fs.create_file(data_path)
         self.fs.create_file(flags_path)
         self.fs.create_file(uncertainty_coefficient_path)
-
         # Use real location file for parsing
         actual_location_file_path = Path(os.path.dirname(__file__), 'test-locations.json')
         self.fs.add_real_file(actual_location_file_path, target_path=locations_path)
+
+    def test_filter(self):
+        data_file_path = DataFilePath(source_type_index=self.source_type_index,
+                                      year_index=self.year_index,
+                                      month_index=self.month_index,
+                                      day_index=self.day_index,
+                                      source_id_index=self.source_id_index,
+                                      data_type_index=self.data_type_index)
+        context_filter = ContextFilter(input_path=self.in_path,
+                                       output_path=self.out_path,
+                                       context=self.context,
+                                       data_file_path=data_file_path)
+        context_filter.filter()
 
     def test_main(self):
         os.environ['IN_PATH'] = str(self.in_path)
@@ -56,7 +61,7 @@ class ContextFilterTest(TestCase):
         os.environ['DAY_INDEX'] = str(self.day_index)
         os.environ['SOURCE_ID_INDEX'] = str(self.source_id_index)
         os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
-        app.main()
+        context_filter_main.main()
         self.check_output()
 
     def check_output(self):
