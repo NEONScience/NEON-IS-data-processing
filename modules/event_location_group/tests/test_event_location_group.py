@@ -5,6 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import event_location_group.event_location_group_main as event_location_group_main
+from event_location_group.data_file_path import DataFilePath
 from event_location_group.event_location_grouper import EventLocationGrouper
 
 
@@ -14,7 +15,7 @@ class EventLocationGroupTest(TestCase):
         self.setUpPyfakefs()
         self.source_id = '00001'
         # input/output paths
-        self.out_path = Path('/repo/outputs')
+        self.out_path = Path('/out')
         self.data_path = Path('/repo/events/heater/2019/01/01', self.source_id)
         self.location_path = Path('/location')
         # create data file
@@ -33,19 +34,18 @@ class EventLocationGroupTest(TestCase):
         self.month_index = 5
         self.day_index = 6
         self.source_id_index = 7
-        self.filename_index = 8
 
     def test_group(self):
+        data_file_path = DataFilePath(source_type_index=self.source_type_index,
+                                      year_index=self.year_index,
+                                      month_index=self.month_index,
+                                      day_index=self.day_index,
+                                      source_id_index=self.source_id_index)
         event_location_grouper = EventLocationGrouper(data_path=self.data_path,
                                                       location_path=self.location_path,
                                                       out_path=self.out_path,
-                                                      source_type_index=self.source_type_index,
-                                                      year_index=self.year_index,
-                                                      month_index=self.month_index,
-                                                      day_index=self.day_index,
-                                                      source_id_index=self.source_id_index,
-                                                      filename_index=self.filename_index)
-        event_location_grouper.group()
+                                                      data_file_path=data_file_path)
+        event_location_grouper.group_files()
         self.check_output()
 
     def test_main(self):
@@ -58,7 +58,6 @@ class EventLocationGroupTest(TestCase):
         os.environ['MONTH_INDEX'] = str(self.month_index)
         os.environ['DAY_INDEX'] = str(self.day_index)
         os.environ['SOURCE_ID_INDEX'] = str(self.source_id_index)
-        os.environ['FILENAME_INDEX'] = str(self.filename_index)
         event_location_group_main.main()
         self.check_output()
 

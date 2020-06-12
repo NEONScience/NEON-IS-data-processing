@@ -5,40 +5,26 @@ from structlog import get_logger
 
 from common.location_file_parser import LocationFileParser
 
+from location_group_path.data_file_path import DataFilePath
+
 log = get_logger()
 
 
 class LocationGroupPath(object):
     """Class adds location context groups to location file paths."""
 
-    def __init__(self, *, source_path: Path, out_path: Path, group: str,
-                 source_type_index: int,
-                 year_index: int,
-                 month_index: int,
-                 day_index: int,
-                 location_index: int,
-                 data_type_index: int):
+    def __init__(self, *, source_path: Path, out_path: Path, group: str, data_file_path: DataFilePath):
         """
         Constructor.
 
         :param source_path: The path to containing location files.
         :param group: The group to match in the location files.
-        :param source_type_index: The input path index of the source type.
-        :param year_index: The input path index of the year.
-        :param month_index: The input path index of the month.
-        :param day_index: The input path index of the day.
-        :param location_index: The input path index of the location.
-        :param data_type_index: The input path index of the data type.
+        :param data_file_path: The file path parser.
         """
         self.source_path = source_path
         self.out_path = out_path
         self.group = group
-        self.source_type_index = source_type_index
-        self.year_index = year_index
-        self.month_index = month_index
-        self.day_index = day_index
-        self.location_index = location_index
-        self.data_type_index = data_type_index
+        self.data_file_path = data_file_path
 
     def add_groups_to_paths(self):
         """
@@ -56,14 +42,7 @@ class LocationGroupPath(object):
         groups = []
         for path in self.source_path.rglob('*'):
             if path.is_file():
-                parts = path.parts
-                source_type = parts[self.source_type_index]
-                year = parts[self.year_index]
-                month = parts[self.month_index]
-                day = parts[self.day_index]
-                location = parts[self.location_index]
-                data_type = parts[self.data_type_index]
-                remainder = parts[self.data_type_index + 1:]
+                source_type, year, month, day, location, data_type, remainder = self.data_file_path.parse(path)
                 path_parts = {
                     "source_type": source_type,
                     "year": year,
@@ -86,7 +65,7 @@ class LocationGroupPath(object):
     def link_files(self, paths: list, groups: list):
         """
         Loop through the files and link into them into the output path while
-         adding the location context group into the path.
+        adding the location context group into the path.
 
         :param paths: File paths for linking.
         :param groups: The location context groups.

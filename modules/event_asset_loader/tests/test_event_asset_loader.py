@@ -22,14 +22,12 @@ class EventAssetLoaderTest(TestCase):
         self.fs.create_dir(self.out_path)
         self.source_type_index = 3
         self.source_id_index = 4
-        self.filename_index = 5
 
     def test_event_asset_loader(self):
         event_asset_loader = EventAssetLoader(source_path=self.source_path,
                                               out_path=self.out_path,
                                               source_type_index=self.source_type_index,
-                                              source_id_index=self.source_id_index,
-                                              filename_index=self.filename_index)
+                                              source_id_index=self.source_id_index)
         event_asset_loader.link_event_files()
         self.check_output()
 
@@ -39,7 +37,6 @@ class EventAssetLoaderTest(TestCase):
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
         os.environ['SOURCE_ID_INDEX'] = str(self.source_id_index)
-        os.environ['FILENAME_INDEX'] = str(self.filename_index)
         event_asset_loader_main.main()
         self.check_output()
 

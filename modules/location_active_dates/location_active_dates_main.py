@@ -14,7 +14,7 @@ def main():
     location_path = env.path('LOCATION_PATH')
     out_path = env.path('OUT_PATH')
     schema_index = env.int('SCHEMA_INDEX')
-    log_level = env.log_level('LOG_LEVEL')
+    log_level = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
     log.info('Processing.')
     link_location_files(location_path=location_path, out_path=out_path, schema_index=schema_index)

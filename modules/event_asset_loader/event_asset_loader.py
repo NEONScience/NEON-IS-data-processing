@@ -6,8 +6,7 @@ log = structlog.get_logger()
 
 class EventAssetLoader(object):
 
-    def __init__(self, *, source_path: Path, out_path: Path, source_type_index: int,
-                 source_id_index: int, filename_index: int):
+    def __init__(self, *, source_path: Path, out_path: Path, source_type_index: int, source_id_index: int):
         """
         Constructor.
 
@@ -15,13 +14,11 @@ class EventAssetLoader(object):
         :param out_path: The output path for writing results.
         :param source_type_index: The file path source type index.
         :param source_id_index: The file path source ID index.
-        :param filename_index: The file path filename index.
         """
         self.source_path = source_path
         self.out_path = out_path
         self.source_type_index = source_type_index
         self.source_id_index = source_id_index
-        self.filename_index = filename_index
 
     def link_event_files(self):
         if self.source_path.is_file():
@@ -35,8 +32,7 @@ class EventAssetLoader(object):
         parts = path.parts
         source_type = parts[self.source_type_index]
         source_id = parts[self.source_id_index]
-        filename = parts[self.filename_index]
-        log.debug(f'file: {filename} type: {source_type} source_id: {source_id}')
+        log.debug(f'file: {path.name} type: {source_type} source_id: {source_id}')
         link_filename = f'{source_type}_{source_id}_events.json'
         link_path = Path(self.out_path, source_type, source_id, link_filename)
         log.debug(f'link_path: {link_path}')

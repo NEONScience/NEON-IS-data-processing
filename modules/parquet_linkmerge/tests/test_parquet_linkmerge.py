@@ -15,8 +15,8 @@ class ParquetLinkMergeTest(TestCase):
 
         self.setUpPyfakefs()
 
-        self.out_path = Path('/repo/outputs')
-        self.in_path = Path('/repo/inputs')
+        self.out_path = Path('/repo/out')
+        self.in_path = Path('/repo/in')
         self.metadata_path = Path('prt/2019/10/02')
 
         self.data_files = [

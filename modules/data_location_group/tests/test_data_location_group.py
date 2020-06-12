@@ -5,6 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import data_location_group.data_location_group_main as app
+from data_location_group.data_file_path import DataFilePath
 from data_location_group.data_location_grouper import DataLocationGrouper
 
 
@@ -34,14 +35,12 @@ class DataLocationGroupTest(TestCase):
         self.file_index = 7
 
     def test_group(self):
-        data_location_grouper = DataLocationGrouper(data_path=self.data_path,
-                                                    location_path=self.location_path,
-                                                    out_path=self.out_path,
-                                                    source_type_index=self.source_type_index,
-                                                    year_index=self.year_index,
-                                                    month_index=self.month_index,
-                                                    day_index=self.day_index,
-                                                    file_index=self.file_index)
+        data_file_path = DataFilePath(source_type_index=self.source_type_index,
+                                      year_index=self.year_index,
+                                      month_index=self.month_index,
+                                      day_index=self.day_index)
+        data_location_grouper = DataLocationGrouper(data_path=self.data_path, location_path=self.location_path,
+                                                    out_path=self.out_path, data_file_path=data_file_path)
         data_location_grouper.group_files()
         self.check_output()
 

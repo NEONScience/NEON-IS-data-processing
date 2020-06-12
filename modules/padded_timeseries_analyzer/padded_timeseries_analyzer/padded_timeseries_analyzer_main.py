@@ -4,7 +4,7 @@ from structlog import get_logger
 
 from common import log_config as log_config
 
-from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer import PaddedTimeSeriesAnalyzer
+from padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer import PaddedTimeSeriesAnalyzer
 
 
 def main():

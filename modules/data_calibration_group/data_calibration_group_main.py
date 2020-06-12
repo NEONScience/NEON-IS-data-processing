@@ -3,6 +3,9 @@ import environs
 import structlog
 
 import common.log_config as log_config
+
+from data_calibration_group.data_file_path import DataFilePath
+from data_calibration_group.calibration_file_path import CalibrationFilePath
 from data_calibration_group.data_calibration_grouper import DataCalibrationGrouper
 
 
@@ -26,17 +29,19 @@ def main():
     log.debug(f'calibration_path: {calibration_path}')
     log.debug(f'out_path: {out_path}')
 
+    data_file_path = DataFilePath(source_type_index=data_source_type_index,
+                                  year_index=data_year_index,
+                                  month_index=data_month_index,
+                                  day_index=data_day_index)
+    calibration_file_path = CalibrationFilePath(source_type_index=calibration_source_type_index,
+                                                source_id_index=calibration_source_id_index,
+                                                stream_index=calibration_stream_index)
     data_calibration_grouper = DataCalibrationGrouper(data_path=data_path,
                                                       calibration_path=calibration_path,
                                                       out_path=out_path,
-                                                      data_source_type_index=data_source_type_index,
-                                                      data_year_index=data_year_index,
-                                                      data_month_index=data_month_index,
-                                                      data_day_index=data_day_index,
-                                                      calibration_source_type_index=calibration_source_type_index,
-                                                      calibration_source_id_index=calibration_source_id_index,
-                                                      calibration_stream_index=calibration_stream_index)
-    data_calibration_grouper.group()
+                                                      data_file_path=data_file_path,
+                                                      calibration_file_path=calibration_file_path)
+    data_calibration_grouper.group_files()
 
 
 if __name__ == '__main__':

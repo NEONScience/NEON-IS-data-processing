@@ -4,8 +4,10 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer import PaddedTimeSeriesAnalyzer
-import padded_timeseries_analyzer.padded_timeseries_analyzer.app as app
+from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer_config import AnalyzerConfig
+from padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer import PaddedTimeSeriesAnalyzer
+import padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main \
+    as padded_timeseries_analyzer_main
 
 
 class PaddedTimeSeriesAnalyzerTest(TestCase):
@@ -14,11 +16,8 @@ class PaddedTimeSeriesAnalyzerTest(TestCase):
         """Set required files in mock filesystem."""
         self.setUpPyfakefs()
 
-        self.threshold_dir = 'threshold'
-        self.threshold_file = 'thresholds.json'
-
-        self.out_dir = Path('/tmp/outputs')
-        self.input_root = Path('/tmp/inputs')
+        self.out_dir = Path('/tmp/out')
+        self.input_root = Path('/tmp/in')
 
         source_root = Path('prt/2018/01')
         self.input_data_dir = Path(self.input_root, source_root, '03')
@@ -35,21 +34,21 @@ class PaddedTimeSeriesAnalyzerTest(TestCase):
         self.outside_range_file = f'prt_{location}_2018-01-05.ext'
 
         # Ancillary location file.
-        self.fs.create_file(Path(self.input_root, self.source_dir, 'location', 'locations.json'))
+        self.fs.create_file(Path(self.input_root, self.source_dir,
+                                 AnalyzerConfig.location_dir, AnalyzerConfig.location_filename))
 
         # Threshold file.
-        threshold_path = Path(self.input_root, self.source_dir, self.threshold_dir, self.threshold_file)
+        threshold_path = Path(self.input_root, self.source_dir,
+                              AnalyzerConfig.threshold_dir, AnalyzerConfig.threshold_filename)
         self.fs.create_file(threshold_path)
 
-        self.data_dir = 'data'
-
         #  Source data file.
-        data_root = Path(self.input_root, self.source_dir, self.data_dir)
+        data_root = Path(self.input_root, self.source_dir, AnalyzerConfig.data_dir)
         source_data_path = Path(data_root, self.source_data_file)
         self.fs.create_file(source_data_path)
 
         #  Manifest file.
-        manifest_path = Path(data_root, 'manifest.txt')
+        manifest_path = Path(data_root, AnalyzerConfig.manifest_filename)
         test_manifest = Path(os.path.dirname(__file__), 'test_manifest.txt')
         self.fs.add_real_file(test_manifest, target_path=manifest_path)
 
@@ -76,18 +75,20 @@ class PaddedTimeSeriesAnalyzerTest(TestCase):
         os.environ['OUT_PATH'] = str(self.out_dir)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
-        app.main()
+        padded_timeseries_analyzer_main.main()
         self.check_output()
 
     def check_output(self):
         """Check files in the output directory."""
-        location_path = Path(self.out_dir, self.source_dir, 'location', 'locations.json')
-        threshold_path = Path(self.out_dir, self.source_dir, self.threshold_dir, self.threshold_file)
+        location_path = Path(self.out_dir, self.source_dir,
+                             AnalyzerConfig.location_dir, AnalyzerConfig.location_filename)
+        threshold_path = Path(self.out_dir, self.source_dir,
+                              AnalyzerConfig.threshold_dir, AnalyzerConfig.threshold_filename)
         output_root = Path(self.out_dir, self.source_dir)
-        data_path = Path(output_root, self.data_dir, self.source_data_file)
-        previous_data_path = Path(output_root, self.data_dir, self.previous_data_file)
-        next_data_path = Path(output_root, self.data_dir, self.next_data_file)
-        outside_range_path = Path(output_root, self.data_dir, self.outside_range_file)
+        data_path = Path(output_root, AnalyzerConfig.data_dir, self.source_data_file)
+        previous_data_path = Path(output_root, AnalyzerConfig.data_dir, self.previous_data_file)
+        next_data_path = Path(output_root, AnalyzerConfig.data_dir, self.next_data_file)
+        outside_range_path = Path(output_root, AnalyzerConfig.data_dir, self.outside_range_file)
         self.assertTrue(location_path.exists())
         self.assertTrue(threshold_path.exists())
         self.assertTrue(data_path.exists())

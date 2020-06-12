@@ -4,6 +4,7 @@ import structlog
 
 import common.log_config as log_config
 
+from event_location_group.data_file_path import DataFilePath
 from event_location_group.event_location_grouper import EventLocationGrouper
 
 log = structlog.get_logger()
@@ -20,20 +21,19 @@ def main():
     month_index = env.int('MONTH_INDEX')
     day_index = env.int('DAY_INDEX')
     source_id_index = env.int('SOURCE_ID_INDEX')
-    filename_index = env.int('FILENAME_INDEX')
     log_config.configure(log_level)
     log.debug(f'data_dir: {data_path} location_dir: {location_path} out_dir: {out_path}')
 
+    data_file_path = DataFilePath(source_type_index=source_type_index,
+                                  year_index=year_index,
+                                  month_index=month_index,
+                                  day_index=day_index,
+                                  source_id_index=source_id_index)
     event_location_grouper = EventLocationGrouper(data_path=data_path,
                                                   location_path=location_path,
                                                   out_path=out_path,
-                                                  source_type_index=source_type_index,
-                                                  year_index=year_index,
-                                                  month_index=month_index,
-                                                  day_index=day_index,
-                                                  source_id_index=source_id_index,
-                                                  filename_index=filename_index)
-    event_location_grouper.group()
+                                                  data_file_path=data_file_path)
+    event_location_grouper.group_files()
 
 
 if __name__ == '__main__':

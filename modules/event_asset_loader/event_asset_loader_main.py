@@ -16,14 +16,12 @@ def main():
     log_level = env.log_level('LOG_LEVEL')
     source_type_index = env.int('SOURCE_TYPE_INDEX')
     source_id_index = env.int('SOURCE_ID_INDEX')
-    filename_index = env.int('FILENAME_INDEX')
     log_config.configure(log_level)
     log.debug(f'source_path: {source_path} out_path: {out_path}')
     event_asset_loader = EventAssetLoader(source_path=source_path,
                                           out_path=out_path,
                                           source_type_index=source_type_index,
-                                          source_id_index=source_id_index,
-                                          filename_index=filename_index)
+                                          source_id_index=source_id_index)
     event_asset_loader.link_event_files()
 
 

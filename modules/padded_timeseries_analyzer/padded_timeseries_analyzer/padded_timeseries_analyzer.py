@@ -7,6 +7,8 @@ from structlog import get_logger
 
 from common.merged_data_filename import MergedDataFilename
 
+from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer_config import AnalyzerConfig
+
 log = get_logger()
 
 
@@ -28,7 +30,7 @@ class PaddedTimeSeriesAnalyzer(object):
         """Analyze time series data to calculate additional time padding
         required for processing with thresholds."""
         out_path_parts = list(self.out_path.parts)
-        manifest_file = 'manifest.txt'
+        manifest_file = AnalyzerConfig.manifest_filename
         try:
             for root, directories, files in os.walk(str(self.data_path)):
                 for filename in files:
@@ -78,13 +80,11 @@ class PaddedTimeSeriesAnalyzer(object):
         :param data_file_path: The source path for the threshold file.
         :param data_file_link_path: The destination path to write results.
         """
-        threshold_dir = 'threshold'
-        threshold_filename = 'thresholds.json'
         file_root = data_file_path.parent.parent
         link_root = data_file_link_path.parent.parent
-        file_path = Path(file_root, threshold_dir, threshold_filename)
+        file_path = Path(file_root, AnalyzerConfig.threshold_dir, AnalyzerConfig.threshold_filename)
         if file_path.exists():
-            link_path = Path(link_root, threshold_dir, threshold_filename)
+            link_path = Path(link_root, AnalyzerConfig.threshold_dir, AnalyzerConfig.threshold_filename)
             log.debug(f'linking {file_path} to {link_path}')
             link_path.parent.mkdir(parents=True, exist_ok=True)
             if not link_path.exists():
@@ -94,12 +94,13 @@ class PaddedTimeSeriesAnalyzer(object):
         """
         Write any files outside of data and thresholds in the input path
         into the output path.
+
         :param root: The threshold root directory.
         """
         for file_path in root.parent.rglob('*'):
             if file_path.is_file():
                 file_path = str(file_path)
-                if 'data' not in file_path and 'threshold' not in file_path:
+                if AnalyzerConfig.data_dir not in file_path and AnalyzerConfig.threshold_dir not in file_path:
                     file_path = Path(file_path)
                     link_path = Path(self.out_path, *file_path.parts[self.relative_path_index:])
                     link_path.parent.mkdir(parents=True, exist_ok=True)
