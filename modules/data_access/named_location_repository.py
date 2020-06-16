@@ -79,7 +79,7 @@ class NamedLocationRepository(object):
 
     def get_asset_location_history(self, asset_id: int):
         """
-        Get an asset's location history.
+        Get an asset's location history in GEOJson format.
 
         :param asset_id: The asset ID.
         :return: The asset's location history.

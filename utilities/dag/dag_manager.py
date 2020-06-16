@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import os
-from pathlib import Path
 
 from dag.pipeline_specification_parser import PipelineSpecificationParser
 from dag.dag_builder import DagBuilder
@@ -8,14 +7,12 @@ from dag.dag_builder import DagBuilder
 
 class DagManager(object):
 
-    def __init__(self, end_node_specification: Path, specifications_directory: Path):
+    def __init__(self, parser: PipelineSpecificationParser):
         """
         Constructor.
 
-        :param end_node_specification: The end node pipeline of the DAG.
-        :param specifications_directory: A directory path containing the DAG pipeline specifications.
+        :param parser: A pipeline specification file parser.
         """
-        parser = PipelineSpecificationParser(end_node_specification, specifications_directory)
         end_node_pipeline = parser.get_end_node_pipeline()
         files_by_pipeline = parser.get_pipeline_files()
         inputs_by_pipeline = parser.get_pipeline_inputs()

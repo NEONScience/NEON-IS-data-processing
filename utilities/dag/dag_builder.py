@@ -14,26 +14,24 @@ class DagBuilder(object):
         """
         self.pipeline_files = pipeline_files
         self.pipeline_inputs = pipeline_inputs
-        # Populated with all nodes for the DAG (pipelines and source repos).
-        self.nodes = []
-        # Populated with pipeline specification files for the DAG.
         self.dag_pipeline_files = []
-        self.dag_pipelines = []  # Populated with pipeline names for the DAG.
+        self.dag_pipeline_names = []
+        self.dag_nodes = []
         self.source_repos = {}
         self.dag = Digraph()
-        self._build(end_node_pipeline)
+        self.build(end_node_pipeline)
 
-    def _build(self, end_node_pipeline: str):
+    def build(self, end_node_pipeline: str):
         """
         Populate the DAG from the given pipeline end node.
 
         :param end_node_pipeline: The end node for the pipeline.
         """
         # add the end node pipeline to the DAG
-        if not self.nodes:
+        if not self.dag_nodes:
             self.dag.node(end_node_pipeline, label=end_node_pipeline, shape='box')
-            self.nodes.append(end_node_pipeline)
-            self.dag_pipelines.append(end_node_pipeline)
+            self.dag_nodes.append(end_node_pipeline)
+            self.dag_pipeline_names.append(end_node_pipeline)
             specification_file = self.pipeline_files[end_node_pipeline]
             self.dag_pipeline_files.append(specification_file)
         # loop over pipeline inputs
@@ -44,19 +42,20 @@ class DagBuilder(object):
                 shape = 'box'
                 # exclude data source repos
                 if 'data_source' not in input_pipeline:
-                    self.dag_pipelines.append(input_pipeline)
+                    self.dag_pipeline_names.append(input_pipeline)
                     self.dag_pipeline_files.append(specification_file)
             # pipeline is a source repository, do not include in DAG pipeline files
             else:
                 shape = 'oval'
                 print(f'source repo: {input_pipeline}')
                 self.source_repos.update({'pipeline': input_pipeline, 'file': specification_file})
-            if input_pipeline not in self.nodes:
+            if input_pipeline not in self.dag_nodes:
                 self.dag.node(input_pipeline, label=input_pipeline, shape=shape)
-                self.nodes.append(input_pipeline)
+                self.dag_nodes.append(input_pipeline)
             self.dag.edge(input_pipeline, end_node_pipeline)
             if input_pipeline in self.pipeline_inputs:
-                self._build(input_pipeline)
+                # recurse this function
+                self.build(input_pipeline)
         # omit duplicate renderings
         del self.pipeline_inputs[end_node_pipeline]
 
@@ -64,7 +63,7 @@ class DagBuilder(object):
         return self.dag
 
     def get_pipeline_names(self) -> list:
-        return self.dag_pipelines
+        return self.dag_pipeline_names
 
     def get_pipeline_files(self) -> list:
         return self.dag_pipeline_files
@@ -76,6 +75,6 @@ class DagBuilder(object):
         """
         Render the dag.
 
-        :param output_file: The path of the output file to write.
+        :param output_file: The output file path.
         """
         self.dag.render(output_file, view=True)

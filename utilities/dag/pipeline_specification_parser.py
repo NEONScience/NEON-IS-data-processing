@@ -10,93 +10,80 @@ class PipelineSpecificationParser(object):
         """
         Constructor.
 
-        :param end_node_specification: Path to the pipeline specifications for the endpoint node
-        :param specification_path: Path to directory containing pipeline specifications.
+        :param end_node_specification: Path to the specifications for the endpoint node
+        :param specification_path: Path to directory containing specifications.
         """
         self.end_node_specification = end_node_specification
         self.specification_path = specification_path
         self.end_node_pipeline_name = None
         self.pipeline_inputs = {}
         self.pipeline_files = {}
-        self.parse()
+        self.parse_all()
 
-    def parse(self):
-        """Read all pipeline specification files and parse their inputs."""
+    def parse_all(self):
+        """Read all specification files and parse their inputs."""
         for path in self.specification_path.rglob('*'):
             if path.is_file():
-                pipeline_input_repos = []
                 if path.suffix == '.yaml':
-                    self.parse_yaml(path, pipeline_input_repos)
+                    self.parse_yaml(path)
                 if path.suffix == '.json':
-                    self.parse_json(path, pipeline_input_repos)
+                    self.parse_json(path)
 
-    def parse_yaml(self, path: Path, pipeline_input_repos: list):
-        """
-        Parse a YAML specification file.
-
-        :param path: The specification file path.
-        :param pipeline_input_repos: A list to hold the pipeline inputs.
-        """
+    def parse_yaml(self, path: Path):
         with open(str(path)) as yaml_file:
             file_data = yaml.load(yaml_file, Loader=yaml.FullLoader)
-            self.parse_file_data(path, file_data, pipeline_input_repos)
+            self.parse_file_data(path, file_data)
 
-    def parse_json(self, path: Path, pipeline_input_repos: list):
-        """
-        Parse a JSON specification file.
-
-        :param path: The file path.
-        :param pipeline_input_repos: A list to hold the pipeline inputs.
-        """
+    def parse_json(self, path: Path):
         with open(str(path)) as json_file:
             file_data = json.load(json_file)
-            self.parse_file_data(path, file_data, pipeline_input_repos)
+            self.parse_file_data(path, file_data)
 
-    def parse_file_data(self, path: Path, file_data: dict, pipeline_input_repos: list):
+    def parse_file_data(self, path: Path, file_data: dict):
         """
-        Parse the specification file data.
+        Parse the file data.
 
         :param path: The file path.
         :param file_data: The file data.
-        :param pipeline_input_repos: A list for appending the pipeline inputs.
         """
         pipeline_name = file_data['pipeline']['name']
         print(f'adding {path} to pipeline: {pipeline_name}')
         self.pipeline_files[pipeline_name] = path
 
-        has_input_repo = False
+        pipeline_has_inputs = False
         if path.samefile(self.end_node_specification):
             self.end_node_pipeline_name = pipeline_name
+        # list to accumulate all the inputs for this pipeline file
+        pipeline_input_repos = []
         for key, value in file_data['input'].items():
-            has_input_repo = self.parse_pipeline_input(key, value, pipeline_input_repos, has_input_repo)
-        if has_input_repo:
+            pipeline_has_inputs = self.parse_pipeline_input(key, value, pipeline_input_repos, pipeline_has_inputs)
+        if pipeline_has_inputs:
             self.pipeline_inputs[pipeline_name] = pipeline_input_repos
 
-    def parse_pipeline_input(self, key: str, value, input_repos: list, has_input_repo=False):
+    def parse_pipeline_input(self, key: str, value, pipeline_input_repos: list, has_input_repo=False):
         """
-        Parse an input entry from a Pachyderm pipeline specification.
+        Parse the inputs from a specification file.
 
-        :param key: An input repo key should be 'pfs'
+        :param key: An input repo key, should be 'pfs'.
         :param value: The input repo name(s).
-        :param input_repos: The list of input repos to populate.
+        :param pipeline_input_repos: The list of input repos to populate.
         :param has_input_repo: true indicates the pipeline has at least one input.
-        :type has_input_repo: bool
         """
         if key == 'pfs':
             has_input_repo = True
             repo = value['repo']
-            if repo not in input_repos:
-                input_repos.append(repo)
+            if repo not in pipeline_input_repos:
+                pipeline_input_repos.append(repo)
         else:
             if isinstance(value, list):
                 for value2 in value:
                     for key3, value3 in value2.items():
                         # recurse
-                        has_input_repo = self.parse_pipeline_input(key3, value3, input_repos, has_input_repo)
+                        has_input_repo = self.parse_pipeline_input(key3, value3, pipeline_input_repos, has_input_repo)
             if isinstance(value, dict):
                 for key3, value3 in value.items():
                     # recurse
-                    has_input_repo = self.parse_pipeline_input(key3, value3, input_repos, has_input_repo)
+                    has_input_repo = self.parse_pipeline_input(key3, value3, pipeline_input_repos, has_input_repo)
         return has_input_repo
 
     def get_end_node_pipeline(self) -> str:
@@ -117,7 +104,7 @@ class PipelineSpecificationParser(object):
 
     def get_pipeline_inputs(self) -> dict:
         """
-        Return inputs by pipeline
+        Return inputs organized by pipeline
 
         :return: Inputs organized by pipeline
         """

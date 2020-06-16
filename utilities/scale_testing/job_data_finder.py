@@ -5,26 +5,28 @@ from python_pachyderm import Client
 from python_pachyderm.proto.pps.pps_pb2 import JobInfo
 
 
-def get_most_recent_job_stats(client: Client, pipeline_name: str):
+def get_latest_job_stats(client: Client, pipeline_name: str):
     max_milliseconds = 0
-    most_recent_job = None
+    latest_job = None
     for job_info in client.list_job(pipeline_name=pipeline_name, history=0, full=False):
         state = job_info.state
         if state == 3:  # 3 means the job is complete
             started_milliseconds = job_info.started.seconds
             if started_milliseconds > max_milliseconds:
                 max_milliseconds = started_milliseconds
-                most_recent_job = job_info
-    return most_recent_job
+                latest_job = job_info
+    return latest_job
 
 
 def get_job_run_times(job_info: JobInfo):
-    started_milliseconds = job_info.started.seconds
-    started_nanos = job_info.started.nanos
-    finished_milliseconds = job_info.finished.seconds
-    finished_nanos = job_info.finished.nanos
     job_stats = job_info.stats
     if job_stats is not None:
+        started = job_info.started
+        started_milliseconds = started.seconds
+        started_nanos = started.nanos
+        finished = job_info.finished
+        finished_milliseconds = finished.seconds
+        finished_nanos = finished.nanos
         download_time = job_stats.download_time
         download_seconds = download_time.seconds
         download_nanos = download_time.nanos
@@ -59,8 +61,11 @@ def main():
     port = int(args.port)
     pipeline_name = args.pipeline
     client = python_pachyderm.Client(host=host, port=port)
-    job = get_most_recent_job_stats(client, pipeline_name)
-    get_job_run_times(job)
+    job = get_latest_job_stats(client, pipeline_name)
+    if job is None:
+        print(f'No jobs are available for {pipeline_name}.')
+    else:
+        get_job_run_times(job)
 
 
 if __name__ == '__main__':
