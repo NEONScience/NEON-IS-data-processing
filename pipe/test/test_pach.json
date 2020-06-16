@@ -1,0 +1,26 @@
+{
+  "pipeline": {
+    "name": "test_pach_cs"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.test.pach.R"],
+    "image": "quay.io/battelleecology/test-pach:v0.0.1.cs",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "tempSoil_calibrated_data_cs",
+      "glob": "/prt/*/*/*/"
+    }
+  },
+  "enable_stats": false,
+  "standby":true,
+  "resource_requests": {
+    "memory": "210M",
+    "cpu": 0.3
+  }
+}
