@@ -1,0 +1,45 @@
+---
+pipeline:
+  name: tempAirSingle_threshold_regularized_group_newJoiner
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/file_joiner:10
+  cmd: ["/bin/bash"]
+  stdin:
+    - "#!/bin/bash"
+    - "python3 -m file_joiner.app"
+  env:
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: REGULARIZED_PATH
+            glob_pattern: /pfs/REGULARIZED_PATH/**
+            # Join on year and month
+            join_indices: [3, 4, 5, 6]
+        - path:
+            name: THRESHOLD_PATH
+            glob_pattern: /pfs/THRESHOLD_PATH/**
+            # Join on year and month
+            join_indices: [3, 4, 5, 6]
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: DEBUG
+    RELATIVE_PATH_INDEX: "3"
+input:
+  cross:
+    - pfs:
+        name: REGULARIZED_PATH
+        repo: tempAirSingle_regularized_data
+        glob: /*/*
+        empty_files: true
+    - pfs:
+        name: THRESHOLD_PATH
+        repo: tempAirSingle_threshold_select
+        glob: /*/*
+        empty_files: true
+parallelism_spec:
+  constant: "1"
+enable_stats: false
+standby: false
