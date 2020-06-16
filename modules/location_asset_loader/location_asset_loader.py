@@ -35,7 +35,7 @@ class LocationAssetLoader(object):
             asset_id = asset['asset_id']
             asset_type = asset['asset_type']
             if asset_type is not None:
-                asset_location_history = self.named_location_repository.get_asset_history(asset_id)
+                asset_location_history = self.named_location_repository.get_asset_location_history(asset_id)
                 # add the asset to the location history as the "source"
                 asset_location_history.update({"source_type": asset_type})
                 asset_location_history.update({"source_id": asset_id})

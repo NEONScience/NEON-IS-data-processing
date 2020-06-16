@@ -2,7 +2,7 @@
 import argparse
 from pathlib import Path
 
-from .dag_manager import DagManager
+from dag.dag_manager import DagManager
 
 
 def main(end_node_specification: str, specification_dir: str):

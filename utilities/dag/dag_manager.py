@@ -2,8 +2,8 @@
 import os
 from pathlib import Path
 
-from .pipeline_specification_parser import PipelineSpecificationParser
-from .dag_builder import DagBuilder
+from dag.pipeline_specification_parser import PipelineSpecificationParser
+from dag.dag_builder import DagBuilder
 
 
 class DagManager(object):

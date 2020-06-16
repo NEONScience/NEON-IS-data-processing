@@ -50,8 +50,8 @@ class DataAccessTest(TestCase):
         self.assertTrue(site_name == 'ORNL')
 
     def test_get_schema_name(self):
-        name = 'SENSOR000000'
-        schema_name = self.named_location_repository.get_schema_name(name)
+        named_location_name = 'SENSOR000000'
+        schema_name = self.named_location_repository.get_schema_name(named_location_name)
         self.assertTrue(schema_name == 'exo2')
 
     def test_get_active_periods(self):
@@ -68,7 +68,11 @@ class DataAccessTest(TestCase):
 
     def test_property_repository(self):
         properties = self.property_repository.get_named_location_properties(self.named_location_id)
-        self.assertTrue(properties[0]['string_value'] == 'CFGLOC100805')
+        prop = properties[0]
+        for key, value in prop.items():
+            print(prop)
+            self.assertTrue(key == 'Required Asset Management Location Code')
+            self.assertTrue(value == 'CFGLOC100805')
 
     def tearDown(self):
         self.connection.close()
