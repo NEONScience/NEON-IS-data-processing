@@ -11,7 +11,7 @@ import common.location_file_parser as location_file_parser
 log = structlog.get_logger()
 
 
-def link_location_files(*, location_path: Path, out_path: Path, schema_index: int):
+def link_files(*, location_path: Path, out_path: Path, schema_index: int):
     """
     Link a location file for each active date with path '/<schema>/yyyy/mm/dd/<location name>/<filename>'.
 
@@ -35,7 +35,7 @@ def link_location_files(*, location_path: Path, out_path: Path, schema_index: in
                 for date in date_formatter.dates_between(start_date, end_date):
                     dt = datetime(date.year, date.month, date.day)
                     year, month, day = date_formatter.parse_date(dt)
-                    link_path = Path(out_path, schema_name, year, month, location_name, path.name)
+                    link_path = Path(out_path, schema_name, year, month, day, location_name, path.name)
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                     if not link_path.exists():
                         link_path.symlink_to(path)

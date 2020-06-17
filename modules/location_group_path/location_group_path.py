@@ -3,7 +3,7 @@ from pathlib import Path
 
 from structlog import get_logger
 
-from common.location_file_parser import LocationFileParser
+from common.asset_location_file_parser import AssetLocationFileParser
 
 from location_group_path.data_file_path import DataFilePath
 
@@ -56,7 +56,7 @@ class LocationGroupPath(object):
                 paths.append({"path": path, "parts": path_parts})
                 # get the location context group from the location file
                 if data_type == 'location':
-                    location_file_parser = LocationFileParser(path)
+                    location_file_parser = AssetLocationFileParser(path)
                     groups.extend(location_file_parser.matching_context_items(self.group))
         if len(groups) == 0:
             log.error(f'No location directory found for group {self.group}.')

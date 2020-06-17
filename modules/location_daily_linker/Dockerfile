@@ -1,6 +1,6 @@
 FROM centos:7
 
-ARG APP_DIR="location_active_dates"
+ARG APP_DIR="location_daily_linker"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
