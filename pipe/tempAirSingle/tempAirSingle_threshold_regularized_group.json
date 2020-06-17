@@ -20,8 +20,8 @@
         "pfs": {
           "name": "REGULARIZED_PATH",
           "repo": "tempAirSingle_regularized_data",
-          "glob": "/*/*/(*)",
-          "joinOn": "$1",
+          "glob": "/(*)/(*)/(*)",
+          "joinOn": "$1/$2/$3",
           "empty_files": true
         } 
       },
@@ -29,8 +29,8 @@
         "pfs": {
           "name": "THRESHOLD_PATH",
           "repo": "tempAirSingle_threshold_select",
-          "glob": "/*/*/(*)",
-          "joinOn": "$1",
+          "glob": "/(*)/(*)/(*)",
+          "joinOn": "$1/$2/$3",
           "empty_files": true
         }
       }
