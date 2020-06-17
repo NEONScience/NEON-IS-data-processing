@@ -53,7 +53,6 @@ class DataLocationGroupTest(TestCase):
         os.environ['YEAR_INDEX'] = str(self.year_index)
         os.environ['MONTH_INDEX'] = str(self.month_index)
         os.environ['DAY_INDEX'] = str(self.day_index)
-        os.environ['FILE_INDEX'] = str(self.file_index)
         app.main()
         self.check_output()
 
