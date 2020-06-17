@@ -25,7 +25,7 @@
     "pfs": {
       "name": "IN_PATH",
       "repo": "tempAirSingle_prt",
-      "glob": "/*/*/*/*/*/*",
+      "glob": "/*/*/*",
       "empty_files": true
     }
   },
