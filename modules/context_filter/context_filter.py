@@ -2,7 +2,7 @@
 from pathlib import Path
 import structlog
 
-from common.location_file_parser import LocationFileParser
+from common.asset_location_file_parser import AssetLocationFileParser
 from context_filter.data_file_path import DataFilePath
 
 log = structlog.get_logger()
@@ -59,7 +59,7 @@ class ContextFilter(object):
                 for data_type in data_type_path:
                     file = data_type_path.get(data_type)
                     if data_type == 'location':
-                        location_file_parser = LocationFileParser(file)
+                        location_file_parser = AssetLocationFileParser(file)
                         if location_file_parser.contains_context(self.context):
                             matching_files.append(file_paths)
         return matching_files
