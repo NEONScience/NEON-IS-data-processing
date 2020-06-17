@@ -53,7 +53,7 @@ test_that("Unit test of def.ucrt.fdas.rstc.R", {
   # Happy path
   #
   # The input is a json with elements of Name, Value, and .attrs
-  
+  # fileCal has the correct value for "resistance" calibration
   fileCal = "calibration3.xml"
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = fileCal, Vrbs = TRUE)
   data = c(0.9, 0.88)
@@ -72,4 +72,13 @@ test_that("Unit test of def.ucrt.fdas.rstc.R", {
   expect_true ((is.data.frame(ufrstcDf_returned)) &&
                  (nrow(ufrstcDf_returned) == 0))
   
+  # Sad path 2 - calibration does not have right values for "resistance" calibration
+  # the calibration should have (U_CVALR1,U_CVALR4) to be the voltage calibration
+  
+  fileCal = "calibration4.xml"
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+  data = c(0.9, 0.88)
+  ufrstcDf_returned <- try(NEONprocIS.cal::def.ucrt.fdas.volt (data = data,
+                                                               infoCal = infoCal), silent = TRUE)
+  testthat::expect_true((class(ufrstcDf_returned)[1] == "try-error")) 
 })

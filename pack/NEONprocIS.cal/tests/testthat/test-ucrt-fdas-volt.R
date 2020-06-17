@@ -48,12 +48,12 @@
 # Define test context
 context("\n                       Unit test of def.ucrt.fdas.volt.R\n")
 
-# Unit test of def.ucrt.fdas.rstc.R
+# Unit test of def.ucrt.fdas.volt.R
 test_that("Unit test of def.ucrt.fdas.volt.R", {
   # Happy path
   #
   # The input is a json with elements of Name, Value, and .attrs
-  
+  # fileCal has the correct value for "voltage" calibration
   fileCal = "calibration4.xml"
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = fileCal, Vrbs = TRUE)
   data = c(0.9, 0.88)
@@ -65,11 +65,21 @@ test_that("Unit test of def.ucrt.fdas.volt.R", {
   expect_true ((is.data.frame(ufvoltDf_returned)) &&
                  !(is.null(ufvoltDf_returned)))
   # The output is a data frame having Name, Value, and .attrs
-  #  Sad path - no parameters passed
+  # Sad path 1 - no parameters passed
   
   ufvoltDf_returned <- NEONprocIS.cal::def.ucrt.fdas.volt ()
   
   expect_true ((is.data.frame(ufvoltDf_returned)) &&
                  (nrow(ufvoltDf_returned) == 0))
+  
+  # Sad path 2 - calibration does not have right values for "vlotage" calibration
+  # the calobration should have (U_CVALV1,U_CVALV4) to be the voltage calibration
+
+  fileCal = "calibration3.xml"
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+  data = c(0.9, 0.88)
+  ufrstcDf_returned <- try(NEONprocIS.cal::def.ucrt.fdas.volt (data = data,
+                                                               infoCal = infoCal), silent = TRUE)
+  testthat::expect_true((class(ufrstcDf_returned)[1] == "try-error")) 
   
 })
