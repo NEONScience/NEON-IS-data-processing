@@ -28,16 +28,18 @@ transform:
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
 input:
-  cross:
+  join:
     - pfs:
         name: REGULARIZED_PATH
         repo: tempAirSingle_regularized_data
-        glob: /*/*
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
         empty_files: true
     - pfs:
         name: THRESHOLD_PATH
         repo: tempAirSingle_threshold_select
-        glob: /*/*
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
         empty_files: true
 parallelism_spec:
   constant: "1"
