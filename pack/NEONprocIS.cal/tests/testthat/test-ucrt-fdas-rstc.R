@@ -78,7 +78,7 @@ test_that("Unit test of def.ucrt.fdas.rstc.R", {
   fileCal = "calibration4.xml"
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
   data = c(0.9, 0.88)
-  ufrstcDf_returned <- try(NEONprocIS.cal::def.ucrt.fdas.volt (data = data,
+  ufrstcDf_returned <- try(NEONprocIS.cal::def.ucrt.fdas.rstc (data = data,
                                                                infoCal = infoCal), silent = TRUE)
   testthat::expect_true((class(ufrstcDf_returned)[1] == "try-error")) 
 })
