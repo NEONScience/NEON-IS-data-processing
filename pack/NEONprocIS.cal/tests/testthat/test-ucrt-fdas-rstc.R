@@ -5,7 +5,7 @@
 #' Run unit tests for def.ucrt.fdas.rstc.R.
 #' The tests include positive and negative scenarios.
 #' The positive test is for a case when all the params to the function are valid
-#' The negative tests are when a param(s) is empty or does not have invalid values
+#' The negative tests are when a param(s) is empty or does not have valid values
 
 #' Refer to def.ucrt.fdas.rstc.R for the details of the function.
 
