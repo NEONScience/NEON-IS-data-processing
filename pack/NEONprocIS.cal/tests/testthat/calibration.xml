@@ -62,7 +62,7 @@
 		<Value>104</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
 		<Name>U_CVALA3</Name>
-		<Value>0.00585</Value>
+		<Value>0.000385</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
 		<Name>U_CVALA2</Name>
 		<Value>0.000141</Value>
