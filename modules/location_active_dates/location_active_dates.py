@@ -5,7 +5,7 @@ from datetime import datetime
 import structlog
 
 import common.date_formatter as date_formatter
-import common.location_file_parser as location_file_parser
+from common.location_file_parser import LocationFileParser
 
 
 log = structlog.get_logger()
@@ -23,7 +23,9 @@ def link_location_files(*, location_path: Path, out_path: Path, schema_index: in
         if path.is_file():
             parts = path.parts
             schema_name = parts[schema_index]
-            location_name, active_periods = location_file_parser.get_active_periods(path)
+            parser = LocationFileParser(path)
+            location_name = parser.get_name()
+            active_periods = parser.get_active_periods()
             for period in active_periods:
                 start_date = period['start_date']
                 end_date = period['end_date']

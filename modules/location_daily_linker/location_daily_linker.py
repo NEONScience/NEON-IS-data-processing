@@ -1,41 +1,38 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from datetime import datetime
+from calendar import monthrange
 
 import structlog
 
-import common.date_formatter as date_formatter
-import common.location_file_parser as location_file_parser
-
+from location_daily_linker.location_file_path import LocationFilePath
 
 log = structlog.get_logger()
 
 
-def link_files(*, location_path: Path, out_path: Path, schema_index: int):
-    """
-    Link a location file for each active date with path '/<schema>/yyyy/mm/dd/<location name>/<filename>'.
+class LocationDailyLinker(object):
 
-    :param location_path: The location file path.
-    :param out_path: The output directory root path.
-    :param schema_index: The file path index of the schema name.
-    """
-    for path in location_path.rglob('*'):
-        if path.is_file():
-            parts = path.parts
-            schema_name = parts[schema_index]
-            location_name, active_periods = location_file_parser.get_active_periods(path)
-            for period in active_periods:
-                start_date = period['start_date']
-                end_date = period['end_date']
-                log.debug(f'start_date: {start_date} end_date: {end_date}')
-                if start_date is not None:
-                    start_date = date_formatter.parse(start_date)
-                if end_date is not None:
-                    end_date = date_formatter.parse(end_date)
-                for date in date_formatter.dates_between(start_date, end_date):
-                    dt = datetime(date.year, date.month, date.day)
-                    year, month, day = date_formatter.parse_date(dt)
-                    link_path = Path(out_path, schema_name, year, month, day, location_name, path.name)
+    def __init__(self, *, location_path: Path, out_path: Path, location_file_path: LocationFilePath):
+        """
+        Constructor.
+
+        :param location_path: The location file path.
+        :param out_path: The output directory path.
+        :param location_file_path: The file path parser.
+        """
+        self.location_path = location_path
+        self.location_file_path = location_file_path
+        self.out_path = out_path
+
+    def link_files(self):
+        """Link a location file for each date with path '/<source>/yyyy/mm/dd/<location>/<file>'."""
+        for path in self.location_path.rglob('*'):
+            if path.is_file():
+                source_type, year, month, location = self.location_file_path.parse(path)
+                days = monthrange(int(year), int(month))[1]
+                for day in range(1, days + 1):
+                    day_string = str(day).zfill(2)
+                    link_path = Path(self.out_path, source_type, year, month, day_string, location, path.name)
+                    log.debug(f'link: {link_path}')
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                     if not link_path.exists():
                         link_path.symlink_to(path)

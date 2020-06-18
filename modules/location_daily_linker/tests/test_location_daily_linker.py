@@ -4,8 +4,9 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import location_daily_linker.location_daily_linker_main as location_active_dates_main
-from location_daily_linker.location_daily_linker import link_files
+import location_daily_linker.location_daily_linker_main as location_daily_linker_main
+from location_daily_linker.location_file_path import LocationFilePath
+from location_daily_linker.location_daily_linker import LocationDailyLinker
 
 
 class LocationDailyLinkerTest(TestCase):
@@ -16,30 +17,40 @@ class LocationDailyLinkerTest(TestCase):
         self.fs.create_dir(self.out_path)
 
         self.input_path = Path('/input/locations')
-        self.location_path = self.input_path.joinpath('prt/CFGLOC113836/location.json')
+        self.location_path = Path(self.input_path, 'prt/2020/01/CFGLOC113836/location.json')
 
         # Use real location file for parsing
         actual_location_file_path = Path(os.path.dirname(__file__), 'test-location.json')
         self.fs.add_real_file(actual_location_file_path, target_path=self.location_path)
 
-        self.schema_index = 3
+        self.source_type_index = 3
+        self.year_index = 4
+        self.month_index = 5
+        self.location_index = 6
 
     def test_link_files(self):
-        link_files(location_path=self.input_path, out_path=self.out_path, schema_index=self.schema_index)
+        location_file_path = LocationFilePath(source_type_index=self.source_type_index,
+                                              year_index=self.year_index,
+                                              month_index=self.month_index,
+                                              location_index=self.location_index)
+        location_daily_linker = LocationDailyLinker(location_path=self.input_path, out_path=self.out_path,
+                                                    location_file_path=location_file_path)
+        location_daily_linker.link_files()
         self.check_output()
 
     def test_main(self):
         os.environ['LOCATION_PATH'] = str(self.input_path)
-        os.environ['SCHEMA_INDEX'] = str(self.schema_index)
+        os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
+        os.environ['YEAR_INDEX'] = str(self.year_index)
+        os.environ['MONTH_INDEX'] = str(self.month_index)
+        os.environ['LOCATION_INDEX'] = str(self.location_index)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        location_active_dates_main.main()
+        location_daily_linker_main.main()
         self.check_output()
 
     def check_output(self):
-        expected_input_path = Path(self.input_path, self.location_path)
-        self.assertTrue(expected_input_path.exists())
-        expected_path_1 = Path(self.out_path, 'prt/2020/06/30/CFGLOC113836/location.json')
-        expected_path_2 = Path(self.out_path, 'prt/2020/07/01/CFGLOC113836/location.json')
+        expected_path_1 = Path(self.out_path, 'prt/2020/01/01/CFGLOC113836/location.json')
+        expected_path_2 = Path(self.out_path, 'prt/2020/01/31/CFGLOC113836/location.json')
         self.assertTrue(expected_path_1.exists())
         self.assertTrue(expected_path_2.exists())
