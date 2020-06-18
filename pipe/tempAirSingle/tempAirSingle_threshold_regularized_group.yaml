@@ -1,13 +1,13 @@
 ---
 pipeline:
-  name: tempSoil_qaqc_regularized_flag_group_newJoiner
+  name: tempAirSingle_threshold_regularized_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/file_joiner:10
+  image: quay.io/battelleecology/file_joiner:11
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
-    - "python3 -m file_joiner.app"
+    - "python3 -m file_joiner.file_joiner_main"
   env:
     CONFIG: |
       ---
@@ -16,30 +16,32 @@ transform:
       input_paths:
         - path:
             name: REGULARIZED_PATH
-            glob_pattern: /pfs/REGULARIZED_PATH/prt/**
+            glob_pattern: /pfs/REGULARIZED_PATH/**
             # Join on year and month
-            join_indices: [4, 5]
+            join_indices: [3, 4, 5, 6]
         - path:
-            name: QAQC_PATH
-            glob_pattern: /pfs/QAQC_PATH/prt/**
+            name: THRESHOLD_PATH
+            glob_pattern: /pfs/THRESHOLD_PATH/**
             # Join on year and month
-            join_indices: [4, 5]
+            join_indices: [3, 4, 5, 6]
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
-    RELATIVE_PATH_INDEX: 3
+    RELATIVE_PATH_INDEX: "3"
 input:
-  cross:
+  join:
     - pfs:
         name: REGULARIZED_PATH
-        repo: tempSoil_regularized_flags
-        glob: /prt/*/*
+        repo: tempAirSingle_regularized_data
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
         empty_files: true
     - pfs:
-        name: QAQC_PATH
-        repo: tempSoil_qaqc_flags
-        glob: /prt/*/*
+        name: THRESHOLD_PATH
+        repo: tempAirSingle_threshold_select
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
         empty_files: true
 parallelism_spec:
-  constant: 4
+  constant: "1"
 enable_stats: false
-standby: true
+standby: false

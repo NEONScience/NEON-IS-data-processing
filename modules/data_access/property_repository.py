@@ -16,7 +16,7 @@ class PropertyRepository(object):
 
     def get_named_location_properties(self, named_location_id: int):
         """
-        Get the properties associated with a named location.
+        Get the properties associated with a named location as name:value pairs.
 
         :param named_location_id: The named location ID to search.
         :return: The named location properties.
@@ -40,18 +40,14 @@ class PropertyRepository(object):
             properties = []
             for row in rows:
                 name = row[0]
-                description = row[1]
                 string_value = row[2]
                 number_value = row[3]
                 date_value = row[4]
+                if string_value is not None:
+                    properties.append({name: string_value})
+                if number_value is not None:
+                    properties.append({name: number_value})
                 if date_value is not None:
                     date_value = date_formatter.convert(date_value)
-                prop = {
-                    'name': name,
-                    'description': description,
-                    'string_value': string_value,
-                    'number_value': number_value,
-                    'date_value': date_value
-                }
-                properties.append(prop)
+                    properties.append({name: date_value})
             return properties

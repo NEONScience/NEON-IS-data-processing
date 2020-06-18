@@ -22,15 +22,15 @@ class NamedLocationRepository(object):
         self.connection = connection
         self.active_period_repository = ActivePeriodRepository(connection)
         self.location_repository = LocationRepository(connection)
-        self.named_location_context_repository = NamedLocationContextRepository(connection)
-        self.named_location_parent_repository = NamedLocationParentRepository(connection)
+        self.context_repository = NamedLocationContextRepository(connection)
+        self.parent_repository = NamedLocationParentRepository(connection)
         self.property_repository = PropertyRepository(connection)
 
-    def get_by_type(self, type_name: str, cutoff_date=None):
+    def get_by_type(self, location_type: str, cutoff_date=None):
         """
         Get named locations in GEOJson format by type and cutoff date for the active time range.
 
-        :param type_name: The named location type.
+        :param location_type: The named location type.
         :param cutoff_date: The maximum active end time to return.
         :type cutoff_date: datetime object
         :return: Geojson FeatureCollection of locations.
@@ -46,46 +46,40 @@ class NamedLocationRepository(object):
             where
                 type.type_id = nam_locn.type_id
             and
-                type.type_name = :type_name
+                type.type_name = :location_type
             and 
                 nam_locn.nam_locn_id = nam_locn_context.nam_locn_id 
-            /* fetch first 1 rows only */
         '''
         with closing(self.connection.cursor()) as cursor:
             cursor.prepare(sql)
-            rows = cursor.execute(None, type_name=type_name)
+            rows = cursor.execute(None, location_type=location_type)
             for row in rows:
                 features = []
                 named_location_id = row[0]
                 name = row[1]
                 description = row[2]
                 log.debug(f'named_location name: {name} description {description}')
-                location_properties = self.property_repository.get_named_location_properties(named_location_id)
-                parents = self.named_location_parent_repository.get_parents(named_location_id)
-                context = self.named_location_context_repository.get_context(named_location_id)
+                properties = self.property_repository.get_named_location_properties(named_location_id)
+                parents = self.parent_repository.get_parents(named_location_id)
+                context = self.context_repository.get_context(named_location_id)
                 active_periods = \
                     self.active_period_repository.get_active_periods(named_location_id, cutoff_date=cutoff_date)
                 # The parent value contains only site
                 site = parents[0]['name']
                 feature = Feature(properties={'name': name,
-                                              'type': type_name,
+                                              'type': location_type,
                                               'description': description,
                                               'site': site,
                                               'context': context,
                                               'active_periods': active_periods})
-                for prop in location_properties:
-                    non_null_field = 'string_value'
-                    if prop['number_value'] is not None:
-                        non_null_field = 'number_value'
-                    if prop['date_value'] is not None:
-                        non_null_field = 'date_value'
-                    feature.update({prop['name']: prop[non_null_field]})
+                for k, v in properties.items():
+                    feature.update({k: v})
                 features.append(feature)
                 yield FeatureCollection(features)
 
-    def get_asset_history(self, asset_id: int):
+    def get_asset_location_history(self, asset_id: int):
         """
-        Get an asset's location history.
+        Get an asset's location history in GEOJson format.
 
         :param asset_id: The asset ID.
         :return: The asset's location history.
@@ -127,8 +121,8 @@ class NamedLocationRepository(object):
 
                 locations = self.location_repository.get_all(named_location_id)
                 properties = self.property_repository.get_named_location_properties(named_location_id)
-                parents = self.named_location_parent_repository.get_parents(named_location_id)
-                context = self.named_location_context_repository.get_context(named_location_id)
+                parents = self.parent_repository.get_parents(named_location_id)
+                context = self.context_repository.get_context(named_location_id)
 
                 # The parent value only contains site
                 site = parents[0]['name']
@@ -139,13 +133,8 @@ class NamedLocationRepository(object):
                                               'transaction_date': transaction_date,
                                               'context': context,
                                               'locations': locations})
-                for prop in properties:
-                    non_null_field = 'string_value'
-                    if prop['number_value'] is not None:
-                        non_null_field = 'number_value'
-                    if prop['date_value'] is not None:
-                        non_null_field = 'date_value'
-                    feature.update({prop['name']: prop[non_null_field]})
+                for k, v in properties.items():
+                    feature.update({k: v})
                 features.append(feature)
         return FeatureCollection(features)
 
@@ -157,7 +146,7 @@ class NamedLocationRepository(object):
         :return: The site name.
         """
         site_name = None
-        parents = self.named_location_parent_repository.get_parents(named_location_id)
+        parents = self.parent_repository.get_parents(named_location_id)
         for parent in parents:
             if parent.get('type').lower() == 'site':
                 site_name = parent.get('name')

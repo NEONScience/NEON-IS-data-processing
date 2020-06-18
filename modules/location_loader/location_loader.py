@@ -16,11 +16,11 @@ class LocationLoader(object):
     def __init__(self, named_location_repository: NamedLocationRepository):
         self.named_location_repository = named_location_repository
 
-    def load_files(self, location_type: str, cutoff_date: datetime, out_path: Path):
+    def load_files(self, *, location_type: str, cutoff_date: datetime, out_path: Path):
         """
         Write a file for each location.
 
-        :param location_type: The location type to read from the database.
+        :param location_type: The location type to read.
         :param cutoff_date: The last date to create a file.
         :param out_path: The output directory path.
         """
