@@ -23,11 +23,6 @@
 #' repeatability and reproducibility of the sensor and the lab DAS and ii) uncertainty of the
 #' calibration procedures and coefficients including uncertainty in the standard (truth).
 
-#' \code{ucrt$raw} - raw reading value (i.e. same as input data)\cr
-#' \code{ucrt$dervCal} - 1st derivative of calibration function evaluated at raw reading value (e.g.
-#' partial derivative of a temperature measurement with respect to the resistance reading)\cr
-#' \code{ucrt$ucrtFdas} - standard uncertainty of individual measurement introduced by the Field DAS \cr
-
 #' @references Currently none
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 

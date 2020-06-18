@@ -62,8 +62,10 @@ test_that("Unit test of def.ucrt.fdas.rstc.R", {
   ufrstcDf_returned <- NEONprocIS.cal::def.ucrt.fdas.rstc (data = data,
                                         infoCal = infoCal)
   
-  expect_true ((is.data.frame(ufrstcDf_returned)) &&
-                 !(is.null(ufrstcDf_returned)))
+  col_List = c('raw','dervCal','ucrtFdas')   
+  expect_true ((is.data.frame(ufrstcDf_returned)) && !(is.null(ufrstcDf_returned)))
+  expect_true (all (names(ufrstcDf_returned) == col_List ) && all(ufrstcDf_returned$raw == data))
+   
   # The output is a data frame having Name, Value, and .attrs
   #  Sad path - no parameters passed
   

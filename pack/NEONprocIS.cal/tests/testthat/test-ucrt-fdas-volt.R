@@ -9,7 +9,6 @@
 
 #' Refer to def.ucrt.fdas.volt.R for the details of the function.
 
-#
 #' @param data Numeric vector of raw resistance measurements
 #' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
 #' (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$cal and info$ucrt,
@@ -62,8 +61,9 @@ test_that("Unit test of def.ucrt.fdas.volt.R", {
   ufvoltDf_returned <- NEONprocIS.cal::def.ucrt.fdas.volt (data = data,
                                         infoCal = infoCal)
   
-  expect_true ((is.data.frame(ufvoltDf_returned)) &&
-                 !(is.null(ufvoltDf_returned)))
+  col_List = c('raw','dervCal','ucrtFdas')   
+  expect_true ((is.data.frame(ufvoltDf_returned)) && !(is.null(ufvoltDf_returned)))
+  expect_true (all (names(ufvoltDf_returned) == col_List ) && all(ufvoltDf_returned$raw == data))
   # The output is a data frame having Name, Value, and .attrs
   # Sad path 1 - no parameters passed
   
