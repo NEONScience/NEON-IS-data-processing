@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from typing import List, Iterator, Optional
 
 from geojson import Feature, FeatureCollection
 import structlog
@@ -26,7 +27,7 @@ class NamedLocationRepository(object):
         self.parent_repository = NamedLocationParentRepository(connection)
         self.property_repository = PropertyRepository(connection)
 
-    def get_by_type(self, location_type: str, cutoff_date=None):
+    def get_by_type(self, location_type: str, cutoff_date=None) -> Iterator[FeatureCollection]:
         """
         Get named locations in GEOJson format by type and cutoff date for the active time range.
 
@@ -54,30 +55,31 @@ class NamedLocationRepository(object):
             cursor.prepare(sql)
             rows = cursor.execute(None, location_type=location_type)
             for row in rows:
-                features = []
+                features: List[Feature] = []
                 named_location_id = row[0]
                 name = row[1]
                 description = row[2]
                 log.debug(f'named_location name: {name} description {description}')
                 properties = self.property_repository.get_named_location_properties(named_location_id)
-                parents = self.parent_repository.get_parents(named_location_id)
+                site = self.parent_repository.get_site(named_location_id)
                 context = self.context_repository.get_context(named_location_id)
-                active_periods = \
-                    self.active_period_repository.get_active_periods(named_location_id, cutoff_date=cutoff_date)
-                # The parent value contains only site
-                site = parents[0]['name']
+                active_periods = self.active_period_repository.get_active_periods(named_location_id,
+                                                                                  cutoff_date=cutoff_date)
+                periods: List[dict] = []
+                for active_period in active_periods:
+                    periods.append({'start_date': active_period.start_date, 'end_date': active_period.end_date})
                 feature = Feature(properties={'name': name,
                                               'type': location_type,
                                               'description': description,
-                                              'site': site,
+                                              'site': site.name,
                                               'context': context,
-                                              'active_periods': active_periods})
-                for k, v in properties.items():
-                    feature.update({k: v})
+                                              'active_periods': periods})
+                for prop in properties:
+                    feature.update({prop.name: prop.value})
                 features.append(feature)
                 yield FeatureCollection(features)
 
-    def get_asset_location_history(self, asset_id: int):
+    def get_asset_location_history(self, asset_id: int) -> FeatureCollection:
         """
         Get an asset's location history in GEOJson format.
 
@@ -104,7 +106,7 @@ class NamedLocationRepository(object):
         with closing(self.connection.cursor()) as cursor:
             cursor.prepare(sql)
             rows = cursor.execute(None, asset_id=asset_id)
-            features = []
+            features: List[Feature] = []
             for row in rows:
                 named_location_id = row[0]
                 install_date = row[1]
@@ -121,38 +123,22 @@ class NamedLocationRepository(object):
 
                 locations = self.location_repository.get_all(named_location_id)
                 properties = self.property_repository.get_named_location_properties(named_location_id)
-                parents = self.parent_repository.get_parents(named_location_id)
+                site = self.parent_repository.get_site(named_location_id)
                 context = self.context_repository.get_context(named_location_id)
 
-                # The parent value only contains site
-                site = parents[0]['name']
                 feature = Feature(properties={'name': named_location_name,
-                                              'site': site,
+                                              'site': site.name,
                                               'install_date': install_date,
                                               'remove_date': remove_date,
                                               'transaction_date': transaction_date,
                                               'context': context,
                                               'locations': locations})
-                for k, v in properties.items():
-                    feature.update({k: v})
+                for prop in properties:
+                    feature.update({prop.name: prop.value})
                 features.append(feature)
         return FeatureCollection(features)
 
-    def get_site(self, named_location_id: int):
-        """
-        Get the site for a named location.
-
-        :param named_location_id: A named location ID.
-        :return: The site name.
-        """
-        site_name = None
-        parents = self.parent_repository.get_parents(named_location_id)
-        for parent in parents:
-            if parent.get('type').lower() == 'site':
-                site_name = parent.get('name')
-        return site_name
-
-    def get_schema_name(self, named_location_name: str):
+    def get_schema_name(self, named_location_name: str) -> Optional[str]:
         """
         Return the schema name for the named location's required sensor type.
 

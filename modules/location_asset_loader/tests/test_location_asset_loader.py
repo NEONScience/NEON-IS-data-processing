@@ -7,6 +7,8 @@ import unittest
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
+from data_access.asset import Asset
+
 import location_asset_loader.location_asset_loader_main as location_asset_loader_main
 from location_asset_loader.location_asset_loader import LocationAssetLoader
 
@@ -29,7 +31,7 @@ class LocationAssetLoaderTest(TestCase):
         self.check_output()
 
     def test_write_file(self):
-        asset = {'asset_id': 2201, 'asset_type': 'prt'}
+        asset = Asset(2201, 'prt')
         location = Feature(geometry=None,
                            properties={'start_date': '2020-01-01T00:00:00Z',
                                        'end_date': '2020-01-02T00:00:00Z',

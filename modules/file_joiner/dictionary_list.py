@@ -2,9 +2,8 @@
 
 
 class DictionaryList(dict):
-    """
-    Class to automatically add new dictionary values with the same keys into a list.
-    """
+    """Class to automatically add all values with the same key into a list."""
+
     def __setitem__(self, key, value):
         try:
             # assumes a list exists on the key

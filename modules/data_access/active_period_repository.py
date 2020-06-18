@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from typing import List
 
 import structlog
 
 import common.date_formatter as date_formatter
+from data_access.active_period import ActivePeriod
 
 log = structlog.get_logger()
 
@@ -13,7 +15,7 @@ class ActivePeriodRepository(object):
     def __init__(self, connection):
         self.connection = connection
 
-    def get_active_periods(self, named_location_id: int, cutoff_date=None):
+    def get_active_periods(self, named_location_id: int, cutoff_date=None) -> List[ActivePeriod]:
         """
         Get the active time periods for a named location.
 
@@ -25,7 +27,7 @@ class ActivePeriodRepository(object):
         with closing(self.connection.cursor()) as cursor:
             cursor.prepare(sql)
             rows = cursor.execute(None, id=named_location_id)
-            periods = []
+            periods: List[ActivePeriod] = []
             for row in rows:
                 start_date = row[0]
                 if start_date is not None:
@@ -39,5 +41,5 @@ class ActivePeriodRepository(object):
                         start_date = date_formatter.convert(start_date)
                     if end_date is not None:
                         end_date = date_formatter.convert(end_date)
-                    periods.append({'start_date': start_date, 'end_date': end_date})
-            return periods
+                    periods.append(ActivePeriod(start_date=start_date, end_date=end_date))
+        return periods

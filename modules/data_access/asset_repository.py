@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from typing import List
+
+from data_access.asset import Asset
 
 
 class AssetRepository(object):
@@ -8,7 +11,7 @@ class AssetRepository(object):
     def __init__(self, connection):
         self.connection = connection
 
-    def get_all(self):
+    def get_all(self) -> List[Asset]:
         sql = '''
              select
                  asset.asset_uid,
@@ -30,5 +33,5 @@ class AssetRepository(object):
             for row in rows:
                 asset_uid = row[0]
                 schema_name = row[1]
-                assets.append({'asset_id': asset_uid, 'asset_type': schema_name})
+                assets.append(Asset(id=asset_uid, type=schema_name))
             return assets

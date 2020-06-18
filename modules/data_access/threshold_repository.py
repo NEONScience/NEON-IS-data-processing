@@ -3,12 +3,15 @@ from contextlib import closing
 
 import common.date_formatter as date_formatter
 
+from data_access.threshold_context_repository import ThresholdContextRepository
+
 
 class ThresholdRepository(object):
     """Class representing a threshold repository backed by a database."""
 
     def __init__(self, connection):
         self.connection = connection
+        self.threshold_context_repository = ThresholdContextRepository(connection)
 
     def get_thresholds(self):
         query = '''
@@ -69,7 +72,7 @@ class ThresholdRepository(object):
                 if end_date is not None:
                     end_date = date_formatter.convert(end_date)
 
-                context = self._get_context(condition_uuid)
+                context = self.threshold_context_repository.get_context(condition_uuid)
 
                 threshold = {}
                 threshold.update({'threshold_name': threshold_name})
@@ -85,18 +88,3 @@ class ThresholdRepository(object):
                 threshold.update({'string_value': string_value})
                 thresholds.append(threshold)
         return thresholds
-
-    def _get_context(self, condition_uuid: str) -> list:
-        """
-        Get all context entries for a threshold.
-
-        :param condition_uuid: The condition UUID.
-        :return: The context codes.
-        """
-        context_codes = []
-        with closing(self.connection.cursor()) as cursor:
-            query = 'select context_code from condition_context where condition_uuid = :condition_uuid'
-            rows = cursor.execute(query, condition_uuid=condition_uuid)
-            for row in rows:
-                context_codes.append(row[0])
-        return context_codes
