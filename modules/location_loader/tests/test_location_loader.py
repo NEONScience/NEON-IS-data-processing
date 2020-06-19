@@ -14,7 +14,7 @@ from location_loader.location_loader import LocationLoader
 import location_loader.location_loader_main as location_loader_main
 
 
-class TestRepository(object):
+class NamedLocationRepositoryMock(object):
 
     def __init__(self):
         self.location = 'CFGLOC123'
@@ -65,7 +65,7 @@ class LocationLoaderTest(TestCase):
         self.assertTrue(file_path.exists())
 
     def test_location_loader(self):
-        repository = TestRepository()
+        repository = NamedLocationRepositoryMock()
         location_loader = LocationLoader(repository)
         cutoff_date = '2020-01-03T00:00:00Z'
         location_loader.load_files(location_type='CONFIG', cutoff_date=parse(cutoff_date), out_path=self.out_path)

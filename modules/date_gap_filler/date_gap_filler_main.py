@@ -27,6 +27,7 @@ def main():
     location_source_type_index = env.int('LOCATION_SOURCE_TYPE_INDEX')
     location_year_index = env.int('LOCATION_YEAR_INDEX')
     location_month_index = env.int('LOCATION_MONTH_INDEX')
+    location_day_index = env.int('LOCATION_DAY_INDEX', None)
     location_index = env.int('LOCATION_INDEX')
     empty_file_type_index = env.int('EMPTY_FILE_TYPE_INDEX')
     log_level = env.log_level('LOG_LEVEL', 'INFO')
@@ -42,6 +43,7 @@ def main():
     location_file_path_config = LocationFilePath(source_type_index=location_source_type_index,
                                                  year_index=location_year_index,
                                                  month_index=location_month_index,
+                                                 day_index=location_day_index,
                                                  location_index=location_index)
     config = DateGapFillerConfig(data_path=data_path,
                                  location_path=location_path,

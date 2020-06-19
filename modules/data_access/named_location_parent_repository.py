@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from typing import List
 
 import structlog
 
+from data_access.named_location_parent import NamedLocationParent
 
 log = structlog.get_logger()
 
@@ -12,13 +14,14 @@ class NamedLocationParentRepository(object):
 
     def __init__(self, connection):
         self.connection = connection
+        self.site_type = 'site'
 
-    def get_parents(self, named_location_id: int):
+    def get_site(self, named_location_id: int) -> NamedLocationParent:
         """
-        Get the parents of a named location.
+        Get the site of a named location.
 
         :param named_location_id: A named location ID.
-        :return: Parent data.
+        :return: The site.
         """
         sql = '''
             select
@@ -32,27 +35,25 @@ class NamedLocationParentRepository(object):
             where
                 chld_nam_locn_id = :named_location_id
         '''
-        parents = []
+        parents: List[NamedLocationParent] = []
         with closing(self.connection.cursor()) as cursor:
             cursor.prepare(sql)
-            self._add_parent(cursor, named_location_id, parents)
-            return parents
+            self._find_site(cursor, named_location_id, parents)
+        return parents[0]
 
-    def _add_parent(self, cursor, named_location_id: int, parents: list):
+    def _find_site(self, cursor, named_location_id: int, parents: List[NamedLocationParent]):
         """
-        Recursively add named location parents to the given list.
+        Recursively search for the site.
 
         :param cursor: A database cursor object.
-        :type cursor: cursor object
-        :param named_location_id: The location ID.
-        :param parents: Collection of parents for appending.
+        :param named_location_id: The named location ID.
         """
-        res = cursor.execute(None, named_location_id=named_location_id)
-        row = res.fetchone()
+        result = cursor.execute(None, named_location_id=named_location_id)
+        row = result.fetchone()
         if row is not None:
             parent_id = row[0]
-            parent_name = row[1]
+            name = row[1]
             type_name = row[2]
-            if type_name.lower() == 'site':  # Only include the site.
-                parents.append({'id': parent_id, 'name': parent_name, 'type': type_name})
-            self._add_parent(cursor, parent_id, parents)
+            if type_name.lower() == self.site_type:
+                parents.append(NamedLocationParent(id=parent_id, name=name, type=type_name))
+            self._find_site(cursor, parent_id, parents)

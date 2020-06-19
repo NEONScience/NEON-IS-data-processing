@@ -26,6 +26,13 @@ class DateGapFillerTest(TestCase):
                                   f'{DateGapFillerConfig.uncertainty_data_dir},' \
                                   f'{DateGapFillerConfig.uncertainty_coefficient_dir},' \
                                   f'{DateGapFillerConfig.flag_dir}'
+        # directories and files
+        self.setUpPyfakefs()
+        self.out_path = Path('/out')
+        self.fs.create_dir(self.out_path)
+        self.create_data_repo()
+        self.create_empty_file_repo()
+
         # path indices
         self.data_source_type_index = 3
         self.data_year_index = 4
@@ -33,18 +40,8 @@ class DateGapFillerTest(TestCase):
         self.data_day_index = 6
         self.data_location_index = 7
         self.data_type_index = 8
-        self.location_source_type_index = 3
-        self.location_year_index = 4
-        self.location_month_index = 5
-        self.location_index = 6
+
         self.empty_file_type_index = 4
-        # directories and files
-        self.setUpPyfakefs()
-        self.out_path = Path('/out')
-        self.fs.create_dir(self.out_path)
-        self.create_data_repo()
-        self.create_location_repo()
-        self.create_empty_file_repo()
 
     def create_data_repo(self):
         self.data_path = Path('/data/repo', self.source, self.year, self.month)
@@ -64,7 +61,13 @@ class DateGapFillerTest(TestCase):
         self.fs.create_file(Path(self.data_path, self.uncertainty_coefficient_file))
         self.fs.create_file(Path(self.data_path, self.uncertainty_data_file))
 
-    def create_location_repo(self):
+    def create_daily_location_repo(self):
+        self.location_path = Path('/location/repo', self.source, self.year, self.month)
+        self.fs.create_file(Path(self.location_path, '01', self.location, self.location_filename))
+        self.fs.create_file(Path(self.location_path, '02', self.location, self.location_filename))
+        self.fs.create_file(Path(self.location_path, '03', self.location, self.location_filename))
+
+    def create_monthly_location_repo(self):
         self.location_path = Path('/location/repo', self.source, self.year, self.month)
         self.fs.create_file(Path(self.location_path, self.location, self.location_filename))
 
@@ -80,17 +83,19 @@ class DateGapFillerTest(TestCase):
         self.fs.create_file(self.empty_uncertainty_data_file)
         self.fs.create_file(self.empty_flag_file)
 
-    def test_fill_gaps(self):
+    def test_fill_gaps_monthly(self):
+        self.create_monthly_location_repo()
         data_file_path_config = DataFilePath(source_type_index=self.data_source_type_index,
                                              year_index=self.data_year_index,
                                              month_index=self.data_month_index,
                                              day_index=self.data_day_index,
                                              location_index=self.data_location_index,
                                              data_type_index=self.data_type_index)
-        location_file_path_config = LocationFilePath(source_type_index=self.location_source_type_index,
-                                                     year_index=self.location_year_index,
-                                                     month_index=self.location_month_index,
-                                                     location_index=self.location_index)
+        location_file_path_config = LocationFilePath(source_type_index=3,
+                                                     year_index=4,
+                                                     month_index=5,
+                                                     day_index=None,
+                                                     location_index=6)
         config = DateGapFillerConfig(data_path=self.data_path,
                                      location_path=self.location_path,
                                      empty_file_path=self.empty_path,
@@ -105,7 +110,9 @@ class DateGapFillerTest(TestCase):
         date_gap_filler.fill_gaps()
         self.check_output()
 
-    def test_main(self):
+    def test_main_monthly(self):
+        self.create_monthly_location_repo()
+        os.environ.pop('LOCATION_DAY_INDEX')  # ensure removal as it may be set by other tests
         os.environ['DATA_PATH'] = str(self.data_path)
         os.environ['LOCATION_PATH'] = str(self.location_path)
         os.environ['EMPTY_FILE_PATH'] = str(self.empty_path)
@@ -120,10 +127,62 @@ class DateGapFillerTest(TestCase):
         os.environ['DATA_DAY_INDEX'] = str(self.data_day_index)
         os.environ['DATA_LOCATION_INDEX'] = str(self.data_location_index)
         os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
-        os.environ['LOCATION_SOURCE_TYPE_INDEX'] = str(self.location_source_type_index)
-        os.environ['LOCATION_YEAR_INDEX'] = str(self.location_year_index)
-        os.environ['LOCATION_MONTH_INDEX'] = str(self.location_month_index)
-        os.environ['LOCATION_INDEX'] = str(self.location_index)
+        os.environ['LOCATION_SOURCE_TYPE_INDEX'] = str(3)
+        os.environ['LOCATION_YEAR_INDEX'] = str(4)
+        os.environ['LOCATION_MONTH_INDEX'] = str(5)
+        os.environ['LOCATION_INDEX'] = str(6)
+        os.environ['EMPTY_FILE_TYPE_INDEX'] = str(self.empty_file_type_index)
+        date_gap_filler_main.main()
+        self.check_output()
+
+    def test_fill_gaps_daily(self):
+        self.create_daily_location_repo()
+        data_file_path_config = DataFilePath(source_type_index=self.data_source_type_index,
+                                             year_index=self.data_year_index,
+                                             month_index=self.data_month_index,
+                                             day_index=self.data_day_index,
+                                             location_index=self.data_location_index,
+                                             data_type_index=self.data_type_index)
+        location_file_path_config = LocationFilePath(source_type_index=3,
+                                                     year_index=4,
+                                                     month_index=5,
+                                                     day_index=6,
+                                                     location_index=7)
+        config = DateGapFillerConfig(data_path=self.data_path,
+                                     location_path=self.location_path,
+                                     empty_file_path=self.empty_path,
+                                     out_path=self.out_path,
+                                     start_date=date(2019, 12, 31),
+                                     end_date=date(2020, 1, 4),
+                                     output_directories=self.output_directories.split(','),
+                                     empty_file_type_index=self.empty_file_type_index)
+        date_gap_filler = DateGapFiller(config=config,
+                                        data_file_path_config=data_file_path_config,
+                                        location_file_path_config=location_file_path_config)
+        date_gap_filler.fill_gaps()
+        self.check_output()
+
+    def test_main_daily(self):
+        self.create_daily_location_repo()
+        os.environ['DATA_PATH'] = str(self.data_path)
+        os.environ['LOCATION_PATH'] = str(self.location_path)
+        os.environ['EMPTY_FILE_PATH'] = str(self.empty_path)
+        os.environ['OUTPUT_DIRECTORIES'] = self.output_directories
+        os.environ['OUT_PATH'] = str(self.out_path)
+        os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['START_DATE'] = '2019-12-31'
+        os.environ['END_DATE'] = '2020-01-04'
+        os.environ['DATA_SOURCE_TYPE_INDEX'] = str(self.data_source_type_index)
+        os.environ['DATA_YEAR_INDEX'] = str(self.data_year_index)
+        os.environ['DATA_MONTH_INDEX'] = str(self.data_month_index)
+        os.environ['DATA_DAY_INDEX'] = str(self.data_day_index)
+        os.environ['DATA_LOCATION_INDEX'] = str(self.data_location_index)
+        os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
+        os.environ['LOCATION_SOURCE_TYPE_INDEX'] = str(3)
+        os.environ['LOCATION_YEAR_INDEX'] = str(4)
+        os.environ['LOCATION_MONTH_INDEX'] = str(5)
+        os.environ['LOCATION_DAY_INDEX'] = str(6)
+        os.environ['LOCATION_INDEX'] = str(7)
         os.environ['EMPTY_FILE_TYPE_INDEX'] = str(self.empty_file_type_index)
         date_gap_filler_main.main()
         self.check_output()

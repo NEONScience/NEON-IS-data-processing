@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from typing import List
 
 import structlog
 
@@ -13,7 +14,7 @@ class NamedLocationContextRepository(object):
     def __init__(self, connection):
         self.connection = connection
 
-    def get_context(self, named_location_id: int):
+    def get_context(self, named_location_id: int) -> List[str]:
         """
         Get context entries for a named location.
 

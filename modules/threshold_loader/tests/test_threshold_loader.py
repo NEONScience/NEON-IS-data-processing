@@ -43,7 +43,7 @@ class ThresholdLoaderTest(TestCase):
             self.assertTrue(threshold_name == 'threshold_name')
             print(json.dumps(json_data, indent=2, sort_keys=False))
 
-    @unittest.skip('Skip due to long process time.')
+    @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
         os.environ['DATABASE_URL'] = self.database_url
         os.environ['OUT_PATH'] = self.out_path

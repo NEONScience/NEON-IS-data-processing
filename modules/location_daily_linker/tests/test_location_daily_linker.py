@@ -13,16 +13,13 @@ class LocationDailyLinkerTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-        self.out_path = Path('/output')
-        self.fs.create_dir(self.out_path)
-
-        self.input_path = Path('/input/locations')
-        self.location_path = Path(self.input_path, 'prt/2020/01/CFGLOC113836/location.json')
-
-        # Use real location file for parsing
-        actual_location_file_path = Path(os.path.dirname(__file__), 'test-location.json')
-        self.fs.add_real_file(actual_location_file_path, target_path=self.location_path)
-
+        self.in_path = Path('/in/locations')
+        self.out_path = Path('/out')
+        self.location_path = Path(self.in_path, 'prt/2020/01/CFGLOC113836/location.json')
+        # real location file for parsing
+        real_location_path = Path(os.path.dirname(__file__), 'test-location.json')
+        self.fs.add_real_file(real_location_path, target_path=self.location_path)
+        # path indices
         self.source_type_index = 3
         self.year_index = 4
         self.month_index = 5
@@ -33,13 +30,13 @@ class LocationDailyLinkerTest(TestCase):
                                               year_index=self.year_index,
                                               month_index=self.month_index,
                                               location_index=self.location_index)
-        location_daily_linker = LocationDailyLinker(location_path=self.input_path, out_path=self.out_path,
+        location_daily_linker = LocationDailyLinker(location_path=self.in_path, out_path=self.out_path,
                                                     location_file_path=location_file_path)
         location_daily_linker.link_files()
         self.check_output()
 
     def test_main(self):
-        os.environ['LOCATION_PATH'] = str(self.input_path)
+        os.environ['LOCATION_PATH'] = str(self.in_path)
         os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
         os.environ['YEAR_INDEX'] = str(self.year_index)
         os.environ['MONTH_INDEX'] = str(self.month_index)
