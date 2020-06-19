@@ -3,6 +3,7 @@ import environs
 import structlog
 import cx_Oracle
 from contextlib import closing
+from pathlib import Path
 
 
 import common.date_formatter as date_formatter
@@ -15,11 +16,11 @@ log = structlog.get_logger()
 
 def main():
     env = environs.Env()
-    location_type = env.str('LOCATION_TYPE')
-    cutoff_date_path = env.path('tick')
-    db_url = env.str('DATABASE_URL')
-    out_path = env.path('OUT_PATH')
-    log_level = env.log_level('LOG_LEVEL', 'INFO')
+    location_type: str = env.str('LOCATION_TYPE')
+    cutoff_date_path: Path = env.path('tick')
+    db_url: str = env.str('DATABASE_URL')
+    out_path: Path = env.path('OUT_PATH')
+    log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
 
     cutoff_date = date_formatter.parse_date_path(cutoff_date_path)

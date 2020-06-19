@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+from typing import Tuple
 
 
 class CalibrationFilePath(object):
@@ -9,9 +10,9 @@ class CalibrationFilePath(object):
         self.source_id_index = source_id_index
         self.stream_index = stream_index
 
-    def parse(self, path: Path):
+    def parse(self, path: Path) -> Tuple[str, str, str]:
         parts = path.parts
-        source_type = parts[self.source_type_index]
-        source_id = parts[self.source_id_index]
-        stream = parts[self.stream_index]
+        source_type: str = parts[self.source_type_index]
+        source_id: str = parts[self.source_id_index]
+        stream: str = parts[self.stream_index]
         return source_type, source_id, stream

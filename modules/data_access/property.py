@@ -1,3 +1,6 @@
-from collections import namedtuple
+from typing import NamedTuple
 
-Property = namedtuple('Property', ['name', 'value'])
+
+class Property(NamedTuple):
+    name: str
+    value: str

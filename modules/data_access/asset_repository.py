@@ -29,7 +29,7 @@ class AssetRepository(object):
         '''
         with closing(self.connection.cursor()) as cursor:
             rows = cursor.execute(sql)
-            assets = []
+            assets: List[Asset] = []
             for row in rows:
                 asset_uid = row[0]
                 schema_name = row[1]

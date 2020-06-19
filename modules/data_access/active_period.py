@@ -1,3 +1,6 @@
-from collections import namedtuple
+from typing import NamedTuple, Optional
 
-ActivePeriod = namedtuple('ActivePeriod', ['start_date', 'end_date'])
+
+class ActivePeriod(NamedTuple):
+    start_date: str
+    end_date: Optional[str]

@@ -31,7 +31,7 @@ class NamedLocationContextRepository(object):
         '''
         with closing(self.connection.cursor()) as cursor:
             rows = cursor.execute(sql, named_location_id=named_location_id)
-            contexts = []
+            contexts: List[str] = []
             for row in rows:
                 context_code = row[0]
                 group = row[1]

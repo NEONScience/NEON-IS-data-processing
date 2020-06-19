@@ -7,11 +7,11 @@ class DataFilename(object):
     def __init__(self, filename: str):
         self.filename = filename.split('.')[0]
 
-    def source_type(self):
+    def source_type(self) -> str:
         return self.filename.split('_')[0]
 
-    def source_id(self):
+    def source_id(self) -> str:
         return self.filename.split('_')[1]
 
-    def date(self):
+    def date(self) -> str:
         return self.filename.split('_')[2]

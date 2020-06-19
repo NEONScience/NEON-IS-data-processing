@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import environs
 import structlog
+from pathlib import Path
 
 from common import log_config as log_config
 from context_filter.data_file_path import DataFilePath
@@ -9,16 +10,16 @@ from context_filter.context_filter import ContextFilter
 
 def main():
     env = environs.Env()
-    in_path = env.path('IN_PATH')
-    out_path = env.path('OUT_PATH')
-    context = env.str('CONTEXT')
-    log_level = env.log_level('LOG_LEVEL', 'INFO')
-    source_type_index = env.int('SOURCE_TYPE_INDEX')
-    year_index = env.int('YEAR_INDEX')
-    month_index = env.int('MONTH_INDEX')
-    day_index = env.int('DAY_INDEX')
-    source_id_index = env.int('SOURCE_ID_INDEX')
-    data_type_index = env.int('DATA_TYPE_INDEX')
+    in_path: Path = env.path('IN_PATH')
+    out_path: Path = env.path('OUT_PATH')
+    context: str = env.str('CONTEXT')
+    log_level: str = env.log_level('LOG_LEVEL', 'INFO')
+    source_type_index: int = env.int('SOURCE_TYPE_INDEX')
+    year_index: int = env.int('YEAR_INDEX')
+    month_index: int = env.int('MONTH_INDEX')
+    day_index: int = env.int('DAY_INDEX')
+    source_id_index: int = env.int('SOURCE_ID_INDEX')
+    data_type_index: int = env.int('DATA_TYPE_INDEX')
     log_config.configure(log_level)
     log = structlog.get_logger()
     log.debug(f'in_path: {in_path} out_path: {out_path} context: {context}')

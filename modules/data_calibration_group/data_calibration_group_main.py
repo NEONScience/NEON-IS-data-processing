@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import environs
 import structlog
+from pathlib import Path
 
 import common.log_config as log_config
 
@@ -11,17 +12,17 @@ from data_calibration_group.data_calibration_grouper import DataCalibrationGroup
 
 def main():
     env = environs.Env()
-    data_path = env.path('DATA_PATH')
-    calibration_path = env.path('CALIBRATION_PATH')
-    out_path = env.path('OUT_PATH')
-    log_level = env.log_level('LOG_LEVEL')
-    data_source_type_index = env.int('DATA_SOURCE_TYPE_INDEX')
-    data_year_index = env.int('DATA_YEAR_INDEX')
-    data_month_index = env.int('DATA_MONTH_INDEX')
-    data_day_index = env.int('DATA_DAY_INDEX')
-    calibration_source_type_index = env.int('CALIBRATION_SOURCE_TYPE_INDEX')
-    calibration_source_id_index = env.int('CALIBRATION_SOURCE_ID_INDEX')
-    calibration_stream_index = env.int('CALIBRATION_STREAM_INDEX')
+    data_path: Path = env.path('DATA_PATH')
+    calibration_path: Path = env.path('CALIBRATION_PATH')
+    out_path: Path = env.path('OUT_PATH')
+    log_level: str = env.log_level('LOG_LEVEL')
+    data_source_type_index: int = env.int('DATA_SOURCE_TYPE_INDEX')
+    data_year_index: int = env.int('DATA_YEAR_INDEX')
+    data_month_index: int = env.int('DATA_MONTH_INDEX')
+    data_day_index: int = env.int('DATA_DAY_INDEX')
+    calibration_source_type_index: int = env.int('CALIBRATION_SOURCE_TYPE_INDEX')
+    calibration_source_id_index: int = env.int('CALIBRATION_SOURCE_ID_INDEX')
+    calibration_stream_index: int = env.int('CALIBRATION_STREAM_INDEX')
 
     log_config.configure(log_level)
     log = structlog.get_logger()

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from structlog import get_logger
 import environs
+from pathlib import Path
 
 import common.log_config as log_config
 
@@ -13,16 +14,16 @@ log = get_logger()
 def main():
     """Group data by related location groups."""
     env = environs.Env()
-    data_path = env.path('DATA_PATH')
-    out_path = env.path('OUT_PATH')
-    log_level = env.log_level('LOG_LEVEL')
-    source_type_index = env.int('SOURCE_TYPE_INDEX')
-    year_index = env.int('YEAR_INDEX')
-    month_index = env.int('MONTH_INDEX')
-    day_index = env.int('DAY_INDEX')
-    group_index = env.int('GROUP_INDEX')
-    location_index = env.int('LOCATION_INDEX')
-    data_type_index = env.int('DATA_TYPE_INDEX')
+    data_path: Path = env.path('DATA_PATH')
+    out_path: Path = env.path('OUT_PATH')
+    log_level: str = env.log_level('LOG_LEVEL')
+    source_type_index: int = env.int('SOURCE_TYPE_INDEX')
+    year_index: int = env.int('YEAR_INDEX')
+    month_index: int = env.int('MONTH_INDEX')
+    day_index: int = env.int('DAY_INDEX')
+    group_index: int = env.int('GROUP_INDEX')
+    location_index: int = env.int('LOCATION_INDEX')
+    data_type_index: int = env.int('DATA_TYPE_INDEX')
     log_config.configure(log_level)
     log.debug(f'data_path: {data_path} out_path: {out_path}')
 

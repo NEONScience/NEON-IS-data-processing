@@ -1,3 +1,6 @@
-from collections import namedtuple
+from typing import NamedTuple
 
-Asset = namedtuple('Asset', ['id', 'type'])
+
+class Asset(NamedTuple):
+    id: int
+    type: str

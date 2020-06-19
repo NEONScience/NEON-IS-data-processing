@@ -3,6 +3,7 @@ import os
 import sys
 from pathlib import Path
 import datetime
+from typing import Dict, List, Union
 
 from structlog import get_logger
 
@@ -34,10 +35,10 @@ class VariableWindowPad(object):
     def pad(self):
         """Pad the data to the calculated window size."""
         try:
-            max_window_size_by_date_and_location = {}
-            min_data_rate_by_date_and_location = {}
-            manifests = {}
-            manifest_file_names = {}
+            max_window_size_by_date_and_location: Dict[str, Union[int, float]] = {}
+            min_data_rate_by_date_and_location: Dict[str, float] = {}
+            manifests: Dict[str, List[datetime]] = {}
+            manifest_file_names: Dict[str, Path] = {}
             for path in self.data_path.rglob('*'):
                 if path.is_file():
                     parts = path.parts
@@ -86,7 +87,7 @@ class VariableWindowPad(object):
                             manifests[location].append(padded_range_date)
                             if padded_range_date == data_date:
                                 manifest_path = link_path.parent
-                                manifest_file_names[location] = os.path.join(manifest_path, PadConfig.manifest_filename)
+                                manifest_file_names[location] = Path(manifest_path, PadConfig.manifest_filename)
                             file_writer.link_thresholds(config_location_path, link_path)
             file_writer.write_manifests(manifests, manifest_file_names)
         except Exception:

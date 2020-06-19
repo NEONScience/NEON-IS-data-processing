@@ -99,11 +99,11 @@ def link_merge(in_path: Path, out_path: Path):
 
 def main():
     env = environs.Env()
-    in_path = env.path('IN_PATH')
-    out_path = env.path('OUT_PATH')
-    log_level = env.log_level('LOG_LEVEL', 'INFO')
+    in_path: Path = env.path('IN_PATH')
+    out_path: Path = env.path('OUT_PATH')
+    log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     # default 30 percent duplication threshold
-    dedup_threshold = env.float('DEDUP_THRESHOLD', 0.3)
+    dedup_threshold: float = env.float('DEDUP_THRESHOLD', 0.3)
     log_config.configure(log_level)
     link_merge(in_path, out_path)
 

@@ -2,13 +2,14 @@
 import structlog
 import logging
 import sys
+from typing import Union
 
 
-def configure(log_level):
+def configure(log_level: Union[int, str]):
     """
     Configures log to write JSON to standard output.
 
-    :param log_level: The log level to set, must be an integer or string.
+    :param log_level: The log level to set.
     """
     root_logger = logging.getLogger()
     root_logger.setLevel(log_level)
