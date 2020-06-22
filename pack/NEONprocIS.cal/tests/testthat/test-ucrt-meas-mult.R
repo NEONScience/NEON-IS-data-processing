@@ -1,13 +1,13 @@
 ##############################################################################################
-#' @title Unit test of def.ucrt.meas.cnst.R
+#' @title Unit test of def.ucrt.meas.mult.R
 
 #' @description
-#' Run unit tests for def.ucrt.meas.cnst.R.
+#' Run unit tests for def.ucrt.meas.mult.R.
 #' The tests include positive and negative scenarios.
 #' The positive test is for a case when all the params to the function are valid
 #' The negative tests are when a param(s) is empty or does not have valid values
 
-#' Refer to def.ucrt.meas.cnst.R for the details of the function.
+#' Refer to def.ucrt.meas.mult.R for the details of the function.
 #' @param data Numeric vector of raw measurements
 #' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
 #' (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
@@ -38,15 +38,16 @@
 #' an example, devtools::test(pkg="C:/projects/NEON-IS-data-processing/pack/NEONprocIS.cal")
 
 # changelog and author contributions / copyrights
-#   Mija Choi (2020-06-18)
+#   Mija Choi (2020-06-22)
 #     Original Creation
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of def.ucrt.meas.cnst.R\n")
+context("\n                       Unit test of def.ucrt.meas.mult.R\n")
 
-# Unit test of def.ucrt.meas.cnst.R
-test_that("Unit test of def.ucrt.meas.cnst.R", {
- 
+# Unit test of def.ucrt.meas.mult.R
+test_that("Unit test of def.ucrt.meas.mult.R", {
+  # Happy path
+  #
   # The input is a json with elements of Name, Value, and .attrs
   # fileCal has the correct value for "resistance" calibration
 
@@ -55,17 +56,17 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   data = c(0.9)
  
   # Happy Path 1 - All params passed
-  umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal)
+  umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.mult (data = data, infoCal = infoCal)
 
   expect_true ((is.data.frame(umeas_cnstDf_returned)) &&
                  !(is.null(umeas_cnstDf_returned)))
   # The output is a data frame having Name, Value, and .attrs
-  # Happy path2 - no parameters passed
+  # Happy path 2 - no parameters passed
   
-  umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst ()
+  umeas_multDf_returned <- NEONprocIS.cal::def.ucrt.meas.mult ()
   
-  expect_true ((is.data.frame(umeas_cnstDf_returned)) &&
-                 (nrow(umeas_cnstDf_returned) == 0))
+  expect_true ((is.data.frame(umeas_multDf_returned)) &&
+                 (nrow(umeas_multDf_returned) == 0))
   
   # Happy path 3 - More than one matching uncertainty coefficient was found for U_CVALA1. 
   #            - Will use the first if more than one matching uncertainty coefficient was found
@@ -75,10 +76,10 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = fileCal, Vrbs = TRUE)
   data = c(0.7)
   
-  umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal)
+  umeas_multDf_returned <- NEONprocIS.cal::def.ucrt.meas.mult (data = data, infoCal = infoCal)
   
   # Check to see if only the first was returned from calibration44.xml
-  # Return combined measurement uncertainty for an individual reading, not multiplied by data
+  # Return the individual measurement uncertainty is just U_CVALA1 multiplied by data
   
-  expect_true (umeas_cnstDf_returned$ucrtMeas == (infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',][1,]$Value))
+  expect_true (umeas_multDf_returned$ucrtMeas == base::as.numeric(infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',][1,]$Value)*data)
 })
