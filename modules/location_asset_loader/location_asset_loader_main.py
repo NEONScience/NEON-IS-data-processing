@@ -3,6 +3,7 @@ import environs
 import structlog
 import cx_Oracle
 from contextlib import closing
+from pathlib import Path
 
 import common.log_config as log_config
 from data_access.asset_repository import AssetRepository
@@ -15,9 +16,9 @@ log = structlog.get_logger()
 
 def main():
     env = environs.Env()
-    out_path = env.path('OUT_PATH')
-    db_url = env.str('DATABASE_URL')
-    log_level = env.log_level('LOG_LEVEL', 'INFO')
+    out_path: Path = env.path('OUT_PATH')
+    db_url: str = env.str('DATABASE_URL')
+    log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
     log.info('Processing.')
     log.debug(f'out_path: {out_path}')

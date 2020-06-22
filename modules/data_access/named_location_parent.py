@@ -1,3 +1,7 @@
-from collections import namedtuple
+from typing import NamedTuple
 
-NamedLocationParent = namedtuple('NamedLocationParent', ['id', 'name', 'type'])
+
+class NamedLocationParent(NamedTuple):
+    id: int
+    name: str
+    type: str

@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 import json
 import yaml
 from yaml import Loader
+from typing import Union, List
 
 
-def convert_window_size(window_size: int, data_rate: float):
+def convert_window_size(window_size: int, data_rate: float) -> float:
     """
     Divide the window size by the data rate.
 
@@ -21,7 +22,7 @@ def convert_window_size(window_size: int, data_rate: float):
     return window_size / data_rate
 
 
-def calculate_pad_size(window_size: int):
+def calculate_pad_size(window_size: int) -> Union[float, int]:
     """
     Calculate the data pad size in days.
 
@@ -34,7 +35,7 @@ def calculate_pad_size(window_size: int):
     return math.ceil(window_size / seconds_per_day)
 
 
-def get_dates_in_padded_range(date: datetime, pad_size: float):
+def get_dates_in_padded_range(date: datetime, pad_size: float) -> List[datetime]:
     """
     Get all the dates in the padded date range.
 
@@ -54,7 +55,7 @@ def get_dates_in_padded_range(date: datetime, pad_size: float):
     return sorted(padded_range)
 
 
-def get_max_window_size(threshold_file: str, data_rate: int):
+def get_max_window_size(threshold_file: str, data_rate: float) -> Union[float, int]:
     """
     Get the maximum window size.
 
@@ -77,7 +78,7 @@ def get_max_window_size(threshold_file: str, data_rate: int):
     return max_window_size
 
 
-def get_min_data_rate(location_file: str):
+def get_min_data_rate(location_file: str) -> float:
     """
     This should be refactored to extract from engineering metadata
     the actual rate(s) at which the sensor produced data.

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 from datetime import datetime
+from typing import List
 
 import structlog
 
@@ -22,10 +23,10 @@ def link_location_files(*, location_path: Path, out_path: Path, schema_index: in
     for path in location_path.rglob('*'):
         if path.is_file():
             parts = path.parts
-            schema_name = parts[schema_index]
+            schema_name: str = parts[schema_index]
             parser = LocationFileParser(path)
-            location_name = parser.get_name()
-            active_periods = parser.get_active_periods()
+            location_name: str = parser.get_name()
+            active_periods: List[dict] = parser.get_active_periods()
             for period in active_periods:
                 start_date = period['start_date']
                 end_date = period['end_date']

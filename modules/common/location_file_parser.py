@@ -1,5 +1,6 @@
 import geojson
 from pathlib import Path
+from typing import List
 
 
 class LocationFileParser(object):
@@ -19,8 +20,8 @@ class LocationFileParser(object):
             self.location_name = self.properties['name']
             self.active_periods = self.properties['active_periods']
 
-    def get_active_periods(self):
+    def get_active_periods(self) -> List[dict]:
         return self.active_periods
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.location_name

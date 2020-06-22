@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from pathlib import Path
 from structlog import get_logger
+from typing import Dict, List
+from datetime import datetime
 
 from timeseries_padder.timeseries_padder.pad_config import PadConfig
 
@@ -8,7 +10,7 @@ from timeseries_padder.timeseries_padder.pad_config import PadConfig
 log = get_logger()
 
 
-def write_manifests(manifests: dict, manifest_file_names: dict):
+def write_manifests(manifests: Dict[str, List[datetime]], manifest_file_names: Dict[str, Path]):
     """
     Write the manifest files.
 
@@ -16,9 +18,9 @@ def write_manifests(manifests: dict, manifest_file_names: dict):
     :param manifest_file_names: The manifest file names.
     """
     for location in manifests.keys():
-        with open(manifest_file_names[location], 'w') as manifest_file:
-            for item in manifests[location]:
-                manifest_file.write("%s\n" % item)
+        with open(str(manifest_file_names[location]), 'w') as manifest_file:
+            for date in manifests[location]:
+                manifest_file.write("%s\n" % date)
 
 
 def link_thresholds(source_path: Path, destination_path: Path):

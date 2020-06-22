@@ -6,7 +6,7 @@ import unittest
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import threshold_loader.app as app
+import threshold_loader.threshold_loader_main as app
 
 
 class ThresholdLoaderTest(TestCase):

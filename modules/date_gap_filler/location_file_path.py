@@ -5,11 +5,7 @@ from typing import Tuple, Optional
 
 class LocationFilePath(object):
 
-    def __init__(self, *,
-                 source_type_index: int,
-                 year_index: int,
-                 month_index: int,
-                 day_index: Optional[int],
+    def __init__(self, *, source_type_index: int, year_index: int, month_index: int, day_index: Optional[int],
                  location_index: int):
         self.source_type_index = source_type_index
         self.year_index = year_index

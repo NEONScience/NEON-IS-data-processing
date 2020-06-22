@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import yaml
 from pathlib import Path
+from typing import NamedTuple
 
 from structlog import get_logger
 
@@ -12,7 +13,15 @@ log = get_logger()
 
 class FileJoiner(object):
 
-    def __init__(self, *, config: dict, out_path: Path, relative_path_index: int):
+    class JoinedKeyPaths(NamedTuple):
+        joined_keys: set
+        file_key_paths: DictionaryList
+
+    class PathLink(NamedTuple):
+        path: Path
+        link: Path
+
+    def __init__(self, *, config: str, out_path: Path, relative_path_index: int):
         """
         Constructor.
 
@@ -25,12 +34,12 @@ class FileJoiner(object):
         self.relative_path_index = relative_path_index
 
     def join_files(self):
-        key_files = self.get_join_keys()
-        joined_keys = key_files.get('joined_keys')
-        file_key_paths = key_files.get('file_key_paths')
+        key_paths = self.get_join_keys()
+        joined_keys = key_paths.joined_keys
+        file_key_paths = key_paths.file_key_paths
         self.link_joined_files(joined_keys, file_key_paths)
 
-    def get_join_keys(self):
+    def get_join_keys(self) -> JoinedKeyPaths:
         """
         Get the file keys and file paths for joining.
 
@@ -60,16 +69,16 @@ class FileJoiner(object):
                 # create the link path for the file
                 link_path = Path(self.out_path, *file.parts[self.relative_path_index:])
                 # associate the join key, the source file, and the file's output path
-                file_key_paths[join_key] = {'file_path': file, 'link_path': link_path}
+                file_key_paths[join_key] = self.PathLink(file, link_path)
             # add the join keys for this configured path to the collection for all paths
             join_keys.append(path_join_keys)
         # intersection will pull only the common elements across all sets
         joined_keys = join_keys[0].intersection(*join_keys[1:])
         # return the joined keys and the file paths organized by keys
-        return {'joined_keys': joined_keys, 'file_key_paths': file_key_paths}
+        return self.JoinedKeyPaths(joined_keys, file_key_paths)
 
     @staticmethod
-    def create_join_key(file: Path, join_indices: list):
+    def create_join_key(file: Path, join_indices: list) -> str:
         """
         Create a join key for the file by concatenating the path elements
         at the given indices. Join-able files will have the same key.
@@ -93,8 +102,8 @@ class FileJoiner(object):
         :param file_key_paths: The keys and file paths.
         """
         for key in joined_keys:
-            for file_paths in file_key_paths[key]:
-                path = file_paths['file_path']
-                link_path = Path(file_paths['link_path'])
+            for path_link in file_key_paths[key]:
+                path = path_link.path
+                link_path = Path(path_link.link)
                 link_path.parent.mkdir(parents=True, exist_ok=True)
                 link_path.symlink_to(path)

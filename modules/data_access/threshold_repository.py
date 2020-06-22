@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from typing import List, Union, Dict
 
 import common.date_formatter as date_formatter
 
@@ -13,7 +14,7 @@ class ThresholdRepository(object):
         self.connection = connection
         self.threshold_context_repository = ThresholdContextRepository(connection)
 
-    def get_thresholds(self):
+    def get_thresholds(self) -> List[Dict[str, Union[str, List[str], None]]]:
         query = '''
             select
                 attr.column_name,

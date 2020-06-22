@@ -7,8 +7,8 @@ class MergedDataFilename(object):
     def __init__(self, filename: str):
         self.filename = filename.split('.')[0]
 
-    def date(self):
+    def date(self) -> str:
         return self.filename.split('_')[2]
 
-    def location(self):
+    def location(self) -> str:
         return self.filename.split('_')[1]

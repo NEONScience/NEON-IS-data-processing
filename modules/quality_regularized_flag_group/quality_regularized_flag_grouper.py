@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 from pathlib import Path
+from typing import Dict, NamedTuple
 
 from structlog import get_logger
 
 log = get_logger()
+
+
+class Paths(NamedTuple):
+    path: Path
+    link: Path
 
 
 class QualityRegularizedFlagGrouper(object):
@@ -28,7 +34,7 @@ class QualityRegularizedFlagGrouper(object):
         self.link_files(regularized_files, quality_files)
 
     @staticmethod
-    def link_files(regularized_files: dict, quality_files: dict):
+    def link_files(regularized_files: Dict[Path, Paths], quality_files: Dict[Path, Paths]):
         """
         Group matching regularized and quality files in the output directory.
 
@@ -44,29 +50,27 @@ class QualityRegularizedFlagGrouper(object):
         for key in common_keys:
             regularized_paths = regularized_files.get(key)
             quality_paths = quality_files.get(key)
-            regularized_file_path = Path(regularized_paths.get('file_path'))
-            regularized_link_path = Path(regularized_paths.get('link_path'))
+            regularized_file_path = regularized_paths.path
+            regularized_link_path = regularized_paths.link
             regularized_link_path.parent.mkdir(parents=True, exist_ok=True)
             regularized_link_path.symlink_to(regularized_file_path)
-            quality_file_path = Path(quality_paths.get('file_path'))
-            quality_link_path = Path(quality_paths.get('link_path'))
+            quality_file_path = quality_paths.path
+            quality_link_path = quality_paths.link
             quality_link_path.parent.mkdir(parents=True, exist_ok=True)
             quality_link_path.symlink_to(quality_file_path)
 
-    def load_files(self, path: Path):
+    def load_files(self, path: Path) -> Dict[Path, Paths]:
         """
         Read files and generate keys associated to the file paths and generated link paths.
 
         :param path: A path containing files.
         :return: File and link paths organized by key.
         """
-        files = {}
+        files: Dict[Path, Paths] = {}
         for path in path.rglob('*'):
             if path.is_file():
                 file_key = Path(self.out_path, *path.parent.parts[self.relative_path_index:])
                 log.debug(f'file key: {file_key}')
                 link_path = Path(file_key, path.name)
-                file_paths = {'file_path': path, 'link_path': link_path}
-                files.update({file_key: file_paths})
-                log.debug(f'adding key: {file_key} value: {file_paths}')
+                files.update({file_key: Paths(path, link_path)})
         return files

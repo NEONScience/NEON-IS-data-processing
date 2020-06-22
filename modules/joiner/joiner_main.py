@@ -14,10 +14,10 @@ log = get_logger()
 def main():
     """Join related paths."""
     env = environs.Env()
-    related_paths = env.list('RELATED_PATHS')
-    out_path = env.path('OUT_PATH')
-    log_level = env.log_level('LOG_LEVEL', 'INFO')
-    relative_path_index = env.int('RELATIVE_PATH_INDEX')
+    related_paths: list = env.list('RELATED_PATHS')
+    out_path: Path = env.path('OUT_PATH')
+    log_level: str = env.log_level('LOG_LEVEL', 'INFO')
+    relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
     log.debug(f'related_paths: {related_paths} out_path: {out_path}')
     paths = []

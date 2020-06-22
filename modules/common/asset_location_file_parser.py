@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import json
+from typing import List
 
 import structlog
 
@@ -18,7 +19,7 @@ class AssetLocationFileParser(object):
                 props = feature['properties']
                 self.context = props['context']
 
-    def contains_context(self, context: str):
+    def contains_context(self, context: str) -> bool:
         """
         Match the context to a location file context.
 
@@ -32,7 +33,7 @@ class AssetLocationFileParser(object):
                 return True
         return False
 
-    def matching_context_items(self, match: str):
+    def matching_context_items(self, match: str) -> List[str]:
         """
         Return context items containing the given string.
 
@@ -41,7 +42,7 @@ class AssetLocationFileParser(object):
         """
         matches = []
         if not self.context:
-            return False
+            return matches
         for item in self.context:
             if match in item:
                 matches.append(item)
