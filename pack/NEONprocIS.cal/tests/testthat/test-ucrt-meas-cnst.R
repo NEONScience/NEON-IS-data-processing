@@ -50,6 +50,7 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   #
   # The input is a json with elements of Name, Value, and .attrs
   # fileCal has the correct value for "resistance" calibration
+
   fileCal = "calibration.xml"
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
   data = c(0.9)
@@ -67,8 +68,15 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   expect_true ((is.data.frame(umeas_cnstDf_returned)) &&
                  (nrow(umeas_cnstDf_returned) == 0))
   
-  # Sad path 2 - calibration does not have right values for "resistance" calibration
-  # the calibration should have (U_CVALR1,U_CVALR4) to be the voltage calibration
+  # Sad path 2 - More than one matching uncertainty coefficient was found for U_CVALA1. 
+  #            - Will use the first if more than one matching uncertainty coefficient was found
+  # calibration44.xml below has 2 entries for U_CVALA1
   
- 
+  fileCal = "calibration44.xml"
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = fileCal, Vrbs = TRUE)
+  data = c(0.9)
+  
+  umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal)
+  #  Check to see if only the first was returned from calibration44.xml
+  expect_true (umeas_cnstDf_returned$ucrtMeas == (infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',][1,]$Value))
 })
