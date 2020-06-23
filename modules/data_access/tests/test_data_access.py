@@ -34,7 +34,7 @@ class DataAccessTest(TestCase):
         self.named_location_id = 31720
 
     def test_asset_finder(self):
-        result = self.asset_repository.get_all()
+        result = self.asset_repository.get_assets()
         print(f'assets: {len(result)}')
         asset = result[0]
         print(f'asset id: {asset.id} type: {asset.type}')

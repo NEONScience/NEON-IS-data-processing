@@ -24,7 +24,7 @@ class LocationDailyLinker(object):
         self.out_path = out_path
 
     def link_files(self):
-        """Link a location file for each date with path '/<source>/yyyy/mm/dd/<location>/<file>'."""
+        """Link a location file for each date with path '/source/yyyy/mm/dd/location/file'."""
         for path in self.location_path.rglob('*'):
             if path.is_file():
                 source_type, year, month, location = self.location_file_path.parse(path)

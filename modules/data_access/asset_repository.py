@@ -11,7 +11,7 @@ class AssetRepository(object):
     def __init__(self, connection):
         self.connection = connection
 
-    def get_all(self) -> List[Asset]:
+    def get_assets(self) -> List[Asset]:
         sql = '''
              select
                  asset.asset_uid,

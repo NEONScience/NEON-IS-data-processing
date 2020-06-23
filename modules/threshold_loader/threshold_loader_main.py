@@ -8,7 +8,7 @@ import environs
 
 import common.log_config as log_config
 from data_access.threshold_repository import ThresholdRepository
-from threshold_loader.threshold_loader import write_threshold_file
+from threshold_loader.threshold_loader import write_file
 
 
 def main():
@@ -21,8 +21,7 @@ def main():
     log.debug(f'db_url: {db_url} out_path: {out_path}')
     with closing(cx_Oracle.connect(db_url)) as connection:
         threshold_repository = ThresholdRepository(connection)
-        thresholds = threshold_repository.get_thresholds()
-        write_threshold_file(thresholds, out_path)
+        write_file(threshold_repository.get_all, out_path)
 
 
 if __name__ == "__main__":
