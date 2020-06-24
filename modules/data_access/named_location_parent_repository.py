@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from typing import List
+from typing import List, Optional
 
 from cx_Oracle import Connection, Cursor
 import structlog
@@ -17,7 +17,7 @@ class NamedLocationParentRepository(object):
         self.connection = connection
         self.site_type = 'site'
 
-    def get_site(self, named_location_id: int) -> NamedLocationParent:
+    def get_site(self, named_location_id: int) -> Optional[str]:
         """
         Get the site of a named location.
 
@@ -40,7 +40,10 @@ class NamedLocationParentRepository(object):
         with closing(self.connection.cursor()) as cursor:
             cursor.prepare(sql)
             self._find_site(cursor, named_location_id, parents)
-        return parents[0]
+        if not parents:
+            return None
+        else:
+            return parents[0].name
 
     def _find_site(self, cursor: Cursor, named_location_id: int, parents: List[NamedLocationParent]):
         """

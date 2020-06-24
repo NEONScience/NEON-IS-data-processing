@@ -49,7 +49,7 @@ class DataAccessTest(TestCase):
 
     def test_get_location_site(self):
         site = self.named_location_parent_repository.get_site(self.named_location_id)
-        self.assertTrue(site.name == 'ORNL')
+        self.assertTrue(site == 'ORNL')
 
     def test_get_location_schema_name(self):
         named_location_name = 'SENSOR000000'
@@ -66,7 +66,7 @@ class DataAccessTest(TestCase):
 
     def test_location_parent_repository(self):
         site = self.named_location_parent_repository.get_site(self.named_location_id)
-        self.assertTrue(site.name == 'ORNL')
+        self.assertTrue(site == 'ORNL')
 
     def test_location_property_repository(self):
         properties = self.property_repository.get_named_location_properties(self.named_location_id)

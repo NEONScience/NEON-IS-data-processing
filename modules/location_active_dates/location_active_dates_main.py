@@ -17,7 +17,6 @@ def main():
     schema_index: int = env.int('SCHEMA_INDEX')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
-    log.info('Processing.')
     link_location_files(location_path=location_path, out_path=out_path, schema_index=schema_index)
 
 

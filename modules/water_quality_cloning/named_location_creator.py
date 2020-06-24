@@ -64,7 +64,7 @@ class NamedLocationCreator(object):
                                       'name': name,
                                       'description': desc,
                                       'type_id': type_id,
-                                      'site': site.name}
+                                      'site': site}
         return named_location
 
     def get_location(self, named_location: dict):

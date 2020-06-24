@@ -11,6 +11,8 @@ from data_access.location_repository import LocationRepository
 from data_access.named_location_context_repository import NamedLocationContextRepository
 from data_access.named_location_parent_repository import NamedLocationParentRepository
 from data_access.property_repository import PropertyRepository
+from data_access.active_period import ActivePeriod
+from data_access.property import Property
 
 import common.date_formatter as date_formatter
 
@@ -28,12 +30,12 @@ class NamedLocationRepository(object):
         self.parent_repository = NamedLocationParentRepository(connection)
         self.property_repository = PropertyRepository(connection)
 
-    def get_named_locations(self, location_type: str) -> Iterator[FeatureCollection]:
+    def get_named_locations(self, location_type: str) -> Iterator[Feature]:
         """
-        Get named locations in GEOJson format by type and apply cutoff date to the active periods.
+        Get named locations in GEOJson format.
 
         :param location_type: The named location type.
-        :return: Geojson FeatureCollection of locations.
+        :return: Geojson Feature of named location data.
         """
         sql = '''
             select
@@ -54,16 +56,14 @@ class NamedLocationRepository(object):
             cursor.prepare(sql)
             rows = cursor.execute(None, location_type=location_type)
             for row in rows:
-                features: List[Feature] = []
                 named_location_id = row[0]
                 name = row[1]
                 description = row[2]
                 log.debug(f'named_location_name: {name} description: {description}')
-                properties = self.property_repository.get_named_location_properties(named_location_id)
-                site = self.parent_repository.get_site(named_location_id)
-                context = self.context_repository.get_context(named_location_id)
-                active_periods = self.active_period_repository.get_active_periods(named_location_id)
-
+                properties: List[Property] = self.property_repository.get_named_location_properties(named_location_id)
+                site: str = self.parent_repository.get_site(named_location_id)
+                context: List[str] = self.context_repository.get_context(named_location_id)
+                active_periods: List[ActivePeriod] = self.active_period_repository.get_active_periods(named_location_id)
                 # convert active periods
                 periods: List[dict] = []
                 for active_period in active_periods:
@@ -72,18 +72,16 @@ class NamedLocationRepository(object):
                     else:
                         # no end date
                         periods.append({'start_date': active_period.start_date})
-
                 # build feature
-                feature = Feature(properties={'name': name,
-                                              'type': location_type,
-                                              'description': description,
-                                              'site': site.name,
-                                              'context': context,
-                                              'active_periods': periods})
+                feature_properties = {'name': name,
+                                      'type': location_type,
+                                      'description': description,
+                                      'site': site,
+                                      'context': context,
+                                      'active_periods': periods}
                 for prop in properties:
-                    feature.update({prop.name: prop.value})
-                features.append(feature)
-                yield FeatureCollection(features)
+                    feature_properties.update({prop.name: prop.value})
+                yield Feature(properties=feature_properties)
 
     def get_asset_location_history(self, asset_id: int) -> FeatureCollection:
         """
@@ -127,20 +125,22 @@ class NamedLocationRepository(object):
                 if transaction_date is not None:
                     transaction_date = date_formatter.convert(transaction_date)
 
-                locations = self.location_repository.get_locations(named_location_id)
-                properties = self.property_repository.get_named_location_properties(named_location_id)
-                site = self.parent_repository.get_site(named_location_id)
-                context = self.context_repository.get_context(named_location_id)
+                locations: FeatureCollection = self.location_repository.get_locations(named_location_id)
+                properties: List[Property] = self.property_repository.get_named_location_properties(named_location_id)
+                site: str = self.parent_repository.get_site(named_location_id)
+                context: List[str] = self.context_repository.get_context(named_location_id)
 
-                feature = Feature(properties={'name': named_location_name,
-                                              'site': site.name,
-                                              'install_date': install_date,
-                                              'remove_date': remove_date,
-                                              'transaction_date': transaction_date,
-                                              'context': context,
-                                              'locations': locations})
+                feature_properties = {'name': named_location_name,
+                                      'site': site,
+                                      'install_date': install_date,
+                                      'remove_date': remove_date,
+                                      'transaction_date': transaction_date,
+                                      'context': context}
                 for prop in properties:
-                    feature.update({prop.name: prop.value})
+                    feature_properties.update({prop.name: prop.value})
+                # add locations at the bottom of property list for easier reading
+                feature_properties.update(locations=locations)
+                feature = Feature(properties=feature_properties)
                 features.append(feature)
         return FeatureCollection(features)
 

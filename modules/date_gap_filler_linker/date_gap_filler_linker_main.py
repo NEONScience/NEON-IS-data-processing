@@ -22,7 +22,7 @@ def main():
     log_config.configure(log_level)
 
     linker = DataGapFillerLinker(in_path, out_path, relative_path_index, location_index, empty_file_suffix)
-    linker.link()
+    linker.link_files()
 
 
 if __name__ == '__main__':

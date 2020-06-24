@@ -21,10 +21,10 @@ class ContextFilterTest(TestCase):
         self.data_type_index = 8
 
         self.setUpPyfakefs()
-        self.out_path = Path('/outputs')
+        self.in_path = Path('/in')
+        self.out_path = Path('/out')
         self.metadata_path = Path('prt/2019/05/21/00001')
         self.context = 'aspirated-triple'  # The context to find in the location file.
-        self.in_path = Path('/inputs')
         inputs_path = self.in_path.joinpath('merged', self.metadata_path)
         data_path = inputs_path.joinpath('data', 'data.ext')
         flags_path = inputs_path.joinpath('flags', 'flags.ext')

@@ -11,13 +11,13 @@ log = structlog.get_logger()
 class AssetLocationFileParser(object):
     """Class to parse GEOJson format asset location files."""
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path) -> None:
         with open(str(path), 'r') as file:
             geojson = json.load(file)
             features = geojson['features']
             for feature in features:
                 props = feature['properties']
-                self.context = props['context']
+                self.context: List[str] = props['context']
 
     def contains_context(self, context: str) -> bool:
         """

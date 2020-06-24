@@ -8,7 +8,7 @@ log = structlog.get_logger()
 class DataGapFillerLinker(object):
 
     def __init__(self, in_path: Path,  out_path: Path, relative_path_index: int,
-                 location_index: int, empty_file_suffix: str):
+                 location_index: int, empty_file_suffix: str) -> None:
         """
         Constructor.
 
@@ -24,7 +24,7 @@ class DataGapFillerLinker(object):
         self.location_index = location_index
         self.empty_file_suffix = empty_file_suffix
 
-    def link(self):
+    def link_files(self):
         """Link input files and directories into the output path."""
         empty_file_glob_pattern = f'**/*{self.empty_file_suffix}'
         for empty_file_path in self.in_path.glob(empty_file_glob_pattern):
@@ -40,7 +40,7 @@ class DataGapFillerLinker(object):
                         log.debug(f'creating directory: {dir_path}')
                         dir_path.mkdir(parents=True, exist_ok=True)
                     elif path.is_file():
-                        # check if it is an empty file
+                        # check if the file is an empty file
                         if path.suffix == self.empty_file_suffix:
                             # data files do not have the empty file suffix,
                             # remove suffix with stem to check for a data file
@@ -56,6 +56,7 @@ class DataGapFillerLinker(object):
                                 link_path = Path(dir_path, path.stem)  # trim the empty file suffix
                                 log.debug(f'linking empty file {path} to {link_path}')
                                 link_path.symlink_to(path)
+                        # link the data file
                         else:
                             dir_path = Path(self.out_path, *parts[self.relative_path_index:len(parts) - 1])
                             dir_path.mkdir(parents=True, exist_ok=True)
