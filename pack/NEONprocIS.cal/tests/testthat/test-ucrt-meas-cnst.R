@@ -60,7 +60,7 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   expect_true ((is.data.frame(umeas_cnstDf_returned)) &&
                  !(is.null(umeas_cnstDf_returned)))
   # The output is a data frame having Name, Value, and .attrs
-  # Happy path2 - no parameters passed
+  # Happy path 2 - no parameters passed
   
   umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst ()
   

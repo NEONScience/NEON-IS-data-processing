@@ -57,7 +57,7 @@ test_that("Unit test of def.ucrt.fdas.volt.R", {
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = fileCal, Vrbs = TRUE)
   data = c(0.9, 0.88)
   
-  # Happy Path- All params passed
+  # Happy Path 1 - All params passed
   ufvoltDf_returned <- NEONprocIS.cal::def.ucrt.fdas.volt (data = data,
                                         infoCal = infoCal)
   
@@ -65,14 +65,14 @@ test_that("Unit test of def.ucrt.fdas.volt.R", {
   expect_true ((is.data.frame(ufvoltDf_returned)) && !(is.null(ufvoltDf_returned)))
   expect_true (all (names(ufvoltDf_returned) == col_List ) && all(ufvoltDf_returned$raw == data))
   # The output is a data frame having Name, Value, and .attrs
-  # Sad path 1 - no parameters passed
+  # Happy path 2 - no parameters passed
   
   ufvoltDf_returned <- NEONprocIS.cal::def.ucrt.fdas.volt ()
   
   expect_true ((is.data.frame(ufvoltDf_returned)) &&
                  (nrow(ufvoltDf_returned) == 0))
   
-  # Sad path 2 - calibration does not have right values for "vlotage" calibration.
+  # Sad path 1 - calibration does not have right values for "vlotage" calibration.
   # the calibration should have (U_CVALV1,U_CVALV4) to be the voltage calibration
 
   fileCal = "calibration3.xml"

@@ -58,7 +58,7 @@ test_that("Unit test of def.ucrt.fdas.rstc.R", {
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = fileCal, Vrbs = TRUE)
   data = c(0.9, 0.88)
   
-  # Happy Path- All params passed
+  # Happy Path 1v- All params passed
   ufrstcDf_returned <- NEONprocIS.cal::def.ucrt.fdas.rstc (data = data,
                                         infoCal = infoCal)
   
@@ -67,14 +67,14 @@ test_that("Unit test of def.ucrt.fdas.rstc.R", {
   expect_true (all (names(ufrstcDf_returned) == col_List ) && all(ufrstcDf_returned$raw == data))
    
   # The output is a data frame having Name, Value, and .attrs
-  #  Sad path - no parameters passed
+  #  Happy path 2 - no parameters passed
   
   ufrstcDf_returned <- NEONprocIS.cal::def.ucrt.fdas.rstc ()
   
   expect_true ((is.data.frame(ufrstcDf_returned)) &&
                  (nrow(ufrstcDf_returned) == 0))
   
-  # Sad path 2 - calibration does not have right values for "resistance" calibration
+  # Sad path 1 - calibration does not have right values for "resistance" calibration
   # the calibration should have (U_CVALR1,U_CVALR4) to be the voltage calibration
   
   fileCal = "calibration4.xml"
