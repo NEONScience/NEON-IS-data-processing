@@ -90,6 +90,5 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   data = c(0.9)
   
   umeas_cnstDf_returned <- try (NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal), silent = TRUE)
-  
-  
+  expect_true (base::class(umeas_cnstDf_returned) == 'try-error')
   })

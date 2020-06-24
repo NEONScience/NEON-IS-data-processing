@@ -91,5 +91,5 @@ test_that("Unit test of def.ucrt.meas.mult.R", {
   data = c(0.9)
   
   umeas_multDf_returned <- try (NEONprocIS.cal::def.ucrt.meas.mult (data = data, infoCal = infoCal), silent = TRUE)
-  
+  expect_true (base::class(umeas_multDf_returned) == 'try-error')
   })
