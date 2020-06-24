@@ -13,7 +13,7 @@
             "MONTH_INDEX": "5",
             "LOCATION_INDEX": "6",
             "OUT_PATH": "/pfs/out",
-            "LOG_LEVEL": "DEBUG"
+            "LOG_LEVEL": "INFO"
         }
     },
     "input": {

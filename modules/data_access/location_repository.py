@@ -2,6 +2,7 @@
 from contextlib import closing
 from typing import List, Optional
 
+from cx_Oracle import Connection
 from geojson import Point, Feature, FeatureCollection
 
 import common.date_formatter as date_formatter
@@ -10,15 +11,15 @@ import common.date_formatter as date_formatter
 class LocationRepository(object):
     """Class to represent a location repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
-    def get_all(self, named_location_id: int) -> FeatureCollection:
+    def get_locations(self, named_location_id: int) -> FeatureCollection:
         """
-        Get the named location's associated locations in Geojson format.
+        Get the locations associated with the named location in GEOJson format.
 
         :param named_location_id: The named location ID.
-        :return: FeatureCollection of the named location's associated geo locations.
+        :return: FeatureCollection of the locations associated with the named location.
         """
         sql = '''
             select
@@ -64,16 +65,16 @@ class LocationRepository(object):
                 if transaction_date is not None:
                     transaction_date = date_formatter.convert(transaction_date)
 
-                geometry = self.get_geometry(location_geometry)
-
+                # get the reference locations for this location
                 reference_locations = None
                 if (named_location_offset_id is not None) and (named_location_offset_id != named_location_id):
-                    reference_locations = self.get_all(named_location_offset_id)
-
+                    reference_locations = self.get_locations(named_location_offset_id)
                 reference_location = Feature(geometry=None,
                                              properties={'name': named_location_offset_name,
                                                          'locations': reference_locations})
-                location = Feature(geometry=geometry,
+                # build the location
+                point = self.get_point(location_geometry)
+                location = Feature(geometry=point,
                                    properties={'start_date': start_date,
                                                'end_date': end_date,
                                                'transaction_date': transaction_date,
@@ -88,12 +89,12 @@ class LocationRepository(object):
             return FeatureCollection(locations)
 
     @staticmethod
-    def get_geometry(location_geometry) -> Optional[Point]:
+    def get_point(location_geometry) -> Optional[Point]:
         if location_geometry is not None:
             ordinates = location_geometry.SDO_ORDINATES
             if ordinates is not None:
                 ordinates = location_geometry.SDO_ORDINATES.aslist()
                 if len(ordinates) == 3:
-                    geometry = Point((float(ordinates[0]), float(ordinates[1]), float(ordinates[2])))
-                    return geometry
+                    point = Point((float(ordinates[0]), float(ordinates[1]), float(ordinates[2])))
+                    return point
         return None

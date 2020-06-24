@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from datetime import datetime, timedelta, date
-from pathlib import Path
 from typing import Tuple, Iterator
 
 ISO_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -24,17 +23,6 @@ def parse(date_string: str) -> datetime:
     :return: A datetime object representing the date.
     """
     return datetime.strptime(date_string, ISO_FORMAT)
-
-
-def parse_date_path(date_path: Path) -> datetime:
-    """
-    Parse the timestamp path to a datetime object.
-
-    :param date_path: The path containing the timestamp file.
-    :return: A datetime object representing the date.
-    """
-    date_parts = str(*date_path.parts[3:])
-    return datetime.strptime(date_parts, ISO_FORMAT)
 
 
 def parse_date(date_obj: datetime.date) -> Tuple[str, str, str]:

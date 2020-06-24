@@ -3,6 +3,7 @@ from contextlib import closing
 from typing import List, Iterator, Optional
 
 from geojson import Feature, FeatureCollection
+from cx_Oracle import Connection
 import structlog
 
 from data_access.active_period_repository import ActivePeriodRepository
@@ -19,7 +20,7 @@ log = structlog.get_logger()
 class NamedLocationRepository(object):
     """Class to represent a named location repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
         self.active_period_repository = ActivePeriodRepository(connection)
         self.location_repository = LocationRepository(connection)
@@ -27,13 +28,11 @@ class NamedLocationRepository(object):
         self.parent_repository = NamedLocationParentRepository(connection)
         self.property_repository = PropertyRepository(connection)
 
-    def get_by_type(self, location_type: str, cutoff_date=None) -> Iterator[FeatureCollection]:
+    def get_named_locations(self, location_type: str) -> Iterator[FeatureCollection]:
         """
-        Get named locations in GEOJson format by type and cutoff date for the active time range.
+        Get named locations in GEOJson format by type and apply cutoff date to the active periods.
 
         :param location_type: The named location type.
-        :param cutoff_date: The maximum active end time to return.
-        :type cutoff_date: datetime object
         :return: Geojson FeatureCollection of locations.
         """
         sql = '''
@@ -59,15 +58,22 @@ class NamedLocationRepository(object):
                 named_location_id = row[0]
                 name = row[1]
                 description = row[2]
-                log.debug(f'named_location name: {name} description {description}')
+                log.debug(f'named_location_name: {name} description: {description}')
                 properties = self.property_repository.get_named_location_properties(named_location_id)
                 site = self.parent_repository.get_site(named_location_id)
                 context = self.context_repository.get_context(named_location_id)
-                active_periods = self.active_period_repository.get_active_periods(named_location_id,
-                                                                                  cutoff_date=cutoff_date)
+                active_periods = self.active_period_repository.get_active_periods(named_location_id)
+
+                # convert active periods
                 periods: List[dict] = []
                 for active_period in active_periods:
-                    periods.append({'start_date': active_period.start_date, 'end_date': active_period.end_date})
+                    if active_period.end_date is not None:
+                        periods.append({'start_date': active_period.start_date, 'end_date': active_period.end_date})
+                    else:
+                        # no end date
+                        periods.append({'start_date': active_period.start_date})
+
+                # build feature
                 feature = Feature(properties={'name': name,
                                               'type': location_type,
                                               'description': description,
@@ -121,7 +127,7 @@ class NamedLocationRepository(object):
                 if transaction_date is not None:
                     transaction_date = date_formatter.convert(transaction_date)
 
-                locations = self.location_repository.get_all(named_location_id)
+                locations = self.location_repository.get_locations(named_location_id)
                 properties = self.property_repository.get_named_location_properties(named_location_id)
                 site = self.parent_repository.get_site(named_location_id)
                 context = self.context_repository.get_context(named_location_id)

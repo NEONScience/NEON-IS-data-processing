@@ -2,6 +2,8 @@
 from contextlib import closing
 from typing import List
 
+from cx_Oracle import Connection
+
 import structlog
 
 
@@ -11,7 +13,7 @@ log = structlog.get_logger()
 class ThresholdContextRepository(object):
     """Class to represent a threshold context repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
     def get_context(self, condition_uuid: str) -> List[str]:

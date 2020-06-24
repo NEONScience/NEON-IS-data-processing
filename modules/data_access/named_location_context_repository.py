@@ -2,6 +2,7 @@
 from contextlib import closing
 from typing import List
 
+from cx_Oracle import Connection
 import structlog
 
 
@@ -11,7 +12,7 @@ log = structlog.get_logger()
 class NamedLocationContextRepository(object):
     """Class to represent a context repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
     def get_context(self, named_location_id: int) -> List[str]:
