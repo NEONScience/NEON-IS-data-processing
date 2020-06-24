@@ -1,5 +1,5 @@
-library(testthat)
-source("R/def.wrte.parq.R")
+#library(testthat)
+#source("R/def.wrte.parq.R")
 
 
 test_that("write parquet file with basic parameter",
