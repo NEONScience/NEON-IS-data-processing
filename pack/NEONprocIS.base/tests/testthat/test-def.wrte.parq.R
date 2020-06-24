@@ -36,7 +36,7 @@ test_that("when schme exists, write the file",
             data <- data.frame(x=c(1,2,3), y=c('one','two','three'), stringsAsFactors=FALSE)
             NameFile <- 'out.parquet'
             Dict <- c(TRUE)
-            Schm <- "tests/testthat/def.wrte.parq/prt_calibrated.avsc"
+            Schm <- "def.wrte.parq/prt_calibrated.avsc"
             returnClass <- try(NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile, Dict =  Dict, Schm = Schm), silent = TRUE)
             testthat::expect_true((class(returnClass)[1] == "try-error"))
             if (file.exists(NameFile)) { file.remove(NameFile)}
@@ -51,7 +51,7 @@ test_that("when NameFileSchm exists, write the file",
             data <- data.frame(z=c('test1','test2','test3'), l=c(4345, 5342, 6345), x=c(time1, time2, time3), y=c(7.0, 8.0, 9.0), stringsAsFactors=FALSE)
             NameFile <- 'out.parquet'
             Dict <- c(TRUE)
-            NameFileSchm <- "tests/testthat/def.wrte.parq/prt_calibrated.avsc"
+            NameFileSchm <- "def.wrte.parq/prt_calibrated.avsc"
             rpt <- try(NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile, Dict =  Dict, NameFileSchm = NameFileSchm), silent = TRUE)
             testthat::expect_false((class(rpt)[1] == "try-error"))
             testthat::expect_true((length(rpt) == 4))
