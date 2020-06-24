@@ -28,8 +28,8 @@ def link_location_files(*, location_path: Path, out_path: Path, schema_index: in
             location_name: str = parser.get_name()
             active_periods: List[dict] = parser.get_active_periods()
             for period in active_periods:
-                start_date = period['start_date']
-                end_date = period['end_date']
+                start_date = period.get('start_date')
+                end_date = period.get('end_date')
                 log.debug(f'start_date: {start_date} end_date: {end_date}')
                 if start_date is not None:
                     start_date = date_formatter.parse(start_date)
