@@ -81,4 +81,15 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   # Return combined measurement uncertainty for an individual reading, not multiplied by data
   
   expect_true (umeas_cnstDf_returned$ucrtMeas == (infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',][1,]$Value))
-})
+  #
+  # Sad path - Check format of infoCal 
+  # the calibration222.xml does not have 'U_CVALA1' in tha names of Uncertainty
+  
+  fileCal = "calibration222.xml"
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+  data = c(0.9)
+  
+  umeas_cnstDf_returned <- try (NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal), silent = TRUE)
+  
+  
+  })

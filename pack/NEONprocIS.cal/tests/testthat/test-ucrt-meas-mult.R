@@ -82,4 +82,14 @@ test_that("Unit test of def.ucrt.meas.mult.R", {
   # Return the individual measurement uncertainty is just U_CVALA1 multiplied by data
   
   expect_true (umeas_multDf_returned$ucrtMeas == base::as.numeric(infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',][1,]$Value)*data)
-})
+  #
+  # Sad path - Check format of infoCal 
+  # the calibration222.xml does not have 'U_CVALA1' in tha names of Uncertainty
+  
+  fileCal = "calibration222.xml"
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+  data = c(0.9)
+  
+  umeas_multDf_returned <- try (NEONprocIS.cal::def.ucrt.meas.mult (data = data, infoCal = infoCal), silent = TRUE)
+  
+  })
