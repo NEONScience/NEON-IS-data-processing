@@ -2,6 +2,7 @@
 from contextlib import closing
 from typing import List
 
+from cx_Oracle import Connection
 import structlog
 
 import common.date_formatter as date_formatter
@@ -13,7 +14,7 @@ log = structlog.get_logger()
 class PropertyRepository(object):
     """Class to represent a property repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
     def get_named_location_properties(self, named_location_id: int) -> List[Property]:

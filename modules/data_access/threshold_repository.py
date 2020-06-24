@@ -2,6 +2,8 @@
 from contextlib import closing
 from typing import List, Iterator
 
+from cx_Oracle import Connection
+
 import common.date_formatter as date_formatter
 from data_access.threshold import Threshold
 from data_access.threshold_context_repository import ThresholdContextRepository
@@ -10,11 +12,11 @@ from data_access.threshold_context_repository import ThresholdContextRepository
 class ThresholdRepository(object):
     """Class representing a threshold repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
         self.threshold_context_repository = ThresholdContextRepository(connection)
 
-    def get_all(self) -> Iterator[Threshold]:
+    def get_thresholds(self) -> Iterator[Threshold]:
         query = '''
              select
                  attr.column_name,

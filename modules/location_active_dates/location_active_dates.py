@@ -35,6 +35,8 @@ def link_location_files(*, location_path: Path, out_path: Path, schema_index: in
                     start_date = date_formatter.parse(start_date)
                 if end_date is not None:
                     end_date = date_formatter.parse(end_date)
+                else:
+                    end_date = datetime.now()  # do not go past current date.
                 for date in date_formatter.dates_between(start_date, end_date):
                     dt = datetime(date.year, date.month, date.day)
                     year, month, day = date_formatter.parse_date(dt)

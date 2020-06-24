@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import unittest
 from datetime import datetime, date
-from pathlib import Path
 
 import common.date_formatter as date_formatter
 
@@ -35,13 +34,6 @@ class DateFormatterTest(unittest.TestCase):
         expected = ('2020', '03', '04')
         result = date_formatter.parse_date(date_obj)
         self.assertEqual(expected, result)
-
-    def test_parse_date_path(self):
-        date_input = '2020-01-02T01:02:03Z'
-        date_expected = date_formatter.parse(date_input)
-        date_path = Path(f'/pfs/tick/{date_input}')
-        date_result = date_formatter.parse_date_path(date_path)
-        self.assertEqual(date_expected, date_result)
 
     def test_date_between(self):
         start_date = date(2020, 1, 1)

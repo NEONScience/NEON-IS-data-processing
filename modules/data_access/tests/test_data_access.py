@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 from pathlib import Path
-from datetime import datetime
 
 import geojson
 import cx_Oracle
@@ -42,7 +41,7 @@ class DataAccessTest(TestCase):
 
     @unittest.skip('Skip due to long process time.')
     def test_get_locations_by_type(self):
-        locations = self.named_location_repository.get_by_type('CONFIG', datetime.now())
+        locations = self.named_location_repository.get_named_locations('CONFIG')
         for location in locations:
             geojson_data = geojson.dumps(location, indent=4, sort_keys=False, default=str)
             print(f'geojson_data: {geojson_data}')

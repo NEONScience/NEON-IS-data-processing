@@ -2,6 +2,7 @@
 from contextlib import closing
 from typing import List
 
+from cx_Oracle import Connection, Cursor
 import structlog
 
 from data_access.named_location_parent import NamedLocationParent
@@ -12,7 +13,7 @@ log = structlog.get_logger()
 class NamedLocationParentRepository(object):
     """Class to represent a named location parent repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
         self.site_type = 'site'
 
@@ -41,7 +42,7 @@ class NamedLocationParentRepository(object):
             self._find_site(cursor, named_location_id, parents)
         return parents[0]
 
-    def _find_site(self, cursor, named_location_id: int, parents: List[NamedLocationParent]):
+    def _find_site(self, cursor: Cursor, named_location_id: int, parents: List[NamedLocationParent]):
         """
         Recursively search for the site.
 

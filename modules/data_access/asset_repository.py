@@ -2,13 +2,15 @@
 from contextlib import closing
 from typing import List
 
+from cx_Oracle import Connection
+
 from data_access.asset import Asset
 
 
 class AssetRepository(object):
     """Class to represent an asset repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
     def get_assets(self) -> List[Asset]:

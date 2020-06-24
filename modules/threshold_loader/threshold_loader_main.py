@@ -21,7 +21,7 @@ def main():
     log.debug(f'db_url: {db_url} out_path: {out_path}')
     with closing(cx_Oracle.connect(db_url)) as connection:
         threshold_repository = ThresholdRepository(connection)
-        write_file(threshold_repository.get_all, out_path)
+        write_file(threshold_repository.get_thresholds, out_path)
 
 
 if __name__ == "__main__":
