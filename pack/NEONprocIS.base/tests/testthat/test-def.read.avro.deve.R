@@ -1,13 +1,13 @@
-library(testthat)
-source("R/def.read.avro.deve.R")
-
-test_that("when more than one input is sent as an input, consider just the first one",
-          {
-            NameFile <- c('def.read.avro.deve/prt_calibrated.avsc', 'def.read.avro.deve/testdata.parquet')
-            rpt <- try(NEONprocIS.base::def.read.avro.deve(NameFile=NameFile), silent = TRUE)
-            testthat::expect_false((class(rpt)[1] == "try-error"))
-
-          })
+# library(testthat)
+# source("R/def.read.avro.deve.R")
+# 
+# test_that("when more than one input is sent as an input, consider just the first one",
+#            {
+#              NameFile <- c('def.read.avro.deve/prt_calibrated.avsc', 'def.read.avro.deve/testdata.parquet')
+#              rpt <- try(NEONprocIS.base::def.read.avro.deve(NameFile=NameFile), silent = TRUE)
+#              testthat::expect_false((class(rpt)[1] == "try-error"))
+#  
+#            })
 
 # test_that("when listVect length is less than 2, throw an error",
 #           {
@@ -26,7 +26,7 @@ test_that("when more than one input is sent as an input, consider just the first
 #             Type <- c('character')
 #             rpt <- try(NEONprocIS.base::def.vect.pars.one.many(listVect=listVect,NameList=NameList,Type=Type), silent = TRUE)
 #             testthat::expect_true((class(rpt)[1] == "try-error"))
-#             
+# 
 #           })
 # 
 # 

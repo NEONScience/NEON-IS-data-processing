@@ -1,5 +1,5 @@
-#library(testthat)
-#source("R/def.wrte.parq.R")
+library(testthat)
+source("R/def.wrte.parq.R")
 
 
 test_that("write parquet file with basic parameter",
@@ -41,4 +41,22 @@ test_that("when schme exists, write the file",
             testthat::expect_true((class(returnClass)[1] == "try-error"))
             if (file.exists(NameFile)) { file.remove(NameFile)}
 
+          })
+
+test_that("when NameFileSchm exists, write the file",
+          {
+            time1 <- base::as.POSIXct('2019-01-01',tz='GMT')
+            time2 <- base::as.POSIXct('2019-01-02',tz='GMT')
+            time3 <- base::as.POSIXct('2019-01-03',tz='GMT')
+            data <- data.frame(z=c('test1','test2','test3'), l=c(4345, 5342, 6345), x=c(time1, time2, time3), y=c(7.0, 8.0, 9.0), stringsAsFactors=FALSE)
+            NameFile <- 'out.parquet'
+            Dict <- c(TRUE)
+            NameFileSchm <- "tests/testthat/def.wrte.parq/prt_calibrated.avsc"
+            rpt <- try(NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile, Dict =  Dict, NameFileSchm = NameFileSchm), silent = TRUE)
+            testthat::expect_false((class(rpt)[1] == "try-error"))
+            testthat::expect_true((length(rpt) == 4))
+        #    testthat::expect_true(names(rpt), "source_id" "site_id" "readout_time" "temp")
+            
+            if (file.exists(NameFile)) { file.remove(NameFile)}
+            
           })
