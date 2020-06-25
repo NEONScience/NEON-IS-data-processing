@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from datetime import datetime, timedelta, date
-from pathlib import Path
+from typing import Tuple, Iterator
 
 ISO_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -25,18 +25,7 @@ def parse(date_string: str) -> datetime:
     return datetime.strptime(date_string, ISO_FORMAT)
 
 
-def parse_date_path(date_path: Path) -> datetime:
-    """
-    Parse the timestamp path to a datetime object.
-
-    :param date_path: The path containing the timestamp file.
-    :return: A datetime object representing the date.
-    """
-    date_parts = str(*date_path.parts[3:])
-    return datetime.strptime(date_parts, ISO_FORMAT)
-
-
-def parse_date(date_obj: datetime.date):
+def parse_date(date_obj: datetime.date) -> Tuple[str, str, str]:
     """
     Parse formatted year, month, and day strings from a date object.
 
@@ -50,7 +39,7 @@ def parse_date(date_obj: datetime.date):
     return year, month, day
 
 
-def dates_between(start_date: datetime, end_date: datetime):
+def dates_between(start_date: datetime, end_date: datetime) -> Iterator[datetime]:
     """
     Yield all dates between the start and end dates.
 
@@ -63,7 +52,7 @@ def dates_between(start_date: datetime, end_date: datetime):
         yield start_date + timedelta(days=i)
 
 
-def date_is_between(year: int, month: int, day: int, start_date: date, end_date: date):
+def date_is_between(year: int, month: int, day: int, start_date: date, end_date: date) -> bool:
     """
     Is the date represented by year, month, and day between the start and end dates.
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from typing import List
 
+from cx_Oracle import Connection
 import structlog
 
 
@@ -10,10 +12,10 @@ log = structlog.get_logger()
 class NamedLocationContextRepository(object):
     """Class to represent a context repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
-    def get_context(self, named_location_id: int):
+    def get_context(self, named_location_id: int) -> List[str]:
         """
         Get context entries for a named location.
 
@@ -30,7 +32,7 @@ class NamedLocationContextRepository(object):
         '''
         with closing(self.connection.cursor()) as cursor:
             rows = cursor.execute(sql, named_location_id=named_location_id)
-            contexts = []
+            contexts: List[str] = []
             for row in rows:
                 context_code = row[0]
                 group = row[1]

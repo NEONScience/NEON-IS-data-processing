@@ -2,6 +2,7 @@
 import environs
 import argparse
 from structlog import get_logger
+from pathlib import Path
 
 from common import log_config as log_config
 from timeseries_padder.timeseries_padder.data_file_path import DataFilePath
@@ -10,9 +11,9 @@ from timeseries_padder.timeseries_padder.variable_window_pad import VariableWind
 
 def main():
     env = environs.Env()
-    data_path = env.path('DATA_PATH')
-    out_path = env.path('OUT_PATH')
-    log_level = env.log_level('LOG_LEVEL')
+    data_path: Path = env.path('DATA_PATH')
+    out_path: Path = env.path('OUT_PATH')
+    log_level: str = env.log_level('LOG_LEVEL')
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'data_dir: {data_path} out_dir: {out_path}')

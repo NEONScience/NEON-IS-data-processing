@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+from typing import Tuple
 
 
 class LocationFilePath(object):
@@ -10,10 +11,10 @@ class LocationFilePath(object):
         self.month_index = month_index
         self.location_index = location_index
 
-    def parse(self, path: Path):
+    def parse(self, path: Path) -> Tuple[str, str, str, str]:
         parts = path.parts
-        source_type = parts[self.source_type_index]
-        year = parts[self.year_index]
-        month = parts[self.month_index]
-        location = parts[self.location_index]
+        source_type: str = parts[self.source_type_index]
+        year: str = parts[self.year_index]
+        month: str = parts[self.month_index]
+        location: str = parts[self.location_index]
         return source_type, year, month, location

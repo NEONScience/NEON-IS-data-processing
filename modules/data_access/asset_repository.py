@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from typing import List
+
+from cx_Oracle import Connection
+
+from data_access.asset import Asset
 
 
 class AssetRepository(object):
     """Class to represent an asset repository backed by a database."""
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
-    def get_all(self):
+    def get_assets(self) -> List[Asset]:
         sql = '''
              select
                  asset.asset_uid,
@@ -26,9 +31,9 @@ class AssetRepository(object):
         '''
         with closing(self.connection.cursor()) as cursor:
             rows = cursor.execute(sql)
-            assets = []
+            assets: List[Asset] = []
             for row in rows:
                 asset_uid = row[0]
                 schema_name = row[1]
-                assets.append({'asset_id': asset_uid, 'asset_type': schema_name})
+                assets.append(Asset(id=asset_uid, type=schema_name))
             return assets

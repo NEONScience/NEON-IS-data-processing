@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 from pathlib import Path
-from datetime import datetime
 
 import geojson
 import cx_Oracle
@@ -20,7 +19,7 @@ class DataAccessTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-        self.out_path = Path('/output')
+        self.out_path = Path('/out')
         self.fs.create_dir(self.out_path)
         #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]
         database_url = os.getenv('DATABASE_URL')
@@ -34,45 +33,46 @@ class DataAccessTest(TestCase):
         self.named_location_id = 31720
 
     def test_asset_finder(self):
-        result = self.asset_repository.get_all()
+        result = self.asset_repository.get_assets()
+        print(f'assets: {len(result)}')
+        asset = result[0]
+        print(f'asset id: {asset.id} type: {asset.type}')
         self.assertTrue((result is not None))
 
     @unittest.skip('Skip due to long process time.')
-    def test_type_context(self):
-        locations = self.named_location_repository.get_by_type('CONFIG', datetime.now())
+    def test_get_locations_by_type(self):
+        locations = self.named_location_repository.get_named_locations('CONFIG')
         for location in locations:
             geojson_data = geojson.dumps(location, indent=4, sort_keys=False, default=str)
             print(f'geojson_data: {geojson_data}')
         self.assertTrue((locations is not None))
 
-    def test_get_site(self):
-        site_name = self.named_location_repository.get_site(self.named_location_id)
-        self.assertTrue(site_name == 'ORNL')
+    def test_get_location_site(self):
+        site = self.named_location_parent_repository.get_site(self.named_location_id)
+        self.assertTrue(site == 'ORNL')
 
-    def test_get_schema_name(self):
+    def test_get_location_schema_name(self):
         named_location_name = 'SENSOR000000'
         schema_name = self.named_location_repository.get_schema_name(named_location_name)
         self.assertTrue(schema_name == 'exo2')
 
-    def test_get_active_periods(self):
+    def test_get_location_active_periods(self):
         active_periods = self.active_period_repository.get_active_periods(self.named_location_id)
         self.assertTrue(active_periods is not None)
 
-    def test_context_repository(self):
+    def test_location_context_repository(self):
         contexts = self.named_location_context_repository.get_context(self.named_location_id)
         self.assertTrue(len(contexts) == 0)
 
-    def test_parent_repository(self):
-        parents = self.named_location_parent_repository.get_parents(self.named_location_id)
-        self.assertTrue(parents[0]['name'] == 'ORNL')
+    def test_location_parent_repository(self):
+        site = self.named_location_parent_repository.get_site(self.named_location_id)
+        self.assertTrue(site == 'ORNL')
 
-    def test_property_repository(self):
+    def test_location_property_repository(self):
         properties = self.property_repository.get_named_location_properties(self.named_location_id)
         prop = properties[0]
-        for key, value in prop.items():
-            print(prop)
-            self.assertTrue(key == 'Required Asset Management Location Code')
-            self.assertTrue(value == 'CFGLOC100805')
+        self.assertTrue(prop.name == 'Required Asset Management Location Code')
+        self.assertTrue(prop.value == 'CFGLOC100805')
 
     def tearDown(self):
         self.connection.close()

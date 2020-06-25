@@ -9,9 +9,7 @@ from date_gap_filler.location_file_linker import LocationFileLinker
 
 class DateGapFiller(object):
 
-    def __init__(self, *,
-                 config: DateGapFillerConfig,
-                 data_file_path_config: DataFilePath,
+    def __init__(self, *, config: DateGapFillerConfig, data_file_path_config: DataFilePath,
                  location_file_path_config: LocationFilePath):
         self.config = config
         self.data_file_path_config = data_file_path_config
