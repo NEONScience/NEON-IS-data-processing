@@ -274,7 +274,7 @@ for(idxDirIn in DirIn){
     # Initialize the arguments for plausibility and spike testing (these are run by separate codes)
     argsPlau <- base::list(data=base::subset(data,select=idxTerm),time=base::as.POSIXlt(data$readout_time))
     argsSpk <- base::list(data=base::subset(data,select=idxTerm))
-    
+
     # Argument(s) for null test
     if('null' %in% ParaTest[[idxTerm]]$test){
       
@@ -437,6 +437,8 @@ for(idxDirIn in DirIn){
       # Run the spike test
       qfSpk <- base::do.call(eddy4R.qaqc::def.dspk.wndw, argsSpk)$qfSpk
       names(qfSpk) <- 'qfSpk'
+      
+      #qfSpk <- def.spk.mad(data=data[[idxTerm]],Meth=SpkMeth,ThshMad=SpkMad,Wndw=SpkWndw,WndwStep=SpkWndwStep,WndwFracSpkMin=0.1,NumGrp=SpkNumPtsGrp,NaFracMax=SpkNaFracMax,log=log)
       
       if(base::is.null(qf[[idxTerm]])){
         qf[[idxTerm]] <- qfSpk
