@@ -34,7 +34,7 @@ Definition function. Parse the elements of one or more vectors into key:multiple
 \examples{
 # Vector input represents key:multi-value set
 listVect <- list(c('key1','1.5','3','4','5'),c('key2','3'))
-NameList <- c('MyKeys','MyValues')
+NameList <- c('MyKey','MyValues')
 Type <- c('character','numeric')
 NEONprocIS.base::def.vect.pars.one.many(listVect=listVect,NameList=NameList,Type=Type)
 }

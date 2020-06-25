@@ -29,7 +29,7 @@
     "pfs": {
       "name": "IN_PATH",
       "repo": "prt_date_gap_filler",
-      "glob": "/prt/*/*",
+      "glob": "/prt/*/*/*",
       "empty_files": true
     }
   },

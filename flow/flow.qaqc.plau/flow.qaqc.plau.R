@@ -108,6 +108,7 @@
 #     fix bug when only one test selected
 #   Cove Sturtevant (2020-04-22)
 #     switch read/write data from avro to parquet
+#   Cove Sturtevant (2020-06-16)
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -115,18 +116,26 @@ log <- NEONprocIS.base::def.log.init()
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly=TRUE)
 
+
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut","TermTest1"),
-                                      NameParaOptn=c("FileSchmData","FileSchmQf",base::paste0("TermTest",2:100),
-                                                     "DirSubCopy"),log=log)
+Para <-
+  NEONprocIS.base::def.arg.pars(
+    arg = arg,
+    NameParaReqd = c("DirIn", "DirOut", "TermTest1"),
+    NameParaOptn = c(
+      "FileSchmData",
+      "FileSchmQf",
+      base::paste0("TermTest", 2:100),
+      "DirSubCopy"
+    ),
+    log = log
+  )
 
-# Retrieve datum path. 
-DirBgn <- Para$DirIn # Input directory. 
-log$debug(base::paste0('Input directory: ',DirBgn))
+# Echo arguments
+log$debug(base::paste0('Input directory: ', Para$DirIn))
+log$debug(base::paste0('Output directory: ', Para$DirOut))
 
-# Retrieve base output path
-DirOut <- Para$DirOut
-log$debug(base::paste0('Output directory: ',DirOut))
+
 
 # Retrieve output schema for data
 FileSchmDataOut <- Para$FileSchmData
@@ -176,7 +185,7 @@ nameDirSub <- base::as.list(base::unique(c(DirSubCopy,'data','threshold')))
 log$debug(base::paste0('Expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
 
 # Find all the input paths (datums). We will process each one.
-DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub,log=log)
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn=Para$DirIn,nameDirSub=nameDirSub,log=log)
 
 # Process each datum path
 for(idxDirIn in DirIn){
@@ -192,7 +201,7 @@ for(idxDirIn in DirIn){
   # Gather info about the input directory (including date) and create the output directories. 
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
-  idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
+  idxDirOut <- base::paste0(Para$DirOut,InfoDirIn$dirRepo)
   idxDirOutData <- base::paste0(idxDirOut,'/data')
   base::dir.create(idxDirOutData,recursive=TRUE)
   idxDirOutQf <- base::paste0(idxDirOut,'/flags')
@@ -265,7 +274,7 @@ for(idxDirIn in DirIn){
     # Initialize the arguments for plausibility and spike testing (these are run by separate codes)
     argsPlau <- base::list(data=base::subset(data,select=idxTerm),time=base::as.POSIXlt(data$readout_time))
     argsSpk <- base::list(data=base::subset(data,select=idxTerm))
-    
+
     # Argument(s) for null test
     if('null' %in% ParaTest[[idxTerm]]$test){
       
@@ -428,6 +437,8 @@ for(idxDirIn in DirIn){
       # Run the spike test
       qfSpk <- base::do.call(eddy4R.qaqc::def.dspk.wndw, argsSpk)$qfSpk
       names(qfSpk) <- 'qfSpk'
+      
+      #qfSpk <- def.spk.mad(data=data[[idxTerm]],Meth=SpkMeth,ThshMad=SpkMad,Wndw=SpkWndw,WndwStep=SpkWndwStep,WndwFracSpkMin=0.1,NumGrp=SpkNumPtsGrp,NaFracMax=SpkNaFracMax,log=log)
       
       if(base::is.null(qf[[idxTerm]])){
         qf[[idxTerm]] <- qfSpk
