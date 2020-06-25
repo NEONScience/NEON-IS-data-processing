@@ -32,7 +32,7 @@
       </AmbientHumidity>
     </CalEnvironment>
     <CalibrationCoefficient> 
-		<Name>CVALR1</Name>
+		<Name>CVALA1</Name>
 		<Value>0</Value>
     </CalibrationCoefficient>
 	<CalibrationTable name="">

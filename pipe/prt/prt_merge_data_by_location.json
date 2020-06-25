@@ -13,8 +13,13 @@
   "input": {
       "pfs": {
         "name": "DIR_IN",
+<<<<<<< HEAD
         "repo": "prt_structure_repo_by_location_cs",
         "glob": "/prt/*/*/*/"
+=======
+        "repo": "prt_structure_repo_by_location",
+        "glob": "/prt/*/*"
+>>>>>>> master
       }
   },
   "enable_stats": false,

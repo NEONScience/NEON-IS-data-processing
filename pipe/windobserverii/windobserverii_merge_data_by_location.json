@@ -14,7 +14,7 @@
       "pfs": {
         "name": "DIR_IN",
         "repo": "windobserverii_structure_repo_by_location",
-        "glob": "/windobserverii/*/*/*/"
+        "glob": "/windobserverii/*/*"
       }
   },
   "enable_stats": false,

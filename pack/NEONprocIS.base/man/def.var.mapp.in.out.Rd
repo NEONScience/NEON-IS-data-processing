@@ -4,9 +4,12 @@
 \alias{def.var.mapp.in.out}
 \title{Map input variable names to output variable names}
 \usage{
-def.var.mapp.in.out(nameVarIn = base::character(0),
+def.var.mapp.in.out(
+  nameVarIn = base::character(0),
   nameVarOut = base::character(0),
-  nameVarDfltSame = base::character(0), log = NULL)
+  nameVarDfltSame = base::character(0),
+  log = NULL
+)
 }
 \arguments{
 \item{nameVarIn}{String vector of input variable names. Defaults to zero-length character vector.}

@@ -24,8 +24,13 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
+<<<<<<< HEAD
       "repo": "tempSoil_context_filter_cs",
       "glob": "/*/*/*/*",
+=======
+      "repo": "tempSoil_context_filter",
+      "glob": "/*/*/*",
+>>>>>>> master
       "empty_files": true
     }
   },

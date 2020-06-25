@@ -4,8 +4,12 @@
 \alias{def.vect.pars.one.many}
 \title{Parse vectors into key:multi-value sets}
 \usage{
-def.vect.pars.one.many(listVect, NameList = c("key", "value"),
-  Type = rep(base::class(listVect[[1]]), 2), log = NULL)
+def.vect.pars.one.many(
+  listVect,
+  NameList = c("key", "value"),
+  Type = rep(base::class(listVect[[1]]), 2),
+  log = NULL
+)
 }
 \arguments{
 \item{listVect}{A list of vectors of class numeric or character. Each vector must be length 2 or greater.}
@@ -30,7 +34,7 @@ Definition function. Parse the elements of one or more vectors into key:multiple
 \examples{
 # Vector input represents key:multi-value set
 listVect <- list(c('key1','1.5','3','4','5'),c('key2','3'))
-NameList <- c('MyKeys','MyValues')
+NameList <- c('MyKey','MyValues')
 Type <- c('character','numeric')
 NEONprocIS.base::def.vect.pars.one.many(listVect=listVect,NameList=NameList,Type=Type)
 }

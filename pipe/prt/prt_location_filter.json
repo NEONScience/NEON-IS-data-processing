@@ -13,8 +13,13 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
+<<<<<<< HEAD
       "repo": "prt_calibrated_location_group_cs",
       "glob": "/prt/*/*/*/"
+=======
+      "repo": "prt_calibrated_location_group",
+      "glob": "/prt/*/*"
+>>>>>>> master
       }
   },
   "enable_stats": false,

@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "exo2_calibrated_location_group",
-      "glob": "/exo2/*/*/*/"
+      "glob": "/exo2/*/*"
       }
   },
   "enable_stats": false,

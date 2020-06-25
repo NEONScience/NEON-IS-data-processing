@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "exophorp_calibrated_location_group",
-      "glob": "/exophorp/*/*/*/"
+      "glob": "/exophorp/*/*"
       }
   },
   "enable_stats": false,

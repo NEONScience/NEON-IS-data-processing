@@ -1,0 +1,23 @@
+{
+    "type": "Feature",
+    "geometry": null,
+    "properties": {
+        "name": "SENSOR000202",
+        "type": "CONFIG",
+        "description": "Blue River Water Chemistry and Temperature S2 Overhang",
+        "site": "BLUE",
+        "context": [
+            "water-quality-296"
+        ],
+        "active_periods": [
+            {
+                "start_date": "2018-09-01T00:00:00Z",
+                "end_date": "2020-06-17T00:00:00Z"
+            }
+        ],
+        "HOR": "112",
+        "VER": "100",
+        "TMI": "000",
+        "Data Rate": "0.0166666666667"
+    }
+}

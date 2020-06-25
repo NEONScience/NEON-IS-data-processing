@@ -4,8 +4,16 @@
 \alias{def.wrte.parq}
 \title{Write Parquet file}
 \usage{
-def.wrte.parq(data, NameFile, Schm = NULL, NameFileSchm = NULL,
-  CompType = "gzip", CompLvl = 5, Dict = NULL, log = NULL)
+def.wrte.parq(
+  data,
+  NameFile,
+  Schm = NULL,
+  NameFileSchm = NULL,
+  CompType = "gzip",
+  CompLvl = 5,
+  Dict = NULL,
+  log = NULL
+)
 }
 \arguments{
 \item{data}{Data frame. Data to write to file.}

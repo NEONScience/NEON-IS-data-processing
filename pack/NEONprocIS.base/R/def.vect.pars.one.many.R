@@ -27,7 +27,7 @@
 #' @examples
 #' # Vector input represents key:multi-value set
 #' listVect <- list(c('key1','1.5','3','4','5'),c('key2','3'))
-#' NameList <- c('MyKeys','MyValues')
+#' NameList <- c('MyKey','MyValues')
 #' Type <- c('character','numeric')
 #' NEONprocIS.base::def.vect.pars.one.many(listVect=listVect,NameList=NameList,Type=Type)
 
@@ -40,6 +40,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-03-11)
 #     original creation
+#   Cove Sturtevant (2020-06-18)
+#     bug fix - output lists were not named according to input argument
 ##############################################################################################
 def.vect.pars.one.many <- function(listVect,
                                    NameList=c('key','value'),
@@ -66,6 +68,7 @@ def.vect.pars.one.many <- function(listVect,
   
   if(base::length(NameList) != 2){
     log$fatal('Length of NameList must be 2.')
+    base::stop()
   }
   
   if(length(Type) != 2){
@@ -85,6 +88,9 @@ def.vect.pars.one.many <- function(listVect,
       # Assign classes
       base::class(rptIdx$key) <- Type[1]
       base::class(rptIdx$value) <- Type[2]
+      
+      # Rename list
+      names(rptIdx) <- NameList
       
       return(rptIdx)
     }

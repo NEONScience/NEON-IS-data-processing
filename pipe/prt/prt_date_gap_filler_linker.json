@@ -28,8 +28,13 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
+<<<<<<< HEAD
       "repo": "prt_date_gap_filler_cs",
       "glob": "/prt/*/*",
+=======
+      "repo": "prt_date_gap_filler",
+      "glob": "/prt/*/*/*",
+>>>>>>> master
       "empty_files": true
     }
   },

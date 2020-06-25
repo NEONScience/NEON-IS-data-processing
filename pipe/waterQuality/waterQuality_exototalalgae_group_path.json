@@ -23,7 +23,7 @@
     "pfs": {
       "name": "SOURCE_PATH",
       "repo": "exototalalgae_merge_data_by_location",
-      "glob": "/exototalalgae/*/*/*/*"
+      "glob": "/exototalalgae/*/*/*"
     }
   },
   "enable_stats": false,

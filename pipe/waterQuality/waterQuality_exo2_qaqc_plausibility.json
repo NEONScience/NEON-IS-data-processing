@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "waterQuality_exo2_padded_timeseries_analyzer",
-          "glob": "/*/*/*/"
+          "glob": "/*/*/*"
         }
       },
       {

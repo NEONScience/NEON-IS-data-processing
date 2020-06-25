@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "exoconductivity_location_filter",
-      "glob": "/exoconductivity/*/*/*/"
+      "glob": "/exoconductivity/*/*"
       }
   },
   "enable_stats": false,
