@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Perform spike test with optional spike removal
+#' @title Perform spike test
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
@@ -14,12 +14,13 @@
 #' @param ThshMad Value
 #' @param Wndw Value. Must be odd
 #' @param WndwStep Value
+#' @param WndwFracSpkMin Method B only. Minimum threshold fraction of windows a point must fail the spike test as the window steps through the timeseries to be marked as a spike
 #' @param NumPtsGrp Value
 #' @param NaFracMax Value
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
-#' @return A data frame the same size as data, with quality flag results of the despike test 
+#' @return An integer vector the same length as data, with quality flag results of the spike test 
 #' (0 = pass, 1 = fail, -1 = cannot eval)
 
 #' @references
@@ -39,14 +40,15 @@
 #   Cove Sturtevant (2020-06-16)
 #     original creation
 ##############################################################################################
-def.dspk.mad <-
+def.spk.mad <-
   function(data,
            Meth=c('A','B')[1],
            ThshMad,
            Wndw,
            WndwStep=1,
+           WndwFracSpkMin=0.1,
            NumGrp=4,
-           NaFracMax=1,
+           NaFracMax=.1,
            log = NULL) {
     # initialize logging if necessary
     if (base::is.null(log)) {
@@ -63,9 +65,9 @@ def.dspk.mad <-
     
     # CHECK PARAMETERS
     # Meth only A or B
-    # Wndw integer & odd for Method A
+    # Wndw integer & odd for Method A (and B the way it's being implemented) (just add 1)
     # WndwStep only applied to method B and must be less than Wndw/2
-    # NumGrp ,ust be > 1
+    # NumGrp must be > 1
     
     # Scale factor to use MAD as a consistent estimation of std
     # equal to reciprocal of the quantile function at probability of 75%
@@ -74,76 +76,102 @@ def.dspk.mad <-
     # Setup
     numData <- base::length(data)
     dmmyVect <- rep(NA,numData)
+    numDataWndw<-dmmyVect
+    med <- dmmyVect
+    mad <- dmmyVect
+    qf <- rep(-1,numData)
     
-    # Method A
+    # To use the running median and mad functions below, we must first handle NA values. 
+    # It appears that later iterations of the native R stats package may handle NAs, but the 3.6.0 version does not.
+    # Let's replicate the "+Big_alternate" method of stats v3.6.2
+    # The tradeoff here is that the faster med and mad algorithms change the stats a bit when there are NAs in the window.
+    # Leaving the NAs in there causes some extra qf=-1 when the NA value is the first value in the window. Maybe we can 
+    # replace the NA/Inf values in these cases with the next non-NA values in the timeseries.
+    numBig <- .Machine$double.xmax/3
+    setNa <- which(is.na(data))
+    numBigAlt <- array(c(numBig,-numBig),length(setNa))
+    dataPrepNa <- data
+    dataPrepNa[setNa] <- numBigAlt 
+    
+    # Compute the running median of the data (WAY faster than running it in the for loop)
+    med <- stats::runmed(x=data,k=Wndw,endrule='constant')
+    mad <- caTools::runmad(x=data,k=Wndw,constant=CorStd,endrule="NA",align='center')
+    numDataWndw[((Wndw-1)/2+1):(numData-(Wndw-1)/2)] <- RcppRoll::roll_sum(x=!is.na(data),n=Wndw,by=1,align='center',na.rm=TRUE)
+    
+    # Compute correction factor to reduce bias with low window size
+    corWndw <- numDataWndw/(numDataWndw-0.8)
+    if(base::min(numDataWndw,na.rm=TRUE) < 10){
+      corWndw[numDataWndw == 9] <- 1.107
+      corWndw[numDataWndw == 8] <- 1.129
+      corWndw[numDataWndw == 7] <- 1.140
+      corWndw[numDataWndw == 6] <- 1.200
+      corWndw[numDataWndw == 5] <- 1.206
+      corWndw[numDataWndw == 4] <- 1.363
+    }
+      
+    # Adjust for window size, stardard deviation approx, and threshold factor
+    madAdj <- mad*corWndw*ThshMad 
+    
+    # Determine the windows that have sufficient sample size to determine mad (indicated at index of central value)
+    setEval <- numDataWndw >= 4 & numDataWndw >= (1-NaFracMax)*Wndw # center indices with enough non-NA data points in the window
+    
+    # Evaluate spike test depending on chosen method
     if (Meth == 'A'){
       
-      numDataWndw<-dmmyVect
-      med <- dmmyVect
-      mad <- dmmyVect
-      qf <- rep(-1,numData)
-      
-      # Run through each window, stepping forward 1 value each time, evaluating spike test for the central value
-      for(idxBgn in 1:(numData-Wndw+1)){
-      
-        setMad <- idxBgn:(idxBgn+Wndw-1) # set of indices for the window
-        idxMid <- idxBgn+(Wndw-1)/2 # mid point of the window
-        dataWndw <- data[setMad]
-
-        # Get rid of NAs
-        #dataWndw <- dataWndw[!is.na(dataWndw)]
-        numDataWndw[idxMid] <- sum(!is.na(dataWndw))
-          
-        # Calculate median absolute deviation over the window
-        med[idxMid] <- median(dataWndw,na.rm=TRUE)
-        diffAbs <-abs(dataWndw-med[idxMid])
-        mad[idxMid] <- median(diffAbs,na.rm=TRUE) # Median absolute deviation from median
-        
-      }
-      
-      # Compute correction factor to reduce bias with low window size
-      corWndw <- numDataWndw/(numDataWndw-0.8)
-      if(base::min(numDataWndw,na.rm=TRUE) < 10){
-        corWndw[numDataWndw == 9] <- 1.107
-        corWndw[numDataWndw == 8] <- 1.129
-        corWndw[numDataWndw == 7] <- 1.140
-        corWndw[numDataWndw == 6] <- 1.200
-        corWndw[numDataWndw == 5] <- 1.206
-        corWndw[numDataWndw == 4] <- 1.363
-      }
-        
-      # Adjust for window size, stardard deviation approx, and threshold factor
-      madAdj <- mad*corWndw*CorStd*ThshMad 
-      
       # Evaluate central point of each window for spike
-      setEval <- numDataWndw >= 4 & numDataWndw >= (1-NaFracMax)*Wndw # center indices with enough non-NA data points in the window
-      setSpkFail <- setEval & data < med-madAdj | data > med+madAdj
+      setSpkFail <- setEval & (data < med-madAdj | data > med+madAdj)
       setSpkPass <- setEval & !setSpkFail
       
       # Set the pass & fail flags (all others are -1)
       qf[setSpkFail] <- 1
       qf[setSpkPass] <- 0
 
-      # Set a fail to a pass if there are more than NumGrp consective fails (suggesting a real data pattern)
-      diff(qf,differences=NumGrp)
+    } else if (Meth == 'B'){
       
-      qfGrp <- utils::head(qf,-(NumGrp-1))
-      for(idx in 2:NumGrp){
-       qfGrp <- qfGrp + qf[idx:(numData-NumGrp+idx)]
+      # Step through the windows at interval WndwStep, assessing all points in the window
+      numFail <- rep(0,numData)
+      numTest <- rep(0,numData)
+      for (idxBgn in seq(from=1,to=numData-Wndw+1,by=WndwStep)){
+        
+        # Indices of the window
+        setWndw <- idxBgn:(idxBgn+Wndw-1)
+        idxMid <- idxBgn + (Wndw-1)/2
+        
+        # Evaluate the whole window, adding to the running count of times a data point has failed the spike test for each of the windows that pass across it
+        setSpkFailIdx <- setEval[idxMid] & abs(data[setWndw]-med[idxMid]) > madAdj[idxMid]
+        numFail[setWndw] <- numFail[setWndw] + setSpkFailIdx
+        numTest[setWndw] <- numTest[setWndw] + setEval[idxMid]
+        
       }
       
-      setFix <- which(qfGrp == NumGrp)
-      for(idxFix in setFix){
-        qf[idxFix:min(idxFix+NumGrp-1,numData)] <- 0
-      }
+      # Evaluate whether the counts of spike failures for each value surpass the threshold percentage
+      setSpkFail <- numFail/numTest >= WndwFracSpkMin # numTest = 0 results in NA
+      setSpkPass <- !setSpkFail
       
-    } # End Method A
+      qf[setSpkFail] <- 1 # NA values ignored (retained as -1)
+      qf[setSpkPass] <- 0 # NA values ignored (retained as -1)
+      
+    }
     
+    # Set a fail to a pass if there are more than NumGrp consective fails (suggesting a real data pattern as opposed to spikes)
+    qfGrp <- utils::head(qf,-(NumGrp-1))
+    for(idx in 2:NumGrp){
+     qfGrp <- qfGrp + qf[idx:(numData-NumGrp+idx)]
+    }
     
-    
-    return(qf)
+    setFix <- which(qfGrp == NumGrp)
+    for(idxFix in setFix){
+      qf[idxFix:(idxFix+NumGrp-1)] <- 0
+    }
+  
+    return(as.integer(qf))
   }
 
-# timeBgn <- Sys.time()
-# X <- def.dspk.mad(data=data,Meth='A',ThshMad=7,Wndw=3601,WndwStep=1,NumGrp=4,NaFracMax=1,log=log)
-# print(Sys.time()-timeBgn)
+timeBgn <- Sys.time()
+qfEddy4R <- base::do.call(eddy4R.qaqc::def.dspk.wndw, argsSpk)$qfSpk
+print(Sys.time()-timeBgn)
+
+timeBgn <- Sys.time()
+# profvis::profvis({qf <- def.spk.mad(data=data,Meth='A',ThshMad=7,Wndw=3601,WndwStep=1,NumGrp=4,NaFracMax=1,log=log)})
+qf <- def.spk.mad(data=data,Meth='A',ThshMad=1,Wndw=1801,WndwStep=1,WndwFracSpkMin=0.1,NumGrp=4,NaFracMax=.1,log=log)
+print(Sys.time()-timeBgn)
