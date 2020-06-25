@@ -73,7 +73,7 @@ class DateGapFillerTest(TestCase):
                                      self.relative_path_index,
                                      self.location_index,
                                      self.empty_file_suffix)
-        linker.link()
+        linker.link_files()
         self.check_output()
 
     def test_main(self):

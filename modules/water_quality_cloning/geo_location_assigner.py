@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 import datetime
+from typing import List
 
 from contextlib import closing
+from cx_Oracle import Connection
 
 
 class GeoLocationAssigner(object):
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
-    def get_locations(self, named_location_id: int):
+    def get_locations(self, named_location_id: int) -> List[dict]:
         """
         Get all the geo-locations assigned over time to a particular named location.
 
@@ -30,7 +32,7 @@ class GeoLocationAssigner(object):
                 locations.append({'location_id': location_id, 'start_date': start_date, 'end_date': end_date})
         return locations
 
-    def assign_locations(self, named_location_id: int, clone_id: int):
+    def assign_locations(self, named_location_id: int, clone_id: int) -> None:
         """
         Get the geo-location history for an existing named location and assign this history
         to the given cloned named location.

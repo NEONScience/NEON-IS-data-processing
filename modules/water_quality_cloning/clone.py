@@ -3,11 +3,13 @@ import environs
 import cx_Oracle
 from contextlib import closing
 
-from water_quality_cloning.named_location_creator import NamedLocationCreator
+
 from water_quality_cloning.active_period_assigner import ActivePeriodAssigner
 from water_quality_cloning.asset_assigner import AssetAssigner
 from water_quality_cloning.geo_location_assigner import GeoLocationAssigner
 from water_quality_cloning.location_tree_assigner import LocationTreeAssigner
+from water_quality_cloning.measurement_stream_assigner import MeasurementStreamAssigner
+from water_quality_cloning.named_location_creator import NamedLocationCreator
 
 
 def main():
@@ -29,7 +31,8 @@ def main():
 
         named_location_creator = NamedLocationCreator(connection)
         active_period_assigner = ActivePeriodAssigner(connection)
-        asset_assigner = AssetAssigner(connection)
+        measurement_stream_assigner = MeasurementStreamAssigner(connection)
+        asset_assigner = AssetAssigner(connection, measurement_stream_assigner)
         geo_location_assigner = GeoLocationAssigner(connection)
         location_tree_assigner = LocationTreeAssigner(connection)
 

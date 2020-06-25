@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from cx_Oracle import Connection
 
 
 class LocationTreeAssigner(object):
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
-    def get_parent(self, named_location_id: int):
+    def get_parent(self, named_location_id: int) -> int:
         """
         Get the parent ID of a named location.
 
@@ -22,7 +23,7 @@ class LocationTreeAssigner(object):
             parent_id = row[0]
         return parent_id
 
-    def assign_parent(self, parent_id: int, child_id: int):
+    def assign_parent(self, parent_id: int, child_id: int) -> None:
         """
         Assign a parent to a new named location ID.
 
@@ -35,7 +36,7 @@ class LocationTreeAssigner(object):
             cursor.execute(None, parent_id=parent_id, child_id=child_id)
             self.connection.commit()
 
-    def assign_to_same_parent(self, source_named_location_id: int, assignable_named_location_id: int):
+    def assign_to_same_parent(self, source_named_location_id: int, assignable_named_location_id: int) -> None:
         """
         Assign a named location to the source named location.
 
@@ -45,7 +46,7 @@ class LocationTreeAssigner(object):
         parent_id = self.get_parent(source_named_location_id)
         self.assign_parent(parent_id, assignable_named_location_id)
 
-    def get_location_tree(self, parent_id: int, child_id: int):
+    def get_location_tree(self, parent_id: int, child_id: int) -> dict:
         """
         Get the named location tree.
 

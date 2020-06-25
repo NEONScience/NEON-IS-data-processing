@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
+from typing import List
+
 from contextlib import closing
+from cx_Oracle import Connection
 
 
 class MeasurementStreamAssigner(object):
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
-    def get_streams(self, named_location_id: int):
+    def get_streams(self, named_location_id: int) -> List[dict]:
         """
         Return the measurement streams associated with a named location ID.
 
@@ -46,7 +49,7 @@ class MeasurementStreamAssigner(object):
                 streams.append(stream)
         return streams
 
-    def reassign_stream(self, measurement_stream_id: int, cloned_name_location_id: int):
+    def reassign_stream(self, measurement_stream_id: int, cloned_name_location_id: int) -> None:
         """
         Reassign the measurement streams to the cloned named location ID.
 

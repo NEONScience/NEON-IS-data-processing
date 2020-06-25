@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
+from typing import List
+
 from contextlib import closing
+from cx_Oracle import Connection
 
 from data_access.named_location_parent_repository import NamedLocationParentRepository
 
 
 class NamedLocationCreator(object):
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
-    def get_prt_wq_named_locations(self):
+    def get_prt_wq_named_locations(self) -> List[int]:
         """
         Find Water Quality named location IDs used by non-Water Quality sensors.
 
@@ -37,7 +40,7 @@ class NamedLocationCreator(object):
                 named_location_ids.append(named_location_id)
             return named_location_ids
 
-    def get_named_location(self, named_location_id: int):
+    def get_named_location(self, named_location_id: int) -> dict:
         """
         Get an existing named location from the database.
 
@@ -67,9 +70,9 @@ class NamedLocationCreator(object):
                                       'site': site}
         return named_location
 
-    def get_location(self, named_location: dict):
+    def get_location(self, named_location: dict) -> int:
         """
-        From the database get the geo-location ID assigned to a named location.
+        Get the geo-location ID assigned to a named location.
 
         :param named_location: The named location object
         :return: The location ID.
@@ -83,9 +86,9 @@ class NamedLocationCreator(object):
                 location_key = row[0]
         return location_key
 
-    def save_clone(self, cloned_named_location: dict):
+    def save_clone(self, cloned_named_location: dict) -> int:
         """
-        Insert the new named location into the database.
+        Insert the new named location.
 
         :param cloned_named_location: The cloned named location.
         :return: The ID of the new named location.
@@ -110,7 +113,7 @@ class NamedLocationCreator(object):
         return last_insert_id
 
     @staticmethod
-    def get_clone_name(index: int):
+    def get_clone_name(index: int) -> str:
         """
         Create a name for the new named location using a consistent format of 'SENSOR' + an index.
 
@@ -128,7 +131,7 @@ class NamedLocationCreator(object):
             new_name = new_name + '00' + str(index)
         return new_name
 
-    def create_clone(self, named_location: dict, index: int):
+    def create_clone(self, named_location: dict, index: int) -> dict:
         """
         Create a new named location based on the input location.
 
@@ -141,9 +144,9 @@ class NamedLocationCreator(object):
         type_id = named_location.get('type_id')
         site = named_location.get('site')
         new_name = self.get_clone_name(index)
-        named_location_clone = {'key': key,
-                                'name': new_name,
-                                'description': description,
-                                'type_id': type_id,
-                                'site': site}
-        return named_location_clone
+        clone = {'key': key,
+                 'name': new_name,
+                 'description': description,
+                 'type_id': type_id,
+                 'site': site}
+        return clone

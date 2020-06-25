@@ -23,7 +23,8 @@ def write_files(*, location_type: str, out_path: Path,
     for named_location in get_locations(location_type):
         geojson_data = geojson.dumps(named_location, indent=4, sort_keys=False, default=str)
         json_data = json.loads(geojson_data)
-        properties = json_data['properties']
+        features = json_data['features']
+        properties = features[0]['properties']
         location_name = properties['name']
         schema_name = get_schema_name(location_name)
         if schema_name is not None:

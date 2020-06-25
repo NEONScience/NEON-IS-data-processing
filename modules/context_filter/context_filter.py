@@ -3,7 +3,7 @@ from pathlib import Path
 import structlog
 from typing import List, Dict
 
-from common.asset_location_file_parser import AssetLocationFileParser
+import common.location_file_parser as location_file_parser
 from context_filter.data_file_path import DataFilePath
 
 log = structlog.get_logger()
@@ -59,8 +59,8 @@ class ContextFilter(object):
             for paths in path_list:
                 for data_type, path in paths.items():
                     if data_type == self.location_type:
-                        parser = AssetLocationFileParser(path)
-                        if parser.contains_context(self.context):
+                        file_context = location_file_parser.get_context(path)
+                        if self.context in file_context:
                             matching_paths.append(path_list)
         return matching_paths
 

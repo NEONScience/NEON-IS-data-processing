@@ -4,7 +4,6 @@ from typing import List, Iterator, Optional
 
 from geojson import Feature, FeatureCollection
 from cx_Oracle import Connection
-import structlog
 
 from data_access.active_period_repository import ActivePeriodRepository
 from data_access.location_repository import LocationRepository
@@ -12,11 +11,10 @@ from data_access.named_location_context_repository import NamedLocationContextRe
 from data_access.named_location_parent_repository import NamedLocationParentRepository
 from data_access.property_repository import PropertyRepository
 from data_access.active_period import ActivePeriod
+from data_access.asset_location import AssetLocation
+from data_access.named_location import NamedLocation
 from data_access.property import Property
-
-import common.date_formatter as date_formatter
-
-log = structlog.get_logger()
+import data_access.geojson_converter as geojson_converter
 
 
 class NamedLocationRepository(object):
@@ -30,7 +28,7 @@ class NamedLocationRepository(object):
         self.parent_repository = NamedLocationParentRepository(connection)
         self.property_repository = PropertyRepository(connection)
 
-    def get_named_locations(self, location_type: str) -> Iterator[Feature]:
+    def get_named_locations(self, location_type: str) -> Iterator[FeatureCollection]:
         """
         Get named locations in GEOJson format.
 
@@ -56,32 +54,17 @@ class NamedLocationRepository(object):
             cursor.prepare(sql)
             rows = cursor.execute(None, location_type=location_type)
             for row in rows:
-                named_location_id = row[0]
+                key = row[0]
                 name = row[1]
                 description = row[2]
-                log.debug(f'named_location_name: {name} description: {description}')
-                properties: List[Property] = self.property_repository.get_named_location_properties(named_location_id)
-                site: str = self.parent_repository.get_site(named_location_id)
-                context: List[str] = self.context_repository.get_context(named_location_id)
-                active_periods: List[ActivePeriod] = self.active_period_repository.get_active_periods(named_location_id)
-                # convert active periods
-                periods: List[dict] = []
-                for active_period in active_periods:
-                    if active_period.end_date is not None:
-                        periods.append({'start_date': active_period.start_date, 'end_date': active_period.end_date})
-                    else:
-                        # no end date
-                        periods.append({'start_date': active_period.start_date})
-                # build feature
-                feature_properties = {'name': name,
-                                      'type': location_type,
-                                      'description': description,
-                                      'site': site,
-                                      'context': context,
-                                      'active_periods': periods}
-                for prop in properties:
-                    feature_properties.update({prop.name: prop.value})
-                yield Feature(properties=feature_properties)
+                properties: List[Property] = self.property_repository.get_named_location_properties(key)
+                site: str = self.parent_repository.get_site(key)
+                context: List[str] = self.context_repository.get_context(key)
+                active_periods: List[ActivePeriod] = self.active_period_repository.get_active_periods(key)
+                named_location = NamedLocation(name=name, type=location_type, description=description,
+                                               site=site, context=context, active_periods=active_periods,
+                                               properties=properties)
+                yield geojson_converter.convert_named_location(named_location)
 
     def get_asset_location_history(self, asset_id: int) -> FeatureCollection:
         """
@@ -112,36 +95,19 @@ class NamedLocationRepository(object):
             rows = cursor.execute(None, asset_id=asset_id)
             features: List[Feature] = []
             for row in rows:
-                named_location_id = row[0]
+                key = row[0]
                 install_date = row[1]
                 remove_date = row[2]
                 transaction_date = row[3]
-                named_location_name = row[4]
-
-                if install_date is not None:
-                    install_date = date_formatter.convert(install_date)
-                if remove_date is not None:
-                    remove_date = date_formatter.convert(remove_date)
-                if transaction_date is not None:
-                    transaction_date = date_formatter.convert(transaction_date)
-
-                locations: FeatureCollection = self.location_repository.get_locations(named_location_id)
-                properties: List[Property] = self.property_repository.get_named_location_properties(named_location_id)
-                site: str = self.parent_repository.get_site(named_location_id)
-                context: List[str] = self.context_repository.get_context(named_location_id)
-
-                feature_properties = {'name': named_location_name,
-                                      'site': site,
-                                      'install_date': install_date,
-                                      'remove_date': remove_date,
-                                      'transaction_date': transaction_date,
-                                      'context': context}
-                for prop in properties:
-                    feature_properties.update({prop.name: prop.value})
-                # add locations at the bottom of property list for easier reading
-                feature_properties.update(locations=locations)
-                feature = Feature(properties=feature_properties)
-                features.append(feature)
+                name = row[4]
+                locations: FeatureCollection = self.location_repository.get_locations(key)
+                properties: List[Property] = self.property_repository.get_named_location_properties(key)
+                site: str = self.parent_repository.get_site(key)
+                context: List[str] = self.context_repository.get_context(key)
+                asset_location = AssetLocation(name=name, site=site, install_date=install_date,
+                                               remove_date=remove_date, transaction_date=transaction_date,
+                                               context=context, properties=properties, locations=locations)
+                features.append(geojson_converter.convert_asset_location(asset_location))
         return FeatureCollection(features)
 
     def get_schema_name(self, named_location_name: str) -> Optional[str]:

@@ -4,7 +4,7 @@ from typing import NamedTuple, Tuple, List
 
 from structlog import get_logger
 
-from common.asset_location_file_parser import AssetLocationFileParser
+import common.location_file_parser as file_parser
 
 from location_group_path.data_file_path import DataFilePath
 
@@ -68,8 +68,8 @@ class LocationGroupPath(object):
                 paths.append(PathParts(path, elements))
                 # get the location context group from the location file
                 if data_type == self.location_type:
-                    location_file_parser = AssetLocationFileParser(path)
-                    groups.extend(location_file_parser.matching_context_items(self.group))
+                    context = file_parser.get_context(path)
+                    groups.extend(file_parser.get_context_matches(context, self.group))
         if len(groups) == 0:
             log.error(f'No location directory found for group {self.group}.')
         return PathGroups(paths, groups)

@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 import datetime
+from typing import List
 
 from contextlib import closing
+from cx_Oracle import Connection
 
-import water_quality_cloning.measurement_stream_assigner as measurement_stream_assigner
+from water_quality_cloning.measurement_stream_assigner import MeasurementStreamAssigner
 
 
 class AssetAssigner(object):
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection, measurement_stream_assigner: MeasurementStreamAssigner) -> None:
         self.connection = connection
+        self.measurement_stream_assigner = measurement_stream_assigner
 
-    def get_assets_at_location(self, named_location_id: int):
+    def get_assets_at_location(self, named_location_id: int) -> List[dict]:
         """
         Get all the assets currently assigned to a PRT location.
 
@@ -55,7 +58,7 @@ class AssetAssigner(object):
                     'sensor_type': sensor_type})
         return assets
 
-    def assign_assets(self, named_location_id: int, cloned_locations: list):
+    def assign_assets(self, named_location_id: int, cloned_locations: list) -> None:
         """
         Reassign assets from the PRT named location to the cloned named location based on the asset (sensor) type.
 
@@ -96,7 +99,7 @@ class AssetAssigner(object):
                 self.assign_measurement_streams(named_location_id, cloned_location_id, sensor_type)
 
     @staticmethod
-    def get_clone_location_index(sensor_type: str):
+    def get_clone_location_index(sensor_type: str) -> int:
         """
         Ensure all sensors of the same type are assigned to the same cloned named location.
 
@@ -116,7 +119,7 @@ class AssetAssigner(object):
         return index
 
     @staticmethod
-    def get_field_names(sensor_type: str):
+    def get_field_names(sensor_type: str) -> List[str]:
         """
         Get all the schema field names for a sensor type.
 
@@ -135,7 +138,7 @@ class AssetAssigner(object):
         index = switcher.get(sensor_type, "Invalid sensor type.")
         return index
 
-    def assign_measurement_streams(self, named_location_id: int, cloned_location_id: int, sensor_type: str):
+    def assign_measurement_streams(self, named_location_id: int, cloned_location_id: int, sensor_type: str) -> None:
         """
         Reassign a measurement stream from the named_location_id to the cloned_location_id if the
         measurement stream schema field name (associated by the term name) matches the cloned
@@ -146,7 +149,7 @@ class AssetAssigner(object):
         :param sensor_type: The sensor type.
         """
         print(f'assigning measurement streams')
-        streams = measurement_stream_assigner.get_streams(self.connection, named_location_id)
+        streams = self.measurement_stream_assigner.get_streams(named_location_id)
         for stream in streams:
             if sensor_type != 'prt':
                 sensor_field_names = self.get_field_names(sensor_type)
@@ -154,4 +157,4 @@ class AssetAssigner(object):
                 print(f'stream field name: {stream_field_name} sensor type {sensor_type}')
                 if stream_field_name in sensor_field_names:
                     measurement_stream_id = stream.get('stream_id')
-                    measurement_stream_assigner.reassign_stream(measurement_stream_id, cloned_location_id)
+                    self.measurement_stream_assigner.reassign_stream(measurement_stream_id, cloned_location_id)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from typing import List, Optional
+from typing import List, Tuple, Optional
 
 from cx_Oracle import Connection
 from geojson import Point, Feature, FeatureCollection
@@ -35,17 +35,20 @@ class LocationRepository(object):
                 locn_z_off, 
                 nam_locn_id_off, 
                 nam_locn_name
-            from locn
-            join locn_nam_locn on locn.locn_id = locn_nam_locn.locn_id
-            join nam_locn on locn.nam_locn_id_off = nam_locn.nam_locn_id
+            from 
+                locn
+            join 
+                locn_nam_locn on locn.locn_id = locn_nam_locn.locn_id
+            join 
+                nam_locn on locn.nam_locn_id_off = nam_locn.nam_locn_id
             where
                 locn_nam_locn.nam_locn_id = :named_location_id
         '''
         with closing(self.connection.cursor()) as cursor:
             rows = cursor.execute(sql, named_location_id=named_location_id)
-            locations: List[Feature] = []
+            features: List[Feature] = []
             for row in rows:
-                location_geometry = row[0]
+                geometry = row[0]
                 start_date = row[1]
                 end_date = row[2]
                 transaction_date = row[3]
@@ -57,44 +60,50 @@ class LocationRepository(object):
                 z_offset = row[9]
                 named_location_offset_id = row[10]
                 named_location_offset_name = row[11]
-
+                # convert dates
                 if start_date is not None:
                     start_date = date_formatter.convert(start_date)
                 if end_date is not None:
                     end_date = date_formatter.convert(end_date)
                 if transaction_date is not None:
                     transaction_date = date_formatter.convert(transaction_date)
-
-                # get the reference locations for this location
-                reference_locations = None
+                # build the reference location
+                reference_locations: Optional[FeatureCollection] = None
                 if (named_location_offset_id is not None) and (named_location_offset_id != named_location_id):
                     reference_locations = self.get_locations(named_location_offset_id)
-                reference_location = Feature(geometry=None,
-                                             properties={'name': named_location_offset_name,
-                                                         'locations': reference_locations})
+                reference_properties = {'name': named_location_offset_name, 'locations': reference_locations}
+                reference_feature = Feature(geometry=None, properties=reference_properties)
                 # build the location
-                point = self.get_point(location_geometry)
-                location = Feature(geometry=point,
-                                   properties={'start_date': start_date,
-                                               'end_date': end_date,
-                                               'transaction_date': transaction_date,
-                                               'alpha': alpha,
-                                               'beta': beta,
-                                               'gamma': gamma,
-                                               'x_offset': x_offset,
-                                               'y_offset': y_offset,
-                                               'z_offset': z_offset,
-                                               'reference_location': reference_location})
-                locations.append(location)
-            return FeatureCollection(locations)
+                properties = {'start_date': start_date,
+                              'end_date': end_date,
+                              'transaction_date': transaction_date,
+                              'alpha': alpha,
+                              'beta': beta,
+                              'gamma': gamma,
+                              'x_offset': x_offset,
+                              'y_offset': y_offset,
+                              'z_offset': z_offset,
+                              'reference_location': reference_feature}
+                point = self.get_point(geometry)
+                feature = Feature(geometry=point, properties=properties)
+                features.append(feature)
+            return FeatureCollection(features)
 
     @staticmethod
-    def get_point(location_geometry) -> Optional[Point]:
-        if location_geometry is not None:
-            ordinates = location_geometry.SDO_ORDINATES
+    def get_coordinates(geometry) -> Optional[Tuple[float, float, float]]:
+        if geometry is not None:
+            ordinates = geometry.SDO_ORDINATES
             if ordinates is not None:
-                ordinates = location_geometry.SDO_ORDINATES.aslist()
-                if len(ordinates) == 3:
-                    point = Point((float(ordinates[0]), float(ordinates[1]), float(ordinates[2])))
-                    return point
+                ordinate_list = ordinates.aslist()
+                if len(ordinate_list) == 3:
+                    x = float(ordinate_list[0])
+                    y = float(ordinate_list[1])
+                    z = float(ordinate_list[2])
+                    return x, y, z
+        return None
+
+    def get_point(self, geometry) -> Optional[Point]:
+        (x, y, z) = self.get_coordinates(geometry)
+        if (x, y, z) is not None:
+            return Point(x, y, z)
         return None

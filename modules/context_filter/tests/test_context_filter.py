@@ -34,10 +34,10 @@ class ContextFilterTest(TestCase):
         self.fs.create_file(flags_path)
         self.fs.create_file(uncertainty_coefficient_path)
         # Use real location file for parsing
-        actual_location_file_path = Path(os.path.dirname(__file__), 'test-locations.json')
+        actual_location_file_path = Path(os.path.dirname(__file__), 'test-asset-location.json')
         self.fs.add_real_file(actual_location_file_path, target_path=locations_path)
 
-    def test_filter(self):
+    def test_filter_asset(self):
         data_file_path = DataFilePath(source_type_index=self.source_type_index,
                                       year_index=self.year_index,
                                       month_index=self.month_index,
