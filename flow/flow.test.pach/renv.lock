@@ -1,0 +1,41 @@
+{
+  "R": {
+    "Version": "3.6.0",
+    "Repositories": [
+      {
+        "Name": "CRAN",
+        "URL": "https://cran.rstudio.com"
+      }
+    ]
+  },
+  "Packages": {
+    "Rcpp": {
+      "Package": "Rcpp",
+      "Version": "1.0.4.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e652f23d8b1807cc975c51410d05b72f"
+    },
+    "generics": {
+      "Package": "generics",
+      "Version": "0.0.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b8cff1d1391fd1ad8b65877f4c7f2e53"
+    },
+    "lubridate": {
+      "Package": "lubridate",
+      "Version": "1.7.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "fc1c91e2e8d9e1fc932e75aa1ed989b7"
+    },
+    "renv": {
+      "Package": "renv",
+      "Version": "0.9.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c1a367437d8a8a44bec4b9d4974cb20c"
+    }
+  }
+}

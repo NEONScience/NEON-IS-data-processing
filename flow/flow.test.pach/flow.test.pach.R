@@ -1,3 +1,6 @@
+# Initialize logging
+log <- NEONprocIS.base::def.log.init()
+
 # Specify directory paths
 dirIn <- Sys.getenv("DIR_IN") # Input path placed into the container for each datum. DIR_IN is the input repo name.
 dirOutBase <- '/pfs/out' # Base output path - MUST be /pfs/out for Pachyderm to recognize it as output
@@ -12,7 +15,9 @@ for (idxDatm in dirDatm){
   
   # Create some text for each datum path, and print it to screen
   text <- paste('Hello. The datum path is',InfoDirIn$dirRepo) 
-  print(text)
+  log$debug(text)
+  
+  x <- lubridate::days(1)
   
   # Write an output file in the output path
   dir.create(dirOut,recursive = TRUE) # Create the output directory in the container
