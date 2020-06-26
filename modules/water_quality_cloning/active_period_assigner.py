@@ -3,7 +3,7 @@ from contextlib import closing
 
 from cx_Oracle import Connection
 
-from data_access.active_period_repository import ActivePeriodRepository
+from data_access.get_active_periods import get_active_periods
 
 
 class ActivePeriodAssigner(object):
@@ -37,8 +37,7 @@ class ActivePeriodAssigner(object):
                 CURRENT_TIMESTAMP
             )
         '''
-        active_period_repository = ActivePeriodRepository(self.connection)
-        periods = active_period_repository.get_active_periods(named_location_id)
+        periods = get_active_periods(self.connection, named_location_id)
         with closing(self.connection.cursor()) as cursor:
             cursor.prepare(sql)
             for period in periods:

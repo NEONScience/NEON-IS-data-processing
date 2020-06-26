@@ -7,10 +7,9 @@ from typing import Iterator
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from data_access.threshold import Threshold
-
+from data_access.types.threshold import Threshold
 import threshold_loader.threshold_loader_main as threshold_loader_main
-from threshold_loader.threshold_loader import write_file
+from threshold_loader.threshold_loader import load_thresholds
 
 
 class ThresholdLoaderTest(TestCase):
@@ -21,7 +20,13 @@ class ThresholdLoaderTest(TestCase):
         self.fs.create_dir(self.out_path)
 
     def test_write_file(self):
-        def get_threshold() -> Iterator[Threshold]:
+
+        def get_thresholds() -> Iterator[Threshold]:
+            """
+            Mock function for getting thresholds.
+
+            :return: A threshold.
+            """
             yield Threshold(threshold_name='threshold_name',
                             term_name='term_name',
                             location_name='CPER',
@@ -33,7 +38,8 @@ class ThresholdLoaderTest(TestCase):
                             end_day_of_year=365,
                             number_value=10,
                             string_value='value')
-        write_file(get_threshold, self.out_path)
+
+        load_thresholds(get_thresholds, self.out_path)
         expected_path = self.out_path.joinpath('thresholds.json')
         self.assertTrue(expected_path.exists())
         with open(expected_path, 'r') as threshold_file:

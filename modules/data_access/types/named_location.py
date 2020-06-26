@@ -1,7 +1,7 @@
 from typing import NamedTuple, List
 
-from data_access.active_period import ActivePeriod
-from data_access.property import Property
+from data_access.types.active_period import ActivePeriod
+from data_access.types.property import Property
 
 
 class NamedLocation(NamedTuple):
@@ -9,6 +9,7 @@ class NamedLocation(NamedTuple):
     type: str
     description: str
     site: str
+    schema_name: str
     context: List[str]
     active_periods: List[ActivePeriod]
     properties: List[Property]

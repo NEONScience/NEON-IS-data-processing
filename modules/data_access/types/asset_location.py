@@ -3,7 +3,7 @@ from datetime import datetime
 
 from geojson import FeatureCollection
 
-from data_access.property import Property
+from data_access.types.property import Property
 
 
 class AssetLocation(NamedTuple):

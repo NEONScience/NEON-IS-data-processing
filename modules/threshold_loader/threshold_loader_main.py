@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 from pathlib import Path
-
+from functools import partial
 from contextlib import closing
+
 from structlog import get_logger
-import cx_Oracle
 import environs
+from cx_Oracle import connect
 
 import common.log_config as log_config
-from data_access.threshold_repository import ThresholdRepository
-from threshold_loader.threshold_loader import write_file
+from data_access.get_thresholds import get_thresholds
+from threshold_loader.threshold_loader import load_thresholds
 
 
 def main():
@@ -19,9 +20,10 @@ def main():
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'db_url: {db_url} out_path: {out_path}')
-    with closing(cx_Oracle.connect(db_url)) as connection:
-        threshold_repository = ThresholdRepository(connection)
-        write_file(threshold_repository.get_thresholds, out_path)
+
+    with closing(connect(db_url)) as connection:
+        get_thresholds_partial = partial(get_thresholds, connection=connection)
+        load_thresholds(get_thresholds_partial, out_path)
 
 
 if __name__ == "__main__":

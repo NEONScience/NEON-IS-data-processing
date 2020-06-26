@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
+import json
 from geojson import FeatureCollection, dumps
 import unittest
 
 import common.date_formatter as date_formatter
-import data_access.geojson_converter as geojson_converter
-from data_access.asset_location import AssetLocation
-from data_access.active_period import ActivePeriod
-from data_access.named_location import NamedLocation
-from data_access.property import Property
+import data_access.types.geojson_converter as geojson_converter
+from data_access.types.asset_location import AssetLocation
+from data_access.types.active_period import ActivePeriod
+from data_access.types.named_location import NamedLocation
+from data_access.types.property import Property
 
 
 class GeoJsonConverterTest(unittest.TestCase):
@@ -45,12 +46,24 @@ class GeoJsonConverterTest(unittest.TestCase):
         start_date = '2020-01-01T00:00:00Z'
         end_date = '2020-01-02T00:00:00Z'
         context = 'context'
-        context = [context]
-        active_periods = [ActivePeriod(start_date=start_date, end_date=end_date)]
-        properties = [Property(name='prop1', value='value1')]
+        active_period = ActivePeriod(start_date=date_formatter.parse(start_date),
+                                     end_date=date_formatter.parse(end_date))
+        prop = Property(name='prop1', value='value1')
         named_location = NamedLocation(name=name, type=location_type, description=description, site=site,
-                                       context=context, active_periods=active_periods, properties=properties)
+                                       schema_name='prt', context=[context], active_periods=[active_period],
+                                       properties=[prop])
         feature = geojson_converter.convert_named_location(named_location)
-        printable = dumps(feature, indent=4, sort_keys=False, default=str)
-        print(f'feature: {printable}')
-        self.assertTrue(True)
+        geojson_data = dumps(feature, indent=4, sort_keys=False, default=str)
+        json_data = json.loads(geojson_data)
+        print(f'location: {geojson_data}')
+        feature = json_data['features'][0]
+        properties = feature['properties']
+        self.assertTrue(properties['name'] == name)
+        self.assertTrue(properties['type'] == location_type)
+        self.assertTrue(properties['description'] == description)
+        self.assertTrue(properties['site'] == site)
+        self.assertTrue(properties['description'] == description)
+        self.assertTrue(properties['context'][0] == context)
+        self.assertTrue(properties['active_periods'][0]['start_date'] == start_date)
+        self.assertTrue(properties['active_periods'][0]['end_date'] == end_date)
+        self.assertTrue(properties['prop1'] == 'value1')

@@ -3,9 +3,9 @@ from typing import List
 from geojson import Feature, FeatureCollection
 
 from common.date_formatter import convert
-from data_access.named_location import NamedLocation
-from data_access.asset_location import AssetLocation
-from data_access.active_period import ActivePeriod
+from data_access.types.named_location import NamedLocation
+from data_access.types.asset_location import AssetLocation
+from data_access.types.active_period import ActivePeriod
 
 
 def convert_asset_location(location: AssetLocation) -> Feature:
@@ -46,8 +46,12 @@ def convert_named_location(location: NamedLocation) -> FeatureCollection:
 def convert_active_periods(active_periods: List[ActivePeriod]) -> List[dict]:
     periods = []
     for period in active_periods:
-        if period.end_date is not None:
-            periods.append({'start_date': period.start_date, 'end_date': period.end_date})
+        start_date = period.start_date
+        end_date = period.end_date
+        formatted_start_date = convert(start_date)
+        if end_date is not None:
+            formatted_end_date = convert(end_date)
+            periods.append({'start_date': formatted_start_date, 'end_date': formatted_end_date})
         else:
-            periods.append({'start_date': period.start_date})
+            periods.append({'start_date': formatted_start_date})
     return periods

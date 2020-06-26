@@ -1,46 +1,39 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from typing import Callable, List
+from typing import Callable, Iterator
 
 from geojson import FeatureCollection, dumps
 import structlog
 
-from data_access.asset import Asset
+from data_access.types.asset import Asset
 
 log = structlog.get_logger()
 
 
-def write_files(*, get_assets: Callable[[], List[Asset]],
-                get_location_history: Callable[[int], FeatureCollection], out_path: Path):
+def write_files(*, get_assets: Callable[[], Iterator[Asset]],
+                get_asset_locations: Callable[[Asset], FeatureCollection], out_path: Path):
     """
-    Write assets and their location history to GEOJson files.
+    Write GEOJson files of assets and their locations.
 
     :param get_assets: Function to return a list of assets.
-    :param get_location_history: Function to return asset location history.
+    :param get_asset_locations: Function to return asset location history.
     :param out_path: Path for writing files.
     """
     for asset in get_assets():
-        log.debug(f'Processing asset: {asset}')
-        if asset.type is not None:
-            history = get_location_history(asset.id)
-            # add the asset to the location history as the "source"
-            history.update({"source_id": asset.id})
-            history.update({"source_type": asset.type})
-            write_file(asset=asset, history=history, out_path=out_path)
-        else:
-            # some types may not be available
-            log.error(f'Asset {asset.id} has no type defined.')
+        log.debug(f'Processing asset: {asset.id}')
+        locations: FeatureCollection = get_asset_locations(asset)
+        write_file(asset=asset, locations=locations, out_path=out_path)
 
 
-def write_file(*, asset: Asset, history: FeatureCollection, out_path: Path):
+def write_file(*, asset: Asset, locations: FeatureCollection, out_path: Path):
     """
-    Write a GEOJson file of the asset.
+    Write a GEOJson file of the asset and its locations.
 
     :param asset: The asset.
-    :param history: The asset's location history.
+    :param locations: The asset's location history.
     :param out_path: The path for writing files.
     """
-    geojson_data = dumps(history, indent=4, sort_keys=False, default=str)
+    geojson_data = dumps(locations, indent=4, sort_keys=False, default=str)
     file_name = f'{asset.type}_{str(asset.id)}_locations.json'
     file_path = Path(out_path, asset.type, str(asset.id), file_name)
     file_path.parent.mkdir(parents=True, exist_ok=True)
