@@ -16,7 +16,7 @@ def load_locations(out_path: Path, get_locations: Callable[[], Iterator[NamedLoc
     Write location files into the output path.
 
     :param out_path: The path for writing files.
-    :param get_locations: A function taking the url and type and returning named locations.
+    :param get_locations: A function yielding named locations.
     """
     for named_location in get_locations():
         schema_name = named_location.schema_name

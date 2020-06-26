@@ -15,8 +15,8 @@ def write_files(*, get_assets: Callable[[], Iterator[Asset]],
     """
     Write GEOJson files of assets and their locations.
 
-    :param get_assets: Function to return a list of assets.
-    :param get_asset_locations: Function to return asset location history.
+    :param get_assets: Function returning a list of assets.
+    :param get_asset_locations: Function returning asset locations.
     :param out_path: Path for writing files.
     """
     for asset in get_assets():
