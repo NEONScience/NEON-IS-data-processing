@@ -15,6 +15,7 @@ class WaterQualityCloningTest(unittest.TestCase):
     def setUp(self):
         #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]
         self.db_url = os.getenv('DATABASE_URL')
+        print(f'using database: {self.db_url}')
 
     def test_get_named_location(self):
         with closing(cx_Oracle.connect(self.db_url)) as connection:

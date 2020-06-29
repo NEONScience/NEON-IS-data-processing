@@ -4,7 +4,7 @@ from typing import List
 from contextlib import closing
 from cx_Oracle import Connection
 
-from data_access.get_named_location_site import NamedLocationParentRepository
+from data_access.get_named_location_site import get_named_location_site
 
 
 class NamedLocationCreator(object):
@@ -51,7 +51,6 @@ class NamedLocationCreator(object):
             select nam_locn_id, nam_locn_name, nam_locn_desc, type_id from nam_locn where nam_locn_id = :id
         '''
         named_location = None
-        named_location_parent_repository = NamedLocationParentRepository(self.connection)
         with closing(self.connection.cursor()) as cursor:
             cursor.prepare(sql)
             rows = cursor.execute(None, id=named_location_id)
@@ -62,7 +61,7 @@ class NamedLocationCreator(object):
                     name = row[1]
                     desc = row[2]
                     type_id = row[3]
-                    site = named_location_parent_repository.get_named_location_site(key)
+                    site = get_named_location_site(self.connection, key)
                     named_location = {'key': key,
                                       'name': name,
                                       'description': desc,

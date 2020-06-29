@@ -11,12 +11,13 @@ log = structlog.get_logger()
 
 
 def write_files(*, get_assets: Callable[[], Iterator[Asset]],
-                get_asset_locations: Callable[[Asset], FeatureCollection], out_path: Path):
+                get_asset_locations: Callable[[Asset], FeatureCollection],
+                out_path: Path):
     """
     Write GEOJson files of assets and their locations.
 
     :param get_assets: Function returning a list of assets.
-    :param get_asset_locations: Function returning asset locations.
+    :param get_asset_locations: Function taking an Asset and returning a FeatureCollection of asset locations.
     :param out_path: Path for writing files.
     """
     for asset in get_assets():

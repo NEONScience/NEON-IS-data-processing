@@ -24,8 +24,8 @@ def main():
     log.debug(f'out_path: {out_path}')
 
     with closing(cx_Oracle.connect(db_url)) as connection:
-        get_assets_partial = partial(get_assets, connection=connection)
-        get_asset_locations_partial = partial(get_asset_locations, connection=connection)
+        get_assets_partial = partial(get_assets, connection)
+        get_asset_locations_partial = partial(get_asset_locations, connection)
         location_asset_loader.write_files(get_assets=get_assets_partial,
                                           get_asset_locations=get_asset_locations_partial,
                                           out_path=out_path)
