@@ -71,7 +71,7 @@ class LocationAssetLoaderTest(TestCase):
         feature_collection.update({"source_type": asset.type})
         return feature_collection
 
-    # @unittest.skip('Integration test skipped due to long process time.')
+    @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
         #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]
         database_url = os.getenv('DATABASE_URL')
