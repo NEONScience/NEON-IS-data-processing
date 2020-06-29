@@ -1,5 +1,7 @@
-from typing import NamedTuple, List
+from typing import NamedTuple, Optional
 from datetime import datetime
+
+from geojson import FeatureCollection
 
 
 class Location(NamedTuple):
@@ -12,9 +14,4 @@ class Location(NamedTuple):
     x_offset: float
     y_offset: float
     z_offset: float
-    reference_feature: dict
-
-
-class ReferenceLocation(NamedTuple):
-    name: str
-    locations: List[Location]
+    reference_locations: Optional[FeatureCollection]

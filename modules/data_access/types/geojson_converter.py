@@ -38,9 +38,10 @@ def convert_named_location(location: NamedLocation) -> FeatureCollection:
                   'site': location.site,
                   'context': location.context,
                   'active_periods': active_periods}
+    feature = Feature(properties=properties)
     for prop in location.properties:
-        properties[prop.name] = prop.value
-    return FeatureCollection([Feature(properties=properties)])
+        feature[prop.name] = prop.value
+    return FeatureCollection([feature])
 
 
 def convert_active_periods(active_periods: List[ActivePeriod]) -> List[dict]:
