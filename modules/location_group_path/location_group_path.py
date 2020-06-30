@@ -6,7 +6,8 @@ from structlog import get_logger
 
 import common.location_file_parser as file_parser
 
-from location_group_path.data_file_path import DataFilePath
+from location_group_path.location_group_path_config import Config
+from location_group_path.data_path_parser import DataPathParser
 
 log = get_logger()
 
@@ -31,38 +32,31 @@ class PathGroups(NamedTuple):
     groups: List[str]
 
 
-class LocationGroupPath(object):
+class LocationGroupPath:
     """Class adds location context groups to location file paths."""
 
-    def __init__(self, *, source_path: Path, out_path: Path, group: str, data_file_path: DataFilePath):
-        """
-        Constructor.
-
-        :param source_path: The path to containing location files.
-        :param group: The group to match in the location files.
-        :param data_file_path: The file path parser.
-        """
-        self.source_path = source_path
-        self.out_path = out_path
-        self.group = group
-        self.data_file_path = data_file_path
+    def __init__(self, config: Config) -> None:
+        self.source_path = config.source_path
+        self.out_path = config.out_path
+        self.group = config.group
+        self.data_path_parser = DataPathParser(config)
         self.location_type = 'location'
 
-    def add_groups_to_paths(self):
+    def add_groups_to_paths(self) -> None:
         """
         Add the location context groups, one group per path. Multiple paths are created
         for the same file if more than one context group is present.
         """
-        path_groups = self.get_paths_and_groups()
-        self.link_files(path_groups)
+        path_groups = self._get_paths_and_groups()
+        self._link_files(path_groups)
 
-    def get_paths_and_groups(self):
+    def _get_paths_and_groups(self) -> PathGroups:
         """Get the location file paths and associated context groups."""
         paths: List[PathParts] = []
         groups: List[str] = []
         for path in self.source_path.rglob('*'):
             if path.is_file():
-                source_type, year, month, day, location, data_type, remainder = self.data_file_path.parse(path)
+                source_type, year, month, day, location, data_type, remainder = self.data_path_parser.parse(path)
                 elements = PathElements(source_type, year, month, day, location, data_type, remainder)
                 # add the original file path and path parts
                 paths.append(PathParts(path, elements))
@@ -74,7 +68,7 @@ class LocationGroupPath(object):
             log.error(f'No location directory found for group {self.group}.')
         return PathGroups(paths, groups)
 
-    def link_files(self, path_groups: PathGroups):
+    def _link_files(self, path_groups: PathGroups) -> None:
         """
         Loop through the files and link into them into the output path while
         adding the location context group into the path.

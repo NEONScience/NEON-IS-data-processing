@@ -2,14 +2,16 @@
 from pathlib import Path
 from typing import Tuple
 
+from location_daily_linker.location_daily_linker_config import Config
 
-class LocationFilePath(object):
 
-    def __init__(self, *, source_type_index: int, year_index: int, month_index: int, location_index: int):
-        self.source_type_index = source_type_index
-        self.year_index = year_index
-        self.month_index = month_index
-        self.location_index = location_index
+class LocationPathParser:
+
+    def __init__(self, config: Config):
+        self.source_type_index = config.source_type_index
+        self.year_index = config.year_index
+        self.month_index = config.month_index
+        self.location_index = config.location_index
 
     def parse(self, path: Path) -> Tuple[str, str, str, str]:
         parts = path.parts

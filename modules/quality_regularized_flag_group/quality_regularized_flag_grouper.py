@@ -12,7 +12,7 @@ class Paths(NamedTuple):
     link: Path
 
 
-class QualityRegularizedFlagGrouper(object):
+class QualityRegularizedFlagGrouper:
 
     def __init__(self, *, regularized_path: Path, quality_path: Path, out_path: Path, relative_path_index: int):
         """
@@ -29,12 +29,12 @@ class QualityRegularizedFlagGrouper(object):
         self.relative_path_index = relative_path_index
 
     def group_files(self):
-        regularized_files = self.load_files(self.regularized_path)
-        quality_files = self.load_files(self.quality_path)
-        self.link_files(regularized_files, quality_files)
+        regularized_files = self._load_files(self.regularized_path)
+        quality_files = self._load_files(self.quality_path)
+        self._link_files(regularized_files, quality_files)
 
     @staticmethod
-    def link_files(regularized_files: Dict[Path, Paths], quality_files: Dict[Path, Paths]):
+    def _link_files(regularized_files: Dict[Path, Paths], quality_files: Dict[Path, Paths]):
         """
         Group matching regularized and quality files in the output directory.
 
@@ -59,7 +59,7 @@ class QualityRegularizedFlagGrouper(object):
             quality_link_path.parent.mkdir(parents=True, exist_ok=True)
             quality_link_path.symlink_to(quality_file_path)
 
-    def load_files(self, path: Path) -> Dict[Path, Paths]:
+    def _load_files(self, path: Path) -> Dict[Path, Paths]:
         """
         Read files and generate keys associated to the file paths and generated link paths.
 

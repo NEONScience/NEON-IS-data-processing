@@ -4,9 +4,9 @@ import structlog
 log = structlog.get_logger()
 
 
-class EventAssetLoader(object):
+class EventAssetLoader:
 
-    def __init__(self, *, source_path: Path, out_path: Path, source_type_index: int, source_id_index: int):
+    def __init__(self, *, source_path: Path, out_path: Path, source_type_index: int, source_id_index: int) -> None:
         """
         Constructor.
 
@@ -20,7 +20,7 @@ class EventAssetLoader(object):
         self.source_type_index = source_type_index
         self.source_id_index = source_id_index
 
-    def link_event_files(self):
+    def link_event_files(self) -> None:
         if self.source_path.is_file():
             self.link_file(self.source_path)
         else:
@@ -28,7 +28,7 @@ class EventAssetLoader(object):
                 if path.is_file():
                     self.link_file(path)
 
-    def link_file(self, path: Path):
+    def link_file(self, path: Path) -> None:
         parts = path.parts
         source_type = parts[self.source_type_index]
         source_id = parts[self.source_id_index]

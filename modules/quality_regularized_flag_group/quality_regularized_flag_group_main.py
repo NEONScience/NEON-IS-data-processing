@@ -18,11 +18,9 @@ def main():
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
-
     log.debug(f'regularized_path: {regularized_path} '
               f'quality_path: {quality_path} '
               f'out_path: {out_path}')
-
     grouper = QualityRegularizedFlagGrouper(regularized_path=regularized_path,
                                             quality_path=quality_path,
                                             out_path=out_path,

@@ -5,7 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import location_group_path.location_group_path_main as location_group_path_main
-from location_group_path.data_file_path import DataFilePath
+from location_group_path.location_group_path_config import Config
 from location_group_path.location_group_path import LocationGroupPath
 
 
@@ -42,16 +42,16 @@ class LocationGroupPathTest(TestCase):
         self.data_type_index = 8
 
     def test_add_groups_to_paths(self):
-        data_file_path = DataFilePath(source_type_index=self.source_type_index,
-                                      year_index=self.year_index,
-                                      month_index=self.month_index,
-                                      day_index=self.day_index,
-                                      location_index=self.location_index,
-                                      data_type_index=self.data_type_index)
-        location_group_path = LocationGroupPath(source_path=self.source_path,
-                                                out_path=self.out_path,
-                                                group=self.group,
-                                                data_file_path=data_file_path)
+        config = Config(source_path=self.source_path,
+                        out_path=self.out_path,
+                        group=self.group,
+                        source_type_index=self.source_type_index,
+                        year_index=self.year_index,
+                        month_index=self.month_index,
+                        day_index=self.day_index,
+                        location_index=self.location_index,
+                        data_type_index=self.data_type_index)
+        location_group_path = LocationGroupPath(config)
         location_group_path.add_groups_to_paths()
         self.check_output()
 

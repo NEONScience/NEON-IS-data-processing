@@ -11,7 +11,7 @@ from file_joiner.dictionary_list import DictionaryList
 log = get_logger()
 
 
-class FileJoiner(object):
+class FileJoiner:
 
     class JoinedKeyPaths(NamedTuple):
         joined_keys: set
@@ -21,7 +21,7 @@ class FileJoiner(object):
         path: Path
         link: Path
 
-    def __init__(self, *, config: str, out_path: Path, relative_path_index: int):
+    def __init__(self, *, config: str, out_path: Path, relative_path_index: int) -> None:
         """
         Constructor.
 
@@ -33,7 +33,7 @@ class FileJoiner(object):
         self.out_path = out_path
         self.relative_path_index = relative_path_index
 
-    def join_files(self):
+    def join_files(self) -> None:
         key_paths = self.get_join_keys()
         joined_keys = key_paths.joined_keys
         file_key_paths = key_paths.file_key_paths
@@ -94,7 +94,7 @@ class FileJoiner(object):
         return key
 
     @staticmethod
-    def link_joined_files(joined_keys: set, file_key_paths: DictionaryList):
+    def link_joined_files(joined_keys: set, file_key_paths: DictionaryList) -> None:
         """
         Loop over the joined keys, get the files and link them to the output path.
 

@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+from typing import NamedTuple
+from pathlib import Path
+
+
+class Config(NamedTuple):
+    data_path: Path
+    out_path: Path
+    window_size: int
+    year_index: int
+    month_index: int
+    day_index: int
+    location_index: int
+    data_type_index: int
+    relative_path_index: int
+    data_dir = 'data'
+    threshold_dir = 'threshold'
+    location_dir = 'location'
+    location_file_extension = '.json'
+    threshold_filename = 'thresholds.json'
+    threshold_file_extension = '.json'
+    manifest_filename = 'manifest.txt'

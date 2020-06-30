@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 
-def filter_directory(in_path: Path, out_path: Path, filter_dirs: list, relative_path_index: int):
+def filter_directory(in_path: Path, out_path: Path, filter_dirs: list, relative_path_index: int) -> None:
     """
     Link paths with matching directory names into the output path.
 

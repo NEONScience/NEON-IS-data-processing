@@ -10,7 +10,6 @@ log = structlog.get_logger()
 
 
 def main():
-    """Read environment variables and create the DataGapFillerLinker object."""
     env = environs.Env()
     in_path: Path = env.path('IN_PATH')
     out_path: Path = env.path('OUT_PATH')

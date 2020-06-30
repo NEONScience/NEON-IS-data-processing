@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 
-class AnalyzerConfig(object):
-
+class AnalyzerConfig:
     data_dir = 'data'
     location_dir = 'location'
     location_filename = 'locations.json'

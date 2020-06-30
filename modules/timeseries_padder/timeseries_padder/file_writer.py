@@ -4,7 +4,7 @@ from structlog import get_logger
 from typing import Dict, List
 from datetime import datetime
 
-from timeseries_padder.timeseries_padder.pad_config import PadConfig
+from timeseries_padder.timeseries_padder.timeseries_padder_config import Config
 
 
 log = get_logger()
@@ -30,10 +30,10 @@ def link_thresholds(source_path: Path, destination_path: Path):
     :param source_path: The data file path.
     :param destination_path: The path to write the file.
     """
-    threshold_file = Path(source_path, PadConfig.threshold_dir, PadConfig.threshold_filename)
+    threshold_file = Path(source_path, Config.threshold_dir, Config.threshold_filename)
     if threshold_file.exists():
         path = destination_path.parent.parent
-        link_path = Path(path, PadConfig.threshold_dir, PadConfig.threshold_filename)
+        link_path = Path(path, Config.threshold_dir, Config.threshold_filename)
         log.debug(f'threshold file: {threshold_file} link: {link_path}')
         link_path.parent.mkdir(parents=True, exist_ok=True)
         if not link_path.exists():
