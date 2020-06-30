@@ -2,13 +2,15 @@
 from pathlib import Path
 from typing import Tuple
 
+from data_calibration_group.data_calibration_group_config import Config
 
-class CalibrationFilePath(object):
 
-    def __init__(self, *, source_type_index: int, source_id_index: int, stream_index: int):
-        self.source_type_index = source_type_index
-        self.source_id_index = source_id_index
-        self.stream_index = stream_index
+class CalibrationPathParser:
+
+    def __init__(self, config: Config):
+        self.source_type_index = config.calibration_source_type_index
+        self.source_id_index = config.calibration_source_id_index
+        self.stream_index = config.calibration_stream_index
 
     def parse(self, path: Path) -> Tuple[str, str, str]:
         parts = path.parts

@@ -2,11 +2,11 @@
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 
 
-class EmptyFilePaths(object):
+class EmptyFilePaths:
     """Class to store empty file paths."""
 
     def __init__(self, config: DateGapFillerConfig):
-        empty_files_path = config.empty_files_path
+        empty_file_path = config.empty_file_path
         empty_file_type_index = config.empty_file_type_index
         calibration_dir = config.calibration_dir
         data_dir = config.data_dir
@@ -18,7 +18,7 @@ class EmptyFilePaths(object):
         self.flags_path = None
         self.uncertainty_coefficient_path = None
         self.uncertainty_data_path = None
-        for path in empty_files_path.rglob('*'):
+        for path in empty_file_path.rglob('*'):
             if path.is_file():
                 file_type_dir = path.parts[empty_file_type_index]
                 if calibration_dir == file_type_dir:

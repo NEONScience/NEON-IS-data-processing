@@ -2,14 +2,16 @@
 from pathlib import Path
 from typing import Tuple
 
+from data_calibration_group.data_calibration_group_config import Config
 
-class DataFilePath(object):
 
-    def __init__(self, *, source_type_index: int, year_index: int, month_index: int, day_index: int):
-        self.source_type_index = source_type_index
-        self.year_index = year_index
-        self.month_index = month_index
-        self.day_index = day_index
+class DataPathParser:
+
+    def __init__(self, config: Config):
+        self.source_type_index = config.data_source_type_index
+        self.year_index = config.data_year_index
+        self.month_index = config.data_month_index
+        self.day_index = config.data_day_index
 
     def parse(self, path: Path) -> Tuple[str, str, str, str]:
         parts = path.parts

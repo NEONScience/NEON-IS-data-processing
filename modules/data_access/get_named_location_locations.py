@@ -67,8 +67,8 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
             if (named_location_offset_id is not None) and (named_location_offset_id != named_location_id):
                 reference_locations = get_named_location_locations(connection, named_location_offset_id)
             reference_location_properties = {'name': named_location_offset_name, 'locations': reference_locations}
-            reference_feature = Feature(geometry=None, properties=reference_location_properties)
             # build the location
+            reference_feature = Feature(geometry=None, properties=reference_location_properties)
             properties = {'start_date': start_date,
                           'end_date': end_date,
                           'transaction_date': transaction_date,

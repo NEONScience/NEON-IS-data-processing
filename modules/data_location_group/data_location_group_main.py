@@ -5,7 +5,7 @@ from pathlib import Path
 
 import common.log_config
 
-from data_location_group.data_file_path import DataFilePath
+from data_location_group.data_location_group_config import Config
 from data_location_group.data_location_grouper import DataLocationGrouper
 
 log = structlog.get_logger()
@@ -22,15 +22,15 @@ def main():
     month_index: int = env.int('MONTH_INDEX')
     day_index: int = env.int('DAY_INDEX')
     log.debug(f'data_dir: {data_path} location_dir: {location_path} out_dir: {out_path}')
-
     common.log_config.configure(log_level)
-
-    data_file_path = DataFilePath(source_type_index=source_type_index,
-                                  year_index=year_index,
-                                  month_index=month_index,
-                                  day_index=day_index)
-    data_location_grouper = DataLocationGrouper(data_path=data_path, location_path=location_path, out_path=out_path,
-                                                data_file_path=data_file_path)
+    config = Config(data_path=data_path,
+                    location_path=location_path,
+                    out_path=out_path,
+                    source_type_index=source_type_index,
+                    year_index=year_index,
+                    month_index=month_index,
+                    day_index=day_index)
+    data_location_grouper = DataLocationGrouper(config)
     data_location_grouper.group_files()
 
 

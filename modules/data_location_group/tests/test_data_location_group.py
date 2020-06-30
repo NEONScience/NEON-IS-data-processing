@@ -4,8 +4,8 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import data_location_group.data_location_group_main as app
-from data_location_group.data_file_path import DataFilePath
+import data_location_group.data_location_group_main as data_location_group_main
+from data_location_group.data_location_group_config import Config
 from data_location_group.data_location_grouper import DataLocationGrouper
 
 
@@ -35,12 +35,14 @@ class DataLocationGroupTest(TestCase):
         self.file_index = 7
 
     def test_group(self):
-        data_file_path = DataFilePath(source_type_index=self.source_type_index,
-                                      year_index=self.year_index,
-                                      month_index=self.month_index,
-                                      day_index=self.day_index)
-        data_location_grouper = DataLocationGrouper(data_path=self.data_path, location_path=self.location_path,
-                                                    out_path=self.out_path, data_file_path=data_file_path)
+        config = Config(data_path=self.data_path,
+                        location_path=self.location_path,
+                        out_path=self.out_path,
+                        source_type_index=self.source_type_index,
+                        year_index=self.year_index,
+                        month_index=self.month_index,
+                        day_index=self.day_index)
+        data_location_grouper = DataLocationGrouper(config)
         data_location_grouper.group_files()
         self.check_output()
 
@@ -53,7 +55,7 @@ class DataLocationGroupTest(TestCase):
         os.environ['YEAR_INDEX'] = str(self.year_index)
         os.environ['MONTH_INDEX'] = str(self.month_index)
         os.environ['DAY_INDEX'] = str(self.day_index)
-        app.main()
+        data_location_group_main.main()
         self.check_output()
 
     def check_output(self):

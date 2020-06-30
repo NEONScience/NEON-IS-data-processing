@@ -2,17 +2,18 @@
 from pathlib import Path
 from typing import Tuple
 
+from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 
-class DataFilePath(object):
 
-    def __init__(self, *, source_type_index: int, year_index: int, month_index: int, day_index: int,
-                 location_index: int, data_type_index: int):
-        self.source_type_index = source_type_index
-        self.year_index = year_index
-        self.month_index = month_index
-        self.day_index = day_index
-        self.location_index = location_index
-        self.data_type_index = data_type_index
+class DataPathParser:
+
+    def __init__(self, config: DateGapFillerConfig):
+        self.source_type_index = config.data_source_type_index
+        self.year_index = config.data_year_index
+        self.month_index = config.data_month_index
+        self.day_index = config.data_day_index
+        self.location_index = config.data_location_index
+        self.data_type_index = config.data_type_index
 
     def parse(self, path: Path) -> Tuple[str, str, str, str, str, str]:
         parts = path.parts

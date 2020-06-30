@@ -29,7 +29,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": true,
+  "standby": false,
   "resource_requests": {
     "memory": "200M",
     "cpu": 0.3

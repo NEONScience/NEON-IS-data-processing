@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from calibrated_location_group.calibrated_file_path import CalibratedFilePath
+from calibrated_location_group.calibrated_location_group_config import Config
 from calibrated_location_group.calibrated_location_file_grouper import CalibratedLocationFileGrouper
 import calibrated_location_group.calibrated_location_group_main as calibrated_location_group_main
 
@@ -43,16 +43,16 @@ class CalibratedLocationGroupTest(TestCase):
         self.data_type_index = 8
 
     def test_group(self):
-        calibrated_file_path = CalibratedFilePath(source_type_index=self.source_type_index,
-                                                  year_index=self.year_index,
-                                                  month_index=self.month_index,
-                                                  day_index=self.day_index,
-                                                  source_id_index=self.source_id_index,
-                                                  data_type_index=self.data_type_index)
-        grouper = CalibratedLocationFileGrouper(calibrated_path=self.calibrated_path,
-                                                location_path=self.location_path,
-                                                out_path=self.out_path,
-                                                calibrated_file_path=calibrated_file_path)
+        config = Config(calibrated_path=self.calibrated_path,
+                        location_path=self.location_path,
+                        out_path=self.out_path,
+                        source_type_index=self.source_type_index,
+                        year_index=self.year_index,
+                        month_index=self.month_index,
+                        day_index=self.day_index,
+                        source_id_index=self.source_id_index,
+                        data_type_index=self.data_type_index)
+        grouper = CalibratedLocationFileGrouper(config)
         grouper.group_files()
 
     def test_main(self):

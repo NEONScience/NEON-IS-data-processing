@@ -5,8 +5,6 @@ from datetime import datetime
 
 import common.log_config
 
-from date_gap_filler.data_file_path import DataFilePath
-from date_gap_filler.location_file_path import LocationFilePath
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 from date_gap_filler.date_gap_filler import DateGapFiller
 
@@ -36,17 +34,6 @@ def main():
 
     common.log_config.configure(log_level)
 
-    data_file_path_config = DataFilePath(source_type_index=data_source_type_index,
-                                         year_index=data_year_index,
-                                         month_index=data_month_index,
-                                         day_index=data_day_index,
-                                         location_index=data_location_index,
-                                         data_type_index=data_type_index)
-    location_file_path_config = LocationFilePath(source_type_index=location_source_type_index,
-                                                 year_index=location_year_index,
-                                                 month_index=location_month_index,
-                                                 day_index=location_day_index,
-                                                 location_index=location_index)
     config = DateGapFillerConfig(data_path=data_path,
                                  location_path=location_path,
                                  empty_file_path=empty_file_path,
@@ -54,10 +41,19 @@ def main():
                                  start_date=start_date,
                                  end_date=end_date,
                                  output_directories=output_directories,
-                                 empty_file_type_index=empty_file_type_index)
-    date_gap_filler = DateGapFiller(config=config,
-                                    data_file_path_config=data_file_path_config,
-                                    location_file_path_config=location_file_path_config)
+                                 empty_file_type_index=empty_file_type_index,
+                                 data_source_type_index=data_source_type_index,
+                                 data_year_index=data_year_index,
+                                 data_month_index=data_month_index,
+                                 data_day_index=data_day_index,
+                                 data_location_index=data_location_index,
+                                 data_type_index=data_type_index,
+                                 location_source_type_index=location_source_type_index,
+                                 location_year_index=location_year_index,
+                                 location_month_index=location_month_index,
+                                 location_day_index=location_day_index,
+                                 location_index=location_index)
+    date_gap_filler = DateGapFiller(config)
     date_gap_filler.fill_gaps()
 
 
