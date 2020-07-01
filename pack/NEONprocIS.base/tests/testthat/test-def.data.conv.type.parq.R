@@ -1,100 +1,82 @@
-library(testthat)
-source("R/def.data.conv.type.parq.R")
+#library(testthat)
+#source("R/def.data.conv.type.parq.R")
 
-test_that("when length of vector is not multiple of 2, throw an error",
+test_that("when type is sent as a character",
           {
-            vect <- c('key1','1.5', 'key3')
-            KeyExpc <- c('key1','key2','key3')
-            ValuDflt <- 3
-            NameCol <- c('MyKey','MyValue')
-            Type <- c('character','numeric')
-            report <- try(NEONprocIS.base::def.vect.pars.pair(vect=vect,KeyExp=KeyExpc,ValuDflt=ValuDflt,NameCol=NameCol,Type=Type), silent = TRUE)
-            testthat::expect_true((class(report)[1] == "try-error"))
+            data <- data.frame(x=c(1,2,3),y=c('one','two','three'),stringsAsFactors=FALSE)
+            type <- data.frame(name=c('x'),type=c('string|utf8'),stringsAsFactors=FALSE)
+            dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
+            testthat::expect_true(is.character(typeof(dataOut$x[1])))
+            testthat::expect_true(is.character(typeof(dataOut$x[2])))
+            testthat::expect_true(is.character(typeof(dataOut$x[3])))
 
           })
 
-test_that("when NameCol is not 2, throw an error",
-          {
-            vect <- c('key1','1.5')
-            KeyExpc <- c('key1','key2')
-            ValuDflt <- 3
-            NameCol <- c('MyKey')
-            Type <- c('character','numeric')
-            rptt <- try(NEONprocIS.base::def.vect.pars.pair(vect=vect,KeyExp=KeyExpc,ValuDflt=ValuDflt,NameCol=NameCol,Type=Type), silent = TRUE)
-            testthat::expect_true((class(rptt)[1] == "try-error"))
+# show it to Cove , it should stop processing
+# test_that("when name of the data to be converted is not in the data",
+#           {
+#             data <- data.frame(x=c(1,2,3),y=c('one','two','three'),stringsAsFactors=FALSE)
+#             type <- data.frame(name=c('z'),type=c('string|utf8'),stringsAsFactors=FALSE)
+#             dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
+#             testthat::expect_true(is.character(typeof(dataOut$x[1])))
+#             testthat::expect_true(is.character(typeof(dataOut$x[2])))
+#             testthat::expect_true(is.character(typeof(dataOut$x[3])))
+#             
+#           })
 
+#show it to Cove
+
+test_that("when data needs to be converted to timestampe",
+          {
+            data <- data.frame(x=c(1,2,3),y=c(base::as.POSIXlt('2020-01-01'),base::as.POSIXlt('2020-01-02'), base::as.POSIXlt('2020-01-03')),stringsAsFactors=FALSE)
+            type <- data.frame(name=c('y'),type=c('timestamp-millis'),stringsAsFactors=FALSE)
+            dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
+            testthat::expect_true(is.character(typeof(data$y[1])))
+            testthat::expect_true(is.character(typeof(data$y[2])))
+            testthat::expect_true(is.character(typeof(data$y[3])))
 
           })
 
-test_that("when length of ValueDflt is not 1, throw an error",
+test_that("when data needs to be converted to int",
           {
-            vect <- c('key1','1.5')
-            KeyExpc <- c('key1','key2','key3')
-            ValuDflt <- c(3,4)
-            NameCol <- c('MyKey', 'MyValu')
-            Type <- c('character','numeric')
-            report <- try(NEONprocIS.base::def.vect.pars.pair(vect=vect,KeyExp=KeyExpc,ValuDflt=ValuDflt,NameCol=NameCol,Type=Type), silent = TRUE)
-            testthat::expect_true((class(report)[1] == "try-error"))
+            data <- data.frame(x=c(1,2,3),y=c("4", "5", "6"),stringsAsFactors=FALSE)
+            type <- data.frame(name=c('y'),type=c('int'),stringsAsFactors=FALSE)
+            dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
+            testthat::expect_true(is.integer(dataOut$y[1]))
+            testthat::expect_true(is.integer(dataOut$y[2]))
+            testthat::expect_true(is.integer(dataOut$y[3]))
 
           })
 
-
-test_that("when type is not 2, throw an error",
+test_that("when data needs to be converted to float",
           {
-            vect <- c('key1','1.5')
-            KeyExpc <- c('key1','key2')
-            ValuDflt <- 3
-            NameCol <- c('MyKey', 'MyKey2')
-            Type <- c('character')
-            rptt <- try(NEONprocIS.base::def.vect.pars.pair(vect=vect,KeyExp=KeyExpc,ValuDflt=ValuDflt,NameCol=NameCol,Type=Type), silent = TRUE)
-            testthat::expect_true((class(rptt)[1] == "try-error"))
-
+            data <- data.frame(x=c(1,2,3),y=c("4", "5", "6"),stringsAsFactors=FALSE)
+            type <- data.frame(name=c('y'),type=c('float'),stringsAsFactors=FALSE)
+            dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
+            testthat::expect_true(is.numeric(dataOut$y[1]))
+            testthat::expect_true(is.numeric(dataOut$y[2]))
+            testthat::expect_true(is.numeric(dataOut$y[3]))
 
           })
 
-test_that("when vect lenght is 1 and keyExpc is 0, throw an error",
+test_that("when data needs to be converted to double",
           {
-            vect <- c('key1')
-            ValuDflt <- 3
-            NameCol <- c('MyKey', 'MyKey2')
-            Type <- c('character', 'numeric')
-            rptt <- try(NEONprocIS.base::def.vect.pars.pair(vect=vect,ValuDflt=ValuDflt,NameCol=NameCol,Type=Type), silent = TRUE)
-            testthat::expect_true((class(rptt)[1] == "try-error"))
-
+            data <- data.frame(x=c(1,2,3),y=c("4", "5", "6"),stringsAsFactors=FALSE)
+            type <- data.frame(name=c('x'),type=c('double'),stringsAsFactors=FALSE)
+            dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
+            testthat::expect_true(is.double(dataOut$x[1]))
+            testthat::expect_true(is.double(dataOut$x[2]))
+            testthat::expect_true(is.double(dataOut$x[3]))
 
           })
 
-test_that("when vect lenght is 1 and keyExpc is 1, return value",
+test_that("when data needs to be converted to boolean",
           {
-            vect <- c('value1')
-            ValuDflt <- 3
-            KeyExpc <- c('key1')
-            NameCol <- c('MyKey', 'MyKey2')
-            Type <- c('character', 'character')
-            rptt <- try(NEONprocIS.base::def.vect.pars.pair(vect=vect, KeyExp=KeyExpc, ValuDflt=ValuDflt,NameCol=NameCol,Type=Type), silent = TRUE)
-            testthat::expect_equal(2, length(rptt))
-            testthat::expect_equal(rptt$MyKey[1], "key1")
-            testthat::expect_equal(rptt$MyKey2[1], "value1")
-
-
-          })
-
-test_that("when vect lenght is greater than 1, return value",
-          {
-            vect <- c('key1','1.5')
-            KeyExpc <- c('key1','key2','key3')
-            ValuDflt <- 3
-            NameCol <- c('MyKey','MyValue')
-            Type <- c('character','numeric')
-            rptt <- try(NEONprocIS.base::def.vect.pars.pair(vect=vect,KeyExp=KeyExpc,ValuDflt=ValuDflt,NameCol=NameCol,Type=Type), silent = TRUE)
-            testthat::expect_false((class(rptt)[1] == "try-error"))
-            testthat::expect_equal(2, length(rptt))
-            testthat::expect_equal(rptt$MyKey[1], "key1")
-            testthat::expect_equal(rptt$MyKey[2], "key2")
-            testthat::expect_equal(rptt$MyKey[3], "key3")
-            testthat::expect_equal(rptt$MyValue[1], 1.5)
-            testthat::expect_equal(rptt$MyValue[2], 3.0)
-            testthat::expect_equal(rptt$MyValue[3], 3.0)
-
+            data <- data.frame(x=c(1,2,3),y=c("4", "5", "6"),stringsAsFactors=FALSE)
+            type <- data.frame(name=c('x'),type=c('boolean'),stringsAsFactors=FALSE)
+            dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
+            testthat::expect_true(is.logical(dataOut$x[1]))
+            testthat::expect_true(is.logical(dataOut$x[2]))
+            testthat::expect_true(is.logical(dataOut$x[3]))
 
           })
