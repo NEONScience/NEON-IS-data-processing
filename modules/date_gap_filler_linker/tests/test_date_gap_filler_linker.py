@@ -13,8 +13,8 @@ class DateGapFillerTest(TestCase):
     def setUp(self):
         self.setUpPyfakefs()
 
-        self.out_path = Path('/pfs/out')
-        self.in_path = Path('/pfs/in')
+        self.out_path = Path('/dir/out')
+        self.in_path = Path('/dir/in')
         self.fs.create_dir(self.out_path)
         self.fs.create_dir(self.in_path)
 
@@ -23,12 +23,12 @@ class DateGapFillerTest(TestCase):
         self.metadata_3 = Path('prt/2019/01/03/CFG123')
 
         # empty files
-        data_1 = self.in_path.joinpath(self.metadata_1, 'data/prt_CFG123_2019-01-01.parquet.empty')
-        flags_1 = self.in_path.joinpath(self.metadata_1, 'flags/prt_CFG123_2019-01-01_flagsCal.parquet.empty')
-        location_1 = self.in_path.joinpath(self.metadata_1, 'location/location.json')
-        calibration_1 = self.in_path.joinpath(self.metadata_1, 'calibration')
-        uncertainty_1 = self.in_path.joinpath(self.metadata_1, 'uncertainty_data',
-                                              'prt_CFG123_2019-01-01_uncertaintyData.parquet.empty')
+        data_1 = Path(self.in_path, self.metadata_1, 'data/prt_CFG123_2019-01-01.parquet.empty')
+        flags_1 = Path(self.in_path, self.metadata_1, 'flags/prt_CFG123_2019-01-01_flagsCal.parquet.empty')
+        location_1 = Path(self.in_path, self.metadata_1, 'location/location.json')
+        calibration_1 = Path(self.in_path, self.metadata_1, 'calibration')
+        uncertainty_1 = Path(self.in_path, self.metadata_1, 'uncertainty_data',
+                             'prt_CFG123_2019-01-01_uncertaintyData.parquet.empty')
         self.fs.create_file(data_1)
         self.fs.create_file(flags_1)
         self.fs.create_file(location_1)
@@ -36,13 +36,13 @@ class DateGapFillerTest(TestCase):
         self.fs.create_file(uncertainty_1)
 
         # real data
-        data_2 = self.in_path.joinpath(self.metadata_2, 'data/prt_CFG123_2019-01-02.parquet')
-        data_2_e = self.in_path.joinpath(self.metadata_2, 'data/prt_CFG123_2019-01-02.parquet.empty')
-        flags_2 = self.in_path.joinpath(self.metadata_2, 'flags/prt_CFG123_2019-01-02_flagsCal.parquet.empty')
-        location_2 = self.in_path.joinpath(self.metadata_2, 'location/location.json')
-        calibration_2 = self.in_path.joinpath(self.metadata_2, 'calibration/calibration.xml')
-        uncertainty_2 = self.in_path.joinpath(self.metadata_2, 'uncertainty_data',
-                                              'prt_CFG123_2019-01-02_uncertaintyData.parquet.empty')
+        data_2 = Path(self.in_path, self.metadata_2, 'data/prt_CFG123_2019-01-02.parquet')
+        data_2_e = Path(self.in_path, self.metadata_2, 'data/prt_CFG123_2019-01-02.parquet.empty')
+        flags_2 = Path(self.in_path, self.metadata_2, 'flags/prt_CFG123_2019-01-02_flagsCal.parquet.empty')
+        location_2 = Path(self.in_path, self.metadata_2, 'location/location.json')
+        calibration_2 = Path(self.in_path, self.metadata_2, 'calibration/calibration.xml')
+        uncertainty_2 = Path(self.in_path, self.metadata_2, 'uncertainty_data',
+                             'prt_CFG123_2019-01-02_uncertaintyData.parquet.empty')
         self.fs.create_file(data_2)
         self.fs.create_file(data_2_e)
         self.fs.create_file(flags_2)
@@ -51,12 +51,12 @@ class DateGapFillerTest(TestCase):
         self.fs.create_file(uncertainty_2)
 
         # real data, no empty file (location not active)
-        data_3 = self.in_path.joinpath(self.metadata_3, 'data/prt_CFG123_2019-01-02.parquet')
-        flags_3 = self.in_path.joinpath(self.metadata_3, 'flags/prt_CFG123_2019-01-02_flagsCal.parquet')
-        location_3 = self.in_path.joinpath(self.metadata_3, 'location/location.json')
-        calibration_3 = self.in_path.joinpath(self.metadata_3, 'calibration/calibration.xml')
-        uncertainty_3 = self.in_path.joinpath(self.metadata_3, 'uncertainty_data',
-                                              'prt_CFG123_2019-01-02_uncertaintyData.parquet')
+        data_3 = Path(self.in_path, self.metadata_3, 'data/prt_CFG123_2019-01-03.parquet')
+        flags_3 = Path(self.in_path, self.metadata_3, 'flags/prt_CFG123_2019-01-03_flagsCal.parquet')
+        location_3 = Path(self.in_path, self.metadata_3, 'location/location.json')
+        calibration_3 = Path(self.in_path, self.metadata_3, 'calibration/calibration.xml')
+        uncertainty_3 = Path(self.in_path, self.metadata_3, 'uncertainty_data',
+                             'prt_CFG123_2019-01-03_uncertaintyData.parquet')
         self.fs.create_file(data_3)
         self.fs.create_file(flags_3)
         self.fs.create_file(location_3)
@@ -68,12 +68,9 @@ class DateGapFillerTest(TestCase):
         self.empty_file_suffix = '.empty'
 
     def test_linker(self):
-        linker = DataGapFillerLinker(self.in_path,
-                                     self.out_path,
-                                     self.relative_path_index,
-                                     self.location_index,
+        linker = DataGapFillerLinker(self.in_path, self.out_path, self.relative_path_index, self.location_index,
                                      self.empty_file_suffix)
-        linker.link()
+        linker.link_files()
         self.check_output()
 
     def test_main(self):

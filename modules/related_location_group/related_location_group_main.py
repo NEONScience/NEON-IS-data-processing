@@ -5,7 +5,7 @@ from pathlib import Path
 
 import common.log_config as log_config
 
-from related_location_group.data_file_path import DataFilePath
+from related_location_group.related_location_group_config import Config
 from related_location_group.related_location_grouper import RelatedLocationGrouper
 
 log = get_logger()
@@ -26,16 +26,16 @@ def main():
     data_type_index: int = env.int('DATA_TYPE_INDEX')
     log_config.configure(log_level)
     log.debug(f'data_path: {data_path} out_path: {out_path}')
-
-    data_file_path = DataFilePath(source_type_index=source_type_index,
-                                  year_index=year_index,
-                                  month_index=month_index,
-                                  day_index=day_index,
-                                  group_index=group_index,
-                                  location_index=location_index,
-                                  data_type_index=data_type_index)
-    related_location_grouper = RelatedLocationGrouper(data_path=data_path, out_path=out_path,
-                                                      data_file_path=data_file_path)
+    config = Config(data_path=data_path,
+                    out_path=out_path,
+                    source_type_index=source_type_index,
+                    year_index=year_index,
+                    month_index=month_index,
+                    day_index=day_index,
+                    group_index=group_index,
+                    location_index=location_index,
+                    data_type_index=data_type_index)
+    related_location_grouper = RelatedLocationGrouper(config)
     related_location_grouper.group_files()
 
 

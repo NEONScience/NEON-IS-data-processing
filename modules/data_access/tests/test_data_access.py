@@ -1,18 +1,27 @@
 #!/usr/bin/env python3
 import os
 from pathlib import Path
+from typing import List
 
-import geojson
 import cx_Oracle
-import unittest
+from geojson import FeatureCollection
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from data_access.active_period_repository import ActivePeriodRepository
-from data_access.asset_repository import AssetRepository
-from data_access.named_location_repository import NamedLocationRepository
-from data_access.named_location_context_repository import NamedLocationContextRepository
-from data_access.named_location_parent_repository import NamedLocationParentRepository
-from data_access.property_repository import PropertyRepository
+from data_access.get_asset_locations import get_asset_locations
+from data_access.get_assets import get_assets
+from data_access.get_named_location_active_periods import get_active_periods
+from data_access.get_named_location_context import get_named_location_context
+from data_access.get_named_location_locations import get_named_location_locations
+from data_access.get_named_location_properties import get_named_location_properties
+from data_access.get_named_location_schema_name import get_named_location_schema_name
+from data_access.get_named_location_site import get_named_location_site
+from data_access.get_named_locations import get_named_locations
+from data_access.get_thresholds import get_thresholds
+
+
+from data_access.types.active_period import ActivePeriod
+from data_access.types.asset import Asset
+from data_access.types.property import Property
 
 
 class DataAccessTest(TestCase):
@@ -22,57 +31,72 @@ class DataAccessTest(TestCase):
         self.out_path = Path('/out')
         self.fs.create_dir(self.out_path)
         #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]
-        database_url = os.getenv('DATABASE_URL')
-        self.connection = cx_Oracle.connect(database_url)
-        self.active_period_repository = ActivePeriodRepository(self.connection)
-        self.asset_repository = AssetRepository(self.connection)
-        self.named_location_repository = NamedLocationRepository(self.connection)
-        self.named_location_context_repository = NamedLocationContextRepository(self.connection)
-        self.named_location_parent_repository = NamedLocationParentRepository(self.connection)
-        self.property_repository = PropertyRepository(self.connection)
+        self.db_url = os.getenv('DATABASE_URL')
+        self.connection = cx_Oracle.connect(self.db_url)
         self.named_location_id = 31720
 
-    def test_asset_finder(self):
-        result = self.asset_repository.get_assets()
-        print(f'assets: {len(result)}')
-        asset = result[0]
-        print(f'asset id: {asset.id} type: {asset.type}')
-        self.assertTrue((result is not None))
+    def test_get_asset_locations(self):
+        asset = Asset(id=41283, type='windobserverii')
+        feature_collection: FeatureCollection = get_asset_locations(self.connection, asset)
+        print(f'asset locations: {feature_collection}')
+        self.assertTrue(True)
 
-    @unittest.skip('Skip due to long process time.')
-    def test_get_locations_by_type(self):
-        locations = self.named_location_repository.get_named_locations('CONFIG')
-        for location in locations:
-            geojson_data = geojson.dumps(location, indent=4, sort_keys=False, default=str)
-            print(f'geojson_data: {geojson_data}')
-        self.assertTrue((locations is not None))
+    def test_get_assets(self):
+        i = 0
+        asset = None
+        for asset in get_assets(self.connection):
+            if i > 0:
+                break
+            print(f'asset id: {asset.id} type: {asset.type}')
+            i += 1
+        self.assertTrue((asset is not None))
 
-    def test_get_location_site(self):
-        site = self.named_location_parent_repository.get_site(self.named_location_id)
-        self.assertTrue(site == 'ORNL')
-
-    def test_get_location_schema_name(self):
-        named_location_name = 'SENSOR000000'
-        schema_name = self.named_location_repository.get_schema_name(named_location_name)
-        self.assertTrue(schema_name == 'exo2')
-
-    def test_get_location_active_periods(self):
-        active_periods = self.active_period_repository.get_active_periods(self.named_location_id)
+    def test_get_named_location_active_periods(self):
+        active_periods: List[ActivePeriod] = get_active_periods(self.connection, self.named_location_id)
         self.assertTrue(active_periods is not None)
 
-    def test_location_context_repository(self):
-        contexts = self.named_location_context_repository.get_context(self.named_location_id)
+    def test_get_named_location_context(self):
+        contexts: List[str] = get_named_location_context(self.connection, self.named_location_id)
         self.assertTrue(len(contexts) == 0)
 
-    def test_location_parent_repository(self):
-        site = self.named_location_parent_repository.get_site(self.named_location_id)
-        self.assertTrue(site == 'ORNL')
+    def test_get_named_location_locations(self):
+        result = get_named_location_locations(self.connection, self.named_location_id)
+        print(f'result: {result}')
+        self.assertTrue(True)
 
-    def test_location_property_repository(self):
-        properties = self.property_repository.get_named_location_properties(self.named_location_id)
+    def test_get_named_location_properties(self):
+        properties: List[Property] = get_named_location_properties(self.connection, self.named_location_id)
         prop = properties[0]
         self.assertTrue(prop.name == 'Required Asset Management Location Code')
         self.assertTrue(prop.value == 'CFGLOC100805')
+
+    def test_get_named_location_schema_name(self):
+        named_location_id = 156951
+        schema_name = get_named_location_schema_name(self.connection, named_location_id)
+        self.assertTrue(schema_name == 'windobserverii')
+
+    def test_get_named_location_site(self):
+        site = get_named_location_site(self.connection, self.named_location_id)
+        self.assertTrue(site == 'ORNL')
+
+    def test_get_named_locations(self):
+        location = None
+        i = 0
+        for location in get_named_locations(self.connection, 'CONFIG'):
+            if i > 0:
+                break
+            i += 1
+        print(f'location: {location}')
+        self.assertTrue((location is not None))
+
+    def test_get_thresholds(self):
+        i = 0
+        for threshold in get_thresholds(self.connection):
+            if i > 0:
+                break
+            print(f'threshold: {threshold}')
+            i += 1
+        self.assertTrue(True)
 
     def tearDown(self):
         self.connection.close()

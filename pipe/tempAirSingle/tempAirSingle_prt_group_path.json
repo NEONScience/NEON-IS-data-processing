@@ -22,8 +22,8 @@
   "input": {
     "pfs": {
       "name": "SOURCE_PATH",
-      "repo": "prt_fill_date_gaps_by_location",
-      "glob": "/prt/*/*/*/*"
+      "repo": "prt_date_gap_filler_linker",
+      "glob": "/prt/*/*"
     }
   },
   "enable_stats": false,

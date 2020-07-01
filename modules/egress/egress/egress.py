@@ -8,7 +8,7 @@ from structlog import get_logger
 log = get_logger()
 
 
-class Egress(object):
+class Egress:
 
     def __init__(self, data_path: Path, out_path: Path, output_name: str, date_index: int, location_index: int):
         """

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 from contextlib import closing
 
-from data_access.active_period_repository import ActivePeriodRepository
+from cx_Oracle import Connection
+
+from data_access.get_active_periods import get_active_periods
 
 
 class ActivePeriodAssigner(object):
 
-    def __init__(self, connection):
+    def __init__(self, connection: Connection) -> None:
         self.connection = connection
 
-    def assign_active_periods(self, named_location_id: int, clone_id: int):
+    def assign_active_periods(self, named_location_id: int, clone_id: int) -> None:
         """
         Get all the active periods associated with an existing named location
         and associate those periods with the cloned named location.
@@ -35,8 +37,7 @@ class ActivePeriodAssigner(object):
                 CURRENT_TIMESTAMP
             )
         '''
-        active_period_repository = ActivePeriodRepository(self.connection)
-        periods = active_period_repository.get_active_periods(named_location_id)
+        periods = get_active_periods(self.connection, named_location_id)
         with closing(self.connection.cursor()) as cursor:
             cursor.prepare(sql)
             for period in periods:

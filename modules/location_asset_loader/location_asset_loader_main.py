@@ -4,10 +4,11 @@ import structlog
 import cx_Oracle
 from contextlib import closing
 from pathlib import Path
+from functools import partial
 
 import common.log_config as log_config
-from data_access.asset_repository import AssetRepository
-from data_access.named_location_repository import NamedLocationRepository
+from data_access.get_assets import get_assets
+from data_access.get_asset_locations import get_asset_locations
 
 import location_asset_loader.location_asset_loader as location_asset_loader
 
@@ -23,10 +24,10 @@ def main():
     log.debug(f'out_path: {out_path}')
 
     with closing(cx_Oracle.connect(db_url)) as connection:
-        named_location_repository = NamedLocationRepository(connection)
-        asset_repository = AssetRepository(connection)
-        location_asset_loader.write_files(get_assets=asset_repository.get_assets,
-                                          get_location_history=named_location_repository.get_asset_location_history,
+        get_assets_partial = partial(get_assets, connection)
+        get_asset_locations_partial = partial(get_asset_locations, connection)
+        location_asset_loader.write_files(get_assets=get_assets_partial,
+                                          get_asset_locations=get_asset_locations_partial,
                                           out_path=out_path)
 
 

@@ -7,8 +7,6 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 import date_gap_filler.date_gap_filler_main as date_gap_filler_main
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
-from date_gap_filler.data_file_path import DataFilePath
-from date_gap_filler.location_file_path import LocationFilePath
 from date_gap_filler.date_gap_filler import DateGapFiller
 
 
@@ -85,17 +83,6 @@ class DateGapFillerTest(TestCase):
 
     def test_fill_gaps_monthly(self):
         self.create_monthly_location_repo()
-        data_file_path_config = DataFilePath(source_type_index=self.data_source_type_index,
-                                             year_index=self.data_year_index,
-                                             month_index=self.data_month_index,
-                                             day_index=self.data_day_index,
-                                             location_index=self.data_location_index,
-                                             data_type_index=self.data_type_index)
-        location_file_path_config = LocationFilePath(source_type_index=3,
-                                                     year_index=4,
-                                                     month_index=5,
-                                                     day_index=None,
-                                                     location_index=6)
         config = DateGapFillerConfig(data_path=self.data_path,
                                      location_path=self.location_path,
                                      empty_file_path=self.empty_path,
@@ -103,10 +90,19 @@ class DateGapFillerTest(TestCase):
                                      start_date=date(2019, 12, 31),
                                      end_date=date(2020, 1, 4),
                                      output_directories=self.output_directories.split(','),
-                                     empty_file_type_index=self.empty_file_type_index)
-        date_gap_filler = DateGapFiller(config=config,
-                                        data_file_path_config=data_file_path_config,
-                                        location_file_path_config=location_file_path_config)
+                                     empty_file_type_index=self.empty_file_type_index,
+                                     data_source_type_index=self.data_source_type_index,
+                                     data_year_index=self.data_year_index,
+                                     data_month_index=self.data_month_index,
+                                     data_day_index=self.data_day_index,
+                                     data_location_index=self.data_location_index,
+                                     data_type_index=self.data_type_index,
+                                     location_source_type_index=3,
+                                     location_year_index=4,
+                                     location_month_index=5,
+                                     location_day_index=None,
+                                     location_index=6)
+        date_gap_filler = DateGapFiller(config)
         date_gap_filler.fill_gaps()
         self.check_output()
 
@@ -137,17 +133,6 @@ class DateGapFillerTest(TestCase):
 
     def test_fill_gaps_daily(self):
         self.create_daily_location_repo()
-        data_file_path_config = DataFilePath(source_type_index=self.data_source_type_index,
-                                             year_index=self.data_year_index,
-                                             month_index=self.data_month_index,
-                                             day_index=self.data_day_index,
-                                             location_index=self.data_location_index,
-                                             data_type_index=self.data_type_index)
-        location_file_path_config = LocationFilePath(source_type_index=3,
-                                                     year_index=4,
-                                                     month_index=5,
-                                                     day_index=6,
-                                                     location_index=7)
         config = DateGapFillerConfig(data_path=self.data_path,
                                      location_path=self.location_path,
                                      empty_file_path=self.empty_path,
@@ -155,10 +140,19 @@ class DateGapFillerTest(TestCase):
                                      start_date=date(2019, 12, 31),
                                      end_date=date(2020, 1, 4),
                                      output_directories=self.output_directories.split(','),
-                                     empty_file_type_index=self.empty_file_type_index)
-        date_gap_filler = DateGapFiller(config=config,
-                                        data_file_path_config=data_file_path_config,
-                                        location_file_path_config=location_file_path_config)
+                                     empty_file_type_index=self.empty_file_type_index,
+                                     data_source_type_index=self.data_source_type_index,
+                                     data_year_index=self.data_year_index,
+                                     data_month_index=self.data_month_index,
+                                     data_day_index=self.data_day_index,
+                                     data_location_index=self.data_location_index,
+                                     data_type_index=self.data_type_index,
+                                     location_source_type_index=3,
+                                     location_year_index=4,
+                                     location_month_index=5,
+                                     location_day_index=6,
+                                     location_index=7)
+        date_gap_filler = DateGapFiller(config)
         date_gap_filler.fill_gaps()
         self.check_output()
 

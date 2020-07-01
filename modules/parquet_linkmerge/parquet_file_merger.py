@@ -12,7 +12,7 @@ from collections.abc import Hashable
 log = structlog.get_logger()
 
 
-class ParquetFileMerger(object):
+class ParquetFileMerger:
 
     def __init__(self, *, data_path: Path, out_path: Path, deduplication_threshold: float, relative_path_index: int):
         self.data_path = data_path

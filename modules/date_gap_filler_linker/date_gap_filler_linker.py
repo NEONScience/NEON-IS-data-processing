@@ -5,7 +5,7 @@ from pathlib import Path
 log = structlog.get_logger()
 
 
-class DataGapFillerLinker(object):
+class DataGapFillerLinker:
 
     def __init__(self, in_path: Path,  out_path: Path, relative_path_index: int,
                  location_index: int, empty_file_suffix: str) -> None:

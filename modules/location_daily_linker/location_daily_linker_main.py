@@ -4,9 +4,8 @@ import structlog
 from pathlib import Path
 
 import common.log_config as log_config
-from location_daily_linker.location_file_path import LocationFilePath
+from location_daily_linker.location_daily_linker_config import Config
 from location_daily_linker.location_daily_linker import LocationDailyLinker
-
 
 log = structlog.get_logger()
 
@@ -21,12 +20,13 @@ def main():
     location_index: int = env.int('LOCATION_INDEX')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
-    location_file_path = LocationFilePath(source_type_index=source_type_index,
-                                          year_index=year_index,
-                                          month_index=month_index,
-                                          location_index=location_index)
-    location_daily_linker = LocationDailyLinker(location_path=location_path, out_path=out_path,
-                                                location_file_path=location_file_path)
+    config = Config(location_path=location_path,
+                    out_path=out_path,
+                    source_type_index=source_type_index,
+                    year_index=year_index,
+                    month_index=month_index,
+                    location_index=location_index)
+    location_daily_linker = LocationDailyLinker(config)
     location_daily_linker.link_files()
 
 

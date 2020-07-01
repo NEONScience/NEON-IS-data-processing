@@ -5,26 +5,19 @@ import structlog
 
 from common.data_filename import DataFilename
 
-from data_location_group.data_file_path import DataFilePath
+from data_location_group.data_location_group_config import Config
+from data_location_group.data_path_parser import DataPathParser
 
 log = structlog.get_logger()
 
 
 class DataLocationGrouper(object):
 
-    def __init__(self, *, data_path: Path, location_path: Path, out_path: Path, data_file_path: DataFilePath):
-        """
-        Constructor.
-
-        :param data_path: The path to the data files.
-        :param location_path: The path to the location files.
-        :param out_path: The output path to link grouped files.
-        :param data_file_path: The file path parser.
-        """
-        self.data_path = data_path
-        self.location_path = location_path
-        self.out_path = out_path
-        self.data_file_path = data_file_path
+    def __init__(self, config: Config):
+        self.data_path = config.data_path
+        self.location_path = config.location_path
+        self.out_path = config.out_path
+        self.data_path_parser = DataPathParser(config)
 
     def group_files(self):
         for common_output_path in self.link_data_files():
@@ -38,7 +31,7 @@ class DataLocationGrouper(object):
         """
         for path in self.data_path.rglob('*'):
             if path.is_file():
-                source_type, year, month, day = self.data_file_path.parse(path)
+                source_type, year, month, day = self.data_path_parser.parse(path)
                 source_id = DataFilename(path.name).source_id()
                 common_output_path = Path(self.out_path, source_type, year, month, day, source_id)
                 link_path = Path(common_output_path, 'data', path.name)

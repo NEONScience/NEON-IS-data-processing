@@ -32,10 +32,11 @@ def calculate_pad_size(window_size: int) -> Union[float, int]:
     if window_size < 0:
         raise ValueError("windowSize cannot be less than 0")
     seconds_per_day = 86400.
-    return math.ceil(window_size / seconds_per_day)
+    pad_size = math.ceil(window_size / seconds_per_day)
+    return pad_size
 
 
-def get_dates_in_padded_range(date: datetime, pad_size: float) -> List[datetime]:
+def get_padded_dates(date: datetime, pad_size: float) -> List[datetime]:
     """
     Get all the dates in the padded date range.
 
@@ -43,13 +44,13 @@ def get_dates_in_padded_range(date: datetime, pad_size: float) -> List[datetime]
     :param pad_size: pad size in days
     :returns: Sorted array of dates whose padded ranges include date.
     """
-    pad_in_days = math.ceil(pad_size)
+    pad_days = math.ceil(pad_size)
     padded_range = [date]
     if pad_size < 0:  # pad size is negative, only go backward in time by the number of days.
-        for day in range(1, abs(pad_in_days) + 1):
+        for day in range(1, abs(pad_days) + 1):
             padded_range.append(date - timedelta(days=day))
     else:  # pad size is positive, go backward and forward in time by the number of days.
-        for day in range(1, pad_in_days + 1):
+        for day in range(1, pad_days + 1):
             padded_range.append(date - timedelta(days=day))
             padded_range.append(date + timedelta(days=day))
     return sorted(padded_range)
@@ -78,7 +79,7 @@ def get_max_window_size(threshold_file: str, data_rate: float) -> Union[float, i
     return max_window_size
 
 
-def get_min_data_rate(location_file: str) -> float:
+def get_data_rate(location_file: str) -> float:
     """
     This should be refactored to extract from engineering metadata
     the actual rate(s) at which the sensor produced data.
@@ -86,6 +87,7 @@ def get_min_data_rate(location_file: str) -> float:
     :param location_file: yaml file containing location metadata
     :returns: The data rate.
     """
-    with open(location_file, "r") as jsonFile:
-        location_json = json.load(jsonFile)
-    return float(location_json['features'][0]['Data Rate'])
+    with open(location_file, "r") as file:
+        location_json = json.load(file)
+        data_rate = location_json['features'][0]['Data Rate']
+    return float(data_rate)

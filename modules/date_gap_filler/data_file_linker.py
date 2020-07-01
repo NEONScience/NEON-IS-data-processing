@@ -4,25 +4,25 @@ from pathlib import Path
 
 from common.date_formatter import date_is_between
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
-from date_gap_filler.data_file_path import DataFilePath
+from date_gap_filler.data_path_parser import DataPathParser
 
 log = structlog.get_logger()
 
 
-class DataFileLinker(object):
+class DataFileLinker:
 
-    def __init__(self, config: DateGapFillerConfig, data_file_path: DataFilePath):
+    def __init__(self, config: DateGapFillerConfig):
         self.data_path = config.data_path
         self.out_path = config.out_path
         self.start_date = config.start_date
         self.end_date = config.end_date
-        self.data_file_path = data_file_path
+        self.data_path_parser = DataPathParser(config)
 
     def link_files(self):
         """Link all files between the start and end dates."""
         for path in self.data_path.rglob('*'):
             if path.is_file():
-                source_type, year, month, day, location, data_type = self.data_file_path.parse(path)
+                source_type, year, month, day, location, data_type = self.data_path_parser.parse(path)
                 if not date_is_between(year=int(year), month=int(month), day=int(day),
                                        start_date=self.start_date, end_date=self.end_date):
                     continue

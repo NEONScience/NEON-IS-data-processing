@@ -14,9 +14,8 @@ def main():
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
-
     file_joiner = FileJoiner(config=config, out_path=out_path, relative_path_index=relative_path_index)
-    file_joiner.join_files()
+    file_joiner.join()
 
 
 if __name__ == '__main__':

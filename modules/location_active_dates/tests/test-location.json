@@ -1,32 +1,32 @@
-{
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "geometry": null,
-            "properties": {
-                "name": "CFGLOC113836",
-                "type": "CONFIG",
-                "description": "LeConte Creek Water Chemistry and Temperature S2 Overhang",
-                "site": "LECO",
-                "context": [
-                    "surfacewater",
-                    "water-quality-300",
-                    "water-quality"
-                ],
-                "active_periods": [
-                    {
-                        "start_date": "2020-06-30T00:00:00Z",
-                        "end_date": "2020-07-01T15:00:00Z"
-                    }
-                ]
-            },
-            "Required Asset Management Location ID": 15722,
-            "Required Asset Management Location Code": "CFGLOC113836",
-            "HOR": "112",
-            "VER": "100",
-            "TMI": "000",
-            "Data Rate": "1"
-        }
-    ]
+ {
+     "type": "FeatureCollection",
+     "features": [
+         {
+             "type": "Feature",
+             "geometry": null,
+             "properties": {
+                 "name": "CFGLOC113836",
+                 "type": "CONFIG",
+                 "description": "LeConte Creek Water Chemistry and Temperature S2 Overhang",
+                 "site": "LECO",
+                 "context": [
+                     "surfacewater",
+                     "water-quality-300",
+                     "water-quality"
+                 ],
+                 "active_periods": [
+                     {
+                         "start_date": "2020-06-30T00:00:00Z",
+                         "end_date": "2020-07-01T15:00:00Z"
+                     }
+                 ],
+                 "Required Asset Management Location ID": 15722,
+                 "Required Asset Management Location Code": "CFGLOC113836",
+                 "HOR": "112",
+                 "VER": "100",
+                 "TMI": "000",
+                 "Data Rate": "1"
+             }
+         }
+     ]
 }

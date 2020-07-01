@@ -3,22 +3,18 @@ from pathlib import Path
 
 import structlog
 
-from data_calibration_group.calibration_file_path import CalibrationFilePath
+from data_calibration_group.data_calibration_group_config import Config
+from data_calibration_group.calibration_path_parser import CalibrationPathParser
 
 log = structlog.get_logger()
 
 
-class CalibrationFileLinker(object):
+class CalibrationFileLinker:
 
-    def __init__(self, *, calibration_path: Path, calibration_file_path: CalibrationFilePath):
-        """
-        Constructor.
-
-        :param calibration_path: The path to calibration files.
-        :param calibration_file_path: The file path parser.
-        """
-        self.calibration_path = calibration_path
-        self.calibration_file_path = calibration_file_path
+    def __init__(self, config: Config):
+        self.calibration_path = config.calibration_path
+        self.stream_index = config.calibration_stream_index
+        self.path_parser = CalibrationPathParser(config)
 
     def link_files(self, source_id: str, output_path: Path):
         """
@@ -29,13 +25,12 @@ class CalibrationFileLinker(object):
         """
         for path in self.calibration_path.rglob('*'):
             log.debug(f'calibration file path: {path}')
-            parts = path.parts
             if path.is_dir():
-                if len(parts) < self.calibration_file_path.stream_index:
+                if len(path.parts) < self.stream_index:
                     Path(output_path, 'calibration').mkdir(parents=True, exist_ok=True)
             elif path.is_file():
                 log.debug(f'path is file: {path}')
-                source_type, calibration_source_id, stream = self.calibration_file_path.parse(path)
+                source_type, calibration_source_id, stream = self.path_parser.parse(path)
                 log.debug(f'calibration type: {source_type}, id: {source_id}, stream: {stream}')
                 if calibration_source_id == source_id:
                     link_path = Path(output_path, 'calibration', stream, path.name)

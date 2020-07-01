@@ -7,7 +7,7 @@ import unittest
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from data_access.asset import Asset
+from data_access.types.asset import Asset
 
 import location_asset_loader.location_asset_loader_main as location_asset_loader_main
 import location_asset_loader.location_asset_loader as location_asset_loader
@@ -62,10 +62,14 @@ class LocationAssetLoaderTest(TestCase):
         """Mock function."""
         return [self.asset]
 
-    def get_history(self, asset_id):
+    def get_asset_locations(self, asset):
         """Mock function."""
-        print(f'id: {asset_id}')
-        return FeatureCollection([self.feature])
+        print(f'id: {asset.id}')
+        feature_collection = FeatureCollection([self.feature])
+        # add the asset to the location history as the "source"
+        feature_collection.update({"source_id": asset.id})
+        feature_collection.update({"source_type": asset.type})
+        return feature_collection
 
     @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
@@ -78,12 +82,12 @@ class LocationAssetLoaderTest(TestCase):
         self.assertTrue(self.expected_path.exists())
 
     def test_write_file(self):
-        history = FeatureCollection([self.feature])
-        location_asset_loader.write_file(asset=self.asset, history=history, out_path=self.out_path)
+        locations = FeatureCollection([self.feature])
+        location_asset_loader.write_file(asset=self.asset, locations=locations, out_path=self.out_path)
         self.check_output()
 
     def test_write_files(self):
-        location_asset_loader.write_files(get_assets=self.get_assets, get_location_history=self.get_history,
+        location_asset_loader.write_files(get_assets=self.get_assets, get_asset_locations=self.get_asset_locations,
                                           out_path=self.out_path)
         self.check_output()
 

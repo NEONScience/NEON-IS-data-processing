@@ -12,7 +12,7 @@ from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer_config impor
 log = get_logger()
 
 
-class PaddedTimeSeriesAnalyzer(object):
+class PaddedTimeSeriesAnalyzer:
 
     def __init__(self, data_path: Path, out_path: Path, relative_path_index: int):
         """

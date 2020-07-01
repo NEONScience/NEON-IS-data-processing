@@ -3,14 +3,14 @@ from pathlib import Path
 import json
 from typing import Callable, Iterator
 
-from data_access.threshold import Threshold
+from data_access.types.threshold import Threshold
 
 
-def write_file(get_thresholds: Callable[[], Iterator[Threshold]], out_path: Path):
+def load_thresholds(get_thresholds: Callable[[], Iterator[Threshold]], out_path: Path):
     """
     Write a threshold file into the output path.
 
-    :param get_thresholds: Function yielding threshold objects.
+    :param get_thresholds: Function yielding thresholds.
     :param out_path: The path for writing results.
     """
     with open(Path(out_path, 'thresholds.json'), 'w') as file:

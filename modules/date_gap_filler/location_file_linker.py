@@ -8,15 +8,15 @@ from common.date_formatter import date_is_between
 from date_gap_filler.empty_file_paths import EmptyFilePaths
 from date_gap_filler.empty_file_linker import EmptyFileLinker
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
-from date_gap_filler.location_file_path import LocationFilePath
+from date_gap_filler.location_path_parser import LocationPathParser
 from date_gap_filler.empty_file_handler import EmptyFileHandler
 
 log = structlog.get_logger()
 
 
-class LocationFileLinker(object):
+class LocationFileLinker:
 
-    def __init__(self, config: DateGapFillerConfig, location_file_path: LocationFilePath):
+    def __init__(self, config: DateGapFillerConfig):
         self.out_path = config.out_path
         self.output_dirs = config.output_directories
         self.location_path = config.location_path
@@ -24,7 +24,7 @@ class LocationFileLinker(object):
         self.end_date = config.end_date
         self.location_dir = config.location_dir
         self.empty_file_paths = EmptyFilePaths(config)
-        self.location_file_path = location_file_path
+        self.location_path_parser = LocationPathParser(config)
         self.empty_file_handler = EmptyFileHandler(config)
 
     def link_files(self):
@@ -32,7 +32,7 @@ class LocationFileLinker(object):
         for path in self.location_path.rglob('*'):
             if path.is_file():
                 log.debug(f'processing location file: {path}')
-                source_type, year, month, day, location = self.location_file_path.parse(path)
+                source_type, year, month, day, location = self.location_path_parser.parse(path)
                 if day is None:
                     days = monthrange(int(year), int(month))[1]
                     for day in range(1, days + 1):

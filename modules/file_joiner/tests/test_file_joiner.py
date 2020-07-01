@@ -44,7 +44,7 @@ class FileJoinerTest(TestCase):
         file_joiner = FileJoiner(config=config,
                                  out_path=self.output_path,
                                  relative_path_index=self.relative_path_index)
-        file_joiner.join_files()
+        file_joiner.join()
         self.check_output()
 
     def test_main(self):
