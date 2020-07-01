@@ -23,7 +23,6 @@ def main():
     log_config.configure(log_level)
     log = structlog.get_logger()
     log.debug(f'in_path: {in_path} out_path: {out_path} context: {context}')
-
     config = Config(in_path=in_path,
                     out_path=out_path,
                     context=context,

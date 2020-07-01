@@ -9,7 +9,7 @@ def filter_directory(in_path: Path, out_path: Path, filter_dirs: list, relative_
 
     :param in_path: The input path for files.
     :param out_path: The output path for linking.
-    :param filter_dirs: The directories to filter.
+    :param filter_dirs: The directories to filter_paths.
     :param relative_path_index: Starting index of the input path to include in the output path.
     """
     for root, directories, files in os.walk(str(in_path)):
