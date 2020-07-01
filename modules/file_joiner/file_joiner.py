@@ -60,7 +60,7 @@ class FileJoiner:
     @staticmethod
     def link_paths(keys: set, key_paths: DictionaryList) -> None:
         """
-        Loop over the keys and link the paths.
+        Link the paths.
 
         :param keys: The joined keys.
         :param key_paths: The keys and paths (source and link).
@@ -68,7 +68,8 @@ class FileJoiner:
         for key in keys:
             for (path, link) in key_paths[key]:
                 link.parent.mkdir(parents=True, exist_ok=True)
-                link.symlink_to(path)
+                if not link.exists():
+                    link.symlink_to(path)
 
     @staticmethod
     def get_key(path: Path, join_indices: list) -> str:
