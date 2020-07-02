@@ -9,32 +9,27 @@ test_that("when type is sent as a character",
             testthat::expect_true(is.character(dataOut$x[1]))
             testthat::expect_true(is.character(dataOut$x[2]))
             testthat::expect_true(is.character(dataOut$x[3]))
-            is.
 
           })
 
-#show it to Cove , it should stop processing
-# test_that("when name of the data to be converted is not in the data",
+test_that("when name of the data to be converted is not in the data",
+          {
+            data <- data.frame(x=c(1,2,3),y=c('one','two','three'),stringsAsFactors=FALSE)
+            type <- data.frame(name=c('z'),type=c('string|utf8'),stringsAsFactors=FALSE)
+            dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
+            testthat::expect_true(is.character(typeof(dataOut$x[1])))
+            testthat::expect_true(is.character(typeof(dataOut$x[2])))
+            testthat::expect_true(is.character(typeof(dataOut$x[3])))
+
+          })
+
+
+# test_that("when data needs to be converted to timestamp",
 #           {
-#             data <- data.frame(x=c(1,2,3),y=c('one','two','three'),stringsAsFactors=FALSE)
-#             type <- data.frame(name=c('z'),type=c('string|utf8'),stringsAsFactors=FALSE)
-#             dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
-#             testthat::expect_true(is.character(typeof(dataOut$x[1])))
-#             testthat::expect_true(is.character(typeof(dataOut$x[2])))
-#             testthat::expect_true(is.character(typeof(dataOut$x[3])))
-# 
-#           })
-#
-#show it to Cove
-# test_that("when data needs to be converted to timestampe",
-#           {
-#             data <- data.frame(x=c(1,2,3),y=c(base::as.POSIXlt('2020-01-01'),base::as.POSIXlt('2020-01-02'), base::as.POSIXlt('2020-01-03')),stringsAsFactors=FALSE)
+#             data <- data.frame(x=c(1,2,3),y=c('2020-01-01','2020-01-02','2020-01-03'),stringsAsFactors=FALSE)
 #             type <- data.frame(name=c('y'),type=c('timestamp-millis'),stringsAsFactors=FALSE)
 #             dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
-#             testthat::expect_true(is. (typeof(data$y[1])))
-#             testthat::expect_true(is.character(typeof(data$y[2])))
-#             testthat::expect_true(is.character(typeof(data$y[3])))
-# 
+#             testthat::expect_true(is.na.data.frame(dataOut$y[1]))
 #           })
 
 test_that("when data needs to be converted to int",
@@ -89,5 +84,5 @@ test_that("when data needs to be converted to list, return the same datatype as 
             testthat::expect_true(is.character(dataOut$x[1]))
             testthat::expect_true(is.character(dataOut$x[2]))
             testthat::expect_true(is.character(dataOut$x[3]))
-            
+
           })

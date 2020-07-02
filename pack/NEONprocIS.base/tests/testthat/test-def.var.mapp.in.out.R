@@ -35,7 +35,6 @@ test_that("when nameVarDfltSame has different number of values compared to nameV
             testthat::expect_equal(output$nameVarIn [1], "varIn1")
             testthat::expect_equal(output$nameVarOut[2], "nameOut2")
             testthat::expect_equal(output$nameVarOut[3], "nameSame1")
-            testthat::expect_equal(output$nameVarIn[4], "nameSame2")
             testthat::expect_equal(output$nameVarIn[5], "nameSame3")
             testthat::expect_equal(output$nameVarIn[5], "nameSame3")
           })
@@ -55,6 +54,7 @@ test_that("when nameVarDfltSame has one different value as nameVarIn and nameVar
             testthat::expect_equal(output$nameVarIn[4], "nameSame2")
             testthat::expect_equal(output$nameVarIn[5], "nameSame3")
             testthat::expect_equal(output$nameVarIn[5], "nameSame3")
+            
           })
 
 
