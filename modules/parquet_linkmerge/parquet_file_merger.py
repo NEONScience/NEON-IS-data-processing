@@ -20,7 +20,7 @@ class ParquetFileMerger:
         self.deduplication_threshold = deduplication_threshold
         self.relative_path_index = relative_path_index
 
-    def write_merged_files(self, input_files):
+    def write_merged_files(self, *, input_files, source_id):
         file_path = input_files[0]
         open_file = open(file_path, 'rb')
         fio = BytesIO(open_file.read())
@@ -57,8 +57,8 @@ class ParquetFileMerger:
         })
         # build the output filename
         new_filename = '_'.join(file_path.name.split('_')[1:])
-        stripped_path = Path(*file_path.parts[self.relative_path_index:])
-        output_file_path = Path(self.out_path, stripped_path.parent, new_filename)
+        trimmed_path = Path(*file_path.parts[self.relative_path_index:])
+        output_file_path = Path(self.out_path, trimmed_path.parent, source_id, new_filename)
         if not output_file_path.parent.exists():
             log.info(f"{output_file_path.parent} directory not found, creating")
             output_file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -86,12 +86,12 @@ class ParquetFileMerger:
             if len(source_files[source_id]) == 1:
                 source_file_path = source_files[source_id][0]
                 filename = '_'.join(source_file_path.name.split('_')[1:])
-                stripped_in_path = Path(*source_file_path.parts[self.relative_path_index:])
-                link_path = Path(self.out_path, stripped_in_path.parent, filename)
+                trimmed_path = Path(*source_file_path.parts[self.relative_path_index:])
+                link_path = Path(self.out_path, trimmed_path.parent, source_id, filename)
                 if not link_path.parent.exists():
                     log.info(f"{link_path.parent} directory not found, creating")
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                 log.info(f"Linking {source_file_path} to {link_path}")
                 link_path.symlink_to(source_file_path)
             else:
-                self.write_merged_files(input_files=source_files[source_id])
+                self.write_merged_files(input_files=source_files[source_id], source_id=source_id)

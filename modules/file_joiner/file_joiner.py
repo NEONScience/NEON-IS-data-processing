@@ -27,7 +27,7 @@ class FileJoiner:
 
     def join(self) -> None:
         """Join paths by common key."""
-        key_paths = DictionaryList()  # file paths by key
+        key_paths = DictionaryList()
         keys: List[set] = []
         for join_path in parse_config(self.config):
             keys.append(self.get_keys(join_path, key_paths))

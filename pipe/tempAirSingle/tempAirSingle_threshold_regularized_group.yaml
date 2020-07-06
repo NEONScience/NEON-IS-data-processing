@@ -3,7 +3,7 @@ pipeline:
   name: tempAirSingle_threshold_regularized_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/file_joiner:11
+  image: quay.io/battelleecology/file_joiner:14
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
