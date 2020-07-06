@@ -3,7 +3,7 @@ pipeline:
   name: file_joiner_test
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/file_joiner:12
+  image: quay.io/battelleecology/file_joiner:13
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
@@ -16,17 +16,17 @@ transform:
       input_paths:
         - path:
             name: INPUT_1
-            glob_pattern: /pfs/INPUT_1/*/*/**
+            glob_pattern: /pfs/INPUT_1/prt/2019/01/01/prt_769_2019-01-01.parquet
             # Join on year and month
             join_indices: [4, 5]
         - path:
             name: INPUT_2
-            glob_pattern: /pfs/INPUT_2/*/*/**
+            glob_pattern: /pfs/INPUT_2/prt/2019/01/01/prt_769_2019-01-01.parquet
             # Join on year and month
             join_indices: [4, 5]
         - path:
             name: INPUT_3
-            glob_pattern: /pfs/INPUT_3/*/*/**
+            glob_pattern: /pfs/INPUT_3/prt/2019/01/01/prt_769_2019-01-01.parquet
             # Join on year and month
             join_indices: [4, 5]
     OUT_PATH: /pfs/out
@@ -37,15 +37,15 @@ input:
     - pfs:
         name: INPUT_1
         repo: data_source_prt_linkmerge
-        glob: /*/2019/01/01
+        glob: /*/2019/*
     - pfs:
         name: INPUT_2
         repo: data_source_prt_linkmerge
-        glob: /*/2019/01/01
+        glob: /*/2019/*
     - pfs:
         name: INPUT_3
         repo: data_source_prt_linkmerge
-        glob: /*/2019/01/01
+        glob: /*/2019/*
 parallelism_spec:
   constant: 4
 enable_stats: true

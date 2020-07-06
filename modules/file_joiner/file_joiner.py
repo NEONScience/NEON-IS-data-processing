@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from typing import List
+from typing import List, Iterator, Tuple
 
-import yaml
 from structlog import get_logger
 
 import file_joiner.path_filter as path_filter
 from file_joiner.dictionary_list import DictionaryList
+from file_joiner.config_parser import InputPath, parse_config
 
 log = get_logger()
 
@@ -27,49 +27,35 @@ class FileJoiner:
 
     def join(self) -> None:
         """Join paths by common key."""
-        key_paths = DictionaryList()  # paths (source and link) by key
+        key_paths = DictionaryList()  # file paths by key
         keys: List[set] = []
-        config_data = yaml.load(self.config, Loader=yaml.FullLoader)
-        for input_paths in config_data['input_paths']:
-            input_path = input_paths['path']
-            glob_pattern: str = input_path['glob_pattern']
-            join_indices: List[int] = input_path['join_indices']
-            path_keys: set = self.process_path(join_indices, glob_pattern, key_paths)
-            keys.append(path_keys)
+        for join_path in parse_config(self.config):
+            keys.append(self.get_keys(join_path, key_paths))
         # join using intersection to pull common keys
         joined_keys: set = keys[0].intersection(*keys[1:])
-        self.link_paths(joined_keys, key_paths)
+        for input_path_name, path in self.get_joined_paths(joined_keys, key_paths):
+            self.link_path(path)
 
-    def process_path(self, join_indices: List[int], glob_pattern: str, key_paths: DictionaryList) -> set:
+    def get_keys(self, input_path: InputPath, key_paths: DictionaryList) -> set:
         """
-        Filter paths, get keys, paths and links.
+        Filter paths, then loop through and associate keys and paths for joining.
 
-        :param join_indices: The path indices to create the join keys.
-        :param glob_pattern: Unix glob pattern for filtering paths.
-        :param key_paths: Paths (source and link) by key.
+        :param input_path: The join path.
+        :param key_paths: Paths by key.
         :return: The set of keys.
         """
         keys = set()
-        for path in path_filter.filter_paths(glob_pattern=glob_pattern, output_path=self.out_path):
-            key = self.get_key(path, join_indices)
+        for path in path_filter.filter_paths(glob_pattern=input_path.glob_pattern, output_path=self.out_path):
+            key = self.get_key(path, input_path.join_indices)
             keys.add(key)
-            link_path = Path(self.out_path, *path.parts[self.relative_path_index:])
-            key_paths[key] = (path, link_path)  # add the key and paths
+            key_paths[key] = (input_path.path_name, path)
         return keys
 
-    @staticmethod
-    def link_paths(keys: set, key_paths: DictionaryList) -> None:
-        """
-        Link the paths.
-
-        :param keys: The joined keys.
-        :param key_paths: The keys and paths (source and link).
-        """
-        for key in keys:
-            for (path, link) in key_paths[key]:
-                link.parent.mkdir(parents=True, exist_ok=True)
-                if not link.exists():
-                    link.symlink_to(path)
+    def link_path(self, path: Path):
+        link_path = Path(self.out_path, *path.parts[self.relative_path_index:])
+        link_path.parent.mkdir(parents=True, exist_ok=True)
+        if not link_path.exists():
+            link_path.symlink_to(path)
 
     @staticmethod
     def get_key(path: Path, join_indices: list) -> str:
@@ -86,3 +72,15 @@ class FileJoiner:
         for index in join_indices:
             key.join(parts[index])
         return key
+
+    @staticmethod
+    def get_joined_paths(keys: set, key_paths: DictionaryList) -> Iterator[Tuple[str, Path]]:
+        """
+        Loop through the joined keys and pull the associated paths.
+
+        :param keys: The joined keys.
+        :param key_paths: Paths by key.
+        """
+        for key in keys:
+            for (input_path_name, path) in key_paths[key]:
+                yield input_path_name, path
