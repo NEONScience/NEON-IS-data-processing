@@ -55,10 +55,9 @@ class ParquetFileMerger:
             'parquet.avro.schema': tb1_schema,
             'writer.model.name': 'avro'
         })
-        # build the output filename
-        new_filename = '_'.join(file_path.name.split('_')[1:])
+        filename = '_'.join(file_path.name.split('_')[1:])
         trimmed_path = Path(*file_path.parts[self.relative_path_index:])
-        output_file_path = Path(self.out_path, trimmed_path.parent, source_id, new_filename)
+        output_file_path = Path(self.out_path, trimmed_path.parent, source_id, filename)
         if not output_file_path.parent.exists():
             log.info(f"{output_file_path.parent} directory not found, creating")
             output_file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -75,23 +74,23 @@ class ParquetFileMerger:
 
     def merge(self):
         source_files = {}
-        for file_path in self.data_path.rglob('*.parquet'):
-            source_id = file_path.name.split('_')[2]
+        for path in self.data_path.rglob('*.parquet'):
+            source_id = path.name.split('_')[2]
             if source_id not in source_files:
-                source_files[source_id] = [file_path]
+                source_files[source_id] = [path]
             else:
-                source_files[source_id].append(file_path)
+                source_files[source_id].append(path)
         for source_id in source_files:
-            # If there is only one file for the source ID, link it
+            # Link if there is only one file for the source ID
             if len(source_files[source_id]) == 1:
-                source_file_path = source_files[source_id][0]
-                filename = '_'.join(source_file_path.name.split('_')[1:])
-                trimmed_path = Path(*source_file_path.parts[self.relative_path_index:])
+                path = source_files[source_id][0]
+                filename = '_'.join(path.name.split('_')[1:])
+                trimmed_path = Path(*path.parts[self.relative_path_index:])
                 link_path = Path(self.out_path, trimmed_path.parent, source_id, filename)
                 if not link_path.parent.exists():
                     log.info(f"{link_path.parent} directory not found, creating")
                     link_path.parent.mkdir(parents=True, exist_ok=True)
-                log.info(f"Linking {source_file_path} to {link_path}")
-                link_path.symlink_to(source_file_path)
+                log.info(f"Linking {path} to {link_path}")
+                link_path.symlink_to(path)
             else:
                 self.write_merged_files(input_files=source_files[source_id], source_id=source_id)
