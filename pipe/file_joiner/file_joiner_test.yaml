@@ -3,7 +3,7 @@ pipeline:
   name: file_joiner_test
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/file_joiner:13
+  image: quay.io/battelleecology/file_joiner:14
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
@@ -47,6 +47,6 @@ input:
         repo: data_source_prt_linkmerge
         glob: /*/2019/*
 parallelism_spec:
-  constant: 4
+  constant: 8
 enable_stats: true
 standby: true

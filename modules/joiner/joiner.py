@@ -14,9 +14,8 @@ def join_files(*, related_paths: list, out_path: Path, relative_path_index: int)
     :param out_path: The output path for linking files.
     :param relative_path_index: Trim the input path to this index.
     """
-    for input_path in related_paths:
-        source_path = input_path
-        for path in source_path.rglob('*'):
+    for related_path in related_paths:
+        for path in related_path.rglob('*'):
             if path.is_file():
                 parts = path.parts
                 link_path = Path(out_path, *parts[relative_path_index:])
