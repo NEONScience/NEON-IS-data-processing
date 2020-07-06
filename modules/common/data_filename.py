@@ -2,7 +2,7 @@
 
 
 class DataFilename(object):
-    """Parse data file names in format [source type]_[source ID]_YYYY-MM-DD.[extension]"""
+    """Parse file names in format [source type]_[source ID]_yyyy-mm-dd.xxx"""
 
     def __init__(self, filename: str):
         self.filename = filename.split('.')[0]

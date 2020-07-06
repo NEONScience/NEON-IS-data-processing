@@ -9,32 +9,32 @@ transform:
     - "#!/bin/bash"
     - "python3 -m file_joiner.file_joiner_main"
   env:
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     OUT_PATH: /pfs/out
     CONFIG: |
       ---
       input_paths:
         - path:
             name: DATA_PATH
-            glob_pattern: /pfs/DATA_PATH/dualfan/*/*/*/dualfan_(*)_*-*-*.*"
-            # Join on year and month
+            glob_pattern: /pfs/DATA_PATH/dualfan/**"
+            # Join on source ID
             join_indices: [7]
         - path:
             name: LOCATION_PATH
-            glob_pattern: /pfs/LOCATION_PATH/dualfan/*/**
-            # Join on year and month
+            glob_pattern: /pfs/LOCATION_PATH/dualfan/**
+            # Join on source ID
             join_indices: [4]
 input:
   cross:
     - pfs:
-      name: DATA_PATH
-      repo: data_source_dualfan_linkmerge
-      glob: "/dualfan/*/*/*/dualfan_(*)_*-*-*.*"
-      empty_files: true
+        name: DATA_PATH
+        repo: data_source_dualfan_linkmerge
+        glob: /dualfan/*/*
+        empty_files: true
     - pfs:
-      name: LOCATION_PATH
-      repo: "location_asset"
-      glob: "/dualfan/(*)"
-      empty_files: true
+        name: LOCATION_PATH
+        repo: location_asset
+        glob: /dualfan/*
+        empty_files: true
 enable_stats: false
 standby: true

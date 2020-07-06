@@ -1,3 +1,0 @@
-geojson==2.4.1
-environs==6.0.0
-structlog==19.1.0
