@@ -3,7 +3,7 @@ pipeline:
   name: dualfan_data_location_group_joiner
 transform:
   image_pull_secrets: ["battelleecology-quay-read-all-pull-secret"]
-  image: quay.io/battelleecology/file_joiner:14
+  image: quay.io/battelleecology/file_joiner:16
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
@@ -17,12 +17,12 @@ transform:
       input_paths:
         - path:
             name: DATA_PATH
-            glob_pattern: /pfs/DATA_PATH/dualfan/**"
+            glob_pattern: /pfs/DATA_PATH/**"
             # Join on source ID
             join_indices: [7]
         - path:
             name: LOCATION_PATH
-            glob_pattern: /pfs/LOCATION_PATH/dualfan/**
+            glob_pattern: /pfs/LOCATION_PATH/**
             # Join on source ID
             join_indices: [4]
 input:

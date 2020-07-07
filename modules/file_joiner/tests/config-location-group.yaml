@@ -1,0 +1,12 @@
+---
+# In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+# Metadata indices will begin at index 3.
+input_paths:
+  - path:
+      name: location
+      glob_pattern: /in/location/**
+      join_indices: [4]
+  - path:
+      name: data
+      glob_pattern: /in/data/**
+      join_indices: [7]

@@ -31,8 +31,8 @@ class DataAccessTest(TestCase):
         self.out_path = Path('/out')
         self.fs.create_dir(self.out_path)
         #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]
-        self.db_url = os.getenv('DATABASE_URL')
-        self.connection = cx_Oracle.connect(self.db_url)
+        db_url = os.getenv('DATABASE_URL')
+        self.connection = cx_Oracle.connect(db_url)
         self.named_location_id = 31720
 
     def test_get_asset_locations(self):
