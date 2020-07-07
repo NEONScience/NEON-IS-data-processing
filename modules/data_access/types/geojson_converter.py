@@ -11,18 +11,14 @@ from data_access.types.active_period import ActivePeriod
 def convert_asset_location(location: AssetLocation) -> Feature:
     install_date = location.install_date
     remove_date = location.remove_date
-    transaction_date = location.transaction_date
     if install_date is not None:
         install_date = convert(install_date)
     if location.remove_date is not None:
         remove_date = convert(location.remove_date)
-    if location.transaction_date is not None:
-        transaction_date = convert(location.transaction_date)
     feature_properties = {'name': location.name,
                           'site': location.site,
                           'install_date': install_date,
                           'remove_date': remove_date,
-                          'transaction_date': transaction_date,
                           'context': location.context}
     for prop in location.properties:
         feature_properties[prop.name] = prop.value

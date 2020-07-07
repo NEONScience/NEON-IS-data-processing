@@ -18,16 +18,13 @@ class GeoJsonConverterTest(unittest.TestCase):
         site = 'CPER'
         install_date = '2020-01-01T00:00:00Z'
         remove_date = '2020-01-02T00:00:00Z'
-        transaction_date = '2020-01-03T00:00:00Z'
         context = 'context'
         install_datetime = date_formatter.parse(install_date)
         remove_datetime = date_formatter.parse(remove_date)
-        transaction_datetime = date_formatter.parse(transaction_date)
         context_list = [context]
         properties = [Property(name='prop1', value='value1')]
         location_start_date = '2020-01-01T00:00:00Z'
         location_end_date = '2020-01-10T00:00:00Z'
-        location_transaction_date = '2020-01-10T00:00:00Z'
         alpha = '1.0'
         beta = '2.0'
         gamma = '3.0'
@@ -36,7 +33,6 @@ class GeoJsonConverterTest(unittest.TestCase):
         z_offset = '3.0'
         location_properties = {'start_date': location_start_date,
                                'end_date': location_end_date,
-                               'transaction_date': location_transaction_date,
                                'alpha': alpha,
                                'beta': beta,
                                'gamma': gamma,
@@ -47,8 +43,7 @@ class GeoJsonConverterTest(unittest.TestCase):
         location = Feature(properties=location_properties)
         locations = FeatureCollection([location])
         asset_location = AssetLocation(name=name, site=site, install_date=install_datetime, remove_date=remove_datetime,
-                                       transaction_date=transaction_datetime, context=context_list,
-                                       properties=properties, locations=locations)
+                                       context=context_list, properties=properties, locations=locations)
         feature = geojson_converter.convert_asset_location(asset_location)
         geojson_data = dumps(feature, indent=4, sort_keys=False, default=str)
         json_data = json.loads(geojson_data)
@@ -58,7 +53,6 @@ class GeoJsonConverterTest(unittest.TestCase):
         self.assertTrue(properties['site'] == site)
         self.assertTrue(properties['install_date'] == install_date)
         self.assertTrue(properties['remove_date'] == remove_date)
-        self.assertTrue(properties['transaction_date'] == transaction_date)
         self.assertTrue(properties['context'][0] == context)
         self.assertTrue(properties['prop1'] == 'value1')
         locations = properties['locations']
@@ -66,7 +60,6 @@ class GeoJsonConverterTest(unittest.TestCase):
         geojson_location_properties = location['properties']
         self.assertTrue(geojson_location_properties['start_date'] == location_start_date)
         self.assertTrue(geojson_location_properties['end_date'] == location_end_date)
-        self.assertTrue(geojson_location_properties['transaction_date'] == location_transaction_date)
         self.assertTrue(geojson_location_properties['alpha'] == alpha)
         self.assertTrue(geojson_location_properties['beta'] == beta)
         self.assertTrue(geojson_location_properties['gamma'] == gamma)
