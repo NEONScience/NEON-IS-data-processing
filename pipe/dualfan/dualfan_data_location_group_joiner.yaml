@@ -3,21 +3,18 @@ pipeline:
   name: dualfan_data_location_group_joiner
 transform:
   image_pull_secrets: ["battelleecology-quay-read-all-pull-secret"]
-  image: quay.io/battelleecology/file_joiner:16
+  image: quay.io/battelleecology/file_joiner:17
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
     - "python3 -m file_joiner.file_joiner_main"
   env:
-    LOG_LEVEL: DEBUG
-    OUT_PATH: /pfs/out
-    RELATIVE_PATH_INDEX: "3"
     CONFIG: |
       ---
       input_paths:
         - path:
             name: DATA_PATH
-            glob_pattern: /pfs/DATA_PATH/**"
+            glob_pattern: /pfs/DATA_PATH/**
             # Join on source ID
             join_indices: [7]
         - path:
@@ -25,12 +22,15 @@ transform:
             glob_pattern: /pfs/LOCATION_PATH/**
             # Join on source ID
             join_indices: [4]
+    LOG_LEVEL: DEBUG
+    OUT_PATH: /pfs/out
+    RELATIVE_PATH_INDEX: "3"
 input:
   cross:
     - pfs:
         name: DATA_PATH
         repo: data_source_dualfan_linkmerge
-        glob: /dualfan/*/*
+        glob: /dualfan/*
         empty_files: true
     - pfs:
         name: LOCATION_PATH
