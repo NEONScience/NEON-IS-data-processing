@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 
-from common.data_filename import DataFilename
+from data_calibration_group.data_filename import DataFilename
 
 
 class DataFilenameTest(unittest.TestCase):

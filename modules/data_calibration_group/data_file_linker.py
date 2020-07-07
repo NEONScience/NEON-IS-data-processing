@@ -5,8 +5,7 @@ from typing import Iterator
 
 import structlog
 
-from common.data_filename import DataFilename
-
+from data_calibration_group.data_filename import DataFilename
 from data_calibration_group.data_calibration_group_config import Config
 from data_calibration_group.data_path_parser import DataPathParser
 
