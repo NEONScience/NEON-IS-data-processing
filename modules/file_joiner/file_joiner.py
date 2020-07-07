@@ -47,6 +47,7 @@ class FileJoiner:
         keys = set()
         for path in path_filter.filter_paths(glob_pattern=input_path.glob_pattern, output_path=self.out_path):
             key = self.get_key(path, input_path.join_indices)
+            log.debug(f'key: {key}')
             keys.add(key)
             key_paths[key] = (input_path.path_name, path)
         return keys
@@ -70,7 +71,8 @@ class FileJoiner:
         key = ''
         parts = path.parts
         for index in join_indices:
-            key.join(parts[index])
+            part = parts[index]
+            key += part
         return key
 
     @staticmethod

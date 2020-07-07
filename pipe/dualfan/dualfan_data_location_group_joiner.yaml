@@ -11,6 +11,7 @@ transform:
   env:
     LOG_LEVEL: DEBUG
     OUT_PATH: /pfs/out
+    RELATIVE_PATH_INDEX: "3"
     CONFIG: |
       ---
       input_paths:
@@ -37,4 +38,4 @@ input:
         glob: /dualfan/*
         empty_files: true
 enable_stats: false
-standby: true
+standby: false
