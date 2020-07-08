@@ -47,13 +47,7 @@ test_that("when nameVarDfltSame has one different value as nameVarIn and nameVar
             nameVarOut <- c("nameOut1","nameOut2")
             nameVarDfltSame <- c('nameOut2','nameSame2', 'nameSame3')
             output <- try(NEONprocIS.base::def.var.mapp.in.out(nameVarIn = nameVarIn, nameVarOut = nameVarOut, nameVarDfltSame = nameVarDfltSame), silent = TRUE)
-            testthat::expect_equal(2, length(output))
-            testthat::expect_equal(output$nameVarIn [1], "varIn1")
-            testthat::expect_equal(output$nameVarOut[2], "nameOut2")
-            testthat::expect_equal(output$nameVarOut[3], "nameOut2")
-            testthat::expect_equal(output$nameVarIn[4], "nameSame2")
-            testthat::expect_equal(output$nameVarIn[5], "nameSame3")
-            testthat::expect_equal(output$nameVarIn[5], "nameSame3")
+            testthat::expect_true((class(output)[1] == "try-error"))
             
           })
 
