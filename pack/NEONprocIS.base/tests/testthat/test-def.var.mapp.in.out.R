@@ -12,6 +12,16 @@ test_that("when length of nameVarIn is not same as nameVarOut, throw an error",
 
           })
 
+test_that("when nameVarIn contains duplicate elements, throw an error",
+          {
+            nameVarIn <- c("varIn1", "varIn2", "varIn1")
+            nameVarOut <- c("nameOut1","nameOut2", "nameOut3")
+            nameVarDfltSame=c('nameSame1','nameSame2')
+            report <- try(NEONprocIS.base::def.var.mapp.in.out(nameVarIn = nameVarIn, nameVarOut = nameVarOut), silent = TRUE)
+            testthat::expect_true((class(report)[1] == "try-error"))
+            
+          })
+
 test_that("when nameVarDfltSame has different value is sent in the parameters",
           {
             nameVarIn <- c("varIn1", "varIn2")
