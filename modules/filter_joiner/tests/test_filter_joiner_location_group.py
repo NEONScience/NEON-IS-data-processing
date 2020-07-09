@@ -3,7 +3,6 @@ import os
 import yaml
 from pathlib import Path
 
-import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from filter_joiner.filter_joiner import FilterJoiner
