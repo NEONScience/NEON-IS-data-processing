@@ -7,7 +7,7 @@ from cx_Oracle import Connection
 
 def get_named_location_schema_name(connection: Connection, named_location_id: int) -> Optional[str]:
     """
-    Return the bound schema name of a named location.
+    Get the schema name for a named location.
 
     :param connection: The database connection.
     :param named_location_id: The named location name.
@@ -34,5 +34,6 @@ def get_named_location_schema_name(connection: Connection, named_location_id: in
         cursor.execute(None, id=named_location_id)
         row = cursor.fetchone()
         if row is not None:
-            return row[0]
+            schema_name = row[0]
+            return schema_name
     return None

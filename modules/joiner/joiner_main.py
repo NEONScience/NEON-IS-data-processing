@@ -12,7 +12,7 @@ log = get_logger()
 
 
 def main():
-    """Join related paths."""
+    """Read files from the list of related paths and link them into the output path."""
     env = environs.Env()
     related_paths: list = env.list('RELATED_PATHS')
     out_path: Path = env.path('OUT_PATH')

@@ -5,8 +5,6 @@ from typing import Iterator
 
 import structlog
 
-from common.data_filename import DataFilename
-
 from data_calibration_group.data_calibration_group_config import Config
 from data_calibration_group.data_path_parser import DataPathParser
 
@@ -33,7 +31,7 @@ class DataFileLinker:
             if path.is_file():
                 log.debug(f'data file path: {path}')
                 source_type, year, month, day = self.path_parser.parse(path)
-                source_id = DataFilename(path.name).source_id()
+                source_id = path.name.split('_')[1]
                 log.debug(f'type: {source_type} Y: {year} M: {month} D: {day} id: {source_id} file: {path.name}')
                 output_path = Path(self.out_path, source_type, year, month, day, source_id)
                 link_path = Path(output_path, 'data', path.name)

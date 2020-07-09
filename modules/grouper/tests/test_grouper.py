@@ -13,32 +13,21 @@ import grouper.grouper_main as grouper_main
 class GrouperTest(TestCase):
 
     def setUp(self):
-        log_config.configure('DEBUG')
         self.setUpPyfakefs()
-
         self.input_path = Path('/repo/inputs')
         self.output_path = Path('/outputs')
-
         self.group = 'aspirated-single-121'
-
         self.location = 'CFGLOC123'
-
         self.metadata_path = Path('2019/05/24', self.group)
-
         self.data_dir = 'data'
         self.location_dir = 'location'
-
         self.data_file = 'data.ext'
         self.location_file = 'locations.json'
-
         self.base_path = Path(self.input_path, 'prt', self.metadata_path)
-
         self.in_data_path = Path(self.base_path, self.location, self.data_dir, self.data_file)
         self.in_location_path = Path(self.base_path, self.location, self.location_dir, self.location_file)
-
         self.fs.create_file(self.in_data_path)
         self.fs.create_file(self.in_location_path)
-
         self.relative_path_index = 3
 
     def test_group(self):
@@ -59,7 +48,3 @@ class GrouperTest(TestCase):
         out_location_path = Path(root_path, self.location_dir, self.location_file)
         self.assertTrue(out_data_path.exists())
         self.assertTrue(out_location_path.exists())
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -10,7 +10,10 @@ log = get_logger()
 
 
 def main():
-    """Group input data files without modifying the file paths."""
+    """
+    Link files in the data path into the output path. A specification file with multiple inputs
+    will use the same 'DATA_PATH' name to group the inputs.
+    """
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')

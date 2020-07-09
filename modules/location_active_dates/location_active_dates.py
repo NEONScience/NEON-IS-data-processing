@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
+from typing import Iterator
 
 import structlog
 
@@ -38,10 +39,23 @@ def link_location_files(*, location_path: Path, out_path: Path, schema_index: in
                     # do not proceed past current date
                     end_date = datetime.now()
                 if start_date is not None:
-                    for date in date_formatter.dates_between(start_date, end_date):
-                        dt = datetime(date.year, date.month, date.day)
-                        year, month, day = date_formatter.parse_date(dt)
+                    for date in dates_between(start_date, end_date):
+                        year = str(date.year)
+                        month = str(date.month).zfill(2)
                         link_path = Path(out_path, schema_name, year, month, location_name, path.name)
                         link_path.parent.mkdir(parents=True, exist_ok=True)
                         if not link_path.exists():
                             link_path.symlink_to(path)
+
+
+def dates_between(start_date: datetime, end_date: datetime) -> Iterator[datetime]:
+    """
+    Yield all dates between the start and end dates.
+
+    :param start_date: Date to begin generating dates.
+    :param end_date: Date to stop generating dates.
+    :return: All dates between the start and end dates.
+    """
+    delta = end_date - start_date
+    for i in range(delta.days + 1):
+        yield start_date + timedelta(days=i)

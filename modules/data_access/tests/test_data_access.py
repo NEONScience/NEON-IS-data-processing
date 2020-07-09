@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 import os
-from pathlib import Path
 from typing import List
+import unittest
 
 import cx_Oracle
 from geojson import FeatureCollection
-from pyfakefs.fake_filesystem_unittest import TestCase
 
 from data_access.get_asset_locations import get_asset_locations
 from data_access.get_assets import get_assets
@@ -17,29 +16,24 @@ from data_access.get_named_location_schema_name import get_named_location_schema
 from data_access.get_named_location_site import get_named_location_site
 from data_access.get_named_locations import get_named_locations
 from data_access.get_thresholds import get_thresholds
-
-
 from data_access.types.active_period import ActivePeriod
 from data_access.types.asset import Asset
 from data_access.types.property import Property
 
 
-class DataAccessTest(TestCase):
+class DataAccessTest(unittest.TestCase):
 
     def setUp(self):
-        self.setUpPyfakefs()
-        self.out_path = Path('/out')
-        self.fs.create_dir(self.out_path)
-        #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]
-        self.db_url = os.getenv('DATABASE_URL')
-        self.connection = cx_Oracle.connect(self.db_url)
+        # database URL in the form: [user]/[pass]@[url]:[port]/[sid]
+        db_url = os.getenv('DATABASE_URL')
+        self.connection = cx_Oracle.connect(db_url)
         self.named_location_id = 31720
 
     def test_get_asset_locations(self):
         asset = Asset(id=41283, type='windobserverii')
         feature_collection: FeatureCollection = get_asset_locations(self.connection, asset)
         print(f'asset locations: {feature_collection}')
-        self.assertTrue(True)
+        self.assertTrue(feature_collection is not None)
 
     def test_get_assets(self):
         i = 0
@@ -49,7 +43,7 @@ class DataAccessTest(TestCase):
                 break
             print(f'asset id: {asset.id} type: {asset.type}')
             i += 1
-        self.assertTrue((asset is not None))
+        self.assertTrue(asset is not None)
 
     def test_get_named_location_active_periods(self):
         active_periods: List[ActivePeriod] = get_active_periods(self.connection, self.named_location_id)
@@ -62,7 +56,7 @@ class DataAccessTest(TestCase):
     def test_get_named_location_locations(self):
         result = get_named_location_locations(self.connection, self.named_location_id)
         print(f'result: {result}')
-        self.assertTrue(True)
+        self.assertTrue(result is not None)
 
     def test_get_named_location_properties(self):
         properties: List[Property] = get_named_location_properties(self.connection, self.named_location_id)
@@ -87,7 +81,7 @@ class DataAccessTest(TestCase):
                 break
             i += 1
         print(f'location: {location}')
-        self.assertTrue((location is not None))
+        self.assertTrue(location is not None)
 
     def test_get_thresholds(self):
         i = 0
@@ -96,7 +90,7 @@ class DataAccessTest(TestCase):
                 break
             print(f'threshold: {threshold}')
             i += 1
-        self.assertTrue(True)
+            self.assertTrue(threshold is not None)
 
     def tearDown(self):
         self.connection.close()

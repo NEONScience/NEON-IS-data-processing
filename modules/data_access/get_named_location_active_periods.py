@@ -23,10 +23,10 @@ def get_active_periods(connection: Connection, named_location_id: int) -> List[A
         where 
             named_location_id = :id
     '''
+    periods: List[ActivePeriod] = []
     with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
         rows = cursor.execute(None, id=named_location_id)
-        periods: List[ActivePeriod] = []
         for row in rows:
             start_date = row[0]
             if start_date is not None:

@@ -17,8 +17,8 @@ def main():
     args = parser.parse_args()
     host = args.host
     port = int(args.port)
-    specification = args.specification
-    specifications = args.specifications
+    specification = Path(args.specification)
+    specifications = Path(args.specifications)
 
     print(f'host: {host}')
     print(f'port: {port}')
@@ -27,7 +27,7 @@ def main():
 
     client = python_pachyderm.Client(host=host, port=port)
 
-    parser = PipelineSpecificationParser(Path(specification), Path(specifications))
+    parser = PipelineSpecificationParser(specification, specifications)
     dag_manager = DagManager(parser)
     dag_builder = dag_manager.get_dag_builder()
     pipeline_names = dag_builder.get_pipeline_names()
@@ -54,7 +54,6 @@ def main():
                 total_download += download_time
             if process_time is not None:
                 total_process += process_time
-
     print(f'total upload: {total_upload} total download: {total_download} total_process: {total_process}')
 
 

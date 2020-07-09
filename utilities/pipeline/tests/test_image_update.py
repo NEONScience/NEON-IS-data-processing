@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+from pathlib import Path
 import yaml
 import json
 
@@ -12,13 +13,13 @@ import pipeline.edit_test as edit_test
 class ParserTest(unittest.TestCase):
 
     def setUp(self):
-        self.pipeline_root = os.path.join(os.path.dirname(__file__), 'test_files')
-        self.yaml_path = os.path.join(self.pipeline_root, 'pipeline.yaml')
-        self.json_path = os.path.join(self.pipeline_root, 'pipeline.json')
+        self.pipeline_root = Path(os.path.dirname(__file__), 'test_files')
+        self.yaml_path = Path(self.pipeline_root, 'pipeline.yaml')
+        self.json_path = Path(self.pipeline_root, 'pipeline.json')
 
     def test_update_image(self):
-        old_image = 'quay.io/battelleecology/file_joiner:7'
-        new_image = 'quay.io/battelleecology/file_joiner:8'
+        old_image = 'quay.io/battelleecology/filter_joiner:7'
+        new_image = 'quay.io/battelleecology/filter_joiner:8'
         # update files to new image
         image_update.update(self.pipeline_root, old_image, new_image)
         with open(self.json_path) as json_file:
@@ -41,7 +42,7 @@ class ParserTest(unittest.TestCase):
             self.assertTrue(image == old_image)
 
     def test_edit(self):
-        image = 'quay.io/battelleecology/file_joiner:7'
+        image = 'quay.io/battelleecology/filter_joiner:7'
         # update files to new image
         edit_test.add(self.pipeline_root, image)
         with open(self.json_path) as json_file:
@@ -54,7 +55,7 @@ class ParserTest(unittest.TestCase):
             self.assertTrue(new_setting == 'value')
 
     def test_undo(self):
-        image = 'quay.io/battelleecology/file_joiner:7'
+        image = 'quay.io/battelleecology/filter_joiner:7'
         # update files to new image
         edit_test.remove(self.pipeline_root, image)
         with open(self.json_path) as json_file:

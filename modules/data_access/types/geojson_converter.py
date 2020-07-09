@@ -11,21 +11,17 @@ from data_access.types.active_period import ActivePeriod
 def convert_asset_location(location: AssetLocation) -> Feature:
     install_date = location.install_date
     remove_date = location.remove_date
-    transaction_date = location.transaction_date
     if install_date is not None:
         install_date = convert(install_date)
     if location.remove_date is not None:
         remove_date = convert(location.remove_date)
-    if location.transaction_date is not None:
-        transaction_date = convert(location.transaction_date)
     feature_properties = {'name': location.name,
                           'site': location.site,
                           'install_date': install_date,
                           'remove_date': remove_date,
-                          'transaction_date': transaction_date,
                           'context': location.context}
-    for prop in location.properties:
-        feature_properties[prop.name] = prop.value
+    for p in location.properties:
+        feature_properties[p.name] = p.value
     feature_properties['locations'] = location.locations
     return Feature(properties=feature_properties)
 
@@ -39,8 +35,8 @@ def convert_named_location(location: NamedLocation) -> FeatureCollection:
                   'context': location.context,
                   'active_periods': active_periods}
     feature = Feature(properties=properties)
-    for prop in location.properties:
-        feature[prop.name] = prop.value
+    for p in location.properties:
+        feature[p.name] = p.value
     return FeatureCollection([feature])
 
 

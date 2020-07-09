@@ -1,2 +1,0 @@
-environs==7.3.1
-cx_Oracle==7.3.0

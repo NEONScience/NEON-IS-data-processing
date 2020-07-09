@@ -7,7 +7,7 @@ from cx_Oracle import Connection
 
 def get_threshold_context(connection: Connection, condition_uuid: str) -> List[str]:
     """
-    Get all context entries for a threshold.
+    Get all context codes for a threshold.
 
     :param connection: A database connection.
     :param condition_uuid: The condition UUID.
@@ -25,5 +25,6 @@ def get_threshold_context(connection: Connection, condition_uuid: str) -> List[s
         '''
         rows = cursor.execute(sql, condition_uuid=condition_uuid)
         for row in rows:
-            context_codes.append(row[0])
+            context_code = row[0]
+            context_codes.append(context_code)
     return context_codes

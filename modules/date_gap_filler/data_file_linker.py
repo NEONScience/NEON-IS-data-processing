@@ -2,7 +2,7 @@
 import structlog
 from pathlib import Path
 
-from common.date_formatter import date_is_between
+from date_gap_filler.dates_between import date_is_between
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 from date_gap_filler.data_path_parser import DataPathParser
 

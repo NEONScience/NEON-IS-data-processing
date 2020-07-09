@@ -5,8 +5,6 @@ from pathlib import Path
 
 from structlog import get_logger
 
-from common.merged_data_filename import MergedDataFilename
-
 from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer_config import AnalyzerConfig
 
 log = get_logger()
@@ -45,7 +43,7 @@ class PaddedTimeSeriesAnalyzer:
                             for data_file in os.listdir(root):
                                 log.debug(f'data_file: {data_file}')
                                 if data_file != manifest_file:
-                                    data_file_date = MergedDataFilename(data_file).date()
+                                    data_file_date = self.get_data_file_date(data_file)
                                     log.debug(f'checking data file date: {data_file_date} and '
                                               f'manifest date {date} in {dates_not_found}')
                                     if date in data_file_date and date in dates_not_found:
@@ -106,3 +104,8 @@ class PaddedTimeSeriesAnalyzer:
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                     if not link_path.exists():
                         link_path.symlink_to(file_path)
+
+    @staticmethod
+    def get_data_file_date(filename: str) -> str:
+        """Parse the date from data file names in format source_location_yyyy-mm-dd.xxx"""
+        return filename.split('.')[0].split('_')[2]

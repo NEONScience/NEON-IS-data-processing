@@ -5,6 +5,7 @@ from datetime import date
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
+from date_gap_filler.dates_between import date_is_between
 import date_gap_filler.date_gap_filler_main as date_gap_filler_main
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 from date_gap_filler.date_gap_filler import DateGapFiller
@@ -80,6 +81,16 @@ class DateGapFillerTest(TestCase):
         self.fs.create_file(self.empty_data_file)
         self.fs.create_file(self.empty_uncertainty_data_file)
         self.fs.create_file(self.empty_flag_file)
+
+    def test_date_between(self):
+        start_date = date(2020, 1, 1)
+        end_date = date(2020, 3, 3)
+        result = date_is_between(year=2020, month=2, day=1, start_date=start_date, end_date=end_date)
+        self.assertTrue(result)
+        start_date = date(2020, 1, 1)
+        end_date = date(2020, 3, 31)
+        result = date_is_between(year=2020, month=2, day=1, start_date=start_date, end_date=end_date)
+        self.assertTrue(result)
 
     def test_fill_gaps_monthly(self):
         self.create_monthly_location_repo()

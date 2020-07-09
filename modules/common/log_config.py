@@ -5,9 +5,9 @@ import sys
 from typing import Union
 
 
-def configure(log_level: Union[int, str]):
+def configure(log_level: Union[int, str]) -> None:
     """
-    Configures log to write JSON to standard output.
+    Configures logging to write JSON to standard output.
 
     :param log_level: The log level to set.
     """

@@ -80,7 +80,3 @@ class ThresholdLoaderTest(TestCase):
         threshold_loader_main.main()
         expected_path = Path(self.out_path, 'thresholds.json')
         self.assertTrue(expected_path.exists())
-
-
-if __name__ == '__main__':
-    unittest.main()

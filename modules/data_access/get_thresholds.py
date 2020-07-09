@@ -55,8 +55,7 @@ def get_thresholds(connection: Connection) -> Iterator[Threshold]:
             '''
             Change term name for soil temp thresholds from 'soilPRTResistance' to 'temp'. 
             The Avro schema for calibrated PRT data uses the term name 'temp' 
-            and this term name used in the data files must match the term name in the 
-            thresholds to apply QA/QC.
+            and data file term name must match threshold term name to apply QA/QC.
             '''
             if term_name == 'soilPRTResistance':
                 term_name = 'temp'

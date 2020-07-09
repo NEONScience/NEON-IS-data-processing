@@ -4,16 +4,13 @@
 input_paths:
   - path:
       name: INPUT_1
-      glob_pattern: /pfs/INPUT_1/**
+      glob_pattern: /in/INPUT_1/**
       join_indices: [3, 4]
-      # output_indices: [4, 5]
   - path:
       name: INPUT_2
-      glob_pattern: /pfs/INPUT_2/**
+      glob_pattern: /in/INPUT_2/**
       join_indices: [3, 4]
-      # output_indices: [3]
   - path:
       name: INPUT_3
-      glob_pattern: /pfs/INPUT_3/**
+      glob_pattern: /in/INPUT_3/**
       join_indices: [3, 4]
-      # output_indices: [3, 4, 5]

@@ -3,8 +3,7 @@ from pathlib import Path
 from calendar import monthrange
 import structlog
 
-from common.date_formatter import date_is_between
-
+from date_gap_filler.dates_between import date_is_between
 from date_gap_filler.empty_file_paths import EmptyFilePaths
 from date_gap_filler.empty_file_linker import EmptyFileLinker
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig

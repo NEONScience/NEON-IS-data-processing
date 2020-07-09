@@ -12,15 +12,12 @@ class ParserTest(TestCase):
     def setUp(self):
         """Create files to parse in fake filesystem."""
         self.setUpPyfakefs()
-
         self.yaml_root = Path('/pipe/yaml')
         self.json_root = Path('/pipe/json')
         self.yaml_path = Path(self.yaml_root, 'pipeline.yaml')
         self.json_path = Path(self.json_root, 'pipeline.json')
-
         config_file_path = Path(os.path.dirname(__file__), 'pipeline.yaml')
         self.fs.add_real_file(config_file_path, target_path=self.yaml_path)
-
         config_file_path = Path(os.path.dirname(__file__), 'pipeline.json')
         self.fs.add_real_file(config_file_path, target_path=self.json_path)
 
