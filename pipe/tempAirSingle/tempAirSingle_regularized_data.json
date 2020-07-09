@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "tempAirSingle_calibrated_data",
-          "glob": "/*/*/*/*"
+          "glob": "/*/*/*"
         }
       },
       {

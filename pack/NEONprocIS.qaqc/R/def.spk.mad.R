@@ -1,22 +1,33 @@
 ##############################################################################################
-#' @title Perform spike test
+#' @title Perform spike test using the median absolute deviation method
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description
-#' Definition function. Evaluate the spike test - whether a change in value from one observation
-#' to the next in a timeseries exceeds a threshold based on the variability over a surrounding 
-#' window of observations
+#' Definition function. Evaluate the spike test - whether an observation lies outside the median 
+#' plus/minus a multiple of the median absolute deviation computed over a surrounding window of 
+#' observations.
 
-#' @param data a numeric vector
-#' @param Meth Character string. 
-#' @param ThshMad Value
-#' @param Wndw Value. Must be odd
-#' @param WndwStep Value
-#' @param WndwFracSpkMin Method B only. Minimum threshold fraction of windows a point must fail the spike test as the window steps through the timeseries to be marked as a spike
-#' @param NumPtsGrp Value
-#' @param NaFracMax Value
+#' @param data a numeric vector of observations
+#' @param Meth Character value of either 'A' or 'B'. Method A evaluates the central point in 
+#' each window as the window slides along the timeseries. Method B evaluates all points within
+#' each window as it slides along the timeseries by WndwStep each time, thus evaluating a point 
+#' multiple times. For this method, a point must be identified as a spike at least the fraction 
+#' of the time specified in WndwFracSpkMin to be flagged as a spike. Default is A.
+#' @param ThshMad The threshold multiple of the median absolute deviation of the median (MAD) for 
+#' each window outside which a value must lie to be identified as a spike. Default is 7.
+#' @param Wndw Integer window size for calculating MAD. Must be odd. If even, 1 will be added. 
+#' If adding 1 makes Wndw longer than the length of the data, 1 will be subtracted.
+#' @param WndwStep Method B only. An integer value specifying the number of data points to slide 
+#' the window as it moves along the timeseries. Default is 1. Maximum is 1/2 the window size.
+#' @param WndwFracSpkMin Method B only. Minimum threshold fraction of windows a point must fail 
+#' the spike test to be flagged as a spike.
+#' @param NumGrp Either NULL or an integer value specifying the minimum number of consective spikes,
+#'  at and above which the points will be deemed plausible values and not flagged. 
+#' Defaults to NULL, which will result in no evaluation of consecutive spikes. Default is NULL.
+#' @param NaFracMax Fraction between 0 and 1 specifying the maximum fraction of missing values 
+#' for which each window retains a sufficient sample size to determine the median absolute deviation.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -30,9 +41,14 @@
 #' @keywords despike, plausibility, QA/QC, quality
 
 #' @examples
-#' PUT SOME HERE
+#' data <- c(1,2,3,4,3,2,1,2,3,4,50,3,2,1,2,3,4,3,2,1)
+#' # Method A
+#' qfSpk <- def.spk.mad(data=data,Meth='A',ThshMad=7,Wndw=5)
+#' 
+#' # Method B
+#' qfSpk <- def.spk.mad(data=data,Meth='B',ThshMad=7,Wndw=5,WndwStep=3,WndwFracSpkMin=0.5)
 
-#' @seealso Currently none
+#' @seealso \link[eddy4R.qaqc]{def.dspk.wndw}
 
 #' @export
 
@@ -43,11 +59,11 @@
 def.spk.mad <-
   function(data,
            Meth=c('A','B')[1],
-           ThshMad,
+           ThshMad=7,
            Wndw,
            WndwStep=1,
            WndwFracSpkMin=0.1,
-           NumGrp=4,
+           NumGrp=NULL,
            NaFracMax=.1,
            log = NULL) {
     # initialize logging if necessary
@@ -62,19 +78,53 @@ def.spk.mad <-
       stop()
     }
     
+    numData <- base::length(data)
     
-    # CHECK PARAMETERS
-    # Meth only A or B
-    # Wndw integer & odd for Method A (and B the way it's being implemented) (just add 1)
-    # WndwStep only applied to method B and must be less than Wndw/2
-    # NumGrp must be > 1
+    # Check input parameters
+    if(base::length(Meth) != 1 || !(Meth %in% c('A','B'))){
+      log$fatal('Input argument Meth must be either "A" or "B"')
+      stop()
+    }
+    if(base::length(ThshMad) != 1 || !base::is.numeric(ThshMad)){
+      log$fatal('Input argument ThshMad must be a single numeric value')
+      stop()
+    }
+    if(base::length(Wndw) != 1 || base::as.integer(Wndw) != Wndw || Wndw > numData){
+      log$fatal('Input argument Wndw must be a single integer value')
+      stop()
+    }
+    if(Wndw %% 2 == 0){
+      if(Wndw != numData){
+        Wndw <- Wndw + 1
+        log$info(base::paste0('Spike test window increased by 1 to ',Wndw, ' in order to make it odd'))
+      } else {
+        Wndw <- Wndw - 1
+        log$info(base::paste0('Spike test window decreased by 1 to ',Wndw, ' in order to make it odd'))
+      }
+    }
+    if(base::length(WndwStep) != 1 || base::as.integer(WndwStep) != WndwStep || WndwStep < 1 || WndwStep > base::floor(Wndw/2)){
+      log$fatal('Input argument WndwStep must be a single integer value >= 1 and <= Wndw/2')
+      stop()
+    }
+    if(base::length(WndwFracSpkMin) != 1 || WndwFracSpkMin < 0 || WndwFracSpkMin > 1){
+      log$fatal('Input argument WndwFracSpkMin must be a single value between 0 and 1')
+      stop()
+    }
+    if(!is.null(NumGrp) && (base::length(NumGrp) != 1 || base::as.integer(NumGrp) != NumGrp || NumGrp < 1 || NumGrp > numData)){
+      log$fatal('Input argument NumGrp must either be NULL or a single integer value >= 1 and <= length of the data')
+      stop()
+    }
+    if(base::length(NaFracMax) != 1 || NaFracMax < 0 || NaFracMax > 1){
+      log$fatal('Input argument NaFracMax must be a single value between 0 and 1')
+      stop()
+    }
     
+
     # Scale factor to use MAD as a consistent estimation of std
     # equal to reciprocal of the quantile function at probability of 75%
     CorStd <- 1.4826 
     
     # Setup
-    numData <- base::length(data)
     dmmyVect <- rep(NA,numData)
     numDataWndw<-dmmyVect
     med <- dmmyVect
@@ -83,10 +133,9 @@ def.spk.mad <-
     
     # To use the running median and mad functions below, we must first handle NA values. 
     # It appears that later iterations of the native R stats package may handle NAs, but the 3.6.0 version does not.
-    # Let's replicate the "+Big_alternate" method of stats v3.6.2
-    # The tradeoff here is that the faster med and mad algorithms change the stats a bit when there are NAs in the window.
-    # Leaving the NAs in there causes some extra qf=-1 when the NA value is the first value in the window. Maybe we can 
-    # replace the NA/Inf values in these cases with the next non-NA values in the timeseries.
+    # Leaving the NAs in there causes some extra qf=-1 when the NA value is the first value in the window. 
+    # Let's replicate the "+Big_alternate" method of stats v3.6.2, which replaces NA values with alternating very large
+    # numbers so that the median and mad are unaffected.
     numBig <- .Machine$double.xmax/3
     setNa <- which(is.na(data))
     numBigAlt <- array(c(numBig,-numBig),length(setNa))
@@ -94,8 +143,8 @@ def.spk.mad <-
     dataPrepNa[setNa] <- numBigAlt 
     
     # Compute the running median of the data (WAY faster than running it in the for loop)
-    med <- stats::runmed(x=data,k=Wndw,endrule='constant')
-    mad <- caTools::runmad(x=data,k=Wndw,constant=CorStd,endrule="NA",align='center')
+    med <- stats::runmed(x=dataPrepNa,k=Wndw,endrule='constant')
+    mad <- caTools::runmad(x=dataPrepNa,k=Wndw,constant=CorStd,endrule="NA",align='center')
     numDataWndw[((Wndw-1)/2+1):(numData-(Wndw-1)/2)] <- RcppRoll::roll_sum(x=!is.na(data),n=Wndw,by=1,align='center',na.rm=TRUE)
     
     # Compute correction factor to reduce bias with low window size
@@ -166,12 +215,3 @@ def.spk.mad <-
   
     return(as.integer(qf))
   }
-
-timeBgn <- Sys.time()
-qfEddy4R <- base::do.call(eddy4R.qaqc::def.dspk.wndw, argsSpk)$qfSpk
-print(Sys.time()-timeBgn)
-
-timeBgn <- Sys.time()
-# profvis::profvis({qf <- def.spk.mad(data=data,Meth='A',ThshMad=7,Wndw=3601,WndwStep=1,NumGrp=4,NaFracMax=1,log=log)})
-qf <- def.spk.mad(data=data,Meth='A',ThshMad=1,Wndw=1801,WndwStep=1,WndwFracSpkMin=0.1,NumGrp=4,NaFracMax=.1,log=log)
-print(Sys.time()-timeBgn)

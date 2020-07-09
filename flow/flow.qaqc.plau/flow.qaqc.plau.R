@@ -108,7 +108,8 @@
 #     fix bug when only one test selected
 #   Cove Sturtevant (2020-04-22)
 #     switch read/write data from avro to parquet
-#   Cove Sturtevant (2020-06-16)
+#   Cove Sturtevant (2020-07-08)
+#     Adjust code to accommodate new (faster!) despike algorithm and efficient plausibility code
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -339,15 +340,8 @@ for(idxDirIn in DirIn){
         stop()
       }
       
-      # The persistence test can be run in point-based mode or time-based mode. Time-based mode potentially takes much longer.
-      # So, if we can run the test in point-based mode let's do so. 
-      timeDiff <- base::diff(argsPlau$time)
-      units(timeDiff) <- 'secs'
-      if(base::min(timeDiff)==max(timeDiff)){
-        argsPlau$WndwPers <- argsPlau$WndwPers/base::as.numeric(timeDiff[1]) # Convert to points
-      } else {
-        argsPlau$WndwPers <- base::as.difftime(argsPlau$WndwPers,units='secs') # Create difftime object so the code knows the window is in seconds
-      }
+      # Convert persistence window to difftime object
+      argsPlau$WndwPers <- base::as.difftime(argsPlau$WndwPers,units='secs') # Create difftime object so the code knows the window is in seconds
     }   
     
     # Argument(s) for spike test
@@ -394,25 +388,6 @@ for(idxDirIn in DirIn){
       # Turn SpkNaFracMax to fraction (from %)
       SpkNaFracMax <- SpkNaFracMax/100
       
-      # Place the spike arguments into the format required for input to the despike function.
-      # Note that some parameters are hard-coded and not specified in the thresholds file
-      argsSpk$Trt <- list(
-        AlgClas = "median",   # de-spiking algorithm class [mean vs. median] (leave as "median")
-        NumPtsWndw = SpkWndw,         # window size [data points] (must be odd for median / mad)
-        NumPtsSlid = SpkWndwStep,          # window sliding increment/step [data points]
-        ThshStd = SpkMad,             # threshold for detecting data point as spike [sigma / MAD_sigma];
-        NaFracMax = SpkNaFracMax, # maximum allowable proportion of NA values per window for reliable spike determination
-        Infl = 0,                # inflation per iteration [fraction of sigma / MAD_sigma] (leave as 0)
-        IterMax = Inf,           # maximum number of iterations 
-        NumPtsGrp= SpkNumPtsGrp, # minimum group size that is not considered as consecutive spikes [data points]; mean:4, med:10
-        NaTrt="omit"             # spike handling among iterations ["approx" or "omit"] (leave as "omit")
-      )
-      argsSpk$Cntl <- base::list(
-        NaOmit = FALSE,          # delete leading / trailing NAs from dataset? (leave as FALSE)
-        Prnt = FALSE,             # print results?
-        Plot = FALSE              # plot results?
-      )
-      
     }   
     
     # Initialize quality flag output
@@ -431,15 +406,10 @@ for(idxDirIn in DirIn){
     # Run the despike test - get quality flags
     if('spike' %in% ParaTest[[idxTerm]]$test){
       
-      # Set some additional arguments and construct the inputs
-      argsSpk$Vrbs=TRUE # Outputs quality flag values instead of vector positions
-      
       # Run the spike test
-      qfSpk <- base::do.call(eddy4R.qaqc::def.dspk.wndw, argsSpk)$qfSpk
+      qfSpk <- NEONprocIS.qaqc::def.spk.mad(data=data[[idxTerm]],Meth=SpkMeth,ThshMad=SpkMad,Wndw=SpkWndw,WndwStep=SpkWndwStep,WndwFracSpkMin=0.1,NumGrp=SpkNumPtsGrp,NaFracMax=SpkNaFracMax,log=log)
       names(qfSpk) <- 'qfSpk'
-      
-      #qfSpk <- def.spk.mad(data=data[[idxTerm]],Meth=SpkMeth,ThshMad=SpkMad,Wndw=SpkWndw,WndwStep=SpkWndwStep,WndwFracSpkMin=0.1,NumGrp=SpkNumPtsGrp,NaFracMax=SpkNaFracMax,log=log)
-      
+
       if(base::is.null(qf[[idxTerm]])){
         qf[[idxTerm]] <- qfSpk
       } else {

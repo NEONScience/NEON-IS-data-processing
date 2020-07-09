@@ -27,7 +27,7 @@
       "name": "DATA_PATH",
       "repo": "tempSoil_timeseries_padder",
       "branch": "master",
-      "glob": "/prt/*/*"
+      "glob": "/prt/*/*/*"
     }
   },
   "standby": true,
