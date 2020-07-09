@@ -4,9 +4,9 @@ from typing import List, Iterator, Tuple
 
 from structlog import get_logger
 
-import file_joiner.path_filter as path_filter
-from file_joiner.dictionary_list import DictionaryList
-from file_joiner.config_parser import InputPath, parse_config
+import filter_joiner.path_filter as path_filter
+from filter_joiner.dictionary_list import DictionaryList
+from filter_joiner.config_parser import InputPath, parse_config
 
 log = get_logger()
 

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import common.log_config as log_config
 
-from file_joiner.file_joiner import FileJoiner
+from filter_joiner.filter_joiner import FileJoiner
 
 
 def main():

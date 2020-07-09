@@ -6,28 +6,26 @@ from pathlib import Path
 import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from file_joiner.file_joiner import FileJoiner
-import file_joiner.file_joiner_main as file_joiner_main
+from filter_joiner.filter_joiner import FileJoiner
+import filter_joiner.filter_joiner_main as file_joiner_main
 
 
-class FileJoinerTest(TestCase):
+class FileJoinerLocationGroupTest(TestCase):
+    """Class to simulate the real pipeline location/data join on source ID."""
 
     def setUp(self):
         """Create files to join in fake filesystem."""
         self.setUpPyfakefs()
         self.input_path = Path('/in')
         self.output_path = Path('/out')
-        self.path_1 = Path('dir1/dir2/file_1.txt')
-        self.path_2 = Path('dir1/dir2/file_2.txt')
-        self.path_3 = Path('dir1/dir2/file_3.txt')
-        self.input_path_1 = Path(self.input_path, 'INPUT_1', self.path_1)
-        self.input_path_2 = Path(self.input_path, 'INPUT_2', self.path_2)
-        self.input_path_3 = Path(self.input_path, 'INPUT_3', self.path_3)
+        self.path_1 = Path('prt/1234/prt_1234_locations.json')
+        self.path_2 = Path('prt/2020/01/02/1234/prt_1234_2020-01-02.parquet')
+        self.input_path_1 = Path(self.input_path, 'location', self.path_1)
+        self.input_path_2 = Path(self.input_path, 'data', self.path_2)
         self.fs.create_file(self.input_path_1)
         self.fs.create_file(self.input_path_2)
-        self.fs.create_file(self.input_path_3)
         # Use real config file
-        config_file_path = Path(os.path.dirname(__file__), 'config.yaml')
+        config_file_path = Path(os.path.dirname(__file__), 'config-location-group.yaml')
         self.fs.add_real_file(config_file_path, target_path='/config.yaml')
         self.relative_path_index = 3
 
@@ -55,7 +53,5 @@ class FileJoinerTest(TestCase):
     def check_output(self):
         path_1 = Path(self.output_path, self.path_1)
         path_2 = Path(self.output_path, self.path_2)
-        path_3 = Path(self.output_path, self.path_3)
         self.assertTrue(path_1.exists())
         self.assertTrue(path_2.exists())
-        self.assertTrue(path_3.exists())
