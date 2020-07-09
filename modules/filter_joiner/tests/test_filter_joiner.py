@@ -6,11 +6,11 @@ from pathlib import Path
 import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from filter_joiner.filter_joiner import FileJoiner
-import filter_joiner.filter_joiner_main as file_joiner_main
+from filter_joiner.filter_joiner import FilterJoiner
+import filter_joiner.filter_joiner_main as filter_joiner_main
 
 
-class FileJoinerTest(TestCase):
+class FilterJoinerTest(TestCase):
 
     def setUp(self):
         """Create files to join in fake filesystem."""
@@ -35,10 +35,10 @@ class FileJoinerTest(TestCase):
         with open('/config.yaml') as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
             config = yaml.dump(data, sort_keys=True)
-        file_joiner = FileJoiner(config=config,
+        filter_joiner = FilterJoiner(config=config,
                                  out_path=self.output_path,
                                  relative_path_index=self.relative_path_index)
-        file_joiner.join()
+        filter_joiner.join()
         self.check_output()
 
     def test_main(self):
@@ -49,7 +49,7 @@ class FileJoinerTest(TestCase):
         os.environ['OUT_PATH'] = str(self.output_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
-        file_joiner_main.main()
+        filter_joiner_main.main()
         self.check_output()
 
     def check_output(self):

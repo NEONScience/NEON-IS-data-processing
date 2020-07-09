@@ -11,7 +11,7 @@ from filter_joiner.config_parser import InputPath, parse_config
 log = get_logger()
 
 
-class FileJoiner:
+class FilterJoiner:
 
     def __init__(self, *, config: str, out_path: Path, relative_path_index: int) -> None:
         """

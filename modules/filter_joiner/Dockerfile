@@ -1,6 +1,6 @@
 FROM centos:7
 
-ARG APP_DIR="file_joiner"
+ARG APP_DIR="filter_joiner"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
