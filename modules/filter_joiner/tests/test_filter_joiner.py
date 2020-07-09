@@ -3,7 +3,6 @@ import os
 import yaml
 from pathlib import Path
 
-import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from filter_joiner.filter_joiner import FilterJoiner
@@ -36,8 +35,8 @@ class FilterJoinerTest(TestCase):
             data = yaml.load(f, Loader=yaml.FullLoader)
             config = yaml.dump(data, sort_keys=True)
         filter_joiner = FilterJoiner(config=config,
-                                 out_path=self.output_path,
-                                 relative_path_index=self.relative_path_index)
+                                     out_path=self.output_path,
+                                     relative_path_index=self.relative_path_index)
         filter_joiner.join()
         self.check_output()
 
