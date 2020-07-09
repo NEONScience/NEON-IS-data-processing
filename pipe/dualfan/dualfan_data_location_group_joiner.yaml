@@ -3,11 +3,11 @@ pipeline:
   name: dualfan_data_location_group_joiner
 transform:
   image_pull_secrets: ["battelleecology-quay-read-all-pull-secret"]
-  image: quay.io/battelleecology/file_joiner:17
+  image: quay.io/battelleecology/filter_joiner:1
   cmd: ["/bin/bash"]
   stdin:
     - "#!/bin/bash"
-    - "python3 -m file_joiner.file_joiner_main"
+    - "python3 -m filter_joiner.filter_joiner_main"
   env:
     CONFIG: |
       ---
