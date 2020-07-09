@@ -9,7 +9,7 @@ from data_access.types.asset import Asset
 
 def get_assets(connection: Connection) -> Iterator[Asset]:
     """
-    Get asset IDs and types.
+    Get assets.
 
     :param connection: A database connection.
     :return: The assets.

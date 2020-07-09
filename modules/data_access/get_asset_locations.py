@@ -39,10 +39,10 @@ def get_asset_locations(connection: Connection, asset: Asset) -> FeatureCollecti
         and
             type.type_id = nam_locn.type_id
     '''
+    features: List[Feature] = []
     with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
         rows = cursor.execute(None, asset_id=asset.id)
-        features: List[Feature] = []
         for row in rows:
             key = row[0]
             install_date = row[1]
@@ -57,7 +57,7 @@ def get_asset_locations(connection: Connection, asset: Asset) -> FeatureCollecti
                                            locations=locations)
             features.append(geojson_converter.convert_asset_location(asset_location))
     feature_collection = FeatureCollection(features)
-    # add the asset as the source to the location collection
+    # add the asset as the source
     feature_collection.update(source_id=asset.id)
     feature_collection.update(source_type=asset.type)
     return feature_collection

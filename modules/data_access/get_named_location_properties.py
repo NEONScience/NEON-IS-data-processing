@@ -29,9 +29,9 @@ def get_named_location_properties(connection: Connection, named_location_id: int
         where
             property.nam_locn_id = :named_location_id
     '''
+    properties: List[Property] = []
     with closing(connection.cursor()) as cursor:
         rows = cursor.execute(sql, named_location_id=named_location_id)
-        properties: List[Property] = []
         for row in rows:
             name = row[0]
             string_value = row[1]
@@ -44,4 +44,4 @@ def get_named_location_properties(connection: Connection, named_location_id: int
             if date_value is not None:
                 date_value = date_formatter.convert(date_value)
                 properties.append(Property(name=name, value=date_value))
-        return properties
+    return properties

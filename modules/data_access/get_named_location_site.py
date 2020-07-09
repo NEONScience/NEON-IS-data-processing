@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
-from typing import List, Optional, NamedTuple
+from typing import List, Optional
 from contextlib import closing
 
 from cx_Oracle import Connection, Cursor
-
-
-class NamedLocationParent(NamedTuple):
-    id: int
-    name: str
-    type: str
 
 
 def get_named_location_site(connection: Connection, named_location_id: int) -> Optional[str]:
@@ -31,17 +25,17 @@ def get_named_location_site(connection: Connection, named_location_id: int) -> O
         where
             chld_nam_locn_id = :named_location_id
     '''
-    parents: List[NamedLocationParent] = []
+    parents: List[str] = []
     with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
         find_site(cursor, named_location_id, parents)
     if not parents:
         return None
     else:
-        return parents[0].name
+        return parents[0]
 
 
-def find_site(cursor: Cursor, named_location_id: int, parents: List[NamedLocationParent]):
+def find_site(cursor: Cursor, named_location_id: int, parents: List[str]):
     """
     Recursively search for the site.
 
@@ -56,5 +50,5 @@ def find_site(cursor: Cursor, named_location_id: int, parents: List[NamedLocatio
         name = row[1]
         type_name = row[2]
         if type_name.lower() == 'site':
-            parents.append(NamedLocationParent(id=parent_id, name=name, type=type_name))
+            parents.append(name)
         find_site(cursor, parent_id, parents)

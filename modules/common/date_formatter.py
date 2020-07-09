@@ -8,19 +8,19 @@ def get_format() -> str:
 
 def convert(dt: datetime) -> str:
     """
-    Convert a datetime object to an ISO standard string.
+    Convert a datetime object to formatted string.
 
     :param dt: The datetime object to convert.
-    :return: An ISO date string of the date.
+    :return: A formatted string of the date.
     """
     return dt.strftime(get_format())
 
 
 def parse(dt: str) -> datetime:
     """
-    Convert an ISO standard string to a datetime object.
+    Convert a formatted date string to a datetime object.
 
-    :param dt: A date and time string in ISO format.
+    :param dt: A formatted date and time string.
     :return: A datetime object representing the date.
     """
     return datetime.strptime(dt, get_format())

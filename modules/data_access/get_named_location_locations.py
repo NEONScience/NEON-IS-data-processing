@@ -38,9 +38,9 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
         where
             locn_nam_locn.nam_locn_id = :named_location_id
     '''
+    features: List[Feature] = []
     with closing(connection.cursor()) as cursor:
         rows = cursor.execute(sql, named_location_id=named_location_id)
-        features: List[Feature] = []
         for row in rows:
             geometry = row[0]
             start_date = row[1]
@@ -77,10 +77,10 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
             point = get_point(geometry)
             feature = Feature(geometry=point, properties=properties)
             features.append(feature)
-        return FeatureCollection(features)
+    return FeatureCollection(features)
 
 
-def get_coordinates(geometry) -> Optional[List]:
+def get_ordinates(geometry) -> Optional[List]:
     if geometry is not None:
         ordinates = geometry.SDO_ORDINATES
         if ordinates is not None:
@@ -91,7 +91,7 @@ def get_coordinates(geometry) -> Optional[List]:
 
 
 def get_point(geometry) -> Optional[Point]:
-    ordinates = get_coordinates(geometry)
+    ordinates = get_ordinates(geometry)
     if ordinates is not None:
         x = float(ordinates[0])
         y = float(ordinates[1])

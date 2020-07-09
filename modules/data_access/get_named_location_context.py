@@ -21,15 +21,15 @@ def get_named_location_context(connection: Connection, named_location_id: int) -
         where 
             nam_locn_id = :named_location_id
     '''
+    contexts: List[str] = []
     with closing(connection.cursor()) as cursor:
         rows = cursor.execute(sql, named_location_id=named_location_id)
-        contexts: List[str] = []
         for row in rows:
             context_code = row[0]
             group = row[1]
             if group is None:
                 contexts.append(context_code)
             else:
-                group = f'{context_code}-{str(group)}'
-                contexts.append(group)
-        return contexts
+                group_name = f'{context_code}-{str(group)}'
+                contexts.append(group_name)
+    return contexts

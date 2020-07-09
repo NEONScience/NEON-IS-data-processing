@@ -20,8 +20,8 @@ def convert_asset_location(location: AssetLocation) -> Feature:
                           'install_date': install_date,
                           'remove_date': remove_date,
                           'context': location.context}
-    for prop in location.properties:
-        feature_properties[prop.name] = prop.value
+    for p in location.properties:
+        feature_properties[p.name] = p.value
     feature_properties['locations'] = location.locations
     return Feature(properties=feature_properties)
 
@@ -35,8 +35,8 @@ def convert_named_location(location: NamedLocation) -> FeatureCollection:
                   'context': location.context,
                   'active_periods': active_periods}
     feature = Feature(properties=properties)
-    for prop in location.properties:
-        feature[prop.name] = prop.value
+    for p in location.properties:
+        feature[p.name] = p.value
     return FeatureCollection([feature])
 
 
