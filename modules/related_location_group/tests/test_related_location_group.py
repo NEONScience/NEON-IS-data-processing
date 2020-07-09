@@ -70,7 +70,3 @@ class RelatedLocationGroupTest(TestCase):
         location_path = Path(root_path, self.source_type, self.location, self.location_dir, self.location_file)
         self.assertTrue(data_path.exists())
         self.assertTrue(location_path.exists())
-
-
-if __name__ == '__main__':
-    unittest.main()

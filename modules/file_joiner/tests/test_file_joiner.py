@@ -59,7 +59,3 @@ class FileJoinerTest(TestCase):
         self.assertTrue(path_1.exists())
         self.assertTrue(path_2.exists())
         self.assertTrue(path_3.exists())
-
-
-if __name__ == '__main__':
-    unittest.main()

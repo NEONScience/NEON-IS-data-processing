@@ -7,12 +7,12 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import quality_regularized_flag_group.quality_regularized_flag_group_main as quality_regularized_flag_group_main
 
 
-class QaqcRegularizedFlagGroupTest(TestCase):
+class QualityRegularizedFlagGroupTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-        self.in_path = Path('/inputs')
-        self.out_path = Path('/outputs')
+        self.in_path = Path('/in')
+        self.out_path = Path('/out')
         self.regularized_path = Path(self.in_path, 'regularized')
         self.quality_path = Path(self.in_path, 'quality')
         #  regularized file

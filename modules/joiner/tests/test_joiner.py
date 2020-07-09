@@ -13,17 +13,13 @@ class JoinerTest(TestCase):
 
     def setUp(self):
         """Create data and location files for prt, dual_fan, and heater in fake filesystem."""
-
         self.setUpPyfakefs()
-
         self.input_path = Path('/repo/inputs')
         self.output_path = Path('/outputs')
-
         self.prt_location_1 = 'CFGLOC123'
         self.prt_location_2 = 'CFGLOC321'
         self.dual_fan_location = 'CFGLOC789'
         self.heater_location = 'CFGLOC456'
-
         self.metadata_path = Path('2019/05/24/aspirated-single-121')
 
         self.data_dir = 'data'
@@ -34,33 +30,27 @@ class JoinerTest(TestCase):
         self.prt_path = Path('prt', self.metadata_path)
         self.dual_fan_path = Path('dual_fan', self.metadata_path)
         self.heater_path = Path('heater', self.metadata_path)
-
         #  prt 1
         self.prt_data_file_1 = Path(self.prt_path, self.prt_location_1, self.data_dir, self.data_file)
         self.prt_location_file_1 = Path(self.prt_path, self.prt_location_1, self.location_dir, self.location_file)
         self.fs.create_file(Path(self.input_path, self.prt_data_file_1))
         self.fs.create_file(Path(self.input_path, self.prt_location_file_1))
-
         # prt 2
         self.prt_data_file_2 = Path(self.prt_path, self.prt_location_2, self.data_dir, self.data_file)
         self.prt_location_file_2 = Path(self.prt_path, self.prt_location_2, self.location_dir, self.location_file)
         self.fs.create_file(Path(self.input_path, self.prt_data_file_2))
         self.fs.create_file(Path(self.input_path, self.prt_location_file_2))
-
         #  dualfan
         self.dualfan_data_file = Path(self.dual_fan_path, self.dual_fan_location, self.data_dir, self.data_file)
         self.dualfan_location_file = Path(self.dual_fan_path, self.dual_fan_location, self.location_dir,
                                           self.location_file)
         self.fs.create_file(Path(self.input_path, self.dualfan_data_file))
         self.fs.create_file(Path(self.input_path, self.dualfan_location_file))
-
         #  heater
         self.heater_data_file = Path(self.heater_path, self.heater_location, self.data_dir, self.data_file)
         self.heater_location_file = Path(self.heater_path, self.heater_location, self.location_dir, self.location_file)
-
         self.fs.create_file(Path(self.input_path, self.heater_data_file))
         self.fs.create_file(Path(self.input_path, self.heater_location_file))
-
         # Set keys and paths in the environment.
         self.related_paths = 'PRT_PATH' + ',' + 'PRT_2_PATH' + ',' + 'DUAL_FAN_PATH' + ',' + 'HEATER_PATH'
         os.environ['PRT_PATH'] = str(Path(self.input_path, self.prt_path))
@@ -111,7 +101,3 @@ class JoinerTest(TestCase):
         self.assertTrue(dual_fan_location_path.exists())
         self.assertTrue(heater_path.exists())
         self.assertTrue(heater_location_path.exists())
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -11,26 +11,19 @@ class EgressTest(TestCase):
 
     def setUp(self):
         """Set required files in mock filesystem."""
-
+        self.setUpPyfakefs()
         log_config.configure('DEBUG')
-
-        self.out_dir = Path('/tmp/outputs')
+        self.out_dir = Path('/tmp/out')
         self.location = 'CFGLOC112154'
-        input_root = Path('/tmp/inputs')
-
+        input_root = Path('/tmp/in')
         source_month = Path('prt/2019/01')
         self.input_data_dir = Path(input_root, source_month, '03')
         self.source_dir = Path(source_month, '03', self.location)
-
         self.out_name = 'outname'
         self.target_date = '2019-01-03'
         self.date_index = 2
         self.loc_index = 1
-
-        self.setUpPyfakefs()
-
         self.data_dir = 'data'
-
         # Data file
         self.source_file_name = 'prt_CFGLOC112154_2019-01-03_basicStats_030.ext'
         self.target_file_name = 'outname_2019-01-03_CFGLOC112154_basicStats_030.ext'

@@ -55,7 +55,3 @@ class FileJoinerLocationGroupTest(TestCase):
         path_2 = Path(self.output_path, self.path_2)
         self.assertTrue(path_1.exists())
         self.assertTrue(path_2.exists())
-
-
-if __name__ == '__main__':
-    unittest.main()

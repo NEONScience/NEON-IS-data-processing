@@ -16,7 +16,7 @@ class EventLocationGroupTest(TestCase):
         self.source_id = '00001'
         # input/output paths
         self.out_path = Path('/out')
-        self.data_path = Path('/repo/events/heater/2019/01/01', self.source_id)
+        self.data_path = Path('/data/events/heater/2019/01/01', self.source_id)
         self.location_path = Path('/location')
         # create data file
         self.data_file = f'heater_{self.source_id}_events_2019-01-01.json'

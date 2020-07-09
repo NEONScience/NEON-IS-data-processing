@@ -26,16 +26,18 @@ transform:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "3"
 input:
-  cross:
+  join:
     - pfs:
         name: DATA_PATH
         repo: data_source_dualfan_linkmerge
-        glob: /dualfan/*
+        glob: /dualfan/*/*/*/(*)
+        joinOn: $1
         empty_files: true
     - pfs:
         name: LOCATION_PATH
         repo: location_asset
-        glob: /dualfan/*
+        glob: /dualfan/(*)
+        joinOn: $1
         empty_files: true
 enable_stats: false
 standby: false
