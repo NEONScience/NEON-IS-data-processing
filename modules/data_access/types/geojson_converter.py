@@ -2,7 +2,7 @@ from typing import List
 
 from geojson import Feature, FeatureCollection
 
-from common.date_formatter import to_string
+import common.date_formatter as date_formatter
 from data_access.types.named_location import NamedLocation
 from data_access.types.asset_location import AssetLocation
 from data_access.types.active_period import ActivePeriod
@@ -12,14 +12,14 @@ def convert_asset_location(location: AssetLocation) -> Feature:
     install_date = location.install_date
     remove_date = location.remove_date
     if install_date is not None:
-        install_date = to_string(install_date)
+        install_date = date_formatter.to_string(install_date)
     if location.remove_date is not None:
-        remove_date = to_string(location.remove_date)
-    feature_properties = {'name': location.name,
-                          'site': location.site,
-                          'install_date': install_date,
-                          'remove_date': remove_date,
-                          'context': location.context}
+        remove_date = date_formatter.to_string(location.remove_date)
+    feature_properties = dict(name=location.name,
+                              site=location.site,
+                              install_date=install_date,
+                              remove_date=remove_date,
+                              context=location.context)
     for p in location.properties:
         feature_properties[p.name] = p.value
     feature_properties['locations'] = location.locations
@@ -28,12 +28,12 @@ def convert_asset_location(location: AssetLocation) -> Feature:
 
 def convert_named_location(location: NamedLocation) -> FeatureCollection:
     active_periods = convert_active_periods(location.active_periods)
-    properties = {'name': location.name,
-                  'type': location.type,
-                  'description': location.description,
-                  'site': location.site,
-                  'context': location.context,
-                  'active_periods': active_periods}
+    properties = dict(name=location.name,
+                      type=location.type,
+                      description=location.description,
+                      site=location.site,
+                      context=location.context,
+                      active_periods=active_periods)
     feature = Feature(properties=properties)
     for p in location.properties:
         feature[p.name] = p.value
@@ -45,10 +45,10 @@ def convert_active_periods(active_periods: List[ActivePeriod]) -> List[dict]:
     for period in active_periods:
         start_date = period.start_date
         end_date = period.end_date
-        formatted_start_date = to_string(start_date)
+        formatted_start_date = date_formatter.to_string(start_date)
         if end_date is not None:
-            formatted_end_date = to_string(end_date)
-            periods.append({'start_date': formatted_start_date, 'end_date': formatted_end_date})
+            formatted_end_date = date_formatter.to_string(end_date)
+            periods.append(dict(start_date=formatted_start_date, end_date=formatted_end_date))
         else:
-            periods.append({'start_date': formatted_start_date})
+            periods.append(dict(start_date=formatted_start_date))
     return periods

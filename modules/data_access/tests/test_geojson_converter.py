@@ -31,15 +31,15 @@ class GeoJsonConverterTest(unittest.TestCase):
         x_offset = '1.0'
         y_offset = '2.0'
         z_offset = '3.0'
-        location_properties = {'start_date': location_start_date,
-                               'end_date': location_end_date,
-                               'alpha': alpha,
-                               'beta': beta,
-                               'gamma': gamma,
-                               'x_offset': x_offset,
-                               'y_offset': y_offset,
-                               'z_offset': z_offset,
-                               'reference_location': None}
+        location_properties = dict(start_date=location_start_date,
+                                   end_date=location_end_date,
+                                   alpha=alpha,
+                                   beta=beta,
+                                   gamma=gamma,
+                                   x_offset=x_offset,
+                                   y_offset=y_offset,
+                                   z_offset=z_offset,
+                                   reference_location=None)
         location = Feature(properties=location_properties)
         locations = FeatureCollection([location])
         asset_location = AssetLocation(name=name, site=site, install_date=install_datetime, remove_date=remove_datetime,

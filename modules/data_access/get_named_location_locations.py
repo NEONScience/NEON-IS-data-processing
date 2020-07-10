@@ -62,18 +62,18 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
             reference_locations: Optional[FeatureCollection] = None
             if (named_location_offset_id is not None) and (named_location_offset_id != named_location_id):
                 reference_locations = get_named_location_locations(connection, named_location_offset_id)
-            reference_location_properties = {'name': named_location_offset_name, 'locations': reference_locations}
+            reference_location_properties = dict(name=named_location_offset_name, locations=reference_locations)
             # build the location
             reference_feature = Feature(geometry=None, properties=reference_location_properties)
-            properties = {'start_date': start_date,
-                          'end_date': end_date,
-                          'alpha': alpha,
-                          'beta': beta,
-                          'gamma': gamma,
-                          'x_offset': x_offset,
-                          'y_offset': y_offset,
-                          'z_offset': z_offset,
-                          'reference_location': reference_feature}
+            properties = dict(start_date=start_date,
+                              end_date=end_date,
+                              alpha=alpha,
+                              beta=beta,
+                              gamma=gamma,
+                              x_offset=x_offset,
+                              y_offset=y_offset,
+                              z_offset=z_offset,
+                              reference_location=reference_feature)
             point = get_point(geometry)
             feature = Feature(geometry=point, properties=properties)
             features.append(feature)
