@@ -9,7 +9,7 @@ import json
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from common.date_formatter import parse
+from common.date_formatter import to_datetime
 from data_access.types.named_location import NamedLocation
 from data_access.types.property import Property
 from data_access.types.active_period import ActivePeriod
@@ -50,8 +50,8 @@ class LocationLoaderTest(TestCase):
             :return: The named location data.
             """
             prop = Property(name='property1', value='value1')
-            active_period = ActivePeriod(start_date=parse('2020-01-01T00:00:00Z'),
-                                         end_date=parse('2020-03-01T00:00:00Z'))
+            active_period = ActivePeriod(start_date=to_datetime('2020-01-01T00:00:00Z'),
+                                         end_date=to_datetime('2020-03-01T00:00:00Z'))
             named_location = NamedLocation(name=location,
                                            type=expected_type,
                                            description=description,

@@ -6,17 +6,17 @@ def get_format() -> str:
     return '%Y-%m-%dT%H:%M:%SZ'
 
 
-def convert(dt: datetime) -> str:
+def to_string(dt: datetime) -> str:
     """
     Convert a datetime object to formatted string.
 
-    :param dt: The datetime object to convert.
-    :return: A formatted string of the date.
+    :param dt: The datetime object.
+    :return: A formatted date.
     """
     return dt.strftime(get_format())
 
 
-def parse(dt: str) -> datetime:
+def to_datetime(dt: str) -> datetime:
     """
     Convert a formatted date string to a datetime object.
 

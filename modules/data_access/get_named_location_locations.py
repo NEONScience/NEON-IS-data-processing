@@ -55,9 +55,9 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
             named_location_offset_name = row[10]
             # convert dates
             if start_date is not None:
-                start_date = date_formatter.convert(start_date)
+                start_date = date_formatter.to_string(start_date)
             if end_date is not None:
-                end_date = date_formatter.convert(end_date)
+                end_date = date_formatter.to_string(end_date)
             # build the reference location
             reference_locations: Optional[FeatureCollection] = None
             if (named_location_offset_id is not None) and (named_location_offset_id != named_location_id):

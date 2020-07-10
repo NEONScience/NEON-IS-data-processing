@@ -19,8 +19,8 @@ class GeoJsonConverterTest(unittest.TestCase):
         install_date = '2020-01-01T00:00:00Z'
         remove_date = '2020-01-02T00:00:00Z'
         context = 'context'
-        install_datetime = date_formatter.parse(install_date)
-        remove_datetime = date_formatter.parse(remove_date)
+        install_datetime = date_formatter.to_datetime(install_date)
+        remove_datetime = date_formatter.to_datetime(remove_date)
         context_list = [context]
         properties = [Property(name='prop1', value='value1')]
         location_start_date = '2020-01-01T00:00:00Z'
@@ -75,8 +75,8 @@ class GeoJsonConverterTest(unittest.TestCase):
         start_date = '2020-01-01T00:00:00Z'
         end_date = '2020-01-02T00:00:00Z'
         context = 'context'
-        active_period = ActivePeriod(start_date=date_formatter.parse(start_date),
-                                     end_date=date_formatter.parse(end_date))
+        active_period = ActivePeriod(start_date=date_formatter.to_datetime(start_date),
+                                     end_date=date_formatter.to_datetime(end_date))
         prop = Property(name='prop1', value='value1')
         named_location = NamedLocation(name=name, type=location_type, description=description, site=site,
                                        schema_name='prt', context=[context], active_periods=[active_period],

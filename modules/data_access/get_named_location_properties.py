@@ -42,6 +42,6 @@ def get_named_location_properties(connection: Connection, named_location_id: int
             if number_value is not None:
                 properties.append(Property(name=name, value=number_value))
             if date_value is not None:
-                date_value = date_formatter.convert(date_value)
+                date_value = date_formatter.to_string(date_value)
                 properties.append(Property(name=name, value=date_value))
     return properties

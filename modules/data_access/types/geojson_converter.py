@@ -2,7 +2,7 @@ from typing import List
 
 from geojson import Feature, FeatureCollection
 
-from common.date_formatter import convert
+from common.date_formatter import to_string
 from data_access.types.named_location import NamedLocation
 from data_access.types.asset_location import AssetLocation
 from data_access.types.active_period import ActivePeriod
@@ -12,9 +12,9 @@ def convert_asset_location(location: AssetLocation) -> Feature:
     install_date = location.install_date
     remove_date = location.remove_date
     if install_date is not None:
-        install_date = convert(install_date)
+        install_date = to_string(install_date)
     if location.remove_date is not None:
-        remove_date = convert(location.remove_date)
+        remove_date = to_string(location.remove_date)
     feature_properties = {'name': location.name,
                           'site': location.site,
                           'install_date': install_date,
@@ -45,9 +45,9 @@ def convert_active_periods(active_periods: List[ActivePeriod]) -> List[dict]:
     for period in active_periods:
         start_date = period.start_date
         end_date = period.end_date
-        formatted_start_date = convert(start_date)
+        formatted_start_date = to_string(start_date)
         if end_date is not None:
-            formatted_end_date = convert(end_date)
+            formatted_end_date = to_string(end_date)
             periods.append({'start_date': formatted_start_date, 'end_date': formatted_end_date})
         else:
             periods.append({'start_date': formatted_start_date})

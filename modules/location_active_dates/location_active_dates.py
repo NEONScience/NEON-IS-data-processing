@@ -30,11 +30,11 @@ def link_location_files(*, location_path: Path, out_path: Path, schema_index: in
                 period_end_date: str = period.get('end_date')
                 log.debug(f'start_date: {period_start_date} end_date: {period_end_date}')
                 if period_start_date is not None:
-                    start_date = date_formatter.parse(period_start_date)
+                    start_date = date_formatter.to_datetime(period_start_date)
                 else:
                     start_date = None
                 if period_end_date is not None:
-                    end_date = date_formatter.parse(period_end_date)
+                    end_date = date_formatter.to_datetime(period_end_date)
                 else:
                     # do not proceed past current date
                     end_date = datetime.now()

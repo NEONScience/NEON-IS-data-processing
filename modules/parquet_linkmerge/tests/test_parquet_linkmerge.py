@@ -29,7 +29,7 @@ class ParquetLinkMergeTest(TestCase):
         ]
         for data_file in self.data_files:
             data_path = Path(self.in_path, self.metadata_path, data_file)
-            # use real data files to convert
+            # use real data files
             actual_data_file_path = Path(os.path.dirname(__file__), data_file)
             self.fs.add_real_file(actual_data_file_path, target_path=data_path)
         self.relative_path_index = 3

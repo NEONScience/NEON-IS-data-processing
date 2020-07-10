@@ -60,9 +60,9 @@ def get_thresholds(connection: Connection) -> Iterator[Threshold]:
             if term_name == 'soilPRTResistance':
                 term_name = 'temp'
             if start_date is not None:
-                start_date = date_formatter.convert(start_date)
+                start_date = date_formatter.to_string(start_date)
             if end_date is not None:
-                end_date = date_formatter.convert(end_date)
+                end_date = date_formatter.to_string(end_date)
             context: List[str] = get_threshold_context(connection, condition_uuid)
             threshold = Threshold(threshold_name=threshold_name,
                                   term_name=term_name,
