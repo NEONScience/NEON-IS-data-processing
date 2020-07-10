@@ -19,12 +19,13 @@ ARG auth_token
 ENV GITHUB_PAT=$auth_token
 
 # Clone the NEON-FIU-algorithm repo using our token
-RUN git clone -b def.plau.optm https://$GITHUB_PAT:x-oauth-basic@github.com/covesturtevant/NEON-FIU-algorithm-covesturtevant.git
+RUN git clone -b more.optm.def.plau https://$GITHUB_PAT:x-oauth-basic@github.com/covesturtevant/NEON-FIU-algorithm-covesturtevant.git
 
 # Now make the final build, which will leave behind our access token
 FROM quay.io/battelleecology/neon-is-base-r:v0.0.53
 
 # copy the eddy4R.base package from the previous image
+COPY --from=intermediate /NEON-FIU-algorithm-covesturtevant/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
 COPY --from=intermediate /NEON-FIU-algorithm-covesturtevant/ext/eddy4R/pack/eddy4R.qaqc/ /pack/eddy4R.qaqc/
 
 
@@ -36,15 +37,18 @@ COPY ./ /pack/NEONprocIS.qaqc/
 
 
 
-# Install the eddy4R.base, eddy4R.qaqc, and NEONprocIS.qaqc packages, including dependencies (NOT RUN, but the top two commands are how one would install eddy4R on local prior to creating
-# the lock file so that renv::restore puts them in the image)
+# Install the eddy4R.base, eddy4R.qaqc, and NEONprocIS.qaqc packages, including dependencies (NOT RUN, but the top two commands are how one would install the open source/production version of eddy4R on local prior to creating the lock file so that renv::restore puts them in the image)
 #RUN R -e 'remotes::install_github("NEONScience/eddy4R@1.0.1",subdir="pack/eddy4R.base",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && \
 #    R -e 'remotes::install_github("NEONScience/eddy4R@1.0.1",subdir="pack/eddy4R.qaqc",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && \
 #    R -e 'devtools::install("/pack/NEONprocIS.qaqc",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && rm -rf /pack
 
+# Install development versions of eddy4R.base and eddy4R.qaqc
+RUN R -e 'devtools::install("/pack/eddy4R.base",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && \
+    R -e 'devtools::install("/pack/eddy4R.qaqc",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))'
 
 # Restore from specific versions of dependencies, install NEONprocIS.qaqc from local, and clean up afterwards. 
 RUN R -e 'renv::restore(lockfile="pack/NEONprocIS.qaqc/renv.lock")' && \
-    R -e 'renv::install("/pack/NEONprocIS.qaqc")' && \
-    R -e 'renv::install("/pack/eddy4R.base")' && rm -rf /pack && \
+    R -e 'renv::install("/pack/NEONprocIS.qaqc")' && rm -rf /pack && \
     rm -rf /pack
+    
+  

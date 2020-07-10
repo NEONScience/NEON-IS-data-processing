@@ -4,8 +4,12 @@
 \alias{def.read.thsh.qaqc.list}
 \title{Read QAQC thresholds for NEON instrumented systems data products from JSON file to list}
 \usage{
-def.read.thsh.qaqc.list(NameFile = NULL, strJson = NULL,
-  listThsh = NULL, log = NULL)
+def.read.thsh.qaqc.list(
+  NameFile = NULL,
+  strJson = NULL,
+  listThsh = NULL,
+  log = NULL
+)
 }
 \arguments{
 \item{NameFile}{Character value. Filename (including relative or absolute path) of the 

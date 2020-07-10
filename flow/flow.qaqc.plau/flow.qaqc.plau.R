@@ -117,7 +117,6 @@ log <- NEONprocIS.base::def.log.init()
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly=TRUE)
 
-
 # Parse the input arguments into parameters
 Para <-
   NEONprocIS.base::def.arg.pars(
@@ -400,13 +399,16 @@ for(idxDirIn in DirIn){
       argsPlau$Vrbs=TRUE # Outputs quality flag values instead of vector positions
       
       # Run the tests
+      log$debug('Running plausibility tests (may include null, gap, range, step, persistence)')
       qf[[idxTerm]] <- base::do.call(eddy4R.qaqc::def.plau, argsPlau)[[idxTerm]]
+      
     }
     
     # Run the despike test - get quality flags
     if('spike' %in% ParaTest[[idxTerm]]$test){
       
       # Run the spike test
+      log$debug('Running spike test')
       qfSpk <- NEONprocIS.qaqc::def.spk.mad(data=data[[idxTerm]],Meth=SpkMeth,ThshMad=SpkMad,Wndw=SpkWndw,WndwStep=SpkWndwStep,WndwFracSpkMin=0.1,NumGrp=SpkNumPtsGrp,NaFracMax=SpkNaFracMax,log=log)
       names(qfSpk) <- 'qfSpk'
 

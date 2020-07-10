@@ -4,8 +4,7 @@
 \alias{def.read.thsh.qaqc.df}
 \title{Read QAQC thresholds for NEON instrumented systems data products from JSON file to data frame}
 \usage{
-def.read.thsh.qaqc.df(NameFile = NULL, strJson = NULL,
-  listThsh = NULL)
+def.read.thsh.qaqc.df(NameFile = NULL, strJson = NULL, listThsh = NULL)
 }
 \arguments{
 \item{NameFile}{Filename (including relative or absolute path). Must be json format.}

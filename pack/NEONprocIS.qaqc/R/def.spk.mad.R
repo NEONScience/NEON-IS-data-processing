@@ -53,7 +53,7 @@
 #' @export
 
 # changelog and author contributions / copyrights
-#   Cove Sturtevant (2020-06-16)
+#   Cove Sturtevant (2020-07-09)
 #     original creation
 ##############################################################################################
 def.spk.mad <-
@@ -135,16 +135,16 @@ def.spk.mad <-
     # It appears that later iterations of the native R stats package may handle NAs, but the 3.6.0 version does not.
     # Leaving the NAs in there causes some extra qf=-1 when the NA value is the first value in the window. 
     # Let's replicate the "+Big_alternate" method of stats v3.6.2, which replaces NA values with alternating very large
-    # numbers so that the median and mad are unaffected.
+    # numbers so that the median is unaffected.
     numBig <- .Machine$double.xmax/3
     setNa <- which(is.na(data))
     numBigAlt <- array(c(numBig,-numBig),length(setNa))
     dataPrepNa <- data
-    dataPrepNa[setNa] <- numBigAlt 
+    dataPrepNa[setNa] <- numBigAlt
     
     # Compute the running median of the data (WAY faster than running it in the for loop)
     med <- stats::runmed(x=dataPrepNa,k=Wndw,endrule='constant')
-    mad <- caTools::runmad(x=dataPrepNa,k=Wndw,constant=CorStd,endrule="NA",align='center')
+    mad <- caTools::runmad(x=data,k=Wndw,constant=CorStd,endrule="NA",align='center',center=med)
     numDataWndw[((Wndw-1)/2+1):(numData-(Wndw-1)/2)] <- RcppRoll::roll_sum(x=!is.na(data),n=Wndw,by=1,align='center',na.rm=TRUE)
     
     # Compute correction factor to reduce bias with low window size
@@ -203,14 +203,17 @@ def.spk.mad <-
     }
     
     # Set a fail to a pass if there are more than NumGrp consective fails (suggesting a real data pattern as opposed to spikes)
-    qfGrp <- utils::head(qf,-(NumGrp-1))
-    for(idx in 2:NumGrp){
-     qfGrp <- qfGrp + qf[idx:(numData-NumGrp+idx)]
-    }
-    
-    setFix <- which(qfGrp == NumGrp)
-    for(idxFix in setFix){
-      qf[idxFix:(idxFix+NumGrp-1)] <- 0
+    if(!is.null(NumGrp)){
+      qfGrp <- utils::head(qf,-(NumGrp-1))
+      for(idx in 2:NumGrp){
+       qfGrp <- qfGrp + qf[idx:(numData-NumGrp+idx)]
+      }
+      
+      setFix <- which(qfGrp == NumGrp)
+      for(idxFix in setFix){
+        qf[idxFix:(idxFix+NumGrp-1)] <- 0
+      }
+      
     }
   
     return(as.integer(qf))
