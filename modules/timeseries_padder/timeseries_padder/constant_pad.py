@@ -25,7 +25,7 @@ class ConstantPad:
         self.month_index = config.month_index
         self.day_index = config.day_index
         self.location_index = config.location_index
-        self.process_types = [config.data_dir]
+        self.data_types = [config.data_dir]
         self.out_path_parts = list(config.out_path.parts)
         self.data_path_parser = DataPathParser(config)
 
@@ -49,7 +49,7 @@ class ConstantPad:
         """
         parts = path.parts
         year, month, day, location, data_type = self.data_path_parser.parse(path)
-        if data_type in self.process_types:
+        if data_type in self.data_types:
             location_path = Path(*parts[:self.location_index + 1])
             if location not in manifests:
                 manifests[f'{location}_{day}'] = []

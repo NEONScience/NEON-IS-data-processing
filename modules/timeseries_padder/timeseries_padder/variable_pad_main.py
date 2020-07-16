@@ -38,8 +38,8 @@ def main():
                     data_type_index=data_type_index,
                     relative_path_index=0,
                     window_size=0)
-    variable_window_pad = VariablePad(config)
-    variable_window_pad.pad()
+    variable_pad = VariablePad(config)
+    variable_pad.pad()
 
 
 if __name__ == '__main__':
