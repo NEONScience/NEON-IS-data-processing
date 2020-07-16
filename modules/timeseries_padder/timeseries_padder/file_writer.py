@@ -17,9 +17,10 @@ def write_manifests(manifests: Dict[str, List[datetime]], manifest_file_names: D
     :param manifests: The manifests.
     :param manifest_file_names: The manifest file names.
     """
-    for location in manifests.keys():
-        with open(str(manifest_file_names[location]), 'w') as manifest_file:
-            for date in manifests[location]:
+    for key in manifests.keys():
+        with open(str(manifest_file_names[key]), 'w') as manifest_file:
+            for date in manifests[key]:
+                print(f'writing date {date} into {manifest_file_names[key]}')
                 manifest_file.write("%s\n" % date)
 
 

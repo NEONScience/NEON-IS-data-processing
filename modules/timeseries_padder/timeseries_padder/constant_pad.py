@@ -52,7 +52,7 @@ class ConstantPad:
         if data_type in self.process_types:
             location_path = Path(*parts[:self.location_index + 1])
             if location not in manifests:
-                manifests[location] = []
+                manifests[f'{location}_{day}'] = []
             data_date = datetime.date(int(year), int(month), int(day))
             padded_range_dates = pad_calculator.get_padded_dates(data_date, self.window_size)
             # link file into each date in the padded range
@@ -68,9 +68,9 @@ class ConstantPad:
                 link_path.parent.mkdir(parents=True, exist_ok=True)
                 if not link_path.exists():
                     link_path.symlink_to(path)
-                manifests[location].append(date)
+                manifests[f'{location}_{day}'].append(date)
                 if date == data_date:
-                    manifest_file_names[location] = Path(link_path.parent, Config.manifest_filename)
+                    manifest_file_names[f'{location}_{day}'] = Path(link_path.parent, Config.manifest_filename)
                 file_writer.link_thresholds(location_path, link_path)
         else:
             link_path = Path(self.out_path, *parts[self.relative_path_index:])

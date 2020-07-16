@@ -41,7 +41,7 @@ class VariablePad:
                         date_location_key = year+month+day+location
                         config_location_path = Path(*parts[:self.data_file_path.location_index + 1])
                         if location not in manifests:
-                            manifests[location] = []
+                            manifests[f'{location}_{day}'] = []
                         # get min of all data rates (to ensure adequate window coverage)
                         if date_location_key not in date_and_location_min_data_rate:
                             location_path = Path(config_location_path, Config.location_dir)
@@ -78,10 +78,10 @@ class VariablePad:
                             link_path.parent.mkdir(parents=True, exist_ok=True)
                             if not link_path.exists():
                                 link_path.symlink_to(path)
-                            manifests[location].append(date)
+                            manifests[f'{location}_{day}'].append(date)
                             if date == data_date:
                                 manifest_path = link_path.parent
-                                manifest_file_names[location] = Path(manifest_path, Config.manifest_filename)
+                                manifest_file_names[f'{location}_{day}'] = Path(manifest_path, Config.manifest_filename)
                             file_writer.link_thresholds(config_location_path, link_path)
             file_writer.write_manifests(manifests, manifest_file_names)
         except Exception:

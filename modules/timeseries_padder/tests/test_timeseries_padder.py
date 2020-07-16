@@ -19,7 +19,7 @@ class TimeSeriesPadTest(TestCase):
         self.out_path = Path('/tmp/out')
         month_path = Path('prt/2018/01')
         day = '03'
-        self.input_path = Path(input_root, month_path, day)
+        self.input_path = Path(input_root, month_path)
         self.fs.create_dir(self.input_path)
         self.metadata_path = Path(month_path, day, self.location)
         #  data file
@@ -79,6 +79,9 @@ class TimeSeriesPadTest(TestCase):
         data_path = Path(self.out_path, self.metadata_path, Config.data_dir, self.data_filename)
         manifest_path = Path(self.out_path, self.metadata_path, Config.data_dir, Config.manifest_filename)
         threshold_path = Path(self.out_path, self.metadata_path, Config.threshold_dir, Config.threshold_filename)
+        print(f'data_path: {data_path}')
+        print(f'manifest_path: {manifest_path}')
+        print(f'threshold_path: {threshold_path}')
         self.assertTrue(data_path.exists())
         self.assertTrue(manifest_path.exists())
         self.assertTrue(threshold_path.exists())
