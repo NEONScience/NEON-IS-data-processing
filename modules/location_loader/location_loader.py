@@ -27,4 +27,5 @@ def load_locations(out_path: Path, get_locations: Callable[[], Iterator[NamedLoc
             geojson_data = geojson_converter.convert_named_location(named_location)
             file_data = geojson.dumps(geojson_data, indent=4, sort_keys=False, default=str)
             with open(path, 'w') as file:
+                log.debug(f'writing file: {path}')
                 file.write(file_data)

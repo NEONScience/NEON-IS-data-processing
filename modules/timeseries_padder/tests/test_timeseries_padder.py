@@ -14,16 +14,16 @@ class TimeSeriesPadTest(TestCase):
     def setUp(self):
         """Set required files in mock filesystem."""
         self.setUpPyfakefs()
-        self.location = 'CFGLOC112154'
-        input_root = Path('/tmp/in')
         self.out_path = Path('/tmp/out')
+        location = 'CFGLOC112154'
+        input_root = Path('/tmp/in')
         month_path = Path('prt/2018/01')
         day = '03'
         self.input_path = Path(input_root, month_path)
         self.fs.create_dir(self.input_path)
-        self.metadata_path = Path(month_path, day, self.location)
+        self.metadata_path = Path(month_path, day, location)
         #  data file
-        self.data_filename = f'prt_{self.location}_2018-01-{day}.ext'
+        self.data_filename = f'prt_{location}_2018-01-{day}.ext'
         data_path = Path(input_root, self.metadata_path, Config.data_dir, self.data_filename)
         self.fs.create_file(data_path)
         # config file (real file for parsing)
