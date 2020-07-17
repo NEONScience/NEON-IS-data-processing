@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "exototalalgae_location_filter",
-      "glob": "/exototalalgae/*/*/*/"
+      "glob": "/exototalalgae/*/*"
       }
   },
   "enable_stats": false,

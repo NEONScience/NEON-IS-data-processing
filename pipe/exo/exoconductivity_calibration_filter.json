@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "exoconductivity_data_calibration_group",
-      "glob": "/exoconductivity/*/*/*/"
+      "glob": "/exoconductivity/*/*"
     }
   },
   "parallelism_spec": {

@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+from pathlib import Path
+from typing import Callable, Iterator
+
+import geojson
+import structlog
+
+from data_access.types.named_location import NamedLocation
+import data_access.types.geojson_converter as geojson_converter
+
+log = structlog.get_logger()
+
+
+def load_locations(out_path: Path, get_locations: Callable[[], Iterator[NamedLocation]]) -> None:
+    """
+    Write location files into the output path.
+
+    :param out_path: The path for writing files.
+    :param get_locations: A function yielding named locations.
+    """
+    for named_location in get_locations():
+        schema_name = named_location.schema_name
+        location_name = named_location.name
+        if named_location.schema_name is not None:
+            path = Path(out_path, schema_name, location_name, f'{location_name}.json')
+            path.parent.mkdir(parents=True, exist_ok=True)
+            geojson_data = geojson_converter.convert_named_location(named_location)
+            file_data = geojson.dumps(geojson_data, indent=4, sort_keys=False, default=str)
+            with open(path, 'w') as file:
+                log.debug(f'writing file: {path}')
+                file.write(file_data)

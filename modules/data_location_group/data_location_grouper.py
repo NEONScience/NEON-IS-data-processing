@@ -1,69 +1,52 @@
 #!/usr/bin/env python3
-import pathlib
-import os
+from pathlib import Path
 
 import structlog
 
-from lib.file_linker import link
-from lib.file_crawler import crawl
-from lib.data_filename import DataFilename
+from data_location_group.data_location_group_config import Config
+from data_location_group.data_path_parser import DataPathParser
 
 log = structlog.get_logger()
 
 
-def link_data(data_path,
-              out_path,
-              source_type_index,
-              year_index,
-              month_index,
-              day_index,
-              file_index):
-    """
-    Link data files into the output path and yield the output directory.
+class DataLocationGrouper:
 
-    :param data_path: The path to the data files.
-    :type data_path: str
-    :param out_path: The output path to write grouped files.
-    :type out_path: str
-    :param source_type_index: The file path source type index.
-    :type source_type_index: int
-    :param year_index: The file path year index.
-    :type year_index: int
-    :param month_index: The file path month index.
-    :type month_index: int
-    :param day_index: The file path day index.
-    :type day_index: int
-    :param file_index: The file path file index.
-    :type file_index: int
-    :return: Yields the output directory for each data file.
-    """
-    for file in crawl(data_path):
-        parts = file.parts
-        source_type = parts[source_type_index]
-        year = parts[year_index]
-        month = parts[month_index]
-        day = parts[day_index]
-        filename = parts[file_index]
-        source_id = DataFilename(filename).source_id()
-        output_dir = os.path.join(out_path, source_type, year, month, day, source_id)
-        output_path = os.path.join(output_dir, 'data', filename)
-        log.debug(f'data output path: {output_path}')
-        link(file, output_path)
-        yield output_dir
+    def __init__(self, config: Config):
+        self.data_path = config.data_path
+        self.location_path = config.location_path
+        self.out_path = config.out_path
+        self.data_path_parser = DataPathParser(config)
 
+    def group_files(self):
+        for common_path in self.link_data_files():
+            self.link_location_files(common_path)
 
-def link_location(location_path, output_dir):
-    """
-    Link the location file.
+    def link_data_files(self):
+        """
+        Link data files into the output path and yield the output directory.
 
-    :param location_path: The path to the file.
-    :type location_path str
-    :param output_dir: The output directory.
-    :type output_dir: str
-    :return:
-    """
-    for file in crawl(location_path):
-        location_filename = pathlib.Path(file).name
-        output_path = os.path.join(output_dir, 'location', location_filename)
-        log.debug(f'location output path: {output_path}')
-        link(file, output_path)
+        :return: Yields the output directory path for each data file.
+        """
+        for path in self.data_path.rglob('*'):
+            if path.is_file():
+                source_type, year, month, day, source_id = self.data_path_parser.parse(path)
+                log.debug(f'source_id: {source_id}')
+                common_path = Path(self.out_path, source_type, year, month, day, source_id)
+                link_path = Path(common_path, 'data', path.name)
+                log.debug(f'link path: {link_path}')
+                link_path.parent.mkdir(parents=True, exist_ok=True)
+                link_path.symlink_to(path)
+                yield common_path
+
+    def link_location_files(self, common_path: Path):
+        """
+        Link the location files.
+
+        :param common_path: The common output path from data file path elements.
+        """
+        for path in self.location_path.rglob('*'):
+            if path.is_file():
+                link_path = Path(common_path, 'location', path.name)
+                log.debug(f'location link path: {link_path}')
+                link_path.parent.mkdir(parents=True, exist_ok=True)
+                link_path.symlink_to(path)

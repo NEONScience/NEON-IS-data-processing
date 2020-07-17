@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "exophorp_data_calibration_group",
-      "glob": "/exophorp/*/*/*/"
+      "glob": "/exophorp/*/*"
     }
   },
   "parallelism_spec": {

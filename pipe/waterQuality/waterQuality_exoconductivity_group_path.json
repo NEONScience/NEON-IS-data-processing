@@ -23,7 +23,7 @@
     "pfs": {
       "name": "SOURCE_PATH",
       "repo": "exoconductivity_merge_data_by_location",
-      "glob": "/exoconductivity/*/*/*/*"
+      "glob": "/exoconductivity/*/*/*"
     }
   },
   "enable_stats": false,

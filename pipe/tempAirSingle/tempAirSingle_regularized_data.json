@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "tempAirSingle_calibrated_data",
-          "glob": "/*/*/*/*"
+          "glob": "/*/*/*"
         }
       },
       {
@@ -29,7 +29,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": true,
+  "standby": false,
   "resource_requests": {
     "memory": "200M",
     "cpu": 0.3

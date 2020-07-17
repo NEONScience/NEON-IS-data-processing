@@ -25,7 +25,7 @@
     "pfs": {
       "name": "IN_PATH",
       "repo": "waterQuality_exophorp",
-      "glob": "/*/*/*/*",
+      "glob": "/*/*/*",
       "empty_files": true
     }
   },

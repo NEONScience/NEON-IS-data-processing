@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "sunav2_data_calibration_group",
-      "glob": "/sunav2/*/*/*/"
+      "glob": "/sunav2/*/*"
     }
   },
   "parallelism_spec": {

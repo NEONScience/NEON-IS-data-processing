@@ -32,8 +32,8 @@
       </AmbientHumidity>
     </CalEnvironment>
     <CalibrationCoefficient> 
-		<Name>CVALR1</Name>
-		<Value>0</Value>
+		<Name>CVALA2</Name>
+		<Value>0.89</Value>
     </CalibrationCoefficient>
 	<CalibrationTable name="">
     <Metadata>

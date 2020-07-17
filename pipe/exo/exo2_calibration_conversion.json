@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "exo2_calibration_filter",
-          "glob": "/exo2/*/*/*/"
+          "glob": "/exo2/*/*"
         }
       },
       {

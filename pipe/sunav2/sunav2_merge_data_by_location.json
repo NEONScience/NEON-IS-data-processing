@@ -14,7 +14,7 @@
       "pfs": {
         "name": "DIR_IN",
         "repo": "sunav2_structure_repo_by_location",
-        "glob": "/sunav2/*/*/*/"
+        "glob": "/sunav2/*/*"
       }
   },
   "enable_stats": false,

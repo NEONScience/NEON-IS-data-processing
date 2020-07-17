@@ -4,8 +4,13 @@
 \alias{def.loc.filt}
 \title{Filter named location information by date-time range for NEON instrumented systems sensors}
 \usage{
-def.loc.filt(NameFileIn, NameFileOut = NULL, TimeBgn, TimeEnd = NULL,
-  log = NULL)
+def.loc.filt(
+  NameFileIn,
+  NameFileOut = NULL,
+  TimeBgn,
+  TimeEnd = NULL,
+  log = NULL
+)
 }
 \arguments{
 \item{NameFileIn}{Filename (including relative or absolute path). Must be json format.}

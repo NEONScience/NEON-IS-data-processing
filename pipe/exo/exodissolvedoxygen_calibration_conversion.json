@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "exodissolvedoxygen_calibration_filter",
-          "glob": "/exodissolvedoxygen/*/*/*/"
+          "glob": "/exodissolvedoxygen/*/*"
         }
       },
       {

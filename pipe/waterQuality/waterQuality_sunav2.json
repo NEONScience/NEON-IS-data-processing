@@ -25,7 +25,7 @@
     "pfs": {
       "name": "IN_PATH",
       "repo": "waterQuality_related_location_group",
-      "glob": "/*/*/*/*",
+      "glob": "/*/*/*",
       "empty_files": true
     }
   },

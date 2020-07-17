@@ -78,6 +78,7 @@ def.vect.pars.pair <- function(vect,
   
   if(base::length(NameCol) != 2){
     log$fatal('Length of NameCol must be 2.')
+    stop()
   }
   
   if(base::length(ValuDflt) != 1){

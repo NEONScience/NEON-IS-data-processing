@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "exoturbidity_calibrated_location_group",
-      "glob": "/exoturbidity/*/*/*/"
+      "glob": "/exoturbidity/*/*"
       }
   },
   "enable_stats": false,

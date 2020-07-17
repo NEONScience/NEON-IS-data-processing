@@ -13,8 +13,13 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
+<<<<<<< HEAD
       "repo": "prt_data_calibration_group_jr",
       "glob": "/prt/*/*/*/"
+=======
+      "repo": "prt_data_calibration_group",
+      "glob": "/prt/*/*"
+>>>>>>> 6c5620586bd8881dfa3efa9130d6692ee12fe530
     }
   },
   "enable_stats": false,

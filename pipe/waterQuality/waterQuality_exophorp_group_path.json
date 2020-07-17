@@ -23,7 +23,7 @@
     "pfs": {
       "name": "SOURCE_PATH",
       "repo": "exophorp_merge_data_by_location",
-      "glob": "/exophorp/*/*/*/*"
+      "glob": "/exophorp/*/*/*"
     }
   },
   "enable_stats": false,

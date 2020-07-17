@@ -4,8 +4,16 @@
 \alias{def.thsh.slct}
 \title{Determine set of applicable QA/QC thresholds for date, location, term, and context}
 \usage{
-def.thsh.slct(thsh, Time, Term, Ctxt = NULL, Site = NULL,
-  NameLoc = NULL, RptThsh = TRUE, log = NULL)
+def.thsh.slct(
+  thsh,
+  Time,
+  Term,
+  Ctxt = NULL,
+  Site = NULL,
+  NameLoc = NULL,
+  RptThsh = TRUE,
+  log = NULL
+)
 }
 \arguments{
 \item{thsh}{List of thresholds, as returned from NEONprocIS.qaqc::def.read.thsh.qaqc.list}

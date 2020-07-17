@@ -4,9 +4,15 @@
 \alias{def.wrte.avro.deve}
 \title{Write AVRO file (development library)}
 \usage{
-def.wrte.avro.deve(data, NameFile, NameSchm = NULL,
-  NameSpceSchm = NULL, Schm = NULL, NameFileSchm = NULL,
-  NameLib = "ravro.so")
+def.wrte.avro.deve(
+  data,
+  NameFile,
+  NameSchm = NULL,
+  NameSpceSchm = NULL,
+  Schm = NULL,
+  NameFileSchm = NULL,
+  NameLib = "ravro.so"
+)
 }
 \arguments{
 \item{data}{Data frame. Data to write to file.}

@@ -4,8 +4,13 @@
 \alias{def.validate.dataframe}
 \title{Validate data frame not empty or invalid}
 \usage{
-def.validate.dataframe(dfIn, TestNa = FALSE, TestNumc = FALSE,
-  TestNameCol = base::character(0), log = NULL)
+def.validate.dataframe(
+  dfIn,
+  TestNa = FALSE,
+  TestNumc = FALSE,
+  TestNameCol = base::character(0),
+  log = NULL
+)
 }
 \arguments{
 \item{dfIn}{Input data frame to be validated}

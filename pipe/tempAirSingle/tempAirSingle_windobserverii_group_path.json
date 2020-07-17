@@ -23,7 +23,7 @@
     "pfs": {
       "name": "SOURCE_PATH",
       "repo": "windobserverii_merge_data_by_location",
-      "glob": "/windobserverii/*/*/*/*"
+      "glob": "/windobserverii/*/*"
     }
   },
   "enable_stats": false,

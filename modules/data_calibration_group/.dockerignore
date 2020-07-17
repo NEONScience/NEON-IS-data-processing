@@ -1,5 +1,0 @@
-# Docker build files to ignore
-**/tests
-**/Dockerfile
-**/.dockerignore
-**/__pycache__

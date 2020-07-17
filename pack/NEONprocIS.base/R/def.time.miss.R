@@ -39,6 +39,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-02-06)
 #     original creation
+#   Cove Sturtevant (2020-06-10)
+#     bug fix when entry in timeFull is completely outside the range of TimeBgn and TimeEnd
 ##############################################################################################
 def.time.miss <- function(TimeBgn, TimeEnd, timeFull, log = NULL) {
   # Initialize log if not input
@@ -49,6 +51,10 @@ def.time.miss <- function(TimeBgn, TimeEnd, timeFull, log = NULL) {
   # Sort the covered time ranges
   timeFull <-
     timeFull[base::order(timeFull$timeBgn, decreasing = FALSE), ]
+  
+  # Get rid of any ranges beginning and ending outside our range of interest
+  setKeep <- !(timeFull$timeBgn >= TimeEnd | timeFull$timeEnd <= TimeBgn)
+  timeFull <- base::subset(timeFull,subset=setKeep)
   
   # Initialize
   dmmyTime <-

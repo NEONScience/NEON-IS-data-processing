@@ -4,8 +4,13 @@
 \alias{def.thsh.json.filt}
 \title{Filter NEON instrumented systems QC JSON-formatted thresholds}
 \usage{
-def.thsh.json.filt(NameFile = NULL, strJson = NULL,
-  NameFileOut = NULL, Term = NULL, Ctxt = NULL)
+def.thsh.json.filt(
+  NameFile = NULL,
+  strJson = NULL,
+  NameFileOut = NULL,
+  Term = NULL,
+  Ctxt = NULL
+)
 }
 \arguments{
 \item{NameFile}{Filename (including relative or absolute path). Must be json format.}

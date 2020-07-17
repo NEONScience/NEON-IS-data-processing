@@ -22,8 +22,13 @@
   "input": {
     "pfs": {
       "name": "SOURCE_PATH",
+<<<<<<< HEAD
       "repo": "prt_date_gap_filler_linker_jr",
       "glob": "/prt/*/*/*/*"
+=======
+      "repo": "prt_date_gap_filler_linker",
+      "glob": "/prt/*/*"
+>>>>>>> 6c5620586bd8881dfa3efa9130d6692ee12fe530
     }
   },
   "enable_stats": false,

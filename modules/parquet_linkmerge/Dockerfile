@@ -1,8 +1,8 @@
 FROM centos:7
 
 ARG APP_DIR="parquet_linkmerge"
-ARG LIB_DIR="lib"
-ARG CONTAINER_APP_DIR="/usr/src/app"
+ARG COMMON_DIR="common"
+ARG CONTAINER_APP_DIR="/usr/src"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
@@ -22,6 +22,6 @@ RUN yum update -y && \
     useradd -r -u 9999 -g appuser appuser
 
 COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${LIB_DIR} ${CONTAINER_APP_DIR}/${LIB_DIR}
+COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser

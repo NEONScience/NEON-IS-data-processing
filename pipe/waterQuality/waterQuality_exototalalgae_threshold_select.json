@@ -16,7 +16,7 @@
         "pfs": {
           "name": "REPO_LOCATIONS",
           "repo": "waterQuality_exototalalgae_location",
-          "glob": "/*/*/*/"
+          "glob": "/*/*/*"
         }
       },
       {

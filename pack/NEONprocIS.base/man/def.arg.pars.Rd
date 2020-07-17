@@ -4,8 +4,14 @@
 \alias{def.arg.pars}
 \title{Parse input argument strings into list of named parameters}
 \usage{
-def.arg.pars(arg, NameParaReqd = NULL, NameParaOptn = NULL,
-  ValuParaOptn = NULL, TypePara = NULL, log = NULL)
+def.arg.pars(
+  arg,
+  NameParaReqd = NULL,
+  NameParaOptn = NULL,
+  ValuParaOptn = NULL,
+  TypePara = NULL,
+  log = NULL
+)
 }
 \arguments{
 \item{arg}{Character vector of argument strings, each in the format "Para=value", where "Para" 

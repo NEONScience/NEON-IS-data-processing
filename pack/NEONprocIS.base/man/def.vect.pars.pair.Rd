@@ -4,9 +4,14 @@
 \alias{def.vect.pars.pair}
 \title{Parse vector into key:value pairs}
 \usage{
-def.vect.pars.pair(vect, KeyExpc = NULL, ValuDflt = NA,
-  NameCol = c("key", "value"), Type = rep(base::class(vect), 2),
-  log = NULL)
+def.vect.pars.pair(
+  vect,
+  KeyExpc = NULL,
+  ValuDflt = NA,
+  NameCol = c("key", "value"),
+  Type = rep(base::class(vect), 2),
+  log = NULL
+)
 }
 \arguments{
 \item{vect}{Vector of class numeric or character. If length of vect is 1, all expected 
