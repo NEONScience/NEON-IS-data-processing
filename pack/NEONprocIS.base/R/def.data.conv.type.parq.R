@@ -55,6 +55,7 @@ def.data.conv.type.parq <- function(data,
     
     if(!(nameIdx %in% nameVar)){
       log$warn(base::paste0('Variable: ', nameIdx, ' not found in input data. No type conversion will be performed for this variable.'))
+      next
     }
     
     # Assign R class from schema-indicated data type
