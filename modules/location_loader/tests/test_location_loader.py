@@ -24,7 +24,7 @@ class LocationLoaderTest(TestCase):
         self.out_path = Path('/out')
         self.fs.create_dir(self.out_path)
 
-    @unittest.skip('Integration test skipped due to long process time.')
+    # @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
         #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]
         database_url = os.getenv('DATABASE_URL')
