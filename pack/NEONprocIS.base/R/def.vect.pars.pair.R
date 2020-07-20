@@ -112,7 +112,7 @@ def.vect.pars.pair <- function(vect,
     # Fill missing keys with default value
     rpt <- base::rbind(rpt,base::data.frame(key=keyMiss,value=ValuDflt,stringsAsFactors = FALSE)) # Fill in with default
   }
-
+  
   # Assign classes
   base::class(rpt$key) <- Type[1]
   base::class(rpt$value) <- Type[2]

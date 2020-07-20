@@ -75,14 +75,14 @@ def.vect.pars.one.many <- function(listVect,
     log$fatal('Length of Type must be 2.')
     base::stop()
   }
- 
+  
   # Parse the key-value sets
   rpt <- base::lapply(
     listVect,
     FUN = function(idxVect) {
       rptIdx <- base::list(
-                key = idxVect[1],
-                value = utils::tail(x = idxVect, n = -1)
+        key = idxVect[1],
+        value = utils::tail(x = idxVect, n = -1)
       )
       
       # Assign classes
