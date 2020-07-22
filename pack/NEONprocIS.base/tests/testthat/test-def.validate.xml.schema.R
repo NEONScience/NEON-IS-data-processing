@@ -21,3 +21,13 @@ test_that("invalid xml should return false",
 
 )
 
+test_that("not xml file, should return false",
+          {
+            xmlpath <- 'def.read.avro.deve/prt_test.avro'
+            schemapath <- 'def.validate.xml.schema/calibration.xsd'
+            returnData <- NEONprocIS.base::def.validate.xml.schema(xmlIn = xmlpath, xmlSchemaIn = schemapath)
+            testthat::expect_false(returnData)
+          }
+          
+)
+
