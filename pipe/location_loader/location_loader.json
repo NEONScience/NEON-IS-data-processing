@@ -23,7 +23,7 @@
     "input": {
         "cron": {
             "name": "tick",
-            "spec": "@daily",
+            "spec": "@every 10m",
             "overwrite": true
         }
     },
