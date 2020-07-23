@@ -35,4 +35,5 @@ class CalibrationFileLinker:
                 if calibration_source_id == source_id:
                     link_path = Path(output_path, 'calibration', stream, path.name)
                     link_path.parent.mkdir(parents=True, exist_ok=True)
-                    link_path.symlink_to(path)
+                    if not link_path.exists():
+                        link_path.symlink_to(path)

@@ -36,5 +36,6 @@ class DataFileLinker:
                 output_path = Path(self.out_path, source_type, year, month, day, source_id)
                 link_path = Path(output_path, 'data', path.name)
                 link_path.parent.mkdir(parents=True, exist_ok=True)
-                link_path.symlink_to(path)
+                if not link_path.exists():
+                    link_path.symlink_to(path)
                 yield SourcePath(source_id, output_path)
