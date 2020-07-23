@@ -4,12 +4,12 @@
   },
   "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-      "image": "quay.io/battelleecology/data_calibration_group:20",
+      "image": "quay.io/battelleecology/data_calibration_group:23",
       "cmd": [ "/bin/bash" ],
-      "stdin": [ "#!/bin/bash", "python3 -m data_calibration_group.app" ],
+      "stdin": [ "#!/bin/bash", "python3 -m data_calibration_group.data_calibration_group_main" ],
       "env": {
           "OUT_PATH": "/pfs/out",
-          "LOG_LEVEL": "INFO",
+          "LOG_LEVEL": "DEBUG",
           "DATA_SOURCE_TYPE_INDEX": "3",
           "DATA_YEAR_INDEX": "4",
           "DATA_MONTH_INDEX": "5",
@@ -40,7 +40,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_prt_subset",
+          "repo": "data_source_prt_linkmerge",
           "branch": "master",
           "glob": "/prt/*",
           "empty_files": true
@@ -49,7 +49,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": true,
+  "standby": false,
   "cache_size": "64M",
   "max_queue_size": "1"
 }
