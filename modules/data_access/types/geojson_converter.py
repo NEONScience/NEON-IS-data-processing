@@ -19,11 +19,12 @@ def convert_asset_location(location: AssetLocation) -> Feature:
                               site=location.site,
                               install_date=install_date,
                               remove_date=remove_date,
-                              context=location.context)
+                              context=location.context,
+                              locations=location.locations)
+    feature = Feature(properties=feature_properties)
     for p in location.properties:
-        feature_properties[p.name] = p.value
-    feature_properties['locations'] = location.locations
-    return Feature(properties=feature_properties)
+        feature[p.name] = p.value
+    return feature
 
 
 def convert_named_location(location: NamedLocation) -> FeatureCollection:
