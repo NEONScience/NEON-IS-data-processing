@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "pqs1_data_calibration_group",
-      "glob": "/pqs1/*/*"
+      "glob": "/pqs1/*/*/*"
     }
   },
   "enable_stats": false,

@@ -4,7 +4,7 @@
   },
   "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-      "image": "quay.io/battelleecology/data_calibration_group:20",
+      "image": "quay.io/battelleecology/data_calibration_group:24",
       "cmd": [ "/bin/bash" ],
       "stdin": [ "#!/bin/bash", "python3 -m data_calibration_group.app" ],
       "env": {
@@ -20,7 +20,7 @@
       }
   },
   "parallelism_spec": {
-    "constant": "4"
+    "constant": "1"
   },
   "output_branch": "master",
   "resource_requests": {
