@@ -20,7 +20,7 @@ class DataCalibrationGroupNoCalibrationTest(TestCase):
         self.data_path = Path(in_path, 'data')
         self.data_metadata_path = Path('prt/2019/07/23/0001')
         self.calibration_metadata_path = Path('prt/0001')
-        self.data_filename = 'prt_0001_2018-01-03.ext'
+        self.data_filename = 'prt_0001_2019-07-23.ext'
 
         self.fs.create_file(Path(in_path, 'data', self.data_metadata_path, self.data_filename))
         self.fs.create_dir(Path(self.calibration_path, self.calibration_metadata_path))
