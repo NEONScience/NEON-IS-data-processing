@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_calibrated_location_group_jr"
+    "name": "prt_calibrated_location_group"
   },
   "transform": {
     "image_pull_secrets": [
@@ -30,7 +30,7 @@
       {
         "pfs": {
           "name": "CALIBRATED_PATH",
-          "repo": "prt_calibration_conversion_jr",
+          "repo": "prt_calibration_conversion",
           "glob": "/prt/*/*/*/(*)",
           "joinOn": "$1",
           "empty_files": true

@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_date_gap_filler_jr"
+    "name": "prt_date_gap_filler"
   },
   "transform": {
     "image_pull_secrets": [
@@ -51,15 +51,9 @@
           {
             "pfs": {
               "name": "DATA_PATH",
-<<<<<<< HEAD
-              "repo": "prt_merge_data_by_location_jr",
-              "glob": "/prt/*/*",
-              "joinOn": "$1$2",
-=======
               "repo": "prt_merge_data_by_location",
               "glob": "/prt/(*)/(*)",
               "joinOn": "$1/$2",
->>>>>>> 6c5620586bd8881dfa3efa9130d6692ee12fe530
               "empty_files": true
             }
           },
@@ -67,13 +61,8 @@
             "pfs": {
               "name": "LOCATION_PATH",
               "repo": "location_active_dates",
-<<<<<<< HEAD
-              "glob": "/prt/*/*",
-              "joinOn": "$1$2",
-=======
               "glob": "/prt/(*)/(*)",
               "joinOn": "$1/$2",
->>>>>>> 6c5620586bd8881dfa3efa9130d6692ee12fe530
               "empty_files": true
             }
           }
