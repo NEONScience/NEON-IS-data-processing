@@ -15,8 +15,7 @@ def group_files(config: Config):
     for path in config.data_path.rglob('*'):
         if path.is_file():
             log.debug(f'data file path: {path}')
-            source_id = path.name.split('_')[1]
-            source_type, year, month, day = parser.parse(path)
+            source_type, source_id, year, month, day = parser.parse(path)
             common_path = Path(config.out_path, source_type, year, month, day, source_id)
             link_data(common_path, path)
             link_calibrations(config, common_path, source_id)
