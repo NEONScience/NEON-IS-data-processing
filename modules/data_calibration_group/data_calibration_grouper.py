@@ -17,27 +17,14 @@ def group_files(config: Config):
             log.debug(f'data file path: {path}')
             source_type, source_id, year, month, day = parser.parse(path)
             common_path = Path(config.out_path, source_type, year, month, day, source_id)
-            link_data(common_path, path)
             link_calibrations(config, common_path, source_id)
-
-
-def link_data(common_path, path):
-    link_path = Path(common_path, 'data', path.name)
-    link_path.parent.mkdir(parents=True, exist_ok=True)
-    if not link_path.exists():
-        link_path.symlink_to(path)
 
 
 def link_calibrations(config: Config, common_path: Path, source_id: str):
     parser = CalibrationPathParser(config)
     for path in config.calibration_path.rglob('*'):
         log.debug(f'calibration file path: {path}')
-        if path.is_dir():
-            if len(path.parts) < parser.stream_index:
-                calibration_dir = Path(common_path, 'calibration')
-                if not calibration_dir.exists():
-                    calibration_dir.mkdir(parents=True, exist_ok=True)
-        elif path.is_file():
+        if path.is_file():
             source_type, calibration_source_id, stream = parser.parse(path)
             if calibration_source_id == source_id:
                 link_path = Path(common_path, 'calibration', stream, path.name)
