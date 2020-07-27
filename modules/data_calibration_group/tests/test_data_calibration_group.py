@@ -18,7 +18,7 @@ class DataCalibrationGroupTest(TestCase):
         self.out_path = Path('/out')
         self.data_metadata_path = Path('prt/2019/07/23/0001')
         self.calibration_metadata_path = Path('prt/0001')
-        self.data_filename = 'prt_0001_2018-01-03.ext'
+        self.data_filename = 'prt_0001_2019-07-23.ext'
 
         data_path = Path(in_path, 'data', self.data_metadata_path)
         calibration_path = Path(in_path, 'calibration', self.calibration_metadata_path)

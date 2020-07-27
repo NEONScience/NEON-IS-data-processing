@@ -3,7 +3,7 @@ import os
 import sys
 from pathlib import Path
 import datetime
-from typing import Dict, List, Union
+from typing import Dict, Union
 
 from structlog import get_logger
 
@@ -31,8 +31,6 @@ class VariablePad:
         try:
             date_and_location_max_window_size: Dict[str, Union[int, float]] = {}
             date_and_location_min_data_rate: Dict[str, float] = {}
-            manifests: Dict[str, List[datetime]] = {}
-            manifest_file_names: Dict[str, Path] = {}
             for path in self.data_path.rglob('*'):
                 if path.is_file():
                     parts = path.parts
@@ -40,8 +38,6 @@ class VariablePad:
                     if data_type in self.data_types:
                         date_location_key = year+month+day+location
                         config_location_path = Path(*parts[:self.data_file_path.location_index + 1])
-                        if location not in manifests:
-                            manifests[f'{location}_{day}'] = []
                         # get min of all data rates (to ensure adequate window coverage)
                         if date_location_key not in date_and_location_min_data_rate:
                             location_path = Path(config_location_path, Config.location_dir)
@@ -65,7 +61,7 @@ class VariablePad:
                         # calculate pad size
                         pad_size = pad_calculator.calculate_pad_size(window_size)
                         padded_dates = pad_calculator.get_padded_dates(data_date, pad_size)
-                        # link file into each date in the padded range
+                        # link data file into each date in the padded range
                         link_parts = list(parts)
                         for index in range(1, len(self.out_dir_parts)):
                             link_parts[index] = self.out_dir_parts[index]
@@ -78,12 +74,12 @@ class VariablePad:
                             link_path.parent.mkdir(parents=True, exist_ok=True)
                             if not link_path.exists():
                                 link_path.symlink_to(path)
-                            manifests[f'{location}_{day}'].append(date)
-                            if date == data_date:
-                                manifest_path = link_path.parent
-                                manifest_file_names[f'{location}_{day}'] = Path(manifest_path, Config.manifest_filename)
+                            # link thresholds
                             file_writer.link_thresholds(config_location_path, link_path)
-            file_writer.write_manifests(manifests, manifest_file_names)
+                            # write manifest
+                            if date == data_date:
+                                manifest_path = Path(link_path.parent, Config.manifest_filename)
+                                file_writer.write_manifest(padded_dates, manifest_path)
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             log.error("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))

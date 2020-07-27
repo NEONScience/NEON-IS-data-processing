@@ -29,13 +29,11 @@ def get_named_locations(connection: Connection, location_type: str) -> Iterator[
             nam_locn.nam_locn_desc,
             type.type_name
         from
-            nam_locn, type, nam_locn_context
+            nam_locn, type
         where
             type.type_id = nam_locn.type_id
         and
             type.type_name = :location_type
-        and 
-            nam_locn.nam_locn_id = nam_locn_context.nam_locn_id 
     '''
     with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
