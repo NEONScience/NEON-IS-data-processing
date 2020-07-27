@@ -41,11 +41,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-<<<<<<< HEAD
-          "repo": "data_source_prt",
-=======
           "repo": "data_source_prt_linkmerge",
->>>>>>> master
           "branch": "master",
           "glob": "/prt/*/*/*/(*)",
           "joinOn": "$1",
