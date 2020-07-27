@@ -24,6 +24,8 @@
 
 #' @return dataframe with L0 uncertatinty column(s) [dataframe]
 
+#' @export
+
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 

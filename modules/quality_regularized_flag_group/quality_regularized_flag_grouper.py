@@ -36,7 +36,7 @@ class QualityRegularizedFlagGrouper:
     @staticmethod
     def _link_files(regularized_files: Dict[Path, Paths], quality_files: Dict[Path, Paths]):
         """
-        Group matching regularized and quality files in the output directory.
+        Link matching regularized and quality files into the output directory.
 
         :param regularized_files: Regularized file sources and destinations.
         :param quality_files: Quality file sources and destinations.
@@ -61,7 +61,7 @@ class QualityRegularizedFlagGrouper:
 
     def _load_files(self, path: Path) -> Dict[Path, Paths]:
         """
-        Read files and generate keys associated to the file paths and generated link paths.
+         Associate source paths and link paths with the link directory path as a key.
 
         :param path: A path containing files.
         :return: File and link paths organized by key.

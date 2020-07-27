@@ -15,6 +15,7 @@ def main():
     calibration_path: Path = env.path('CALIBRATION_PATH')
     out_path: Path = env.path('OUT_PATH')
     log_level: str = env.log_level('LOG_LEVEL')
+    data_source_id_index: int = env.int('DATA_SOURCE_ID_INDEX')
     data_source_type_index: int = env.int('DATA_SOURCE_TYPE_INDEX')
     data_year_index: int = env.int('DATA_YEAR_INDEX')
     data_month_index: int = env.int('DATA_MONTH_INDEX')
@@ -31,6 +32,7 @@ def main():
                     calibration_path=calibration_path,
                     out_path=out_path,
                     data_source_type_index=data_source_type_index,
+                    data_source_id_index=data_source_id_index,
                     data_year_index=data_year_index,
                     data_month_index=data_month_index,
                     data_day_index=data_day_index,

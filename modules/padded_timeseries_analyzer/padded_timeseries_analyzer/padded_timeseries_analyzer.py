@@ -25,9 +25,7 @@ class PaddedTimeSeriesAnalyzer:
         self.relative_path_index = relative_path_index
 
     def analyze(self):
-        """Analyze time series data to calculate additional time padding
-        required for processing with thresholds."""
-        out_path_parts = list(self.out_path.parts)
+        """Verify all necessary data files are present in the input."""
         manifest_file = AnalyzerConfig.manifest_filename
         try:
             for root, directories, files in os.walk(str(self.data_path)):
@@ -54,17 +52,13 @@ class PaddedTimeSeriesAnalyzer:
                             for data_file in os.listdir(root):
                                 if data_file != manifest_file:
                                     file_path = Path(root, data_file)
-                                    link_parts = Path(file_path).parts
-                                    link_parts = list(link_parts)
-                                    for index in range(1, len(out_path_parts)):
-                                        link_parts[index] = out_path_parts[index]
-                                    link_path = Path(*link_parts)
+                                    link_path = Path(self.out_path, *file_path.parts[self.relative_path_index:])
                                     log.debug(f'linking {file_path} to {link_path}')
                                     link_path.parent.mkdir(parents=True, exist_ok=True)
                                     if not link_path.exists():
                                         link_path.symlink_to(file_path)
                                     self.link_thresholds(file_path, link_path)
-                            # go up one directory and get any ancillary files to link
+                            # go up one directory to find any ancillary files to link
                             self.link_ancillary_files(Path(root))
         except Exception:
             exception_type, exception_obj, exception_tb = sys.exc_info()
@@ -73,10 +67,10 @@ class PaddedTimeSeriesAnalyzer:
     @staticmethod
     def link_thresholds(data_file_path: Path, data_file_link_path: Path):
         """
-        Write thresholds if they exist in the source repository.
+        Link the threshold file.
 
-        :param data_file_path: The source path for the threshold file.
-        :param data_file_link_path: The destination path to write results.
+        :param data_file_path: The source path for the data file.
+        :param data_file_link_path: The link path for the data file.
         """
         file_root = data_file_path.parent.parent
         link_root = data_file_link_path.parent.parent
@@ -90,16 +84,13 @@ class PaddedTimeSeriesAnalyzer:
 
     def link_ancillary_files(self, root: Path):
         """
-        Write any files outside of data and thresholds in the input path
-        into the output path.
+        Link any files beyond data and thresholds.
 
-        :param root: The threshold root directory.
+        :param root: The root directory to find files.
         """
         for file_path in root.parent.rglob('*'):
             if file_path.is_file():
-                file_path = str(file_path)
-                if AnalyzerConfig.data_dir not in file_path and AnalyzerConfig.threshold_dir not in file_path:
-                    file_path = Path(file_path)
+                if AnalyzerConfig.data_dir not in str(file_path) and AnalyzerConfig.threshold_dir not in str(file_path):
                     link_path = Path(self.out_path, *file_path.parts[self.relative_path_index:])
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                     if not link_path.exists():
@@ -107,5 +98,5 @@ class PaddedTimeSeriesAnalyzer:
 
     @staticmethod
     def get_data_file_date(filename: str) -> str:
-        """Parse the date from data file names in format source_location_yyyy-mm-dd.xxx"""
+        """Parse the date from file names in format source_location_yyyy-mm-dd.xxx"""
         return filename.split('.')[0].split('_')[2]

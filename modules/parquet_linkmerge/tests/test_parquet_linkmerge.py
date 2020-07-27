@@ -51,5 +51,5 @@ class ParquetLinkMergeTest(TestCase):
     def check_output(self):
         for data_file in self.expected_files:
             source_id = data_file.split('_')[1]
-            data_path = Path(self.out_path, self.metadata_path, source_id, data_file)
+            data_path = Path(self.out_path, 'prt', source_id, '2019/10/02', data_file)
             self.assertTrue(data_path.exists())

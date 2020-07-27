@@ -10,18 +10,31 @@ from timeseries_padder.timeseries_padder.timeseries_padder_config import Config
 log = get_logger()
 
 
-def write_manifests(manifests: Dict[str, List[datetime]], manifest_file_names: Dict[str, Path]) -> None:
+def write_manifests(manifests: Dict[str, List[datetime]], manifest_paths: Dict[str, Path]) -> None:
     """
     Write the manifest files.
 
     :param manifests: The manifests.
-    :param manifest_file_names: The manifest file names.
+    :param manifest_paths: The manifest file names.
     """
     for key in manifests.keys():
-        with open(str(manifest_file_names[key]), 'w') as manifest_file:
+        with open(str(manifest_paths[key]), 'w') as manifest_file:
             for date in manifests[key]:
-                log.debug(f'writing date {date} into {manifest_file_names[key]}')
+                log.debug(f'writing date {date} into {manifest_paths[key]}')
                 manifest_file.write("%s\n" % date)
+
+
+def write_manifest(manifest: List[datetime], manifest_path: Path) -> None:
+    """
+    Write the manifest files.
+
+    :param manifest: The manifest dates.
+    :param manifest_path: The manifest path.
+    """
+    with open(str(manifest_path), 'w') as manifest_file:
+        for date in manifest:
+            log.debug(f'writing date {date} into {manifest_path}')
+            manifest_file.write("%s\n" % date)
 
 
 def link_thresholds(source_path: Path, destination_path: Path) -> None:

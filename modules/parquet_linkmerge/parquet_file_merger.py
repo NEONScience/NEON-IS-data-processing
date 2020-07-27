@@ -20,9 +20,9 @@ class ParquetFileMerger:
         self.deduplication_threshold = deduplication_threshold
         self.relative_path_index = relative_path_index
 
-    def write_merged_files(self, *, input_files, source_id):
-        file_path = input_files[0]
-        open_file = open(file_path, 'rb')
+    def write_merged_files(self, *, input_files):
+        path = input_files[0]
+        open_file = open(path, 'rb')
         fio = BytesIO(open_file.read())
         open_file.close()
         # Use BytesIO to read the entire file into ram before using it with pyarrow
@@ -39,29 +39,22 @@ class ParquetFileMerger:
             fio.close()
             tbf_schema = tbf.schema.metadata['parquet.avro.schema'.encode('UTF-8')]
             if tbf_schema != tb1_schema:
-                log.error(f"{f} schema does not match {file_path} schema")
+                log.error(f"{f} schema does not match {path} schema")
                 sys.exit(1)
-            log.info(f"Merging {f} with {file_path}")
+            log.info(f"Merging {f} with {path}")
             df = df.append(tbf.to_pandas())
-
         df = df.sort_values('readout_time')
         # Check which columns in the data frame are hashable
         hashable_columns = [x for x in df.columns if isinstance(df[x][0], Hashable)]
         # For all the hashable columns, see if duplicated columns are over the duplication threshold
         duplicated_columns = [x.encode('UTF-8') for x in hashable_columns
                               if (df[x].duplicated().sum() / (int(df[x].size) - 1)) > self.deduplication_threshold]
-
         table = pyarrow.Table.from_pandas(df, preserve_index=False, nthreads=1).replace_schema_metadata({
             'parquet.avro.schema': tb1_schema,
             'writer.model.name': 'avro'
         })
-        filename = '_'.join(file_path.name.split('_')[1:])
-        trimmed_path = Path(*file_path.parts[self.relative_path_index:])
-        output_file_path = Path(self.out_path, trimmed_path.parent, source_id, filename)
-        if not output_file_path.parent.exists():
-            log.info(f"{output_file_path.parent} directory not found, creating")
-            output_file_path.parent.mkdir(parents=True, exist_ok=True)
-        log.info(f"Writing merged parquet file {output_file_path}")
+        output_file_path = self.convert_path(path)
+        log.info(f"writing merged parquet file {output_file_path}")
         pq.write_table(
             table,
             output_file_path,
@@ -84,13 +77,19 @@ class ParquetFileMerger:
             # Link if there is only one file for the source ID
             if len(source_files[source_id]) == 1:
                 path = source_files[source_id][0]
-                filename = '_'.join(path.name.split('_')[1:])
-                trimmed_path = Path(*path.parts[self.relative_path_index:])
-                link_path = Path(self.out_path, trimmed_path.parent, source_id, filename)
-                if not link_path.parent.exists():
-                    log.info(f"{link_path.parent} directory not found, creating")
-                    link_path.parent.mkdir(parents=True, exist_ok=True)
+                link_path = self.convert_path(path)
                 log.info(f"Linking {path} to {link_path}")
                 link_path.symlink_to(path)
             else:
-                self.write_merged_files(input_files=source_files[source_id], source_id=source_id)
+                self.write_merged_files(input_files=source_files[source_id])
+
+    def convert_path(self, path: Path):
+        source_id = path.name.split('_')[2]
+        filename = '_'.join(path.name.split('_')[1:])
+        trimmed_parts = path.parts[self.relative_path_index:]
+        output_path = Path(self.out_path, trimmed_parts[0], source_id, *trimmed_parts[1:len(trimmed_parts)-1], filename)
+        print(f'output_path: {output_path}')
+        if not output_path.parent.exists():
+            log.info(f"{output_path.parent} directory not found, creating")
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+        return output_path

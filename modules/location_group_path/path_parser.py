@@ -5,7 +5,7 @@ from typing import Tuple
 from location_group_path.location_group_path_config import Config
 
 
-class DataPathParser:
+class PathParser:
 
     def __init__(self, config: Config):
         self.source_type_index = config.source_type_index
