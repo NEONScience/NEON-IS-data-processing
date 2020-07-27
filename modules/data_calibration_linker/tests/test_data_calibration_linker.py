@@ -27,12 +27,19 @@ class DataCalibrationTest(TestCase):
         self.fs.create_file(Path(temperature_path, 'calibration1.xml'))
         self.fs.create_file(Path(temperature_path, 'calibration2.xml'))
 
-        # data file
+        self.data_path = Path(in_path, 'data')
+
+        # data file 1
         self.data_metadata_path = Path('prt/0001/2019/07/23')
         self.data_filename = 'prt_0001_2019-07-23.ext'
-        data_path = Path(in_path, 'data', self.data_metadata_path)
+        data_path = Path(self.data_path, self.data_metadata_path)
         self.fs.create_file(Path(data_path, self.data_filename))
-        self.data_path = Path(in_path, 'data')
+
+        # data file 2
+        self.data_metadata_path_2 = Path('prt/0001/2019/07/24')
+        self.data_filename_2 = 'prt_0001_2019-07-24.ext'
+        data_path_2 = Path(self.data_path, self.data_metadata_path_2)
+        self.fs.create_file(Path(data_path_2, self.data_filename_2))
 
         # path indices
         self.data_source_type_index = 3
@@ -80,7 +87,13 @@ class DataCalibrationTest(TestCase):
         temperature_calibration2 = Path(temperature_path, 'calibration2.xml')
         data_path = Path(root_path, 'data', self.data_filename)
 
+        # check for empty 'calibration' directory for data file without calibration
+        data_path_2 = Path(self.out_path, 'prt/2019/07/24/0001/data', self.data_filename_2)
+        calibration_dir = Path(self.out_path, 'prt/2019/07/24/0001/calibration')
+        self.assertTrue(calibration_dir.exists())
+
         self.assertTrue(data_path.exists())
+        self.assertTrue(data_path_2.exists())
         self.assertTrue(resistance_calibration1.exists())
         self.assertTrue(resistance_calibration2.exists())
         self.assertTrue(temperature_calibration1.exists())
