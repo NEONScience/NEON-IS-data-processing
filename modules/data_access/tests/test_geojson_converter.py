@@ -41,6 +41,7 @@ class GeoJsonConverterTest(unittest.TestCase):
                                    z_offset=z_offset,
                                    reference_location=None)
         location = Feature(properties=location_properties)
+        location['prop1'] = 'value1'
         locations = FeatureCollection([location])
         asset_location = AssetLocation(name=name, site=site, install_date=install_datetime, remove_date=remove_datetime,
                                        context=context_list, properties=properties, locations=locations)
@@ -54,7 +55,7 @@ class GeoJsonConverterTest(unittest.TestCase):
         self.assertTrue(properties['install_date'] == install_date)
         self.assertTrue(properties['remove_date'] == remove_date)
         self.assertTrue(properties['context'][0] == context)
-        self.assertTrue(properties['prop1'] == 'value1')
+        self.assertTrue(json_data['prop1'] == 'value1')
         locations = properties['locations']
         location = locations['features'][0]
         geojson_location_properties = location['properties']

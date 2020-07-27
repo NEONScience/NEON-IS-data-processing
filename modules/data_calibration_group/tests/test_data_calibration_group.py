@@ -16,9 +16,9 @@ class DataCalibrationGroupTest(TestCase):
 
         in_path = Path('/in')
         self.out_path = Path('/out')
-        self.data_metadata_path = Path('prt/2019/07/23/0001')
+        self.data_metadata_path = Path('prt/0001/2019/07/23')
         self.calibration_metadata_path = Path('prt/0001')
-        self.data_filename = 'prt_0001_2018-01-03.ext'
+        self.data_filename = 'prt_0001_2019-07-23.ext'
 
         data_path = Path(in_path, 'data', self.data_metadata_path)
         calibration_path = Path(in_path, 'calibration', self.calibration_metadata_path)
@@ -38,9 +38,10 @@ class DataCalibrationGroupTest(TestCase):
         self.calibration_path = Path(in_path, 'calibration')
 
         self.data_source_type_index = 3
-        self.data_year_index = 4
-        self.data_month_index = 5
-        self.data_day_index = 6
+        self.data_source_id_index = 4
+        self.data_year_index = 5
+        self.data_month_index = 6
+        self.data_day_index = 7
         self.calibration_source_type_index = 3
         self.calibration_source_id_index = 4
         self.calibration_stream_index = 5
@@ -50,6 +51,7 @@ class DataCalibrationGroupTest(TestCase):
                         calibration_path=self.calibration_path,
                         out_path=self.out_path,
                         data_source_type_index=self.data_source_type_index,
+                        data_source_id_index=self.data_source_id_index,
                         data_year_index=self.data_year_index,
                         data_month_index=self.data_month_index,
                         data_day_index=self.data_day_index,
@@ -65,6 +67,7 @@ class DataCalibrationGroupTest(TestCase):
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['DATA_SOURCE_TYPE_INDEX'] = str(self.data_source_type_index)
+        os.environ['DATA_SOURCE_ID_INDEX'] = str(self.data_source_id_index)
         os.environ['DATA_YEAR_INDEX'] = str(self.data_year_index)
         os.environ['DATA_MONTH_INDEX'] = str(self.data_month_index)
         os.environ['DATA_DAY_INDEX'] = str(self.data_day_index)
@@ -75,7 +78,7 @@ class DataCalibrationGroupTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        root_path = Path(self.out_path, self.data_metadata_path)
+        root_path = Path(self.out_path, 'prt/2019/07/23/0001/')
         calibration_path = Path(root_path, 'calibration')
         resistance_path = Path(calibration_path, 'resistance')
         temperature_path = Path(calibration_path, 'temperature')
