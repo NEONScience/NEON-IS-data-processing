@@ -27,7 +27,7 @@ def main():
     year_index = int(args.yearindex)
     month_index = int(args.monthindex)
     day_index = int(args.dayindex)
-    location_index = int(args.locationindex)
+    location_index = int(args.locindex)
     data_type_index = int(args.subdirindex)
     config = Config(data_path=data_path,
                     out_path=out_path,
