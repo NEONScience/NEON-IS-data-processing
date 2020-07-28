@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import Tuple
 
-from data_calibration_group.data_calibration_group_config import Config
+from data_calibration_linker.data_calibration_config import Config
 
 
 class DataPathParser:

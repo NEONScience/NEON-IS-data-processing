@@ -11,6 +11,4 @@ class Config(NamedTuple):
     data_year_index: int
     data_month_index: int
     data_day_index: int
-    calibration_source_type_index: int
-    calibration_source_id_index: int
-    calibration_stream_index: int
+    relative_path_index: int
