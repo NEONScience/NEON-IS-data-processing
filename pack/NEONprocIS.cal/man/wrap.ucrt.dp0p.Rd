@@ -4,8 +4,15 @@
 \alias{wrap.ucrt.dp0p}
 \title{Wrapper for computing individual measurement uncertainty for NEON L0' data}
 \usage{
-wrap.ucrt.dp0p(data, ParaUcrt, ucrtCoefFdas = NULL, calSlct,
-  DirCal = "./", mappNameVar = NULL, log = NULL)
+wrap.ucrt.dp0p(
+  data,
+  ParaUcrt,
+  ucrtCoefFdas = NULL,
+  calSlct,
+  DirCal = "./",
+  mappNameVar = NULL,
+  log = NULL
+)
 }
 \arguments{
 \item{data}{Data frame of L0 data. Must include POSIXct time variable readout_time.}

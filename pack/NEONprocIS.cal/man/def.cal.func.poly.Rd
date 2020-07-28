@@ -4,7 +4,7 @@
 \alias{def.cal.func.poly}
 \title{Create calibration polynomial function from NEON CVAL coefficients}
 \usage{
-def.cal.func.poly(infoCal, log = NULL)
+def.cal.func.poly(infoCal, Prfx = "CVALA", log = NULL)
 }
 \arguments{
 \item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file
@@ -12,6 +12,10 @@ def.cal.func.poly(infoCal, log = NULL)
 a data frame of uncertainty coefficents. Columns of this data frame are:\cr
 \code{Name} String. The name of the coefficient. \cr
 \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr}
+
+\item{Prfx}{String. The prefix for the polynomial coefficients. Default is 'CVALA', indicating 
+that the polynomial coefficients will follow the convention CVALA0, CVALA1, CVALA2, etc., where
+the number indicates the polynomial power CVALA0 + CVALA1x + CVALA2x^2...}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}
