@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "sunav2_data_calibration_group",
+      "repo": "sunav2_data_calibration_linker",
       "glob": "/sunav2/*/*"
     }
   },
