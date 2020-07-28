@@ -5,7 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from data_path_order.data_path_order_config import Config
-from data_path_order.data_path_order import order_files
+from data_path_order.data_path_order import order_paths
 import data_path_order.data_path_order_main as data_path_order_main
 
 
@@ -34,7 +34,7 @@ class DataPathOrderTest(TestCase):
                         month_index=self.month_index,
                         day_index=self.day_index,
                         source_id_index=self.source_id_index)
-        order_files(config)
+        order_paths(config)
         self.check_output()
 
     def test_main(self):

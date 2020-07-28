@@ -3,9 +3,9 @@ import environs
 import structlog
 from pathlib import Path
 
-import data_path_order.log_config as log_config
+import common.log_config as log_config
 from data_path_order.data_path_order_config import Config
-from data_path_order.data_path_order import order_files
+from data_path_order.data_path_order import order_paths
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
                     month_index=month_index,
                     day_index=day_index,
                     source_id_index=source_id_index)
-    order_files(config)
+    order_paths(config)
 
 
 if __name__ == '__main__':
