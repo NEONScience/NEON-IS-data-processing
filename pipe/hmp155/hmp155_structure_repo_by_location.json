@@ -1,9 +1,9 @@
 {
   "pipeline": {
-    "name": "prt_structure_repo_by_location"
+    "name": "hmp155_structure_repo_by_location"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.loc.repo.strc.R","DirIn=$DIR_IN","DirOut=/pfs/out","Comb=TRUE"],
+    "cmd": ["Rscript","/flow.loc.repo.strc.R","DirIn=$DIR_IN","DirOut=/pfs/out","Comb=FALSE"],
     "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.6",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
@@ -13,8 +13,8 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_location_filter",
-      "glob": "/prt/*/*"
+      "repo": "hmp155_location_filter",
+      "glob": "/hmp155/*/*"
       }
   },
   "enable_stats": false,
