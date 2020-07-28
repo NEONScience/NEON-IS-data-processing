@@ -7,6 +7,7 @@ class Config(NamedTuple):
     calibration_path: Path
     out_path: Path
     data_source_type_index: int
+    data_source_id_index: int
     data_year_index: int
     data_month_index: int
     data_day_index: int

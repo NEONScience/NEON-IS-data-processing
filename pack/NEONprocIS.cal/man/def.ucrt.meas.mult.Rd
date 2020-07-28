@@ -4,8 +4,7 @@
 \alias{def.ucrt.meas.mult}
 \title{Compute individual measurement uncertainty as a multiplier from NEON CVAL coefficient}
 \usage{
-def.ucrt.meas.mult(data = base::numeric(0), infoCal = NULL,
-  log = NULL)
+def.ucrt.meas.mult(data = base::numeric(0), infoCal = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Numeric vector of raw measurements}

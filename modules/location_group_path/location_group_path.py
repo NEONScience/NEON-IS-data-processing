@@ -67,5 +67,6 @@ class LocationGroupPath:
                     link_path = Path(self.out_path, source_type, year, month, day,
                                      group, location, data_type, *remainder)
                     link_path.parent.mkdir(parents=True, exist_ok=True)
-                    log.debug(f'file: {path} link: {link_path}')
-                    link_path.symlink_to(path)
+                    if not link_path.exists():
+                        log.debug(f'file: {path} link: {link_path}')
+                        link_path.symlink_to(path)

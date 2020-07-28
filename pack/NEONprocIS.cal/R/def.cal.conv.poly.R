@@ -1,11 +1,12 @@
 ##############################################################################################
-#' @title Convert raw to calibrated data using NEON polynomial calibration coefficients
+#' @title Convert raw to calibrated data using NEON CVALA polynomial calibration coefficients
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description
-#' Definition function. Apply NEON calibration polynomial function to convert raw data to calibrated data.
+#' Definition function. Apply NEON calibration polynomial function contained in coefficients 
+#' CVALA0, CVALA1, CVALA2, etc. to convert raw data to calibrated data.
 
 #' @param data Numeric vector of raw measurements
 #' @param infoCal A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
@@ -32,6 +33,8 @@
 #' def.cal.conv(data=data,infoCal=infoCal)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
+#' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.b}
+#' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.m}
 #'
 #' @export
 
@@ -49,6 +52,8 @@
 #     Added list validations
 #   Cove Sturtevant (2020-05-12)
 #     Bug fix - incorrectly stopping when infoCal is NULL
+#   Cove Sturtevant (2020-07-28)
+#     specify CVALA as the coefficient prefix
 ##############################################################################################
 def.cal.conv.poly <- function(data = base::numeric(0),
                               infoCal = NULL,
@@ -87,7 +92,7 @@ def.cal.conv.poly <- function(data = base::numeric(0),
   
   # Construct the polynomial calibration function
   func <-
-    NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, log = log)
+    NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
   
   # Convert data using the calibration function
   dataConv <- stats::predict(object = func, newdata = data)

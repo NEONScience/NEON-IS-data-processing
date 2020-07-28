@@ -2,10 +2,9 @@
 % Please edit documentation in R/def.cal.conv.poly.R
 \name{def.cal.conv.poly}
 \alias{def.cal.conv.poly}
-\title{Convert raw to calibrated data using NEON polynomial calibration coefficients}
+\title{Convert raw to calibrated data using NEON CVALA polynomial calibration coefficients}
 \usage{
-def.cal.conv.poly(data = base::numeric(0), infoCal = NULL,
-  log = NULL)
+def.cal.conv.poly(data = base::numeric(0), infoCal = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Numeric vector of raw measurements}
@@ -25,7 +24,8 @@ created and used within the function.}
 A  Numeric vector of calibrated data\cr
 }
 \description{
-Definition function. Apply NEON calibration polynomial function to convert raw data to calibrated data.
+Definition function. Apply NEON calibration polynomial function contained in coefficients 
+CVALA0, CVALA1, CVALA2, etc. to convert raw data to calibrated data.
 }
 \examples{
 data=c(1,2,3)
@@ -38,6 +38,10 @@ NEON.DOC.000785 TIS Calibrated Measurements and Level 1 Data Products Uncertaint
 }
 \seealso{
 \link[NEONprocIS.cal]{def.read.cal.xml}
+
+\link[NEONprocIS.cal]{def.cal.conv.poly.b}
+
+\link[NEONprocIS.cal]{def.cal.conv.poly.m}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
