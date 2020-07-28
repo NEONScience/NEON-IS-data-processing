@@ -3,7 +3,7 @@
     "name": "hmp155_calibration_conversion"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","TermQf=temperature|relative_humidity","TermUcrt=temperature|relative_humidity","FuncUcrt=temperature:def.ucrt.meas.cnst|relative_humidity:def.ucrt.meas.cnst"],
+    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$FILE_SCHEMA_FLAGS","TermQf=temperature|relative_humidity|dew_point","TermUcrt=temperature|relative_humidity|dew_point","FuncUcrt=temperature:def.ucrt.meas.cnst|relative_humidity:def.ucrt.meas.cnst|dew_point:def.ucrt.meas.cnst"],
     "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.29",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
@@ -23,7 +23,7 @@
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
           "repo": "avro_schemas",
-          "glob": "/dp0p/flags_calibration.avsc"
+          "glob": "/dp0p/flags_calibration_hmp155.avsc"
         }
       },
       {
