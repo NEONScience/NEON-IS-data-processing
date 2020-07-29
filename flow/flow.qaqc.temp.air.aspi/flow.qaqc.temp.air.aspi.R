@@ -354,9 +354,7 @@ for(idxDirIn in DirIn){
   dataFlow$avelTbne[setBin] <- base::unlist(base::lapply(setBin,FUN=function(idxBin){
     base::mean(dataTbne[[SensTermTbne$term]][binTbne==idxBin],na.rm=TRUE)}))
   
-  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TRY MATCHING ATBD !!!!!!!!!!!
-  
-  # Take a 30-second bin average of wind speed 
+  # Take a 30-second bin average of wind speed - this is slightly different from ATBD, but much more robust
   dataFlow$veloWind <- NA
   if(!base::is.null(dataWind)){
     veloVectWind <- base::subset(dataWind,select=SensTermWind[[idxSensWind]]$term)
@@ -527,14 +525,9 @@ for(idxDirIn in DirIn){
       
 
       # Construct file names
-      fileDataOutSplt <- base::strsplit(idxFileDataTemp,'[.]')[[1]] # Try to grab the file name without extension
-      if(base::length(fileDataOutSplt) > 1){
-        NameFileOutData <- base::paste0(idxDirOutData,'/',base::paste0(fileDataOutSplt[-base::length(fileDataOutSplt)],collapse='.'),'_specificQc.',utils::tail(fileDataOutSplt,1))
-        NameFileOutQf <- base::paste0(idxDirOutQf,'/flags_',base::paste0(fileDataOutSplt[-base::length(fileDataOutSplt)],collapse='.'),'_specificQc.',utils::tail(fileDataOutSplt,1))
-      } else {
-        NameFileOutData <- base::paste0(idxDirOutData,'/',idxFileDataTemp,'_specificQc')
-        NameFileOutQf <- base::paste0(idxDirOutQf,'/flags_',idxFileDataTemp,'_specificQc')
-      }
+      NameFileOutData <- NEONprocIS.base::def.file.name.out(nameFileIn = idxFileDataTemp, prfx=base::paste0(idxDirOutData,'/'), sufx = '_specificQc')
+      NameFileOutQf <- NEONprocIS.base::def.file.name.out(nameFileIn = idxFileDataTemp, prfx=base::paste0(idxDirOutQf,'/'), sufx = '_flagsSpecificQc')
+      
       
       # Write the data
       rptData <- base::try(NEONprocIS.base::def.wrte.parq(data=dataTemp,NameFile=NameFileOutData,NameFileSchm=NULL,Schm=idxSchmDataOut),silent=TRUE)

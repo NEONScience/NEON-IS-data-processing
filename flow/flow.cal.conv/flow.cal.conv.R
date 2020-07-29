@@ -695,7 +695,9 @@ for (idxDirIn in DirIn) {
   # Write out the valid calibration flags
   if (!base::is.null(Para$TermQf)) {
     NameFileOutQf <-
-      NEONprocIS.base::def.file.name.out(nameFileIn = fileData, sufx = '_flagsCal')
+      NEONprocIS.base::def.file.name.out(nameFileIn = fileData, 
+                                         prfx = base::paste0(idxDirOutQf, '/'),
+                                         sufx = '_flagsCal')
     NameFileOutQf <- base::paste0(idxDirOutQf, '/', NameFileOutQf)
     rptQfCal <-
       base::try(NEONprocIS.base::def.wrte.parq(
