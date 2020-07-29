@@ -30,5 +30,5 @@
     }
   },
   "enable_stats": false,
-  "standby": true
+  "standby": true 
 }

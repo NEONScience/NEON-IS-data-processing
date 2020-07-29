@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/timeseries_padder:25",
+    "image": "quay.io/battelleecology/timeseries_padder:26",
     "cmd": [
       "/bin/bash"
     ],
@@ -16,7 +16,7 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "DEBUG"
     }
   },
   "parallelism_spec": {
