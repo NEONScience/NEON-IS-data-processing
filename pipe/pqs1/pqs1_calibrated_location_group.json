@@ -48,7 +48,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": true,
+  "standby": false,
   "resource_requests": {
     "memory": "50M",
     "cpu": 0.2
