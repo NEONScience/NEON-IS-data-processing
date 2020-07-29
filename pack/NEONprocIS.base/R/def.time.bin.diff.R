@@ -35,6 +35,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-12-19)
 #     original creation
+#   Cove Sturtevant (2020-07-29)
+#     force units of output difftime objects to be the same as WndwBin
 ##############################################################################################
 def.time.bin.diff <- function(WndwBin,
                          WndwTime,
@@ -46,22 +48,22 @@ def.time.bin.diff <- function(WndwBin,
   timeBgnDiff <- list()
   timeEndDiff <- list()
 
-    # Time series of binning windows 
-    timeBgnSeq <- base::as.POSIXlt(base::seq.POSIXt(from=timeDmmyBgn,to=timeDmmyEnd,by=base::format(WndwBin)))
-    timeBgnSeq <- utils::head(timeBgnSeq,n=-1) # Lop off the last one at timeEnd 
-    timeEndSeq <- timeBgnSeq + WndwBin
-    if(utils::tail(timeEndSeq,n=1) != timeDmmyEnd){
-      msg <- (base::paste0('WndwBin must be an even divisor of WndwTime. A WndwBin of ',
-                             WndwBin,' does not fit this requirement. Check inputs.'))
-      if(!base::is.null(log)){
-        log$fatal(msg)
-      } 
-      stop(msg)
+  # Time series of binning windows 
+  timeBgnSeq <- base::as.POSIXlt(base::seq.POSIXt(from=timeDmmyBgn,to=timeDmmyEnd,by=base::format(WndwBin)))
+  timeBgnSeq <- utils::head(timeBgnSeq,n=-1) # Lop off the last one at timeEnd 
+  timeEndSeq <- timeBgnSeq + WndwBin
+  if(utils::tail(timeEndSeq,n=1) != timeDmmyEnd){
+    msg <- (base::paste0('WndwBin must be an even divisor of WndwTime. A WndwBin of ',
+                           WndwBin,' does not fit this requirement. Check inputs.'))
+    if(!base::is.null(log)){
+      log$fatal(msg)
+    } 
+    stop(msg)
 
-    }
-    
-    timeBgnDiff <- timeBgnSeq - timeDmmyBgn # Add to timeBgn of each day to represent the starting time sequence
-    timeEndDiff <- timeEndSeq - timeDmmyBgn # Add to timeBgn of each day to represent the end time sequence
+  }
+  
+  timeBgnDiff <-  base::difftime(timeBgnSeq,timeDmmyBgn,units=base::attr(WndwBin,'units')) # Add to timeBgn of each day to represent the starting time sequence
+  timeEndDiff <- base::difftime(timeEndSeq,timeDmmyBgn,units=base::attr(WndwBin,'units')) # Add to timeBgn of each day to represent the end time sequence
 
   return(base::list(timeBgnDiff=timeBgnDiff,timeEndDiff=timeEndDiff))
 }
