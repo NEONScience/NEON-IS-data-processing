@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "exofdom_data_calibration_group",
+      "repo": "exofdom_data_calibration_linker",
       "glob": "/exofdom/*/*"
     }
   },

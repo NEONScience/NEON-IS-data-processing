@@ -12,7 +12,6 @@ class DataPathParser:
         self.year_index = config.year_index
         self.month_index = config.month_index
         self.day_index = config.day_index
-        self.source_id_index = config.source_id_index
 
     def parse(self, path: Path) -> Tuple[str, str, str, str, str]:
         parts = path.parts
@@ -20,5 +19,5 @@ class DataPathParser:
         year: str = parts[self.year_index]
         month: str = parts[self.month_index]
         day: str = parts[self.day_index]
-        source_id: str = parts[self.source_id_index]
+        source_id: str = path.name.split('_')[1]
         return source_type, year, month, day, source_id

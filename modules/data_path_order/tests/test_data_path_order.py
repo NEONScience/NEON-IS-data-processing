@@ -15,7 +15,7 @@ class DataPathOrderTest(TestCase):
         self.setUpPyfakefs()
         self.in_path = Path('/in/data')
         self.out_path = Path('/out')
-        self.data_metadata_path = Path('prt/2019/07/23/0001')
+        self.data_metadata_path = Path('prt/2019/07/23')
         self.data_filename = 'prt_0001_2019-07-23.ext'
         data_path = Path(self.in_path, self.data_metadata_path, self.data_filename)
         self.fs.create_file(data_path)
@@ -32,8 +32,7 @@ class DataPathOrderTest(TestCase):
                         source_type_index=self.source_type_index,
                         year_index=self.year_index,
                         month_index=self.month_index,
-                        day_index=self.day_index,
-                        source_id_index=self.source_id_index)
+                        day_index=self.day_index)
         order_paths(config)
         self.check_output()
 
@@ -45,7 +44,6 @@ class DataPathOrderTest(TestCase):
         os.environ['YEAR_INDEX'] = str(self.year_index)
         os.environ['MONTH_INDEX'] = str(self.month_index)
         os.environ['DAY_INDEX'] = str(self.day_index)
-        os.environ['SOURCE_ID_INDEX'] = str(self.source_id_index)
         data_path_order_main.main()
         self.check_output()
 
