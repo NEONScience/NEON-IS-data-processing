@@ -9,4 +9,3 @@ class Config(NamedTuple):
     year_index: int
     month_index: int
     day_index: int
-    source_id_index: int

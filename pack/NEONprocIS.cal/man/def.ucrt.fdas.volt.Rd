@@ -4,8 +4,7 @@
 \alias{def.ucrt.fdas.volt}
 \title{Compute uncertainty attributed to NEON FDAS voltage measurements}
 \usage{
-def.ucrt.fdas.volt(data = base::numeric(0), infoCal = NULL,
-  log = NULL)
+def.ucrt.fdas.volt(data = base::numeric(0), infoCal = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Numeric vector of raw voltage measurements}

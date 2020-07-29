@@ -4,8 +4,7 @@
 \alias{def.ucrt.meas.cnst}
 \title{Compute individual measurement uncertainty as a constant from NEON CVAL coefficient}
 \usage{
-def.ucrt.meas.cnst(data = base::numeric(0), infoCal = NULL,
-  log = NULL)
+def.ucrt.meas.cnst(data = base::numeric(0), infoCal = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Numeric vector of raw measurements}

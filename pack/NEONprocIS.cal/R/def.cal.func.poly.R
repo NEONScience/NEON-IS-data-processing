@@ -13,6 +13,9 @@
 #' a data frame of uncertainty coefficents. Columns of this data frame are:\cr
 #' \code{Name} String. The name of the coefficient. \cr
 #' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
+#' @param Prfx String. The prefix for the polynomial coefficients. Default is 'CVALA', indicating 
+#' that the polynomial coefficients will follow the convention CVALA0, CVALA1, CVALA2, etc., where
+#' the number indicates the polynomial power CVALA0 + CVALA1x + CVALA2x^2...
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -35,8 +38,12 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-01-31)
 #     original creation
+#   Cove Sturtevant (2020-07-28)
+#     add options for different calibration coefficient prefixes
 ##############################################################################################
-def.cal.func.poly <- function(infoCal, log = NULL) {
+def.cal.func.poly <- function(infoCal, 
+                              Prfx='CVALA',
+                              log = NULL) {
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -49,7 +56,7 @@ def.cal.func.poly <- function(infoCal, log = NULL) {
   
   # Reduce cal coefficients to ones we recognize
   cal <- infoCal$cal
-  cal <- cal[grep('CVALA[0-9]', cal$Name), ]
+  cal <- cal[grep(base::paste0(Prfx,'[0-9]'), cal$Name), ]
   
   # Error out if there aren't any calibration coefficients
   if(base::nrow(cal) == 0){
@@ -61,7 +68,7 @@ def.cal.func.poly <- function(infoCal, log = NULL) {
   # Pull out the numeric polynomial level of each coefficient (a0,a1,a2,...)
   levlPoly <-
     base::as.numeric(base::unlist(base::lapply(
-      base::strsplit(cal$Name, 'CVALA', fixed = TRUE),
+      base::strsplit(cal$Name, Prfx, fixed = TRUE),
       FUN = function(vect) {
         vect[2]
       }

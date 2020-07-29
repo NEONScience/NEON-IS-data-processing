@@ -4,8 +4,7 @@
 \alias{wrap.qf.cal}
 \title{Wrapper for computing calibration flags for all variables and time ranges}
 \usage{
-wrap.qf.cal(data, calSlct, DirCal = "./", mappNameVar = NULL,
-  log = NULL)
+wrap.qf.cal(data, calSlct, DirCal = "./", mappNameVar = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Data frame of L0 data. Must include POSIXct time variable readout_time.}

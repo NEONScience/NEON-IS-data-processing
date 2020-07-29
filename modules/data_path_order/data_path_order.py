@@ -9,7 +9,7 @@ from data_path_order.data_path_order_config import Config
 log = structlog.get_logger()
 
 
-def order_files(config: Config):
+def order_paths(config: Config):
     parser = DataPathParser(config)
     for path in config.data_path.rglob('*'):
         if path.is_file():

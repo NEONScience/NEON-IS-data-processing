@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_data_calibration_group",
+      "repo": "prt_data_calibration_linker",
       "glob": "/prt/*/*"
     }
   },

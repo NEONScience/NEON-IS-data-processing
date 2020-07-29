@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "exodissolvedoxygen_data_calibration_group",
+      "repo": "exodissolvedoxygen_data_calibration_linker",
       "glob": "/exodissolvedoxygen/*/*"
     }
   },

@@ -1,18 +1,18 @@
 ##############################################################################################
-#' @title Convert raw to calibrated data using NEON CVALA polynomial calibration coefficients
+#' @title Convert raw to calibrated data using NEON CVALB polynomial calibration coefficients
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description
 #' Definition function. Apply NEON calibration polynomial function contained in coefficients 
-#' CVALA0, CVALA1, CVALA2, etc. to convert raw data to calibrated data.
+#' CVALB0, CVALB1, CVALB2, etc. to convert raw data to calibrated data.
 
 #' @param data Numeric vector of raw measurements
 #' @param infoCal A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
 #' One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients.
 #' This data frame must include columns:\cr
-#' \code{Name} String. The name of the coefficient. Must fit regular expression CVALA[0-9]\cr
+#' \code{Name} String. The name of the coefficient. Must fit regular expression CVALB[0-9]\cr
 #' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
 #' Defaults to NULL, in which case converted data will be retured as NA.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -29,33 +29,20 @@
 
 #' @examples
 #' data=c(1,2,3)
-#' infoCal <- data.frame(Name=c('CVALA1','CVALA0'),Value=c(10,1),stringsAsFactors=FALSE)
-#' def.cal.conv(data=data,infoCal=infoCal)
+#' infoCal <- data.frame(Name=c('CVALB1','CVALB0'),Value=c(10,1),stringsAsFactors=FALSE)
+#' def.cal.conv.poly.b(data=data,infoCal=infoCal)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
-#' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.b}
+#' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly}
 #' @seealso \link[NEONprocIS.cal]{def.cal.conv.poly.m}
-#'
+
 #' @export
 
 # changelog and author contributions / copyrights
-#   Cove Sturtevant (2019-02-26)
-#     original creation
-#   Cove Sturtevant (2019-10-28)
-#     Added computation of uncertainty information
-#   Mija Choi (2020-01-07)
-#     Added parameter validations and logging
-#   Cove Sturtevant (2020-01-31)
-#     Removed uncertainty quantification (moved to separate function)
-#     Split out creation of the polynomial model object into a function
-#   Mija Choi (2020-02-24)
-#     Added list validations
-#   Cove Sturtevant (2020-05-12)
-#     Bug fix - incorrectly stopping when infoCal is NULL
 #   Cove Sturtevant (2020-07-28)
-#     specify CVALA as the coefficient prefix
+#     original creation, from def.cal.conv.poly
 ##############################################################################################
-def.cal.conv.poly <- function(data = base::numeric(0),
+def.cal.conv.poly.b <- function(data = base::numeric(0),
                               infoCal = NULL,
                               log = NULL) {
   # Intialize logging if needed
@@ -92,7 +79,7 @@ def.cal.conv.poly <- function(data = base::numeric(0),
   
   # Construct the polynomial calibration function
   func <-
-    NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
+    NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALB', log = log)
   
   # Convert data using the calibration function
   dataConv <- stats::predict(object = func, newdata = data)

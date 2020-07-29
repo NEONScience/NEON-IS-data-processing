@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "exophorp_data_calibration_group",
+      "repo": "exophorp_data_calibration_linker",
       "glob": "/exophorp/*/*"
     }
   },

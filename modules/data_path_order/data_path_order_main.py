@@ -5,7 +5,7 @@ from pathlib import Path
 
 import data_path_order.log_config as log_config
 from data_path_order.data_path_order_config import Config
-from data_path_order.data_path_order import order_files
+from data_path_order.data_path_order import order_paths
 
 
 def main():
@@ -17,20 +17,16 @@ def main():
     year_index: int = env.int('YEAR_INDEX')
     month_index: int = env.int('MONTH_INDEX')
     day_index: int = env.int('DAY_INDEX')
-    source_id_index: int = env.int('SOURCE_ID_INDEX')
-
     log_config.configure(log_level)
     log = structlog.get_logger()
     log.debug(f'data_path: {data_path} out_path: {out_path}')
-
     config = Config(data_path=data_path,
                     out_path=out_path,
                     source_type_index=source_type_index,
                     year_index=year_index,
                     month_index=month_index,
-                    day_index=day_index,
-                    source_id_index=source_id_index)
-    order_files(config)
+                    day_index=day_index)
+    order_paths(config)
 
 
 if __name__ == '__main__':

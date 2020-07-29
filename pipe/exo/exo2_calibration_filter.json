@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "exo2_data_calibration_group",
+      "repo": "exo2_data_calibration_linker",
       "glob": "/exo2/*/*"
     }
   },

@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "exoconductivity_data_calibration_group",
+      "repo": "exoconductivity_data_calibration_linker",
       "glob": "/exoconductivity/*/*"
     }
   },

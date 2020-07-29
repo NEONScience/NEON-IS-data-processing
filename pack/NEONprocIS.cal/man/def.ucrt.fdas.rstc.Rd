@@ -4,8 +4,7 @@
 \alias{def.ucrt.fdas.rstc}
 \title{Compute uncertainty attributed to NEON FDAS resistance measurements}
 \usage{
-def.ucrt.fdas.rstc(data = base::numeric(0), infoCal = NULL,
-  log = NULL)
+def.ucrt.fdas.rstc(data = base::numeric(0), infoCal = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Numeric vector of raw resistance measurements}

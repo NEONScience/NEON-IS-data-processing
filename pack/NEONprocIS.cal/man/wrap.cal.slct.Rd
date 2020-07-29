@@ -4,8 +4,14 @@
 \alias{wrap.cal.slct}
 \title{Wrapper for selecting the applicable calibrations and their time ranges for all variables}
 \usage{
-wrap.cal.slct(DirCal = "./", NameVarExpc = character(0), TimeBgn,
-  TimeEnd, NumDayExpiMax, log = NULL)
+wrap.cal.slct(
+  DirCal = "./",
+  NameVarExpc = character(0),
+  TimeBgn,
+  TimeEnd,
+  NumDayExpiMax,
+  log = NULL
+)
 }
 \arguments{
 \item{DirCal}{Character string. Relative or absolute path (minus file name) to the main calibration
