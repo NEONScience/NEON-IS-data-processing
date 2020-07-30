@@ -22,6 +22,6 @@ RUN yum update -y && \
     useradd -r -u 9999 -g appuser appuser
 
 COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser
