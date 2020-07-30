@@ -698,7 +698,6 @@ for (idxDirIn in DirIn) {
       NEONprocIS.base::def.file.name.out(nameFileIn = fileData, 
                                          prfx = base::paste0(idxDirOutQf, '/'),
                                          sufx = '_flagsCal')
-    NameFileOutQf <- base::paste0(idxDirOutQf, '/', NameFileOutQf)
     rptQfCal <-
       base::try(NEONprocIS.base::def.wrte.parq(
         data = qfCal,
