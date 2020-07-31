@@ -24,17 +24,17 @@ def order_paths(in_path: Path, out_path: Path, indices: list):
                 link_path.symlink_to(path)
 
 
-def order_path(path: Path, indices: list, base_path: Path) -> Path:
+def order_path(path: Path, indices: list, out_path: Path) -> Path:
     """
     Re-order a path into a new path based on the indices.
 
     :param path: The source path.
     :param indices: The desired path element sequence.
-    :param base_path: The base root for the new path.
+    :param out_path: The base root for the new path.
     :return: The new re-ordered path.
     """
     path_parts = path.parts
-    new_path = Path(base_path)
+    new_path = Path(out_path)
     for index in indices:
         part = path_parts[int(index)]
         new_path = new_path.joinpath(part)
