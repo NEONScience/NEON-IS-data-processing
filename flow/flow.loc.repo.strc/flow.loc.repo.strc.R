@@ -99,6 +99,8 @@
 #   Cove Sturtevant (2019-09-26)
 #     re-structured inputs to be more human readable
 #     added argument for output directory 
+#   Cove Sturtevant (2020-07-16)
+#     replaced reading of location file with NEONprocIS.base::def.loc.meta
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -168,10 +170,10 @@ for(idxDirIn in DirIn){
   }
   
   # Load in the location json
-  loc <- rjson::fromJSON(file=base::paste0(idxDirInLoc,'/',fileLoc),simplify=FALSE)
+  loc <- NEONprocIS.base::def.loc.meta(NameFile=base::paste0(idxDirInLoc,'/',fileLoc))
   
   # How many named locations do we have?
-  numLoc <- base::length(loc$features)
+  numLoc <- base::nrow(loc)
   if(numLoc == 0){
     log$warn(base::paste0('No named locations listed in ',base::paste0(idxDirInLoc,'/',fileLoc),'. Skipping...'))
     next()
@@ -180,8 +182,10 @@ for(idxDirIn in DirIn){
   # Go through each named location, restructuring the repo and copying the sensor data into it
   for(idxLoc in base::seq_len(numLoc)){
     # Get the named location name and any context
-    nameLoc <- loc$features[[idxLoc]]$properties$name
-    ctxtLoc <- base::unlist(loc$features[[idxLoc]]$properties$context)
+    nameLoc <- loc$name[idxLoc]
+    
+    # Get contexts - # Split the parameter value into a character vector delimited by pipes, but not splitting if more than one pipe
+    ctxtLoc <- base::strsplit(loc$context[idxLoc],"(?<![|])[|]{1}(?![|])",perl=TRUE)[[1]]
     
     # Check for context match
     if(base::sum(Ctxt %in% ctxtLoc)!=base::length(Ctxt)){
