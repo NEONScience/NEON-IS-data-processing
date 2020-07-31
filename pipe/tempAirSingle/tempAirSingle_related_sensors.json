@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempAirSingle_qaqc_specific_flags"
+    "name": "tempAirSingle_related_sensors"
   },
   "transform": {
     "image_pull_secrets": [
@@ -16,7 +16,7 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "FILTER_DIR": "flags",
+      "FILTER_DIR": "dualfan,windobserverii,heater",
       "LOG_LEVEL": "INFO",
       "RELATIVE_PATH_INDEX": "3"
     }
@@ -24,8 +24,8 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "tempAirSingle_qaqc_specific",
-      "glob": "/*/*/*/*/*/*",
+      "repo": "tempAirSingle_related_location_group",
+      "glob": "/*/*/*",
       "empty_files": true
     }
   },
