@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempAirSingle_heater"
+    "name": "tempAirSingle_related_sensors"
   },
   "transform": {
     "image_pull_secrets": [
@@ -16,7 +16,7 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "FILTER_DIR": "heater",
+      "FILTER_DIR": "dualfan,windobserverii,heater",
       "LOG_LEVEL": "INFO",
       "RELATIVE_PATH_INDEX": "3"
     }

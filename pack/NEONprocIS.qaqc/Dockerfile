@@ -19,7 +19,7 @@ ARG auth_token
 ENV GITHUB_PAT=$auth_token
 
 # Clone the NEON-FIU-algorithm repo using our token
-RUN git clone -b more.optm.def.plau https://$GITHUB_PAT:x-oauth-basic@github.com/covesturtevant/NEON-FIU-algorithm-covesturtevant.git
+RUN git clone -b master https://$GITHUB_PAT:x-oauth-basic@github.com/covesturtevant/NEON-FIU-algorithm-covesturtevant.git
 
 # Now make the final build, which will leave behind our access token
 FROM quay.io/battelleecology/neon-is-base-r:v0.0.55
@@ -43,11 +43,13 @@ COPY ./ /pack/NEONprocIS.qaqc/
 #    R -e 'devtools::install("/pack/NEONprocIS.qaqc",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && rm -rf /pack
 
 # Install development versions of eddy4R.base and eddy4R.qaqc
-RUN R -e 'devtools::install("/pack/eddy4R.base",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && \
-    R -e 'devtools::install("/pack/eddy4R.qaqc",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))'
+#RUN R -e 'devtools::install("/pack/eddy4R.base",dependencies=TRUE,repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))'
+#RUN R -e 'Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS=TRUE); devtools::install("/pack/eddy4R.qaqc",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))'
 
 # Restore from specific versions of dependencies, install NEONprocIS.qaqc from local, and clean up afterwards. 
 RUN R -e 'renv::restore(lockfile="pack/NEONprocIS.qaqc/renv.lock")' && \
+    R -e 'devtools::install("/pack/eddy4R.base",dependencies=FALSE,repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && \
+    R -e 'devtools::install("/pack/eddy4R.qaqc",dependencies=FALSE,repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && \
     R -e 'renv::install("/pack/NEONprocIS.qaqc")' && rm -rf /pack && \
     rm -rf /pack
     

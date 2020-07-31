@@ -21,7 +21,7 @@ ARG auth_token
 ENV GITHUB_PAT=$auth_token
 
 # Clone the NEON-FIU-algorithm repo using our token
-RUN git clone -b add.optn.def.rglr https://$GITHUB_PAT:x-oauth-basic@github.com/covesturtevant/NEON-FIU-algorithm-covesturtevant.git
+RUN git clone -b master https://$GITHUB_PAT:x-oauth-basic@github.com/covesturtevant/NEON-FIU-algorithm-covesturtevant.git
 
 # Now make the final build, which will leave behind our access token
 FROM quay.io/battelleecology/neon-is-base-r:v0.0.55
@@ -39,8 +39,7 @@ COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Install the eddy4R.base package, including dependencies (usually this is done through renv.lock file when pulling from public repo - comment this line)
-RUN R -e 'renv::install("/pack/eddy4R.base")' && rm -rf /pack
-#RUN R -e 'devtools::install("/pack/eddy4R.base",dependencies=FALSE,repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' && rm -rf /pack
+RUN R -e 'devtools::install("/pack/eddy4R.base",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))'
 
 # Copy in regularization workflow
 COPY ./flow.rglr.R /flow.rglr.R
