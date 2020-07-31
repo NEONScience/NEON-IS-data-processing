@@ -1,20 +1,20 @@
 FROM centos:7
 
-ARG APP_DIR="timeseries_padder"
+ARG APP_DIR="path_order"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
-ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
+ENV PYTHONPATH="${CONTAINER_APP_DIR}:${CONTAINER_APP_DIR}/common"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY timeseries_padder/requirements.txt ${CONTAINER_APP_DIR}
+COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
 RUN yum update -y && \
     yum install -y epel-release && \
     yum install -y gcc python36 python36-pip python36-devel python36-setuptools && \
     ldconfig && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools && \
-    python3 -mpip install -r ${CONTAINER_APP_DIR}/requirements.txt && \
+    python3 -mpip install -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
     yum remove gcc -y && \
     yum autoremove -y && \
     yum clean all && \

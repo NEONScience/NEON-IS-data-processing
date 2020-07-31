@@ -3,7 +3,7 @@ import environs
 import structlog
 from pathlib import Path
 
-import data_path_order.log_config as log_config
+import common.log_config as log_config
 from data_path_order.data_path_order_config import Config
 from data_path_order.data_path_order import order_paths
 
