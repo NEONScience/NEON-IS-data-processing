@@ -42,7 +42,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "sunav2_data_path_order",
+          "repo": "sunav2_data_calibration_group_path",
           "branch": "master",
           "glob": "/sunav2/(*)",
           "joinOn": "$1",

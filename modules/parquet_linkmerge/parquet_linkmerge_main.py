@@ -16,11 +16,12 @@ def main():
     out_path: Path = env.path('OUT_PATH')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     # default 30 percent duplication threshold
-    deduplication_threshold: float = env.float('DEDUPLICATION_THRESHOLD', 0.3)
+    duplication_threshold: float = env.float('DEDUPLICATION_THRESHOLD', 0.3)
     relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
-    parquet_file_merger = ParquetFileMerger(data_path=in_path, out_path=out_path,
-                                            deduplication_threshold=deduplication_threshold,
+    parquet_file_merger = ParquetFileMerger(data_path=in_path,
+                                            out_path=out_path,
+                                            duplication_threshold=duplication_threshold,
                                             relative_path_index=relative_path_index)
     parquet_file_merger.merge()
 
