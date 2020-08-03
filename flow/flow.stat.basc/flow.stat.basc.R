@@ -498,12 +498,11 @@ for(idxDirIn in DirIn){
       
       
       # Write out the file for this aggregation interval
-      fileStatOutSplt <- base::strsplit(idxFileData,'[.]')[[1]] # Try to grab the file name without extension
-      if(base::length(fileStatOutSplt) > 1){
-        NameFileOutStat <- base::paste0(idxDirOutStat,'/',base::paste0(fileStatOutSplt[-base::length(fileStatOutSplt)],collapse='.'),'_basicStats_',Para$WndwAgr[idxWndwAgr],'.',utils::tail(fileStatOutSplt,1))
-      } else {
-        NameFileOutStat <- base::paste0(idxDirOutStat,'/',idxFileData,'_basicStats_',Para$WndwAgr[idxWndwAgr])
-      }
+      NameFileOutStat <- 
+        NEONprocIS.base::def.file.name.out(nameFileIn = idxFileData, 
+                                           prfx = base::paste0(idxDirOutStat, '/'),
+                                           sufx = base::paste0('_basicStats_',Para$WndwAgr[idxWndwAgr])
+        )
       rptWrte <- base::try(NEONprocIS.base::def.wrte.parq(data=rpt,NameFile=NameFileOutStat,NameFileSchm=NULL,Schm=SchmStat),silent=TRUE)
       if(base::class(rptWrte) == 'try-error'){
         log$error(base::paste0('Cannot write basic statistics file ', NameFileOutStat,'. ',attr(rptWrte,"condition"))) 

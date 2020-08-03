@@ -26,25 +26,9 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "tempAirSingle_dualfan",
+          "repo": "tempAirSingle_related_sensors",
           "glob": "/*/*/*",
           "empty_files": true
-        }
-      },
-      {
-        "pfs": {
-        "name": "DATA_PATH",
-        "repo": "tempAirSingle_windobserverii",
-        "glob": "/*/*/*",
-        "empty_files": true
-        }
-      },
-      {
-        "pfs": {
-        "name": "DATA_PATH",
-        "repo": "tempAirSingle_heater",
-        "glob": "/*/*/*",
-        "empty_files": true
         }
       }
     ]
