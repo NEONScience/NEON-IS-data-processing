@@ -14,10 +14,10 @@ log = structlog.get_logger()
 
 class ParquetFileMerger:
 
-    def __init__(self, *, data_path: Path, out_path: Path, deduplication_threshold: float, relative_path_index: int):
+    def __init__(self, *, data_path: Path, out_path: Path, duplication_threshold: float, relative_path_index: int):
         self.data_path = data_path
         self.out_path = out_path
-        self.deduplication_threshold = deduplication_threshold
+        self.duplication_threshold = duplication_threshold
         self.relative_path_index = relative_path_index
 
     def write_merged_files(self, *, input_files):
@@ -48,7 +48,7 @@ class ParquetFileMerger:
         hashable_columns = [x for x in df.columns if isinstance(df[x][0], Hashable)]
         # For all the hashable columns, see if duplicated columns are over the duplication threshold
         duplicated_columns = [x.encode('UTF-8') for x in hashable_columns
-                              if (df[x].duplicated().sum() / (int(df[x].size) - 1)) > self.deduplication_threshold]
+                              if (df[x].duplicated().sum() / (int(df[x].size) - 1)) > self.duplication_threshold]
         table = pyarrow.Table.from_pandas(df, preserve_index=False, nthreads=1).replace_schema_metadata({
             'parquet.avro.schema': tb1_schema,
             'writer.model.name': 'avro'
@@ -84,12 +84,9 @@ class ParquetFileMerger:
                 self.write_merged_files(input_files=source_files[source_id])
 
     def convert_path(self, path: Path):
-        source_id = path.name.split('_')[2]
         filename = '_'.join(path.name.split('_')[1:])
-        trimmed_parts = path.parts[self.relative_path_index:]
-        output_path = Path(self.out_path, trimmed_parts[0], source_id, *trimmed_parts[1:len(trimmed_parts)-1], filename)
-        print(f'output_path: {output_path}')
-        if not output_path.parent.exists():
-            log.info(f"{output_path.parent} directory not found, creating")
-            output_path.parent.mkdir(parents=True, exist_ok=True)
+        parts = path.parts
+        trimmed_path = Path(*parts[self.relative_path_index:len(parts)-1])
+        output_path = Path(self.out_path, trimmed_path, filename)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         return output_path

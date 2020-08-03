@@ -23,12 +23,9 @@ class ParquetLinkMergeTest(TestCase):
             'UNDE_prt_6848_2019-10-02.parquet',
             'WREF_prt_6848_2019-10-02.parquet'
         ]
-        self.expected_files = [
-            'prt_6974_2019-10-02.parquet',
-            'prt_6848_2019-10-02.parquet',
-        ]
         for data_file in self.data_files:
-            data_path = Path(self.in_path, self.metadata_path, data_file)
+            source_id = data_file.split('_')[2]
+            data_path = Path(self.in_path, self.metadata_path, source_id, data_file)
             # use real data files
             actual_data_file_path = Path(os.path.dirname(__file__), data_file)
             self.fs.add_real_file(actual_data_file_path, target_path=data_path)
@@ -36,7 +33,7 @@ class ParquetLinkMergeTest(TestCase):
 
     def test_file_merger(self):
         file_merger = ParquetFileMerger(data_path=self.in_path, out_path=self.out_path,
-                                        deduplication_threshold=0.3, relative_path_index=3)
+                                        duplication_threshold=0.3, relative_path_index=3)
         file_merger.merge()
         self.check_output()
 
@@ -49,7 +46,5 @@ class ParquetLinkMergeTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        for data_file in self.expected_files:
-            source_id = data_file.split('_')[1]
-            data_path = Path(self.out_path, 'prt', source_id, '2019/10/02', data_file)
-            self.assertTrue(data_path.exists())
+        self.assertTrue(Path(self.out_path, self.metadata_path, '6974', 'prt_6974_2019-10-02.parquet').exists())
+        self.assertTrue(Path(self.out_path, self.metadata_path, '6848', 'prt_6848_2019-10-02.parquet').exists())
