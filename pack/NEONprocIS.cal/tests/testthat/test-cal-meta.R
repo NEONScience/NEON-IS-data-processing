@@ -59,6 +59,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-04-08)
 #     original creation
+#   Mija Choi (2020-08-03)
+#     Modified to reorganize the test input xml and json files
 ##############################################################################################
 # Define test context
 #context("\n       |testing def.cal.meta.R, Compile metadata for calibrations\n")
@@ -72,14 +74,17 @@ test_that("   Test of def.cal.meta.R, Compile metadata for calibrations",
             ########## fileCal: multiple calibration xmls
             ########## metaCal: a data frame returned.
             
-            fileCal <- c('calibration.xml','calibration2.xml','calibration3.xml','calibration4.xml')
-           
+            testDir = "testdata/"
+            
+            testFileCal <- c('calibration.xml','calibration2.xml','calibration3.xml','calibration4.xml')
+            testFileCalPath <- paste0(testDir, testFileCal)
+            
             cat("\n       |=====================================   Test Summary   ====================================|\n")
             
             cat("\n       |------ Positive test 1:: All the input parameters are valid                                |\n")
             
             metaCal <-
-              NEONprocIS.cal::def.cal.meta(fileCal = fileCal)
+              NEONprocIS.cal::def.cal.meta(fileCal = testFileCalPath)
             
             NameList = c('file', 'timeValiBgn', 'timeValiEnd', 'id')
             
