@@ -13,14 +13,15 @@ test_that("when source directory lenght is greater than 1 and source dir length 
 
           })
 
-test_that("when all source directory don't exist",
+test_that("when all source directories don't exist",
           {
            
-            inputDir <- c('def.dir.copy.symb/test1', 'def.dir.copy.symb/test2')
+            inputDir <- c('def.dir.copy.symb/test1', 'def.dir.copy.symb/test3h')
             outputDir <- 'def.dir.copy.symb/output'
             report <- try(NEONprocIS.base::def.dir.copy.symb(inputDir, outputDir), silent = TRUE)
             testthat::expect_false((class(report)[1] == "try-error"))
   
           })
+
 
 
