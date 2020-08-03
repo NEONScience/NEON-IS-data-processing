@@ -59,6 +59,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-06-03)
 #     Original Creation
+#   Mija Choi (2020-08-03)
+#     Modified to reorganize the test input xml and json files
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of wrap.ucrt.coef.R\n")
@@ -67,11 +69,17 @@ context("\n                       Unit test of wrap.ucrt.coef.R\n")
 test_that("Unit test of wrap.ucrt.coef.R", {
    # The input json has Name, Value, and .attrs
    
-   NameFile = "ucrt-coef-fdas-input.json"
+   testDir = "testdata/"
+   testJson = "ucrt-coef-fdas-input.json"
+   testJsonPath <- paste0(testDir, testJson)
    
-   rucfDf_returned <- NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = NameFile, log =  NULL)
+   rucfDf_returned <- NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = testJsonPath, log =  NULL)
    
-   data <- read.csv("L0_data.csv", sep = ",", header = TRUE)
+   testData = "L0_data.csv"
+   testDataPath <- paste0(testDir, testData)
+   
+   data <- read.csv(testDataPath, sep = ",", header = TRUE)
+   
    data$readout_time <- as.POSIXct(data$readout_time, tz = 'GMT')
    # FuncConv
    FuncConv = "def.cal.conv.poly"
