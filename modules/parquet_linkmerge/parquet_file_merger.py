@@ -78,8 +78,9 @@ class ParquetFileMerger:
             if len(source_files[source_id]) == 1:
                 path = source_files[source_id][0]
                 link_path = self.convert_path(path)
-                log.info(f"Linking {path} to {link_path}")
-                link_path.symlink_to(path)
+                if not link_path.exists():
+                    log.info(f"Linking {path} to {link_path}")
+                    link_path.symlink_to(path)
             else:
                 self.write_merged_files(input_files=source_files[source_id])
 
