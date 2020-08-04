@@ -1,14 +1,14 @@
 ##############################################################################################
-#' @title Unit test of def.ucrt.wq.temp.do.R
+#' @title Unit test of def.ucrt.wq.do.conc.R
 
 #' @description
-#' Run unit tests for def.ucrt.wq.temp.do.R, 
+#' Run unit tests for def.ucrt.wq.do.conc.R, 
 #'            "Uncertainty for dissolved oxygen (DO) concentration (mg/L) as part of the water"
 #' The tests include positive and negative scenarios.
 #' The positive test is for a case when all the params to the function are valid
 #' The negative tests are when a param(s) is empty or does not have valid values
 
-#' Refer to def.ucrt.wq.temp.do.R for the details of the function.
+#' Refer to def.ucrt.wq.do.conc.R for the details of the function.
 
 #' @param data Dissolved oxygen (DO) concentration data [vector]
 #' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
@@ -45,52 +45,34 @@
 #     Original Creation
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of def.ucrt.wq.temp.do.R\n")
+context("\n                       Unit test of def.ucrt.wq.do.conc.R\n")
 
-# Unit test of def.ucrt.wq.temp.do.R
-test_that("Unit test of def.ucrt.wq.temp.do.R", {
-  # Happy Path 1 - All params passed
+# Unit test of def.ucrt.wq.do.conc.R
+test_that("Unit test of def.ucrt.wq.do.conc.R", {
+  # Happy Path 
   
-  testDir = "testdata/"
-  
-  testFileCal = "calibration222.xml"
-  testFileCalPath <- paste0(testDir, testFileCal)
-  
-  infoCal <-
-    NEONprocIS.cal::def.read.cal.xml(NameFile = testFileCalPath, Vrbs = TRUE)
-  
-  # data is temperature in Celsius
-  
-  ### output = 0.01 if data is <= 35 Celsius according to the manual
-  ### output = 0.05 if data is >35 Celsius according to the manual
-  
-  temp = c(37, 30, 38, 20, 40, 15)
-  out_Data = c(0.05, 0.01, 0.05, 0.01, 0.05, 0.01)
- 
-  col_List = c('ucrtMeas')
- 
-  #The cal input is not a requireed parameter 
+  ### output = 0.01 if DO is > 0 & <= 20 mg/l according to the manual
+  ### output = 0.05 if DO is >20 mg/l & < 50 mg/l according to the manual
 
+  data = c(-5, 25, 20, 30, 10, 35)
+  out_Data = c(0.01, 0.05, 0.01, 0.05, 0.01, 0.05)
+  
+  col_List = c("ucrtPercent", "ucrtMeas")
+ 
   outputDF_returned <-
-    NEONprocIS.cal::def.ucrt.wq.temp.do (data = temp, infoCal = infoCal, log = NULL)
+    NEONprocIS.cal::def.ucrt.wq.do.conc (data = data, log = NULL)
   
   expect_true ((is.data.frame(outputDF_returned)) &&
                  !(is.null(outputDF_returned)))
+  # columns returned are ucrtPercent and ucrtMeas
   expect_true (all (names(outputDF_returned) == col_List) &&
-                 all(outputDF_returned$ucrtMeas == out_Data))
+                  all(outputDF_returned$ucrtMeas == out_Data*data))
   
-  # Happy path 2 - infoCal is not passed
+  # Sad path - data is NULL
   
-  outputDF_returned <- NEONprocIS.cal::def.ucrt.wq.temp.do (data = temp)
-  
-  expect_true ((is.data.frame(outputDF_returned)) && !(is.null(outputDF_returned)))
-  expect_true (all (names(outputDF_returned) == col_List ) && all(outputDF_returned$ucrtMeas == out_Data))
-  
-  # Sad path 1 - data is NULL
-  
-  # There will be no output since data has no value to separate 
+  # The error will be returned since empty data is not a valid input to def.ucrt.wq.do.conc.R
  
-  temp = c()
-  outputDF_returned <- try (NEONprocIS.cal::def.ucrt.wq.temp.do (data = temp), silent = TRUE) 
+  data = c()
+  outputDF_returned <- try (NEONprocIS.cal::def.ucrt.wq.do.conc (data = data), silent = TRUE) 
   testthat::expect_true((class(outputDF_returned)[1] == "try-error")) 
 })
