@@ -14,11 +14,11 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "li191r_data_calibration_group",
-      "glob": "/li191r/*/*"
+      "glob": "/li191r/*/*/*"
     }
   },
-  "enable_stats": false,
-  "standby":true,
+  "enable_stats": true,
+  "standby": true,
   "resource_requests": {
     "memory": "210M",
     "cpu": 0.3
