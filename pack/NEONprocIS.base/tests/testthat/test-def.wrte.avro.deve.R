@@ -4,11 +4,8 @@
 test_that("write Avro file with basic parameter",
      {
        data <- data.frame(x=c(1,2,3), y=c('one','two','three'), stringsAsFactors=FALSE)
-       NameFile <- 'tests/testthat/def.wrte.avro.deve/out.avro'
-     #  NEONprocIS.base::def.wrte.avro.deve(data = data, NameFile = NameFile)
-    #   Schm <- "def.wrte.parq/prt_calibrated.avsc"
-       returnClass <- try(NEONprocIS.base::def.wrte.avro.deve(data = data, NameFile = NameFile), silent = TRUE)
-       testthat::expect_false((class(returnClass)[1] == "try-error"))
+       NameFile <- 'out.avro'
+       NEONprocIS.base::def.wrte.avro.deve(data = data, NameFile = NameFile, NameLib='../../ravro.so')
        expect_true (file.exists(NameFile))
        if (file.exists(NameFile)) { file.remove(NameFile)}
 
