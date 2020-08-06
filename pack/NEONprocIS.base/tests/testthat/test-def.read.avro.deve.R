@@ -3,16 +3,21 @@
 
 # test_that("when more than one input is sent as an input, consider just the first one",
 #            {
-#              nameFile <- c('tests/testthat/def.read.avro.deve/prt_test.avro', 'def.read.avro.deve/prt_calibrated_2.avsc')
-#              rpt <- try(NEONprocIS.base::def.read.avro.deve(NameFile = nameFile, NameLib = "ravro.so"), silent = TRUE)
+#              workingDirPath <- getwd()
+#              nameFile <- file.path(workingDirPath,"tests/testthat/def.read.avro.deve/prt_test.avro")
+#              nameLib <- file.path(workingDirPath, "ravro.so")
+#              print(nameLib)
+#              rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib), silent = FALSE)
 #              testthat::expect_false((class(rpt)[1] == "try-error"))
-#             
+# 
 #            })
 # 
 #  test_that("check data types of the reutrn list",
 #            {
-#              nameFile <- c('tests/testthat/def.read.avro.deve/prt_test.avro')
-#              rpt <- try(NEONprocIS.base::def.read.avro.deve(NameFile = nameFile, NameLib = "ravro.so"), silent = TRUE)
+#              workingDirPath <- getwd()
+#              nameFile <- file.path(workingDirPath,"tests/testthat/def.read.avro.deve/prt_test.avro")
+#              nameLib <- file.path(workingDirPath, "ravro.so")
+#              rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib), silent = FALSE)
 #              testthat::expect_false((class(rpt)[1] == "try-error"))
 #              testthat::equals(length(rpt), 4 )
 #              testthat::equals(class(rpt$source_id), "character" )
