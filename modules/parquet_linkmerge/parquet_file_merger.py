@@ -15,7 +15,8 @@ log = structlog.get_logger()
 
 class ParquetFileMerger:
 
-    def __init__(self, *, data_path: Path, out_path: Path, duplication_threshold: float, relative_path_index: int):
+    def __init__(self, *, data_path: Path, out_path: Path,
+                 duplication_threshold: float, relative_path_index: int) -> None:
         self.data_path = data_path
         self.out_path = out_path
         self.duplication_threshold = duplication_threshold

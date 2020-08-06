@@ -9,7 +9,7 @@ from data_calibration_linker.data_calibration_config import Config
 log = structlog.get_logger()
 
 
-def process_files(config: Config):
+def process_files(config: Config) -> None:
     if config.data_path is not None:
         log.debug('linking data')
         link_data(config)
@@ -18,7 +18,7 @@ def process_files(config: Config):
         link_calibrations(config)
 
 
-def link_data(config: Config):
+def link_data(config: Config) -> None:
     parser = DataPathParser(config)
     for path in config.data_path.rglob('*'):
         if path.is_file():
@@ -36,7 +36,7 @@ def link_data(config: Config):
             calibration_path.mkdir(parents=True, exist_ok=True)
 
 
-def link_calibrations(config: Config):
+def link_calibrations(config: Config) -> None:
     for path in config.calibration_path.rglob('*'):
         if path.is_file():
             parts = path.parts
@@ -45,4 +45,3 @@ def link_calibrations(config: Config):
             if not link_path.exists():
                 log.debug(f'calibration_link: {link_path}')
                 link_path.symlink_to(path)
-

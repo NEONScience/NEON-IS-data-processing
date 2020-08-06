@@ -44,14 +44,6 @@
         "glob": "/windobserverii/*/*/*",
         "empty_files": true
         }
-      },
-      {
-        "pfs": {
-        "name": "DATA_PATH",
-        "repo": "tempAirSingle_heater_group_path",
-        "glob": "/heater/*/*/*",
-        "empty_files": true
-        }
       }
     ]
   },

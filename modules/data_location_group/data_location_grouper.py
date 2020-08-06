@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+from typing import Iterator
 
 import structlog
 
@@ -11,17 +12,17 @@ log = structlog.get_logger()
 
 class DataLocationGrouper:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.data_path = config.data_path
         self.location_path = config.location_path
         self.out_path = config.out_path
         self.data_path_parser = DataPathParser(config)
 
-    def group_files(self):
+    def group_files(self) -> None:
         for common_path in self.link_data_files():
             self.link_location_files(common_path)
 
-    def link_data_files(self):
+    def link_data_files(self) -> Iterator[Path]:
         """
         Link data files into the output path and yield the output directory.
 
@@ -35,10 +36,11 @@ class DataLocationGrouper:
                 link_path = Path(common_path, 'data', path.name)
                 log.debug(f'link path: {link_path}')
                 link_path.parent.mkdir(parents=True, exist_ok=True)
-                link_path.symlink_to(path)
+                if not link_path.exists():
+                    link_path.symlink_to(path)
                 yield common_path
 
-    def link_location_files(self, common_path: Path):
+    def link_location_files(self, common_path: Path) -> None:
         """
         Link the location files.
 
@@ -49,4 +51,5 @@ class DataLocationGrouper:
                 link_path = Path(common_path, 'location', path.name)
                 log.debug(f'location link path: {link_path}')
                 link_path.parent.mkdir(parents=True, exist_ok=True)
-                link_path.symlink_to(path)
+                if not link_path.exists():
+                    link_path.symlink_to(path)
