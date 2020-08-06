@@ -23,7 +23,7 @@
     "pfs": {
       "name": "SOURCE_PATH",
       "repo": "prt_date_gap_filler_linker",
-      "glob": "/prt/*/*"
+      "glob": "/prt/*/*/*"
     }
   },
   "enable_stats": false,
