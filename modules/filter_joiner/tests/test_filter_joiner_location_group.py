@@ -10,7 +10,7 @@ import filter_joiner.filter_joiner_main as filter_joiner_main
 
 
 class FilterJoinerLocationGroupTest(TestCase):
-    """Class to simulate the real pipeline location/data join on source ID."""
+    """Class to simulate pipeline location/data join on source ID."""
 
     def setUp(self):
         """Create files to join in fake filesystem."""

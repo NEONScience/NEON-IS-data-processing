@@ -8,23 +8,23 @@ log = structlog.get_logger()
 
 class EmptyFileLinker:
 
-    def __init__(self, empty_files: EmptyFilePaths, location: str, year: str, month: str, day: str):
+    def __init__(self, empty_files: EmptyFilePaths, location: str, year: str, month: str, day: str) -> None:
         self.empty_files = empty_files
         self.location = location
         self.year = year
         self.month = month
         self.day = day
 
-    def link_data_file(self, out_path: Path):
+    def link_data_file(self, out_path: Path) -> None:
         self.link_empty_file(out_path, self.empty_files.data_path)
 
-    def link_flags_file(self, out_path: Path):
+    def link_flags_file(self, out_path: Path) -> None:
         self.link_empty_file(out_path, self.empty_files.flags_path)
 
-    def link_uncertainty_data_file(self, out_path: Path):
+    def link_uncertainty_data_file(self, out_path: Path) -> None:
         self.link_empty_file(out_path, self.empty_files.uncertainty_data_path)
 
-    def link_empty_file(self, out_path: Path, file: Path):
+    def link_empty_file(self, out_path: Path, file: Path) -> None:
         """
         Link the file into the output path.
 

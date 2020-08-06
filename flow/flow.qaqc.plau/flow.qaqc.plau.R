@@ -481,12 +481,7 @@ for(idxDirIn in DirIn){
   }
   
   # Write out the flags 
-  fileDataOutSplt <- base::strsplit(fileDataOut,'[.]')[[1]] # Try to grab the file name without extension
-  if(base::length(fileDataOutSplt) > 1){
-    NameFileOutQf <- base::paste0(idxDirOutQf,'/',base::paste0(fileDataOutSplt[-base::length(fileDataOutSplt)],collapse='.'),'_flagsPlausibility.',utils::tail(fileDataOutSplt,1))
-  } else {
-    NameFileOutQf <- base::paste0(idxDirOutQf,'/',fileDataOut,'_flagsPlausibility')
-  }
+  NameFileOutQf <- NEONprocIS.base::def.file.name.out(nameFileIn = fileDataOut, prfx=base::paste0(idxDirOutQf,'/'), sufx='_flagsPlausibility')
   rptQf <- base::try(NEONprocIS.base::def.wrte.parq(data=qf,NameFile=NameFileOutQf,NameFileSchm=NULL,Schm=SchmQfOut),silent=TRUE)
   if(base::class(rptQf) == 'try-error'){
     log$error(base::paste0('Cannot write plausibility flags  in file ', NameFileOutQf,'. ',attr(rptQf,"condition"))) 

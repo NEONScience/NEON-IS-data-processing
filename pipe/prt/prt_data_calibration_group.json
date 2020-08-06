@@ -42,7 +42,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_prt_linkmerge",
+          "repo": "prt_data_calibration_group_path",
           "branch": "master",
           "glob": "/prt/(*)",
           "joinOn": "$1",
@@ -52,7 +52,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": false,
+  "standby": true,
   "cache_size": "64M",
   "max_queue_size": "1"
 }

@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "3.5.1",
+    "Version": "3.6.0",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -11,31 +11,24 @@
   "Packages": {
     "Rcpp": {
       "Package": "Rcpp",
-      "Version": "1.0.4.6",
+      "Version": "1.0.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "e652f23d8b1807cc975c51410d05b72f"
-    },
-    "curl": {
-      "Package": "curl",
-      "Version": "4.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "2b7d10581cc730804e9ed178c8374bd6"
+      "Hash": "125dc7a0ed375eb68c0ce533b48d291f"
     },
     "geojsonsf": {
       "Package": "geojsonsf",
-      "Version": "1.3.3",
+      "Version": "2.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "22149e0e0ea1cb4725b15d05ee6ed01f"
+      "Hash": "26519a4f3231dc58fcfb2e931c0ca502"
     },
     "jsonify": {
       "Package": "jsonify",
-      "Version": "1.1.1",
+      "Version": "1.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5b6d70fc92e471ba0d10f9cb6f4ce19a"
+      "Hash": "f435875f0eb7de52ade944ed82ee9089"
     },
     "rapidjsonr": {
       "Package": "rapidjsonr",
@@ -60,10 +53,10 @@
     },
     "sfheaders": {
       "Package": "sfheaders",
-      "Version": "0.2.1",
+      "Version": "0.2.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0daf332f569bde82b56326eb9e545cc8"
+      "Hash": "d69b3f4a19888552509cebe2d116afde"
     }
   }
 }

@@ -11,14 +11,14 @@ log = structlog.get_logger()
 
 class DataFileLinker:
 
-    def __init__(self, config: DateGapFillerConfig):
+    def __init__(self, config: DateGapFillerConfig) -> None:
         self.data_path = config.data_path
         self.out_path = config.out_path
         self.start_date = config.start_date
         self.end_date = config.end_date
         self.data_path_parser = DataPathParser(config)
 
-    def link_files(self):
+    def link_files(self) -> None:
         """Link all files between the start and end dates."""
         for path in self.data_path.rglob('*'):
             if path.is_file():
@@ -28,4 +28,5 @@ class DataFileLinker:
                     continue
                 link_path = Path(self.out_path, source_type, year, month, day, location, data_type, path.name)
                 link_path.parent.mkdir(parents=True, exist_ok=True)
-                link_path.symlink_to(path)
+                if not link_path.exists():
+                    link_path.symlink_to(path)

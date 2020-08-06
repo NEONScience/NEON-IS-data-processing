@@ -44,6 +44,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-06-15)
 #     Original Creation
+#   Mija Choi (2020-08-03)
+#     Modified to reorganize the test input xml and json files
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of def.ucrt.fdas.rstc.R\n")
@@ -54,8 +56,11 @@ test_that("Unit test of def.ucrt.fdas.rstc.R", {
   #
   # The input is a json with elements of Name, Value, and .attrs
   # fileCal has the correct value for "resistance" calibration
-  fileCal = "calibration3.xml"
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = fileCal, Vrbs = TRUE)
+  testDir = "testdata/"
+  testFileCal = "calibration3.xml"
+  testFileCalPath <- paste0(testDir, testFileCal)
+  
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = testFileCalPath, Vrbs = TRUE)
   data = c(0.9, 0.88)
   
   # Happy Path 1v- All params passed
@@ -77,8 +82,10 @@ test_that("Unit test of def.ucrt.fdas.rstc.R", {
   # Sad path 1 - calibration does not have right values for "resistance" calibration
   # the calibration should have (U_CVALR1,U_CVALR4) to be the voltage calibration
   
-  fileCal = "calibration4.xml"
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+  testFileCal = "calibration4.xml"
+  testFileCalPath <- paste0(testDir, testFileCal)
+  
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=testFileCalPath,Vrbs=TRUE)
   data = c(0.9, 0.88)
   ufrstcDf_returned <- try(NEONprocIS.cal::def.ucrt.fdas.rstc (data = data,
                                                                infoCal = infoCal), silent = TRUE)

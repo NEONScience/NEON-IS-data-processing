@@ -24,13 +24,8 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-<<<<<<< HEAD
-          "repo": "tempAirSingle_prt_group_path_jr",
-          "glob": "/prt/*/*/*",
-=======
           "repo": "tempAirSingle_prt_group_path",
-          "glob": "/prt/*/*",
->>>>>>> 6c5620586bd8881dfa3efa9130d6692ee12fe530
+          "glob": "/prt/*/*/*",
           "empty_files": true
         }
       },
@@ -38,7 +33,7 @@
         "pfs": {
           "name": "DATA_PATH",
           "repo": "tempAirSingle_dualfan_group_path",
-          "glob": "/dualfan/*/*",
+          "glob": "/dualfan/*/*/*",
           "empty_files": true
         }
       },

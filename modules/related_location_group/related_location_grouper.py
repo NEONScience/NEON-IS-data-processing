@@ -11,12 +11,12 @@ log = get_logger()
 
 class RelatedLocationGrouper:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.data_path = config.data_path
         self.out_path = config.out_path
         self.data_path_parser = DataPathParser(config)
 
-    def group_files(self):
+    def group_files(self) -> None:
         """Link related data and location files into the output path."""
         for path in self.data_path.rglob('*'):
             if path.is_file():

@@ -49,6 +49,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-04-07)
 #     original creation
+#   Mija Choi (2020-08-03)
+#     Modified to reorganize the test input xml and json files
 ##############################################################################################
 # Define test context
 #context("\n       |testing def.cal.slct.R, determine applicable date ranges for calibration\n")
@@ -65,7 +67,11 @@ test_that("   Test of def.cal.slct.R, determine applicable date ranges for calib
             ########## timeValiEnd as.POSIXct and
             ########## id, which is CertificateNumber in calibration files.
             
-            metaCal <- read.csv("metaCal.csv", stringsAsFactors = FALSE)
+            testDir = "testdata/"
+            testFile = "metaCal.csv"
+            testFilePath <- paste0(testDir, testFile)
+            
+            metaCal <- read.csv(testFilePath, stringsAsFactors = FALSE)
             #
             # ensure that metaCal$timeValiBgn and metaCal$timeValiEnd are in POSIXct.
             # The data in your test file are pulled in as character, so the code does not operate properly
