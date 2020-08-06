@@ -24,7 +24,7 @@ class DataGapFillerLinker:
         self.location_index = location_index
         self.empty_file_suffix = empty_file_suffix
 
-    def link_files(self):
+    def link_files(self) -> None:
         """Link input files and directories into the output path."""
         empty_file_glob_pattern = f'**/*{self.empty_file_suffix}'
         for empty_file_path in self.in_path.glob(empty_file_glob_pattern):
@@ -54,12 +54,14 @@ class DataGapFillerLinker:
                                 dir_path = Path(self.out_path, *parts[self.relative_path_index:len(parts) - 1])
                                 dir_path.mkdir(parents=True, exist_ok=True)
                                 link_path = Path(dir_path, path.stem)  # trim the empty file suffix
-                                log.debug(f'linking empty file {path} to {link_path}')
-                                link_path.symlink_to(path)
+                                if not link_path.exists():
+                                    log.debug(f'linking empty file {path} to {link_path}')
+                                    link_path.symlink_to(path)
                         # link the data file
                         else:
                             dir_path = Path(self.out_path, *parts[self.relative_path_index:len(parts) - 1])
                             dir_path.mkdir(parents=True, exist_ok=True)
                             link_path = Path(dir_path, path.name)
-                            log.debug(f'linking data file {path} to {link_path}')
-                            link_path.symlink_to(path)
+                            if not link_path.exists():
+                                log.debug(f'linking data file {path} to {link_path}')
+                                link_path.symlink_to(path)

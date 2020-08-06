@@ -50,8 +50,9 @@ class DataAccessTest(unittest.TestCase):
         self.assertTrue(active_periods is not None)
 
     def test_get_named_location_context(self):
-        contexts: List[str] = get_named_location_context(self.connection, self.named_location_id)
-        self.assertTrue(len(contexts) == 0)
+        context: List[str] = get_named_location_context(self.connection, self.named_location_id)
+        expected_context = ['aspirated-single-31', 'par-met', 'upward-facing']
+        self.assertTrue(context == expected_context)
 
     def test_get_named_location_locations(self):
         result = get_named_location_locations(self.connection, self.named_location_id)
@@ -61,8 +62,8 @@ class DataAccessTest(unittest.TestCase):
     def test_get_named_location_properties(self):
         properties: List[Property] = get_named_location_properties(self.connection, self.named_location_id)
         prop = properties[0]
-        self.assertTrue(prop.name == 'Required Asset Management Location Code')
-        self.assertTrue(prop.value == 'CFGLOC100805')
+        self.assertTrue(prop.name == 'HOR')
+        self.assertTrue(prop.value == '000')
 
     def test_get_named_location_schema_name(self):
         named_location_id = 156951

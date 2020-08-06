@@ -10,7 +10,7 @@ log = get_logger()
 
 class Egress:
 
-    def __init__(self, data_path: Path, out_path: Path, output_name: str, date_index: int, location_index: int):
+    def __init__(self, data_path: Path, out_path: Path, output_name: str, date_index: int, location_index: int) -> None:
         """
         Constructor.
 
@@ -28,7 +28,7 @@ class Egress:
         self.location_index = location_index
         self.filename_delimiter = "_"
 
-    def upload(self):
+    def upload(self) -> None:
         """Link the source files into the output directory."""
         try:
             for root, dirs, files in os.walk(str(self.data_path)):
