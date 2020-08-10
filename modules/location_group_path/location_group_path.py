@@ -45,12 +45,11 @@ class LocationGroupPath:
                     context = file_parser.get_context(path)
                     groups = file_parser.get_context_matches(context, self.group)
                     associated_paths: List[Path] = []
-                    # get all the files in the directory containing this location file
+                    # get all the files and other directory in the parent directory containing this location file
                     location_path = path.parent.parent
                     for associated_path in location_path.rglob('*'):
-                        if associated_path.is_file():
-                            log.debug(f'associated_path: {associated_path}')
-                            associated_paths.append(associated_path)
+                        log.debug(f'associated_path: {associated_path}')
+                        associated_paths.append(associated_path)
                     path_groups.append(PathGroup(associated_paths, groups))
         return path_groups
 

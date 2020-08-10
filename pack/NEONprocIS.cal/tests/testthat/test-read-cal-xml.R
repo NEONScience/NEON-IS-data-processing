@@ -33,6 +33,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-03-02)
 #     Added unit testing
+#   Mija Choi (2020-08-03)
+#     Modified to reorganize the test input xml and json files
 ##############################################################################################
 # Define test context
 context("\n                      Read NEON calibration XML file\n")
@@ -43,15 +45,18 @@ test_that("testing Read NEON calibration XML file", {
   ########## Happy path #1 - input xml is valid and conforms to the xml schmema
   ##########
   Sys.setenv(LOG_LEVEL='debug')
-  file1 = "calibration.xml"
+  
+  testDir = "testdata/"
+  testFileCal = "calibration.xml"
+  testFileCalPath <- paste0(testDir, testFileCal)
  
   #
   cat("\n       |======= Positive test 1:: input xml is valid and conforms to the xml schmema  ================|\n\n")
   
   #
-  rpt1 <- NEONprocIS.cal::def.read.cal.xml (file1, Vrbs = TRUE)
+  rpt1 <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
   
-  listXml <- XML::xmlToList(file1)
+  listXml <- XML::xmlToList(testFileCalPath)
   listIdentical <- identical(listXml, rpt1$file)
   
   testthat::expect_true(listIdentical)
@@ -83,13 +88,14 @@ test_that("testing Read NEON calibration XML file", {
   ########## Warning issued and calibrated values NA.
   ##########
   
-  file1 = "calibration-timeMissing.xml"
+  testFileCal = "calibration-timeMissing.xml"
+  testFileCalPath <- paste0(testDir, testFileCal)
   
   #
   cat("\n       |======= Negative test 2:: input xml does not conform to the xml schema  ======================|\n\n")
   #
   rpt1 <-
-    try(NEONprocIS.cal::def.read.cal.xml (file1, Vrbs = TRUE),
+    try(NEONprocIS.cal::def.read.cal.xml (file1= testFileCalPath, Vrbs = TRUE),
         silent = TRUE)
   
   testthat::expect_true((class(rpt1)[1] == "try-error"))

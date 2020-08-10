@@ -6,7 +6,7 @@ from structlog import get_logger
 log = get_logger()
 
 
-def join_files(*, related_paths: list, out_path: Path, relative_path_index: int):
+def join_files(*, related_paths: list, out_path: Path, relative_path_index: int) -> None:
     """
     Link files in related paths into the output directory.
 

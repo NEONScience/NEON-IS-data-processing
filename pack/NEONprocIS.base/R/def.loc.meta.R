@@ -45,6 +45,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-02-19)
 #     original creation
+#   Cove Sturtevant (2020-07-16)
+#     output source_type and source_id from location file
 ##############################################################################################
 def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NULL){
   # Initialize log if not input
@@ -77,6 +79,18 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   
   # Load the full json into list
   locFull <- rjson::fromJSON(file=NameFile,simplify=TRUE)
+  
+  # Top level properties of sensor-based location file
+  if(!base::is.null(locFull$source_type)){
+    srcType <- locFull$source_type
+  } else {
+    srcType <- NA
+  }  
+  if(!base::is.null(locFull$source_id)){
+    srcId <- locFull$source_id
+  } else {
+    srcId <- NA
+  }  
   
   # Properties of each named location listed in the locations file
   # Lists the named location, site, install_date, remove_date
@@ -147,6 +161,8 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
     
     rpt <- base::rbind(rpt,base::data.frame(name=locProp$name[idxLoc],
                                             site=locProp$site[idxLoc],
+                                            source_type=srcType,
+                                            source_id=srcId,
                                             install_date=locProp$install_date[idxLoc],
                                             remove_date=locProp$remove_date[idxLoc],
                                             transaction_date=locProp$transaction_date[idxLoc],

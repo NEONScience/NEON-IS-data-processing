@@ -6,7 +6,7 @@ from typing import Callable, Iterator
 from data_access.types.threshold import Threshold
 
 
-def load_thresholds(get_thresholds: Callable[[], Iterator[Threshold]], out_path: Path):
+def load_thresholds(get_thresholds: Callable[[], Iterator[Threshold]], out_path: Path) -> None:
     """
     Write a threshold file into the output path.
 

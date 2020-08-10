@@ -12,7 +12,7 @@ log = get_logger()
 
 class PaddedTimeSeriesAnalyzer:
 
-    def __init__(self, data_path: Path, out_path: Path, relative_path_index: int):
+    def __init__(self, data_path: Path, out_path: Path, relative_path_index: int) -> None:
         """
         Constructor.
 
@@ -24,7 +24,7 @@ class PaddedTimeSeriesAnalyzer:
         self.out_path = out_path
         self.relative_path_index = relative_path_index
 
-    def analyze(self):
+    def analyze(self) -> None:
         """Verify all necessary data files are present in the input."""
         manifest_file = AnalyzerConfig.manifest_filename
         try:
@@ -65,7 +65,7 @@ class PaddedTimeSeriesAnalyzer:
             log.error("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
 
     @staticmethod
-    def link_thresholds(data_file_path: Path, data_file_link_path: Path):
+    def link_thresholds(data_file_path: Path, data_file_link_path: Path) -> None:
         """
         Link the threshold file.
 
@@ -82,7 +82,7 @@ class PaddedTimeSeriesAnalyzer:
             if not link_path.exists():
                 link_path.symlink_to(file_path)
 
-    def link_ancillary_files(self, root: Path):
+    def link_ancillary_files(self, root: Path) -> None:
         """
         Link any files beyond data and thresholds.
 

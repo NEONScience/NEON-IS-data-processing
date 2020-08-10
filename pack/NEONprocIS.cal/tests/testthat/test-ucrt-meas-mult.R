@@ -40,6 +40,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-06-22)
 #     Original Creation
+#   Mija Choi (2020-08-03)
+#     Modified to reorganize the test input xml and json files
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of def.ucrt.meas.mult.R\n")
@@ -51,8 +53,11 @@ test_that("Unit test of def.ucrt.meas.mult.R", {
   # The input is a json with elements of Name, Value, and .attrs
   # fileCal has the correct value for "resistance" calibration
 
-  fileCal = "calibration.xml"
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+  testDir = "testdata/"
+  testFileCal = "calibration.xml"
+  testFileCalPath <- paste0(testDir, testFileCal)
+  
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=testFileCalPath,Vrbs=TRUE)
   data = c(0.9)
  
   # Happy Path 1 - All params passed
@@ -72,8 +77,10 @@ test_that("Unit test of def.ucrt.meas.mult.R", {
   #            - Will use the first if more than one matching uncertainty coefficient was found
   # calibration44.xml below has 2 entries for U_CVALA1
  
-  fileCal = "calibration44.xml"
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = fileCal, Vrbs = TRUE)
+  testFileCal = "calibration44.xml"
+  testFileCalPath <- paste0(testDir, testFileCal)
+  
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = testFileCalPath, Vrbs = TRUE)
   data = c(0.7)
   
   umeas_multDf_returned <- NEONprocIS.cal::def.ucrt.meas.mult (data = data, infoCal = infoCal)
@@ -86,8 +93,10 @@ test_that("Unit test of def.ucrt.meas.mult.R", {
   # Sad path - Check format of infoCal 
   # the calibration222.xml does not have 'U_CVALA1' in tha names of Uncertainty
   
-  fileCal = "calibration222.xml"
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+  testFileCal = "calibration222.xml"
+  testFileCalPath <- paste0(testDir, testFileCal)
+  
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=testFileCalPath,Vrbs=TRUE)
   data = c(0.9)
   
   umeas_multDf_returned <- try (NEONprocIS.cal::def.ucrt.meas.mult (data = data, infoCal = infoCal), silent = TRUE)

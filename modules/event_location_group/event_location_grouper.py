@@ -27,7 +27,8 @@ class EventLocationGrouper:
                 link_path = Path(link_root_path, 'data', path.name)
                 log.debug(f'data link: {link_path}')
                 link_path.parent.mkdir(parents=True, exist_ok=True)
-                link_path.symlink_to(path)
+                if not link_path.exists():
+                    link_path.symlink_to(path)
 
     def link_location(self, link_root_path: Path) -> None:
         """
@@ -40,4 +41,5 @@ class EventLocationGrouper:
                 link_path = Path(link_root_path, 'location', path.name)
                 log.debug(f'location link: {link_path}')
                 link_path.parent.mkdir(parents=True, exist_ok=True)
-                link_path.symlink_to(path)
+                if not link_path.exists():
+                    link_path.symlink_to(path)

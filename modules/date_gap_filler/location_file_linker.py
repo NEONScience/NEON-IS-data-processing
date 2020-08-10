@@ -15,7 +15,7 @@ log = structlog.get_logger()
 
 class LocationFileLinker:
 
-    def __init__(self, config: DateGapFillerConfig):
+    def __init__(self, config: DateGapFillerConfig) -> None:
         self.out_path = config.out_path
         self.output_dirs = config.output_directories
         self.location_path = config.location_path
@@ -26,7 +26,7 @@ class LocationFileLinker:
         self.location_path_parser = LocationPathParser(config)
         self.empty_file_handler = EmptyFileHandler(config)
 
-    def link_files(self):
+    def link_files(self) -> None:
         """Process the location files and fill date gaps with empty files."""
         for path in self.location_path.rglob('*'):
             if path.is_file():
@@ -46,7 +46,7 @@ class LocationFileLinker:
                         continue
                     self.link_path(path, source_type, year, month, day, location)
 
-    def link_path(self, path: Path, source_type: str, year: str, month: str, day: str, location: str):
+    def link_path(self, path: Path, source_type: str, year: str, month: str, day: str, location: str) -> None:
         root_link_path = Path(self.out_path, source_type, year, month, day, location)
         location_link = Path(root_link_path, self.location_dir, path.name)
         location_link.parent.mkdir(parents=True, exist_ok=True)
