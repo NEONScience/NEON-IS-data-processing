@@ -6,7 +6,7 @@ import structlog
 log = structlog.get_logger()
 
 
-def order_paths(in_path: Path, out_path: Path, indices: list):
+def order_paths(in_path: Path, out_path: Path, indices: list) -> None:
     """
     Re-order a path into the sequence defined by the indices and link the path
     to the new path in the output directory.
