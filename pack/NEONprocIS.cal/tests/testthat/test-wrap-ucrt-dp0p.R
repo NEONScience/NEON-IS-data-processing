@@ -132,7 +132,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    
    fdas = c("R", "V")
    var2 = c("resistance", "voltage")
-   ParaUcrt <- data.frame(var = var2, typeFdas = fdas, stringsAsFactors = FALSE)
+   ParaUcrt <- data.frame(var = var2, typeFdas = fdas, FuncUcrt = FuncUcrt, stringsAsFactors = FALSE)
    
    nameVarIn = c('resistance', 'voltage')
    nameVarOut = c('resistance', 'voltage')
