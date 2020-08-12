@@ -101,10 +101,10 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    var = c("resistance")
   # FuncUcrt <- data.frame(var = var, FuncUcrt = FuncUcrt, stringsAsFactors = FALSE)
    #
-   Name = c("CVALA1", "CVALA2", "CVALA3")
-   Value = c("0.9", "0.88", "0.77")
-   cal <- data.frame(Name, Value, stringsAsFactors = FALSE)
-   infoCal <- list(cal = cal)
+   testFileCal = "calibration.xml"
+   testFileCalPath <- paste0(testDir, testFileCal)
+   
+   infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
    
    DirCal = "./calibrations"
    NameVarExpc = character(0)
