@@ -99,7 +99,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    # FuncUcrt
    FuncUcrt = "def.ucrt.meas.cnst"
    var = c("resistance")
-   FuncUcrt <- data.frame(var = var, FuncUcrt = FuncUcrt, stringsAsFactors = FALSE)
+  # FuncUcrt <- data.frame(var = var, FuncUcrt = FuncUcrt, stringsAsFactors = FALSE)
    #
    Name = c("CVALA1", "CVALA2", "CVALA3")
    Value = c("0.9", "0.88", "0.77")
@@ -145,10 +145,11 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    #
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
-         calSlct,
-         DirCal = DirCal,
+         data=data,
          ParaUcrt = ParaUcrt,
          ucrtCoefFdas = rucfDf_returned,
+         calSlct=calSlct,
+         DirCal = DirCal,
          mappNameVar = mappNameVar
       )
    
