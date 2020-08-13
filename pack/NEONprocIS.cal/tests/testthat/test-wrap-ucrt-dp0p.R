@@ -248,3 +248,4 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
                    all(names(wudp0pList_returned$voltage) == elementsList))  
    
    })
+
