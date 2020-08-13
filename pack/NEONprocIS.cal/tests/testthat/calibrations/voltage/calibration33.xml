@@ -58,7 +58,7 @@
 		<Name>U_CVALD2</Name>
 		<Value>50</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
-		<Name>U_CVALD1</Name>
+		<Name>U_CVALV1</Name>
 		<Value>104</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
 		<Name>U_CVALA3</Name>
