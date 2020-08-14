@@ -11,10 +11,10 @@
       "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
       "SOURCE_TYPE_INDEX": "3",
-      "YEAR_INDEX": "4",
-      "MONTH_INDEX": "5",
-      "DAY_INDEX": "6",
-      "SOURCE_ID_INDEX": "7"
+      "SOURCE_ID_INDEX": "4",
+      "YEAR_INDEX": "5",
+      "MONTH_INDEX": "6",
+      "DAY_INDEX": "7"
     }
   },
   "input": {
@@ -22,8 +22,8 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_dualfan_linkmerge",
-          "glob": "/dualfan/*/*/*/(*)",
+          "repo": "dualfan_data_location_group_path",
+          "glob": "/dualfan/(*)",
           "joinOn": "$1",
           "empty_files": true
         }

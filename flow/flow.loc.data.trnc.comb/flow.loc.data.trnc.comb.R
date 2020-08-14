@@ -101,6 +101,9 @@
 #     adjust datum identification to allow copied-through directories to be present or not
 #   Cove Sturtevant (2020-04-15)
 #     switch read/write data from avro to parquet
+#   Cove Sturtevant (2020-07-20)
+#     adjusted determination of source_ids to be read from location files rather than assuming
+#     an ordered component of the data file names
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -160,12 +163,15 @@ for(idxDirIn in DirIn){
   idxDirInLoc <- base::paste0(idxDirIn,'/location')
   fileLoc <- base::dir(idxDirInLoc)
 
+  # Pull all source IDs installed at this location for this day from the location files 
+  locMeta <- base::do.call(base::rbind,base::lapply(base::paste0(idxDirInLoc,'/',fileLoc), 
+                                                    NEONprocIS.base::def.loc.meta,
+                                                    TimeBgn=InfoDirIn$time,
+                                                    TimeEnd=InfoDirIn$time+as.difftime(1,units='days')))
+  idSrc <- base::unique(locMeta$source_id)
+  
   # For each data directory, truncate/merge the data within based on its installation period at the specified named location
   for (idxDirSubCombData in DirSubCombData){
-    
-    # Get the source ids from the name of the files in the merge directory. It is the second field delimited by underscores
-    idSrc <-  base::unique(base::unlist(base::lapply(strsplit(base::dir(base::paste0(idxDirIn,'/',idxDirSubCombData)),
-                                                              '[.|_]'),FUN=function(str){str[2]})))    
     
     # Create the output directory
     base::suppressWarnings(base::dir.create( base::paste0(idxDirOut,'/',idxDirSubCombData),recursive=TRUE))
@@ -180,17 +186,11 @@ for(idxDirIn in DirIn){
       
       nameFileData <- base::paste0(idxDirIn,'/',idxDirSubCombData,'/',idxFileData) # Full path to file
       
-      # Determine its source id and find its matching location file
+      # Determine its source id
       idSrcIdx <- idSrc[base::unlist(base::lapply(idSrc,base::grepl,x=idxFileData,fixed=TRUE))] # source id
       if(base::length(idSrcIdx) != 1){
         # Generate error and stop execution
-        log$error(base::paste0('Cannot unambiguously determine the source id from file name: ', nameFileData)) 
-        stop()
-      }
-      fileLocIdx <- fileLoc[base::grepl(idSrcIdx,fileLoc,fixed=TRUE)] # associated locations file
-      if(base::length(fileLocIdx) != 1){
-        # Generate error and stop execution
-        log$error(base::paste0('Cannot unambiguously determine the location file associated with: ', nameFileData)) 
+        log$error(base::paste0('Cannot unambiguously determine source id and matching location info for file name: ', nameFileData)) 
         stop()
       }
       
@@ -207,16 +207,14 @@ for(idxDirIn in DirIn){
         dataOut <- data[base::numeric(0),]
       }
       
-      # Open the locations file
-      loc <- geojsonsf::geojson_sf(base::paste0(idxDirInLoc,'/',fileLocIdx))
-      loc$install_date <- base::as.POSIXct(loc$install_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
-      loc$remove_date <- base::as.POSIXct(loc$remove_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
+      # Pull the location metadata for this sensor & location
+      loc <- locMeta[locMeta$source_id==idSrcIdx & locMeta$name==nameLoc,]
       
       # Find the location id in the locations file
-      loc <- loc[loc$name==nameLoc,]
       numLoc <- base::nrow(loc)
       if(numLoc == 0){
-        log$warn(base::paste0('No locations match ',nameLoc,' in location file ', fileLocIdx, 
+        log$warn(base::paste0('No matching location information for location',nameLoc,' and source id ',
+                              idSrcIdx, ' was found in the location files ', 
                               ' as part of processing data file: ',nameFileData,
                               ' . This should not happen. You should investigate...'))
         next()
@@ -266,9 +264,6 @@ for(idxDirIn in DirIn){
     # Get a file listing
     fileUcrt <- base::dir(base::paste0(idxDirIn,'/',idxDirSubCombUcrt))
     
-    # Get the source ids from the name of the files in the merge directory. It is the second field delimited by underscores
-    idSrc <-  base::unique(base::unlist(base::lapply(strsplit(fileUcrt,'[.|_]'),FUN=function(str){str[2]})))    
-    
     # Create the output directory
     base::suppressWarnings(base::dir.create( base::paste0(idxDirOut,'/',idxDirSubCombUcrt),recursive=TRUE))
     
@@ -283,13 +278,7 @@ for(idxDirIn in DirIn){
       idSrcIdx <- idSrc[base::unlist(base::lapply(idSrc,base::grepl,x=idxFileUcrt,fixed=TRUE))] # source id
       if(base::length(idSrcIdx) != 1){
         # Generate error and stop execution
-        log$error(base::paste0('Cannot unambiguously determine the source id from file name: ', nameFileUcrt)) 
-        stop()
-      }
-      fileLocIdx <- fileLoc[base::grepl(idSrcIdx,fileLoc,fixed=TRUE)] # associated locations file
-      if(base::length(fileLocIdx) != 1){
-        # Generate error and stop execution
-        log$error(base::paste0('Cannot unambiguously determine the location file associated with: ', nameFileUcrt)) 
+        log$error(base::paste0('Cannot unambiguously determine source id and matching location info for file name: ', nameFileUcrt))
         stop()
       }
       
@@ -306,16 +295,14 @@ for(idxDirIn in DirIn){
         ucrtOut <- base::list()
       }
       
-      # Open the locations file
-      loc <- geojsonsf::geojson_sf(base::paste0(idxDirInLoc,'/',fileLocIdx))
-      loc$install_date <- base::as.POSIXct(loc$install_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
-      loc$remove_date <- base::as.POSIXct(loc$remove_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
+      # Pull the location metadata for this sensor & location
+      loc <- locMeta[locMeta$source_id==idSrcIdx & locMeta$name==nameLoc,]
       
       # Find the location id in the locations file
-      loc <- loc[loc$name==nameLoc,]
       numLoc <- base::nrow(loc)
       if(numLoc == 0){
-        log$warn(base::paste0('No locations match ',nameLoc,' in location file ', fileLocIdx, 
+        log$warn(base::paste0('No matching location information for location',nameLoc,' and source id ',
+                              idSrcIdx, ' was found in the location files ', 
                               ' as part of processing data file: ',nameFileUcrt,
                               ' . This should not happen. You should investigate...'))
         next()

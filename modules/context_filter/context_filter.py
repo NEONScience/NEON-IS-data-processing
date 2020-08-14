@@ -13,13 +13,13 @@ log = structlog.get_logger()
 
 class ContextFilter:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.input_path = config.in_path
         self.output_path = config.out_path
         self.context = config.context
         self.path_parser = PathParser(config)
 
-    def filter_files(self):
+    def filter_files(self) -> None:
         self.link_matching_paths(self.get_matching_paths(self.get_source_paths()))
 
     def get_source_paths(self) -> Dict[str, List[Dict[str, Path]]]:
@@ -65,4 +65,5 @@ class ContextFilter:
                     source_type, year, month, day, source_id, data_type, remainder = self.path_parser.parse(path)
                     link_path = Path(self.output_path, source_type, year, month, day, source_id, data_type, *remainder)
                     link_path.parent.mkdir(parents=True, exist_ok=True)
-                    link_path.symlink_to(path)
+                    if not link_path.exists():
+                        link_path.symlink_to(path)

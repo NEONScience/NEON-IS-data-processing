@@ -35,6 +35,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-06-03)
 #     Original Creation
+#   Mija Choi (2020-08-03)
+#     Modified to reorganize the test input xml and json files
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of def.read.ucrt.coef.fdas.R\n")
@@ -45,21 +47,24 @@ test_that("Unit test of def.read.ucrt.coef.fdas.R", {
   #
   # The input is a json with elements of Name, Value, and .attrs
   
-  NameFile = "ucrt-coef-fdas-input.json"
+  testDir = "testdata/"
+  testJson = "ucrt-coef-fdas-input.json"
+  testJsonPath <- paste0(testDir, testJson)
   
   #===================================================================
   ucrtDf_returned <-
-    NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = NameFile, log = NULL)
+    NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = testJsonPath, log = NULL)
   # The output is a data frame having Name, Value, and .attrs
   expect_true ((is.data.frame(ucrtDf_returned)) &&
                  !(is.null(ucrtDf_returned)))
   
   # Sad path - test with a bad json
   
-  NameFile = "ucrt-coef-fdas-input-bad.json"
+  testJson = "ucrt-coef-fdas-input-bad.json"
+  testJsonPath <- paste0(testDir, testJson)
   
   #===================================================================
-  ucrtDf_returned <- try(NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = NameFile, log = NULL),
+  ucrtDf_returned <- try(NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = testJsonPath, log = NULL),
                          silent = TRUE)
   
   expect_true (base::class(ucrtDf_returned) == 'try-error')
