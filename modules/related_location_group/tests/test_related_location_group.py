@@ -2,7 +2,6 @@
 import os
 from pathlib import Path
 
-import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from related_location_group.related_location_group_config import Config
@@ -17,16 +16,17 @@ class RelatedLocationGroupTest(TestCase):
         self.source_type = 'prt'
         self.in_path = Path('/in/repo')
         self.out_path = Path('/out')
-        self.group = 'aspirated-single-121'
         self.location = 'CFGLOC123'
-        self.metadata_path = Path('2019/05/24', self.group)
+        self.metadata_path = Path('2019/05/24/aspirated-single-121')
         self.data_dir = 'data'
-        self.location_dir = 'location'
         self.data_file = 'data.extension'
+        self.location_dir = 'location'
         self.location_file = 'locations.json'
-        self.prt_path = Path(self.in_path, self.source_type, self.metadata_path)
-        self.fs.create_file(Path(self.prt_path, self.location, self.data_dir, self.data_file))
-        self.fs.create_file(Path(self.prt_path, self.location, self.location_dir, self.location_file))
+        self.empty_dir = 'uncertainty_coef'
+        self.group_path = Path(self.in_path, self.source_type, self.metadata_path)
+        self.fs.create_file(Path(self.group_path, self.location, self.data_dir, self.data_file))
+        self.fs.create_file(Path(self.group_path, self.location, self.location_dir, self.location_file))
+        self.fs.create_dir(Path(self.group_path, self.location, self.empty_dir))
         # path indices
         self.source_type_index = 3
         self.year_index = 4
@@ -68,5 +68,7 @@ class RelatedLocationGroupTest(TestCase):
         root_path = Path(self.out_path, self.metadata_path)
         data_path = Path(root_path, self.source_type, self.location, self.data_dir, self.data_file)
         location_path = Path(root_path, self.source_type, self.location, self.location_dir, self.location_file)
+        empty_dir = Path(root_path, self.source_type, self.location, self.empty_dir)
         self.assertTrue(data_path.exists())
         self.assertTrue(location_path.exists())
+        self.assertTrue(empty_dir.exists())
