@@ -12,7 +12,7 @@
     ],
     "stdin": [
       "#!/bin/bash",
-      "python3 -m related_location_group.app"
+      "python3 -m related_location_group.related_location_group_main"
     ],
     "env": {
       "LOG_LEVEL": "DEBUG",
@@ -55,5 +55,5 @@
     ]
   },
   "enable_stats": false,
-  "standby": true
+  "standby": false
 }
