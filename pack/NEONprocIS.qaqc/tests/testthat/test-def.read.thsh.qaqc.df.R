@@ -4,7 +4,7 @@
 test_that("if not valid dataframe, return false",
           {
 
-            returnValue <- NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = 'tests/testthat/def.read.thsh.qaqc.df/thresholds.json')
+            returnValue <- NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = 'def.read.thsh.qaqc.df/thresholds.json')
             testthat::expect_false((class(returnValue)[1] == "try-error"))
             testthat::expect_equal(returnValue$context[1], "NA")
             testthat::expect_equal(returnValue$context[3], "soil|water")
