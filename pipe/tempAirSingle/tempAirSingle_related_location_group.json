@@ -25,7 +25,7 @@
         "pfs": {
           "name": "DATA_PATH",
           "repo": "tempAirSingle_prt_group_path",
-          "glob": "/prt/*/*",
+          "glob": "/prt/*/*/*",
           "empty_files": true
         }
       },
@@ -33,7 +33,7 @@
         "pfs": {
           "name": "DATA_PATH",
           "repo": "tempAirSingle_dualfan_group_path",
-          "glob": "/dualfan/*/*",
+          "glob": "/dualfan/*/*/*",
           "empty_files": true
         }
       },
@@ -42,14 +42,6 @@
         "name": "DATA_PATH",
         "repo": "tempAirSingle_windobserverii_group_path",
         "glob": "/windobserverii/*/*/*",
-        "empty_files": true
-        }
-      },
-      {
-        "pfs": {
-        "name": "DATA_PATH",
-        "repo": "tempAirSingle_heater_group_path",
-        "glob": "/heater/*/*/*",
         "empty_files": true
         }
       }

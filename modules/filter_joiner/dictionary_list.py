@@ -4,7 +4,7 @@
 class DictionaryList(dict):
     """Class to automatically add all values with the same key into a list."""
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value) -> None:
         try:
             # assumes a list exists on the key
             self[key].append(value)

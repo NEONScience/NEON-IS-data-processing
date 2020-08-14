@@ -71,6 +71,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-02-13)
 #     original creation
+#   Mija Choi (2020-08-14)
+#     modified uncertainty function to use, FuncUcrtIdx, by replacing FuncUcrt$ with ParaUcrt$
 ##############################################################################################
 wrap.ucrt.dp0p <- function(data,
                            ParaUcrt,
@@ -93,7 +95,7 @@ wrap.ucrt.dp0p <- function(data,
   for(idxVar in ParaUcrt$var){
     
     # Determine the uncertainty function to use
-    FuncUcrtIdx <- base::get(FuncUcrt$FuncUcrt[FuncUcrt$var == idxVar], base::asNamespace("NEONprocIS.cal"))
+    FuncUcrtIdx <- base::get(ParaUcrt$FuncUcrt[ParaUcrt$var == idxVar], base::asNamespace("NEONprocIS.cal"))
     
     # Get output variable name
     nameVarUcrtOut <- mappNameVar$nameVarOut[mappNameVar$nameVarIn==idxVar]

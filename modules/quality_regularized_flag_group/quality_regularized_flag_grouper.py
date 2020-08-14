@@ -14,7 +14,7 @@ class Paths(NamedTuple):
 
 class QualityRegularizedFlagGrouper:
 
-    def __init__(self, *, regularized_path: Path, quality_path: Path, out_path: Path, relative_path_index: int):
+    def __init__(self, *, regularized_path: Path, quality_path: Path, out_path: Path, relative_path_index: int) -> None:
         """
         Constructor.
 
@@ -28,13 +28,13 @@ class QualityRegularizedFlagGrouper:
         self.out_path = out_path
         self.relative_path_index = relative_path_index
 
-    def group_files(self):
+    def group_files(self) -> None:
         regularized_files = self._load_files(self.regularized_path)
         quality_files = self._load_files(self.quality_path)
         self._link_files(regularized_files, quality_files)
 
     @staticmethod
-    def _link_files(regularized_files: Dict[Path, Paths], quality_files: Dict[Path, Paths]):
+    def _link_files(regularized_files: Dict[Path, Paths], quality_files: Dict[Path, Paths]) -> None:
         """
         Link matching regularized and quality files into the output directory.
 
@@ -53,11 +53,13 @@ class QualityRegularizedFlagGrouper:
             regularized_file_path = regularized_paths.path
             regularized_link_path = regularized_paths.link
             regularized_link_path.parent.mkdir(parents=True, exist_ok=True)
-            regularized_link_path.symlink_to(regularized_file_path)
+            if not regularized_link_path.exists():
+                regularized_link_path.symlink_to(regularized_file_path)
             quality_file_path = quality_paths.path
             quality_link_path = quality_paths.link
             quality_link_path.parent.mkdir(parents=True, exist_ok=True)
-            quality_link_path.symlink_to(quality_file_path)
+            if not quality_link_path.exists():
+                quality_link_path.symlink_to(quality_file_path)
 
     def _load_files(self, path: Path) -> Dict[Path, Paths]:
         """

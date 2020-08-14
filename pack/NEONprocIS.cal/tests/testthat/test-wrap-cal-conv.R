@@ -58,6 +58,8 @@
 #'
 #   Mija Choi (2020-05-20)
 #     original creation
+#   Mija Choi (2020-08-03)
+#     Modified to reorganize the test input xml and json files
 ##############################################################################################
 # Define test context
 context("\n                       calibration conversion wrapper\n")
@@ -66,7 +68,12 @@ context("\n                       calibration conversion wrapper\n")
 test_that("testing calibration conversion wrapper", {
   
   # Create data to calibrate
-  data <- read.csv("L0_data.csv", sep = ",", header = TRUE)
+  
+  testDir = "testdata/"
+  testData = "L0_data.csv"
+  testDataPath <- paste0(testDir, testData)
+  
+  data <- read.csv(testDataPath, sep = ",", header = TRUE)
   data$readout_time <- as.POSIXct(data$readout_time, tz = 'GMT')
   # FuncConv
   FuncConv = "def.cal.conv.poly"

@@ -43,6 +43,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-06-17)
 #     Original Creation
+#   Mija Choi (2020-08-03)
+#     Modified to reorganize the test input xml and json files
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of def.ucrt.fdas.volt.R\n")
@@ -53,8 +55,12 @@ test_that("Unit test of def.ucrt.fdas.volt.R", {
   #
   # The input is a json with elements of Name, Value, and .attrs
   # fileCal has the correct value for "voltage" calibration
-  fileCal = "calibration4.xml"
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = fileCal, Vrbs = TRUE)
+  
+  testDir = "testdata/"
+  testFileCal = "calibration4.xml"
+  testFileCalPath <- paste0(testDir, testFileCal)
+  
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = testFileCalPath, Vrbs = TRUE)
   data = c(0.9, 0.88)
   
   # Happy Path 1 - All params passed
@@ -75,8 +81,10 @@ test_that("Unit test of def.ucrt.fdas.volt.R", {
   # Sad path 1 - calibration does not have right values for "vlotage" calibration.
   # the calibration should have (U_CVALV1,U_CVALV4) to be the voltage calibration
 
-  fileCal = "calibration3.xml"
-  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+  testFileCal = "calibration3.xml"
+  testFileCalPath <- paste0(testDir, testFileCal)
+  
+  infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=testFileCalPath,Vrbs=TRUE)
   data = c(0.9, 0.88)
   ufrstcDf_returned <- try(NEONprocIS.cal::def.ucrt.fdas.volt (data = data,
                                                                infoCal = infoCal), silent = TRUE)

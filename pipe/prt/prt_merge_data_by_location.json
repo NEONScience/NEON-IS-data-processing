@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.loc.data.trnc.comb.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCombData=data|flags|uncertainty_data","DirSubCombUcrt=uncertainty_coef","DirSubCopy=location"],
-    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.17",
+    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.19",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -14,7 +14,7 @@
       "pfs": {
         "name": "DIR_IN",
         "repo": "prt_structure_repo_by_location",
-        "glob": "/prt/*/*"
+        "glob": "/prt/*/*/*"
       }
   },
   "enable_stats": false,

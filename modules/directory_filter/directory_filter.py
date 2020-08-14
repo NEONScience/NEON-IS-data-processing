@@ -18,4 +18,5 @@ def filter_directory(in_path: Path, out_path: Path, filter_dirs: list, relative_
                 path = Path(root, name)
                 link_path = Path(out_path, *Path(path).parts[relative_path_index:])
                 link_path.parent.mkdir(parents=True, exist_ok=True)
-                link_path.symlink_to(path)
+                if not link_path.exists():
+                    link_path.symlink_to(path)

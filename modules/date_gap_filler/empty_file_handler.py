@@ -7,7 +7,7 @@ from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 
 class EmptyFileHandler(object):
 
-    def __init__(self, config: DateGapFillerConfig):
+    def __init__(self, config: DateGapFillerConfig) -> None:
         self.output_dirs = config.output_directories
         self.calibration_dir = config.calibration_dir
         self.data_dir = config.data_dir
@@ -21,7 +21,7 @@ class EmptyFileHandler(object):
         self.link_uncertainty_coefficient = True if self.uncertainty_coefficient_dir in self.output_dirs else False
         self.link_uncertainty_data = True if self.uncertainty_data_dir in self.output_dirs else False
 
-    def link_files(self, root_link_path: Path, empty_file_linker: EmptyFileLinker):
+    def link_files(self, root_link_path: Path, empty_file_linker: EmptyFileLinker) -> None:
         if self.link_calibration:
             Path(root_link_path, self.calibration_dir).mkdir(parents=True, exist_ok=True)
         if self.link_data:
