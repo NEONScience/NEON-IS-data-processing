@@ -22,13 +22,13 @@ transform:
             join_indices: [6]
         - path:
             name: UNCERTAINTY_COEF_PATH
-            # Filter for data directory
+            # Filter for uncertainty_coef directory
             glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/*/*/*/*/prt/*/uncertainty_coef/**
             # Join on context group (already joined below by day
             join_indices: [6]
         - path:
             name: UNCERTAINTY_DATA_PATH
-            # Filter for data directory
+            # Filter for uncertainty_data directory
             glob_pattern: /pfs/UNCERTAINTY_DATA_PATH/*/*/*/*/prt/*/uncertainty_data/**
             # Join on context group (already joined below by day
             join_indices: [6]

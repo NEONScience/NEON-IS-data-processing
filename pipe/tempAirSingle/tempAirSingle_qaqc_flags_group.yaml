@@ -16,19 +16,19 @@ transform:
       input_paths:
         - path:
             name: QAQC_PLAUSIBILITY_PATH
-            # Filter for data directory
+            # Filter for flags directory
             glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
             # Join on context group (already joined below by day)
             join_indices: [6]
         - path:
             name: QAQC_SPECIFIC_PATH
-            # Filter for data directory
+            # Filter for flags directory
             glob_pattern: /pfs/QAQC_SPECIFIC_PATH/*/*/*/*/*/*/flags/**
             # Join on context group (already joined below by day
             join_indices: [6]
         - path:
             name: REGULARIZED_FLAGS_PATH
-            # Filter for data directory
+            # Filter for flags directory
             glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
             # Join on context group (already joined below by day
             join_indices: [6]
