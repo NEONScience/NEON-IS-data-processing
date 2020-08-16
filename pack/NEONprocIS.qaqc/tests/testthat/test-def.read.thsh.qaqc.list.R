@@ -16,7 +16,7 @@ test_that("if valid dataframe, return false",
 test_that("if threshold file is not reachable, return false",
           {
 
-            returnValue <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(NameFile = 'def.read.thsh.qaqc.df/thresholds_not_exist.json')
+            returnValue <- try(NEONprocIS.qaqc::def.read.thsh.qaqc.list(NameFile = "NameFile"), silent = TRUE)
             testthat::expect_true((class(returnValue)[1] == "try-error"))
 
           })
@@ -43,7 +43,7 @@ test_that("if listThsh is sent as a parameter, returnValue should be same",
 
 test_that("if strJson is sent as a parameter, returnValue should be same",
           {
-            thshRaw <- base::try(paste(base::readLines(con='tests/testthat/def.read.thsh.qaqc.df/thresholds.json'), collapse = ""), silent=FALSE)
+            thshRaw <- base::try(paste(base::readLines(con='def.read.thsh.qaqc.df/thresholds.json'), collapse = ""), silent=FALSE)
             returnValue <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(strJson = thshRaw)
             testthat::expect_false((class(returnValue)[1] == "try-error"))
             testthat::expect_true(is.list(returnValue[[1]]$context))
