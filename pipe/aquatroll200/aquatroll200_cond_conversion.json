@@ -1,0 +1,46 @@
+{
+  "pipeline": {
+    "name": "aquatroll200_cond_conversion"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.troll.cond.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$SCHEMA_DATA","FileSchmQf=$SCHEMA_FLAGS"],
+    "image": "quay.io/ncatolico/neon-is-troll-cond-conv-r:v0.0.1",
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "aquatroll200_flags_specific",
+          "glob": "/*/*/*/"
+        }
+      },
+      {      
+        "pfs": {
+            "name": "SCHEMA_DATA",
+            "repo": "avro_schemas",
+            "glob": "/dp0p/aquatroll200_calibrated.avsc"
+        }
+      },
+      {
+        "pfs": {
+            "name": "SCHEMA_FLAGS",
+            "repo": "avro_schemas",
+            "glob": "/dp0p/flags_troll_specific_temp.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}

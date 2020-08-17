@@ -1,4 +1,4 @@
-# Dockerfile for NEON IS Data Processing - Below Zero Pressure flags
+# Dockerfile for NEON IS Data Processing - Missing Temp Flag and Conductivity Conversion
 
 # Start with the neon-is-base-r image. 
 FROM quay.io/battelleecology/neon-is-base-r:v0.0.55
@@ -12,4 +12,4 @@ MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
 #RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in troll flag workflow
-COPY ./flow.troll.flags.R /flow.troll.flags.R
+COPY ./flow.troll.cond.conv.R /flow.troll.cond.conv.R
