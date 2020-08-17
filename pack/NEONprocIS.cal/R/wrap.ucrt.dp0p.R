@@ -157,7 +157,7 @@ wrap.ucrt.dp0p <- function(data,
         ucrtDataIdx <-
           base::as.data.frame(
             base::matrix(
-              data = NA,
+              data=as.numeric(NA),
               nrow = base::length(timeMeas),
               ncol = base::ncol(ucrtMeas),
               dimnames = base::list(NULL, base::names(ucrtMeas))
