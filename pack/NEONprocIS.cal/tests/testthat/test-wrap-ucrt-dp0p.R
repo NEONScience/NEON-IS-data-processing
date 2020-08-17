@@ -247,5 +247,43 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
                    !(is.null(wudp0pList_returned)) &&
                    all(names(wudp0pList_returned$voltage) == elementsList))  
    
-   })
-
+   #  Happy path 3 - calibration xml selected has the time expired
+   # All the rest of test data remain the same as in happy path 2, test in voltage
+ 
+   TimeBgn = base::as.POSIXct('2020-06-12 00:10:20', tz = 'GMT')
+   TimeEnd = base::as.POSIXct('2020-07-07 00:18:28', tz = 'GMT')
+   
+   #
+   calSlct <- NEONprocIS.cal::wrap.cal.slct (
+      DirCal = DirCal,
+      NameVarExpc = character(0),
+      TimeBgn = TimeBgn,
+      TimeEnd = TimeEnd,
+      NumDayExpiMax = NumDayExpiMax,
+      log = NULL
+   )
+   
+   wudp0pList_returned <-
+      NEONprocIS.cal::wrap.ucrt.dp0p (
+         data = data,
+         ParaUcrt = ParaUcrt,
+         ucrtCoefFdas = ucrtCoefFdas,
+         calSlct = calSlct,
+         DirCal = DirCal,
+         mappNameVar = mappNameVar
+      )
+   
+   elementsList = c(
+      "voltage_ucrtMeas",
+      "voltage_raw",
+      "voltage_dervCal",
+      "voltage_ucrtFdas",
+      "voltage_ucrtComb",
+      "voltage_ucrtExpn"
+   )
+   
+   expect_true ((is.list(wudp0pList_returned)) &&
+               !(is.null(wudp0pList_returned)) &&
+               all(names(wudp0pList_returned$voltage) == elementsList)) &&
+               is.null(wudp0pList_returned$reistance)
+})
