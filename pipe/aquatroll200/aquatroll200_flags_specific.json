@@ -4,8 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.troll.flags.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS"],
-    "image": "quay.io/ncatolico/neon-is-troll-flags-r:v0.0.1",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "image": "quay.io/ncatolico/neon-is-troll-flags-r:v0.0.2",
     "env": {
       "LOG_LEVEL": "DEBUG"
     }  

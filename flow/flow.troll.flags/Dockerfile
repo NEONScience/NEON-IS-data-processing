@@ -12,4 +12,4 @@ MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
 #RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in troll flag workflow
-COPY ./flow.troll.flags.R /flow.trolls.flags.R
+COPY ./flow.troll.flags.R /flow.troll.flags.R
