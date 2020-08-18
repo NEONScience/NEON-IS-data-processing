@@ -34,6 +34,8 @@
 
 # Module or local package directory
 #dirWork <- '~/NEON-IS-data-processing/pack/NEONprocIS.wq'
+#dirWork <- '~/R/NEON-IS-data-processing/flow/flow.troll.flags'
+#dirWork <- '~/R/NEON-IS-data-processing/flow/flow.troll.cond.conv'
 dirWork <- '~/R/NEON-IS-data-processing-homeDir/pack/NEONprocIS.base'
 PackIgnr <- c('NEONprocIS.base','NEONprocIS.cal','NEONprocIS.qaqc','NEONprocIS.wq') # These should already be in the respective docker containers
 
