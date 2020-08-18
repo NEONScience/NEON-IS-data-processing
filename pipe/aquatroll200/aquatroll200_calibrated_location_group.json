@@ -30,7 +30,7 @@
       {
         "pfs": {
           "name": "CALIBRATED_PATH",
-          "repo": "aquatroll200_calibration_conversion",
+          "repo": "aquatroll200_cond_conversion",
           "glob": "/aquatroll200/*/*/*/(*)",
           "joinOn": "$1",
           "empty_files": true
