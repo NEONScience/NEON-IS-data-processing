@@ -88,7 +88,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    testJson = "ucrt-coef-fdas-input.json"
    testJsonPath <- paste0(testDir, testJson)
    
-   ucrtCoefFdas <- NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile = testJsonPath, log =  NULL)
+   ucrtCoefFdas <- NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile=testJsonPath,log=NULL)
 
    testFileCal = "calibration.xml"
    testFileCalPath <- paste0(testDir, testFileCal)
@@ -104,12 +104,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    
    values <- c(10, 13)
    
-   NumDayExpiMax <-
-      data.frame(
-         var = varCal,
-         NumDayExpiMax = values,
-         stringsAsFactors = FALSE
-      )
+   NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
    #
    calSlct <- NEONprocIS.cal::wrap.cal.slct (
       DirCal = DirCal,
@@ -131,15 +126,9 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    data <- read.csv(testDataPath, sep = ",", header = TRUE)
    
    data$readout_time <- as.POSIXct(data$readout_time, tz = 'GMT')
-   fdas_rst = c("R")
-   var_rst = c("resistance")
-   ParaUcrt <-
-      data.frame(
-         var = var_rst,
-         typeFdas = fdas_rst,
-         FuncUcrt = FuncUcrt,
-         stringsAsFactors = FALSE
-      )
+   fdas = c("R")
+   var = c("resistance")
+   ParaUcrt <-data.frame(var = var,typeFdas = fdas,FuncUcrt = FuncUcrt,stringsAsFactors = FALSE)
    
    nameVarIn = c('resistance')
    nameVarOut = c('resistance')
@@ -152,15 +141,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
          stringsAsFactors = FALSE
       )
    newVar <- nameVarDfltSame[!(nameVarDfltSame %in% nameVarIn)]
-   mappNameVar <-
-      base::rbind(
-         mappNameVar,
-         base::data.frame(
-            nameVarIn = newVar,
-            nameVarOut = newVar,
-            stringsAsFactors = FALSE
-         )
-      )
+   mappNameVar <- base::rbind(mappNameVar,base::data.frame( nameVarI =newVar, nameVarOut=newVar,stringsAsFactors = FALSE))
   
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
@@ -193,36 +174,17 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    data <- read.csv(testDataPath, sep = ",", header = TRUE)
    
    data$readout_time <- as.POSIXct(data$readout_time, tz = 'GMT')
-   fdas_vtg = c("V")
-   var_vtg = c("voltage")
-   ParaUcrt <-
-      data.frame(
-         var = var_vtg,
-         typeFdas = fdas_vtg,
-         FuncUcrt = FuncUcrt,
-         stringsAsFactors = FALSE
-      )
+   fdas = c("V")
+   var = c("voltage")
+   ParaUcrt <- data.frame(var = var,typeFdas = fdas,FuncUcrt=FuncUcrt,stringsAsFactors = FALSE)
    
    nameVarIn = c('voltage')
    nameVarOut = c('voltage')
    nameVarDfltSame = c('voltage')
    
-   mappNameVar <-
-      base::data.frame(
-         nameVarIn = nameVarIn,
-         nameVarOut = nameVarOut,
-         stringsAsFactors = FALSE
-      )
+   mappNameVar <- base::data.frame(nameVarIn = nameVarIn, nameVarOut = nameVarOut, stringsAsFactors = FALSE)
    newVar <- nameVarDfltSame[!(nameVarDfltSame %in% nameVarIn)]
-   mappNameVar <-
-      base::rbind(
-         mappNameVar,
-         base::data.frame(
-            nameVarIn = newVar,
-            nameVarOut = newVar,
-            stringsAsFactors = FALSE
-         )
-      )
+   mappNameVar <-base::rbind(mappNameVar, base::data.frame(nameVarIn = newVar,nameVarOut = newVar,stringsAsFactors = FALSE))
    
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
@@ -248,7 +210,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
                    all(names(wudp0pList_returned$voltage) == elementsList))  
    
    #  Happy path 3 - calibration xml selected has the time expired
-   # All the rest of test data remain the same as in happy path 2, test in voltage
+   #  All the rest of test data remain the same as in happy path 2, test in voltage
  
    TimeBgn = base::as.POSIXct('2020-06-12 00:10:20', tz = 'GMT')
    TimeEnd = base::as.POSIXct('2020-07-07 00:18:28', tz = 'GMT')
@@ -272,6 +234,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
          DirCal = DirCal,
          mappNameVar = mappNameVar
       )
+   
    
    elementsList = c(
       "voltage_ucrtMeas",
