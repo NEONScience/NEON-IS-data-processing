@@ -15,7 +15,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "aquatroll200_calibration_conversion",
-          "glob": "/*/*/*/"
+          "glob": "/aquatroll200/*/*/*/"
         }
       },
       {

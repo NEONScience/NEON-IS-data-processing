@@ -201,11 +201,11 @@ for (idxDirIn in DirIn){
   
   
   #Write out data
-  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
+  rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
                                                  NameFile = base::paste0(idxDirOutData,"/aquatroll200_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_cond_conversion.parquet"), 
-                                                 Schm = SchmQfOut),silent=FALSE)
-  if(class(rptQfOut) == 'try-error'){
-    log$error(base::paste0('Writing the output data failed: ',attr(rptQfOut,"condition")))
+                                                 Schm = SchmDataOut),silent=FALSE)
+  if(class(rptDataOut) == 'try-error'){
+    log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
     stop()
   } else {
     log$info("Data written out.")
