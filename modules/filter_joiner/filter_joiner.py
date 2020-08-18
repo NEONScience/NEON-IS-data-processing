@@ -49,9 +49,10 @@ class FilterJoiner:
         """
         keys = set()
         for path in path_filter.filter_paths(glob_pattern=input_path.glob_pattern, output_path=self.out_path):
-            key = self.get_key(path, input_path.join_indices)
-            keys.add(key)
-            key_paths[key] = (input_path.path_name, path)
+            if len(path.parts) > max(input_path.join_indices):
+                key = self.get_key(path, input_path.join_indices)
+                keys.add(key)
+                key_paths[key] = (input_path.path_name, path)
         return keys
 
     def link_path(self, path: Path):
