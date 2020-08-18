@@ -31,6 +31,7 @@ class ConstantPad:
     def pad(self) -> None:
         """Pad the data using the given window size."""
         for path in self.data_path.rglob('*'):
+            log.debug(f'path: {path}')
             if path.is_file():
                 parts = path.parts
                 year, month, day, location, data_type = self.data_path_parser.parse(path)
