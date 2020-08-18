@@ -37,7 +37,8 @@ class FilterJoiner:
             if path.is_file():
                 self.link_path(path)
             else:
-                path.mkdir(parents=True, exist_ok=True)
+                dir_path = Path(self.out_path, *path.parts[self.relative_path_index:])
+                dir_path.mkdir(parents=True, exist_ok=True)
 
     def get_keys(self, input_path: InputPath, key_paths: DictionaryList) -> set:
         """
