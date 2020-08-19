@@ -32,8 +32,8 @@
       </AmbientHumidity>
     </CalEnvironment>
     <CalibrationCoefficient> 
-		<Name>CVALR1</Name>
-		<Value>0</Value>
+		<Name>CVALA1</Name>
+		<Value>0.0123</Value>
     </CalibrationCoefficient>
 	<CalibrationTable name="">
     <Metadata>
@@ -58,7 +58,7 @@
 		<Name>U_CVALD2</Name>
 		<Value>50</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
-		<Name>U_CVALD1</Name>
+		<Name>U_CVALV1</Name>
 		<Value>104</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
 		<Name>U_CVALA3</Name>
@@ -78,8 +78,8 @@
     <CertificateNumber>162903</CertificateNumber>
   </StreamCalVal>
   <ValidTimeRange>
-    <StartTime>2020-01-11T17:48:35.0000</StartTime>
-    <EndTime>2020-02-08T17:48:35.0000</EndTime>
+    <StartTime>2019-06-11T17:48:35.0000</StartTime>
+    <EndTime>2019-07-08T17:48:35.0000</EndTime>
   </ValidTimeRange>
   <Comment>
     <CommentDescription/>
