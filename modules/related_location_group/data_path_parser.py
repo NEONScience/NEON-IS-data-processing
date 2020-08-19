@@ -18,7 +18,7 @@ class DataPathParser:
         self.max_value = max([self.source_type_index, self.year_index, self.month_index, self.day_index,
                               self.location_index, self.data_type_index])
 
-    def parse(self, path: Path) -> Tuple[str, str, str, str, str, str, str, Tuple[str]]:
+    def parse_file(self, path: Path) -> Tuple[str, str, str, str, str, str, str, Tuple[str]]:
         parts = path.parts
         source_type: str = parts[self.source_type_index]
         year: str = parts[self.year_index]
@@ -29,3 +29,14 @@ class DataPathParser:
         data_type: str = parts[self.data_type_index]
         remainder: Tuple[str] = parts[self.max_value + 1:]
         return source_type, year, month, day, group, location, data_type, remainder
+
+    def parse_dir(self, path: Path) -> Tuple[str, str, str, str, str, str, str]:
+        parts = path.parts
+        source_type: str = parts[self.source_type_index]
+        year: str = parts[self.year_index]
+        month: str = parts[self.month_index]
+        day: str = parts[self.day_index]
+        group: str = parts[self.group_index]
+        location: str = parts[self.location_index]
+        data_type: str = parts[self.data_type_index]
+        return source_type, year, month, day, group, location, data_type

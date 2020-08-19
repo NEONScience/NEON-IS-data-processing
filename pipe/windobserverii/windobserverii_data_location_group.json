@@ -11,10 +11,10 @@
       "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
       "SOURCE_TYPE_INDEX": "3",
+      "SOURCE_ID_INDEX": "4",
       "YEAR_INDEX": "5",
       "MONTH_INDEX": "6",
-      "DAY_INDEX": "7",
-      "SOURCE_ID_INDEX": "4"
+      "DAY_INDEX": "7"
     }
   },
   "input": {
@@ -22,7 +22,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_windobserverii_linkmerge",
+          "repo": "windobserverii_data_location_group_path",
           "glob": "/windobserverii/(*)",
           "joinOn": "$1",
           "empty_files": true
