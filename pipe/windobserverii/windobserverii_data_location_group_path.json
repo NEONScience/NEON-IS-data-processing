@@ -23,7 +23,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "data_source_windobserverii_linkmerge",
+      "repo": "data_source_day_windobserverii",
       "branch": "master",
       "glob": "/windobserverii/*/*",
       "empty_files": true
