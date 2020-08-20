@@ -28,7 +28,7 @@
 #' TimeEnd <- base::as.POSIXct('2018-01-02',tz='GMT)
 #' NameFileIn <- 'locations.json'
 #' NameFileOut <- 'filtered_locations.json'
-#' loc <- def.loc.filt(NameFileIn,NameFileOut,TimeBgn,TimeEnd)
+#' loc <- def.loc.trnc.actv(NameFileIn,NameFileOut,TimeBgn,TimeEnd)
 
 
 #' @seealso Currently none
