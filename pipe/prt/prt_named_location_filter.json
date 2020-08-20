@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_named_location_filter",
+      "repo": "prt_date_gap_filler_linker",
       "glob": "/prt/*/*/*"
       }
   },
