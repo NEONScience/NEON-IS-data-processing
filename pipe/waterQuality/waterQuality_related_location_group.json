@@ -3,10 +3,17 @@
     "name": "waterQuality_related_location_group"
   },
   "transform": {
-    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-    "image": "quay.io/battelleecology/related_location_group:10",
-    "cmd": [ "/bin/bash" ],
-    "stdin": [ "#!/bin/bash", "python3 -m related_location_group.app" ],
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/related_location_group:11",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "python3 -m related_location_group.related_location_group_main"
+    ],
     "env": {
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out",
@@ -39,54 +46,54 @@
       },
       {
         "pfs": {
-        "name": "DATA_PATH",
-        "repo": "waterQuality_exodissolvedoxygen_group_path",
-        "glob": "/exodissolvedoxygen/*/*/*",
-        "empty_files": true
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exodissolvedoxygen_group_path",
+          "glob": "/exodissolvedoxygen/*/*/*",
+          "empty_files": true
         }
       },
       {
         "pfs": {
-        "name": "DATA_PATH",
-        "repo": "waterQuality_exofdom_group_path",
-        "glob": "/exofdom/*/*/*",
-        "empty_files": true
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exofdom_group_path",
+          "glob": "/exofdom/*/*/*",
+          "empty_files": true
         }
       },
       {
         "pfs": {
-        "name": "DATA_PATH",
-        "repo": "waterQuality_exophorp_group_path",
-        "glob": "/exophorp/*/*/*",
-        "empty_files": true
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exophorp_group_path",
+          "glob": "/exophorp/*/*/*",
+          "empty_files": true
         }
       },
       {
         "pfs": {
-        "name": "DATA_PATH",
-        "repo": "waterQuality_exototalalgae_group_path",
-        "glob": "/exototalalgae/*/*/*",
-        "empty_files": true
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exototalalgae_group_path",
+          "glob": "/exototalalgae/*/*/*",
+          "empty_files": true
         }
       },
       {
         "pfs": {
-        "name": "DATA_PATH",
-        "repo": "waterQuality_exoturbidity_group_path",
-        "glob": "/exoturbidity/*/*/*",
-        "empty_files": true
+          "name": "DATA_PATH",
+          "repo": "waterQuality_exoturbidity_group_path",
+          "glob": "/exoturbidity/*/*/*",
+          "empty_files": true
         }
       },
       {
         "pfs": {
-        "name": "DATA_PATH",
-        "repo": "waterQuality_sunav2_group_path",
-        "glob": "/sunav2/*/*/*",
-        "empty_files": true
+          "name": "DATA_PATH",
+          "repo": "waterQuality_sunav2_group_path",
+          "glob": "/sunav2/*/*/*",
+          "empty_files": true
         }
       }
     ]
   },
   "enable_stats": false,
-  "standby": true 
+  "standby": true
 }

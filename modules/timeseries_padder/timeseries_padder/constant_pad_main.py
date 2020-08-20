@@ -14,7 +14,7 @@ def main():
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')
-    log_level: str = env.log_level('LOG_LEVEL')
+    log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     window_size: int = env.int('WINDOW_SIZE')
     year_index: int = env.int('YEAR_INDEX')
     month_index: int = env.int('MONTH_INDEX')

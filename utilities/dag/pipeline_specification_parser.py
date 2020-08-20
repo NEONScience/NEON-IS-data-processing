@@ -31,11 +31,13 @@ class PipelineSpecificationParser(object):
 
     def parse_yaml(self, path: Path):
         with open(str(path)) as yaml_file:
+            print(f'loading YAML: {path}')
             file_data = yaml.load(yaml_file, Loader=yaml.FullLoader)
             self.parse_file_data(path, file_data)
 
     def parse_json(self, path: Path):
         with open(str(path)) as json_file:
+            print(f'loading JSON: {path}')
             file_data = json.load(json_file)
             self.parse_file_data(path, file_data)
 

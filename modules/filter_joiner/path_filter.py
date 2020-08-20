@@ -13,6 +13,5 @@ def filter_paths(*, glob_pattern: str, output_path: Path) -> List[Path]:
     :return File paths matching the given glob pattern.
     """
     paths = [Path(file_path) for file_path in glob.glob(glob_pattern, recursive=True)
-             if not os.path.basename(file_path).startswith(str(output_path))
-             if os.path.isfile(file_path)]
+             if not os.path.basename(file_path).startswith(str(output_path))]
     return paths
