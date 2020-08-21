@@ -22,13 +22,8 @@
   "input": {
       "pfs": {
         "name": "IN_PATH",
-<<<<<<< HEAD
-        "repo": "prt_merge_data_by_location_jr",
-        "glob": "/*/*/*/*"
-=======
         "repo": "prt_date_gap_filler_linker",
         "glob": "/prt/*/*/*"
->>>>>>> 6c5620586bd8881dfa3efa9130d6692ee12fe530
       }
   },
   "enable_stats": false,

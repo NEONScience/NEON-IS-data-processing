@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempSoil_calibrated_data_jr"
+    "name": "tempSoil_calibrated_data"
   },
   "transform": {
     "image_pull_secrets": [
@@ -24,13 +24,8 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-<<<<<<< HEAD
-      "repo": "tempSoil_context_filter_jr",
-      "glob": "/*/*/*/*",
-=======
       "repo": "tempSoil_context_filter",
       "glob": "/*/*/*",
->>>>>>> 6c5620586bd8881dfa3efa9130d6692ee12fe530
       "empty_files": true
     }
   },

@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempAirSingle_related_location_group_jr"
+    "name": "tempAirSingle_related_location_group"
   },
   "transform": {
     "image_pull_secrets": [
