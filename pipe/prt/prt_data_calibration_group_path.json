@@ -23,7 +23,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "data_source_prt_linkmerge",
+      "repo": "data_source_day_prt",
       "branch": "master",
       "glob": "/prt/*/*",
       "empty_files": true
