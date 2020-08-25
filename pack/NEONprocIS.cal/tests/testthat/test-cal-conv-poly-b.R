@@ -82,22 +82,39 @@ context("\n                       Unit test of def-cal-conv-poly-b.R\n")
 
 # Unit test of def-cal-conv-poly-b.R
 test_that("Unit test of def-cal-conv-poly-b.R", {
-   # The input json has Name, Value, and .attrs
-   
+ 
    testDir = "testdata/"
    testFileCal = "calibration_CVALB.xml"
    testFileCalPath <- paste0(testDir, testFileCal)
    
-   infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
-   
    testData = "L0_data.csv"
    testDataPath <- paste0(testDir, testData)
    
-   data <- read.csv(testDataPath, sep = ",", header = TRUE)
+   data0 <- read.csv(testDataPath, sep = ",", header = TRUE)
    
-   data <- data$resistance
-
-   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = base::numeric(0),infoCal = infoCal,log = NULL) 
-  
-    expect_true (is.vector(vector_cvalB))
-})
+   data <- data0$resistance 
+   
+   # Happy path 1
+   
+   infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
+   
+   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = base::numeric(0),
+                                           infoCal = infoCal,
+                                           log = NULL)
+   
+   expect_true (is.vector(vector_cvalB))
+   
+   # Happy path 2 infoCal is not passed in
+   
+   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = base::numeric(0), log = NULL)
+   
+   expect_true (is.vector(vector_cvalB))
+   
+   # Sad path 1 - data is not an array
+   data <- list (data)
+   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = base::numeric(0),
+                                           infoCal = infoCal,
+                                           log = NULL)
+   
+   expect_true (is.vector(vector_cvalB))
+ })

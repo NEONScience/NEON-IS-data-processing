@@ -88,16 +88,32 @@ test_that("Unit test of def-cal-conv-poly-m.R", {
    testFileCal = "calibration_CVALM.xml"
    testFileCalPath <- paste0(testDir, testFileCal)
    
-   infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
-   
    testData = "L0_data.csv"
    testDataPath <- paste0(testDir, testData)
    
-   data <- read.csv(testDataPath, sep = ",", header = TRUE)
+   data0 <- read.csv(testDataPath, sep = ",", header = TRUE)
    
-   data <- data$resistance
-
-   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.m (data = base::numeric(0),infoCal = infoCal,log = NULL) 
-  
-    expect_true (is.vector(vector_cvalM))
+   data <- data0$resistance
+   
+   # Happy path 1
+   
+   infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
+   
+   
+   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.m (data = base::numeric(0),infoCal = infoCal,log = NULL)
+   
+   expect_true (is.vector(vector_cvalM))
+   
+   # Happy path 2 infoCal is not passed in
+   
+   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.m (data = base::numeric(0), log = NULL)
+   
+   expect_true (is.vector(vector_cvalM))
+   
+   # Sad path 1 - data is not an array
+   data <- list (data)
+   
+   vector_cvalM <- NEONprocIS.cal::def.cal.conv.poly.m (data = base::numeric(0),infoCal = infoCal,log = NULL)
+   
+   expect_true (is.vector(vector_cvalM))
 })
