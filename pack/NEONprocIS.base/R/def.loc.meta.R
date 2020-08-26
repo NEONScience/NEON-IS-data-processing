@@ -93,7 +93,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   }  
   
   # Properties of each named location listed in the locations file
-  # Lists the named location, site, install_date, remove_date
+  # Lists the named location, site, install_date, remove_date, active periods
   locProp <- geojsonsf::geojson_sf(NameFile) # data frame
   if(!base::is.null(locProp$install_date)){
     locProp$install_date <- base::as.POSIXct(locProp$install_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
@@ -128,7 +128,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   locPropMore <- locFull$features[setLocProp]
   
   # Expected property names that might not be there
-  nameProp <- c('active-periods',
+  nameProp <- c('active_periods',
                 'Required Asset Management Location ID',
                 'Required Asset Management Location Code',
                 'HOR',
@@ -167,7 +167,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                                             remove_date=locProp$remove_date[idxLoc],
                                             transaction_date=locProp$transaction_date[idxLoc],
                                             context=ctxt,
-                                            active_periods=propFill[['active-periods']],
+                                            active_periods=locProp$active_periods[idxLoc],
                                             location_id=propFill[['Required Asset Management Location ID']],
                                             location_code=propFill[['Required Asset Management Location Code']],
                                             HOR=propFill$HOR,

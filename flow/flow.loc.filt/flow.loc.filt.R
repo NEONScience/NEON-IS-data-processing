@@ -6,7 +6,8 @@
 
 #' @description Workflow. Location filtering module for NEON IS data processing. Applies a filter for 
 #' the location information relevant to the data day as indicated in the file path, and resaves the 
-#' filtered location file. 
+#' filtered location file. This code works for both sensor-based location files as well as 
+#' location-based location files.
 #' 
 #' General code workflow:
 #'    Parse input parameters
@@ -14,7 +15,8 @@
 #'    For each datum:
 #'      Create output directories and copy over (by symbolic link) unmodified components
 #'      Open each location file and delete location information that does not apply to the data day
-#'         indicated in the file path
+#'         indicated in the file path. For location information that does apply, truncate any start/end
+#'         dates in the location file to start/end at the data day/data day+1. 
 #'      Write out the filtered location file
 #'
 #' This script is run at the command line with the following arguments. Each argument must be a string 
@@ -78,6 +80,8 @@
 #     added arguments for output directory and optional copying of additional subdirectories
 #   Cove Sturtevant (2020-03-04) 
 #     adjust datum identification to allow copied-through directories to be present or not
+#   Cove Sturtevant (2020-08-19)
+#     extend application to filter location-based location files as well
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -141,10 +145,30 @@ for(idxDirIn in DirIn){
   }
   for(idxFileLoc in fileLoc){
     
-    # Filter the location file for named locations and geolocations applicable to this day
-    loc <- NEONprocIS.base::def.loc.filt(NameFileIn=base::paste0(idxDirInLoc,'/',idxFileLoc),
-                           NameFileOut=base::paste0(idxDirOutLoc,'/',idxFileLoc),
-                           TimeBgn=timeBgn,TimeEnd=timeBgn+base::as.difftime(1,units='days'))
+    # Filter the sensor location file for named locations and geolocations applicable to this day
+    # Note: This will intentionally fail for namedLocation location files, for which the next 
+    # statement applies.
+    idxNameFileIn <- base::paste0(idxDirInLoc,'/',idxFileLoc)
+    idxNameFileOut <- base::paste0(idxDirOutLoc,'/',idxFileLoc)
+    loc <- try(NEONprocIS.base::def.loc.filt(NameFileIn=idxNameFileIn,
+                           NameFileOut=idxNameFileOut,
+                           TimeBgn=timeBgn,
+                           TimeEnd=timeBgn+base::as.difftime(1,units='days')),
+               silent=TRUE)
+    if(class(loc) == 'try-error'){
+      # Truncate the active dates for named location location files to the data date.
+      loc <- try(NEONprocIS.base::def.loc.trnc.actv(NameFileIn=idxNameFileIn,
+                                                    NameFileOut=idxNameFileOut,
+                                                    TimeBgn=timeBgn,TimeEnd=timeBgn+base::as.difftime(1,units='days')),
+                 silent=TRUE)
+      
+      # If we failed both functions, then there is a problem 
+      if(class(loc) == 'try-error'){
+        log$error(base::paste0('Attempted to filter location information for location file ',
+                               idxNameFileIn,', treating it as a sensor-based location file as well as a location-based location. ',
+                               'Both attempts failed. Check file.'))
+      }
+    }
 
   } # End loop around location files
 } # End loop around datum paths
