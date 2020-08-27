@@ -120,5 +120,5 @@ test_that("Unit test of def-qf-cal-susp.R", {
    
    qfSusp <- NEONprocIS.cal::def.qf.cal.susp(data)
    
-   expect_true (all(qfSusp) == -1)
+   expect_true (all(qfSusp == -1))
 })
