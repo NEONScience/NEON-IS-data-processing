@@ -23,7 +23,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "data_source_dualfan_linkmerge",
+      "repo": "data_source_day_dualfan",
       "branch": "master",
       "glob": "/dualfan/*/*",
       "empty_files": true
