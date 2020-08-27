@@ -78,10 +78,10 @@
 #     Original Creation
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of def-cal-conv-poly-b.R\n")
+context("\n                       Unit test of def-qf-cal-susp.R\n")
 
-# Unit test of def-cal-conv-poly-b.R
-test_that("Unit test of def-cal-conv-poly-b.R", {
+# Unit test of def-qf-cal-susp.R
+test_that("Unit test of def-qf-cal-susp.R", {
    testDir = "testdata/"
    
    testData = "L0_data.csv"
@@ -118,4 +118,7 @@ test_that("Unit test of def-cal-conv-poly-b.R", {
    
    # Happy path 3 - If no calibration information is available, set the flag to -1.
    
+   qfSusp <- NEONprocIS.cal::def.qf.cal.susp(data)
+   
+   expect_true (all(qfSusp) == -1)
 })
