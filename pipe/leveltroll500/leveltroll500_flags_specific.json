@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "aquatroll200_flags_specific"
+    "name": "leveltroll500_flags_specific"
   },
   "transform": {
     "cmd": ["Rscript","/flow.troll.flags.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS"],
@@ -15,8 +15,8 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "aquatroll200_calibration_conversion",
-          "glob": "/aquatroll200/*/*/*/"
+          "repo": "leveltroll500_calibration_conversion",
+          "glob": "/leveltroll500/*/*/*/"
         }
       },
       {

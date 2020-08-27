@@ -1,0 +1,26 @@
+{
+  "pipeline": {
+    "name": "leveltroll500_location_filter"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.loc.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data|flags|uncertainty_coef|uncertainty_data|missingTempQF|zeroPressureQF"],
+    "image": "quay.io/battelleecology/neon-is-loc-filt-r:v0.0.11",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "leveltroll500_calibrated_location_group",
+      "glob": "/leveltroll500/*/*/*"
+      }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "30M",
+    "cpu": 0.1
+  }
+}
