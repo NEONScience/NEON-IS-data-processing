@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "required": [
+    "type",
+    "features"
+  ],
+  "properties": {
+    "type": {
+      "examples": [
+        "FeatureCollection"
+      ]
+    },
+    "features": {
+      "type": ["array", "null"],
+      "items": {
+          "type": "object",
+          "required": [
+            "type",
+            "geometry",
+            "properties"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "examples": [
+                "Feature"
+              ]
+            },
+            "geometry": {
+              "minLength": 1,
+              "type": ["object", "null"],
+              "examples": [
+                "Point"
+              ]
+            },
+            "properties": {
+              "required": [
+                "name",
+                "type",
+                "site",
+                "context",
+                "active_periods"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "examples": [
+                    "CFGLOC108440"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "examples": [
+                    "CFGLOC101255"
+                  ]
+                },
+                "site": {
+                  "type": "string",
+                  "examples": [
+                    "HARV"
+                  ]
+                },
+                "context": {
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string",
+                    "examples": [
+                      "soil"
+                    ]
+                  }
+                },
+                "active_periods": {
+                  "minLength": 1,
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "object",
+                    "required": [
+                      "start_date"
+                    ],
+                    "properties": {
+                      "start_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "examples": [
+                          "2017-02-07T00:17:20Z"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "Required Asset Management Location ID": {
+            "minLength": 1,
+            "type": "integer",
+            "examples": [
+              9915
+            ]
+          },
+          "Required Asset Management Location Code": {
+            "minLength": 1,
+            "type": "string",
+            "examples": [
+              "CFGLOC108440"
+            ]
+          },
+          "HOR": {
+            "minLength": 1,
+            "type": "string",
+            "examples": [
+              "200"
+            ]
+          },
+          "VER": {
+            "minLength": 1,
+            "type": "string",
+            "examples": [
+              "000"
+            ]
+          },
+          "Data Rate": {
+            "minLength": 1,
+            "type": "string",
+            "examples": [
+              "1"
+            ]
+          }
+        }
+      }
+    }
+  }
