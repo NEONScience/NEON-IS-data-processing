@@ -3,7 +3,7 @@
     "name": "leveltroll500_location_filter"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.loc.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data|flags|uncertainty_coef|uncertainty_data|missingTempQF|zeroPressureQF"],
+    "cmd": ["Rscript","/flow.loc.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data|flags|uncertainty_coef|uncertainty_data|zeroPressureQF"],
     "image": "quay.io/battelleecology/neon-is-loc-filt-r:v0.0.11",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {

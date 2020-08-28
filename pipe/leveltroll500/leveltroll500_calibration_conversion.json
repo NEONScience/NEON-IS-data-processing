@@ -3,7 +3,7 @@
     "name": "leveltroll500_calibration_conversion"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_FLAGS","FuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly|conductivity:def.cal.conv.poly.m","TermQf=pressure|temperature|conductivity","TermUcrt=pressure|temperature|conductivity"],
+    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_FLAGS","FuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly","TermQf=pressure|temperature","TermUcrt=pressure|temperature"],
     "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.32",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {

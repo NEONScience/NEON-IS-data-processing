@@ -30,7 +30,7 @@
       {
         "pfs": {
           "name": "CALIBRATED_PATH",
-          "repo": "leveltroll500_cond_conversion",
+          "repo": "leveltroll500_flags_specific",
           "glob": "/leveltroll500/*/*/*/(*)",
           "joinOn": "$1",
           "empty_files": true
