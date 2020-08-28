@@ -27,7 +27,7 @@ time differences to be added to an arbitrary start time.
 \examples{
 WndwBin <- base::as.difftime(30,units="mins")
 WndwTime <- base::as.difftime(1,units='days')
-
+NEONprocIS.base::def.time.bin.diff(WndwBin=WndwBin,WndwTime=WndwTime)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

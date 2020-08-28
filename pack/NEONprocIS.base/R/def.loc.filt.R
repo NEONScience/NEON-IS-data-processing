@@ -44,6 +44,10 @@
 #     Added json schema validations
 #   Mija Choi (2020-03-25)
 #     Modified to add a read-only file, inst/extdata/locations-schema.json, in NEONprocIS.base package 
+#   Cove Sturtevant (2020-08-19)
+#     Modified filtered output to truncate all relevant dates in the locations file to the 
+#      date range of interest (TimeBgn to TimeEnd). Original dates falling between TimeBgn
+#      and TimeEnd will not be modified.
 ##############################################################################################
 def.loc.filt <-
   function(NameFileIn,
@@ -66,7 +70,7 @@ def.loc.filt <-
     #
 
     validateJsonSchema <- FALSE
-    locJsonSchema <- system.file("extdata", "locations-schema.json", package="NEONprocIS.base")
+    locJsonSchema <- system.file("extdata", "locations-sensor-schema.json", package="NEONprocIS.base")
     if (validateJson == TRUE)  {
       validateJsonSchema <-
         NEONprocIS.base::def.validate.json.schema (NameFileIn, locJsonSchema)
@@ -90,10 +94,16 @@ def.loc.filt <-
     #
     if ((validateJson) && (validateJsonSchema))
     {
+      FmtTime <- '%Y-%m-%dT%H:%M:%SZ' # Time format in the location file
+      
       # If NULL, set TimeEnd to 1 second after TimeBgn
       if (base::is.null(TimeEnd)) {
         TimeEnd <- TimeBgn + as.difftime(1, units = 'secs')
       }
+      
+      # Get formatted character representations of the start and end times
+      TimeBgnFmt <- base::format(TimeBgn,format=FmtTime)
+      TimeEndFmt <- base::format(TimeEnd,format=FmtTime)
       
       # Load in the raw json info
       loc <- rjson::fromJSON(file = NameFileIn, simplify = FALSE)
@@ -104,17 +114,29 @@ def.loc.filt <-
         timeInst <- loc$features[[idxLoc]]$properties$install_date
         if (!base::is.null(timeInst)) {
           timeInst <-
-            base::as.POSIXct(timeInst, format = '%Y-%m-%dT%H:%M:%SZ', tz = 'GMT')
+            base::as.POSIXct(timeInst, format = FmtTime, tz = 'GMT')
         }
         timeRmv <- loc$features[[idxLoc]]$properties$remove_date
         if (!base::is.null(timeRmv)) {
           timeRmv <-
-            base::as.POSIXct(timeRmv, format = '%Y-%m-%dT%H:%M:%SZ', tz = 'GMT')
+            base::as.POSIXct(timeRmv, format = FmtTime, tz = 'GMT')
         }
         
         if ((timeInst < TimeEnd) &&
             (base::is.null(timeRmv) || (timeRmv > TimeBgn))) {
+          # Mark this location to keep (it applies to this day)
           setKeepLoc <- c(setKeepLoc, idxLoc)
+          
+          # Truncate the install and remove dates to the start & end times, so that any 
+          # upstream changes outside TimeBgn and TimeEnd are indistinguishable in 
+          # downstream processing
+          if(timeInst < TimeBgn){
+            loc$features[[idxLoc]]$properties$install_date <- TimeBgnFmt
+          }
+          if(base::is.null(timeRmv) || (timeRmv > TimeEnd)){
+            loc$features[[idxLoc]]$properties$remove_date <- TimeEndFmt
+            
+          }
         }
       }
       loc$features <- loc$features[setKeepLoc]
@@ -135,18 +157,29 @@ def.loc.filt <-
           timeBgnGeo <- locGeo[[idxGeo]]$properties$start_date
           if (!base::is.null(timeBgnGeo)) {
             timeBgnGeo <-
-              base::as.POSIXct(timeBgnGeo, format = '%Y-%m-%dT%H:%M:%SZ', tz = 'GMT')
+              base::as.POSIXct(timeBgnGeo, format = FmtTime, tz = 'GMT')
           }
           timeEndGeo <- locGeo[[idxGeo]]$properties$end_date
           if (!base::is.null(timeEndGeo)) {
             timeEndGeo <-
-              base::as.POSIXct(timeEndGeo, format = '%Y-%m-%dT%H:%M:%SZ', tz = 'GMT')
+              base::as.POSIXct(timeEndGeo, format = FmtTime, tz = 'GMT')
           }
           
           if ((timeBgnGeo < TimeEnd) &&
               (base::is.null(timeEndGeo) ||
                (timeEndGeo > TimeBgn))) {
             setKeepGeo <- c(setKeepGeo, idxGeo)
+            
+            # Truncate the start and end dates to the time range we are interested in, so that any 
+            # upstream changes outside TimeBgn and TimeEnd are indistinguishable in 
+            # downstream processing
+            if(timeBgnGeo < TimeBgn){
+              locGeo[[idxGeo]]$properties$start_date <- TimeBgnFmt
+            }
+            if(base::is.null(timeEndGeo) || (timeEndGeo > TimeEnd)){
+              locGeo[[idxGeo]]$properties$end_date <- TimeEndFmt
+            }
+          
           } else {
             # We're deleting this geolocation, let's move on
             next
@@ -238,12 +271,12 @@ def.loc.filt <-
             timeBgnGeoRef <- locGeoRef$properties$start_date
             if (!base::is.null(timeBgnGeoRef)) {
               timeBgnGeoRef <-
-                base::as.POSIXct(timeBgnGeoRef, format = '%Y-%m-%dT%H:%M:%SZ', tz = 'GMT')
+                base::as.POSIXct(timeBgnGeoRef, format = FmtTime, tz = 'GMT')
             }
             timeEndGeoRef <- locGeoRef$properties$end_date
             if (!base::is.null(timeEndGeoRef)) {
               timeEndGeoRef <-
-                base::as.POSIXct(timeEndGeoRef, format = '%Y-%m-%dT%H:%M:%SZ', tz = 'GMT')
+                base::as.POSIXct(timeEndGeoRef, format = FmtTime, tz = 'GMT')
             }
             
             # If this geoloc date range is outside our day, mark for deletion and move on
@@ -256,6 +289,19 @@ def.loc.filt <-
               idxGeoRef[base::length(idxGeoRef)] <-
                 utils::tail(idxGeoRef, 1) + 1
               next
+              
+            } else {
+              # Truncate the start and end dates to the time range we are interested in, so that any 
+              # upstream changes outside TimeBgn and TimeEnd are indistinguishable in 
+              # downstream processing
+              if(timeBgnGeoRef < TimeBgn){
+                txtTimeEval <- base::paste0(txtEval,'$properties$start_date <- TimeBgnFmt')
+                base::eval(parse(text = txtTimeEval))
+              }
+              if(base::is.null(timeEndGeoRef) || (timeEndGeoRef > TimeEnd)){
+                txtTimeEval <- base::paste0(txtEval,'$properties$end_date <- TimeEndFmt')
+                base::eval(parse(text = txtTimeEval))
+              }
               
             }
             
@@ -321,10 +367,14 @@ def.loc.filt <-
         
       } # End loop around named locations
       
+      log$info('Sensor location file filtered successfully.')
+      
       # Write to file
       if (!base::is.null(NameFileOut)) {
         base::write(rjson::toJSON(loc, indent = 4), file = NameFileOut)
+        log$info(base::paste0('Filtered sensor location file written successfully to ',NameFileOut))
       }
     }
+    
     return(loc)
   }
