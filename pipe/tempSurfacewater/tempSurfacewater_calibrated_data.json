@@ -24,7 +24,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "tempSurfacewaterr_context_filter",
+      "repo": "tempSurfacewater_context_filter",
       "glob": "/*/*/*",
       "empty_files": true
     }
