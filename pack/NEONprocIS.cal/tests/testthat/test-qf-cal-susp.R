@@ -70,7 +70,7 @@ test_that("Unit test of def-qf-cal-susp.R", {
    
    qfSusp <- NEONprocIS.cal::def.qf.cal.susp(data, infoCal)
    
-   expect_true (all(qfSusp) == 0)
+   expect_true (any(qfSusp, (base::as.integer(infoCal$cal$Value))))
    
    # Happy path 2 -  If the CVALR1 coefficient is not present, set the suspect calibration flag
    # to 0.
@@ -89,4 +89,13 @@ test_that("Unit test of def-qf-cal-susp.R", {
    qfSusp <- NEONprocIS.cal::def.qf.cal.susp(data)
    
    expect_true (all(qfSusp == -1))
+ 
+   # Happy path 4 - If data is not a vector, errors out.
+   
+   data <- list(data)
+   
+   qfSusp <- try(NEONprocIS.cal::def.qf.cal.susp(data, infoCal), silent = TRUE)
+   
+   expect_true(class(qfSusp)[1] == "try-error")
+   
 })
