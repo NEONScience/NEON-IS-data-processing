@@ -1,24 +1,29 @@
 #library(testthat)
 #source("R/def.read.avro.deve.R")
 
-# test_that("when more than one input is sent as an input, consider just the first one",
-#            {
-#              NameFile <- c("tests/testthat/def.read.avro.deve/prt_test.avro", "tests/testthat/def.read.avro.deve/prt_calibrated_2.avsc")
-#              rpt <- try(NEONprocIS.base::def.read.avro.deve(NameFile=NameFile, NameLib = "ravro.so"), silent = TRUE)
-#              testthat::expect_false((class(rpt)[1] == "try-error"))
-#              testthat::equals(length(rpt), 4 )
-# 
-#            })
-# 
-#  test_that("check data types of the reutrn list",
-#            {
-#              NameFile <- c("~/gitRepo/NEON-IS-data-processing/pack/NEONprocIS.base/tests/testthat/def.read.avro.deve/prt_test.avro", "tests/testthat/def.read.avro.deve/prt_calibrated_2.avsc")
-#              rpt <- try(NEONprocIS.base::def.read.avro.deve(NameFile=NameFile, NameLib = "ravro.so"), silent = TRUE)
-#              testthat::expect_false((class(rpt)[1] == "try-error"))
-#              testthat::equals(length(rpt), 4 )
-#              #testthat::equals(class(rpt$source_id), "character" )
-#              testthat::equals(class(rpt$source_id), "string" )
-#              testthat::equals(class(rpt$readout_time), "POSIXct" )
-#              testthat::equals(class(rpt$resistance), "numeric" )
-# 
-#      })
+test_that("when more than one input is sent as an input, consider just the first one",
+           {
+             workingDirPath <- getwd()
+             nameFile <- file.path(workingDirPath,"def.read.avro.deve/prt_test.avro")
+             nameFile2 <- file.path(workingDirPath,"def.read.avro.deve/prt_test2.avro")
+             nameLib <- file.path(workingDirPath, "ravro.so")
+             print(nameLib)
+             rpt <- try(def.read.avro.deve(NameFile = c(nameFile, nameFile2), NameLib = nameLib), silent = FALSE)
+             testthat::expect_false((class(rpt)[1] == "try-error"))
+
+           })
+
+ test_that("check data types of the reutrn list",
+           {
+             workingDirPath <- getwd()
+             nameFile <- file.path(workingDirPath,"def.read.avro.deve/prt_test.avro")
+             nameLib <- file.path(workingDirPath, "ravro.so")
+             rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib), silent = FALSE)
+             testthat::expect_false((class(rpt)[1] == "try-error"))
+             testthat::equals(length(rpt), 4 )
+             testthat::equals(class(rpt$source_id), "character" )
+             testthat::equals(class(rpt$site_id), "character" )
+             testthat::equals(class(rpt$readout_time), "POSIXct" )
+             testthat::equals(class(rpt$resistance), "numeric" )
+
+     })

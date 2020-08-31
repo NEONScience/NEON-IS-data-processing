@@ -31,13 +31,16 @@ class ConstantPad:
     def pad(self) -> None:
         """Pad the data using the given window size."""
         for path in self.data_path.rglob('*'):
+            log.debug(f'path: {path}')
             if path.is_file():
                 parts = path.parts
                 year, month, day, location, data_type = self.data_path_parser.parse(path)
                 if data_type in self.data_types:
+                    log.debug(f'processing file: {path}')
                     location_path = Path(*parts[:self.location_index + 1])
                     data_date = datetime.date(int(year), int(month), int(day))
                     padded_dates = pad_calculator.get_padded_dates(data_date, self.window_size)
+                    log.debug(f'{path} padded dates {padded_dates}')
                     # link data file into each date in the padded range
                     link_parts = list(parts)
                     for index in range(1, len(self.out_path_parts)):
@@ -54,6 +57,7 @@ class ConstantPad:
                         file_writer.link_thresholds(location_path, link_path)
                         if date == data_date:
                             manifest_path = Path(link_path.parent, Config.manifest_filename)
+                            log.debug(f'writing manifest: {manifest_path}')
                             file_writer.write_manifest(padded_dates, manifest_path)
                 else:
                     link_path = Path(self.out_path, *parts[self.relative_path_index:])

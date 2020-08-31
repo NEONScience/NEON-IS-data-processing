@@ -58,16 +58,16 @@
 		<Name>U_CVALF2</Name>
 		<Value>50</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
-		<Name>U_CVALF1</Name>
+		<Name>U_CVALR1</Name>
 		<Value>104</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
 		<Name>U_CVALF3</Name>
 		<Value>0.00585</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
-		<Name>U_CVALF2</Name>
+		<Name>U_CVALF1</Name>
 		<Value>0.000141</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
-		<Name>U_CVALF1</Name>
+		<Name>U_CVALA1</Name>
 		<Value>0.00585</Value>
 	</Uncertainty>
     <Trueness units="uS/cm">0.000000</Trueness>
