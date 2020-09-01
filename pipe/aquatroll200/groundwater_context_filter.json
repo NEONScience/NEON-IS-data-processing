@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "condGroundwater_context_filter"
+    "name": "groundwater_context_filter"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -23,14 +23,14 @@
     "union": [
       {
         "pfs": {
-          "name": "DATA_PATH",
+          "name": "IN_PATH",
           "repo": "aquatroll200_date_gap_filler_linker",
           "glob": "/aquatroll200/*/*/*"
        }
       },
       {
         "pfs": {
-          "name": "DATA_PATH",
+          "name": "IN_PATH",
           "repo": "leveltroll500_date_gap_filler_linker",
           "glob": "/leveltroll500/*/*/*"
         }
@@ -38,7 +38,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": true,
+  "standby": false,
   "resource_requests": {
     "memory": "20M",
     "cpu": 0.05

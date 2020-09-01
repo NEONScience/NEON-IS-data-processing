@@ -179,7 +179,7 @@ for (idxDirIn in DirIn){
   
   #Write out flags
   rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut, 
-                                                 NameFile = base::paste0(idxDirOutFlags,"/aquatroll200_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc.parquet"), 
+                                                 NameFile = base::paste0(idxDirOutFlags,"/troll_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc.parquet"), 
                                                  Schm = SchmQfOut),silent=FALSE)
   if(class(rptQfOut) == 'try-error'){
     log$error(base::paste0('Writing the output flags failed: ',attr(rptQfOut,"condition")))
