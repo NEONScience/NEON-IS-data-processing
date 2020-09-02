@@ -70,7 +70,7 @@ test_that("Unit test of def-qf-cal-susp.R", {
    
    qfSusp <- NEONprocIS.cal::def.qf.cal.susp(data, infoCal)
    
-   expect_true (any(qfSusp, (base::as.integer(infoCal$cal$Value))))
+   expect_true (all(qfSusp == 1))
    
    # Happy path 2 -  If the CVALR1 coefficient is not present, set the suspect calibration flag
    # to 0.
