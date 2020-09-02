@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Quality flag for suspect calibration
+#' @title Unit test for def-qf-cal-susp.R, quality flag for suspect calibration
 
 #' @author
 #' Mija Choi \email{choim@battelleecology.org}
