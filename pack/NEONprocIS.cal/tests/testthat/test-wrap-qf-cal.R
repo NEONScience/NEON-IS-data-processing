@@ -43,14 +43,14 @@
 #' an example, devtools::test(pkg="C:/projects/NEON-IS-data-processing/pack/NEONprocIS.cal")
 #' 
 # changelog and author contributions / copyrights
-#   Mija Choi (2020-00-02)
+#   Mija Choi (2020-09-02)
 #     Original Creation
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of def-qf-cal-susp.R\n")
+context("\n                       Unit test of wrap-qf-cal.R\n")
 
-# Unit test of def-qf-cal-susp.R
-test_that("Unit test of def-qf-cal-susp.R", {
+# Unit test of wrap-qf-cal.R
+test_that("Unit test of wrap-qf-cal.R", {
    testDir = "testdata/"
    
    testData = "L0_data.csv"
@@ -60,9 +60,7 @@ test_that("Unit test of def-qf-cal-susp.R", {
    
    data <- data0$resistance
    
-   # Happy path 1 - Check the CVALR1 coefficient in the calibration file. If it is present,
-   # set the suspect calibration flag for all data values to the value of the coefficient
-   # (1=bad,0=good).
+   # Happy path 1 - 
    
    testFileCal = "calibration2.xml"
    testFileCalPath <- paste0(testDir, testFileCal)
@@ -90,36 +88,8 @@ test_that("Unit test of def-qf-cal-susp.R", {
          NumDayExpiMax = NumDayExpiMax,
          log = NULL
       )
+   testDir = "./testdata"
+   wrapQfCal <- NEONprocIS.cal::wrap.qf.cal (data,calSlct,DirCal=testDir,mappNameVar=NULL,log=NULL)
    
-   
-   qfSusp <- NEONprocIS.cal::def.qf.cal.susp(data, infoCal)
-   
-   expect_true (all(qfSusp == 1))
-   
-   # Happy path 2 -  If the CVALR1 coefficient is not present, set the suspect calibration flag
-   # to 0.
-   
-   testFileCal = "calibration4.xml"
-   testFileCalPath <- paste0(testDir, testFileCal)
-   
-   infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
-   
-   qfSusp <- NEONprocIS.cal::def.qf.cal.susp(data, infoCal)
-   
-   expect_true (all(qfSusp) == 0)
-   
-   # Happy path 3 - If no calibration information is available, set the flag to -1.
-   
-   qfSusp <- NEONprocIS.cal::def.qf.cal.susp(data)
-   
-   expect_true (all(qfSusp == -1))
  
-   # Happy path 4 - If data is not a vector, errors out.
-   
-   data <- list(data)
-   
-   qfSusp <- try(NEONprocIS.cal::def.qf.cal.susp(data, infoCal), silent = TRUE)
-   
-   expect_true(class(qfSusp)[1] == "try-error")
-   
 })
