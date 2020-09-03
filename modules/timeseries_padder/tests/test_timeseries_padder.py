@@ -46,7 +46,7 @@ class TimeSeriesPadTest(TestCase):
         self.location_index = 7
         self.data_type_index = 8
 
-    def test_constant_window(self):
+    def test_constant_pad(self):
         config = Config(data_path=self.input_path,
                         out_path=self.out_path,
                         relative_path_index=self.relative_path_index,
@@ -60,7 +60,7 @@ class TimeSeriesPadTest(TestCase):
         constant_pad.pad()
         self.check_output()
 
-    def test_variable_window(self):
+    def test_variable_pad(self):
         config = Config(data_path=self.input_path,
                         out_path=self.out_path,
                         relative_path_index=0,
@@ -76,12 +76,21 @@ class TimeSeriesPadTest(TestCase):
 
     def check_output(self):
         """Ensure the expected files are in the output directory."""
+        not_exists_data_path = Path(self.out_path, 'prt/2018/01/01/CFGLOC112154/data', self.data_filename)
+        previous_data_path = Path(self.out_path, 'prt/2018/01/02/CFGLOC112154/data', self.data_filename)
+        next_data_path = Path(self.out_path, 'prt/2018/01/04/CFGLOC112154/data', self.data_filename)
         data_path = Path(self.out_path, self.metadata_path, Config.data_dir, self.data_filename)
         manifest_path = Path(self.out_path, self.metadata_path, Config.data_dir, Config.manifest_filename)
         threshold_path = Path(self.out_path, self.metadata_path, Config.threshold_dir, Config.threshold_filename)
         print(f'data_path: {data_path}')
         print(f'manifest_path: {manifest_path}')
         print(f'threshold_path: {threshold_path}')
+        with open(str(manifest_path), 'r') as manifest_file:
+            for line in manifest_file.readlines():
+                print(f'manifest line: {line.strip()}')
+        self.assertFalse(not_exists_data_path.exists())
+        self.assertTrue(previous_data_path.exists())
+        self.assertTrue(next_data_path.exists())
         self.assertTrue(data_path.exists())
         self.assertTrue(manifest_path.exists())
         self.assertTrue(threshold_path.exists())
