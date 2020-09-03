@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><CalVal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../CVALData.xsd ">
+   <SensorID>
+    <MxAssetID>1285</MxAssetID>
+    
+  </SensorID>
+  <StreamCalVal>
+    <CalFixture>
+      <CalFixtureID>21000000000084</CalFixtureID>
+      <ActivityLocation>10000000100349</ActivityLocation>
+      <SWVersion>1.0</SWVersion>
+      <ProcedureVersion>1.0</ProcedureVersion>
+      <Station>0</Station>
+    </CalFixture>
+    <CalEnvironment>
+      <AmbientTemperature>
+        <Min>21.00</Min>
+        <Max>22.80</Max>
+        <Mean>22.41</Mean>
+        <StdDev>0.46</StdDev>
+      </AmbientTemperature>
+      <AmbientPressure>
+        <Min>840.70</Min>
+        <Max>841.20</Max>
+        <Mean>840.87</Mean>
+        <StdDev>0.18</StdDev>
+      </AmbientPressure>
+      <AmbientHumidity>
+        <Min>35.70</Min>
+        <Max>44.90</Max>
+        <Mean>37.85</Mean>
+        <StdDev>2.51</StdDev>
+      </AmbientHumidity>
+    </CalEnvironment>
+    <CalibrationCoefficient> 
+		<Name>CVALH2</Name>
+		<Value>0.000007067061488</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALH1</Name>
+		<Value>1.021338038908240</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALH0</Name>
+		<Value>-3.831569019253189</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALM2</Name>
+		<Value>-0.000080828104414</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALM1</Name>
+		<Value>1.008251095617125</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALM0</Name>
+		<Value>-0.061550466016713</Value>
+    </CalibrationCoefficient>
+	<CalibrationTable name="">
+    <Metadata>
+        <Entry>
+            <Name> </Name>
+            <Value> </Value>
+        </Entry> 
+    </Metadata>
+	<Row index="">
+    <Independent name=""> </Independent>
+    <Column index="">
+        <Dependent name=""> </Dependent>
+    </Column>
+	</Row>
+	</CalibrationTable>
+    <CalibrationStandards CertNumber="186612">30000000001144</CalibrationStandards>
+    <StreamID>4</StreamID>
+    <Uncertainty units="%"> 
+		<Name>U_CVALE12</Name>
+		<Value>191572.000000000</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE11</Name>
+		<Value>0.000000000</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE10</Name>
+		<Value>0.000000000</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE9</Name>
+		<Value>7592.922887842</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE8</Name>
+		<Value>0.000000000</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE7</Name>
+		<Value>1.000000000</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE6</Name>
+		<Value>-0.000000000</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE5</Name>
+		<Value>-2773315.084784245</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE4</Name>
+		<Value>35047.393121667</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE3</Name>
+		<Value>4038.196470540</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE2</Name>
+		<Value>7334827.438928702</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALE1</Name>
+		<Value>1132831.881549818</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALD3</Name>
+		<Value>75</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALD2</Name>
+		<Value>10</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALD1</Name>
+		<Value>78</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALA3</Name>
+		<Value>0.007200</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALA2</Name>
+		<Value>0.000580</Value>
+	</Uncertainty><Uncertainty units="%"> 
+		<Name>U_CVALA1</Name>
+		<Value>0.007223</Value>
+	</Uncertainty>
+    <Trueness units="%">0.006484</Trueness>
+    <ActivityTimeRange>
+      <StartTime>2019-08-19T18:46:59.8305</StartTime>
+      <EndTime>2019-08-19T20:18:24.3229</EndTime>
+    </ActivityTimeRange>
+    <CertificateNumber>191572</CertificateNumber>
+  </StreamCalVal>
+  <ValidTimeRange>
+    <StartTime>2019-08-19T20:18:24.3229</StartTime>
+    <EndTime>2020-09-28T20:18:24.0000</EndTime>
+  </ValidTimeRange>
+  <Comment>
+    <CommentDescription/>
+    <CommentCreator/>
+    <CommentDateTime/>
+  </Comment>
+  <DATA>
+		<MetaData>
+			<Equipment>21000000051559</Equipment>
+			<Operator>mvanlysel</Operator>
+			<WorkOrder>WO33833</WorkOrder>
+			<MaximoID>1285</MaximoID>
+			<AssetID>30000000023519</AssetID>
+			<Reference/>
+			<Fixture>L1F100</Fixture>
+			<NEONPN>0317730000</NEONPN>
+			<SN header=""/>
+			<FW header=""/>
+			<SOH header=""/>
+			<UncertaintyCtl>L1F100</UncertaintyCtl>
+		</MetaData>
+		<PreCALDATA header=""/>
+		<CALDATA header="TS,  Amb C, Amb RH, Amb hPa, Ref Specific uS/cm, Ref Actual uS/cm, Ref C, UUT Specific uS/cm, UUT Actual uS/cm, UUT kPa, UUT C, UUT m">3649085696.000000,21.000000,44.900002,841.200012,11.850000,11.162700,22.100000,11.695646,11.049029,0.706864,22.105392,0.072152
+3649085696.000000,21.000000,44.900002,841.200012,11.790000,11.106180,22.100000,11.683887,11.038135,0.705996,22.106354,0.072064
+3649085696.000000,21.000000,44.900002,841.200012,11.680000,11.002560,22.100000,11.697351,11.050815,0.707205,22.106178,0.072187
+3649085696.000000,21.000000,44.900002,841.200012,11.830000,11.143860,22.100000,11.686951,11.041086,0.700564,22.106613,0.071509
+3649085696.000000,21.100000,44.900002,841.200012,11.750000,11.068500,22.100000,11.681898,11.036313,0.707205,22.106613,0.072187
+3649085696.000000,21.100000,44.799999,841.200012,11.690000,11.011980,22.100000,11.691569,11.045530,0.706942,22.106972,0.072160
+3649085696.000000,21.100000,44.799999,841.200012,11.780000,11.096760,22.100000,11.693856,11.047923,0.704654,22.108009,0.071927
+3649085696.000000,21.100000,44.599998,841.200012,11.810000,11.125020,22.100000,11.689976,11.044375,0.705746,22.108543,0.072038
+3649085696.000000,21.100000,44.599998,841.200012,11.720000,11.040240,22.100000,11.689976,11.044375,0.705746,22.108543,0.072038
+3649085696.000000,21.100000,44.599998,841.200012,11.770000,11.087340,22.100000,11.690555,11.044999,0.703234,22.108887,0.071782
+</CALDATA>
+		<ValidationDATA header=""/>
+		<QCStatic header="K,U_Constant,U_QA,R2_Check,U_Drift,Drift_Total,Revision,Unit">1.992000,0.003130,0.030000,0.004610,0.000000,0.000000,5,%</QCStatic>
+		<QCDynamic header="Pass/Fail,Gain,Offset,R2,Uqa,Trueness,Urepeat,Udrift,DaysSince,CalID_Drift">PASS,NaN,NaN,NaN,0.014342,0.006484,0.000580,1132831.881550,-1.000000,191572</QCDynamic>
+		<Precision header=""/>
+		<AsLeftCFG header=""/>
+		<AsReceived>
+			<ReceivedCFG header=""/>
+			<ReceivedCoefficient> 
+				<Name> </Name>
+				<Value> </Value>
+			</ReceivedCoefficient>
+			<ReceivedDATA header=""/>
+		</AsReceived>
+  </DATA>
+  </CalVal>

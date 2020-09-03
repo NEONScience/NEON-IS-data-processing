@@ -10,38 +10,41 @@ import structlog
 from io import BytesIO
 from collections.abc import Hashable
 
+from parquet_linkmerge.parquet_linkmerge_config import Config
+from parquet_linkmerge.path_parser import PathParser
+
 log = structlog.get_logger()
 
 
 class ParquetFileMerger:
 
-    def __init__(self, *, data_path: Path, out_path: Path,
-                 duplication_threshold: float, relative_path_index: int) -> None:
-        self.data_path = data_path
-        self.out_path = out_path
-        self.duplication_threshold = duplication_threshold
-        self.relative_path_index = relative_path_index
+    def __init__(self, config: Config) -> None:
+        self.in_path = config.in_path
+        self.out_path = config.out_path
+        self.duplication_threshold = config.duplication_threshold
+        self.path_parser = PathParser(config)
 
     def merge(self) -> None:
-        source_files = {}
-        for path in self.data_path.rglob('*.parquet'):
-            source_id = path.name.split('_')[2]
-            if source_id not in source_files:
-                source_files[source_id] = [path]
+        key_files = {}
+        for path in self.in_path.rglob('*.parquet'):
+            source_type, year, month, day, source_id = self.path_parser.parse(path)
+            key = source_type+year+month+day+source_id
+            if key not in key_files:
+                key_files[key] = [path]
             else:
-                source_files[source_id].append(path)
-        for source_id in source_files:
+                key_files[key].append(path)
+        for key in key_files:
             # Link if there is only one file for the source ID
-            if len(source_files[source_id]) == 1:
-                path = source_files[source_id][0]
-                link_path = self._convert_path(path)
+            if len(key_files[key]) == 1:
+                path = key_files[key][0]
+                link_path = self.convert_path(path)
                 if not link_path.exists():
                     log.info(f"Linking {path} to {link_path}")
                     link_path.symlink_to(path)
             else:
-                self._write_merged_files(input_files=source_files[source_id])
+                self.write_merged_files(key_files[key])
 
-    def _write_merged_files(self, *, input_files: List[Path]) -> None:
+    def write_merged_files(self, input_files: List[Path]) -> None:
         """
         Merge files from same source at different sites occurring on the same day.
 
@@ -79,7 +82,7 @@ class ParquetFileMerger:
             'parquet.avro.schema': tb1_schema,
             'writer.model.name': 'avro'
         })
-        output_file_path = self._convert_path(path)
+        output_file_path = self.convert_path(path)
         log.info(f"writing merged parquet file {output_file_path}")
         pq.write_table(
             table,
@@ -91,7 +94,7 @@ class ParquetFileMerger:
             allow_truncated_timestamps=False
         )
 
-    def _convert_path(self, path: Path) -> Path:
+    def convert_path(self, path: Path) -> Path:
         """
         Generate the output path for a path.
 
@@ -99,8 +102,7 @@ class ParquetFileMerger:
         :return: The output path.
         """
         filename = '_'.join(path.name.split('_')[1:])
-        parts = path.parts
-        trimmed_path = Path(*parts[self.relative_path_index:len(parts)-1])
-        output_path = Path(self.out_path, trimmed_path, filename)
+        source_type, year, month, day, source_id = self.path_parser.parse(path)
+        output_path = Path(self.out_path, source_type, year, month, day, source_id, filename)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         return output_path
