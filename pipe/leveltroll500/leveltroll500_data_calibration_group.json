@@ -11,6 +11,7 @@
           "OUT_PATH": "/pfs/out",
           "LOG_LEVEL": "INFO",
           "DATA_SOURCE_TYPE_INDEX": "3",
+          "DATA_SOURCE_ID_INDEX": "4",
           "DATA_YEAR_INDEX": "4",
           "DATA_MONTH_INDEX": "5",
           "DATA_DAY_INDEX": "6",
