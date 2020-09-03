@@ -33,7 +33,7 @@
     </CalEnvironment>
     <CalibrationCoefficient> 
 		<Name>CVALR1</Name>
-		<Value>1.12345</Value>
+		<Value>0</Value>
     </CalibrationCoefficient>
 	<CalibrationTable name="">
     <Metadata>
