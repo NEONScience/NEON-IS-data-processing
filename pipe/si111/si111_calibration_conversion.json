@@ -15,22 +15,22 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "prt_calibration_filter",
-          "glob": "/prt/*/*/*/"
+          "repo": "si111_calibration_filter",
+          "glob": "/si111/*/*/*/"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_DATA",
           "repo": "avro_schemas",
-          "glob": "/dp0p/prt_calibrated.avsc"
+          "glob": "/dp0p/si111_calibrated.avsc"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
           "repo": "avro_schemas",
-          "glob": "/dp0p/flags_calibration.avsc"
+          "glob": "/dp0p/flags_calibration_si111.avsc"
         }
       },
       {

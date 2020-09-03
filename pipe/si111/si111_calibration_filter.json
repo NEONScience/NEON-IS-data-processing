@@ -13,8 +13,8 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_data_calibration_linker",
-      "glob": "/prt/*/*/*"
+      "repo": "si111_data_calibration_group",
+      "glob": "/si111/*/*/*"
     }
   },
   "enable_stats": false,

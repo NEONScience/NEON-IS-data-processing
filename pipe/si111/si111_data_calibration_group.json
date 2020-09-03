@@ -34,7 +34,7 @@
           "name": "CALIBRATION_PATH",
           "repo": "calibration",
           "branch": "master",
-          "glob": "/prt/(*)",
+          "glob": "/si111/(*)",
           "joinOn": "$1",
           "empty_files": true
         }
@@ -42,9 +42,9 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "prt_data_calibration_group_path",
+          "repo": "data_source_si111_linkmerge",
           "branch": "master",
-          "glob": "/prt/(*)",
+          "glob": "/si111/(*)",
           "joinOn": "$1",
           "empty_files": true
         }
