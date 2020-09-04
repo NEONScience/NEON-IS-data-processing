@@ -30,8 +30,8 @@
       {
         "pfs": {
           "name": "CALIBRATED_PATH",
-          "repo": "prt_calibrated_location_group_path",
-          "glob": "/prt/(*)",
+          "repo": "si111_calibration_conversion",
+          "glob": "/si111/(*)",
           "joinOn": "$1",
           "empty_files": true
         }
@@ -40,7 +40,7 @@
         "pfs": {
           "name": "LOCATION_PATH",
           "repo": "location_asset",
-          "glob": "/prt/(*)",
+          "glob": "/si111/(*)",
           "joinOn": "$1",
           "empty_files": true
         }
