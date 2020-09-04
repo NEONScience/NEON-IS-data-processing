@@ -4,18 +4,22 @@
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-    "image": "quay.io/battelleecology/parquet_linkmerge:12",
+    "image": "quay.io/battelleecology/parquet_linkmerge:13",
     "cmd": [
       "bash"
     ],
     "stdin": [
       "#!/bin/bash",
-      "python3 -m parquet_linkmerge.parquet_linkmerge_app"
+      "python3 -m parquet_linkmerge.parquet_linkmerge_main"
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "RELATIVE_PATH_INDEX": "3",
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO",
+      "SOURCE_TYPE_INDEX": "3",
+      "YEAR_INDEX": "4",
+      "MONTH_INDEX": "5",
+      "DAY_INDEX": "6",
+      "SOURCE_ID_INDEX": "7"
     }
   },
   "parallelism_spec": {
