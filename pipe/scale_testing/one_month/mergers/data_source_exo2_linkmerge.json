@@ -4,7 +4,11 @@
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+<<<<<<< HEAD
     "image": "quay.io/battelleecology/parquet_linkmerge:11",
+=======
+    "image": "quay.io/battelleecology/parquet_linkmerge:13",
+>>>>>>> master
     "cmd": [
       "bash"
     ],
@@ -14,8 +18,17 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
+<<<<<<< HEAD
       "RELATIVE_PATH_INDEX": "3",
       "LOG_LEVEL": "INFO"
+=======
+      "LOG_LEVEL": "INFO",
+      "SOURCE_TYPE_INDEX": "3",
+      "YEAR_INDEX": "4",
+      "MONTH_INDEX": "5",
+      "DAY_INDEX": "6",
+      "SOURCE_ID_INDEX": "7"
+>>>>>>> master
     }
   },
   "parallelism_spec": {
@@ -42,4 +55,8 @@
     "memory": "64M",
     "cpu": "0.5"
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master
