@@ -22,11 +22,11 @@ input:
   - pfs:
       name: DIR_IN
       repo: tempSurfacewater_calibrated_data
-      glob: "/tempSurfacewater/*/*"
+      glob: "/prt/*/*"
   - pfs:
       name: FILE_SCHEMA_RGLR
       repo: avro_schemas
-      glob: "/dp0p/tempSurfacewater_calibrated_wo_source.avsc"
+      glob: "/dp0p/prt_calibrated_wo_source.avsc"
 enable_stats: false
 standby: true
 parallelism_spec:
