@@ -14,7 +14,6 @@ test_that("NameFile is not null and both term and ctxt are null",
             }
 
           }
-
 )
 test_that("NameFile and strJson are both null, stop processing",
           {
@@ -23,7 +22,6 @@ test_that("NameFile and strJson are both null, stop processing",
             testthat::expect_true((class(rpt)[1] == "try-error"))
 
           }
-
 )
 test_that("NameFile is not null and ctxt is not null",
           {
@@ -97,7 +95,6 @@ test_that("NameFile is not null and both term and ctxt are not null and exists i
             }
           }
 )
-
 test_that("NameFile is not null and NameFileOut is NULL",
           {
             nameFileIn <- "def.read.thsh.qaqc.df/thresholds.json"
