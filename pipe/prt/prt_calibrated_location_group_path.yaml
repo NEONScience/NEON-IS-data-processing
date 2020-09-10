@@ -1,4 +1,5 @@
 ---
+# NOTE GL: the location_group_path was not used in original pipeline creation
 pipeline:
   name: prt_calibrated_location_group_path
 transform:
