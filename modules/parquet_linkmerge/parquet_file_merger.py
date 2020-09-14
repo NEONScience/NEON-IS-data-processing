@@ -34,7 +34,8 @@ class ParquetFileMerger:
             else:
                 key_files[key].append(path)
         for key in key_files:
-            # Link if there is only one file for the source ID
+            # Link if there is only one file for the key
+            paths = key_files[key]
             if len(key_files[key]) == 1:
                 path = key_files[key][0]
                 link_path = self.convert_path(path)
@@ -42,7 +43,27 @@ class ParquetFileMerger:
                     log.info(f"Linking {path} to {link_path}")
                     link_path.symlink_to(path)
             else:
-                self.write_merged_files(key_files[key])
+                site_keys = {}
+                for path in paths:
+                    site = path.name.split('_')[0]
+                    if site not in site_keys:
+                        site_keys[site] = [path]
+                    else:
+                        site_keys[site].append(path)
+                if len(site_keys.keys()) > 1:  # there are different sites on the same day
+                    files_to_merge: List[Path] = []
+                    for site_key in site_keys:
+                        files_to_merge.extend(site_keys[site_key])
+                    self.write_merged_files(files_to_merge)
+                else:
+                    for site_key in site_keys:
+                        paths = site_keys[site_key]
+                        for path in paths:
+                            link_path = self.convert_path(path)
+                            if not link_path.exists():
+                                log.info(f"Linking {path} to {link_path}")
+                                link_path.symlink_to(path)
+                    # self.write_merged_files(key_files[key])
 
     def write_merged_files(self, input_files: List[Path]) -> None:
         """
