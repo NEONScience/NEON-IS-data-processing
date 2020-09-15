@@ -64,6 +64,7 @@ def.thsh.slct <- function(thsh,
                           NameLoc=NULL,
                           RptThsh = TRUE,
                           log = NULL) {
+  #browser()
   # Initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -255,7 +256,7 @@ def.thsh.slct <- function(thsh,
   # Are we returning the indices of the thresholds in the list, or the thresholds themselves?
   if(RptThsh == TRUE){
     # Return the thresholds
-    rpt <- thshRaw[setThshSlct]
+    rpt <- thsh[setThshSlct]
   } else {
     # Return the indices
     rpt <- setThshSlct
