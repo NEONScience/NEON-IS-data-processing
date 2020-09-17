@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "aquatroll200_data_calibration_group",
+      "repo": "aquatroll200_data_calibration_linker",
       "glob": "/aquatroll200/*/*/*/"
     }
   },
