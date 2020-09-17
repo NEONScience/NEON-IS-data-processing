@@ -28,8 +28,8 @@
 #' NEONprocIS.cal::def.ucrt.expn(ucrtComb=ucrtComb)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
-#' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.rstc}
-#' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.volt}
+#' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.rstc.poly}
+#' @seealso \link[NEONprocIS.cal]{def.ucrt.fdas.volt.poly}
 #' @seealso \link[NEONprocIS.cal]{def.ucrt.meas.cnst}
 #' @seealso \link[NEONprocIS.cal]{def.ucrt.meas.mult}
 #' @seealso \link[NEONprocIS.cal]{def.ucrt.comb}

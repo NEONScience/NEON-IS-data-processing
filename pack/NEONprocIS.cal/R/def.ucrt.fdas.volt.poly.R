@@ -1,20 +1,27 @@
 ##############################################################################################
-#' @title Compute uncertainty attributed to NEON FDAS voltage measurements
+#' @title Compute uncertainty attributed to NEON FDAS voltage measurements (and CVALA polynomial calibration conversion)
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description
-#' Definition function. Computes uncertainty imposed by a NEON field data acquisition system (FDAS)
-#' when making voltage measurements.
+#' Definition function. Computes L0' uncertainty imposed by a NEON field data acquisition system (FDAS)
+#' when making voltage measurements and using a polynomial calibration conversion function with CVALA 
+#' coefficients.
 
-#' @param data Numeric vector of raw voltage measurements
+#' @param data Numeric data frame of raw measurements. 
 #' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
 #' (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$cal and info$ucrt,
 #' which are data frames of calibration coefficients and uncertainty coeffcients, respectively.
 #' Columns of these data frames are:\cr
 #' \code{Name} String. The name of the coefficient. \cr
 #' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
+#' @param varUcrt A character string of the target variable (column) in the data frame \code{data} for 
+#' which FDAS uncertainty data will be computed (all other columns will be ignored). Note that for other
+#' uncertainty functions this variable may not need to be in the input data frame, so long as the function
+#' knows that. Defaults to the first column in \code{data}.
+#' @param calSlct Unused in this function. Defaults to NULL. See the inputs to 
+#' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is. 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -35,6 +42,7 @@
 
 #' @seealso \link[NEONprocIS.cal]{def.cal.func.poly}
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
+#' @seealso \link[NEONprocIS.cal]{wrap.ucrt.dp0p}
 
 #' @export
 
@@ -43,26 +51,38 @@
 #     original creation
 #   Cove Sturtevant (2020-05-12)
 #     Bug fix - allow code to produce NAs if infoCal$cal is NULL but infoCal$ucrt is not NULL
+#   Cove Sturtevant (2020-09-02)
+#     adjusted inputs to conform to new generic format 
+#     This includes inputting the entire data frame, the 
+#     variable to be generate uncertainty info for, and the (unused) argument calSlct
 ##############################################################################################
-def.ucrt.fdas.volt <- function(data = base::numeric(0),
+def.ucrt.fdas.volt.poly <- function(data = data.frame(data=base::numeric(0)),
                                infoCal = NULL,
+                               varUcrt = base::names(data)[1],
+                               calSlct=NULL,
                                log = NULL) {
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
   
-  # Check data input
-  if (!NEONprocIS.base::def.validate.vector(data, TestEmpty = FALSE, log =
-                                            log)) {
+  # Ensure input is data frame with the target variable in it
+  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=varUcrt,TestEmpty=FALSE, log = log)
+  if (!chk) {
+    stop()
+  }
+  
+  # Check data input is numeric
+  if (!NEONprocIS.base::def.validate.vector(data[[varUcrt]],TestEmpty = FALSE, TestNumc = TRUE, log=log)) {
     stop()
   }
   
   # Initialize uncertainty output
+  dataUcrt <- data[[varUcrt]] # Target variable to compute uncertainty for
   ucrt <-
-    base::data.frame(raw = data,
-                     dervCal = NA * data,
-                     ucrtFdas = NA * data)
+    base::data.frame(raw = dataUcrt,
+                     dervCal = NA * dataUcrt,
+                     ucrtFdas = NA * dataUcrt)
   
   # If infoCal is NULL, return NA data
   if (base::is.null(infoCal$cal)) {
@@ -79,10 +99,10 @@ def.ucrt.fdas.volt <- function(data = base::numeric(0),
   
   
   # Compute derivative of calibration function
-  func <- NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal)
+  func <- NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal,Prfx='CVALA',log=log)
   funcDerv <- stats::deriv(func)
   ucrt$dervCal <-
-    stats::predict(object = funcDerv, newdata = data) # Eval derivative at each measurement
+    stats::predict(object = funcDerv, newdata = dataUcrt) # Eval derivative at each measurement
   
   # Retrieve the uncertainty coefficients for voltage measurements
   # Combined, relative FDAS uncertainty of an individual measurement (U_CVALV1, unitless).
@@ -95,7 +115,7 @@ def.ucrt.fdas.volt <- function(data = base::numeric(0),
   
   # Compute FDAS uncertainty
   ucrt$ucrtFdas <-
-    (coefUcrtFdas * data + coefUcrtFdasOfst) * base::abs(ucrt$dervCal)
+    (coefUcrtFdas * dataUcrt + coefUcrtFdasOfst) * base::abs(ucrt$dervCal)
   
   return(ucrt)
 }
