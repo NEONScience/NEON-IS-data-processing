@@ -105,6 +105,21 @@ test_that("For SITE specific, when there are more than 2 thresholds, use first o
             testthat::equals(rpt[1]$location_name, "CPER")
             testthat::equals(rpt[1]$number_value, NULL)
             testthat::equals(rpt[1]$string_value, "test")
-            
+
+          }
+)
+test_that("For REALM & DOY-specific, when there are more than 2 thresholds, use first one",
+          {
+            #thsh, Time, Term, Ctxt = NULL, Site=NULL, NameLoc=NULL, RptThsh = TRUE, log = NULL
+            inputThsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(NameFile = 'def.read.thsh.qaqc.df/thresholds3.json')
+            time1 <- base::as.POSIXct('2000-01-10 00:00:00', tz = 'GMT')
+            rpt <- NEONprocIS.qaqc::def.thsh.slct(thsh = inputThsh, Time = time1, Term="TDPrecipBulk")
+            testthat::expect_true(is.list(rpt))
+            expect_true(length(rpt) == 1)
+            testthat::equals(rpt[1]$start_date, "2000-01-01T00:00:00Z")
+            testthat::equals(rpt[1]$location_name, "REALM")
+            testthat::equals(rpt[1]$number_value, 20)
+            testthat::equals(rpt[1]$string_value, NULL)
+
           }
 )
