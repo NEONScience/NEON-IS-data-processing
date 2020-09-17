@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Merge QC-filtered data files
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.56
+FROM quay.io/battelleecology/neon-is-base-r:v0.0.57
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

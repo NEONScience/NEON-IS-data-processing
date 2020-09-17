@@ -1,6 +1,6 @@
 ##############################################################################################
-#' @title Uncertainty for temperature from the conductivity sensor as part of the water
-#' quality transition
+#' @title Individual measurement uncertainty for temperature from the conductivity sensor as part of the water
+#' quality data product
 
 #' @author
 #' Kaelin Cawley \email{kcawley@battelleecology.org}
@@ -12,17 +12,24 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 
-#' @param data Temperature data from the conductivity sensor [vector]
+#' @param data Numeric data frame of raw measurements. 
 #' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
 #' (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
 #' a data frame of uncertainty coefficents. Columns of this data frame are:\cr
 #' \code{Name} String. The name of the coefficient. \cr
 #' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
+#' @param varUcrt A character string of the target variable (column) in the data frame \code{data} 
+#' that represents temperature data from the conductivity sensor. Note that for other
+#' uncertainty functions this variable may not need to be in the input data frame, so long as the function
+#' knows that. Defaults to the first column in \code{data}.
+#' @param calSlct Unused in this function. Defaults to NULL. See the inputs to 
+#' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is. 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
 
-#' @return dataframe with L0 uncertatinty column(s) [dataframe]
+#' @return A data frame with the following variables:\cr
+#' \code{ucrtMeas} - combined measurement uncertainty for an individual L0 reading.
 
 #' @export
 
@@ -40,19 +47,29 @@
 # changelog and author contributions / copyrights
 #   Kaelin Cawley (2020-03-02)
 #     original creation
+#   Cove Sturtevant (2020-09-02)
+#     adjusted inputs to conform to new generic format 
+#     This includes inputting the entire data frame, the 
+#     variable to be generate uncertainty info for, and the (unused) argument calSlct
 ##############################################################################################
-def.ucrt.wq.temp.conc <- function(data, infoCal = NULL, log = NULL) {
+def.ucrt.wq.temp.conc <- function(data = data.frame(data=base::numeric(0)),
+                                  infoCal = NULL, 
+                                  varUcrt = base::names(data)[1],
+                                  calSlct=NULL,
+                                  log = NULL) {
   # Start logging, if needed
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
   
-  #Check that we have more than 0 rows of data
-  if (!NEONprocIS.base::def.validate.vector(data, TestEmpty = FALSE, log =
-                                            log)) {
-    msg <-
-      base::paste0('       |------ data is empty. Uncertainty will not run\n')
-    log$error(msg)
+  # Ensure input is data frame with the target variable in it
+  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=varUcrt,TestEmpty=FALSE, log = log)
+  if (!chk) {
+    stop()
+  }
+  
+  # Check data input is numeric
+  if (!NEONprocIS.base::def.validate.vector(data[[varUcrt]],TestEmpty = FALSE, TestNumc = TRUE, log=log)) {
     stop()
   }
   
@@ -60,10 +77,11 @@ def.ucrt.wq.temp.conc <- function(data, infoCal = NULL, log = NULL) {
   #It's just a placeholder input to allow the calibration module to be more generic
   
   #Create the output dataframe
+  dataUcrt <- data[[varUcrt]] # Target variable to compute uncertainty for
   outputNames <- c("ucrtMeas")
   outputDF <-
     base::as.data.frame(base::matrix(
-      nrow = length(data),
+      nrow = length(dataUcrt),
       ncol = length(outputNames),
       data = NA
     ),
@@ -74,11 +92,11 @@ def.ucrt.wq.temp.conc <- function(data, infoCal = NULL, log = NULL) {
   #Create an output dataframe with U_CVALA1 based off of the following rules:
   ### U_CVALA1 = 0.01 if temp is <= 35 Celsius according to the manual
   ### U_CVALA1 = 0.05 if temp is >35 Celsius according to the manual
-  outputDF$ucrtMeas[data <= 35] <-
+  outputDF$ucrtMeas[dataUcrt <= 35] <-
     0.01
   log$debug('Low range temp uncertainty populated.')
   
-  outputDF$ucrtMeas[data > 35] <-
+  outputDF$ucrtMeas[dataUcrt > 35] <-
     0.05
   log$debug('High range temp uncertainty populated.')
   
