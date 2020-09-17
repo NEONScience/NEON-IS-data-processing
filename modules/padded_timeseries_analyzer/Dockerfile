@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the padded timeseries analyzer module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t padded_timeseries_analyzer:latest -f padded_timeseries_analyzer/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="padded_timeseries_analyzer/padded_timeseries_analyzer"

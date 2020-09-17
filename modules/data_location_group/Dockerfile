@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the data location group module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t data_location_group:latest -f data_location_group/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="data_location_group"

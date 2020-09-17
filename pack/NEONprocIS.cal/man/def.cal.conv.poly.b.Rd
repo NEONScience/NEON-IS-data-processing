@@ -4,10 +4,16 @@
 \alias{def.cal.conv.poly.b}
 \title{Convert raw to calibrated data using NEON CVALB polynomial calibration coefficients}
 \usage{
-def.cal.conv.poly.b(data = base::numeric(0), infoCal = NULL, log = NULL)
+def.cal.conv.poly.b(
+  data = data.frame(data = base::numeric(0)),
+  infoCal = NULL,
+  varConv = base::names(data)[1],
+  calSlct = NULL,
+  log = NULL
+)
 }
 \arguments{
-\item{data}{Numeric vector of raw measurements}
+\item{data}{Numeric data frame of raw measurements.}
 
 \item{infoCal}{A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
 One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients.
@@ -15,6 +21,14 @@ This data frame must include columns:\cr
 \code{Name} String. The name of the coefficient. Must fit regular expression CVALB[0-9]\cr
 \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
 Defaults to NULL, in which case converted data will be retured as NA.}
+
+\item{varConv}{A character string of the target variable (column) in the data frame \code{data} for 
+which the calibration will be applied (all other columns will be ignored). Note that for other
+uncertainty functions this variable may not need to be in the input data frame. Defaults to the first
+column in \code{data}.}
+
+\item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::wrap.cal.conv for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
@@ -28,7 +42,7 @@ Definition function. Apply NEON calibration polynomial function contained in coe
 CVALB0, CVALB1, CVALB2, etc. to convert raw data to calibrated data.
 }
 \examples{
-data=c(1,2,3)
+data=data.frame(data=c(1,2,3))
 infoCal <- data.frame(Name=c('CVALB1','CVALB0'),Value=c(10,1),stringsAsFactors=FALSE)
 def.cal.conv.poly.b(data=data,infoCal=infoCal)
 }
@@ -42,6 +56,8 @@ NEON.DOC.000785 TIS Calibrated Measurements and Level 1 Data Products Uncertaint
 \link[NEONprocIS.cal]{def.cal.conv.poly}
 
 \link[NEONprocIS.cal]{def.cal.conv.poly.m}
+
+\link[NEONprocIS.cal]{wrap.cal.conv}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}

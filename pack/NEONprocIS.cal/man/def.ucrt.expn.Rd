@@ -33,9 +33,9 @@ NEON.DOC.000746 Calibration Fixture and Sensor Uncertainty Analysis: CVAL 2014 U
 \seealso{
 \link[NEONprocIS.cal]{def.read.cal.xml}
 
-\link[NEONprocIS.cal]{def.ucrt.fdas.rstc}
+\link[NEONprocIS.cal]{def.ucrt.fdas.rstc.poly}
 
-\link[NEONprocIS.cal]{def.ucrt.fdas.volt}
+\link[NEONprocIS.cal]{def.ucrt.fdas.volt.poly}
 
 \link[NEONprocIS.cal]{def.ucrt.meas.cnst}
 
