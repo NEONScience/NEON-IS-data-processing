@@ -44,19 +44,19 @@ input:
   - pfs:
       name: STATISTICS_PATH
       repo: tempSurfacewater_qaqc_plausibility 
-      glob: /(*)/(*)/(*)
+      glob: /prt/(*)/(*)/(*)/**
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: UNCERTAINTY_COEF_PATH
       repo: tempSurfacewater_context_filter
-      glob: /(*)/(*)/(*)
+      glob: /prt/(*)/(*)/(*)/**
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: UNCERTAINTY_DATA_PATH
       repo: tempSurfacewater_regularized_uncertainty_data
-      glob: /(*)/(*)/(*)
+      glob: /prt/(*)/(*)/(*)/**
       joinOn: $1/$2/$3
       empty_files: true
 parallelism_spec:
