@@ -34,7 +34,11 @@ class FilterJoiner:
         # join using intersection to pull common keys
         joined_keys: set = keys[0].intersection(*keys[1:])
         for input_path_name, path in self.get_joined_paths(joined_keys, key_paths):
-            self.link_path(path)
+            if path.is_file():
+                self.link_path(path)
+            else:
+                dir_path = Path(self.out_path, *path.parts[self.relative_path_index:])
+                dir_path.mkdir(parents=True, exist_ok=True)
 
     def get_keys(self, input_path: InputPath, key_paths: DictionaryList) -> set:
         """
@@ -46,10 +50,10 @@ class FilterJoiner:
         """
         keys = set()
         for path in path_filter.filter_paths(glob_pattern=input_path.glob_pattern, output_path=self.out_path):
-            key = self.get_key(path, input_path.join_indices)
-            log.debug(f'key: {key}')
-            keys.add(key)
-            key_paths[key] = (input_path.path_name, path)
+            if len(path.parts) > max(input_path.join_indices):
+                key = self.get_key(path, input_path.join_indices)
+                keys.add(key)
+                key_paths[key] = (input_path.path_name, path)
         return keys
 
     def link_path(self, path: Path):

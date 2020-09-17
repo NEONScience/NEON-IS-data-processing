@@ -58,8 +58,8 @@
 #'
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn.
 #'
-#' 3. "FileSchmData=value" (optional), where value is the full path to schema for calibrated data output by this
-#' workflow. If not input, the same schema as the input data will be used for output.
+#' 3. "FileSchmData=value" (optional), where value is the full path to schema for calibrated data 
+#' output by this workflow. If not input, the same schema as the input data will be used for output. 
 #' Note that the column order of the output data will be identical to the column order of the input. Terms/variables
 #' not calibrated will still be included in the output, just passed through. Note that any term names that are
 #' changed between the input schema that the data are read in with and the output schema will be applied also
@@ -76,26 +76,26 @@
 #' For example, for terms 'resistance' and 'voltage' each having calibration information. The default column naming
 #' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
 #'
-#' 5. "TermConv=value" (optional), where value contains any number of terms/variables of the input data to convert the data
-#' by applying the calibration function, separated by pipes (|). For example, to apply calibration to the terms
-#' "resistance" and "voltage", then enter the argument as "TermConv=resistance|voltage".
+#' 5. "TermFuncConv=value" (optional), where value contains the combination of the L0 term and the associated calibration conversion 
+#' function to use within the NEONprocIS.cal package. The argument is formatted as term:function|term:function...
+#' where term is the L0 term and function is the function to use. Multiple term:function pairs are separated by pipes (|). 
+#' For example, "TermFuncConv=resistance:def.cal.conv.poly|voltage:cal.func" indicates that the function def.cal.conv.poly will 
+#' be used to convert the resistance term to calibrated output, and the function cal.func will be used for the voltage term. 
+#' Note that any and all calibration functions specified here must accept arguments "data", "infoCal", "varCal", "slctCal", 
+#' and "log", even if they are unused in the function. See any def.cal.conv.____.R function in the NEONprocIS.cal package for 
+#' explanation of these inputs, but in short, the entire L0 data frame and available calibration information are passed into each 
+#' calibration function.
+#' In the typical case where term(s) listed in this argument match L0 term(s) in the input data, their calibrated output will 
+#' overwrite the original L0 data (the columns may be relabeled as specified in the output schema provided in FileSchmData).
+#' However, a term listed in this argument does not need to match any of the L0 terms in the input data, so long the specified 
+#' calibration function knows this. This may be the case if multiple L0 terms are used to create a single calibrated output.
+#' In this case, no L0 data will be overwritten by the function's output and instead a new column will be appended to the end of the 
+#' output data in the order it appears here, with the column name defaulting to the term name indicated in this argument (but 
+#' it may also be relabeled as specified in the output schema provided in FileSchmData). 
+#' If this argument is not included, no calibration conversion will be performed for any L0 data, and the output L0' data will be
+#' identical to the L0 data, aside from any relabeling of the columns as specified in FileSchmData. 
 #'
-#' 6. "FuncConv=value" (optional), where value contains the name of the calibration conversion function to use within
-#' the NEONprocIS.cal package. Value may be a single function name, which will be used to convert all terms indicated
-#' in TermConv, or multiple function names in which case the argument is formatted as term:function|term:function...
-#' where term is the term in TermConv for which the corresponding calibration function will be used. Multiple term:function
-#' pairs are separated by pipes (|). For example, "FuncConv=resistance:def.cal.conv.poly|voltage:cal.func"
-#' indicates that the function def.cal.conv.poly will be used for the resistance term, and the function cal.func will
-#' be used for the voltage term. Another example, "FuncConv=def.cal.conv.poly" indicates that function def.conv.poly will
-#' be used for all terms in the TermConv argument. If this argument is not included, the standard polynomial calibration
-#' function def.cal.conv.poly will be used for all variables in TermConv. Note that any alternative function
-#' must accept arguments "data", "infoCal", and "log", even if they are unused in the function. Input "data" is an array
-#' of the data for the applicable term. Input "infoCal" is a data frame of calibration information as returned from
-#' NEONprocIS.cal::def.read.cal.xml. If no calibration files are associated with the term, infoCal would be passed in to
-#' the function as NULL. Input "log" is a logger object as generated by NEONprocIS.base::def.log.init and used in this
-#' script to generate hierarchical logging.
-#'
-#' 7. "NumDayExpiMax=value" (optional), where value contains the max days since expiration that calibration information is
+#' 6. "NumDayExpiMax=value" (optional), where value contains the max days since expiration that calibration information is
 #' still considered usable. Calibrations beyond this allowance period are treated as if they do not exist. Thus,
 #' if no other applicable calibration file exists, calibrated values will be NA and uncertainty coefficients will
 #' not be recorded for these periods. Value may be a single number, in which case it will apply to all terms with
@@ -110,58 +110,61 @@
 #' "NumDayExpiMax=NA". Note that use of expired calibration information and the lack of any usable calibration
 #' information will always cause the expired/valid calibration flag to be raised.
 #'
-#' 8. "TermQf=value" (optional), where value contains any number of terms/variables for which to provide calibration
+#' 7. "TermQf=value" (optional), where value contains any number of L0 terms/variables for which to provide calibration
 #' flags, separated by pipes (|). For example, if calibration information is expected for the terms "resistance" and
 #' "voltage", then enter the argument as "TermQf=resistance|voltage".Terms listed here should match the names of the
 #' expected subfolders in the calibration directory. If no subfolder exists matching the term names here, the valid
 #' calibration flag will be 1, and the suspect calibration flag will be -1.
 #'
-#' 9. "TermUcrt=value" (optional), where value contains any number of terms/variables for which to output
-#' individual measurement uncertainty using the uncertainty coefficients in the calibration file, or a separate
-#' function (see FuncUcrt). Separate multiple terms with pipes (|). If the measurements were collected with a
-#' resistance- or voltage-based field data aquisition
-#' system (FDAS), indicate whether the resistance or voltage uncertainty applies by adding a parentheses with either
-#' R or V, respectively, inside. For example, if terms resistance and voltage are subject to FDAS uncertainty, and
-#' their respective raw measurement units are ohms and volts, the argument is "TermUcrt=resistance(R)|voltage(V)".
-#' Terms with FDAS uncertainty must be a subset of the terms listed in the TermConv argument above, whereas other
-#' terms may or may not be a subset of those in the TermConv argument. Note that uncertainty coefficients will be output
-#' for all terms with calibration information supplied in the calibration folder, regardless of whether they are
-#' specified here for output of individual measurement uncertainty.
+#' 8. "TermFuncUcrt=value" (optional), where value contains the combination of the L0 term and the associated uncertainty 
+#' function to use within the NEONprocIS.cal package to compute individual measurement uncertainty. The argument is formatted 
+#' as term:functionMeas,functionFdas|term:functionMeas,functionFdas... where term is the L0 term, functionMeas is the function 
+#' to use for computing in the individual measurement (calibration) uncertainty, and functionFdas is the function to use for 
+#' computing the FDAS uncertainty, if applicable. Note that functionMeas is required, whereas functionFdas is not, and they are
+#' separated by a comma if both are input. Multiple term:functionMeas,functionFdas sets are separated by pipes (|). 
+#' For example, "TermFuncUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly|relative_humidity:def.ucrt.meas.mult" 
+#' indicates that the function def.ucrt.meas.cnst will be used to compute the individual measurement (calibration) uncertainty 
+#' for the term 'resistance' and the function def.ucrt.fdas.rstc.poly will be used to compute the FDAS uncertainty for this same term. 
+#' The function def.ucrt.meas.mult will be used to compute the individual measurement (calibration) uncertainty for the term 
+#' 'relative_humidity', and FDAS uncertainty will not be computed.  
+#' Note that any and all uncertainty functions specified here must accept arguments "data", "infoCal", "varUcrt", "slctCal", 
+#' and "log", even if they are unused in the function. See any def.ucrt.meas.____.R function in the NEONprocIS.cal package for 
+#' explanation of these inputs, but in short, the entire L0 data frame and available calibration information are passed into each 
+#' uncertainty function.
+#' In the typical calse, a term listed in this argument will match a L0 term in the input data. However, it need not match any of 
+#' the L0 terms in the input data, so long as it the specified (custom) uncertainty function knows this and the term matches one 
+#' of the terms listed in the TermFuncConv. 
+#' Custom uncertainty functions may output any amount of variables/columns as needed, but the variable naming is important. 
+#' At least one output column name from the measurement uncertainty function must start with "ucrtMeas", and any number of output 
+#' columns beginning with "ucrtMeas" indicate other sources of uncertainty (except FDAS) that should be added in quadrature to yield
+#' the combined individual measurement uncertainty. Indeed, combined and expanded individual measurement uncertainty are also output in 
+#' the resulting uncertainty data file. Any variables in the output data frame(s) of the uncertainty 
+#' functions indicated here that begin with 'ucrtMeas' or 'ucrtFdas' (typically output from the FDAS uncertainty function) will be 
+#' added in quadrature to represent the combined L0' uncertainty for the indicated term. 
+#' Note that there is no option to provide an alternate output schema for uncertainty data, as column naming is depended on for 
+#' downstream processing and needs to be consistent with the calibrated data. Output column naming is a combination of the term, 
+#' un underscore, and the column names output from the uncertainty functions (e.g. resistance_ucrtMeas).If an output schema was provided 
+#' in FileSchmData, any mappings between input terms and output (converted) terms will also be performed for uncertainty data. For example, 
+#' if term "resistance" was converted to "temp", and "ucrtMeas" is an output column from the measurement uncertainty function, then the column 
+#' output by this script  would be temp_ucrtMeas. 
+#' Finally, note that all uncertainty coefficients in the calibration files and FDAS uncertainty (if applicable) will be output 
+#' in the ucrt_coef folder for all terms with calibration information supplied in the calibration folder, regardless of whether they are 
+#' specified here for output of individual measurement uncertainty data (output in the ucrt_data folder).
 #'
-#' 10. "FuncUcrt=value" (optional), where value contains the name of the function to use within the NEONprocIS.cal
-#' package to compute individual measurement uncertainty. Value may be a single function name, which will be used
-#' to compute uncertainty for all terms indicated in TermUcrt, or multiple function names in which case the argument
-#' is formatted as term:function|term:function... where term is the term in TermUcrt for which the corresponding
-#' uncertainty function will be used. Multiple term:function pairs are separated by pipes (|). For example,
-#' "FuncUcrt=resistance:def.ucrt.meas.cnst|voltage:ucrt.func" indicates that the function def.ucrt.meas.cnst will be used for
-#' the resistance term, and the function ucrt.func will be used for the voltage term. Another example,
-#' "FuncUrt=def.ucrt.meas.cnst" indicates that function def.ucrt.meas.cnst will be used for all terms in the TermUcrt argument.
-#' If this argument is not included, the standard uncertainty function def.ucrt.meas.cnst will be used for all variables
-#' in TermUcrt. Note that any alternative function must accept arguments "data", "infoCal", and "log", even if they
-#' are unused in the function. See documentation for NEONprocIS.cal::def.ucrt.meas.cnst for input/output format. Note that
-#' one output column must be labeled "ucrtMeas", corresponding to the individual measurement uncertainty. The
-#' measurement uncertainty (ucrtMeas) returned from the indicated function will be added in quadrature with
-#' FDAS uncertainty if applicable (see TermUcrt). Combined and expanded individual measurement uncertainty are also
-#' output. No alternate functions for these quantities are accepted at this time, and there is no option to provide
-#' an alternate output schema for uncertainty data, as column naming is depended on for downstream processing. Output
-#' column naming is a combination of the term, un underscore, and the uncertainty quantity (e.g. resistance_ucrtMeas).
-#' If an output schema was provided in FileSchmData, any mappings between input terms and output (converted) terms
-#' will also be performed for uncertainty data. For example, if term "resistance" was converted to "temp", then
-#' the output column for measurement uncertainty would be temp_ucrtMeas.
+#' 9. "FileUcrtFdas=value" (optional), where value is the full path to the uncertainty coefficients for the FDAS.
+#' Must be provided if FDAS uncertainty applies. These coefficients will be added to the uncertainty coefficients found in any calibration
+#' files and output to the ucrt_coef folder, as well as input into any uncertainty functions indicated in TermFuncUcrt.
 #'
-#' 11. "FileUcrtFdas=value" (optional), where value is the full path to the uncertainty coefficients for the FDAS.
-#' Must be provided if any terms in argument TermUcrt are indicated as subject to FDAS uncertainty.
-#'
-#' 12. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at
+#' 10. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at
 #' the same level as the calibration folder in the input path that are to be copied with a symbolic link to the
 #' output path.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 
-#' @return Directories for calibrated data, valid calibration flags, uncertainty information, uncertainty data (if
-#' indicated) and any other additional subfolders specified in DirSubCopy symbolically linked in directory DirOut,
-#' where DirOut replaces the input directory structure up to #/pfs/BASE_REPO (see inputs above) but otherwise retains
+#' @return Directories for calibrated data (data), uncertainty coefficients (uncertainty_coef), valid calibration flags (flags)(if indicated), 
+#' uncertainty data (uncertainty_data) (if indicated) and any other additional subfolders specified in DirSubCopy symbolically linked in 
+#' directory DirOut, where DirOut replaces the input directory structure up to #/pfs/BASE_REPO (see inputs above) but otherwise retains
 #' the child directory structure of the input path. By default, the 'calibration' directory of the input path is dropped
 #' unless specified in the DirSubCopy argument.
 
@@ -172,16 +175,16 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.cal.conv.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" "TermConv=resistance" "NumDayExpiMax=NA" "TermUcrt=resistance(R)"
+#' Rscript flow.cal.conv.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" "TermFuncConv=resistance:def.cal.conv.poly" "NumDayExpiMax=NA" "TermFuncUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly"
 #'
 #' Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/prt_calibration_filter/prt/2019/01/01')
-#' Rscript flow.cal.conv.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" "TermConv=resistance" "NumDayExpiMax=NA" "TermUcrt=resistance(R)"
+#' Rscript flow.cal.conv.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "FileSchmData=/avro_schemas/dp0p/prt_calibrated.avsc" "FileSchmQf=/avro_schemas/dp0p/flags_calibration.avsc" TermFuncConv=resistance:def.cal.conv.poly" "NumDayExpiMax=NA" "TermUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly"
 #'
 #' Stepping through the code in Rstudio
 #' Sys.setenv(DIR_IN='/scratch/pfs/prt_calibration_filter')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/prt_calibrated.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_calibration.avsc", "TermConv=resistance", "NumDayExpiMax=NA", "TermUcrt=resistance(R)")
+#' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "FileSchmData=/scratch/pfs/avro_schemas/dp0p/prt_calibrated.avsc", "FileSchmQf=/scratch/pfs/avro_schemas/dp0p/flags_calibration.avsc", TermFuncConv=resistance:def.cal.conv.poly", "NumDayExpiMax=NA", "TermUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly")
 #' # Then copy and paste rest of workflow into the command window
 
 #' @seealso None currently
@@ -226,6 +229,10 @@
 #     remove dirSubCopy from mandatory directories to identify datums. Require data folder only.
 #   Cove Sturtevant (2020-04-06)
 #     switch read/write data from avro to parquet
+#   Cove Sturtevant (2020-09-01)
+#     restructured the arguments and code to allow multiple L0 terms to create a single
+#     calibrated output, and to pass all data and cal info to calibration and uncertainty
+#     functions
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -243,21 +250,17 @@ Para <-
     NameParaOptn = c(
       "FileSchmData",
       "FileSchmQf",
-      "TermConv",
-      "FuncConv",
+      "TermFuncConv",
       "NumDayExpiMax",
       "TermQf",
-      "TermUcrt",
-      "FuncUcrt",
+      "TermFuncUcrt",
       "FileUcrtFdas",
       "DirSubCopy"
     ),
     ValuParaOptn = base::list(
-      TermConv = NULL,
-      FuncConv = "def.cal.conv.poly",
+      TermFuncConv = NULL,
       TermQf = NULL,
-      TermUcrt = NULL,
-      FuncUcrt = "def.ucrt.meas.cnst",
+      TermFuncUcrt = NULL,
       NumDayExpiMax =
         NA
     ),
@@ -271,11 +274,6 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
-log$debug(base::paste0(
-  'Terms to apply calibration function: ',
-  base::paste0(Para$TermConv, collapse = ',')
-))
-numConv <- base::length(Para$TermConv)
 log$debug(base::paste0(
   'Terms to output calibration flags: ',
   base::paste0(Para$TermQf, collapse = ',')
@@ -301,22 +299,28 @@ if (!base::is.null(Para$FileSchmQf)) {
 }
 
 # Determine the calibration function to be used for each converted term
-log$debug(base::paste0(
-  'Calibration conversion function(s) to be used: ',
-  base::paste0(Para$FuncConv, collapse = ',')
-))
-if (!base::is.null(Para$TermConv) &&
-    base::length(Para$TermConv) > 0) {
+if(!base::is.null(Para$TermFuncConv) && 
+   base::length(Para$TermFuncConv) %% 2 > 0){
+  log$fatal('Input argument TermFuncConv must contain term:function pairs, separated by pipes.')
+  stop()
+}
+if (!base::is.null(Para$TermFuncConv) &&
+    base::length(Para$TermFuncConv) > 0) {
   FuncConv <-
     NEONprocIS.base::def.vect.pars.pair(
-      vect = Para$FuncConv,
-      KeyExp = Para$TermConv,
-      ValuDflt = 'def.cal.conv.poly',
+      vect = Para$TermFuncConv,
       NameCol = c('var', 'FuncConv'),
       log = log
     )
+  numConv <- base::nrow(FuncConv)
+  log$debug(base::paste0(
+    'Terms to calibrate & conversion function(s) to be used: ',
+    base::paste0(apply(as.matrix(FuncConv),1,base::paste0,collapse=':'), collapse = ', ')
+))
 } else {
   FuncConv <- NULL
+  numConv <- 0
+  log$debug('Terms to calibrate & conversion function(s) to be used: None')
 }
 
 # Error check & convert NumDayExpiMax for internal use
@@ -327,87 +331,46 @@ log$debug(
   )
 )
 
-# Parse parameters for individual measurement uncertainty
-if (!base::is.null(Para$TermUcrt) &&
-    base::length(Para$TermUcrt) > 0) {
-  ParaUcrt <- base::lapply(
-    Para$TermUcrt,
-    FUN = function(argSplt) {
-      if (base::grepl(pattern = '(R)', x = argSplt)) {
-        # Terms in which FDAS resistance uncertainty applies
-        return(base::data.frame(
-          var = gsub(
-            pattern = '[(R)]',
-            replacement = '',
-            x = argSplt
-          ),
-          typeFdas = 'R',
-          stringsAsFactors = FALSE
-        ))
-      } else if (base::grepl(pattern = '(V)', x = argSplt)) {
-        return(base::data.frame(
-          var = gsub(
-            pattern = '[(V)]',
-            replacement = '',
-            x = argSplt
-          ),
-          typeFdas = 'V',
-          stringsAsFactors = FALSE
-        ))
-      } else {
-        return(base::data.frame(
-          var = argSplt,
-          typeFdas = NA,
-          stringsAsFactors = FALSE
-        ))
-      }
-    }
-  )
-  ParaUcrt <- base::do.call(base::rbind, ParaUcrt)
-  
-  # Open FDAS uncertainty file
-  if (base::any(!base::is.na(ParaUcrt$typeFdas))) {
-    if (base::is.null(Para$FileUcrtFdas)) {
-      log$fatal('Path to FDAS uncertainty file must be input in argument FileUcrtFdas.')
-      stop()
-      
-    } else {
-      ucrtCoefFdas  <-
-        NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = Para$FileUcrtFdas,
-                                                log = log)
-      
-    }
-  }
-  
-} else {
-  ParaUcrt <- NULL
-}
-log$debug(
-  base::paste0(
-    'Terms for which to compute individual measurement uncertainty: ',
-    base::paste0(Para$TermUcrt, collapse = ',')
-  )
-)
 
 # Which uncertainty function(s) are we using?
-log$debug(
-  base::paste0(
-    'Individual measurement uncertainty function(s) to be used: ',
-    base::paste0(Para$FuncUcrt, collapse = ',')
-  )
-)
-if (!base::is.null(ParaUcrt)) {
+if(!base::is.null(Para$TermFuncUcrt) && 
+   base::length(Para$TermFuncUcrt) %% 2 > 0){
+  log$fatal('Input argument TermFuncUcrt must contain term:function(s) sets, separated by pipes.')
+  stop()
+}
+if (!base::is.null(Para$TermFuncUcrt) &&
+    base::length(Para$TermFuncUcrt) > 0) {
   FuncUcrt <-
     NEONprocIS.base::def.vect.pars.pair(
-      vect = Para$FuncUcrt,
-      KeyExp = ParaUcrt$var,
-      ValuDflt = 'def.ucrt.meas.cnst',
-      NameCol = c('var', 'FuncUcrt'),
+      vect = Para$TermFuncUcrt,
+      NameCol = c('var', 'FuncUcrtMeasFdas'),
       log = log
     )
-  ParaUcrt <- base::merge(x = ParaUcrt, y = FuncUcrt, by = 'var')
+  log$debug(base::paste0(
+    'Terms and functions to compute individual measurement uncertainty: ',
+    base::paste0(apply(as.matrix(FuncUcrt),1,base::paste0,collapse=':'), collapse = ' ... ')
+  ))
+  
+  # Further separate FDAS uncertainty functions into their own column
+  funcUcrtSplt <- base::strsplit(FuncUcrt$FuncUcrtMeasFdas,',')
+  funcUcrtSplt <- lapply(funcUcrtSplt,FUN=function(rowIdx){data.frame(FuncUcrtMeas=rowIdx[1],FuncUcrtFdas=rowIdx[2],stringsAsFactors=FALSE)})
+  FuncUcrt <- cbind(FuncUcrt['var'],do.call('rbind',funcUcrtSplt))
 } else {
   FuncUcrt <- NULL
+  log$debug('Terms and functions to compute individual measurement uncertainty: None')
+}
+
+
+# Open FDAS uncertainty file
+if (base::is.null(Para$FileUcrtFdas)) {
+  log$fatal('Path to FDAS uncertainty file must be input in argument FileUcrtFdas.')
+  stop()
+  
+} else {
+  ucrtCoefFdas  <-
+    NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = Para$FileUcrtFdas,
+                                            log = log)
+  
 }
 
 # Retrieve optional subdirectories to copy over
@@ -452,7 +415,7 @@ for (idxDirIn in DirIn) {
     NEONprocIS.base::def.vect.pars.pair(
       vect = Para$NumDayExpiMax,
       KeyExpc = base::unique(c(
-        Para$TermConv, Para$TermQf, ParaUcrt$var
+        FuncConv$var, Para$TermQf, FuncUcrt$var
       )),
       ValuDflt = NA,
       NameCol = c('var', 'NumDayExpiMax'),
@@ -460,15 +423,16 @@ for (idxDirIn in DirIn) {
       log = log
     )
   
-  # Check that the data streams we want to calibrate have calibration folders. If not, issue a warning.
-  exstCal <- Para$TermConv %in% varCal
+  # Check that the data streams we want to calibrate and/or compute uncertainty for have calibration folders. If not, issue a warning.
+  exstCal <- base::unique(FuncConv$var,FuncUcrt$var) %in% varCal
   if (numConv > 0 && !base::all(exstCal)) {
     log$warn(
       base::paste0(
         'No calibration folder exists for term(s): ',
-        base::paste0(Para$TermConv[!exstCal], collapse = ','),
+        base::paste0(FuncConv$var[!exstCal], collapse = ','),
         ' in datum path ',
-        idxDirCal
+        idxDirCal,
+        '. This might be okay if custom cal and/or uncertainty functions are used.'
       )
     )
   }
@@ -481,20 +445,20 @@ for (idxDirIn in DirIn) {
   idxDirOutData <- base::paste0(idxDirOut, '/data')
   idxDirOutUcrtCoef <- base::paste0(idxDirOut, '/uncertainty_coef')
   NEONprocIS.base::def.dir.crea(
-    DirBgn = '/',
+    DirBgn = '',
     DirSub = c(idxDirOutData, idxDirOutUcrtCoef),
     log = log
   )
   if (!base::is.null(Para$TermQf)) {
     idxDirOutQf <- base::paste0(idxDirOut, '/flags')
-    NEONprocIS.base::def.dir.crea(DirBgn = '/',
+    NEONprocIS.base::def.dir.crea(DirBgn = '',
                                   DirSub = idxDirOutQf,
                                   log = log)
   }
   
-  if (!base::is.null(ParaUcrt)) {
+  if (!base::is.null(FuncUcrt)) {
     idxDirOutUcrtData <- base::paste0(idxDirOut, '/uncertainty_data')
-    NEONprocIS.base::def.dir.crea(DirBgn = '/',
+    NEONprocIS.base::def.dir.crea(DirBgn = '',
                                   DirSub = idxDirOutUcrtData,
                                   log = log)
   }
@@ -512,7 +476,7 @@ for (idxDirIn in DirIn) {
     base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(idxDirData, '/', fileData),
                                              log = log),
               silent = FALSE)
-  if (base::class(data) == 'try-error') {
+  if (base::any(base::class(data) == 'try-error')) {
     # Generate error and stop execution
     log$error(base::paste0('File ', idxDirData, '/', fileData, ' is unreadable.'))
     base::stop()
@@ -522,7 +486,7 @@ for (idxDirIn in DirIn) {
   valiData <-
     NEONprocIS.base::def.validate.dataframe(dfIn = data,
                                             TestNameCol = base::unique(c(
-                                              'readout_time', Para$TermConv, ParaUcrt$var, Para$TermQf
+                                              'readout_time', Para$TermQf
                                             )),
                                             log = log)
   if (!valiData) {
@@ -531,14 +495,15 @@ for (idxDirIn in DirIn) {
   
   # Create a mapping between terms in the input data and terms in the output data (if we have an output schema)
   nameVarIn <- base::names(data)
+  nameVarAdd <- setdiff(FuncConv$var,nameVarIn)
   if (!base::is.null(Para$FileSchmData)) {
     nameVarOut <- SchmDataOutVar$name
   } else {
-    nameVarOut <- nameVarIn
+    nameVarOut <- c(nameVarIn,nameVarAdd)
   }
   mappNameVar <-
     NEONprocIS.base::def.var.mapp.in.out(
-      nameVarIn = nameVarIn,
+      nameVarIn = c(nameVarIn,nameVarAdd),
       nameVarOut = nameVarOut,
       nameVarDfltSame = varCal,
       log = log
@@ -549,7 +514,7 @@ for (idxDirIn in DirIn) {
   calSlct <- NEONprocIS.cal::wrap.cal.slct(
     DirCal = idxDirCal,
     NameVarExpc = base::unique(c(
-      Para$TermConv, Para$TermQf, ParaUcrt$var
+      FuncConv$var, Para$TermQf, FuncUcrt$var
     )),
     TimeBgn = timeBgn,
     TimeEnd = timeEnd,
@@ -598,7 +563,6 @@ for (idxDirIn in DirIn) {
     NEONprocIS.cal::wrap.ucrt.coef(
       calSlct = calSlct,
       DirCal = idxDirCal,
-      ParaUcrt = ParaUcrt,
       ucrtCoefFdas = ucrtCoefFdas,
       mappNameVar = mappNameVar,
       log = log
@@ -640,7 +604,7 @@ for (idxDirIn in DirIn) {
   ucrtData <-
     NEONprocIS.cal::wrap.ucrt.dp0p(
       data = data,
-      ParaUcrt = ParaUcrt,
+      FuncUcrt = FuncUcrt,
       ucrtCoefFdas = ucrtCoefFdas,
       calSlct = calSlct,
       DirCal = idxDirCal,
@@ -666,6 +630,13 @@ for (idxDirIn in DirIn) {
   if (base::is.null(SchmDataOut)) {
     # Use the same schema as the input data to write the output data.
     idxSchmDataOut <- base::attr(data, 'schema')
+    
+    # If we created new variables, add them to the schema as double
+    for(idxVarAdd in nameVarAdd){
+      txtEval <- base::paste0('arrow::schema(',idxVarAdd,'=arrow::float32())')
+      schmAdd <- base::eval(base::parse(text=txtEval))
+      idxSchmDataOut <- arrow::unify_schemas(idxSchmDataOut,schmAdd)
+    }
   } else {
     idxSchmDataOut <- SchmDataOut
   }
@@ -680,7 +651,7 @@ for (idxDirIn in DirIn) {
       Schm = idxSchmDataOut
     ),
     silent = FALSE)
-  if (base::class(rptData) == 'try-error') {
+  if (base::any(base::class(rptData) == 'try-error')) {
     log$error(base::paste0(
       'Cannot write Calibrated data to ',
       NameFileOutData,
@@ -695,8 +666,9 @@ for (idxDirIn in DirIn) {
   # Write out the valid calibration flags
   if (!base::is.null(Para$TermQf)) {
     NameFileOutQf <-
-      NEONprocIS.base::def.file.name.out(nameFileIn = fileData, sufx = '_flagsCal')
-    NameFileOutQf <- base::paste0(idxDirOutQf, '/', NameFileOutQf)
+      NEONprocIS.base::def.file.name.out(nameFileIn = fileData, 
+                                         prfx = base::paste0(idxDirOutQf, '/'),
+                                         sufx = '_flagsCal')
     rptQfCal <-
       base::try(NEONprocIS.base::def.wrte.parq(
         data = qfCal,
@@ -705,7 +677,7 @@ for (idxDirIn in DirIn) {
         Schm = SchmQf
       ),
       silent = FALSE)
-    if (base::class(rptQfCal) == 'try-error') {
+    if (base::any(base::class(rptQfCal) == 'try-error')) {
       log$error(base::paste0(
         'Cannot write calibration flags to ',
         NameFileOutQf,
@@ -737,7 +709,7 @@ for (idxDirIn in DirIn) {
     rptUcrt <-
       base::try(base::write(rjson::toJSON(ucrtList, indent = 3), file = NameFileOutUcrtCoef),
                 silent = FALSE)
-    if (base::class(rptUcrt) == 'try-error') {
+    if (base::any(base::class(rptUcrt) == 'try-error')) {
       log$error(
         base::paste0(
           'Cannot write uncertainty coefficients to ',
@@ -758,7 +730,7 @@ for (idxDirIn in DirIn) {
   }
   
   # Write out uncertainty data
-  if (!base::is.null(ParaUcrt)) {
+  if (!base::is.null(FuncUcrt)) {
     NameFileOutUcrtData <-
       NEONprocIS.base::def.file.name.out(nameFileIn = fileData, sufx = '_uncertaintyData')
     NameFileOutUcrtData <-
@@ -768,7 +740,7 @@ for (idxDirIn in DirIn) {
                                                NameFile = NameFileOutUcrtData,
                                                log = log),
                 silent = FALSE)
-    if (base::class(rptUcrtData) == 'try-error') {
+    if (base::any(base::class(rptUcrtData) == 'try-error')) {
       log$error(
         base::paste0(
           'Cannot write uncertainty data to ',

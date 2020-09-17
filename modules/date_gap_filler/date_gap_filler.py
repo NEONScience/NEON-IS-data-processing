@@ -6,10 +6,10 @@ from date_gap_filler.location_file_linker import LocationFileLinker
 
 class DateGapFiller:
 
-    def __init__(self, config: DateGapFillerConfig):
+    def __init__(self, config: DateGapFillerConfig) -> None:
         self.config = config
 
-    def fill_gaps(self):
+    def fill_gaps(self) -> None:
         if self.config.data_path is not None:
             data_file_linker = DataFileLinker(self.config)
             data_file_linker.link_files()

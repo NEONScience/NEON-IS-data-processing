@@ -4,21 +4,21 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.cal.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data"],
-    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.24",
+    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.33",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "DEBUG"
     }  
   },
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_data_calibration_group",
-      "glob": "/prt/*/*"
+      "repo": "prt_data_calibration_linker",
+      "glob": "/prt/*/*/*"
     }
   },
   "enable_stats": false,
-  "standby":true,
+  "standby": false,
   "resource_requests": {
     "memory": "210M",
     "cpu": 0.3

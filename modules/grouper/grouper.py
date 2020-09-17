@@ -6,7 +6,7 @@ from structlog import get_logger
 log = get_logger()
 
 
-def group_files(*, path: Path, out_path: Path, relative_path_index: int):
+def group_files(*, path: Path, out_path: Path, relative_path_index: int) -> None:
     """
     Link files into the output directory.
 

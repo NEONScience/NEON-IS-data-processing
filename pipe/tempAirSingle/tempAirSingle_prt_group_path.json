@@ -4,7 +4,7 @@
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-    "image": "quay.io/battelleecology/location_group_path:9",
+    "image": "quay.io/battelleecology/location_group_path:10",
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m location_group_path.location_group_path_main" ],
     "env": {
@@ -22,8 +22,8 @@
   "input": {
     "pfs": {
       "name": "SOURCE_PATH",
-      "repo": "prt_date_gap_filler_linker",
-      "glob": "/prt/*/*"
+      "repo": "prt_named_location_filter",
+      "glob": "/prt/*/*/*"
     }
   },
   "enable_stats": false,

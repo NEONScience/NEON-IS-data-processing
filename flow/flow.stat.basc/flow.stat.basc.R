@@ -48,10 +48,17 @@
 #' to be generated for each term/variable. Begin each argument with the term name (e.g. temp), followed by a 
 #' colon (:), and then the stats to compute, delimited by pipes (|).  Statistic options are (exact names): 
 #' mean, median, minimum, maximum, sum, variance, stdDev, stdEr, numPts, expUncert. For example, to compute the
-#' mean, minimum, and maximum for term "temp", the argument is "TermStat1=temp:mean|minimum|maximum". There may be 
-#' multiple assignments of TermStatX, specified by incrementing the number X by 1 with each additional argument. 
-#' TermStat1 must be an input, and there is a limit of X=100 for additional TermStatX arguments. Note that the 
-#' order that the terms and statistics are given here is the column order in which they will be output (statistic
+#' mean, minimum, maximum, and expanded uncertainty for term "temp", the argument is 
+#' "TermStat1=temp:mean|minimum|maximum|expUncert". For expUncert, the default is to compute only uncertainty due
+#' to natural variation (standard error) and calibration uncertainty (U_CVALA3). For data in which
+#' FDAS uncertainty also applies, append '(R)' or '(V)' to the expUncert to indicate that resistance or voltage FDAS 
+#' uncertainty should be added, respectively. For example, "TermStat1=temp:mean|minimum|maximum|expUncert(R)" indicates
+#' that FDAS uncertainty for resistance measurements should be included in the uncertainty estimate. Note that FDAS
+#' uncertainty data and FDAS uncertainty coefficients as produced by the calibration module are required in order 
+#' to compute FDAS uncertainty. 
+#' There may be multiple assignments of TermStatX, specified by incrementing the number X by 1 with each additional  
+#' argument. TermStat1 must be an input, and there is a limit of X=100 for additional TermStatX arguments. Note that 
+#' the order that the terms and statistics are given here is the column order in which they will be output (statistic
 #' nested within term, see below). All terms must correspond to numeric data.
 #'  
 #' N+1. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
@@ -86,7 +93,7 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.stat.basc.R "DirIn=/pfs/proc_group/prt/2019/01/01/CFGLOC112083" "DirOut=/pfs/out" "FileSchmStat=/outputStatSchema.avsc" "WndwAgr=001|030" "TermStat1=temp:mean|minimum|maximum"
+#' Rscript flow.stat.basc.R "DirIn=/pfs/proc_group/prt/2019/01/01/CFGLOC112083" "DirOut=/pfs/out" "FileSchmStat=/outputStatSchema.avsc" "WndwAgr=001|030" "TermStat1=temp:mean|minimum|maximum|expUncert(R)"
 
 #' @seealso Currently none.
 
@@ -103,6 +110,8 @@
 #     adjust reading of fdas uncertainty data to look within generic uncertainty data file
 #   Cove Sturtevant (2020-04-23)
 #     switch read/write data from avro to parquet
+#   Cove Sturtevant (2020-09-15)
+#     adjust code to explicitly specify if FDAS uncertainty applies, and which (Resistance or Voltage)
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -147,11 +156,40 @@ spltStat <- Para[nameParaTermStat]
 ParaStat <- base::lapply(spltStat,FUN=function(argSplt){
   term <- argSplt[1]
   stat <- utils::tail(x=argSplt,n=-1)
+  typeFdas <- NULL
+  statUcrt <- base::substr(stat,1,9) %in% "expUncert"
+  if(base::sum(statUcrt) > 1){
+    # Error if multiple
+    log$fatal(base::paste0('Multiple expUncert stats for term ', term, '. This is not allowed.'))
+    stop()
+  } else if (base::sum(statUcrt) == 1){
+    # Parse resistance or voltage
+    if (base::grepl(pattern = '(R)', x = stat[statUcrt])) {
+      # FDAS resistance uncertainty applies
+      typeFdas <- 'R'
+      stat[statUcrt] <- gsub(
+        pattern = '[(R)]',
+        replacement = '',
+        x = stat[statUcrt]
+      )
+
+    } else if (base::grepl(pattern = '(V)', x = stat[statUcrt])) {
+      # FDAS voltage uncertainty applies
+      typeFdas <- 'V'
+      stat[statUcrt] <- gsub(
+        pattern = '[(V)]',
+        replacement = '',
+        x = stat[statUcrt]
+      )
+    } 
+  }
   base::list(term=term,
              stat=stat,
+             typeFdas=typeFdas,
              nameTermStat=base::paste0(term,base::paste(base::toupper(base::substr(stat,1,1)),base::substr(stat,2,base::nchar(stat)),sep="")))
 })
 names(ParaStat) <- base::unlist(base::lapply(ParaStat,FUN=function(idx){idx$term})) # Pull out a list of all the terms we are going to use 
+nameVarUcrtFdas <- base::unlist(base::lapply(ParaStat,FUN=function(idx){if(!base::is.null(idx$typeFdas)){return(idx$term)}else{return(NULL)}})) # Terms for which FDAS uncertainty applies
 
 # Compile the stats we are going to compute
 stat <- base::unique(base::unlist(base::lapply(ParaStat,FUN=function(idx){idx$stat})))
@@ -267,10 +305,10 @@ for(idxDirIn in DirIn){
     
     # Is there a folder for uncertainty data? If so, read it in and search for fdas uncertainty.
     ucrtData <- NULL
-    nameVarUcrtFdas <- NULL
+    nameVarDataUcrtFdas <- NULL
     if('uncertainty_data' %in% base::dir(idxDirIn)){
       idxDirUcrtData <- base::paste0(idxDirIn,'/uncertainty_data')
-      log$info(base::paste0('Detected uncertainty data folder in ',idxDirUcrtData,'. Will attemp to to include FDAS uncertainty in expUncert for applicable variables.'))
+      log$info(base::paste0('Detected uncertainty data folder in ',idxDirUcrtData,'.'))
       
       fileUcrtData <- base::dir(idxDirUcrtData)
       if(base::length(fileUcrtData) != 1){
@@ -280,7 +318,7 @@ for(idxDirIn in DirIn){
         
         # Open the uncertainty data file
         ucrtData  <- base::try(NEONprocIS.base::def.read.parq(NameFile=nameFileUcrtData,log=log),silent=FALSE)
-        if(base::class(ucrtData) == 'try-error'){
+        if(base::any(base::class(ucrtData) == 'try-error')){
           log$error(base::paste0('File ', fileUcrtData,' is unreadable.')) 
           stop()
         } else {
@@ -290,23 +328,23 @@ for(idxDirIn in DirIn){
         
         # Get names of variables that FDAS uncertainty applies
         nameColUcrtFdas <- nameColUcrtData[base::grepl(pattern='_ucrtFdas',x=nameColUcrtData)] # search for ucrtFdas columns
-        nameVarUcrtFdas <- base::unique(base::unlist(base::lapply(base::strsplit(nameColUcrtFdas,'_'),utils::head,n=1))) # variables
+        nameVarDataUcrtFdas <- base::unique(base::unlist(base::lapply(base::strsplit(nameColUcrtFdas,'_'),utils::head,n=1))) # variables
 
         # Reset uncertainty data to NULL if no FDAS uncertainty columns
-        if(base::length(nameVarUcrtFdas) == 0){
+        if(base::length(nameVarDataUcrtFdas) == 0){
           ucrtData <- NULL
         }
       }
     } # End if statement around FDAS uncertainty
   } # End if statement around expUncert
     
-  # Run through each file
+  # Run through each data file
   for(idxFileData in fileData){
     
     # Load in data file in parquet format into data frame 'data'.  
     fileIn <- base::paste0(idxDirData,'/',idxFileData)
     data  <- base::try(NEONprocIS.base::def.read.parq(NameFile=fileIn,log=log),silent=FALSE)
-    if(base::class(data) == 'try-error'){
+    if(base::any(base::class(data) == 'try-error')){
       log$error(base::paste0('File ', fileIn,' is unreadable.')) 
       stop()
     } else {
@@ -322,7 +360,7 @@ for(idxDirIn in DirIn){
     timeMeas <- base::as.POSIXlt(data$readout_time)
     
     # For each of the variables in the data file, go through and remove the FDAS uncertainties for any time points that were filtered (e.g. from the QA/QC step)
-    if(base::sum(nameVarIn %in% nameVarUcrtFdas) > 0){
+    if(base::sum(nameVarIn %in% nameVarDataUcrtFdas) > 0){
       for(idxVar in nameVarIn){
         # Do we have FDAS uncertainty data for this variable? If so, create NAs where they exist in the data
         ucrtData[base::is.na(data[[idxVar]]),base::unlist(base::lapply(base::strsplit(nameColUcrtData,'_'),utils::head,n=1))==idxVar] <- NA
@@ -401,10 +439,19 @@ for(idxDirIn in DirIn){
             dataUcrtFdasWndwTime <- base::subset(ucrtData,subset=setTimeUcrtFdas==idxWndwTime) 
             ucrtFdasValu <- base::lapply(statTerm[['expUncert']],FUN=function(idxTerm){
               
+              if(!(idxTerm %in% nameVarUcrtFdas)){
+                # No FDAS uncertainty applies
+                ucrtFdasValuIdxTerm <- 0
+                return(ucrtFdasValuIdxTerm)
+              }
               
+              # Which Fdas uncertainty, resistance or voltage
+              typeFdas <- ParaStat[[idxTerm]]$typeFdas
+              
+              # Fdas uncertainty multiplier
               # Which uncertainty entries match this term, time period, and the uncertainty coef we want (U_CVALV3 or U_CVALR3 - only one should be populated)
               mtch <- base::unlist(base::lapply(ucrtCoef,FUN=function(idxUcrt){idxUcrt$term == idxTerm && 
-                  (idxUcrt$Name == 'U_CVALV3' || idxUcrt$Name == 'U_CVALR3') && 
+                  idxUcrt$Name == base::paste0('U_CVAL',typeFdas,'3') && 
                   idxUcrt$start_date < timeAgrEnd[idxWndwTime] && idxUcrt$end_date > timeAgrBgn[idxWndwTime]}))
               
               # Pull the uncertainty coefficient
@@ -416,9 +463,10 @@ for(idxDirIn in DirIn){
                 coefUcrtFdas <- base::max(base::as.numeric(base::unlist(base::lapply(ucrtCoef[mtch],FUN=function(idxUcrt){idxUcrt$Value}))))
               }
 
+              # Fdas uncertainty offset
               # Which uncertainty entries match this term, time period, and the uncertainty coef we want (U_CVALV3 or U_CVALR3 - only one should be populated)
               mtch <- base::unlist(base::lapply(ucrtCoef,FUN=function(idxUcrt){idxUcrt$term == idxTerm && 
-                  (idxUcrt$Name == 'U_CVALV4' || idxUcrt$Name == 'U_CVALR4') && 
+                  idxUcrt$Name == base::paste0('U_CVAL',typeFdas,'4') && 
                   idxUcrt$start_date < timeAgrEnd[idxWndwTime] && idxUcrt$end_date > timeAgrBgn[idxWndwTime]}))
               
               # Pull the uncertainty coefficient
@@ -431,19 +479,15 @@ for(idxDirIn in DirIn){
               }
               
               # Do some error checking
-              if(base::is.na(coefUcrtFdas) && base::is.na(coefUcrtFdasOfst)){
-                # No FDAS uncertainty applies
-                ucrtFdasValuIdxTerm <- 0
-                return(ucrtFdasValuIdxTerm)
-              } else if (base::is.na(coefUcrtFdas) || base::is.na(coefUcrtFdasOfst)){
-                # One of the terms is not present (but should be). Send back NA so the uncertainty is NA
-                log$warn(base::paste0('One of the expected FDAS uncertainty coeffiecients is not present. Setting uncertainty to NA for term: ',idxTerm, ', averaging window ',idxWndwTime))
+              if (base::is.na(coefUcrtFdas) || base::is.na(coefUcrtFdasOfst)){
+                # At least one of the terms is not present (but should be). Send back NA so the uncertainty is NA
+                log$warn(base::paste0('At least one of the expected FDAS uncertainty coeffiecients is not present. Setting uncertainty to NA for term: ',idxTerm, ', averaging window ',idxWndwTime))
                 ucrtFdasValuIdxTerm <- NA
                 return(ucrtFdasValuIdxTerm)
               }
               
               # Do we have FDAS uncertainty data for this term?
-              if (idxTerm %in% nameVarUcrtFdas){
+              if (idxTerm %in% nameVarDataUcrtFdas){
                 # Construct the column names of the output we want
                 nameColRawIdx <- base::paste0(idxTerm,'_raw')
                 nameColDervCalIdx <- base::paste0(idxTerm,'_dervCal')
@@ -460,11 +504,10 @@ for(idxDirIn in DirIn){
                 }
               } else if (!base::is.na(coefUcrtFdas+coefUcrtFdasOfst)){
                 # We have FDAS uncertainty coefficients for this term, but there's no FDAS uncertainty data. Turn FDAS uncertainty to NA.
+                log$error(base::paste0('FDAS uncertainty data expected for term ',idxTerm,' but not found. FDAS uncertainty set to NA'))
                 ucrtFdasValuIdxTerm <- NA
-              } else {
-                # FDAS uncertainty not computed
-                ucrtFdasValuIdxTerm <- 0
-              }
+              } 
+              
               return(ucrtFdasValuIdxTerm)
               
             })     
@@ -498,12 +541,11 @@ for(idxDirIn in DirIn){
       
       
       # Write out the file for this aggregation interval
-      fileStatOutSplt <- base::strsplit(idxFileData,'[.]')[[1]] # Try to grab the file name without extension
-      if(base::length(fileStatOutSplt) > 1){
-        NameFileOutStat <- base::paste0(idxDirOutStat,'/',base::paste0(fileStatOutSplt[-base::length(fileStatOutSplt)],collapse='.'),'_basicStats_',Para$WndwAgr[idxWndwAgr],'.',utils::tail(fileStatOutSplt,1))
-      } else {
-        NameFileOutStat <- base::paste0(idxDirOutStat,'/',idxFileData,'_basicStats_',Para$WndwAgr[idxWndwAgr])
-      }
+      NameFileOutStat <- 
+        NEONprocIS.base::def.file.name.out(nameFileIn = idxFileData, 
+                                           prfx = base::paste0(idxDirOutStat, '/'),
+                                           sufx = base::paste0('_basicStats_',Para$WndwAgr[idxWndwAgr])
+        )
       rptWrte <- base::try(NEONprocIS.base::def.wrte.parq(data=rpt,NameFile=NameFileOutStat,NameFileSchm=NULL,Schm=SchmStat),silent=TRUE)
       if(base::class(rptWrte) == 'try-error'){
         log$error(base::paste0('Cannot write basic statistics file ', NameFileOutStat,'. ',attr(rptWrte,"condition"))) 

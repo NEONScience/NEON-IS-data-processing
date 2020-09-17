@@ -2,13 +2,18 @@
 % Please edit documentation in R/def.cal.conv.poly.R
 \name{def.cal.conv.poly}
 \alias{def.cal.conv.poly}
-\title{Convert raw to calibrated data using NEON polynomial calibration coefficients}
+\title{Convert raw to calibrated data using NEON CVALA polynomial calibration coefficients}
 \usage{
-def.cal.conv.poly(data = base::numeric(0), infoCal = NULL,
-  log = NULL)
+def.cal.conv.poly(
+  data = data.frame(data = base::numeric(0)),
+  infoCal = NULL,
+  varConv = base::names(data)[1],
+  calSlct = NULL,
+  log = NULL
+)
 }
 \arguments{
-\item{data}{Numeric vector of raw measurements}
+\item{data}{Numeric data frame of raw measurements.}
 
 \item{infoCal}{A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
 One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients.
@@ -16,6 +21,14 @@ This data frame must include columns:\cr
 \code{Name} String. The name of the coefficient. Must fit regular expression CVALA[0-9]\cr
 \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
 Defaults to NULL, in which case converted data will be retured as NA.}
+
+\item{varConv}{A character string of the target variable (column) in the data frame \code{data} for 
+which calibrated output will be computed (all other columns will be ignored). Note that for other
+uncertainty functions this variable may not need to be in the input data frame. Defaults to the first
+column in \code{data}.}
+
+\item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::wrap.cal.conv for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
@@ -25,12 +38,13 @@ created and used within the function.}
 A  Numeric vector of calibrated data\cr
 }
 \description{
-Definition function. Apply NEON calibration polynomial function to convert raw data to calibrated data.
+Definition function. Apply NEON calibration polynomial function contained in coefficients 
+CVALA0, CVALA1, CVALA2, etc. to convert raw data to calibrated data.
 }
 \examples{
-data=c(1,2,3)
+data=data.frame(data=c(1,2,3))
 infoCal <- data.frame(Name=c('CVALA1','CVALA0'),Value=c(10,1),stringsAsFactors=FALSE)
-def.cal.conv(data=data,infoCal=infoCal)
+def.cal.conv.poly(data=data,infoCal=infoCal)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -38,6 +52,12 @@ NEON.DOC.000785 TIS Calibrated Measurements and Level 1 Data Products Uncertaint
 }
 \seealso{
 \link[NEONprocIS.cal]{def.read.cal.xml}
+
+\link[NEONprocIS.cal]{def.cal.conv.poly.b}
+
+\link[NEONprocIS.cal]{def.cal.conv.poly.m}
+
+\link[NEONprocIS.cal]{wrap.cal.conv}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}

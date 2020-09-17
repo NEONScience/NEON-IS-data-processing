@@ -2,13 +2,19 @@
 % Please edit documentation in R/def.ucrt.wq.temp.conc.R
 \name{def.ucrt.wq.temp.conc}
 \alias{def.ucrt.wq.temp.conc}
-\title{Uncertainty for temperature from the conductivity sensor as part of the water
-quality transition}
+\title{Individual measurement uncertainty for temperature from the conductivity sensor as part of the water
+quality data product}
 \usage{
-def.ucrt.wq.temp.conc(data, infoCal = NULL, log = NULL)
+def.ucrt.wq.temp.conc(
+  data = data.frame(data = base::numeric(0)),
+  infoCal = NULL,
+  varUcrt = base::names(data)[1],
+  calSlct = NULL,
+  log = NULL
+)
 }
 \arguments{
-\item{data}{Temperature data from the conductivity sensor [vector]}
+\item{data}{Numeric data frame of raw measurements.}
 
 \item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file
 (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
@@ -16,12 +22,21 @@ a data frame of uncertainty coefficents. Columns of this data frame are:\cr
 \code{Name} String. The name of the coefficient. \cr
 \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr}
 
+\item{varUcrt}{A character string of the target variable (column) in the data frame \code{data} 
+that represents temperature data from the conductivity sensor. Note that for other
+uncertainty functions this variable may not need to be in the input data frame, so long as the function
+knows that. Defaults to the first column in \code{data}.}
+
+\item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
+
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 created and used within the function.}
 }
 \value{
-dataframe with L0 uncertatinty column(s) [dataframe]
+A data frame with the following variables:\cr
+\code{ucrtMeas} - combined measurement uncertainty for an individual L0 reading.
 }
 \description{
 Alternative calibration uncertainty function. Create file (dataframe) with

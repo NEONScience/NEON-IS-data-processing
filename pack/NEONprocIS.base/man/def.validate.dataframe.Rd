@@ -9,6 +9,7 @@ def.validate.dataframe(
   TestNa = FALSE,
   TestNumc = FALSE,
   TestNameCol = base::character(0),
+  TestEmpty = TRUE,
   log = NULL
 )
 }

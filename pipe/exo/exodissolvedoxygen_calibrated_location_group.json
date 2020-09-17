@@ -18,10 +18,10 @@
       "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
       "SOURCE_TYPE_INDEX": "3",
-      "YEAR_INDEX": "4",
-      "MONTH_INDEX": "5",
-      "DAY_INDEX": "6",
-      "SOURCE_ID_INDEX": "7",
+      "SOURCE_ID_INDEX": "4",
+      "YEAR_INDEX": "5",
+      "MONTH_INDEX": "6",
+      "DAY_INDEX": "7",
       "DATA_TYPE_INDEX": "8"
     }
   },
@@ -30,8 +30,8 @@
       {
         "pfs": {
           "name": "CALIBRATED_PATH",
-          "repo": "exodissolvedoxygen_calibration_conversion",
-          "glob": "/exodissolvedoxygen/*/*/*/(*)",
+          "repo": "exodissolvedoxygen_calibrated_location_group_path",
+          "glob": "/exodissolvedoxygen/(*)",
           "joinOn": "$1",
           "empty_files": true
         }

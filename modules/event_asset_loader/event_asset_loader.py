@@ -37,4 +37,5 @@ class EventAssetLoader:
         link_path = Path(self.out_path, source_type, source_id, link_filename)
         log.debug(f'link_path: {link_path}')
         link_path.parent.mkdir(parents=True, exist_ok=True)
-        link_path.symlink_to(path)
+        if not link_path.exists():
+            link_path.symlink_to(path)

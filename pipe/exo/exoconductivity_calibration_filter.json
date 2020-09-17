@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.cal.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data"],
-    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.28",
+    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.33",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -13,7 +13,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "exoconductivity_data_calibration_group",
+      "repo": "exoconductivity_data_calibration_linker",
       "glob": "/exoconductivity/*/*"
     }
   },

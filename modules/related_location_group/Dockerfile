@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the related location group module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t related_location_group:latest -f related_location_group/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="related_location_group"
