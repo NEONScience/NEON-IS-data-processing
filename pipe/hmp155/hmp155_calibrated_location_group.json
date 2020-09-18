@@ -18,10 +18,10 @@
       "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
       "SOURCE_TYPE_INDEX": "3",
+      "SOURCE_ID_INDEX": "7",
       "YEAR_INDEX": "4",
       "MONTH_INDEX": "5",
       "DAY_INDEX": "6",
-      "SOURCE_ID_INDEX": "7",
       "DATA_TYPE_INDEX": "8"
     }
   },
