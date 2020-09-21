@@ -362,15 +362,16 @@ if (!base::is.null(Para$TermFuncUcrt) &&
 
 
 # Open FDAS uncertainty file
-if (base::is.null(Para$FileUcrtFdas)) {
+if (base::is.null(Para$FileUcrtFdas) && !base::is.null(FuncUcrt) && base::any(!base::is.na(FuncUcrt$FuncUcrtFdas))) {
   log$fatal('Path to FDAS uncertainty file must be input in argument FileUcrtFdas.')
   stop()
   
-} else {
+} else if (!base::is.null(Para$FileUcrtFdas)){
   ucrtCoefFdas  <-
     NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = Para$FileUcrtFdas,
                                             log = log)
-  
+} else {
+  ucrtCoefFdas  <- NULL
 }
 
 # Retrieve optional subdirectories to copy over

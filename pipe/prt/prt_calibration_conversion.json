@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_FLAGS","TermFuncConv=resistance:def.cal.conv.poly","TermQf=resistance","TermFuncUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly","FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.35",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.36",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
