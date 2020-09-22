@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.qaqc.qm.dp0p.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQm=$FILE_SCHEMA_QM", "GrpQfAlph1=turbidity:sensorNAQF|turbidityValidCalQF|turbiditySuspectCalQF|turbidityNullQF|turbidityGapQF|turbidityRangeQF|turbidityStepQF|turbiditySpikeQF|turbidityPersistenceQF","GrpQfBeta1=turbidity:turbidityRangeQF","QfForc1=sensorNAQF:1:turbidityNullQF|turbidityGapQF|turbidityRangeQF|turbidityStepQF|turbiditySpikeQF|turbidityPersistenceQF:-1","GrpQfBetaIgnr1=turbidity:turbidityNullQF|sensorNAQF","Tmi=100"],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.3",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.4",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

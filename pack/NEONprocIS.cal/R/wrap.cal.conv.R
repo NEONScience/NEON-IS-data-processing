@@ -77,6 +77,8 @@ wrap.cal.conv <- function(data,
   # Loop through variables
   for(idxVarCal in FuncConv$var){
     
+    log$debug(base::paste0('Applying calibration to term: ',idxVarCal))
+    
     calSlctIdx <- calSlct[[idxVarCal]]
 
     # Run through each selected calibration and apply the calibration function for the applicable time period
@@ -88,7 +90,7 @@ wrap.cal.conv <- function(data,
       # If a calibration file is available for this period, open it and get calibration information
       if(!base::is.na(calSlctIdx$file[idxRow])){
         fileCal <- base::paste0(DirCal,'/',idxVarCal,'/',calSlctIdx$file[idxRow])
-        infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+        infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE,log=log)
       } else {
         infoCal <- NULL
       }
