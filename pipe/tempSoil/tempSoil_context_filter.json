@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempSoil_context_filter_jr"
+    "name": "tempSoil_context_filter"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
