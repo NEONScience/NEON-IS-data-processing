@@ -17,8 +17,8 @@
     "env": {
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out",
-      "START_DATE": "2018-12-31",
-      "END_DATE": "2019-01-07",
+      "START_DATE": "2019-12-31",
+      "END_DATE": "2020-01-07",
       "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags,zeroPressureQF",
       "DATA_SOURCE_TYPE_INDEX": "3",
       "DATA_YEAR_INDEX": "4",

@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Below Zero Pressure flags
 
 # Start with the neon-is-base-r image. 
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.55
+FROM quay.io/battelleecology/neon-is-base-r:v0.0.59
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org

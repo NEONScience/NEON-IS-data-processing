@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "lelevtroll500_data_calibration_linker"
+    "name": "leveltroll500_data_calibration_linker"
   },
   "transform": {
       "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -30,18 +30,18 @@
       {
         "pfs": {
           "name": "CALIBRATION_PATH",
-          "repo": "lelevtroll500_data_calibration_group",
+          "repo": "leveltroll500_data_calibration_group",
           "branch": "master",
-          "glob": "/lelevtroll500/*/*",
+          "glob": "/leveltroll500/*/*",
           "empty_files": true
         }
       },
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "lelevtroll500_data_calibration_group_path",
+          "repo": "leveltroll500_data_calibration_group_path",
           "branch": "master",
-          "glob": "/lelevtroll500/*/*",
+          "glob": "/leveltroll500/*/*",
           "empty_files": true
         }
       }

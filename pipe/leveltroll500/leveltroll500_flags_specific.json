@@ -3,7 +3,13 @@
     "name": "leveltroll500_flags_specific"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.troll.flags.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS"],
+    "cmd": [
+      "Rscript",
+      "/flow.troll.flags.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQf=$SCHEMA_FLAGS"
+      ],
     "image": "quay.io/battelleecology/neon-is-troll-flags-r:v0.0.2",
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
     "env": {
