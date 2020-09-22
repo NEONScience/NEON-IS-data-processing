@@ -96,7 +96,7 @@ def.cal.conv.poly.m <- function(data = data.frame(data=base::numeric(0)),
     NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALM', log = log)
   
   # Convert data using the calibration function
-  dataConv <- stats::predict(object = func, newdata = data)
+  dataConv <- stats::predict(object = func, newdata = data[[varConv]])
   
   return(dataConv)
   
