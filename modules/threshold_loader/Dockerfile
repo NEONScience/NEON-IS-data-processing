@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the threshold loader module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t threshold_loader:latest -f threshold_loader/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="threshold_loader"

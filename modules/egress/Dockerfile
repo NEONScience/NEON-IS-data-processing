@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the egress module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t egress:latest -f egress/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="egress/egress"

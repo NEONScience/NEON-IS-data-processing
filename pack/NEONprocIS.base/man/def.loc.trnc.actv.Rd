@@ -36,7 +36,7 @@ TimeBgn <- base::as.POSIXct('2018-01-01',tz='GMT)
 TimeEnd <- base::as.POSIXct('2018-01-02',tz='GMT)
 NameFileIn <- 'locations.json'
 NameFileOut <- 'filtered_locations.json'
-loc <- def.loc.filt(NameFileIn,NameFileOut,TimeBgn,TimeEnd)
+loc <- def.loc.trnc.actv(NameFileIn,NameFileOut,TimeBgn,TimeEnd)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

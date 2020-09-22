@@ -90,6 +90,8 @@ COPY ./ pack/NEONprocIS.base/
 # Install devtools & renv (package manager), restore from specific versions of dependencies, install NEONprocIS.base from local, and clean up afterwards. 
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
 ENV LIBARROW_BINARY=true
+ENV ARROW_USE_PKG_CONFIG=false
+ENV LIBARROW_MINIMAL=false
 RUN R -e 'utils::install.packages(c("devtools"))' && \
     R -e 'remotes::install_github("rstudio/renv@0.9.3")' && \
     R -e 'renv::consent(provided=TRUE); renv::restore("pack/NEONprocIS.base/")' && \

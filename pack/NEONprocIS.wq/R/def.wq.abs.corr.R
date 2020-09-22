@@ -34,6 +34,8 @@
 # changelog and author contributions / copyrights
 #   Kaelin Cawley (2020-01-23)
 #     original creation
+#   Kaelin Cawley (2020-09-15)
+#     updated for reading parquet files
 ##############################################################################################
 def.wq.abs.corr <-
   function(sunav2Filenames,
@@ -45,9 +47,6 @@ def.wq.abs.corr <-
     }
     msg <- NULL
     
-    # String constants
-    ravroLib <- "/ravro.so"
-    
     # Numeric Constants
     Abs_ex_start <- 351 #nm
     Abs_ex_end <- 361 #nm
@@ -57,8 +56,7 @@ def.wq.abs.corr <-
     sunav2DataList <-
       try(base::lapply(
         sunav2Filenames,
-        NEONprocIS.base::def.read.avro.deve,
-        NameLib = ravroLib,
+        NEONprocIS.base::def.read.parq,
         log = log
       ),
       silent = FALSE)

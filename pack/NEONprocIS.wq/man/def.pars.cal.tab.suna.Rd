@@ -4,8 +4,11 @@
 \alias{def.pars.cal.tab.suna}
 \title{Parse SUNA cal table using calibration filename}
 \usage{
-def.pars.cal.tab.suna(calFilename = NULL, calTableName = "CVALTABLEA1",
-  log = NULL)
+def.pars.cal.tab.suna(
+  calFilename = NULL,
+  calTableName = "CVALTABLEA1",
+  log = NULL
+)
 }
 \arguments{
 \item{calFilename}{The filename assiciated with the desired calibration table [character]}

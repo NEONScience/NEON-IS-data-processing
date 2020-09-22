@@ -167,7 +167,8 @@ for(idxDirIn in DirIn){
   locMeta <- base::do.call(base::rbind,base::lapply(base::paste0(idxDirInLoc,'/',fileLoc), 
                                                     NEONprocIS.base::def.loc.meta,
                                                     TimeBgn=InfoDirIn$time,
-                                                    TimeEnd=InfoDirIn$time+as.difftime(1,units='days')))
+                                                    TimeEnd=InfoDirIn$time+as.difftime(1,units='days'),
+                                                    log=log))
   idSrc <- base::unique(locMeta$source_id)
   
   # For each data directory, truncate/merge the data within based on its installation period at the specified named location
@@ -196,7 +197,7 @@ for(idxDirIn in DirIn){
       
       # Open the data file
       data  <- base::try(NEONprocIS.base::def.read.parq(NameFile=nameFileData,log=log),silent=FALSE)
-      if(base::class(data) == 'try-error'){
+      if(base::any(base::class(data) == 'try-error')){
         # Generate error and stop execution
         log$error(base::paste0('File: ', nameFileData, ' is unreadable.')) 
         stop()

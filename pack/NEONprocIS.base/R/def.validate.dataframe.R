@@ -13,6 +13,7 @@
 #' @param TestNa Boolean where TRUE results in testing for any NA values (resulting in FALSE output). Defaults to FALSE.
 #' @param TestNumc Boolean where TRUE results in testing for any non-numeric values (resulting in FALSE output). Defaults to FALSE.
 #' @param TestNameCol A character vector of minimum expected column names in dfIn. Defaults to zero-length character (none expected).
+#' @param TestEmpty Boolean where TRUE results in testing for at least 1 row in \code{dfIn}. Defaults to TRUE.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -35,6 +36,8 @@
 #   Cove Sturtevant (2020-02-03)
 #     added options for testing non-numeric values, NA values, and expected columns
 #     added logging of failures
+#   Cove Sturtevant (2020-09-16)
+#     add test for non-empty data frame (at least 1 row)
 ##############################################################################################
 
 def.validate.dataframe <-
@@ -42,6 +45,7 @@ def.validate.dataframe <-
            TestNa = FALSE,
            TestNumc = FALSE,
            TestNameCol = base::character(0),
+           TestEmpty=TRUE,
            log = NULL) {
     # Initialize logging if necessary
     if (base::is.null(log)) {
@@ -56,7 +60,7 @@ def.validate.dataframe <-
       log$error('Input is not a data frame.')
     }
     
-    else if (nrow(dfIn) == 0) {
+    else if (TestEmpty == TRUE && nrow(dfIn) == 0) {
       b <- FALSE
       log$error('Data frame is empty (zero rows).')
       

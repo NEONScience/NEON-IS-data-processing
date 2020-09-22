@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the event_location_group module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t event_location_group:latest -f event_location_group/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="event_location_group"

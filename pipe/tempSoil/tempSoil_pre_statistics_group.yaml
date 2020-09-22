@@ -19,13 +19,13 @@ transform:
             # Filter for data directory
             glob_pattern: /pfs/QAQC_PATH/prt/*/*/*/*/data/**
             # Join on named location (already joined below by day)
-            join_indices: [6]
+            join_indices: [7]
         - path:
             name: UNCERTAINTY_COEF_PATH
             # Filter for data directory
             glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/prt/*/*/*/*/uncertainty_coef/**
             # Join on named location (already joined below by day
-            join_indices: [6]
+            join_indices: [7]
         - path:
             name: UNCERTAINTY_DATA_PATH
             # Filter for data directory
