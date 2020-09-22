@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the location_active_dates module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t location_active_dates:latest -f location_active_dates/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="location_active_dates"
