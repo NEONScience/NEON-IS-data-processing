@@ -1,16 +1,16 @@
 {
   "pipeline": {
-    "name": "pqs1_calibration_filter"
+    "name": "pqs1_named_location_filter"
   },
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.cal.filt.R",
+      "/flow.loc.filt.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
-      "DirSubCopy=data"
+      "DirSubCopy=data|flags|uncertainty_coef|uncertainty_data"
       ],
-    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.33",
+    "image": "quay.io/battelleecology/neon-is-loc-filt-r:v0.0.13",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -19,14 +19,14 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "pqs1_data_calibration_linker",
+      "repo": "pqs1_date_gap_filler_linker",
       "glob": "/pqs1/*/*/*"
-    }
+      }
   },
   "enable_stats": false,
-  "standby":false,
+  "standby": true,
   "resource_requests": {
-    "memory": "210M",
-    "cpu": 0.3
+    "memory": "30M",
+    "cpu": 0.1
   }
 }
