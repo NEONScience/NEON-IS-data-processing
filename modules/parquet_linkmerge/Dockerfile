@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the parquet linkmerge module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t parquet_linkmerge:latest -f parquet_linkmerge/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="parquet_linkmerge"

@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the date gap filler linker module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t date_gap_filler_linker:latest -f date_gap_filler_linker/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="data_gap_filler_linker"

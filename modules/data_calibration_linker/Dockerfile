@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the data calibration linker group module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t data_calibration_linker:latest -f data_calibration_linker/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="data_calibration_linker"

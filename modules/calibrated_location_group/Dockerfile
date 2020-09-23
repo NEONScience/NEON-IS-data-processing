@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the calibrated location group module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t calibrated_location_group:latest -f calibrated_location_group/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="calibrated_location_group"

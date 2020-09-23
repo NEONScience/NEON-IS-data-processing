@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the filter_joiner module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t filter_joiner:latest -f filter_joiner/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="filter_joiner"

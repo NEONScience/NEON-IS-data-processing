@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the event_asset_loader module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t event_asset_loader:latest -f event_asset_loader/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="event_asset_loader"

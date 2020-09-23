@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the quality regularized flag group module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t quality_regularized_flag_group:latest -f quality_regularized_flag_group/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="quality_regularized_flag_group"
