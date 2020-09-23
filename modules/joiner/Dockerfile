@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the joiner module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t joiner:latest -f joiner/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="joiner"

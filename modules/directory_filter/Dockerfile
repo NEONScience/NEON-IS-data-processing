@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the directory filter module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t directory_filter:latest -f directory_filter/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="directory_filter"

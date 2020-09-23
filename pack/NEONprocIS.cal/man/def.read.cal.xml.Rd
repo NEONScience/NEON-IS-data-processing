@@ -4,12 +4,15 @@
 \alias{def.read.cal.xml}
 \title{Read NEON calibration XML file}
 \usage{
-def.read.cal.xml(NameFile, Vrbs = TRUE)
+def.read.cal.xml(NameFile, Vrbs = TRUE, log = NULL)
 }
 \arguments{
 \item{NameFile}{String. Name (including relative or absolute path) of calibration file.}
 
 \item{Vrbs}{(Optional) Logical. If TRUE, returns the full contents of the calibration file as an additional output.}
+
+\item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+output. Defaults to NULL, in which the logger will be created and used within the function.}
 }
 \value{
 A named list:\cr

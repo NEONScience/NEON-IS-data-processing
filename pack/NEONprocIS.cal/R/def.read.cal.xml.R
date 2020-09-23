@@ -9,6 +9,8 @@
 
 #' @param NameFile String. Name (including relative or absolute path) of calibration file.
 #' @param Vrbs (Optional) Logical. If TRUE, returns the full contents of the calibration file as an additional output.
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output. Defaults to NULL, in which the logger will be created and used within the function.
 
  
 #' @return A named list:\cr
@@ -35,8 +37,15 @@
 #     Added xml validation
 #   Mija Choi (2020-03-25)
 #     Modified to add a read-only file, inst/extdata/calibration.xsd, in NEONprocIS.cal package 
+#   Cove Sturtevant (2020-09-21)
+#     added logging
 ##############################################################################################
-def.read.cal.xml <- function(NameFile,Vrbs=TRUE){
+def.read.cal.xml <- function(NameFile,Vrbs=TRUE,log=NULL){
+  
+  # initialize logging if necessary
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
   
   xsd1 <-
     system.file("extdata", "calibration.xsd", package = "NEONprocIS.cal")
@@ -45,16 +54,19 @@ def.read.cal.xml <- function(NameFile,Vrbs=TRUE){
         silent = TRUE)
   
   if (xmlchk != TRUE) {
-    base::stop(base::paste0(
+    log$error(base::paste0(
       " ====== def.read.cal.xml will not run due to the error in xml,  ",
       NameFile
     ))
+    
+    base::stop()
   }
   
   # Read contents of xml file 
   xml <- try(XML::xmlParse(NameFile),silent=TRUE) 
   if(class(xml)[1] == "try-error") {
-    base::stop(base::paste0("Calibration XML file: ",NameFile," does not exist or is unreadable"))
+    log$error(base::paste0("Calibration XML file: ",NameFile," does not exist or is unreadable"))
+    base::stop()
   }
   
   # XML file as a list

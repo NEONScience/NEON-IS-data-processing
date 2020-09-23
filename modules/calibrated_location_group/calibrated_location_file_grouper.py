@@ -51,4 +51,5 @@ class CalibratedLocationFileGrouper:
                 link_path = Path(common_link_path, 'location', path.name)
                 link_path.parent.mkdir(parents=True, exist_ok=True)
                 if not link_path.exists():
+                    log.debug(f'linking location: {link_path}')
                     link_path.symlink_to(path)

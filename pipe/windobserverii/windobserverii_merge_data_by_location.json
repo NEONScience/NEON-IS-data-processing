@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.loc.data.trnc.comb.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCombData=data","DirSubCopy=location"],
-    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.19",
+    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.22",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"

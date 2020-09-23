@@ -9,6 +9,7 @@ def.validate.dataframe(
   TestNa = FALSE,
   TestNumc = FALSE,
   TestNameCol = base::character(0),
+  TestEmpty = TRUE,
   log = NULL
 )
 }
@@ -20,6 +21,8 @@ def.validate.dataframe(
 \item{TestNumc}{Boolean where TRUE results in testing for any non-numeric values (resulting in FALSE output). Defaults to FALSE.}
 
 \item{TestNameCol}{A character vector of minimum expected column names in dfIn. Defaults to zero-length character (none expected).}
+
+\item{TestEmpty}{Boolean where TRUE results in testing for at least 1 row in \code{dfIn}. Defaults to TRUE.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
