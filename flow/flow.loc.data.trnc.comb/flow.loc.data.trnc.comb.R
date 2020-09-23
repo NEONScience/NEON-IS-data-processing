@@ -28,31 +28,27 @@
 #'         location/
 #' 
 #' The location folder holds json files with the location data corresponding to the data files in the data
-#' directory. These files must have the source-id embedded in the file name, but may have additional text 
-#' in the file name so long as it does not match any other source-id. 
+#' directory. The source-ids for which data are expected are gathered from the location files. 
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
 #' 3. "DirSubCombData=value" (optional), where the value is the name of subfolders holding timeseries files 
-#' (e.g. data, flags) to be merged, separated by pipes (|). These additional subdirectories must be at the same 
-#' level as the location directory. Within each subfolder are timeseries files, one for each source-id. The 
-#' source-id is the identifier for the sensor that collected the data in the file.The source-id of each sensor 
-#' is taken from the name of the files in the directory. The name of the file must be constructed as 
-#' follows: SOURCETYPE_SOURCID_OTHERDESCRIPTORS.EXT, where capital words are replaced by applicable text, and 
-#' these terms are separated by underscores (_). The only field that is used by this script is the SOURCEID 
-#' field.  Any additional descriptors may be added to the file name by adding an additional underscore-
-#' delimited fields after the source-id field (e.g. prt_12345_otherdescriptor.parquet, where 12345 is the 
-#' source-id).
+#' (e.g. data, flags) to be truncated and/or merged, separated by pipes (|). These additional subdirectories must 
+#' be at the same level as the location directory. Within each subfolder are timeseries files from one or more 
+#' source-ids. The source-id is the identifier for the sensor that collected the data in the file, and must be included
+#' somewhere in the file name (and must match one of the source-ids gathered from the location files). The data folders
+#' listed here may contain files holding different types of data (e.g. one file holds calibration flags, 
+#' another holds sensor diagnostic flags). However, the file names for each type must be identical with the exception of
+#' the source ID. An attempt will be made to group the files that have the same naming convention and merge/truncate 
+#' files matching the convention. For example, prt_12345_sensorFlags.parquet will be merged with 
+#' prt_678_sensorFlags.parquet, and prt_12345_calFlags.parquet will be merged with prt_678_calFlags.parquet, since 
+#' the file names in each of these two groups are identical with the exception of the source ID.
 #' 
 #' 4. "DirSubCombUcrt=value" (optional), where the value is the name of subfolders holding uncertainty coefficient 
 #' json files to be merged, separated by pipes (|). These additional subdirectories must be at the same level as 
 #' the location directory. Within each subfolder are uncertainty json files, one for each source-id. The 
-#' source-id is the identifier for the sensor pertaining to the uncertainty info in the file. The source-id 
-#' of each sensor is taken from the name of the files in the directory. The name of the file must be constructed 
-#' as follows: SOURCETYPE_SOURCID_OTHERDESCRIPTORS.EXT, where capital words are replaced by applicable text, and 
-#' these terms are separated by underscores (_). The only field that is used by this script is the SOURCEID 
-#' field.  Any additional descriptors may be added to the file name by adding an additional underscore-delimited 
-#' fields after the source-id field (e.g. prt_12345_otherdescriptor.parquet, where 12345 is the source-id).
+#' source-id is the identifier for the sensor pertaining to the uncertainty info in the file, and must be somewhere
+#' in the file name. 
 #' 
 #' 5. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
@@ -104,6 +100,9 @@
 #   Cove Sturtevant (2020-07-20)
 #     adjusted determination of source_ids to be read from location files rather than assuming
 #     an ordered component of the data file names
+#   Cove Sturtevant (2020-09-22)
+#     added support for multiple data files with different schemas within the same folder. Grouping
+#     based on file names is now attempted, truncating and/or merging done within each group
 ##############################################################################################
 options(digits.secs = 3)
 
@@ -180,81 +179,105 @@ for(idxDirIn in DirIn){
     # Get a file listing
     fileData <- base::dir(base::paste0(idxDirIn,'/',idxDirSubCombData))
     
-    dataOut <- NULL # Initialize output
     
-    # Go through each sensor file, grabbing data installed at the location
-    for(idxFileData in fileData){
+    # Parse the names of the files to form groupings of files to be merged. Files that should be merged will have 
+    # the same name except for the source ID. 
+    fileDataNoSrc <- fileData
+    for(idxIdSrc in idSrc){
+        fileDataNoSrc <- base::sub(pattern=idxIdSrc,replacement='SOURCEID',x=fileDataNoSrc)
+    }
+    grpFileData <- base::unique(fileDataNoSrc)
+    grpFileData <- lapply(grpFileData,FUN=function(idxGrpFileData){
+      return(fileData[fileDataNoSrc==idxGrpFileData])
+    })
+    
+    # Do a quick check: are any groups empty? Something went wrong so let's assume there are no groups
+    numFileGrp <- base::unlist(base::lapply(grpFileData,base::length))
+    if(base::any(numFileGrp == 0)){
+      grpFileData <- list(grp=fileData)
+    }
+    
+    # Go through each group of similar files
+    for(idxGrp in base::seq_len(base::length(grpFileData))){
       
-      nameFileData <- base::paste0(idxDirIn,'/',idxDirSubCombData,'/',idxFileData) # Full path to file
+      dataOut <- NULL # Initialize output
       
-      # Determine its source id
-      idSrcIdx <- idSrc[base::unlist(base::lapply(idSrc,base::grepl,x=idxFileData,fixed=TRUE))] # source id
-      if(base::length(idSrcIdx) != 1){
-        # Generate error and stop execution
-        log$error(base::paste0('Cannot unambiguously determine source id and matching location info for file name: ', nameFileData)) 
-        stop()
-      }
+      # Go through each sensor file, grabbing data installed at the location
+      for(idxFileData in grpFileData[[idxGrp]]){
+        
+        nameFileData <- base::paste0(idxDirIn,'/',idxDirSubCombData,'/',idxFileData) # Full path to file
+        
+        # Determine its source id
+        idSrcIdx <- idSrc[base::unlist(base::lapply(idSrc,base::grepl,x=idxFileData,fixed=TRUE))] # source id
+        if(base::length(idSrcIdx) != 1){
+          # Generate error and stop execution
+          log$error(base::paste0('Cannot unambiguously determine source id and matching location info for file name: ', nameFileData)) 
+          stop()
+        }
+        
+        # Open the data file
+        data  <- base::try(NEONprocIS.base::def.read.parq(NameFile=nameFileData,log=log),silent=FALSE)
+        if(base::any(base::class(data) == 'try-error')){
+          # Generate error and stop execution
+          log$error(base::paste0('File: ', nameFileData, ' is unreadable.')) 
+          stop()
+        }
+        
+        # If we haven't saved any data. Initialize columns
+        if(base::is.null(dataOut)){
+          dataOut <- data[base::numeric(0),]
+        }
+        
+        # Pull the location metadata for this sensor & location
+        loc <- locMeta[locMeta$source_id==idSrcIdx & locMeta$name==nameLoc,]
+        
+        # Find the location id in the locations file
+        numLoc <- base::nrow(loc)
+        if(numLoc == 0){
+          log$warn(base::paste0('No matching location information for location',nameLoc,' and source id ',
+                                idSrcIdx, ' was found in the location files ', 
+                                ' as part of processing data file: ',nameFileData,
+                                ' . This should not happen. You should investigate...'))
+          next()
+        }
+        
+        # For each install and removal at this location, mark the data to pull over to the output
+        setData <- base::numeric(0)
+        for (idxLoc in base::seq_len(numLoc)){
+          if(base::is.na(loc$remove_date[idxLoc])){
+            setData <- c(setData,base::which(data$readout_time >= loc$install_date[idxLoc]))
+          } else {
+            setData <- c(setData,base::which(data$readout_time >= loc$install_date[idxLoc] & 
+                                               data$readout_time < loc$remove_date[idxLoc]))
+          }
+        }
+        setData <- base::unique(setData)
+        
+        # Put data applicable to this named location into the output
+        dataOut <- base::rbind(dataOut,data[setData,])
+        
+      } # End loop around sensor files
       
-      # Open the data file
-      data  <- base::try(NEONprocIS.base::def.read.parq(NameFile=nameFileData,log=log),silent=FALSE)
-      if(base::any(base::class(data) == 'try-error')){
-        # Generate error and stop execution
-        log$error(base::paste0('File: ', nameFileData, ' is unreadable.')) 
-        stop()
-      }
-      
-      # If we haven't saved any data. Initialize columns
-      if(base::is.null(dataOut)){
-        dataOut <- data[base::numeric(0),]
-      }
-      
-      # Pull the location metadata for this sensor & location
-      loc <- locMeta[locMeta$source_id==idSrcIdx & locMeta$name==nameLoc,]
-      
-      # Find the location id in the locations file
-      numLoc <- base::nrow(loc)
-      if(numLoc == 0){
-        log$warn(base::paste0('No matching location information for location',nameLoc,' and source id ',
-                              idSrcIdx, ' was found in the location files ', 
-                              ' as part of processing data file: ',nameFileData,
-                              ' . This should not happen. You should investigate...'))
-        next()
-      }
-      
-      # For each install and removal at this location, mark the data to pull over to the output
-      setData <- base::numeric(0)
-      for (idxLoc in base::seq_len(numLoc)){
-        if(base::is.na(loc$remove_date[idxLoc])){
-          setData <- c(setData,base::which(data$readout_time >= loc$install_date[idxLoc]))
+      # Sort the output by date and write the output
+      if(!base::is.null(dataOut)){
+        dataOut <- dataOut[base::order(dataOut$readout_time),]
+        
+        # Replace the source id in the file name with the location id
+        fileDataOut <- base::sub(pattern=idSrcIdx,replacement=nameLoc,x=idxFileData)
+        nameFileDataOut <- base::paste0(idxDirOut,'/',idxDirSubCombData,'/',fileDataOut) # Full path to output file
+        
+        # Write the data
+        rptDataOut <- base::try(NEONprocIS.base::def.wrte.parq(data=dataOut,NameFile=nameFileDataOut,log=log),silent=TRUE)
+        if(base::any(base::class(rptDataOut) == 'try-error')){
+          log$error(base::paste0('Cannot write Truncated/merged file ', nameFileDataOut,'. ',attr(rptDataOut,"condition"))) 
+          stop()
         } else {
-          setData <- c(setData,base::which(data$readout_time >= loc$install_date[idxLoc] & 
-                                             data$readout_time < loc$remove_date[idxLoc]))
+          log$info(base::paste0('Truncated/merged timeseries data (by location) written successfully in ',nameFileDataOut))
         }
       }
-      setData <- base::unique(setData)
-        
-      # Put data applicable to this named location into the output
-      dataOut <- base::rbind(dataOut,data[setData,])
-        
-    } # End loop around sensor files
       
-    # Sort the output by date and write the output
-    if(!base::is.null(dataOut)){
-      dataOut <- dataOut[base::order(dataOut$readout_time),]
-      
-      # Replace the source id in the file name with the location id
-      fileDataOut <- base::sub(pattern=idSrcIdx,replacement=nameLoc,x=idxFileData)
-      nameFileDataOut <- base::paste0(idxDirOut,'/',idxDirSubCombData,'/',fileDataOut) # Full path to output file
-      
-      # Write the data
-      rptDataOut <- base::try(NEONprocIS.base::def.wrte.parq(data=dataOut,NameFile=nameFileDataOut,log=log),silent=TRUE)
-      if(base::class(rptDataOut) == 'try-error'){
-        log$error(base::paste0('Cannot write Truncated/merged file ', nameFileDataOut,'. ',attr(rptDataOut,"condition"))) 
-        stop()
-      } else {
-        log$info(base::paste0('Truncated/merged timeseries data (by location) written successfully in ',nameFileDataOut))
-      }
-    }
+    } # End loop around file groups
+    
     
   } # End loop around data directories
   
