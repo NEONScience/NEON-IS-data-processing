@@ -20,7 +20,6 @@
 #'         /aquatroll200/yyyy/mm/dd/SENSOR/flags
 #'         /aquatroll200/yyyy/mm/dd/SENSOR/uncertainty_coef
 #'         /aquatroll200/yyyy/mm/dd/SENSOR/uncertainty_data
-#'         /aquatroll200/yyyy/mm/dd/SENSOR/zeroPressureQF
 #'         
 #'        
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
@@ -67,6 +66,9 @@
 # changelog and author contributions / copyrights
 #   Nora Catolico (2020-08-01)
 #     original creation
+#   Cove Sturtevant (2020-09-22)
+#     placed output flags in existing flags directory
+#     symbolically linked any files already in the flags directory to the output
 ##############################################################################################
 
 # Start logging
@@ -107,11 +109,10 @@ if(base::is.null(FileSchmQfOut) || FileSchmQfOut == 'NA'){
 }
 
 # Retrieve optional sensor subdirectories to copy over
-nameDirSubCopy <- c('flags','uncertainty_coef','uncertainty_data','zeroPressureQF')
+nameDirSubCopy <- c('flags','uncertainty_coef','uncertainty_data')
 DirFlagsCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[1]))
 DirUncertCoefCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[2]))
 DirUncertDataCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[3]))
-DirZeroPressureQFCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[4]))
 
 
 #what are the expected subdirectories of each input path
@@ -143,22 +144,27 @@ for (idxDirIn in DirIn){
   idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
   idxDirOutData <- base::paste0(idxDirOut,'/data')
   base::dir.create(idxDirOutData,recursive=TRUE)
-  idxDirOutFlags <- base::paste0(idxDirOut,'/missingTempQF')
+  idxDirInFlags <- base::paste0(idxDirIn,'/flags')
+  idxDirOutFlags <- base::paste0(idxDirOut,'/flags')
   base::dir.create(idxDirOutFlags,recursive=TRUE)
   
   # Copy with a symbolic link the desired sensor subfolders 
-  if(base::length(DirFlagsCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/flags'),idxDirOut,log=log)
-  } 
   if(base::length(DirUncertCoefCopy) > 0){
     NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/uncertainty_coef'),idxDirOut,log=log)
   } 
   if(base::length(DirUncertDataCopy) > 0){
     NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/uncertainty_data'),idxDirOut,log=log)
   } 
-  if(base::length(DirZeroPressureQFCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/zeroPressureQF'),idxDirOut,log=log)
-  } 
+
+  # The flags folder is already populated from the calibration module. Let's copy over any existing files
+  fileCopy <- base::list.files(idxDirInFlags,recursive=TRUE) # Files to copy over
+  
+  # Symbolically link each file
+  for(idxFileCopy in fileCopy){
+    cmdCopy <- base::paste0('ln -s ',base::paste0(idxDirInFlags,'/',idxFileCopy),' ',base::paste0(idxDirOutFlags,'/',idxFileCopy))
+    rptCopy <- base::system(cmdCopy)
+  }
+  
   
   ##### Read in troll data #####
   trollData <- NULL

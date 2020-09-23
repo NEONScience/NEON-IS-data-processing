@@ -7,7 +7,7 @@
     "/flow.loc.data.trnc.comb.R",
     "DirIn=$DIR_IN",
     "DirOut=/pfs/out",
-    "DirSubCombData=data|flags|uncertainty_data|missingTempQF|zeroPressureQF",
+    "DirSubCombData=data|flags|uncertainty_data",
     "DirSubCombUcrt=uncertainty_coef",
     "DirSubCopy=location"
     ],

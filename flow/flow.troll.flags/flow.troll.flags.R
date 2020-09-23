@@ -66,6 +66,9 @@
 # changelog and author contributions / copyrights
 #   Nora Catolico (2020-08-01)
 #     original creation
+#   Cove Sturtevant (2020-09-22)
+#     placed output flags in existing flags directory
+#     symbolically linked any files already in the flags directory to the output
 ##############################################################################################
 
 # Start logging
@@ -98,9 +101,8 @@ if(base::is.null(FileSchmQfOut) || FileSchmQfOut == 'NA'){
 }
 
 # Retrieve optional sensor subdirectories to copy over
-nameDirSubCopy <- c('data','flags','uncertainty_coef','uncertainty_data')
+nameDirSubCopy <- c('data','uncertainty_coef','uncertainty_data')
 DirDataCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[1]))
-DirFlagsCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[2]))
 DirUncertCoefCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[3]))
 DirUncertDataCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[4]))
 
@@ -132,15 +134,13 @@ for (idxDirIn in DirIn){
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
-  idxDirOutFlags <- base::paste0(idxDirOut,'/zeroPressureQF')
-  base::dir.create(idxDirOutFlags,recursive=TRUE)
+  idxDirInFlags <- base::paste0(idxDirIn,'/flags')
+  idxDirOutFlags <- base::paste0(idxDirOut,'/flags')
+  base::dir.create(idxDirOutFlags,recursive=TRUE) 
   
   # Copy with a symbolic link the desired sensor subfolders 
   if(base::length(DirDataCopy) > 0){
     NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/data'),idxDirOut,log=log)
-  } 
-  if(base::length(DirFlagsCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/flags'),idxDirOut,log=log)
   } 
   if(base::length(DirUncertCoefCopy) > 0){
     NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/uncertainty_coef'),idxDirOut,log=log)
@@ -148,6 +148,16 @@ for (idxDirIn in DirIn){
   if(base::length(DirUncertDataCopy) > 0){
     NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/uncertainty_data'),idxDirOut,log=log)
   } 
+  
+  # The flags folder is already populated from the calibration module. Let's copy over any existing files
+  fileCopy <- base::list.files(idxDirInFlags,recursive=TRUE) # Files to copy over
+  
+  # Symbolically link each file
+  for(idxFileCopy in fileCopy){
+    cmdCopy <- base::paste0('ln -s ',base::paste0(idxDirInFlags,'/',idxFileCopy),' ',base::paste0(idxDirOutFlags,'/',idxFileCopy))
+    rptCopy <- base::system(cmdCopy)
+  }
+  
   
   ##### Read in troll data #####
   trollData <- NULL
