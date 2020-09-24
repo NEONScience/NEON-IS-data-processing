@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "groundwater_context_filter"
+    "name": "surfacewaterPhysical_context_filter"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -9,7 +9,7 @@
     "stdin": [ "#!/bin/bash", "python3 -m context_filter.app" ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "CONTEXT": "groundwater",
+      "CONTEXT": "surfacewater",
       "LOG_LEVEL": "INFO",
       "SOURCE_TYPE_INDEX": "3",
       "YEAR_INDEX": "4",

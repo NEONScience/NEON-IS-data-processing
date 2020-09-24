@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "groundwater_uncertainty_coefficients"
+    "name": "surfacewaterPhysical_uncertainty_data"
   },
   "transform": {
     "image_pull_secrets": [
@@ -16,7 +16,7 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "FILTER_DIR": "uncertainty_coef",
+      "FILTER_DIR": "uncertainty_data",
       "LOG_LEVEL": "INFO",
       "RELATIVE_PATH_INDEX": "3"
     }
@@ -24,7 +24,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "groundwater_context_filter",
+      "repo": "surfacewaterPhysical_context_filter",
       "glob": "/*/*/*",
       "empty_files": true
     }

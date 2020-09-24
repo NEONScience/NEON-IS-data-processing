@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "surfacewater_calibrated_data"
+    "name": "groundwaterPhysical_locations"
   },
   "transform": {
     "image_pull_secrets": [
@@ -16,7 +16,7 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "FILTER_DIR": "data,location",
+      "FILTER_DIR": "location",
       "LOG_LEVEL": "INFO",
       "RELATIVE_PATH_INDEX": "3"
     }
@@ -24,7 +24,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "surfacewater_context_filter",
+      "repo": "groundwaterPhysical_context_filter",
       "glob": "/*/*/*",
       "empty_files": true
     }
@@ -32,7 +32,8 @@
   "enable_stats": false,
   "standby": true,
   "resource_requests": {
-    "memory": "15M",
-    "cpu": 0.03
+    "memory": "32M",
+    "cpu": 0.01
   }
 }
+
