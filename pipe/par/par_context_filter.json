@@ -22,7 +22,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "[SENSOR]_date_gap_filler_linker",
+      "repo": "[SENSOR]_named_location_filter",
       "glob": "/[SENSOR]/*/*/*"
     }
   },
