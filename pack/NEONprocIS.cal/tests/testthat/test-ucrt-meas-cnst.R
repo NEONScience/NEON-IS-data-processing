@@ -42,6 +42,10 @@
 #     Original Creation
 #   Mija Choi (2020-08-03)
 #     Modified to reorganize the test input xml and json files
+#   Mija Choi (2020-09-24)
+#     adjusted inputs to conform to the change made in def.ucrt.meas.cnst.R
+#     This includes inputting the entire data frame not a vector, the 
+#     variable to be calibrated, and the (unused) argument calSlct
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of def.ucrt.meas.cnst.R\n")
@@ -58,6 +62,7 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=testFileCalPath,Vrbs=TRUE)
   data = c(0.9)
+  data = data.frame(data=data)
  
   # Happy Path 1 - All params passed
   umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal)
@@ -81,6 +86,7 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile = testFileCalPath, Vrbs = TRUE)
   data = c(0.7)
+  data = data.frame(data=data)
   
   umeas_cnstDf_returned <- NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal)
   
@@ -97,6 +103,7 @@ test_that("Unit test of def.ucrt.meas.cnst.R", {
   
   infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=testFileCalPath,Vrbs=TRUE)
   data = c(0.9)
+  data = data.frame(data=data)
   
   umeas_cnstDf_returned <- try (NEONprocIS.cal::def.ucrt.meas.cnst (data = data, infoCal = infoCal), silent = TRUE)
   expect_true (base::class(umeas_cnstDf_returned) == 'try-error')
