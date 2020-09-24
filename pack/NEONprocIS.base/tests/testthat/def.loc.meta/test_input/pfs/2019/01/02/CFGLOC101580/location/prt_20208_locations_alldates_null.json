@@ -11,11 +11,6 @@
                     "aspirated-single-121",
                     "aspirated-single"
                 ],
-                "active_periods": [
-                    {
-                        "start_date": "2016-03-05T00:00:00Z"
-                    }
-                ],
                 "locations":{
                     "type":"FeatureCollection",
                     "features":[

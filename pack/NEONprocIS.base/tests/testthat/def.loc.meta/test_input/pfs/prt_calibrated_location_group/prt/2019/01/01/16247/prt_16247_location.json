@@ -15,11 +15,6 @@
                     "water-quality-274",
                     "water-quality"
                 ],
-                "active_periods": [
-                    {
-                        "start_date": "2016-03-05T00:00:00Z"
-                    }
-                ],
                 "locations": {
                     "type": "FeatureCollection",
                     "features": [
@@ -111,11 +106,6 @@
                     "water-quality-237",
                     "water-quality"
                 ],
-                "active_periods": [
-                    {
-                        "start_date": "2016-03-05T00:00:00Z"
-                    }
-                ],
                 "locations": {
                     "type": "FeatureCollection",
                     "features": [
@@ -206,11 +196,6 @@
                     "surfacewater",
                     "water-quality-247",
                     "water-quality"
-                ],
-                "active_periods": [
-                    {
-                        "start_date": "2016-03-05T00:00:00Z"
-                    }
                 ],
                 "locations": {
                     "type": "FeatureCollection",
