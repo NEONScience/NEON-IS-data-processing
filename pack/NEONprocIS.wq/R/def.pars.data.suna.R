@@ -40,7 +40,8 @@ def.pars.data.suna <-
     
     # Merge the burst data from all observations into one data frame
     parsedBurst <-
-      base::lapply(sunaBurstParq, base::as.data.frame, stringsAsFactors = FALSE)
+      base::lapply(sunaBurst
+                   , base::as.data.frame, stringsAsFactors = FALSE)
     parsedBurst <- base::do.call(base::cbind, parsedBurst)
     parsedBurst <-
       base::as.data.frame(base::lapply(parsedBurst, base::as.numeric))

@@ -4,10 +4,10 @@
 \alias{def.dir.crea}
 \title{Create output directories}
 \usage{
-def.dir.crea(DirBgn, DirSub, log = NULL)
+def.dir.crea(DirBgn = NULL, DirSub, log = NULL)
 }
 \arguments{
-\item{DirBgn}{String value. Starting path}
+\item{DirBgn}{String value. Starting path. Defaults to NULL, in which case DirSub contains the full absolute or relative path.}
 
 \item{DirSub}{String value or vector. Path to subdirectories to create relative to starting
 directory}
@@ -16,7 +16,7 @@ directory}
 output. Defaults to NULL, in which the logger will be created and used within the function.}
 }
 \value{
-No output from this function other than performing the intended action.
+A logical vector, where TRUE indicates the directory at the index was created. FALSE if it was not created for any reason.
 }
 \description{
 Definition function. Create one or more output directories given a starting path and 1 or more relative paths

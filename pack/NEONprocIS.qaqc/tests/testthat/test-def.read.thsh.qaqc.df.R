@@ -1,6 +1,5 @@
 #library(testthat)
 #source("R/def.read.thsh.qaqc.df.R")
-
 test_that("if not valid dataframe, return false",
           {
 
@@ -10,7 +9,6 @@ test_that("if not valid dataframe, return false",
             testthat::expect_equal(returnValue$context[3], "soil|water")
 
           })
-
 test_that("when threshold is empty",
           {
             returnValue <- try(NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = NULL), silent = TRUE)

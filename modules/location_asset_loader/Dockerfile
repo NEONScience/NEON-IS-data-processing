@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the location asset loader module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t location_asset_loader:latest -f location_asset_loader/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="location_asset_loader"

@@ -20,6 +20,7 @@ test_that("when all source directories don't exist",
             outputDir <- 'def.dir.copy.symb/output'
             report <- try(NEONprocIS.base::def.dir.copy.symb(inputDir, outputDir), silent = TRUE)
             testthat::expect_false((class(report)[1] == "try-error"))
+            base::suppressWarnings(base::unlink(outputDir, recursive = TRUE) )# For some reason it works best to do a complete rewrite
   
           })
 

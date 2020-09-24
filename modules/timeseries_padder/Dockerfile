@@ -1,3 +1,10 @@
+####
+#
+# This dockerfile will build the timeseries padder module.
+# Example command (must be run from project root directory to include common path in Docker context):
+# docker build -t timeseries_padder:latest -f timeseries_padder/Dockerfile .
+#
+###
 FROM centos:7
 
 ARG APP_DIR="timeseries_padder"
