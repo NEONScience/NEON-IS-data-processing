@@ -76,6 +76,13 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-08-05)
 #     Original Creation
+#   Mija Choi (2020-09-24)
+#     adjusted calls to uncertainty funcs to conform to new generic format 
+#     This includes inputting the entire data frame, the 
+#     variable to be generate uncertainty info for, and the (unused) argument calSlct
+#     Changed input to also specify the FDAS uncertainty function to use, instead of 
+#     determining it within the code 
+#     Changed input argument ParaUcrt to FuncUcrt, and changed input column names to support above changes
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of wrap.ucrt.dp0p.R\n")
@@ -114,10 +121,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
       NumDayExpiMax = NumDayExpiMax,
       log = NULL
    )
-   
-   # FuncUcrt
-   FuncUcrt = "def.ucrt.meas.cnst"
-   #
+  
    # Happy path 1 - test calibration in resistance
    #
    testData = "L0_data_resistance.csv"
@@ -126,9 +130,13 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    data <- read.csv(testDataPath, sep = ",", header = TRUE)
    
    data$readout_time <- as.POSIXct(data$readout_time, tz = 'GMT')
-   fdas = c("R")
+   data = data.frame(data)
+   
+   FuncUcrtMeas = "def.ucrt.meas.cnst"
+   FuncUcrtFdas = "def.ucrt.fdas.rstc.poly"
    var = c("resistance")
-   ParaUcrt <-data.frame(var = var,typeFdas = fdas,FuncUcrt = FuncUcrt,stringsAsFactors = FALSE)
+   
+   FuncUcrt <-data.frame(var=var,FuncUcrtMeas=FuncUcrtMeas,FuncUcrtFdas=FuncUcrtFdas,stringsAsFactors=FALSE)
    
    nameVarIn = c('resistance')
    nameVarOut = c('resistance')
@@ -145,8 +153,8 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
   
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
-         data = data,
-         ParaUcrt = ParaUcrt,
+         data,
+         FuncUcrt,
          ucrtCoefFdas = ucrtCoefFdas,
          calSlct = calSlct,
          DirCal = DirCal,
@@ -174,9 +182,13 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    data <- read.csv(testDataPath, sep = ",", header = TRUE)
    
    data$readout_time <- as.POSIXct(data$readout_time, tz = 'GMT')
-   fdas = c("V")
+   data=data.frame(data=data)
+   
+   FuncUcrtMeas = "def.ucrt.meas.cnst"
+   FuncUcrtFdas = "def.ucrt.fdas.volt.poly"
    var = c("voltage")
-   ParaUcrt <- data.frame(var = var,typeFdas = fdas,FuncUcrt=FuncUcrt,stringsAsFactors = FALSE)
+   
+   FuncUcrt <-data.frame(var=var,FuncUcrtMeas=FuncUcrtMeas,FuncUcrtFdas=FuncUcrtFdas,stringsAsFactors=FALSE)
    
    nameVarIn = c('voltage')
    nameVarOut = c('voltage')
@@ -188,8 +200,8 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
-         data = data,
-         ParaUcrt = ParaUcrt,
+         data,
+         FuncUcrt,
          ucrtCoefFdas = ucrtCoefFdas,
          calSlct = calSlct,
          DirCal = DirCal,
@@ -227,8 +239,8 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
-         data = data,
-         ParaUcrt = ParaUcrt,
+         data,
+         FuncUcrt,
          ucrtCoefFdas = ucrtCoefFdas,
          calSlct = calSlct,
          DirCal = DirCal,
