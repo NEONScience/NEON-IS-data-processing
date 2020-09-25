@@ -8,7 +8,7 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - FileSchmQf=$SCHEMA_FLAGS
-  - TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence
+  - TermTest1=linePAR:null|gap|range(rmv)|step(rmv)|persistence
   image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.14
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -19,16 +19,16 @@ input:
   - pfs:
       name: DIR_IN
       repo: parQuantumLine_padded_timeseries_analyzer
-      glob: /prt/*/*
+      glob: /li191r/*/*
   - pfs:
       name: SCHEMA_FLAGS
       repo: avro_schemas
-      glob: /dp0p/flags_plausibility.avsc
+      glob: /dp0p/flags_plausibility_li191r.avsc
 enable_stats: false
 standby: true
 parallelism_spec:
   constant: '2'
 resource_requests:
   memory: 200Mi
-  cpu: 0
+  cpu: 0.1
 
