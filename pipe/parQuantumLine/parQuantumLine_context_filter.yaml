@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: tempSoil_context_filter
+  name: parQuantumLine_context_filter
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -12,7 +12,7 @@ transform:
   - python3 -m context_filter.app
   env:
     OUT_PATH: "/pfs/out"
-    CONTEXT: soil
+    CONTEXT:
     LOG_LEVEL: INFO
     SOURCE_TYPE_INDEX: '3'
     YEAR_INDEX: '4'
@@ -23,8 +23,8 @@ transform:
   input:
     pfs:
       name: IN_PATH
-      repo: prt_named_location_filter
-      glob: "/prt/*/*/*"
+      repo: li191r_named_location_filter
+      glob: "/li191r/*/*/*"
 enable_stats: false
 standby: true
 resource_requests:
