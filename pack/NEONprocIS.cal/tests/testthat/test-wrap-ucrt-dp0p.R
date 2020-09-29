@@ -182,7 +182,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    data <- read.csv(testDataPath, sep = ",", header = TRUE)
    
    data$readout_time <- as.POSIXct(data$readout_time, tz = 'GMT')
-   data=data.frame(data=data)
+   data=data.frame(data)
    
    FuncUcrtMeas = "def.ucrt.meas.cnst"
    FuncUcrtFdas = "def.ucrt.fdas.volt.poly"
@@ -223,10 +223,10 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    
    #  Happy path 3 - calibration xml selected has the time expired
    #  All the rest of test data remain the same as in happy path 2, test in voltage
- 
+   # 
    TimeBgn = base::as.POSIXct('2020-06-12 00:10:20', tz = 'GMT')
    TimeEnd = base::as.POSIXct('2020-07-07 00:18:28', tz = 'GMT')
-   
+
    #
    calSlct <- NEONprocIS.cal::wrap.cal.slct (
       DirCal = DirCal,
@@ -236,7 +236,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
       NumDayExpiMax = NumDayExpiMax,
       log = NULL
    )
-   
+
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
          data,
@@ -246,8 +246,8 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
          DirCal = DirCal,
          mappNameVar = mappNameVar
       )
-   
-   
+
+
    elementsList = c(
       "voltage_ucrtMeas",
       "voltage_raw",
@@ -256,7 +256,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
       "voltage_ucrtComb",
       "voltage_ucrtExpn"
    )
-   
+
    expect_true ((is.list(wudp0pList_returned)) &&
                !(is.null(wudp0pList_returned)) &&
                all(names(wudp0pList_returned$voltage) == elementsList)) &&
