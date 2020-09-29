@@ -58,7 +58,7 @@ test_that("testing calibration conversion", {
   # Create data to calibrate
   
   data=c(1,2,3,4,5,6)
-  data = data.frame(data=c(1,2,3,4,5,6))
+  data = data.frame(data=data)
   
   # Create calibration coefficients
   Name = c("CVALA1", "CVALA2", "CVALA3", "CVALA4", "CVALA5", "CVALA6")
@@ -73,7 +73,7 @@ test_that("testing calibration conversion", {
   ##########
   
   calibrated <-
-    NEONprocIS.cal::def.cal.conv.poly(data = data.frame(data = data.frame(data=base::numeric(0)), infoCal = infoCal))
+    NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = infoCal)
  
   # Check the zeroed data and calibrated data are equal
   testthat::expect_equal(c(6, 126, 1092, 5460, 19530, 55986), calibrated)
@@ -85,7 +85,8 @@ test_that("testing calibration conversion", {
   ##########
   ########## Sad path #1 - when infoCal (data frame) is empty
   ##########
-  data <- data.frame(as.numeric(c("1", "0.1", "1", "1")))
+  data <- as.numeric(c("1", "0.1", "1", "1"))
+  data = data.frame(data=data)
   
   Name = c()
   Value <- vector(mode = "numeric", length = 0)
@@ -107,7 +108,8 @@ test_that("testing calibration conversion", {
   ########## Sad path #2 - when cal has invalid values.
   ########## Warning issued and calibrated values NA.
   ##########
-  data <- data.frame(as.numeric(c("1", "0.1", "1", "1")))
+  data <- as.numeric(c("1", "0.1", "1", "1"))
+  data = data.frame(data=data)
   
   Name = c("CVALA1", "CVALA2", "CVALA3", "CVALA4", "CVALA5", "CVALA6")
   Value = as.numeric(c("ab.1b", "1", "1", "0.000196", "0.0000229", "0.0067"))
@@ -118,9 +120,9 @@ test_that("testing calibration conversion", {
   cat("\n       |------ cal is a list but has invalid values, converted to NA|\n\n")
   
   calibrated <-
-    NEONprocIS.cal::def.cal.conv.poly(data = data.frame(data=base::numeric(0)), infoCal = infoCal)
+    NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = infoCal)
   
-  testthat::expect_equal(data * NA, calibrated)
+  testthat::expect_equal(c(as.numeric(t(data)) * NA), calibrated)
   
   cat("\n       |------ Calibration will have NAs                           |\n")
   cat("\n       |===========================================================|\n")
