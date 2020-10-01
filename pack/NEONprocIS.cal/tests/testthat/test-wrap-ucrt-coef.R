@@ -146,7 +146,6 @@ test_that("Unit test of wrap.ucrt.coef.R", {
       NEONprocIS.cal::wrap.ucrt.coef (
          calSlct,
          DirCal = DirCal,
-         ParaUcrt = ParaUcrt,
          ucrtCoefFdas = rucfDf_returned,
          mappNameVar = mappNameVar
       )
