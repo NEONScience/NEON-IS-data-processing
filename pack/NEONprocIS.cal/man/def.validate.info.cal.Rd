@@ -4,13 +4,8 @@
 \alias{def.validate.info.cal}
 \title{Validate calibration information returned by NEONprocIS.cal::def.read.cal.xml}
 \usage{
-def.validate.info.cal(
-  infoCal,
-  NameList = c("cal", "ucrt"),
-  CoefCal = NULL,
-  CoefUcrt = NULL,
-  log = NULL
-)
+def.validate.info.cal(infoCal, NameList = c("cal", "ucrt"),
+  CoefCal = NULL, CoefUcrt = NULL, log = NULL)
 }
 \arguments{
 \item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file

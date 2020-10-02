@@ -4,13 +4,9 @@
 \alias{def.cal.conv.poly.b}
 \title{Convert raw to calibrated data using NEON CVALB polynomial calibration coefficients}
 \usage{
-def.cal.conv.poly.b(
-  data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
-  varConv = base::names(data)[1],
-  calSlct = NULL,
-  log = NULL
-)
+def.cal.conv.poly.b(data = data.frame(data = base::numeric(0)),
+  infoCal = NULL, varConv = base::names(data)[1], calSlct = NULL,
+  log = NULL)
 }
 \arguments{
 \item{data}{Numeric data frame of raw measurements.}

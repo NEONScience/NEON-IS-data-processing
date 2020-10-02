@@ -4,13 +4,9 @@
 \alias{def.ucrt.fdas.rstc.poly}
 \title{Compute uncertainty attributed to NEON FDAS resistance measurements (and CVALA polynomial calibration conversion)}
 \usage{
-def.ucrt.fdas.rstc.poly(
-  data = data.frame(data = base::numeric(0)),
-  varUcrt = base::names(data)[1],
-  calSlct = NULL,
-  infoCal = NULL,
-  log = NULL
-)
+def.ucrt.fdas.rstc.poly(data = data.frame(data = base::numeric(0)),
+  varUcrt = base::names(data)[1], calSlct = NULL, infoCal = NULL,
+  log = NULL)
 }
 \arguments{
 \item{data}{Numeric data frame of raw measurements.}

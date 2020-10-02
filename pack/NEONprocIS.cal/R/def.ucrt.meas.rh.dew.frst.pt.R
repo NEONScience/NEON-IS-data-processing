@@ -79,7 +79,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   }
   
   # Ensure input is data frame with the target variable in it
-  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=varUcrt,TestEmpty=FALSE, log = log)
+  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=varUcrt, log = log) # deleted argument: ,TestEmpty=FALSE
   if (!chk) {
     stop()
   }
@@ -104,14 +104,14 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
     stop()
   }
   
-  # Uncertainty coefficient U_CVALA1 represents the combined measurement uncertainty for an
-  # individual reading. It includes the repeatability and reproducibility of the sensor and the
-  # lab DAS and ii) uncertainty of the calibration procedures and coefficients including
-  # uncertainty in the standard (truth).
-  ucrtCoef <- infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',]
+  # # Uncertainty coefficient U_CVALA1 represents the combined measurement uncertainty for an
+  # # individual reading. It includes the repeatability and reproducibility of the sensor and the
+  # # lab DAS and ii) uncertainty of the calibration procedures and coefficients including
+  # # uncertainty in the standard (truth).
+  # ucrtCoef <- infoCal$ucrt[infoCal$ucrt$Name == 'U_CVALA1',]
   
   # Specify constants based on relative humidity ATBD
-  absZero <- 273.15
+  absZero <- -273.15
   b0 <- -0.58002206*10^4
   b1 <- 1.3914993
   b2 <- -0.048640239
@@ -122,13 +122,71 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   c1 <- -0.46094296 * 10^-2
   c2 <- 0.13746454 * 10^-4
   c3 <- -0.12743214 * 10^-7
-  a0 <- -0.56745359 x 10^4
+  a0 <- -0.56745359 * 10^4
   a1 <- 6.3925247
-  a2 <- -0.96778430 x 10^-2
-  a3 <- 0.62215701 x 10^-6
-  a4 <- 0.20747825 x 10^-8
-  a5 <- -0.94840240 x 10^-12
+  a2 <- -0.96778430 * 10^-2
+  a3 <- 0.62215701 * 10^-6
+  a4 <- 0.20747825 * 10^-8
+  a5 <- -0.94840240 * 10^-12
   a6 <- 4.1635019
+  
+  # Calculate saturation vapor pressure 
+  # Identify rows with temperature above 0 degrees C
+  waterRows <- which(data$temperature > 0)
+  if(length(waterRows)>0){
+    # Calculate virtual temperature at temperatures above 0 degrees C
+    data$virtual_temperature[waterRows] <- (data$temperature[waterRows]-absZero-
+                                             (data$temperature[waterRows]*c0+
+                                                data$temperature[waterRows]*c1+
+                                                data$temperature[waterRows]*c2+
+                                                data$temperature[waterRows]*c3) )
+    
+    # Calculate saturation vapor pressure over water
+    data$saturation_vapor_pressure[waterRows] <- exp((b0/data$virtual_temperature[waterRows])+
+                                            (data$virtual_temperature[waterRows]^0*b1+
+                                               data$virtual_temperature[waterRows]^1*b2+
+                                               data$virtual_temperature[waterRows]^2*b3+
+                                               data$virtual_temperature[waterRows]^3*b4)+
+                                            log(data$virtual_temperature[waterRows])*b5)/100
+  }
+  # Identify rows with temperature above 0 degrees C
+  iceRows <- which(data$temperature <= 0)
+  if(length(iceRows>0)){
+    # Calculate virtual temperature at temperatures at or below 0 degrees C
+    data$virtual_temperature[iceRows] <- data$temperature[iceRows]-absZero
+    
+    # Calculate saturation vapor pressure over ice
+    data$saturation_vapor_pressure[iceRows] <- exp((a0/data$virtual_temperature[iceRows])+
+                                            (data$virtual_temperature[iceRows]^0*a1+
+                                               data$virtual_temperature[iceRows]^1*a2+
+                                               data$virtual_temperature[iceRows]^2*a3+
+                                               data$virtual_temperature[iceRows]^3*a4+
+                                               data$virtual_temperature[iceRows]^4*a5)+
+                                            log(data$virtual_temperature[iceRows])*a6)/100
+  }
+  
+  # Calculate partial derivative (degrees C hPa-1) of ATBD Eq. 1, substituting Eq. 3 for P_pw and Eq. 5 for P_pi, with respect to P_ws_w/i
+  data$derivative_dfpt_t_part1 <- 4719.72/(data$saturation_vapor_pressure*(log10(data$saturation_vapor_pressure*data$relative_humidity)-30.605)^2 )
+  
+  # Calculate derivative (hpa K-1) of ATBD Eq.3 or 5, substituting Eq. 4 or 6 for virtual temperature, with respect to temperature
+  data$derivative_dfpt_t_part2 ...........................
+  
+  # Calculate derivative of dew/frost point with respect to temperature (K)
+  data$derivative_dfpt_t <- data$derivative_dfpt_t_part1*data$derivative_dfpt_t_part2
+  
+  # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient temperature
+  data$ucrtMeas_dfpt_t <- abs(data$derivative_dfpt_t)**u_cvalA1_t
+  
+  # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient relative humidity
+  data$ucrtMeas_dfpt_rh <- abs(4719.72/(data$relative_humidity*(log10(data$saturation_vapor_pressure*data$relative_humidity)-30.605)^2 ))*u_cvalA1_rh
+
+  # # Calculate the combined uncertainty for each dew/frost point measurement
+  # data$ <- (data$ucrtMeas_dfpt_t^2)*(data$ucrtMeas_dfpt_rh^2)
+  
+  
+  
+  
+  
   
   # Issue warning if more than one matching uncertainty coefficient was found
   if(base::nrow(ucrtCoef) > 1){

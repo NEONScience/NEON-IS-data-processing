@@ -5,13 +5,9 @@
 \title{Individual measurement uncertainty for temperature from the conductivity sensor as part of the water
 quality data product}
 \usage{
-def.ucrt.wq.temp.conc(
-  data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
-  varUcrt = base::names(data)[1],
-  calSlct = NULL,
-  log = NULL
-)
+def.ucrt.wq.temp.conc(data = data.frame(data = base::numeric(0)),
+  infoCal = NULL, varUcrt = base::names(data)[1], calSlct = NULL,
+  log = NULL)
 }
 \arguments{
 \item{data}{Numeric data frame of raw measurements.}

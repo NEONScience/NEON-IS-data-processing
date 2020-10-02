@@ -4,13 +4,9 @@
 \alias{def.ucrt.fdas.volt.poly}
 \title{Compute uncertainty attributed to NEON FDAS voltage measurements (and CVALA polynomial calibration conversion)}
 \usage{
-def.ucrt.fdas.volt.poly(
-  data = data.frame(data = base::numeric(0)),
-  infoCal = NULL,
-  varUcrt = base::names(data)[1],
-  calSlct = NULL,
-  log = NULL
-)
+def.ucrt.fdas.volt.poly(data = data.frame(data = base::numeric(0)),
+  infoCal = NULL, varUcrt = base::names(data)[1], calSlct = NULL,
+  log = NULL)
 }
 \arguments{
 \item{data}{Numeric data frame of raw measurements.}

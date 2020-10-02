@@ -4,7 +4,8 @@
 \alias{def.cal.slct}
 \title{Determine applicable date ranges for calibration}
 \usage{
-def.cal.slct(metaCal = NULL, TimeBgn, TimeEnd, TimeExpiMax = NULL, log = NULL)
+def.cal.slct(metaCal = NULL, TimeBgn, TimeEnd, TimeExpiMax = NULL,
+  log = NULL)
 }
 \arguments{
 \item{metaCal}{A data frame of calibration metadata as returned from NEONprocIS.cal::def.cal.meta}
