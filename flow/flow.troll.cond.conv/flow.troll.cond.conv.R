@@ -208,7 +208,7 @@ for (idxDirIn in DirIn){
   
   #Write out data
   rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
-                                                 NameFile = base::paste0(idxDirOutData,"/aquatroll200_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_cond_conversion.parquet"), 
+                                                 NameFile = base::paste0(idxDirOutData,"/aquatroll200_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet"), 
                                                  Schm = SchmDataOut),silent=FALSE)
   if(class(rptDataOut) == 'try-error'){
     log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
