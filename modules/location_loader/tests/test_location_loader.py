@@ -33,9 +33,10 @@ class LocationLoaderTest(TestCase):
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         location_loader_main.main()
-        file_path = Path(self.out_path, 'prt/CFGLOC101740/CFGLOC101740.json')
+        file_path = Path(self.out_path, 'prt/CFGLOC100240/CFGLOC100240.json')
         self.assertTrue(file_path.exists())
 
+    # @unittest.skip('Test skipped.')
     def test_location_loader(self):
         site = 'CPER'
         location = 'CFGLOC123'
