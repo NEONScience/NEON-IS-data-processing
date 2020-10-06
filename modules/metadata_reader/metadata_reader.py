@@ -17,17 +17,19 @@ def read(config: Config,
 
     # open the output path as a pipe
     out_path: Path = config.out_path
-    output_pipe = open_pipe(out_path)
-    if output_pipe is None:
-        log.error(f'error opening output path: {out_path}')
-        exit(-2)
 
     # run continuously
     while True:
-        log.debug(f'creating tar archive')
-        tar_stream = open_tar(output_pipe)
         # read messages
         for message in read_messages(config):
+
+            output_pipe = open_pipe(out_path)
+            if output_pipe is None:
+                log.error(f'error opening output path: {out_path}')
+                exit(-2)
+
+            log.debug(f'creating tar archive')
+            tar_stream = open_tar(output_pipe)
             name = f'{message}'
             log.debug(f'name: "{name}"')
             # add context to tar
@@ -42,7 +44,11 @@ def read(config: Config,
             except tarfile.TarError as te:
                 log.error(f'error writing message {message} to tar file: {te}')
                 exit(-2)
+
+            # clean up
             tar_stream.close()
+            output_pipe.close()
+
         if not config.test_mode:
             log.info('waiting for new messages')
             time.sleep(5)
