@@ -32,7 +32,6 @@ class DataAccessTest(unittest.TestCase):
     def test_get_asset_locations(self):
         asset = Asset(id=41283, type='windobserverii')
         feature_collection: FeatureCollection = get_asset_locations(self.connection, asset)
-        print(f'asset locations: {feature_collection}')
         self.assertTrue(feature_collection is not None)
 
     def test_get_assets(self):
@@ -51,7 +50,8 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_named_location_context(self):
         context: List[str] = get_named_location_context(self.connection, self.named_location_id)
-        expected_context = ['aspirated-single-31', 'par-met', 'upward-facing']
+        expected_context = ['par-met-370', 'par-met', 'upward-facing']
+        print(f'context: {context}')
         self.assertTrue(context == expected_context)
 
     def test_get_named_location_locations(self):
