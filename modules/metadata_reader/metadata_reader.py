@@ -37,7 +37,8 @@ def read(config: Config,
             tar_info = tarfile.TarInfo()
             tar_info.size = len(message)
             tar_info.mode = 0o600
-            tar_info.name = name
+            current_milliseconds = int(round(time.time() * 1000))
+            tar_info.name = str(current_milliseconds)
             log.debug(f'writing tar file to spout for message "{message}"')
             try:
                 with io.BytesIO(bytes(json.dumps(message), 'utf-8')) as message_bytes:
