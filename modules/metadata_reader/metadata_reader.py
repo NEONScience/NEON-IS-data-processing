@@ -4,6 +4,7 @@ import tarfile
 from typing import Callable, Iterator, Any
 from pathlib import Path
 import structlog
+import json
 
 from metadata_reader.tar_file_opener import open_tar
 from metadata_reader.metadata_reader_config import Config
@@ -39,7 +40,7 @@ def read(config: Config,
             tar_info.name = name
             log.debug(f'writing tar file to spout for message "{message}"')
             try:
-                with io.BytesIO(bytes(message, 'utf-8')) as message_bytes:
+                with io.BytesIO(bytes(json.dumps(message), 'utf-8')) as message_bytes:
                     tar_stream.addfile(tarinfo=tar_info, fileobj=message_bytes)
             except tarfile.TarError as te:
                 log.error(f'error writing message {message} to tar file: {te}')
