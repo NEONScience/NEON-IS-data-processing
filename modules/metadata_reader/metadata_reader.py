@@ -22,7 +22,7 @@ def read(config: Config,
     while True:
         # read messages
         for message in read_messages(config):
-            log.debug(f'message: "{message}"')
+            log.debug(f'read message: "{message}"')
             # open output path as a named pipe
             output_pipe = open_pipe(out_path)
             if output_pipe is None:
@@ -39,7 +39,7 @@ def read(config: Config,
             tar_info.name = str(current_milliseconds)
             log.debug('writing tar file to spout')
             try:
-                with io.BytesIO(bytes(message, 'utf-8')) as message_bytes:
+                with io.BytesIO(bytes(str(message), 'utf-8')) as message_bytes:
                     tar_stream.addfile(tarinfo=tar_info, fileobj=message_bytes)
             except tarfile.TarError as te:
                 log.error(f'error writing message {message} to tar file: {te}')
