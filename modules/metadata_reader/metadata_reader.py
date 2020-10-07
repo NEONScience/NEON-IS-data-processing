@@ -39,7 +39,7 @@ def read(config: Config,
             tar_info.name = str(current_milliseconds)
             log.debug('writing tar file to spout')
             try:
-                tar_stream.addfile(tarinfo=tar_info, fileobj=BytesIO(message.encode('utf-8')))
+                tar_stream.addfile(tarinfo=tar_info, fileobj=BytesIO(str(message).encode('utf-8')))
             except tarfile.TarError as te:
                 log.error(f'error writing message {message} to tar file: {te}')
                 exit(-2)
