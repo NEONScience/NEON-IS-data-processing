@@ -1,6 +1,7 @@
 import time
 from io import BytesIO
 import tarfile
+import json
 from typing import Callable, Iterator, Any
 from pathlib import Path
 import structlog
@@ -39,7 +40,9 @@ def read(config: Config,
             tar_info.name = str(current_milliseconds)
             log.debug('writing tar file to spout')
             try:
-                tar_stream.addfile(tarinfo=tar_info, fileobj=BytesIO(str(message).encode('utf-8')))
+                message_bytes = json.dumps(message).encode('utf-8')
+                # tar_stream.addfile(tarinfo=tar_info, fileobj=BytesIO(str(message).encode('utf-8')))
+                tar_stream.addfile(tarinfo=tar_info, fileobj=BytesIO(message_bytes))
             except tarfile.TarError as te:
                 log.error(f'error writing message {message} to tar file: {te}')
                 exit(-2)
