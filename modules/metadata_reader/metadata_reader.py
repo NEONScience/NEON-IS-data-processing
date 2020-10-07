@@ -1,6 +1,7 @@
 import time
-import io
+from io import BytesIO
 import tarfile
+import json
 from typing import Callable, Iterator, Any
 from pathlib import Path
 import structlog
@@ -22,25 +23,26 @@ def read(config: Config,
     while True:
         # read messages
         for message in read_messages(config):
-
+            log.debug(f'MESSAGE: "{message}"')
+            # open output path as a named pipe
             output_pipe = open_pipe(out_path)
             if output_pipe is None:
                 log.error(f'error opening output path: {out_path}')
                 exit(-2)
-
-            log.debug(f'creating tar archive')
+            # create tar archive
+            log.debug('creating tar archive')
             tar_stream = open_tar(output_pipe)
-            name = f'{message}'
-            log.debug(f'name: "{name}"')
             # add context to tar
             tar_info = tarfile.TarInfo()
             tar_info.size = len(message)
             tar_info.mode = 0o600
-            tar_info.name = name
-            log.debug(f'writing tar file to spout for message "{message}"')
+            current_milliseconds = int(round(time.time() * 1000))
+            tar_info.name = str(current_milliseconds)
+            log.debug('writing tar file to spout')
             try:
-                with io.BytesIO(message.encode('utf-8')) as message_bytes:
-                    tar_stream.addfile(tarinfo=tar_info, fileobj=message_bytes)
+                message_bytes = json.dumps(message).encode('utf-8')
+                # tar_stream.addfile(tarinfo=tar_info, fileobj=BytesIO(str(message).encode('utf-8')))
+                tar_stream.addfile(tarinfo=tar_info, fileobj=BytesIO(message_bytes))
             except tarfile.TarError as te:
                 log.error(f'error writing message {message} to tar file: {te}')
                 exit(-2)

@@ -70,12 +70,10 @@ class MetadataReaderTest(TestCase):
             :param config: The Configuration
             :return: The message.
             """
-            message = 'test'
+            message = '{ "test": "testing" }'
             return [message]
 
         # test
         metadata_reader.read(config=self.config, open_pipe=open_pipe, read_messages=read_messages)
         # check output
         self.assertTrue(self.out_path.exists())
-        with open(self.out_path) as file:
-            print(f'file: {file}')
