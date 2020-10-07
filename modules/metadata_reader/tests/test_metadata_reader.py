@@ -70,7 +70,7 @@ class MetadataReaderTest(TestCase):
             :param config: The Configuration
             :return: The message.
             """
-            message = 'test'
+            message = '{ "test": "testing" }'
             return [message]
 
         # test
