@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "par_uncertainty_data"
+    "name": "par_calibrated_flags"
   },
   "transform": {
     "image_pull_secrets": [
@@ -16,7 +16,7 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "FILTER_DIR": "uncertainty_data",
+      "FILTER_DIR": "flags",
       "LOG_LEVEL": "INFO",
       "RELATIVE_PATH_INDEX": "3"
     }

@@ -24,7 +24,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "pqs1_named_location_filter",
+      "repo": "par_related_location_group",
       "glob": "/*/*/*",
       "empty_files": true
     }
