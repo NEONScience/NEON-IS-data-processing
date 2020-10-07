@@ -65,7 +65,7 @@ class MetadataReaderTest(TestCase):
 
         def read_messages(config: Config) -> Iterator[str]:
             """
-            Function to return a mock message.
+            Mock function to return a message.
 
             :param config: The Configuration
             :return: The message.
