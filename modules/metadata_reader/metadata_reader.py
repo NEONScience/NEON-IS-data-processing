@@ -24,6 +24,7 @@ def read(config: Config,
         # read messages
         for message in read_messages(config):
             log.debug(f'MESSAGE: "{message}"')
+            message_bytes = json.dumps(message).encode('utf-8')
             # open output path as a named pipe
             output_pipe = open_pipe(out_path)
             if output_pipe is None:
@@ -34,14 +35,13 @@ def read(config: Config,
             tar_stream = open_tar(output_pipe)
             # add context to tar
             tar_info = tarfile.TarInfo()
-            tar_info.size = len(message)
+            tar_info.size = len(message_bytes)
             tar_info.mode = 0o600
             current_milliseconds = int(round(time.time() * 1000))
             tar_info.name = str(current_milliseconds)
             log.debug('writing tar file to spout')
             try:
-                message_bytes = json.dumps(message).encode('utf-8')
-                # tar_stream.addfile(tarinfo=tar_info, fileobj=BytesIO(str(message).encode('utf-8')))
+                log.debug(f'message bytes: {message_bytes}')
                 tar_stream.addfile(tarinfo=tar_info, fileobj=BytesIO(message_bytes))
             except tarfile.TarError as te:
                 log.error(f'error writing message {message} to tar file: {te}')
