@@ -39,7 +39,7 @@ input:
   join:
   - pfs:
       name: STATISTICS_PATH
-      repo: parQuantumLine_qaqc_plausibility
+      repo: parQuantumLine_calibrated_data
       glob: /li191r/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true

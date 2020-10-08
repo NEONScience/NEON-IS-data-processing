@@ -2,7 +2,7 @@
 pipeline:
   name: parQuantumLine_statistics
 transform:
-  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.9
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.11
   cmd:
   - Rscript
   - /flow.stat.basc.R
