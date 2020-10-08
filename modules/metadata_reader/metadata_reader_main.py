@@ -5,7 +5,7 @@ from pathlib import Path
 
 import common.log_config as log_config
 
-from metadata_reader.metadata_reader import read
+from metadata_reader.metadata_reader import MetadataReader
 from metadata_reader.kafka_reader import read_messages
 from metadata_reader.metadata_reader_config import Config
 from metadata_reader.pipe_opener import open_pipe
@@ -34,7 +34,8 @@ def main():
                     auto_offset_reset=auto_offset_reset,
                     enable_auto_commit=enable_auto_commit,
                     test_mode=test_mode)
-    read(config, open_pipe, read_messages)
+    metadata_reader = MetadataReader(config)
+    metadata_reader.read(open_pipe, read_messages)
 
 
 if __name__ == "__main__":
