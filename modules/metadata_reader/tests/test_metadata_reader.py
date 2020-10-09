@@ -8,7 +8,8 @@ import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from metadata_reader.metadata_reader_config import Config
-import metadata_reader.metadata_reader as metadata_reader
+from metadata_reader.message import Message
+from metadata_reader.metadata_reader import MetadataReader
 import metadata_reader.metadata_reader_main as metadata_reader_main
 
 
@@ -63,19 +64,19 @@ class MetadataReaderTest(TestCase):
             output_pipe = os.fdopen(open_file, 'wb')
             return output_pipe
 
-        def read_messages(config: Config) -> Iterator[str]:
+        def read_messages(config: Config) -> Iterator[Message]:
             """
             Mock function to return a message.
 
             :param config: The Configuration
             :return: The message.
             """
-            message = 'test'
-            return [message]
+            key = '1'
+            content = '{ "test": "testing" }'
+            return [Message(key=key, content=content)]
 
         # test
-        metadata_reader.read(config=self.config, open_pipe=open_pipe, read_messages=read_messages)
+        metadata_reader = MetadataReader(self.config)
+        metadata_reader.read(open_pipe=open_pipe, read_messages=read_messages)
         # check output
         self.assertTrue(self.out_path.exists())
-        with open(self.out_path) as file:
-            print(f'file: {file}')

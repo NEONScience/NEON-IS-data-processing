@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/genavro:v1.0.49",
+    "image": "quay.io/battelleecology/genavro:v1.0.52",
     "cmd": [
       "bash"
     ],
@@ -55,7 +55,7 @@
     ]
   },
   "parallelism_spec": {
-    "constant": "8"
+    "constant": "2"
   },
   "output_branch": "master",
   "resource_requests": {
