@@ -4,19 +4,17 @@
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-    "image": "quay.io/battelleecology/metadata_change_reader:12",
+    "image": "quay.io/battelleecology/metadata_change_reader:13",
     "cmd": [ "/bin/bash" ],
-    "stdin": [ "#!/bin/bash", "python3 -m metadata_reader.metadata_reader_main" ],
+    "stdin": [ "#!/bin/bash", "python3 -m message_reader.message_reader_main" ],
     "env": {
         "OUT_PATH": "/pfs/out",
         "LOG_LEVEL": "DEBUG",
         "BOOTSTRAP_SERVER": "10.206.27.129:30937",
         "TOPIC": "debezium_test.pdr.customers",
         "GROUP_ID": "my-group",
-        "ENCODING": "utf-8",
         "AUTO_OFFSET_RESET": "earliest",
-        "ENABLE_AUTO_COMMIT": "True",
-        "TEST_MODE": "True"
+        "ENABLE_AUTO_COMMIT": "True"
     }
   },
   "spout": {
