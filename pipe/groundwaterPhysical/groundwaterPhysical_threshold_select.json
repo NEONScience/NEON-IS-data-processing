@@ -1,9 +1,9 @@
 {
   "pipeline": {
-    "name": "elevSurfacewater_threshold_select"
+    "name": "groundwaterPhysical_threshold_select"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.thsh.slct.R","DirIn=$REPO_LOCATIONS","DirOut=/pfs/out","FileThsh=$FILE_THRESHOLDS","TermCtxt1=pressure","DirSubCopy=location"],
+    "cmd": ["Rscript","/flow.thsh.slct.R","DirIn=$REPO_LOCATIONS","DirOut=/pfs/out","FileThsh=$FILE_THRESHOLDS","TermCtxt1=pressure|groundwater","TermCtxt2=temperature|groundwater","TermCtxt3=conductivity|groundwater","DirSubCopy=location"],
     "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.13",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
@@ -15,14 +15,14 @@
       {
         "pfs": {
           "name": "REPO_LOCATIONS",
-          "repo": "surfacewaterPhysical_locations",
+          "repo": "groundwaterPhysical_locations",
           "glob": "/*/*/*/*/"
         }
       },
       {
         "pfs": {
           "name": "FILE_THRESHOLDS",
-          "repo": "elevSurfacewater_threshold_filter",
+          "repo": "groundwaterPhysical_threshold_filter",
           "glob": "/thresholds.json"
         }
       }
