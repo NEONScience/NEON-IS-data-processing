@@ -1,6 +1,6 @@
 ####
 #
-# This dockerfile will build the metadata reader module.
+# This dockerfile will build the message reader module.
 # Example command (must be run from project root directory to include common path in Docker context):
 # docker build -t message_reader:latest -f message_reader/Dockerfile .
 #
@@ -14,7 +14,7 @@ ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY metadata_reader/requirements.txt ${CONTAINER_APP_DIR}
+COPY message_reader/requirements.txt ${CONTAINER_APP_DIR}
 
 RUN yum update -y && \
     yum install -y epel-release && \
