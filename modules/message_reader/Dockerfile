@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the metadata reader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t metadata_reader:latest -f metadata_reader/Dockerfile .
+# docker build -t message_reader:latest -f message_reader/Dockerfile .
 #
 ###
 FROM centos:7
