@@ -55,7 +55,7 @@
     ]
   },
   "parallelism_spec": {
-    "constant": "4"
+    "constant": "2"
   },
   "output_branch": "master",
   "resource_requests": {
