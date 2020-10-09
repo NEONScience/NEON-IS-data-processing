@@ -7,7 +7,7 @@
 ###
 FROM centos:7
 
-ARG APP_DIR="metadata_reader"
+ARG APP_DIR="message_reader"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
