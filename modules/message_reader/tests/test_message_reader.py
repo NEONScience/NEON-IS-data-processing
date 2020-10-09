@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import json
 from pathlib import Path
 from typing import Iterator, BinaryIO
 
@@ -58,8 +59,8 @@ class MessageReaderTest(TestCase):
 
             :return: The message.
             """
-            key = '{ "id": "1" }'
-            value = '{ "test": "testing" }'
+            key = json.loads('{ "id": "1" }')
+            value = json.loads('{ "test": "testing" }')
             return [Message(key=key, value=value)]
 
         config = Config(out_path=self.out_path,
