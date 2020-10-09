@@ -46,7 +46,7 @@ test_that("Unit test of def.wq.abs.corr.R", {
   xsd1 <- system.file("extdata", "sunav2_calibration.xsd", package = "NEONprocIS.wq")
   
   calDir = "calibrations/"
-  testFileCal = "sunav2_calibration.xml"
+  testFileCal = "sunav2_calibration1.xml"
   testFileCalPath <- paste0(calDir, testFileCal)
   NameFile = testFileCalPath
   
@@ -66,6 +66,10 @@ test_that("Unit test of def.wq.abs.corr.R", {
   }
   
   testDir = "testdata/"
-  NEONprocIS.wq::def.wq.abs.corr(sunav2Filenames,sunav2CalFilenames,log = NULL)
+  testFile = "sunav2_File4.parquet"
+  testFilesPath <- paste0(testDir, testFile)
+  # Get the filenames without path information
+ # nameFileCal <- base::unlist(base::lapply(strsplit(fileCal,'/'),utils::tail,n=1))
+  NEONprocIS.wq::def.wq.abs.corr(sunav2Filenames=testFilesPath,sunav2CalFilenames=testFileCalPath,log = NULL)
   
   })
