@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 from typing import Iterator
 import json
+import structlog
 
 from kafka import KafkaConsumer
 
 from message_reader.message_reader_config import Config
 from message_reader.message import Message
 
+log = structlog.getLogger()
+
 
 def read_messages(config: Config) -> Iterator[Message]:
     consumer = create_consumer(config)
     for message in consumer:
-        yield Message(key=message.key, value=message.value)
+        key = message.key
+        value = message.value
+        log.debug(f'message key {key}')
+        log.debug(f'message value: {value}')
+        yield Message(key=key, value=value)
 
 
 def create_consumer(config: Config) -> KafkaConsumer:
