@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "surfacewaterPhysical_timeseries_padder"
+    "name": "groundwaterPhysical_timeseries_padder"
   },
   "transform": {
     "image_pull_secrets": [
@@ -29,9 +29,9 @@
   "input": {
     "pfs": {
       "name": "DATA_PATH",
-      "repo": "surfacewaterPhysical_threshold_regularized_group",
+      "repo": "groundwaterPhysical_threshold_regularized_group",
       "branch": "master",
-      "glob": "/*/*/*/*/"
+      "glob": "/*/*/*/*"
     }
   },
   "standby": true,

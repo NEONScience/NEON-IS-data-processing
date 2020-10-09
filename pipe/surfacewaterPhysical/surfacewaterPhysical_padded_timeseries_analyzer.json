@@ -1,22 +1,18 @@
 {
   "pipeline": {
-    "name": "surfacewaterPhysical_timeseries_padder"
+    "name": "surfacewaterPhysical_padded_timeseries_analyzer"
   },
   "transform": {
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/timeseries_padder:28",
-    "cmd": [
-      "/bin/bash"
-    ],
-    "stdin": [
-      "#!/bin/bash",
-      "python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 4 --monthindex 5 --dayindex 6 --locindex 7 --subdirindex 8"
-    ],
+    "image": "quay.io/battelleecology/padded_timeseries_analyzer:12",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app" ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO",
+      "RELATIVE_PATH_INDEX": "3"
     }
   },
   "parallelism_spec": {
@@ -29,9 +25,9 @@
   "input": {
     "pfs": {
       "name": "DATA_PATH",
-      "repo": "surfacewaterPhysical_threshold_regularized_group",
+      "repo": "surfacewaterPhysical_timeseries_padder",
       "branch": "master",
-      "glob": "/*/*/*/*/"
+      "glob": "/*/*/*/*"
     }
   },
   "standby": true,
