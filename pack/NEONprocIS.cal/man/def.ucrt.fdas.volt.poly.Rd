@@ -13,7 +13,7 @@ def.ucrt.fdas.volt.poly(
 )
 }
 \arguments{
-\item{data}{Numeric data frame of raw measurements.}
+\item{data}{Data frame of raw measurements. Note that the column/variable indicated in varUcrt must be numeric.}
 
 \item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file
 (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$cal and info$ucrt,

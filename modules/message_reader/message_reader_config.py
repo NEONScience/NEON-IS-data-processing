@@ -7,7 +7,6 @@ class Config(NamedTuple):
     bootstrap_server: str
     topic: str
     group_id: str
-    encoding: str
     auto_offset_reset: str
     enable_auto_commit: bool
-    test_mode: bool
+    is_test: bool
