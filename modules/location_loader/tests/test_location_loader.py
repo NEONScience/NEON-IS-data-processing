@@ -40,7 +40,7 @@ class LocationLoaderTest(TestCase):
     def test_location_loader(self):
         site = 'CPER'
         location = 'CFGLOC123'
-        schema_names = ['prt']
+        schema_names = set('prt')
         description = 'A test location.'
         expected_type = 'CONFIG'
 
@@ -58,7 +58,7 @@ class LocationLoaderTest(TestCase):
                                            description=description,
                                            site=site,
                                            schema_names=schema_names,
-                                           context=schema_names,
+                                           context=list(schema_names),
                                            active_periods=[active_period],
                                            properties=[prop])
             return [named_location]
@@ -66,7 +66,7 @@ class LocationLoaderTest(TestCase):
         # test
         location_loader.load_locations(out_path=self.out_path, get_locations=get_locations)
         # check output
-        file_path = Path(self.out_path, schema_names[0], location, f'{location}.json')
+        file_path = Path(self.out_path, next(iter(schema_names)), location, f'{location}.json')
         self.assertTrue(file_path.exists())
         with open(file_path) as file:
             file_data = geojson.load(file)
@@ -78,4 +78,4 @@ class LocationLoaderTest(TestCase):
             self.assertTrue(properties['type'] == expected_type)
             self.assertTrue(properties['description'] == description)
             self.assertTrue(properties['site'] == site)
-            self.assertTrue(properties['context'][0] == schema_names[0])
+            self.assertTrue(properties['context'][0] == next(iter(schema_names)))
