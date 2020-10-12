@@ -1,6 +1,7 @@
 import json
 from typing import Callable, Iterator, Any
 import structlog
+import time
 from pathlib import Path
 
 from message_reader.message import Message
@@ -17,7 +18,9 @@ def run(config: Config,
     while True:
         for message in read_messages():
             log.debug(f'received {message.key}  {message.value}')
-            message_key = message.key['payload']['id']
+            time_millis = int(round(time.time() * 1000))
+            payload_id = str(message.key['payload']['id'])
+            message_key = f'{time_millis}_{payload_id}'
             message_bytes = json.dumps(message.value).encode('utf-8')
             write_file(message_key, message_bytes)
             if config.is_test:

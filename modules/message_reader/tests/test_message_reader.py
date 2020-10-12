@@ -59,7 +59,7 @@ class MessageReaderTest(TestCase):
 
             :return: The message.
             """
-            key = json.loads('{ "id": "1" }')
+            key = json.loads('{ "payload": { "id": "1" }}')
             value = json.loads('{ "test": "testing" }')
             return [Message(key=key, value=value)]
 

@@ -4,7 +4,7 @@
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-    "image": "quay.io/battelleecology/metadata_change_reader:16",
+    "image": "quay.io/battelleecology/metadata_change_reader:17",
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m message_reader.message_reader_main" ],
     "env": {
