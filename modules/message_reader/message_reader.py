@@ -17,7 +17,7 @@ def run(config: Config,
     while True:
         for message in read_messages():
             log.debug(f'received {message.key}  {message.value}')
-            message_key = message.key['id']
+            message_key = message.key['payload']['id']
             message_bytes = json.dumps(message.value).encode('utf-8')
             write_file(message_key, message_bytes)
             if config.is_test:
