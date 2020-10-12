@@ -67,8 +67,9 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_named_location_schema_name(self):
         named_location_id = 156951
-        schema_name = get_named_location_schema_name(self.connection, named_location_id)
-        self.assertTrue(schema_name == 'windobserverii')
+        schema_names = get_named_location_schema_name(self.connection, named_location_id)
+        print(f'schema_names: {schema_names}')
+        self.assertTrue(schema_names[0] == 'windobserverii')
 
     def test_get_named_location_site(self):
         site = get_named_location_site(self.connection, self.named_location_id)

@@ -19,9 +19,9 @@ def load_locations(out_path: Path, get_locations: Callable[[], Iterator[NamedLoc
     :param get_locations: A function yielding named locations.
     """
     for named_location in get_locations():
-        schema_name = named_location.schema_name
+        schema_names = named_location.schema_names
         location_name = named_location.name
-        if schema_name is not None:
+        for schema_name in schema_names:
             path = Path(out_path, schema_name, location_name, f'{location_name}.json')
             path.parent.mkdir(parents=True, exist_ok=True)
             geojson_data = geojson_converter.convert_named_location(named_location)

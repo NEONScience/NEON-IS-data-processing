@@ -9,7 +9,7 @@ class NamedLocation(NamedTuple):
     type: str
     description: str
     site: str
-    schema_name: str
+    schema_names: List[str]
     context: List[str]
     active_periods: List[ActivePeriod]
     properties: List[Property]
