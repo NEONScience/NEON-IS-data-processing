@@ -39,8 +39,14 @@
 #' @keywords calibration, uncertainty, L0', hmp155, dew point, frost point
 
 #' @examples
-#' data <- data.frame(data=c(1,6,7,0,10))
-#' calSlct <- #NOT SURE HOW TO SPECIFY THIS IN AN EXAMPLE
+#' data <- data.frame(relative_humidity=c(1,6,7,0,10), temperature=c(2,3,6,8,5), dew_pont=c(1,-1,5,4,4.5))
+#' calSlct=list("temperature"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
+#' timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "30000000000080_WO29705_157555.xml",id = 157555, expi= FALSE),
+#' "relative_humidity"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
+#' timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "30000000000080_WO29705_157554.xml",id = 157554, expi= FALSE),
+#' "dew_point"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),timeEnd=as.POSIXct("2019-01-02",tz="GMT"),
+#' file = "30000000000080_WO29705_157556.xml",id = 157556, expi= FALSE))
+
 #' def.ucrt.meas.rh.dew.frst.pt(data=data,calSlct=calSlct)
 
 #' @seealso \link[NEONprocIS.cal]{def.read.cal.xml}
@@ -255,7 +261,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   data$ucrt_dfpt_rh <- abs(4719.72/(data$relative_humidity*(log10(data$saturation_vapor_pressure*data$relative_humidity)-30.605)^2 ))*base::as.numeric(ucrtCoefRh$Value[1])
 
   # Calculate the combined uncertainty for each dew/frost point measurement
-  data$ucrtMeas_dew_point <- sqrt((data$ucrtMeas_dfpt_t^2)+(data$ucrtMeas_dfpt_rh^2))
+  ucrt$ucrtMeas <- sqrt((data$ucrtMeas_dfpt_t^2)+(data$ucrtMeas_dfpt_rh^2))
 
   return(ucrt)
   
