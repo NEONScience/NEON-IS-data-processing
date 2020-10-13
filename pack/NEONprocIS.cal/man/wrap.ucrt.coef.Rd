@@ -4,8 +4,13 @@
 \alias{wrap.ucrt.coef}
 \title{Wrapper for compiling uncertainty coefficients for all variables and time ranges}
 \usage{
-wrap.ucrt.coef(calSlct, DirCal = "./", ucrtCoefFdas = NULL,
-  mappNameVar = NULL, log = NULL)
+wrap.ucrt.coef(
+  calSlct,
+  DirCal = "./",
+  ucrtCoefFdas = NULL,
+  mappNameVar = NULL,
+  log = NULL
+)
 }
 \arguments{
 \item{calSlct}{A named list of data frames, list element corresponding to the variable for which

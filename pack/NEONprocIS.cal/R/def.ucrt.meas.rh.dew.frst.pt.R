@@ -261,7 +261,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   data$ucrt_dfpt_rh <- abs(4719.72/(data$relative_humidity*(log10(data$saturation_vapor_pressure*data$relative_humidity)-30.605)^2 ))*base::as.numeric(ucrtCoefRh$Value[1])
 
   # Calculate the combined uncertainty for each dew/frost point measurement
-  ucrt$ucrtMeas <- sqrt((data$ucrtMeas_dfpt_t^2)+(data$ucrtMeas_dfpt_rh^2))
+  ucrt$ucrtMeas[] <- sqrt((data$ucrtMeas_dfpt_t^2)+(data$ucrtMeas_dfpt_rh^2))
 
   return(ucrt)
   

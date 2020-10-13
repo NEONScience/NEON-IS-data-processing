@@ -4,9 +4,13 @@
 \alias{def.ucrt.meas.mult}
 \title{Compute individual measurement calibration uncertainty as a multiplier with NEON CVAL coefficient U_CVALA1}
 \usage{
-def.ucrt.meas.mult(data = data.frame(data = base::numeric(0)),
-  infoCal = NULL, varUcrt = base::names(data)[1], calSlct = NULL,
-  log = NULL)
+def.ucrt.meas.mult(
+  data = data.frame(data = base::numeric(0)),
+  infoCal = NULL,
+  varUcrt = base::names(data)[1],
+  calSlct = NULL,
+  log = NULL
+)
 }
 \arguments{
 \item{data}{Numeric data frame of raw measurements.}

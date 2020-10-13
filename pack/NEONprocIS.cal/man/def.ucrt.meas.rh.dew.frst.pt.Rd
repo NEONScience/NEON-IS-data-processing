@@ -5,27 +5,23 @@
 \title{Uncertainty for dew/frost point from the relative humidity sensor as part of the relative
 humidity transition}
 \usage{
-def.ucrt.meas.rh.dew.frst.pt(data = data.frame(data = base::numeric(0)),
-  infoCal = NULL, varUcrt = base::names(data)[1], calSlct = NULL,
-  log = NULL)
+def.ucrt.meas.rh.dew.frst.pt(
+  data = data.frame(data = base::numeric(0)),
+  infoCal = NULL,
+  varUcrt = base::names(data)[1],
+  calSlct = NULL,
+  log = NULL
+)
 }
 \arguments{
 \item{data}{Temperature, relative humidity, and dew/frost point data from the relative humidity sensor}
 
-\item{infoCal}{List of calibration and uncertainty information read from a NEON calibration file
-(as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$ucrt, which is
-a data frame of uncertainty coefficents. Columns of this data frame are:\cr
-\code{Name} String. The name of the coefficient. \cr
-\code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr}
+\item{infoCal}{Not used in this function \cr}
 
 \item{varUcrt}{A character string of the target variable (column) in the data frame \code{data} for 
-which uncertainty data will be computed (all other columns will be ignored). Note that for other
-uncertainty functions this variable may not need to be in the input data frame, so long as the function
-knows that. Defaults to the first
-column in \code{data}.}
+which uncertainty data will be computed (dew_point in this function).}
 
-\item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
-NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
+\item{calSlct}{Defaults to NULL. See the inputs to NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
@@ -33,25 +29,29 @@ created and used within the function.}
 }
 \value{
 A data frame with the following variables:\cr
-\code{ucrtMeas} - combined measurement uncertainty for an individual dew/frost point reading. Includes the
+\code{ucrtMeas_dew_point} - combined measurement uncertainty for an individual dew/frost point reading. Includes the
 repeatability and reproducibility of the sensor and the lab DAS and uncertainty of the
 calibration procedures and coefficients including uncertainty in the standard (truth).
 }
 \description{
 Definition function. Alternative calibration uncertainty function. Create file (dataframe) with
-uncertainty information based off of the L0 temperature and relative humidity data values from 
+uncertainty information based off of the L0 temperature, relative humidity, and dew/frost point data values from 
 the relative humidity sensor according to NEON.DOC.000851 - NEON Algorithm Theoretical Basis   
 Document (ATBD): Humidity and Temperature Sensor.
 
 Accepts L0 data and NEON uncertainty information as produced
 by NEONprocIS.cal::def.read.cal.xml and returns a vector of individual measurement
-uncertainties for each data value. The uncertainty computed is the L0 value multipled by 
-NEON calibration uncertainty coefficient U_CVALA1.
+uncertainties for each data value.
 }
 \examples{
-data <- data.frame(data=c(1,6,7,0,10))
-infoCal <- list(ucrt = data.frame(Name=c('U_CVALA1','U_CVALA3'),Value=c(0.1,5),stringsAsFactors=FALSE))
-def.ucrt.meas.mult(data=data,infoCal=infoCal)
+data <- data.frame(relative_humidity=c(1,6,7,0,10), temperature=c(2,3,6,8,5), dew_pont=c(1,-1,5,4,4.5))
+calSlct=list("temperature"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
+timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "30000000000080_WO29705_157555.xml",id = 157555, expi= FALSE),
+"relative_humidity"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
+timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "30000000000080_WO29705_157554.xml",id = 157554, expi= FALSE),
+"dew_point"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),timeEnd=as.POSIXct("2019-01-02",tz="GMT"),
+file = "30000000000080_WO29705_157556.xml",id = 157556, expi= FALSE))
+def.ucrt.meas.rh.dew.frst.pt(data=data,calSlct=calSlct)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
