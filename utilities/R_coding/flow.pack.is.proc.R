@@ -11,16 +11,16 @@
 DirWrk00 <-
   
   # Cove
-  #"/scratch/SOM/Github/RstudioServer/shared/shared-covesturtevant"
-  #"/scratch/SOM/Github/RstudioServer/NEON-IS-data-processing/NEON-IS-data-processing"
   "/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
+
+  # Feel free to add your repo path! Just comment the ones not being used.
 
 
 #name(s) of package(s)
 namePack <- c("NEONprocIS.base",
               "NEONprocIS.cal",
               "NEONprocIS.qaqc",
-              "NEONprocIS.wq")[1]
+              "NEONprocIS.wq")[2]
 
 
 
@@ -34,9 +34,8 @@ for(idxNamePack in namePack) {
   # Install and load required packages
   
     # install libraries in case missing
-    DirLib <- list(NULL, "C:/Program Files/R/R-3.5.1/library")[[1]]
-    if(!("devtools" %in% rownames(installed.packages()))) install.packages("devtools", lib=DirLib)
-    if(!("roxygen2" %in% rownames(installed.packages()))) install.packages("roxygen2", lib=DirLib)
+    if(!("devtools" %in% rownames(installed.packages()))) install.packages("devtools")
+    if(!("roxygen2" %in% rownames(installed.packages()))) install.packages("roxygen2")
 
     # most current development version of roxygen2:
     # if(!("roxygen2" %in% rownames(installed.packages()))) devtools::install_github("klutometis/roxygen")
@@ -96,11 +95,11 @@ for(idxNamePack in namePack) {
   document()
   
   # remove any existing version of package in the library location
-  remove.packages(idxNamePack, lib=DirLib)
+  remove.packages(idxNamePack)
   
   # Install the package
   setwd("..")
-  install(idxNamePack, lib=DirLib)
+  install(idxNamePack)
   detach(paste0("package:", idxNamePack), unload=TRUE, character.only = TRUE)
   library(paste0(idxNamePack), character.only = TRUE)
 
