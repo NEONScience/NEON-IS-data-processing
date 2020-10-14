@@ -2,11 +2,10 @@
 import math
 from datetime import datetime, timedelta
 import json
-import yaml
 import structlog
-import sys
-from yaml import Loader
 from typing import Union, List
+
+import timeseries_padder.timeseries_padder.file_loader as file_loader
 
 log = structlog.getLogger()
 
@@ -60,24 +59,6 @@ def get_padded_dates(date: datetime, pad_size: float) -> List[datetime]:
     return sorted(padded_range)
 
 
-def load_window_size_file():
-    try:
-        with open('timeseries_padder/config/windowSizeNames.yaml', 'r') as file:
-            return yaml.load(file, Loader=Loader)
-    except FileNotFoundError:
-        log.error('Could not open windowSizeNames.yaml file.')
-        sys.exit(-1)
-
-
-def load_threshold_file(threshold_file: str):
-    try:
-        with open(threshold_file, "r") as jsonFile:
-            return json.load(jsonFile)
-    except FileNotFoundError:
-        log.error('Could not open threshold file.')
-        sys.exit(-1)
-
-
 def get_max_window_size(threshold_file: str, data_rate: float) -> Union[float, int]:
     """
     Get the maximum window size.
@@ -86,8 +67,8 @@ def get_max_window_size(threshold_file: str, data_rate: float) -> Union[float, i
     :param data_rate: the data rate in Hz
     :returns: max window size
     """
-    window_size_yaml = load_window_size_file()
-    threshold_json = load_threshold_file(threshold_file)
+    window_size_yaml = file_loader.load_window_size_file()
+    threshold_json = file_loader.load_threshold_file(threshold_file)
     max_window_size = 0
     this_window_size = 0
     for threshold in threshold_json['thresholds']:
