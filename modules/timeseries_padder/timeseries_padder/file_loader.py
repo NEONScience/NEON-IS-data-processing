@@ -12,11 +12,10 @@ log = structlog.getLogger()
 
 def load_window_size_file():
     try:
-        # with open('timeseries_padder/config/windowSizeNames.yaml', 'r') as file:
         this_path = Path(os.path.dirname(__file__))
-        path = os.path.join(this_path.parent, 'config/windowSizeNames.yaml')
-        log.debug(f'yaml path: {path}')
-        with open(path) as file:
+        file_path = Path(this_path.parent, 'config/windowSizeNames.yaml')
+        log.debug(f'yaml path: {file_path}')
+        with open(file_path) as file:
             return yaml.load(file, Loader=Loader)
     except FileNotFoundError:
         log.error('Could not open window size names yaml file.')
