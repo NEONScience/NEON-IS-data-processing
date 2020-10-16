@@ -15,6 +15,7 @@ ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${COMMON_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/common_requirements.txt
 
 RUN yum update -y && \
     yum install -y epel-release && \
@@ -22,6 +23,7 @@ RUN yum update -y && \
     ldconfig && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools && \
     python3 -mpip install -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    python3 -mpip install -r ${CONTAINER_APP_DIR}/${APP_DIR}/common_requirements.txt && \
     yum remove gcc -y && \
     yum autoremove -y && \
     yum clean all && \
