@@ -47,7 +47,7 @@
 #' 5-N. "TermStatX=value", where X is a number beginning at 1 and value contains the (exact) names of the stats 
 #' to be generated for each term/variable. Begin each argument with the term name (e.g. temp), followed by a 
 #' colon (:), and then the stats to compute, delimited by pipes (|).  Statistic options are (exact names): 
-#' mean, median, minimum, maximum, sum, variance, stdDev, stdEr, numPts, expUncert. For example, to compute the
+#' mean, median, minimum, maximum, sum, variance, stdDev, stdEr, numPts, expUncert, skewness, kurtosis. For example, to compute the
 #' mean, minimum, maximum, and expanded uncertainty for term "temp", the argument is 
 #' "TermStat1=temp:mean|minimum|maximum|expUncert". For expUncert, the default is to compute only uncertainty due
 #' to natural variation (standard error) and calibration uncertainty (U_CVALA3). For data in which
@@ -525,7 +525,7 @@ for(idxDirIn in DirIn){
             })     
             
           }
-          browser()
+
           # Compute the stat for this time window, for all the terms that need it. We will get a named vector, where the names correspond to the terms
           statIdx[idxWndwTime,] <- switch(idxStat,
                             mean=base::apply(X=base::subset(dataWndwTime,select=statTerm[['mean']]),MARGIN=2,FUN=base::mean,na.rm=TRUE),
