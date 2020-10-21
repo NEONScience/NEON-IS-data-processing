@@ -1347,13 +1347,13 @@
 	</Uncertainty>
     <Trueness units="mg/L">0.000000</Trueness>
     <ActivityTimeRange>
-      <StartTime>2019-04-17T10:52:46.0000</StartTime>
+      <StartTime>2019-01-01T00:00:00.0000</StartTime>
       <EndTime>2019-04-17T10:56:56.0000</EndTime>
     </ActivityTimeRange>
     <CertificateNumber>179979</CertificateNumber>
   </StreamCalVal>
   <ValidTimeRange>
-    <StartTime>2019-04-17T10:56:56.0000</StartTime>
+    <StartTime>2018-12-31T10:56:56.0000</StartTime>
     <EndTime>2019-06-14T10:56:56.0000</EndTime>
   </ValidTimeRange>
   <Comment>
