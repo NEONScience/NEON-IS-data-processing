@@ -46,7 +46,7 @@
 #   Mija Choi (2020-05-6)
 #     Added more tests to get the test coverage over 95%
 ##############################################################################################
-library(rapporttools)
+library(rapportools)
 
 # Define test context
 #context("\n       | Filter named location information by date-time range\n")
