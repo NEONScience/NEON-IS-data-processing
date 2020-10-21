@@ -49,6 +49,7 @@
 #     output source_type and source_id from location file
 ##############################################################################################
 def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NULL){
+  print(NameFile)
   # Initialize log if not input
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
