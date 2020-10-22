@@ -46,16 +46,10 @@
     },
     "arrow": {
       "Package": "arrow",
-      "Version": "0.17.1",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "arrow",
-      "RemoteUsername": "apache",
-      "RemoteRef": "apache-arrow-0.17.1",
-      "RemoteSha": "ff7ee06020949daf66ac05090753e1a17736d9fa",
-      "RemoteSubdir": "r",
-      "Hash": "f9a8e343d15d22c182bf948591a03b11"
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "efda15fcd9c09800b3cc8fa301a43dde"
     },
     "assertthat": {
       "Package": "assertthat",

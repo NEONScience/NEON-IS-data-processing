@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from typing import Optional
+from typing import Set
 
 from cx_Oracle import Connection
 
 
-def get_named_location_schema_name(connection: Connection, named_location_id: int) -> Optional[str]:
+def get_named_location_schema_name(connection: Connection, named_location_id: int) -> Set[str]:
     """
     Get the schema name for a named location.
 
@@ -14,7 +14,7 @@ def get_named_location_schema_name(connection: Connection, named_location_id: in
     :return: The schema name.
     """
     sql = '''
-        select distinct 
+        select 
             is_sensor_type.avro_schema_name
         from 
             is_sensor_type, is_asset_definition, is_asset_assignment, is_asset_location, nam_locn
@@ -31,11 +31,11 @@ def get_named_location_schema_name(connection: Connection, named_location_id: in
         and 
             nam_locn.nam_locn_id = :id
     '''
+    schema_names = set()
     with closing(connection.cursor()) as cursor:
         cursor.prepare(sql)
-        cursor.execute(None, id=named_location_id)
-        row = cursor.fetchone()
-        if row is not None:
+        rows = cursor.execute(None, id=named_location_id)
+        for row in rows:
             schema_name = row[0]
-            return schema_name
-    return None
+            schema_names.add(schema_name)
+        return schema_names

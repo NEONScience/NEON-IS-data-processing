@@ -47,7 +47,7 @@
 #' 5-N. "TermStatX=value", where X is a number beginning at 1 and value contains the (exact) names of the stats 
 #' to be generated for each term/variable. Begin each argument with the term name (e.g. temp), followed by a 
 #' colon (:), and then the stats to compute, delimited by pipes (|).  Statistic options are (exact names): 
-#' mean, median, minimum, maximum, sum, variance, stdDev, stdEr, numPts, expUncert. For example, to compute the
+#' mean, median, minimum, maximum, sum, variance, stdDev, stdEr, numPts, expUncert, skewness, kurtosis. For example, to compute the
 #' mean, minimum, maximum, and expanded uncertainty for term "temp", the argument is 
 #' "TermStat1=temp:mean|minimum|maximum|expUncert". For expUncert, the default is to compute only uncertainty due
 #' to natural variation (standard error) and calibration uncertainty (U_CVALA3). For data in which
@@ -93,7 +93,7 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.stat.basc.R "DirIn=/pfs/proc_group/prt/2019/01/01/CFGLOC112083" "DirOut=/pfs/out" "FileSchmStat=/outputStatSchema.avsc" "WndwAgr=001|030" "TermStat1=temp:mean|minimum|maximum|expUncert(R)"
+#' Rscript flow.stat.basc.R "DirIn=/pfs/proc_group/prt/2019/01/01/CFGLOC112083" "DirOut=/pfs/out" "FileSchmStat=/outputStatSchema.avsc" "WndwAgr=001|030" "TermStat1=temp:mean|minimum|maximum|expUncert(R)|skewness|kurtosis"
 
 #' @seealso Currently none.
 
@@ -198,7 +198,7 @@ stat <- base::unique(base::unlist(base::lapply(ParaStat,FUN=function(idx){idx$st
 nameTermStat <- base::unlist(base::lapply(ParaStat,FUN=function(idx){idx$nameTermStat}))
 
 # Error check the statistic names
-nameStat <- c("mean", "median", "minimum", "maximum", "sum", "variance", "stdDev", "stdEr", "numPts", "expUncert")
+nameStat <- c("mean", "median", "minimum", "maximum", "sum", "variance", "stdDev", "stdEr", "numPts", "expUncert", "skewness", "kurtosis")
 chkStat <- stat %in% nameStat
 if(base::sum(!chkStat) > 0){
   log$fatal(base::paste0('Statistic(s): ',base::paste0(stat[!chkStat],collapse=","), ' are unrecognized for computation by this module. Acceptable statistic choices are ',base::paste0(nameStat,collapse=",")))
@@ -409,10 +409,22 @@ for(idxDirIn in DirIn){
           dataWndwTime <- base::subset(data,subset=setTime==idxWndwTime)  
           
           # Compute dependency stats we need for the chosen stats
-          if(idxStat %in% c('numPts','stdEr','variance','expUncert')){
+          if(idxStat %in% c('numPts','stdEr','variance','expUncert', 'skewness', 'kurtosis')){
             numPts <- base::as.list(base::colSums(x=!base::is.na(base::subset(dataWndwTime,select=base::unique(c(statTerm[['numPts']],statTerm[['stdEr']],statTerm[['expUncert']])))),na.rm=FALSE))
             vari <- base::as.list(base::apply(X=base::subset(dataWndwTime,select=base::unique(c(statTerm[['variance']],statTerm[['stdEr']],statTerm[['expUncert']]))),MARGIN=2,FUN=stats::var,na.rm=TRUE))
             stdEr <- base::as.list(base::sqrt(base::unlist(vari[base::unique(c(statTerm[['stdEr']],statTerm[['expUncert']]))]))/base::sqrt(base::unlist(numPts[base::unique(c(statTerm[['stdEr']],statTerm[['expUncert']]))])))
+            skewness <- base::as.list(
+              base::apply(X=base::subset(dataWndwTime,select=statTerm[['skewness']]), MARGIN = 2, function(data){
+                ((base::sum(data-base::mean(data, na.rm=TRUE))/stats::sd(data,na.rm=TRUE))^3)/(base::length(stats::na.omit(data))-1)
+              }
+              )
+            )
+            kurtosis <- base::as.list(
+              base::apply(X=base::subset(dataWndwTime,select=statTerm[['kurtosis']]), MARGIN = 2, function(data){
+                ((base::sum(data-base::mean(data, na.rm=TRUE))/stats::sd(data,na.rm=TRUE))^4)/(base::length(stats::na.omit(data))-1)
+              }
+              )
+            )
           }
           
           # For uncertainty, we need the correct coefficients for each term
@@ -513,7 +525,7 @@ for(idxDirIn in DirIn){
             })     
             
           }
-          
+
           # Compute the stat for this time window, for all the terms that need it. We will get a named vector, where the names correspond to the terms
           statIdx[idxWndwTime,] <- switch(idxStat,
                             mean=base::apply(X=base::subset(dataWndwTime,select=statTerm[['mean']]),MARGIN=2,FUN=base::mean,na.rm=TRUE),
@@ -525,7 +537,9 @@ for(idxDirIn in DirIn){
                             stdDev=base::apply(X=base::subset(dataWndwTime,select=statTerm[['stdDev']]),MARGIN=2,FUN=stats::sd,na.rm=TRUE),
                             stdEr=base::unlist(stdEr[statTerm[['stdEr']]]),
                             numPts=base::as.integer(base::unlist(numPts[statTerm[['numPts']]])),
-                            expUncert=2*base::sqrt(base::unlist(stdEr[statTerm[['expUncert']]])^2 + base::unlist(coefUcrtCal[statTerm[['expUncert']]])^2 + base::unlist(ucrtFdasValu[statTerm[['expUncert']]])^2)
+                            expUncert=2*base::sqrt(base::unlist(stdEr[statTerm[['expUncert']]])^2 + base::unlist(coefUcrtCal[statTerm[['expUncert']]])^2 + base::unlist(ucrtFdasValu[statTerm[['expUncert']]])^2),
+                            skewness=base::unlist(skewness[statTerm[['skewness']]]),
+                            kurtosis=base::unlist(kurtosis[statTerm[['kurtosis']]])
                     )
           
         } # End loop through time windows

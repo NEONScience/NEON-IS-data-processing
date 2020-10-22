@@ -3,7 +3,14 @@
     "name": "tempSoil_threshold_filter"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.thsh.filt.R","DirIn=$threshold","DirOut=/pfs/out","Term=temp","Ctxt=soil"],
+    "cmd": [
+      "Rscript",
+      "/flow.thsh.filt.R",
+      "DirIn=$threshold",
+      "DirOut=/pfs/out",
+      "Term=temp",
+      "Ctxt=soil"
+      ],
     "image": "quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.7",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {

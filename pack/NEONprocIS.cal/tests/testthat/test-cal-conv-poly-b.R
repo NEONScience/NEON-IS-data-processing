@@ -76,6 +76,10 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-08-05)
 #     Original Creation
+#   Mija Choi (2020-09-22)
+#     adjusted inputs to conform to the change made in def.cal.conv.poly.b.R
+#     This includes inputting the entire data frame not a vector, the 
+#     variable to be calibrated, and the (unused) argument calSlct
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of def-cal-conv-poly-b.R\n")
@@ -92,13 +96,13 @@ test_that("Unit test of def-cal-conv-poly-b.R", {
    
    data0 <- read.csv(testDataPath, sep = ",", header = TRUE)
    
-   data <- data0$resistance 
+   data <- data.frame(data0$resistance) 
    
    # Happy path 1
    
    infoCal <- NEONprocIS.cal::def.read.cal.xml (testFileCalPath, Vrbs = TRUE)
    
-   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = base::numeric(0),
+   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = data.frame(data=base::numeric(0)),
                                            infoCal = infoCal,
                                            log = NULL)
    
@@ -106,13 +110,13 @@ test_that("Unit test of def-cal-conv-poly-b.R", {
    
    # Happy path 2 infoCal is not passed in
    
-   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = base::numeric(0), log = NULL)
+   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = data.frame(data=base::numeric(0)), log = NULL)
    
    expect_true (is.vector(vector_cvalB))
    
    # Sad path 1 - data is not an array
    data <- list (data)
-   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = base::numeric(0),
+   vector_cvalB <- NEONprocIS.cal::def.cal.conv.poly.b (data = data.frame(data=base::numeric(0)),
                                            infoCal = infoCal,
                                            log = NULL)
    

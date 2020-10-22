@@ -131,9 +131,10 @@ def.wrte.parq <- function(data,
     
     # Run through each var. If the values repeat often, use dictionary encoding
     for(idxVar in base::seq_len(numVar)){
-      if(base::length(base::unique(data[[idxVar]])) < 0.7*numRow){
+      enblDict <- try(base::length(base::unique(data[[idxVar]])) < 0.7*numRow,silent=TRUE) # Fails for some arrow types
+      if(base::all(base::class(enblDict) != 'try-error')){
         Dict[idxVar] <- TRUE
-      }
+      } 
     }    
   }
 

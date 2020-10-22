@@ -43,6 +43,10 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-08-03)
 #     Original Creation
+#   Mija Choi (2020-09-24)
+#     adjusted inputs to conform to the change made in def.ucrt.wq.do.conc.R
+#     This includes inputting the entire data frame not a vector, the 
+#     variable to be calibrated, and the (unused) argument calSlct
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of def.ucrt.wq.do.conc.R\n")
@@ -55,6 +59,8 @@ test_that("Unit test of def.ucrt.wq.do.conc.R", {
   ### output = 0.05 if DO is >20 mg/l & < 50 mg/l according to the manual
   
   data = c(-5, 25, 20, 30, 10, 35)
+  data = data.frame(data=data)
+  
   out_Data = c(0.01, 0.05, 0.01, 0.05, 0.01, 0.05)
   
   col_List = c("ucrtPercent", "ucrtMeas")
@@ -73,6 +79,8 @@ test_that("Unit test of def.ucrt.wq.do.conc.R", {
   # The error will be returned since empty data is not a valid input to def.ucrt.wq.do.conc.R
   
   data = c()
+  data = data.frame(data=data)
+  
   outputDF_returned <-
     try (NEONprocIS.cal::def.ucrt.wq.do.conc (data = data), silent = TRUE)
   testthat::expect_true((class(outputDF_returned)[1] == "try-error"))

@@ -45,6 +45,10 @@
 #     Added negative testing
 #   Cove Sturtevant (2020-02-17)
 #     Updated tests for function edits
+#   Mija Choi (2020-09-23)
+#     adjusted inputs to conform to the change made in def.cal.conv.poly.R
+#     This includes inputting the entire data frame not a vector, the 
+#     variable to be calibrated, and the (unused) argument calSlct
 ##############################################################################################
 # Define test context
 context("\n                       calibration conversion\n")
@@ -52,8 +56,9 @@ context("\n                       calibration conversion\n")
 # Test calibration conversion
 test_that("testing calibration conversion", {
   # Create data to calibrate
-  data <- c(1, 2, 3, 4, 5, 6)
-  print(data)
+  
+  data=c(1,2,3,4,5,6)
+  data = data.frame(data=data)
   
   # Create calibration coefficients
   Name = c("CVALA1", "CVALA2", "CVALA3", "CVALA4", "CVALA5", "CVALA6")
@@ -69,8 +74,7 @@ test_that("testing calibration conversion", {
   
   calibrated <-
     NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = infoCal)
-  print(calibrated)
-  
+ 
   # Check the zeroed data and calibrated data are equal
   testthat::expect_equal(c(6, 126, 1092, 5460, 19530, 55986), calibrated)
   
@@ -82,6 +86,7 @@ test_that("testing calibration conversion", {
   ########## Sad path #1 - when infoCal (data frame) is empty
   ##########
   data <- as.numeric(c("1", "0.1", "1", "1"))
+  data = data.frame(data=data)
   
   Name = c()
   Value <- vector(mode = "numeric", length = 0)
@@ -92,7 +97,7 @@ test_that("testing calibration conversion", {
   cat("\n       |======= Negative test 1::                      ============|\n")
   cat("\n       |------ cal is a list but empty                             |\n\n")
   #
-  calibrated <- try (NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = cal), silent = TRUE)
+  calibrated <- try (NEONprocIS.cal::def.cal.conv.poly(data = data.frame(data=base::numeric(0)), infoCal = cal), silent = TRUE)
   
   testthat::expect_true((class(calibrated)[1] == "try-error"))
   
@@ -104,6 +109,7 @@ test_that("testing calibration conversion", {
   ########## Warning issued and calibrated values NA.
   ##########
   data <- as.numeric(c("1", "0.1", "1", "1"))
+  data = data.frame(data=data)
   
   Name = c("CVALA1", "CVALA2", "CVALA3", "CVALA4", "CVALA5", "CVALA6")
   Value = as.numeric(c("ab.1b", "1", "1", "0.000196", "0.0000229", "0.0067"))
@@ -116,7 +122,7 @@ test_that("testing calibration conversion", {
   calibrated <-
     NEONprocIS.cal::def.cal.conv.poly(data = data, infoCal = infoCal)
   
-  testthat::expect_equal(data * NA, calibrated)
+  testthat::expect_equal(c(as.numeric(t(data)) * NA), calibrated)
   
   cat("\n       |------ Calibration will have NAs                           |\n")
   cat("\n       |===========================================================|\n")

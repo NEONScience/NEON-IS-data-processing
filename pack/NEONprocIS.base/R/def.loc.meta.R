@@ -49,6 +49,7 @@
 #     output source_type and source_id from location file
 ##############################################################################################
 def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NULL){
+  print(NameFile)
   # Initialize log if not input
   if (is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -110,6 +111,11 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   } else {
     locProp$transaction_date <- NA
   }
+  if(!base::is.null(locProp$active_periods)){
+    locProp$active_periods <- locProp$active_periods
+  } else {
+    locProp$active_periods <- NA
+  }
   
   # Is there a named location and/or date range we want to restrict location info to?
   setLocProp <- base::seq_len(base::nrow(locProp))
@@ -128,8 +134,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   locPropMore <- locFull$features[setLocProp]
   
   # Expected property names that might not be there
-  nameProp <- c('active_periods',
-                'Required Asset Management Location ID',
+  nameProp <- c('Required Asset Management Location ID',
                 'Required Asset Management Location Code',
                 'HOR',
                 'VER',
