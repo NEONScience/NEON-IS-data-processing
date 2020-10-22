@@ -48,27 +48,21 @@ test_that("Unit test of def.pars.data.suna.R", {
   testFileCalPath <- paste0(calDir, testFileCal)
   NameFile = testFileCalPath
   
-  xmlchk <-
-    try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),
-        silent = TRUE)
+  xmlchk <- try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1), silent = TRUE)
   
   if (xmlchk != TRUE) {
     log$error(
       base::paste0(
-        " ====== def.read.cal.xml will not run due to the error in xml,  ",
-        NameFile
-      )
-    )
-    
-    base::stop()
+        " ====== def.read.cal.xml will not run due to the error in xml,  ", NameFile))
+     base::stop()
   }
   
   testDir = "testdata/"
-  testFile = "sunav2_File4.parquet"
+  testFile = "sunav2_File2.parquet"
   testFilesPath <- paste0(testDir, testFile)
   # Get the filenames without path information
  # nameFileCal <- base::unlist(base::lapply(strsplit(fileCal,'/'),utils::tail,n=1))
-  sunaBurst_loaded <- load("../../data/sunaBurst.rda")
+#  sunaBurst_loaded <- load("../../data/sunaBurst.rda")
   
-  avg_burst <- NEONprocIS.wq::def.pars.data.suna (sunaBurst = sunaBurst_loaded,log = log) 
+#  avg_burst <- NEONprocIS.wq::def.pars.data.suna (sunaBurst = sunaBurst_loaded,log = log) 
   })
