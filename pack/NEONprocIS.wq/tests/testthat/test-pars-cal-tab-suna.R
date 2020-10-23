@@ -64,11 +64,14 @@ test_that("Unit test of def.pars.cal.tab.R", {
     base::stop()
   }
   
-  testDir = "testdata/"
-  testFile = "sunav2_File4.parquet"
-  testFilesPath <- paste0(testDir, testFile)
-  # Get the filenames without path information
- # nameFileCal <- base::unlist(base::lapply(strsplit(fileCal,'/'),utils::tail,n=1))
-  
   df_SunaCalTab <- NEONprocIS.wq::def.pars.cal.tab.suna(calFilename = testFileCalPath, calTableName = "CVALTABLEA1")
+ 
+  expect_true ((is.data.frame(df_SunaCalTab)) && !(is.null(df_SunaCalTab))  && nrow(df_SunaCalTab) == 256)
+  
+  col_List = c("wavelength","transmittance")
+  
+  # columns returned are  wavelength transmittance 
+  expect_true (all (names(df_SunaCalTab) ==  col_List))
+  
+  
   })

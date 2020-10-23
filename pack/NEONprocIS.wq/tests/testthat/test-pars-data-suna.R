@@ -39,30 +39,14 @@ context("\n                       Unit test of def.pars.data.suna.R\n")
 # Unit test of def.pars.data.suna.R
 test_that("Unit test of def.pars.data.suna.R", {
 
-# Validate sunav2 calibration against the xsd  
-  
-  xsd1 <- system.file("extdata", "sunav2_calibration.xsd", package = "NEONprocIS.wq")
-  
-  calDir = "calibrations/"
-  testFileCal = "sunav2_calibration1.xml"
-  testFileCalPath <- paste0(calDir, testFileCal)
-  NameFile = testFileCalPath
-  
-  xmlchk <- try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1), silent = TRUE)
-  
-  if (xmlchk != TRUE) {
-    log$error(
-      base::paste0(
-        " ====== def.read.cal.xml will not run due to the error in xml,  ", NameFile))
-     base::stop()
-  }
-  
+
   testDir = "testdata/"
-  testFile = "sunav2_File2.parquet"
+  testFile = "sunaBurst.csv"
   testFilesPath <- paste0(testDir, testFile)
-  # Get the filenames without path information
- # nameFileCal <- base::unlist(base::lapply(strsplit(fileCal,'/'),utils::tail,n=1))
-  sunaBurst_loaded <- load("../../data/sunaBurst.rda")
+  sunaBurst <- c(read.csv(testFilesPath))
   
-  avg_burst <- NEONprocIS.wq::def.pars.data.suna (sunaBurst = sunaBurst_loaded,log = log) 
+  avg_burst <- NEONprocIS.wq::def.pars.data.suna (sunaBurst = sunaBurst,log = log) 
+
+  expect_true ((is.vector(avg_burst)) && !(is.null(avg_burst)) && length(avg_burst) == 256)
+  
   })

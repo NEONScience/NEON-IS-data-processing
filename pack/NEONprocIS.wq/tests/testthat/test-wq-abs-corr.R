@@ -73,10 +73,11 @@ test_that("Unit test of def.wq.abs.corr.R", {
   
   col_List = c("readout_time","Abs_ex","Abs_em","ucrt_A_ex","ucrt_A_em","spectrumCount","fDOMAbsQF")
   expect_true ((is.data.frame(wq_abs_corr_returned)) && !(is.null(wq_abs_corr_returned)))
+
   # columns returned are readout_time, abs_ex, abs_em, ucrt_A_ex, ucrt_A_em, spectrumCount, fDOMAbsQF 
   expect_true (all (names(wq_abs_corr_returned) ==  col_List))
   
-  # Happy path 1: maxBurstIdx > 20
+  # Happy path 2: maxBurstIdx > 20
   
   testFile = "sunav2_File4.parquet"
   testFilesPath <- paste0(testDir, testFile)
@@ -91,12 +92,16 @@ test_that("Unit test of def.wq.abs.corr.R", {
   
   col_List = c("readout_time","Abs_ex","Abs_em","ucrt_A_ex","ucrt_A_em","spectrumCount","fDOMAbsQF")
   expect_true ((is.data.frame(wq_abs_corr_returned)) && !(is.null(wq_abs_corr_returned)))
+ 
   # columns returned are readout_time, abs_ex, abs_em, ucrt_A_ex, ucrt_A_em, spectrumCount, fDOMAbsQF 
   expect_true (all (names(wq_abs_corr_returned) ==  col_List))
   
   ############################################################################################
   # Change the calibration 
   # CalibrationTable does not have 256 rows
+  #
+  # Sad path 1:  CalibrationTable has 255 rows
+  
   testFileCal = "sunav2_calibration_255row.xml"
   testFileCalPath <- paste0(calDir, testFileCal)
   NameFile = testFileCalPath
@@ -115,9 +120,9 @@ test_that("Unit test of def.wq.abs.corr.R", {
     log = NULL),silent = FALSE)
   
   expect_true(class(wq_abs_corr_returned)[1] == "try-error")
-  
-  
-  #  calibration does not have CalibrationTable
+  #
+  # Sad path 2:  calibration does not have CalibrationTable
+  #  
   testFileCal = "sunav2_noCalTbl_calibration.xml"
   testFileCalPath <- paste0(calDir, testFileCal)
   NameFile = testFileCalPath
