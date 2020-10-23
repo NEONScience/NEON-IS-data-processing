@@ -62,7 +62,7 @@ test_that("Unit test of def.pars.data.suna.R", {
   testFilesPath <- paste0(testDir, testFile)
   # Get the filenames without path information
  # nameFileCal <- base::unlist(base::lapply(strsplit(fileCal,'/'),utils::tail,n=1))
-#  sunaBurst_loaded <- load("../../data/sunaBurst.rda")
+  sunaBurst_loaded <- load("../../data/sunaBurst.rda")
   
-#  avg_burst <- NEONprocIS.wq::def.pars.data.suna (sunaBurst = sunaBurst_loaded,log = log) 
+  avg_burst <- NEONprocIS.wq::def.pars.data.suna (sunaBurst = sunaBurst_loaded,log = log) 
   })
