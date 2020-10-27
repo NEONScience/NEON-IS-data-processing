@@ -45,22 +45,17 @@ test_that("Unit test of def.pars.cal.tab.R", {
   xsd1 <- system.file("extdata", "sunav2_calibration.xsd", package = "NEONprocIS.wq")
   
   calDir = "calibrations/"
+  #
+  # Test 1: sunav2 calibration has Calibrationtable
+  #
   testFileCal = "sunav2_calibration1.xml"
   testFileCalPath <- paste0(calDir, testFileCal)
   NameFile = testFileCalPath
   
-  xmlchk <-
-    try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),
-        silent = TRUE)
+  xmlchk <- try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),silent = TRUE)
   
   if (xmlchk != TRUE) {
-    log$error(
-      base::paste0(
-        " ====== def.read.cal.xml will not run due to the error in xml,  ",
-        NameFile
-      )
-    )
-    
+    log$error(base::paste0(" ====== def.read.cal.xml will not run due to the error in xml,  ",NameFile))
     base::stop()
   }
   
@@ -72,6 +67,21 @@ test_that("Unit test of def.pars.cal.tab.R", {
   
   # columns returned are  wavelength transmittance 
   expect_true (all (names(df_SunaCalTab) ==  col_List))
+  #
+  # Test 2: sunav2 calibration does not have Calibrationtable
+  #
+  testFileCal = "sunav2_noCalTbl_calibration.xml"
+  testFileCalPath <- paste0(calDir, testFileCal)
+  NameFile = testFileCalPath
   
+  xmlchk <- try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),silent=TRUE)
   
+  if (xmlchk != TRUE) {
+    log$error(base::paste0(" ====== def.read.cal.xml will not run due to the error in xml,  ",NameFile))
+    base::stop()
+  }
+  
+  df_SunaCalTab <- try(NEONprocIS.wq::def.pars.cal.tab.suna(calFilename=testFileCalPath, calTableName="CVALTABLEA1"),silent=TRUE)
+  
+
   })
