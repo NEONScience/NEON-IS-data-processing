@@ -32,7 +32,8 @@
 
 
 ##############################################################################################
-library(arsenal)
+library(compareDF)
+#library(arsenal)
 library(tidyr)
 def.data.comp <- function(avroFile, parquetFile,temporalindex, namedlocname, log=NULL){
   
@@ -54,9 +55,10 @@ def.data.comp <- function(avroFile, parquetFile,temporalindex, namedlocname, log
   
   #neededAvroData <- subset(avrodata, select = (names(parquetData)))
   
-  neededAvroData <- subset(avrodata, select = (intersect(names(avrodata), names(parquetData)))
+  neededAvroData <- subset(avrodata, select = (intersect(names(avrodata), names(parquetData))))
  
-  out <- capture.output(summary(comparedf(neededAvroData, parquetData, int.as.num = TRUE, tolerance = 1E-5, tolerance_type = difference)))
+ # out <- capture.output(summary(comparedf(neededAvroData, parquetData, int.as.num = TRUE, tolerance = 1E-5, tolerance_type = difference)))
+  out  <- capture.output(summary(compareDF::compare_df(df_new = neededAvroData, df_old = parquetData, group_col = "endDateTime", tolerance = 0.001)))
   
   cat(out,file="/home/NEON/vchundru/statsOutput.txt",sep="\n",append=TRUE)
   
