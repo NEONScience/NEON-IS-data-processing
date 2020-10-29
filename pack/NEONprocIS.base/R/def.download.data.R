@@ -36,8 +36,10 @@ library(compareDF)
 library(magrittr)
 library(tidyr)
 library(tools)
-def.download.data <- function(pachydermrepo, subDir, log = NULL) {
+def.download.data <- function(pachydermrepo, subDir, namedLocationName, log = NULL) {
   browser()
+  outputdir <- paste0(getwd(), "/", pachydermrepo)
+  dir.create(outputdir)
   
   pachydermFiles = system(
     command = paste0('pachctl list file ', pachydermrepo, '@master:', subDir),
@@ -47,28 +49,26 @@ def.download.data <- function(pachydermrepo, subDir, log = NULL) {
     gsub(pattern = " file [0-9.]*[aA-zZ]{1,} ", replacement = "") %>%
     trimws()
   pachFilesOnly <- pachydermFiles[intersect(grep("005",pachydermFiles), grep("CFGLOC101670",pachydermFiles))]
-  finalFiles <- lapply(1:length(pachFilesOnly), function(i) strsplit(pachFilesOnly[i], split = "_",fixed = TRUE)[[1]][3])
+
   if (length(pachFilesOnly) > 0) {
-    for (i in 1:length(pachydermFiles)) {
-      if (str_sub(x, start = -8) == ".parquet")
-      {
+    for (i in 1:length(pachFilesOnly)) {
         url <-
           paste0(
             'http://pachd1.k8s.ci.neoninternal.org:600/',
             pachydermrepo,
-            pachydermFiles[i]
+            pachFilesOnly[i]
           )
-        #outputdir <- paste0("~/pfs/", pachydermrepo, pachydermFiles[i])
-        outputdir <- file.path("~/pfs/", pachydermrepo)
+        splitpath  <- strsplit(pachFilesOnly[i], split ="/", fixed = TRUE)
+        filename <- sapply(splitpath, tail, 1)
+        parquetfileName  <- tools::file_path_sans_ext(filename)
         temp <-
-          tempfile(pattern = pachydermFiles[i],
-                   tmpdir = outputdir ,
-                   fileext = "")
+          tempfile(pattern = parquetfileName,
+                   tmpdir = outputdir,
+                   fileext = ".parquet")
         download.file(url, temp)
         
       }
       
-    }
   } else{
     message(paste0(
       "No files found in repo: '",
