@@ -2,7 +2,7 @@
 pipeline:
   name: parQuantumLine_statistics
 transform:
-  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.12
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.13
   cmd:
   - Rscript
   - /flow.stat.basc.R
@@ -10,7 +10,7 @@ transform:
   - DirOut=/pfs/out
   - FileSchmStat=$FILE_SCHEMA_STATS
   - WndwAgr=001|030
-  - TermStat1=linePAR:mean|minimum|maximum|variance|numPts|stdEr|expUncert(V)|skewness|kurtosis
+  - TermStat1=linePAR:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.fdas.volt)|skewness|kurtosis
   env:
     LOG_LEVEL: INFO
   image_pull_secrets:
