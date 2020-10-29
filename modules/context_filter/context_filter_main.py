@@ -14,10 +14,7 @@ def main():
     out_path: Path = env.path('OUT_PATH')
     context: str = env.str('CONTEXT')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
-    source_type_index: int = env.int('SOURCE_TYPE_INDEX')
-    year_index: int = env.int('YEAR_INDEX')
-    month_index: int = env.int('MONTH_INDEX')
-    day_index: int = env.int('DAY_INDEX')
+    trim_index: int = env.int('TRIM_INDEX')
     source_id_index: int = env.int('SOURCE_ID_INDEX')
     data_type_index: int = env.int('DATA_TYPE_INDEX')
     log_config.configure(log_level)
@@ -26,10 +23,7 @@ def main():
     config = Config(in_path=in_path,
                     out_path=out_path,
                     context=context,
-                    source_type_index=source_type_index,
-                    year_index=year_index,
-                    month_index=month_index,
-                    day_index=day_index,
+                    trim_index=trim_index,
                     source_id_index=source_id_index,
                     data_type_index=data_type_index)
     context_filter = ContextFilter(config)

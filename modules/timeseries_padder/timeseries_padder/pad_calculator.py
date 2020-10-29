@@ -2,9 +2,12 @@
 import math
 from datetime import datetime, timedelta
 import json
-import yaml
-from yaml import Loader
+import structlog
 from typing import Union, List
+
+import timeseries_padder.timeseries_padder.file_loader as file_loader
+
+log = structlog.getLogger()
 
 
 def convert_window_size(window_size: int, data_rate: float) -> float:
@@ -64,10 +67,8 @@ def get_max_window_size(threshold_file: str, data_rate: float) -> Union[float, i
     :param data_rate: the data rate in Hz
     :returns: max window size
     """
-    with open('timeseries_padder/config/windowSizeNames.yaml', 'r') as file:
-        window_size_yaml = yaml.load(file, Loader=Loader)
-    with open(threshold_file, "r") as jsonFile:
-        threshold_json = json.load(jsonFile)
+    window_size_yaml = file_loader.load_window_size_file()
+    threshold_json = file_loader.load_threshold_file(threshold_file)
     max_window_size = 0
     this_window_size = 0
     for threshold in threshold_json['thresholds']:

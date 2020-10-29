@@ -26,6 +26,7 @@
 #   Mija Choi (2020-01-14)
 #     original creation
 ##############################################################################################
+library(RJSONIO)
 
 def.validate.json <- function(jsonIn, log = NULL) {
   # Initialize log if not input
