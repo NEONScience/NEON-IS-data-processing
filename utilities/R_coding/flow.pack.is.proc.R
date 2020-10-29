@@ -20,7 +20,8 @@ DirWrk00 <-
 namePack <- c("NEONprocIS.base",
               "NEONprocIS.cal",
               "NEONprocIS.qaqc",
-              "NEONprocIS.wq")[2]
+              "NEONprocIS.stat",
+              "NEONprocIS.wq")[4]
 
 
 

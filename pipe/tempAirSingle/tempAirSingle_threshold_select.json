@@ -3,7 +3,15 @@
     "name": "tempAirSingle_threshold_select"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.thsh.slct.R","DirIn=$REPO_LOCATIONS","DirOut=/pfs/out","FileThsh=$FILE_THRESHOLDS","TermCtxt1=temp|aspirated-single","DirSubCopy=location"],
+    "cmd": [
+      "Rscript",
+      "/flow.thsh.slct.R",
+      "DirIn=$REPO_LOCATIONS",
+      "DirOut=/pfs/out",
+      "FileThsh=$FILE_THRESHOLDS",
+      "TermCtxt1=temp|aspirated-single",
+      "DirSubCopy=location"
+      ],
     "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.13",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {

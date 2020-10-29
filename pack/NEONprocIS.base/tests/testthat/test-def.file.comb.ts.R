@@ -1,4 +1,4 @@
-test_that("valid files to mergee",
+test_that("valid files to merge",
           {
             file <- c('def.file.comb.ts/validFiles/testdata.parquet', 'def.file.comb.ts/validFiles/testflagsdata.parquet')
            

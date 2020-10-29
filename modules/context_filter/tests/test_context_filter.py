@@ -29,35 +29,27 @@ class ContextFilterTest(TestCase):
         actual_location_file_path = Path(os.path.dirname(__file__), 'test-asset-location.json')
         self.fs.add_real_file(actual_location_file_path, target_path=locations_path)
         # File path indices.
-        self.source_type_index = 3
-        self.year_index = 4
-        self.month_index = 5
-        self.day_index = 6
+        self.trim_index = 3
         self.source_id_index = 7
         self.data_type_index = 8
 
-    def test_filter_asset(self):
+    def test_filter(self):
         config = Config(in_path=self.in_path,
                         out_path=self.out_path,
                         context=self.context,
-                        source_type_index=self.source_type_index,
-                        year_index=self.year_index,
-                        month_index=self.month_index,
-                        day_index=self.day_index,
+                        trim_index=self.trim_index,
                         source_id_index=self.source_id_index,
                         data_type_index=self.data_type_index)
         context_filter = ContextFilter(config)
         context_filter.filter_files()
+        self.check_output()
 
     def test_main(self):
         os.environ['IN_PATH'] = str(self.in_path)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['CONTEXT'] = self.context
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
-        os.environ['YEAR_INDEX'] = str(self.year_index)
-        os.environ['MONTH_INDEX'] = str(self.month_index)
-        os.environ['DAY_INDEX'] = str(self.day_index)
+        os.environ['TRIM_INDEX'] = str(self.trim_index)
         os.environ['SOURCE_ID_INDEX'] = str(self.source_id_index)
         os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
         context_filter_main.main()
