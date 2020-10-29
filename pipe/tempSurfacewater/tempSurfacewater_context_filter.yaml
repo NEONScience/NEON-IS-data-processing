@@ -1,25 +1,32 @@
 ---
 pipeline:
-  name: tempSurfacewater_threshold_filter
+  name: tempSurfacewater_context_filter
 transform:
-  cmd:
-  - Rscript
-  - "/flow.thsh.filt.R"
-  - DirIn=$threshold
-  - DirOut=/pfs/out
-  - Term=temp
-  - Ctxt=surfacewater
-  image: quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.7
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/context_filter:25
+  cmd:
+  - "/bin/bash"
+  stdin:
+  - "#!/bin/bash"
+  - python3 -m context_filter.app
   env:
+    OUT_PATH: "/pfs/out"
+    CONTEXT: surfacewater
     LOG_LEVEL: INFO
+    SOURCE_TYPE_INDEX: '3'
+    YEAR_INDEX: '4'
+    MONTH_INDEX: '5'
+    DAY_INDEX: '6'
+    SOURCE_ID_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
 input:
   pfs:
-    repo: threshold
-    glob: "/"
+    name: IN_PATH
+    repo: prt_date_gap_filler_linker
+    glob: "/prt/*/*/*"
 enable_stats: false
 standby: true
 resource_requests:
-  memory: 13M
-  cpu: 0.01
+  memory: 20M
+  cpu: 0.05
