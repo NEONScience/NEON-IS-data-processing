@@ -1,0 +1,32 @@
+---
+pipeline:
+  name: tempSurfacewater_regularized_uncertainty_data
+transform:
+  cmd:
+  - Rscript
+  - "/flow.rglr.R"
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirRglr=uncertainty_data
+  - FileSchmRglr=NA
+  - FreqRglr=1
+  - MethRglr=CybiEc
+  - WndwRglr=Trlg
+  - IdxWndw=IdxWndwMin
+  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.22
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  pfs:
+    name: DIR_IN
+    repo: tempSurfacewater_uncertainty_data
+    glob: "/*/*/*/"
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '2'
+resource_requests:
+  memory: 200Mi
+  cpu: 0
