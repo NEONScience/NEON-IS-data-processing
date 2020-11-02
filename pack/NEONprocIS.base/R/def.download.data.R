@@ -23,7 +23,7 @@
 #' @keywords Currently none
 
 #' @examples
-#' def.dir.copy.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01/01')
+#' def.download.data(pachydermrepo = "tempSurfacewater_egress", subDir = "/**", dpid="DP1.20053.001", startdate="2019-01-02", namedLocationName = "CFGLOC101670")
 
 
 #' @seealso Currently none
@@ -36,10 +36,14 @@ library(compareDF)
 library(magrittr)
 library(tidyr)
 library(tools)
-def.download.data <- function(pachydermrepo, subDir, namedLocationName, log = NULL) {
+def.download.data <- function(pachydermrepo, subDir, site, dpid, startdate, enddate = NULL, namedLocationName, log = NULL) {
   browser()
   outputdir <- paste0(getwd(), "/", pachydermrepo)
-  dir.create(outputdir)
+  if(!dir.exists(outputdir)){
+    
+    dir.create(outputdir)
+  }
+  
   
   pachydermFiles = system(
     command = paste0('pachctl list file ', pachydermrepo, '@master:', subDir),
@@ -50,6 +54,8 @@ def.download.data <- function(pachydermrepo, subDir, namedLocationName, log = NU
     trimws()
   pachFilesOnly <- pachydermFiles[intersect(grep("005",pachydermFiles), grep("CFGLOC101670",pachydermFiles))]
 
+  transitionexeclist <- list()
+  transitionexeclist[[ "DP1.20053.001" ]] <- "L0_to_L1_Surface_Water_Temperature"
   if (length(pachFilesOnly) > 0) {
     for (i in 1:length(pachFilesOnly)) {
         url <-
@@ -58,14 +64,30 @@ def.download.data <- function(pachydermrepo, subDir, namedLocationName, log = NU
             pachydermrepo,
             pachFilesOnly[i]
           )
+        #https://s3.data.neonscience.org/prod-is-transition-output/provisional/dpid=DP1.20053.001/ms=2019-01/site=ARIK/ARIK_L0_to_L1_Surface_Water_Temperature_DP1.20053.001__2019-01-02.avro")  
         splitpath  <- strsplit(pachFilesOnly[i], split ="/", fixed = TRUE)
         filename <- sapply(splitpath, tail, 1)
+        avrofilenamedate <- splitpath[[1]][3]
+        month_yr <- format(as.Date(avrofilenamedate), "%Y-%m")
+        avrofilename <- paste0(site,"_",transitionexeclist[dpid],"_", dpid, "__", avrofilenamedate)
+        avroextension <- ".avro"
+        avrourl <- paste0(
+          'https://s3.data.neonscience.org/prod-is-transition-output/provisional/dpid=',
+          dpid, '/ms=',month_yr,"/site=", site,"/", avrofilename, avroextension)
         parquetfileName  <- tools::file_path_sans_ext(filename)
         temp <-
           tempfile(pattern = parquetfileName,
                    tmpdir = outputdir,
                    fileext = ".parquet")
         download.file(url, temp)
+        avrotemp <-
+          tempfile(pattern = avrofilename,
+                   tmpdir = outputdir,
+                   fileext = ".avro")
+        download.file(url, temp)
+        download.file(avrourl, avrotemp)
+        filelist <- list.files(path = outputdir, full.names = FALSE)
+        
         
       }
       
