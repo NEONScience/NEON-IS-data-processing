@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "ptb330a_data_calibration_linker",
-      "glob": "/prt/*/*/*"
+      "glob": "/ptb330a/*/*/*"
     }
   },
   "enable_stats": false,
