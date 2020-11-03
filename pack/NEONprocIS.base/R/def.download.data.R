@@ -23,7 +23,7 @@
 #' @keywords Currently none
 
 #' @examples
-#' def.download.data(pachydermrepo = "tempSurfacewater_egress", subDir = "/**", dpid="DP1.20053.001", startdate="2019-01-02", namedLocationName = "CFGLOC101670")
+#' def.download.data(pachydermrepo = "tempSurfacewater_egress", subDir = "/**", site="ARIK",dpid="DP1.20053.001", temporalindex = "005", startdate="2019-01-02", namedLocationName = "CFGLOC101670")
 
 
 #' @seealso Currently none
@@ -41,6 +41,7 @@ def.download.data <-
            subDir,
            site,
            dpid,
+           temporalindex, 
            startdate,
            enddate = NULL,
            namedLocationName,
@@ -60,8 +61,8 @@ def.download.data <-
       gsub(pattern = " file [0-9.]*[aA-zZ]{1,} ", replacement = "") %>%
       trimws()
     pachFilesOnly <-
-      pachydermFiles[intersect(grep("005", pachydermFiles),
-                               grep("CFGLOC101670", pachydermFiles))]
+      pachydermFiles[intersect(grep(temporalindex, pachydermFiles),
+                               grep(namedLocationName, pachydermFiles))]
     
     transitionexeclist <- list()
     transitionexeclist[["DP1.20053.001"]] <-
@@ -114,13 +115,20 @@ def.download.data <-
         download.file(avrourl, avrotemp)
         filelist <- list.files(path = outputdir, full.names = FALSE)
         if (length(filelist) == 2) {
+          outputfilepath <- paste0(outputdir, "/", parquetfileName , "_Output.txt")
           if (file_ext(filelist[1]) == ".avro") {
-            avrofiletocompare = paste(outputdir, filelist[1])
-            parquetfiletocompare = past(outputdir, filelist[2])
+            avrofiletocompare = paste0
+            parquetfiletocompare = paste0(outputdir, filelist[2])
+            def.data.comp(avroFile = avrofiletocompare, parquetFile = parquetfiletocompare, 
+                          temporalindex = temporalindex, namedlocname = namedLocationName, 
+                          outputfilepath = outputfilepath)
           }
           else {
-            parquetfiletocompare = past(outputdir, filelist[1])
-            avrofiletocompare = paste(outputdir, filelist[2])
+            parquetfiletocompare = paste0(outputdir, filelist[1])
+            avrofiletocompare = paste0(outputdir, filelist[2])
+            def.data.comp(avroFile = avrofiletocompare, parquetFile = parquetfiletocompare, 
+                          temporalindex = temporalindex, namedlocname = namedLocationName, 
+                          outputfilepath = outputfilepath)
             
           }
           
