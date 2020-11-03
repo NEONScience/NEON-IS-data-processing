@@ -1,0 +1,39 @@
+---
+pipeline:
+  name: tempSurfacewater_statistics
+transform:
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.9
+  cmd:
+  - Rscript
+  - "/flow.stat.basc.R"
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - FileSchmStat=$FILE_SCHEMA_STATS
+  - WndwAgr=005|030
+  - TermStat1=temp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(R)
+  env:
+    LOG_LEVEL: INFO
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+parallelism_spec:
+  constant: '2'
+output_branch: master
+resource_requests:
+  memory: 200Mi
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: tempSurfacewater_statistics_uncertainty_group
+      branch: master
+      glob: "/prt/*/*/*"
+  - pfs:
+      name: FILE_SCHEMA_STATS
+      repo: avro_schemas
+      branch: master
+      glob: "/dp01/tempSurfacewater_dp01_stats.avsc"
+cache_size: 64M
+max_queue_size: '1'
+salt: 1a066393a052492e9bed6fb2970742a9
+standby: true
+datum_tries: '3'

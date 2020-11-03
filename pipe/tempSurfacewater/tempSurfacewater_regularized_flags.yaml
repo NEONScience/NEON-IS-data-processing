@@ -1,0 +1,30 @@
+---
+pipeline:
+  name: tempSurfacewater_regularized_flags
+transform:
+  cmd:
+  - Rscript
+  - "/flow.rglr.R"
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirRglr=flags
+  - FileSchmRglr=NA
+  - FreqRglr=1
+  - MethRglr=CybiEc
+  - WndwRglr=Trlg
+  - IdxWndw=IdxWndwMin
+  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.22
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  pfs:
+    name: DIR_IN
+    repo: tempSurfacewater_calibrated_flags
+    glob: "/*/*/*/"
+enable_stats: false
+standby: true
+resource_requests:
+  memory: 50M
+  cpu: 0.1
