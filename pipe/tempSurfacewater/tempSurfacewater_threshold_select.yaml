@@ -1,0 +1,32 @@
+---
+pipeline:
+  name: tempSurfacewater_threshold_select
+transform:
+  cmd:
+  - Rscript
+  - "/flow.thsh.slct.R"
+  - DirIn=$REPO_LOCATIONS
+  - DirOut=/pfs/out
+  - FileThsh=$FILE_THRESHOLDS
+  - TermCtxt1=temp|surfacewater
+  - DirSubCopy=location
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.13
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: REPO_LOCATIONS
+      repo: tempSurfacewater_locations
+      glob: "/prt/*/*/*"
+  - pfs:
+      name: FILE_THRESHOLDS
+      repo: tempSurfacewater_threshold_filter
+      glob: "/thresholds.json"
+enable_stats: false
+standby: true
+resource_requests:
+  memory: 12M
+  cpu: 0.05
