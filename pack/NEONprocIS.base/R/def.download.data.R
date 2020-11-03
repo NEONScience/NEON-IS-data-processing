@@ -36,44 +36,70 @@ library(compareDF)
 library(magrittr)
 library(tidyr)
 library(tools)
-def.download.data <- function(pachydermrepo, subDir, site, dpid, startdate, enddate = NULL, namedLocationName, log = NULL) {
-  browser()
-  outputdir <- paste0(getwd(), "/", pachydermrepo)
-  if(!dir.exists(outputdir)){
+def.download.data <-
+  function(pachydermrepo,
+           subDir,
+           site,
+           dpid,
+           startdate,
+           enddate = NULL,
+           namedLocationName,
+           log = NULL) {
+    browser()
+    outputdir <- paste0(getwd(), "/", pachydermrepo)
+    if (!dir.exists(outputdir)) {
+      dir.create(outputdir)
+    }
     
-    dir.create(outputdir)
-  }
-  
-  
-  pachydermFiles = system(
-    command = paste0('pachctl list file ', pachydermrepo, '@master:', subDir),
-    intern = T
-  ) %>%
-    .[!grepl(pattern = "NAME", x = .)] %>%
-    gsub(pattern = " file [0-9.]*[aA-zZ]{1,} ", replacement = "") %>%
-    trimws()
-  pachFilesOnly <- pachydermFiles[intersect(grep("005",pachydermFiles), grep("CFGLOC101670",pachydermFiles))]
-
-  transitionexeclist <- list()
-  transitionexeclist[[ "DP1.20053.001" ]] <- "L0_to_L1_Surface_Water_Temperature"
-  if (length(pachFilesOnly) > 0) {
-    for (i in 1:length(pachFilesOnly)) {
+    
+    pachydermFiles = system(
+      command = paste0('pachctl list file ', pachydermrepo, '@master:', subDir),
+      intern = T
+    ) %>%
+      .[!grepl(pattern = "NAME", x = .)] %>%
+      gsub(pattern = " file [0-9.]*[aA-zZ]{1,} ", replacement = "") %>%
+      trimws()
+    pachFilesOnly <-
+      pachydermFiles[intersect(grep("005", pachydermFiles),
+                               grep("CFGLOC101670", pachydermFiles))]
+    
+    transitionexeclist <- list()
+    transitionexeclist[["DP1.20053.001"]] <-
+      "L0_to_L1_Surface_Water_Temperature"
+    if (length(pachFilesOnly) > 0) {
+      for (i in 1:length(pachFilesOnly)) {
         url <-
           paste0(
             'http://pachd1.k8s.ci.neoninternal.org:600/',
             pachydermrepo,
             pachFilesOnly[i]
           )
-        #https://s3.data.neonscience.org/prod-is-transition-output/provisional/dpid=DP1.20053.001/ms=2019-01/site=ARIK/ARIK_L0_to_L1_Surface_Water_Temperature_DP1.20053.001__2019-01-02.avro")  
-        splitpath  <- strsplit(pachFilesOnly[i], split ="/", fixed = TRUE)
+        #https://s3.data.neonscience.org/prod-is-transition-output/provisional/dpid=DP1.20053.001/ms=2019-01/site=ARIK/ARIK_L0_to_L1_Surface_Water_Temperature_DP1.20053.001__2019-01-02.avro")
+        splitpath  <-
+          strsplit(pachFilesOnly[i], split = "/", fixed = TRUE)
         filename <- sapply(splitpath, tail, 1)
         avrofilenamedate <- splitpath[[1]][3]
         month_yr <- format(as.Date(avrofilenamedate), "%Y-%m")
-        avrofilename <- paste0(site,"_",transitionexeclist[dpid],"_", dpid, "__", avrofilenamedate)
+        avrofilename <-
+          paste0(site,
+                 "_",
+                 transitionexeclist[dpid],
+                 "_",
+                 dpid,
+                 "__",
+                 avrofilenamedate)
         avroextension <- ".avro"
         avrourl <- paste0(
           'https://s3.data.neonscience.org/prod-is-transition-output/provisional/dpid=',
-          dpid, '/ms=',month_yr,"/site=", site,"/", avrofilename, avroextension)
+          dpid,
+          '/ms=',
+          month_yr,
+          "/site=",
+          site,
+          "/",
+          avrofilename,
+          avroextension
+        )
         parquetfileName  <- tools::file_path_sans_ext(filename)
         temp <-
           tempfile(pattern = parquetfileName,
@@ -87,17 +113,27 @@ def.download.data <- function(pachydermrepo, subDir, site, dpid, startdate, endd
         download.file(url, temp)
         download.file(avrourl, avrotemp)
         filelist <- list.files(path = outputdir, full.names = FALSE)
-        
-        
+        if (length(filelist) == 2) {
+          if (file_ext(filelist[1]) == ".avro") {
+            avrofiletocompare = paste(outputdir, filelist[1])
+            parquetfiletocompare = past(outputdir, filelist[2])
+          }
+          else {
+            parquetfiletocompare = past(outputdir, filelist[1])
+            avrofiletocompare = paste(outputdir, filelist[2])
+            
+          }
+          
+        }
       }
       
-  } else{
-    message(paste0(
-      "No files found in repo: '",
-      pachydermrepo,
-      "', sub directory: '",
-      subDir,
-      "'"
-    ))
+    } else{
+      message(paste0(
+        "No files found in repo: '",
+        pachydermrepo,
+        "', sub directory: '",
+        subDir,
+        "'"
+      ))
+    }
   }
-}
