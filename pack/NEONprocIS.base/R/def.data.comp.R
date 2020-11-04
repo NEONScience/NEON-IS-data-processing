@@ -32,9 +32,10 @@
 
 
 ##############################################################################################
-library(compareDF)
-#library(arsenal)
+#library(compareDF)
+library(arsenal)
 library(tidyr)
+library(dplyr)
 def.data.comp <- function(avroFile, parquetFile,temporalindex, namedlocname, outputfilepath,log=NULL){
   
   browser()
@@ -42,6 +43,7 @@ def.data.comp <- function(avroFile, parquetFile,temporalindex, namedlocname, out
   orignialAvroData <- NEONprocIS.base::def.read.avro.deve(NameFile = avroFile, NameLib ="/home/NEON/vchundru/git/NEON-IS-data-processing/pack/NEONprocIS.base/ravro.so")
   
   parquetData <- NEONprocIS.base::def.read.parq(NameFile = parquetFile)
+  #parquetData %>% mutate_if(is.numeric, round, digits=3)
   
   avrodata <- subset(orignialAvroData, (temporalIndex == temporalindex & namedLocationName == namedlocname ))
   
@@ -57,8 +59,8 @@ def.data.comp <- function(avroFile, parquetFile,temporalindex, namedlocname, out
   
   neededAvroData <- subset(avrodata, select = (intersect(names(avrodata), names(parquetData))))
  
- # out <- capture.output(summary(comparedf(neededAvroData, parquetData, int.as.num = TRUE, tolerance = 1E-5, tolerance_type = difference)))
-  out  <- capture.output(summary(compareDF::compare_df(df_new = neededAvroData, df_old = parquetData, group_col = "endDateTime", tolerance = 0.001)))
+  out <- capture.output(summary(comparedf(neededAvroData, parquetData, int.as.num = TRUE, tol.num.val = 1E-5)))
+ # out  <- capture.output(summary(compareDF::compare_df(df_new = neededAvroData, df_old = parquetData, group_col = "endDateTime", tolerance = 0.001)))
   
   #cat(out,file="/home/NEON/vchundru/statsOutput.txt",sep="\n",append=TRUE)
   cat(out,file = outputfilepath,sep="\n",append=TRUE)
