@@ -78,7 +78,7 @@ def.download.data <-
         #https://s3.data.neonscience.org/prod-is-transition-output/provisional/dpid=DP1.20053.001/ms=2019-01/site=ARIK/ARIK_L0_to_L1_Surface_Water_Temperature_DP1.20053.001__2019-01-02.avro")
         splitpath  <-
           strsplit(pachFilesOnly[i], split = "/", fixed = TRUE)
-        filename <- sapply(splitpath, tail, 1)
+        parquetfileName <- sapply(splitpath, tail, 1)
         avrofilenamedate <- splitpath[[1]][3]
         month_yr <- format(as.Date(avrofilenamedate), "%Y-%m")
         avrofilename <-
@@ -101,40 +101,19 @@ def.download.data <-
           avrofilename,
           avroextension
         )
-        parquetfileName  <- tools::file_path_sans_ext(filename)
-        temp <-
-          tempfile(pattern = parquetfileName,
-                   tmpdir = outputdir,
-                   fileext = ".parquet")
-        download.file(url, temp)
-        avrotemp <-
-          tempfile(pattern = avrofilename,
-                   tmpdir = outputdir,
-                   fileext = ".avro")
-        download.file(url, temp)
-        download.file(avrourl, avrotemp)
+        download.file(url, file.path(outputdir, parquetfileName), mode = "wb", method = "libcurl")
+        avrofilename <- paste0(avrofilename, ".avro")
+        download.file(avrourl, file.path(outputdir, avrofilename), mode = "wb", method = "libcurl")
         filelist <- list.files(path = outputdir, full.names = FALSE)
-        if (length(filelist) == 2) {
+        avrofilepath <- file.path(outputdir, avrofilename)
+        parquetfilepath <- file.path(outputdir, parquetfileName)
+         if(file.exists(avrofilepath) && file.exists(parquetfilepath)) {
           outputfilepath <- paste0(outputdir, "/", parquetfileName , "_Output.txt")
-          if (file_ext(filelist[1]) == "avro") {
-            avrofiletocompare = paste0(outputdir, "/",filelist[1])
-            parquetfiletocompare = paste0(outputdir, "/", filelist[2])
-            def.data.comp(avroFile = avrofiletocompare, parquetFile = parquetfiletocompare, 
+          def.data.comp(avroFile = avrofilepath, parquetFile = parquetfilepath, 
                           temporalindex = temporalindex, namedlocname = namedLocationName, 
                           outputfilepath = outputfilepath)
-          }
-          else {
-            parquetfiletocompare = paste0(outputdir,"/", filelist[1])
-            avrofiletocompare = paste0(outputdir, "/", filelist[2])
-            def.data.comp(avroFile = avrofiletocompare, parquetFile = parquetfiletocompare, 
-                          temporalindex = temporalindex, namedlocname = namedLocationName, 
-                          outputfilepath = outputfilepath)
-            
-          }
-          if (file.exists(paste0(outputdir, "/",filelist[1]))) 
-            file.remove(paste0(outputdir, "/",filelist[1]))
-          if(file.exists(paste0(outputdir, "/",filelist[2])))
-            file.remove(paste0(outputdir, "/",filelist[2]))
+          file.remove(avrofilepath)
+          file.remove(parquetfilepath)
           
         }
       }
