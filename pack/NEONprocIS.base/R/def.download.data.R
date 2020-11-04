@@ -55,11 +55,11 @@ def.download.data <-
     
     pachydermFiles = system(
       command = paste0('pachctl list file ', pachydermrepo, '@master:', subDir),
-      intern = T
-    ) %>%
+      intern = T) %>%
       .[!grepl(pattern = "NAME", x = .)] %>%
       gsub(pattern = " file [0-9.]*[aA-zZ]{1,} ", replacement = "") %>%
       trimws()
+    
     pachFilesOnly <-
       pachydermFiles[intersect(grep(temporalindex, pachydermFiles),
                                grep(namedLocationName, pachydermFiles))]
@@ -131,6 +131,10 @@ def.download.data <-
                           outputfilepath = outputfilepath)
             
           }
+          if (file.exists(paste0(outputdir, "/",filelist[1]))) 
+            file.remove(paste0(outputdir, "/",filelist[1]))
+          if(file.exists(paste0(outputdir, "/",filelist[2])))
+            file.remove(paste0(outputdir, "/",filelist[2]))
           
         }
       }
