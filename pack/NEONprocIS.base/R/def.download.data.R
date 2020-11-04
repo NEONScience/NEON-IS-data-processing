@@ -116,16 +116,16 @@ def.download.data <-
         filelist <- list.files(path = outputdir, full.names = FALSE)
         if (length(filelist) == 2) {
           outputfilepath <- paste0(outputdir, "/", parquetfileName , "_Output.txt")
-          if (file_ext(filelist[1]) == ".avro") {
-            avrofiletocompare = paste0
-            parquetfiletocompare = paste0(outputdir, filelist[2])
+          if (file_ext(filelist[1]) == "avro") {
+            avrofiletocompare = paste0(outputdir, "/",filelist[1])
+            parquetfiletocompare = paste0(outputdir, "/", filelist[2])
             def.data.comp(avroFile = avrofiletocompare, parquetFile = parquetfiletocompare, 
                           temporalindex = temporalindex, namedlocname = namedLocationName, 
                           outputfilepath = outputfilepath)
           }
           else {
-            parquetfiletocompare = paste0(outputdir, filelist[1])
-            avrofiletocompare = paste0(outputdir, filelist[2])
+            parquetfiletocompare = paste0(outputdir,"/", filelist[1])
+            avrofiletocompare = paste0(outputdir, "/", filelist[2])
             def.data.comp(avroFile = avrofiletocompare, parquetFile = parquetfiletocompare, 
                           temporalindex = temporalindex, namedlocname = namedLocationName, 
                           outputfilepath = outputfilepath)
