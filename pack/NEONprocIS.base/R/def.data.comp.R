@@ -2,19 +2,17 @@
 #' @title Copy all files in a directory with a symbolic link
 
 #' @author 
-#' Cove Sturtevant \email{csturtevant@battelleecology.org}
+#' Visalakshi Chundru \email{vchundru@battelleecology.org}
 
 #' @description 
 #' Definition function. Copy all files in a source directory to a destination directory with a symbolic link 
 
-#' @param DirSrc String vector. Source directories. All files in these source directories will be copied to the 
-#' destination directories. 
-#' @param DirDest String value or vector. Destination director(ies). If not of length 1, must be same length 
-#' as DirDest, each index corresponding to the same index of DirDest. NOTE: DirDest should be the parent of the 
-#' distination directories. For example, to create a link from source /parent/child/ to /newparent/child, 
-#' DirSrc='/parent/child/' and DirDest='/newparent/'
+#' @param avroFile String value. Source path of the avro file.
+#' @param parquetFile String value. Source path of the parquet file.
+#' @param temporalindex String value of the temporal Index (TMI) timing.
+#' @param namedlocname String value of the particular namedlocname
+#' @param outputfilepath String value of the path where to put the output of the comparision.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
-#' output. Defaults to NULL, in which the logger will be created and used within the function.
 
 #' @return No output from this function other than performing the intended action.  
 
@@ -23,12 +21,12 @@
 #' @keywords Currently none
 
 #' @examples 
-#' def.dir.copy.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01/01')
+#' def.data.comp <- function(avroFile = "~/git/NEON-IS-data-processing/, parquetFile,temporalindex = "005", namedlocname="", outputfilepath="",log=NULL)
 
 
 #' @seealso Currently none
 
-#' @exportdata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAkCAYAAAD7PHgWAAAA00lEQVR42mNgGAWjYBQMUxAauorZLL452TyhZQUtMMhs47QGLrIdaJ7QmtSyeP+5fTc//N98+e1/agGQWSvOvPqfNGHnRbO4lnjyHRjfvHzvzff/Zx5+/r9x60OqORBkFgg3bHnw1yy+ZQkFIdiyAuRbmIHUdiAIg+wYdeCoA0cdOOrAUQdSyYG0wKMOHHUgOQ6kNGOMOhCXpaMOHHXgiHTgSmDva9A6ENRvTejfcYFWDkzs33kBZAfZDvTMncQO6huDup+06rhbhvZxjg6RjILBDgAZYqbbTdtPRgAAAABJRU5ErkJggg==
+#' @export
 
 
 ##############################################################################################
