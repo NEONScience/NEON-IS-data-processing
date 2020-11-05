@@ -20,17 +20,26 @@ neededCFGs=listPachFiles1(repo = "pqs1_merge_data_by_location", subDir = "/pqs1/
   unique()
 
 #alteration for pqs1 data (2020-10-06):
-neededCFGs<-c(neededCFGs[3:5],"CFGLOC100353","CFGLOC100357","CFGLOC100361","CFGLOC100368","CFGLOC100369")
+#neededCFGs<-c(neededCFGs[3:5],"CFGLOC100353","CFGLOC100357","CFGLOC100361","CFGLOC100368","CFGLOC100369")
 
 # Switch to pachd2
 setActiveContext("pachd2")
 
+#### [START] If I need to pull the data files over from a different commit than on the Master branch:
 # List the files in location_active_dates for my sensor, 2019-01, THEN subset to only files that match neededCFGLOCs
-neededFiles=listPachFiles2(repo = "location_active_dates", subDir = "bff7b79c729c4ddba4b98573243a1590:/pqs1/2019/01") %>%  #/pqs1/2019/01/**
-  .[grepl(pattern = paste0(neededCFGs, collapse = "|"), x=.)] #This bit subsets
+# neededFiles=listPachFiles2(repo = "location_active_dates", subDir = "bff7b79c729c4ddba4b98573243a1590:/pqs1/2019/01") %>%  #/pqs1/2019/01/**
+# .[grepl(pattern = paste0(neededCFGs, collapse = "|"), x=.)] #This bit subsets
+neededFiles=listPachFiles2(repo = "location_active_dates", subDir = "master:/pqs1/2019/01/**") %>%  #/pqs1/2019/01/**
+  .[grepl(pattern = paste0(neededCFGs, collapse = "|"), x=.)]
 
-# copy those files over to /scratch/pfs/location_active_dates/ on the som
+#### [END] If I need to pull the data files over from a different commit than on the Master branch:
+
+# copy those files over to /scratch/pfs/location_active_dates/ on the som (if from commit):
 getPachFiles(repo = "location_active_dates", pachFiles = neededFiles, somDirectory = somDirectory,commitID = "bff7b79c729c4ddba4b98573243a1590")
+# If from master branch:
+getPachFiles(repo = "location_active_dates", pachFiles = neededFiles, somDirectory = somDirectory)
+
+
 
 # Switch back to pachd1
 setActiveContext("pachd1")

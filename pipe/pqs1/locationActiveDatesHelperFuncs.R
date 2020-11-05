@@ -46,6 +46,7 @@ listPachFiles1=function(repo, subDir){
 
 listPachFiles2=function(repo, subDir){
   library(magrittr)
+  browser()
   foundFiles=system(command = paste0('pachctl list file ', repo, '@', subDir), intern = T) %>%
     .[!grepl(pattern = "NAME", x = .)] %>%
     gsub(pattern = " file [0-9.]*[aA-zZ]{1,} ", replacement = "") %>%
