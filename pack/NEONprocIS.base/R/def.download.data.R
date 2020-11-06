@@ -7,13 +7,18 @@
 #' @description
 #' Download all the files needed for comparision both from Pachyderm and ECS
 
-#' @param DirSrc String vector. Source directories. All files in these source directories will be copied to the
-#' destination directories.
-#' @param DirDest String value or vector. Destination director(ies). If not of length 1, must be same length
-#' as DirDest, each index corresponding to the same index of DirDest. NOTE: DirDest should be the parent of the
-#' distination directories. For example, to create a link from source /parent/child/ to /newparent/child,
-#' DirSrc='/parent/child/' and DirDest='/newparent/'
+#' @param pachydermrepo String value of the pachyderm repository.
+#' @param subDir String value of the directory inside the pachderm repo from which to donwload the data
+#' @param site String value of the site
+#' @param dpid String value of the data product id
+#' @param temporalindex String value of the temporal index
+#' @param startdate date value ,
+#' @param enddate is optional. If there is not end assume that we need data only for the start date,
+#' @param namedLocationName String value,
+#' @param outputfilepath the String value of the file path where to put the final comparision output,
+#' @param log = NULL
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' 
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
 #' @return No output from this function other than performing the intended action.
@@ -28,7 +33,7 @@
 
 #' @seealso Currently none
 
-#' @exportdata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAkCAYAAAD7PHgWAAAA00lEQVR42mNgGAWjYBQMUxAauorZLL452TyhZQUtMMhs47QGLrIdaJ7QmtSyeP+5fTc//N98+e1/agGQWSvOvPqfNGHnRbO4lnjyHRjfvHzvzff/Zx5+/r9x60OqORBkFgg3bHnw1yy+ZQkFIdiyAuRbmIHUdiAIg+wYdeCoA0cdOOrAUQdSyYG0wKMOHHUgOQ6kNGOMOhCXpaMOHHXgiHTgSmDva9A6ENRvTejfcYFWDkzs33kBZAfZDvTMncQO6huDup+06rhbhvZxjg6RjILBDgAZYqbbTdtPRgAAAABJRU5ErkJggg==
+#' @export
 
 
 ##############################################################################################
@@ -45,9 +50,10 @@ def.download.data <-
            startdate,
            enddate = NULL,
            namedLocationName,
+           outputfilepath,
            log = NULL) {
     browser()
-    outputdir <- paste0(getwd(), "/", pachydermrepo)
+    outputdir <- paste0(outputfilepath, "/", pachydermrepo)
     if (!dir.exists(outputdir)) {
       dir.create(outputdir)
     }
