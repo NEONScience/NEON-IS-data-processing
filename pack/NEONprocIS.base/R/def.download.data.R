@@ -73,6 +73,12 @@ def.download.data <-
     transitionexeclist <- list()
     transitionexeclist[["DP1.20053.001"]] <-
       "L0_to_L1_Surface_Water_Temperature"
+    transitionexeclist[["DP1.00066.001"]] <-
+      "L0_to_L1_Quantum_Line_PAR_REVB"
+    transitionexeclist[["DP1.00041.001"]] <-
+      "L0_to_L1_Soil_Temperature"
+    
+    
     if (length(pachFilesOnly) > 0) {
       for (i in 1:length(pachFilesOnly)) {
         url <-
