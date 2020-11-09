@@ -5,9 +5,9 @@ from typing import Tuple
 from array_parser.array_parser_config import Config
 
 
-class DataPathParser:
+class PathParser:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.source_type_index = config.source_type_index
         self.year_index = config.year_index
         self.month_index = config.month_index
@@ -23,4 +23,4 @@ class DataPathParser:
         day: str = parts[self.day_index]
         source_id: str = parts[self.source_id_index]
         data_type: str = parts[self.data_type_index]
-        return source_type, source_id, year, month, day, data_type
+        return source_type, year, month, day, source_id, data_type
