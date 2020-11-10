@@ -14,9 +14,10 @@ def link_files(config: DateGapFillerConfig, out_path: Path, location, year, mont
     empty_file_path = config.empty_file_path
     create_directories(output_directories, out_path)
     for path in empty_file_path.rglob('*'):
-        empty_file_type = path.parts[index]
-        if empty_file_type in output_directories:
-            link_empty_file(path, Path(out_path, empty_file_type), location, year, month, day)
+        if path.is_file():
+            empty_file_type = path.parts[index]
+            if empty_file_type in output_directories:
+                link_empty_file(path, Path(out_path, empty_file_type), location, year, month, day)
 
 
 def create_directories(output_directories: list, out_path: Path):
