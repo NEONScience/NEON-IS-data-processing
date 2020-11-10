@@ -18,7 +18,7 @@
 #' @param outputfilepath the String value of the file path where to put the final comparision output,
 #' @param log = NULL
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
-#' 
+#'
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
 #' @return No output from this function other than performing the intended action.
@@ -41,15 +41,18 @@ library(compareDF)
 library(magrittr)
 library(tidyr)
 library(tools)
+library(jsonlite)
+library(httr)
 def.download.data <-
   function(pachydermrepo,
            subDir,
            site,
            dpid,
-           temporalindex, 
+           temporalindex,
            startdate,
            enddate = NULL,
            namedLocationName,
+           plotnumber = NULL,
            outputfilepath,
            log = NULL) {
     browser()
@@ -61,7 +64,8 @@ def.download.data <-
     
     pachydermFiles = system(
       command = paste0('pachctl list file ', pachydermrepo, '@master:', subDir),
-      intern = T) %>%
+      intern = T
+    ) %>%
       .[!grepl(pattern = "NAME", x = .)] %>%
       gsub(pattern = " file [0-9.]*[aA-zZ]{1,} ", replacement = "") %>%
       trimws()
@@ -78,6 +82,10 @@ def.download.data <-
     transitionexeclist[["DP1.00041.001"]] <-
       "L0_to_L1_Soil_Temperature"
     
+#    base <- "https://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp"
+#    endpoint <- "/namedlocations"
+#    endpointcall <- paste(base,endpoint,/,"ticker","=", stock, sep="")
+
     
     if (length(pachFilesOnly) > 0) {
       for (i in 1:length(pachFilesOnly)) {
@@ -91,16 +99,31 @@ def.download.data <-
         splitpath  <-
           strsplit(pachFilesOnly[i], split = "/", fixed = TRUE)
         parquetfileName <- sapply(splitpath, tail, 1)
-        avrofilenamedate <- splitpath[[1]][3]
-        month_yr <- format(as.Date(avrofilenamedate), "%Y-%m")
-        avrofilename <-
-          paste0(site,
-                 "_",
-                 transitionexeclist[dpid],
-                 "_",
-                 dpid,
-                 "__",
-                 avrofilenamedate)
+        avrofilenamedate <-
+          paste0(splitpath[[1]][3], "-", splitpath[[1]][4], "-", splitpath[[1]][5])
+        month_yr <- paste0(splitpath[[1]][3], "-", splitpath[[1]][4])
+        if (!is.null(plotnumber)) {
+          avrofilename <-
+            paste0(site,
+                   "_",
+                   transitionexeclist[dpid],
+                   "_",
+                   plotnumber,
+                   "_",
+                   dpid,
+                   "__",
+                   avrofilenamedate)
+        } else {
+          avrofilename <-
+            paste0(site,
+                   "_",
+                   transitionexeclist[dpid],
+                   "_",
+                   dpid,
+                   "__",
+                   avrofilenamedate)
+          
+        }
         avroextension <- ".avro"
         avrourl <- paste0(
           'https://s3.data.neonscience.org/prod-is-transition-output/provisional/dpid=',
@@ -113,17 +136,33 @@ def.download.data <-
           avrofilename,
           avroextension
         )
-        download.file(url, file.path(outputdir, parquetfileName), mode = "wb", method = "libcurl")
+        download.file(
+          url,
+          file.path(outputdir, parquetfileName),
+          mode = "wb",
+          method = "libcurl"
+        )
         avrofilename <- paste0(avrofilename, ".avro")
-        download.file(avrourl, file.path(outputdir, avrofilename), mode = "wb", method = "libcurl")
+        download.file(
+          avrourl,
+          file.path(outputdir, avrofilename),
+          mode = "wb",
+          method = "libcurl"
+        )
         filelist <- list.files(path = outputdir, full.names = FALSE)
         avrofilepath <- file.path(outputdir, avrofilename)
         parquetfilepath <- file.path(outputdir, parquetfileName)
-         if(file.exists(avrofilepath) && file.exists(parquetfilepath)) {
-          outputfilepath <- paste0(outputdir, "/", parquetfileName , "_Output.txt")
-          def.data.comp(avroFile = avrofilepath, parquetFile = parquetfilepath, 
-                          temporalindex = temporalindex, namedlocname = namedLocationName, 
-                          outputfilepath = outputfilepath)
+        if (file.exists(avrofilepath) &&
+            file.exists(parquetfilepath)) {
+          outputfilepath <-
+            paste0(outputdir, "/", parquetfileName , "_Output.txt")
+          def.data.comp(
+            avroFile = avrofilepath,
+            parquetFile = parquetfilepath,
+            temporalindex = temporalindex,
+            namedlocname = namedLocationName,
+            outputfilepath = outputfilepath
+          )
           file.remove(avrofilepath)
           file.remove(parquetfilepath)
           

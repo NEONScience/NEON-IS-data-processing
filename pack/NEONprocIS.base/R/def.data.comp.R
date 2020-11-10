@@ -41,7 +41,8 @@ def.data.comp <- function(avroFile, parquetFile,temporalindex, namedlocname, out
   orignialAvroData <- NEONprocIS.base::def.read.avro.deve(NameFile = avroFile, NameLib ="/home/NEON/vchundru/git/NEON-IS-data-processing/pack/NEONprocIS.base/ravro.so")
   
   parquetData <- NEONprocIS.base::def.read.parq(NameFile = parquetFile)
-  #parquetData %>% mutate_if(is.numeric, round, digits=3)
+  
+  numericCols <- unlist(lapply(parquetData, is.numeric)) 
   
   avrodata <- subset(orignialAvroData, (temporalIndex == temporalindex & namedLocationName == namedlocname ))
   
