@@ -3,8 +3,17 @@
     "name": "exofdom_calibration_conversion"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$FILE_SCHEMA_FLAGS","TermFuncUcrt=fDOM:def.ucrt.meas.cnst","TermQf=fDOM","DirSubCopy=calibration"],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.37",
+    "cmd": [
+      "Rscript",
+      "/flow.cal.conv.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQf=$FILE_SCHEMA_FLAGS",
+      "TermFuncUcrt=fDOM:def.ucrt.meas.cnst",
+      "TermQf=fDOM",
+      "DirSubCopy=calibration"
+      ],
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.38",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"

@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.wq.fdom.corr.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmData=$SCHEMA_DATA","FileSchmQf=$SCHEMA_FLAGS"],
-    "image": "quay.io/battelleecology/neon-is-wq-fdom-corr-r:v0.0.12",
+    "image": "quay.io/battelleecology/neon-is-wq-fdom-corr-r:v0.0.13",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

@@ -7,7 +7,7 @@
 ###
 FROM centos:7
 
-ARG APP_DIR="data_gap_filler"
+ARG APP_DIR="date_gap_filler"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
