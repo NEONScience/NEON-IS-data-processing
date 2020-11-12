@@ -12,6 +12,7 @@ class DataParserTest(TestCase):
     def setUp(self) -> None:
         self.data_file_path = Path(os.path.dirname(__file__), 'tchain_32610_2019-01-12.parquet')
         self.schema_file_path = Path(os.path.dirname(__file__), 'tchain_parsed.avsc')
+        self.out_path = Path('/tmp')
 
     def test_data_parser(self) -> None:
-        data_file_parser.parse(self.data_file_path, None, self.schema_file_path)
+        data_file_parser.write_restructured_file(self.data_file_path, self.out_path, self.schema_file_path)

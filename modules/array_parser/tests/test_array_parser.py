@@ -8,7 +8,7 @@ import array_parser.calibration_file_parser as calibration_file_parser
 import array_parser.schema_parser as schema_parser
 import array_parser.array_parser as array_parser
 import array_parser.array_parser_main as array_parser_main
-from array_parser.schema_parser import TermMapping
+from array_parser.schema_parser import SchemaData
 from array_parser.array_parser_config import Config
 
 
@@ -86,23 +86,25 @@ class ArrayParserTest(TestCase):
         assert stream_id == '0'
 
     def test_schema_parser(self) -> None:
-        term_mapping: TermMapping = schema_parser.parse_schema(self.schema_path)
-        assert term_mapping.source == 'tchain'
-        term_name = term_mapping.mapping.get('0')
+        schema_data: SchemaData = schema_parser.parse_schema_file(self.schema_path)
+        assert schema_data.source_type == 'tchain'
+        term_name = schema_data.mapping.get('0')
         assert term_name == 'depth0WaterTemp'
-        term_name = term_mapping.mapping.get('10')
+        term_name = schema_data.mapping.get('10')
         assert term_name == 'depth10WaterTemp'
 
     def test_parser(self) -> None:
         config = Config(data_path=self.in_path,
                         schema_path=self.schema_path,
                         out_path=self.out_path,
+                        parse_calibration=True,
                         source_type_index=self.source_type_index,
                         year_index=self.year_index,
                         month_index=self.month_index,
                         day_index=self.day_index,
                         source_id_index=self.source_id_index,
-                        data_type_index=self.data_type_index)
+                        data_type_index=self.data_type_index,
+                        test_mode=True)
         array_parser.parse(config)
         self.check_output()
 
@@ -110,6 +112,7 @@ class ArrayParserTest(TestCase):
         os.environ['DATA_PATH'] = str(self.in_path)
         os.environ['SCHEMA_PATH'] = str(self.schema_path)
         os.environ['OUT_PATH'] = str(self.out_path)
+        os.environ['PARSE_CALIBRATION'] = str(True)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['SOURCE_TYPE_INDEX'] = str(self.source_type_index)
         os.environ['YEAR_INDEX'] = str(self.year_index)
@@ -117,6 +120,7 @@ class ArrayParserTest(TestCase):
         os.environ['DAY_INDEX'] = str(self.day_index)
         os.environ['SOURCE_ID_INDEX'] = str(self.source_id_index)
         os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
+        os.environ['TEST_MODE'] = str(True)
         array_parser_main.main()
         self.check_output()
 
