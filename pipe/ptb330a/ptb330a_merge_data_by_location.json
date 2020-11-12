@@ -22,7 +22,7 @@
       "pfs": {
         "name": "DIR_IN",
         "repo": "ptb330a_structure_repo_by_location",
-        "glob": "/prt/*/*/*"
+        "glob": "/ptb330a/*/*/*"
       }
   },
   "enable_stats": false,
