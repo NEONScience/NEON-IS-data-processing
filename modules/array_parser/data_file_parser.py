@@ -78,4 +78,7 @@ def write_restructured_file(path: Path, out_path: Path, schema: Path) -> None:
     metadata = get_metadata(schema_data)
     table = table.replace_schema_metadata(metadata)
     log.debug(f'modified_table:\n{table}')
-    pq.write_table(table, Path(out_path, path.name))
+    file_path = Path(out_path, path.name)
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    file_path.touch()
+    pq.write_table(table, file_path)
