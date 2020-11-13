@@ -10,11 +10,10 @@
       "DirOut=/pfs/out",
       "FileSchmData=$FILE_SCHEMA_DATA",
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
-      "TermFuncConv=resistance:def.cal.conv.poly",
-      "TermQf=resistance",
-      "TermFuncUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly",
-      "FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"
-      ],
+      "TermFuncConv=barometricPressure:def.cal.conv.poly",
+      "TermQf=barometricPressure",
+      "TermFuncUcrt=barometricPressure:def.ucrt.meas.cnst"
+            ],
     "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.38",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
@@ -42,13 +41,6 @@
           "name": "FILE_SCHEMA_FLAGS",
           "repo": "avro_schemas",
           "glob": "/dp0p/flags_calibration.avsc"
-        }
-      },
-      {
-        "pfs": {
-          "name": "FILE_UNCERTAINTY_FDAS",
-          "repo": "uncertainty_fdas",
-          "glob": "/fdas_calibration_uncertainty_general.json"
         }
       }
     ]
