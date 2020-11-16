@@ -65,7 +65,7 @@
   "input": {
     "pfs": {
       "name": "import_trigger",
-      "repo": "import_trigger_trolls",
+      "repo": "import_trigger",
       "glob": "/*/*/*"
     }
   },
