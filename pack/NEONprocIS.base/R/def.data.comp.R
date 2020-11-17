@@ -54,16 +54,11 @@ def.data.comp <- function(avroFile, parquetFile,temporalindex, namedlocname, out
   
   names(avrodata)[names(avrodata) == "endDate"] <- "endDateTime"
   
- #neededAvroData <- subset(avrodata, select = (names(parquetData)))
-  
   neededAvroData <- subset(avrodata, select = (intersect(names(avrodata), names(parquetData))))
  
   out <- capture.output(summary(comparedf(neededAvroData, parquetData, int.as.num = TRUE, tol.num.val = 1E-5)))
- # out  <- capture.output(summary(compareDF::compare_df(df_new = neededAvroData, df_old = parquetData, group_col = "endDateTime", tolerance = 0.001)))
-  
-  #cat(out,file="/home/NEON/vchundru/statsOutput.txt",sep="\n",append=TRUE)
+ 
   cat(out,file = outputfilepath,sep="\n",append=TRUE)
   
-  #NEONprocIS.base::def.data.comp(avroFile="/home/NEON/vchundru/pfs/ARIK_L0_to_L1_Surface_Water_Temperature_DP1.20053.001__2019-01-02.avro",  parquetFile = "/home/NEON/vchundru/pfs/tempSurfacewater_2019-01-02_CFGLOC101670_basicStats_005.parquet", temporalindex = "005", namedlocname = "CFGLOC101670")
   
 }
