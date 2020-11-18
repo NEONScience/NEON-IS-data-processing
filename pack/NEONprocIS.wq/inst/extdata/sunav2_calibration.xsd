@@ -1,0 +1,326 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="CalVal">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SensorID">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:int" name="MxAssetID"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="StreamCalVal">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CalFixture">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="CalFixtureID"/>
+                    <xs:element type="xs:string" name="ActivityLocation"/>
+                    <xs:element type="xs:string" name="SWVersion"/>
+                    <xs:element type="xs:string" name="ProcedureVersion"/>
+                    <xs:element type="xs:string" name="Station"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="CalEnvironment">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="AmbientTemperature">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:float" name="Min"/>
+                          <xs:element type="xs:float" name="Max"/>
+                          <xs:element type="xs:float" name="Mean"/>
+                          <xs:element type="xs:float" name="StdDev"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="AmbientPressure">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:float" name="Min"/>
+                          <xs:element type="xs:float" name="Max"/>
+                          <xs:element type="xs:float" name="Mean"/>
+                          <xs:element type="xs:float" name="StdDev"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="AmbientHumidity">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:float" name="Min"/>
+                          <xs:element type="xs:float" name="Max"/>
+                          <xs:element type="xs:float" name="Mean"/>
+                          <xs:element type="xs:float" name="StdDev"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="CalibrationCoefficient" maxOccurs="unbounded" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="Name"/>
+                    <xs:element type="xs:float" name="Value"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="CalibrationTable" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Metadata">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Entry">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element type="xs:string" name="Name"/>
+                                <xs:element type="xs:string" name="Value"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Row" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Independent">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:float">
+                                  <xs:attribute type="xs:string" name="name" use="optional"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="Column">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Dependent">
+                                  <xs:complexType>
+                                    <xs:simpleContent>
+                                      <xs:extension base="xs:float">
+                                        <xs:attribute type="xs:string" name="name" use="optional"/>
+                                      </xs:extension>
+                                    </xs:simpleContent>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute type="xs:byte" name="index" use="optional"/>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:short" name="index" use="optional"/>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="name"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="CalibrationStandards">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="CertNumber"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element type="xs:byte" name="StreamID"/>
+              <xs:element name="Uncertainty" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="Name"/>
+                    <xs:element type="xs:float" name="Value"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="units" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Trueness">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:float">
+                      <xs:attribute type="xs:string" name="units"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="ActivityTimeRange">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:dateTime" name="StartTime"/>
+                    <xs:element type="xs:dateTime" name="EndTime"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element type="xs:int" name="CertificateNumber"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ValidTimeRange">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:dateTime" name="StartTime"/>
+              <xs:element type="xs:dateTime" name="EndTime"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Comment">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="CommentDescription"/>
+              <xs:element type="xs:string" name="CommentCreator"/>
+              <xs:element type="xs:string" name="CommentDateTime"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DATA">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="MetaData">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="Equipment"/>
+                    <xs:element type="xs:string" name="Operator"/>
+                    <xs:element type="xs:string" name="WorkOrder"/>
+                    <xs:element type="xs:int" name="MaximoID"/>
+                    <xs:element type="xs:long" name="AssetID"/>
+                    <xs:element type="xs:string" name="Reference"/>
+                    <xs:element type="xs:string" name="Fixture"/>
+                    <xs:element type="xs:string" name="NEONPN"/>
+                    <xs:element name="SN">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="header"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="FW">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="header"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="SOH">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="header"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element type="xs:string" name="UncertaintyCtl"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="PreCALDATA">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="header"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="CALDATA">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="header"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="ValidationDATA">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="header"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="QCStatic">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="header"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="QCDynamic">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="header"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Precision">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="header"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="AsLeftCFG">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="header"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="AsReceived">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="ReceivedCFG">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="header"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ReceivedCoefficient">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element type="xs:string" name="Name"/>
+                          <xs:element type="xs:string" name="Value"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ReceivedDATA">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="header"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

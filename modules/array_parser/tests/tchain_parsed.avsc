@@ -1,0 +1,149 @@
+{
+  "type": "record",
+  "name": "tchain_parsed",
+  "source": "tchain",
+  "namespace": "org.neonscience.schema.dp0p",
+  "doc": "Parsed tchain Data.",
+  "fields": [
+        {
+            "name": "source_id",
+            "type": "string",
+            "doc": "Source serial number or MAC address"
+        },
+        {
+            "name": "site_id",
+            "type": "string",
+            "doc": "NEON site identifier"
+        },
+        {
+            "name": "readout_time",
+            "type": {
+                "type": "long",
+                "logicalType": "timestamp-millis"
+            },
+            "doc": "Timestamp of readout expressed in milliseconds since epoch",
+            "__neon_units": "millisecond"
+        },
+        {
+          "name": "depth0WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "0"
+        },
+        {
+          "name": "depth1WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 2nd shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "1"
+        },
+        {
+          "name": "depth2WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 3rd shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "2"
+        },
+        {
+          "name": "depth3WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 4th shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "3"
+        },
+        {
+          "name": "depth4WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 5th shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "4"
+        },
+        {
+          "name": "depth5WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 6th shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "5"
+        },
+        {
+          "name": "depth6WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 7th shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "6"
+        },
+        {
+          "name": "depth7WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 8th shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "7"
+        },
+        {
+          "name": "depth8WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 9th shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "8"
+        },
+        {
+          "name": "depth9WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 10th shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "9"
+        },
+        {
+          "name": "depth10WaterTemp",
+          "type": [
+            "null",
+            "float"
+            ],
+          "default": null,
+          "doc": "Measurement of water temperature along a fixed chain from 11th shallowest depth.",
+          "__neon_units": "celsius",
+          "__neon_stream_id": "10"
+        }
+    ]
+}

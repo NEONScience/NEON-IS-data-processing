@@ -2,7 +2,7 @@
 from graphviz import Digraph
 
 
-class DagBuilder(object):
+class DagBuilder:
 
     def __init__(self, end_node_pipeline: str, pipeline_files: dict, pipeline_inputs: dict):
         """
