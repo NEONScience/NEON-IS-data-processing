@@ -1,6 +1,9 @@
 ##############################################################################################
 #' @title Unit test of def.ucrt.dp01.cal.cnst.R
 
+#' @author
+#' Mija Choi \email{choim@battelleecology.org}
+#' 
 #' @description
 #' Run unit tests for def.ucrt.dp01.cal.cnst.R.
 #' The tests include positive and negative scenarios.
