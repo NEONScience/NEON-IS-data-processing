@@ -1,0 +1,38 @@
+---
+pipeline:
+  name: tchain_calibration_conversion
+transform:
+  cmd:
+  - Rscript
+  - /flow.cal.conv.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - FileSchmData=$FILE_SCHEMA_DATA
+  - FileSchmQf=$FILE_SCHEMA_FLAGS
+  - TermQf=water_temperature
+  - TermFuncUcrt=water_temperature:def.ucrt.meas.cnst
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.34
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: DEBUG
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: tchain_calibration_filter
+      glob: /tchain/*/*/*/
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: avro_schemas
+      glob: /dp0p/tchain_parsed.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: avro_schemas
+      glob: /dp0p/flags_calibration.avsc
+enable_stats: false
+standby: true
+resource_requests:
+  memory: 250M
+  cpu: 0.25
+
