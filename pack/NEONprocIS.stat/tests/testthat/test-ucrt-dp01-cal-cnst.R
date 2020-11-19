@@ -111,4 +111,14 @@ test_that("Unit test of def.ucrt.dp01.cal.cnst.R", {
     TimeAgrEnd = as.POSIXct('2019-01-05 00:30', tz = 'GMT')
   )
   expect_true(is.na(ucrtCal))
+  
+  # Sad Path 1 - When all parameters are NULL, returns NA
+  
+  ucrtCal <- NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef = NULL,
+                                                      NameCoef = NULL,
+                                                      VarUcrt = NULL,
+                                                      TimeAgrBgn = NULL,
+                                                      TimeAgrEnd = NULL,
+                                                      log = NULL)
+  expect_true(is.na(ucrtCal))
 })
