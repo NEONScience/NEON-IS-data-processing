@@ -90,7 +90,7 @@ test_that("Unit test of def.ucrt.dp01.cal.cnst.R", {
   
   expect_true(ucrtCal == 0.0143)
   
-  # Happy Path 2 When no uncertainty coefficients match this time period, returns NA
+  # Happy Path 2 - When no uncertainty coefficients match this time period, returns NA
 
   ucrtCal <- NEONprocIS.stat::def.ucrt.dp01.cal.cnst(
     ucrtCoef = ucrtCoef,
@@ -98,6 +98,17 @@ test_that("Unit test of def.ucrt.dp01.cal.cnst.R", {
     VarUcrt = 'linePAR',
     TimeAgrBgn = as.POSIXct('2019-02-05 00:00', tz = 'GMT'),
     TimeAgrEnd = as.POSIXct('2019-02-05 00:30', tz = 'GMT')
+  )
+  expect_true(is.na(ucrtCal))
+  
+  # Happy Path 3 - When no uncertainty coefficients match coefficient name, returns NA
+  
+  ucrtCal <- NEONprocIS.stat::def.ucrt.dp01.cal.cnst(
+    ucrtCoef = ucrtCoef,
+    NameCoef = 'U_CVALA2',
+    VarUcrt = 'linePAR',
+    TimeAgrBgn = as.POSIXct('2019-01-01 00:00', tz = 'GMT'),
+    TimeAgrEnd = as.POSIXct('2019-01-05 00:30', tz = 'GMT')
   )
   expect_true(is.na(ucrtCal))
 })
