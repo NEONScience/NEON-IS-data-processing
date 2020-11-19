@@ -18,6 +18,7 @@ COPY message_reader/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirement
 RUN update-ca-trust && \
     dnf update -y --disableplugin=subscription-manager && \
     dnf install -y --disableplugin=subscription-manager \
+            shadow-utils \
             gcc \
             python36 && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
