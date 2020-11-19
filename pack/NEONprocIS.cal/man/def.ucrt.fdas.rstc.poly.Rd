@@ -13,7 +13,7 @@ def.ucrt.fdas.rstc.poly(
 )
 }
 \arguments{
-\item{data}{Numeric data frame of raw measurements.}
+\item{data}{Data frame of raw measurements. Note that the column/variable indicated in varUcrt must be numeric.}
 
 \item{varUcrt}{A character string of the target variable (column) in the data frame \code{data} for 
 which FDAS uncertainty data will be computed (all other columns will be ignored). Note that for other

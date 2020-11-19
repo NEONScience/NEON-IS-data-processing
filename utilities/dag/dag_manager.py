@@ -5,7 +5,7 @@ from dag.pipeline_specification_parser import PipelineSpecificationParser
 from dag.dag_builder import DagBuilder
 
 
-class DagManager(object):
+class DagManager:
 
     def __init__(self, parser: PipelineSpecificationParser):
         """

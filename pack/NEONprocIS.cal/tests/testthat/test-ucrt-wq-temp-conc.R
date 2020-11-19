@@ -37,6 +37,10 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2020-07-21)
 #     Original Creation
+#   Mija Choi (2020-09-24)
+#     adjusted inputs to conform to the change made in def.ucrt.wq.temp.conc.R
+#     This includes inputting the entire data frame not a vector, the 
+#     variable to be calibrated, and the (unused) argument calSlct
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of def.ucrt.wq.temp.conc.R\n")
@@ -59,6 +63,8 @@ test_that("Unit test of def.ucrt.wq.temp.conc.R", {
   ### output = 0.05 if data is >35 Celsius according to the manual
   
   temp = c(37, 30, 38, 20, 40, 15)
+  temp = data.frame(temp=temp)
+  
   out_Data = c(0.05, 0.01, 0.05, 0.01, 0.05, 0.01)
  
   col_List = c('ucrtMeas')
@@ -85,6 +91,8 @@ test_that("Unit test of def.ucrt.wq.temp.conc.R", {
   # There will be no output since data has no value to separate 
  
   temp = c()
+  temp = data.frame(temp=temp)
+  
   outputDF_returned <- try (NEONprocIS.cal::def.ucrt.wq.temp.conc (data = temp), silent = TRUE) 
   testthat::expect_true((class(outputDF_returned)[1] == "try-error")) 
 })

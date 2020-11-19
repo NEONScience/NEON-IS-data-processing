@@ -1,0 +1,31 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC101255",
+                "type": "CONFIG",
+                "description": "Arikaree River Single Aspirated Air Temperature",
+                "site": "ARIK",
+                "context": [
+                    "aspirated-single-114",
+                    "aspirated-single"
+                ],
+                "active_periods": [
+                    {
+                        "start_date": "2015-03-05T00:00:00Z",
+                        "end_date": "2017-03-05T00:00:00Z"
+                    }
+                ]
+            },
+            "Required Asset Management Location Code": "CFGLOC101255",
+            "Required Asset Management Location ID": 2397,
+            "HOR": "200",
+            "VER": "000",
+            "TMI": "000",
+            "Data Rate": "1"
+        }
+    ]
+}

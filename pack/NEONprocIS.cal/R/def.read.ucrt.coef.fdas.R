@@ -1,11 +1,11 @@
 ##############################################################################################
-#' @title Read NEON calibration XML file
+#' @title Read NEON FDAS uncertainty coefficients
 
 #' @author 
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description 
-#' Definition function. Read in a NEON calibration XML file.
+#' Definition function. Read in NEON FDAS uncertainty coefficients
 
 #' @param NameFile String. Name (including relative or absolute path) of json file.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log

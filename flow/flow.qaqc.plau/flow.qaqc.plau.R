@@ -110,6 +110,8 @@
 #     switch read/write data from avro to parquet
 #   Cove Sturtevant (2020-07-08)
 #     Adjust code to accommodate new (faster!) despike algorithm and efficient plausibility code
+#   Cove Sturtevant (2020-10-09)
+#     Add check that terms slated for QA/QC are in the data
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -219,7 +221,7 @@ for(idxDirIn in DirIn){
   for (idxFileData in fileData){
     # Load in data file 
     dataIdx  <- base::try(NEONprocIS.base::def.read.parq(NameFile=base::paste0(idxDirData,'/',idxFileData),log=log),silent=FALSE)
-    if(base::class(dataIdx) == 'try-error'){
+    if(base::any(base::class(dataIdx) == 'try-error')){
       log$error(base::paste0('File ', fileIn,' is unreadable.')) 
       stop()
     }
@@ -233,11 +235,18 @@ for(idxDirIn in DirIn){
     
   } # End for loop around reading data files
   
-  # Sort the data by readout_time
-  if(!('readout_time' %in% base::names(data))){
-    log$error(base::paste0('Variable "readout_time" is required, but cannot be found in file: ',fileIn)) 
+  # Check that the data has the terms we are planning to do QA/QC on
+  valiData <-
+    NEONprocIS.base::def.validate.dataframe(dfIn = data,
+                                            TestNameCol = base::unique(c(
+                                              'readout_time', termTest
+                                            )),
+                                            log = log)
+  if(valiData != TRUE){
     stop()
   }
+  
+  # Sort the data by readout_time
   data <- data[base::order(data$readout_time),]
   dataOut <- data # initialize output
   

@@ -1,0 +1,54 @@
+{
+  "pipeline": {
+    "name": "ptb330a_calibration_conversion"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.cal.conv.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmData=$FILE_SCHEMA_DATA",
+      "FileSchmQf=$FILE_SCHEMA_FLAGS",
+      "TermFuncConv=barometricPressure:def.cal.conv.poly",
+      "TermQf=barometricPressure",
+      "TermFuncUcrt=barometricPressure:def.ucrt.meas.cnst"
+            ],
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.38",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "ptb330a_calibration_filter",
+          "glob": "/ptb330a/*/*/*/"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_DATA",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/ptb330a_calibrated.avsc"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_FLAGS",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/flags_calibration.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "250M",
+    "cpu": 0.25
+  }
+}

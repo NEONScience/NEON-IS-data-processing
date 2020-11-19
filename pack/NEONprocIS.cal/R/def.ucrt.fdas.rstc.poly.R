@@ -9,7 +9,7 @@
 #' when making resistance measurements and using a polynomial calibration conversion function with CVALA 
 #' coefficients.
 
-#' @param data Numeric data frame of raw measurements. 
+#' @param data Data frame of raw measurements. Note that the column/variable indicated in varUcrt must be numeric.
 #' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
 #' (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$cal and info$ucrt,
 #' which are data frames of calibration coefficients and uncertainty coeffcients, respectively.

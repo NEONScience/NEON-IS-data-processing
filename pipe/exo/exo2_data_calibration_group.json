@@ -42,7 +42,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "data_source_exo2_linkmerge",
+          "repo": "exo2_data_calibration_group_path",
           "branch": "master",
           "glob": "/exo2/(*)",
           "joinOn": "$1",

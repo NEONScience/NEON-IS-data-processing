@@ -1,0 +1,2141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><CalVal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../CVALData.xsd ">
+   <SensorID>
+    <MxAssetID>37144</MxAssetID>
+    
+  </SensorID>
+  <StreamCalVal>
+    <CalFixture>
+      <CalFixtureID>21000000000084</CalFixtureID>
+      <ActivityLocation>10000000100349</ActivityLocation>
+      <SWVersion>1.0</SWVersion>
+      <ProcedureVersion>1.0.0</ProcedureVersion>
+      <Station>1</Station>
+    </CalFixture>
+    <CalEnvironment>
+      <AmbientTemperature>
+        <Min>21.30</Min>
+        <Max>21.70</Max>
+        <Mean>21.39</Mean>
+        <StdDev>0.16</StdDev>
+      </AmbientTemperature>
+      <AmbientPressure>
+        <Min>836.80</Min>
+        <Max>837.20</Max>
+        <Mean>837.10</Mean>
+        <StdDev>0.15</StdDev>
+      </AmbientPressure>
+      <AmbientHumidity>
+        <Min>55.50</Min>
+        <Max>59.00</Max>
+        <Mean>57.86</Mean>
+        <StdDev>1.16</StdDev>
+      </AmbientHumidity>
+    </CalEnvironment>
+    <CalibrationCoefficient> 
+		<Name> CVALA1</Name>
+		<Value>9.81</Value>
+    </CalibrationCoefficient><CalibrationCoefficient> 
+		<Name>CVALR1</Name>
+		<Value>0</Value>
+    </CalibrationCoefficient>
+	<CalibrationTable name="CVALTABLEA1">
+    <Metadata>
+        <Entry>
+            <Name>wavelength</Name>
+            <Value>nm</Value>
+        </Entry> 
+    </Metadata>
+	<Row index="1">
+    <Independent name="wavelength">189.110000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-5.708333</Dependent>
+    </Column>
+	</Row>
+	<Row index="2">
+    <Independent name="wavelength">189.910000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-4.166667</Dependent>
+    </Column>
+	</Row><Row index="3">
+    <Independent name="wavelength">190.710000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-2.083333</Dependent>
+    </Column>
+	</Row><Row index="4">
+    <Independent name="wavelength">191.510000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-4.833333</Dependent>
+    </Column>
+	</Row><Row index="5">
+    <Independent name="wavelength">192.310000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-3.875000</Dependent>
+    </Column>
+	</Row><Row index="6">
+    <Independent name="wavelength">193.110000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-4.416667</Dependent>
+    </Column>
+	</Row><Row index="7">
+    <Independent name="wavelength">193.920000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-2.541667</Dependent>
+    </Column>
+	</Row><Row index="8">
+    <Independent name="wavelength">194.720000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-6.291667</Dependent>
+    </Column>
+	</Row><Row index="9">
+    <Independent name="wavelength">195.520000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-4.625000</Dependent>
+    </Column>
+	</Row><Row index="10">
+    <Independent name="wavelength">196.320000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-6.916667</Dependent>
+    </Column>
+	</Row><Row index="11">
+    <Independent name="wavelength">197.130000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">-4.166667</Dependent>
+    </Column>
+	</Row><Row index="12">
+    <Independent name="wavelength">197.930000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4.208333</Dependent>
+    </Column>
+	</Row><Row index="13">
+    <Independent name="wavelength">198.730000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">78.833333</Dependent>
+    </Column>
+	</Row><Row index="14">
+    <Independent name="wavelength">199.540000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">342.458333</Dependent>
+    </Column>
+	</Row><Row index="15">
+    <Independent name="wavelength">200.340000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">1062.333333</Dependent>
+    </Column>
+	</Row><Row index="16">
+    <Independent name="wavelength">201.140000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">2552.833333</Dependent>
+    </Column>
+	</Row><Row index="17">
+    <Independent name="wavelength">201.950000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4856.416667</Dependent>
+    </Column>
+	</Row><Row index="18">
+    <Independent name="wavelength">202.750000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7494.458333</Dependent>
+    </Column>
+	</Row><Row index="19">
+    <Independent name="wavelength">203.560000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9812.458333</Dependent>
+    </Column>
+	</Row><Row index="20">
+    <Independent name="wavelength">204.360000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11439.250000</Dependent>
+    </Column>
+	</Row><Row index="21">
+    <Independent name="wavelength">205.170000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12323.916667</Dependent>
+    </Column>
+	</Row><Row index="22">
+    <Independent name="wavelength">205.970000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12696.333333</Dependent>
+    </Column>
+	</Row><Row index="23">
+    <Independent name="wavelength">206.780000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12760.791667</Dependent>
+    </Column>
+	</Row><Row index="24">
+    <Independent name="wavelength">207.580000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12714.166667</Dependent>
+    </Column>
+	</Row><Row index="25">
+    <Independent name="wavelength">208.390000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12667.750000</Dependent>
+    </Column>
+	</Row><Row index="26">
+    <Independent name="wavelength">209.190000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12715.625000</Dependent>
+    </Column>
+	</Row><Row index="27">
+    <Independent name="wavelength">210.000000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12885.083333</Dependent>
+    </Column>
+	</Row><Row index="28">
+    <Independent name="wavelength">210.810000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13226.375000</Dependent>
+    </Column>
+	</Row><Row index="29">
+    <Independent name="wavelength">211.610000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13731.416667</Dependent>
+    </Column>
+	</Row><Row index="30">
+    <Independent name="wavelength">212.420000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14413.958333</Dependent>
+    </Column>
+	</Row><Row index="31">
+    <Independent name="wavelength">213.230000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15286.958333</Dependent>
+    </Column>
+	</Row><Row index="32">
+    <Independent name="wavelength">214.030000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16352.500000</Dependent>
+    </Column>
+	</Row><Row index="33">
+    <Independent name="wavelength">214.840000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17588.916667</Dependent>
+    </Column>
+	</Row><Row index="34">
+    <Independent name="wavelength">215.650000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18966.750000</Dependent>
+    </Column>
+	</Row><Row index="35">
+    <Independent name="wavelength">216.460000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20440.958333</Dependent>
+    </Column>
+	</Row><Row index="36">
+    <Independent name="wavelength">217.260000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">21929.666667</Dependent>
+    </Column>
+	</Row><Row index="37">
+    <Independent name="wavelength">218.070000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23319.416667</Dependent>
+    </Column>
+	</Row><Row index="38">
+    <Independent name="wavelength">218.880000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24556.208333</Dependent>
+    </Column>
+	</Row><Row index="39">
+    <Independent name="wavelength">219.690000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25500.750000</Dependent>
+    </Column>
+	</Row><Row index="40">
+    <Independent name="wavelength">220.500000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">26109.833333</Dependent>
+    </Column>
+	</Row><Row index="41">
+    <Independent name="wavelength">221.310000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">26299.666667</Dependent>
+    </Column>
+	</Row><Row index="42">
+    <Independent name="wavelength">222.120000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">26096.041667</Dependent>
+    </Column>
+	</Row><Row index="43">
+    <Independent name="wavelength">222.920000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25556.833333</Dependent>
+    </Column>
+	</Row><Row index="44">
+    <Independent name="wavelength">223.730000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24776.541667</Dependent>
+    </Column>
+	</Row><Row index="45">
+    <Independent name="wavelength">224.540000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23877.583333</Dependent>
+    </Column>
+	</Row><Row index="46">
+    <Independent name="wavelength">225.350000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22949.000000</Dependent>
+    </Column>
+	</Row><Row index="47">
+    <Independent name="wavelength">226.160000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22077.541667</Dependent>
+    </Column>
+	</Row><Row index="48">
+    <Independent name="wavelength">226.970000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">21351.125000</Dependent>
+    </Column>
+	</Row><Row index="49">
+    <Independent name="wavelength">227.780000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20786.041667</Dependent>
+    </Column>
+	</Row><Row index="50">
+    <Independent name="wavelength">228.590000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20424.708333</Dependent>
+    </Column>
+	</Row><Row index="51">
+    <Independent name="wavelength">229.400000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20244.166667</Dependent>
+    </Column>
+	</Row><Row index="52">
+    <Independent name="wavelength">230.210000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20270.458333</Dependent>
+    </Column>
+	</Row><Row index="53">
+    <Independent name="wavelength">231.020000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20465.166667</Dependent>
+    </Column>
+	</Row><Row index="54">
+    <Independent name="wavelength">231.830000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20843.375000</Dependent>
+    </Column>
+	</Row><Row index="55">
+    <Independent name="wavelength">232.650000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">21413.416667</Dependent>
+    </Column>
+	</Row><Row index="56">
+    <Independent name="wavelength">233.460000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22120.291667</Dependent>
+    </Column>
+	</Row><Row index="57">
+    <Independent name="wavelength">234.270000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22974.458333</Dependent>
+    </Column>
+	</Row><Row index="58">
+    <Independent name="wavelength">235.080000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23955.833333</Dependent>
+    </Column>
+	</Row><Row index="59">
+    <Independent name="wavelength">235.890000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25036.708333</Dependent>
+    </Column>
+	</Row><Row index="60">
+    <Independent name="wavelength">236.700000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">26219.791667</Dependent>
+    </Column>
+	</Row><Row index="61">
+    <Independent name="wavelength">237.510000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">27463.500000</Dependent>
+    </Column>
+	</Row><Row index="62">
+    <Independent name="wavelength">238.330000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">28684.416667</Dependent>
+    </Column>
+	</Row><Row index="63">
+    <Independent name="wavelength">239.140000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">29918.750000</Dependent>
+    </Column>
+	</Row><Row index="64">
+    <Independent name="wavelength">239.950000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">31047.583333</Dependent>
+    </Column>
+	</Row><Row index="65">
+    <Independent name="wavelength">240.760000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">32008.500000</Dependent>
+    </Column>
+	</Row><Row index="66">
+    <Independent name="wavelength">241.570000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">32800.375000</Dependent>
+    </Column>
+	</Row><Row index="67">
+    <Independent name="wavelength">242.390000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">33281.250000</Dependent>
+    </Column>
+	</Row><Row index="68">
+    <Independent name="wavelength">243.200000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">33451.666667</Dependent>
+    </Column>
+	</Row><Row index="69">
+    <Independent name="wavelength">244.010000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">33290.708333</Dependent>
+    </Column>
+	</Row><Row index="70">
+    <Independent name="wavelength">244.820000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">32782.458333</Dependent>
+    </Column>
+	</Row><Row index="71">
+    <Independent name="wavelength">245.640000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">31936.875000</Dependent>
+    </Column>
+	</Row><Row index="72">
+    <Independent name="wavelength">246.450000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">30883.541667</Dependent>
+    </Column>
+	</Row><Row index="73">
+    <Independent name="wavelength">247.260000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">29595.791667</Dependent>
+    </Column>
+	</Row><Row index="74">
+    <Independent name="wavelength">248.080000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">28160.375000</Dependent>
+    </Column>
+	</Row><Row index="75">
+    <Independent name="wavelength">248.890000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">26735.125000</Dependent>
+    </Column>
+	</Row><Row index="76">
+    <Independent name="wavelength">249.700000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25290.541667</Dependent>
+    </Column>
+	</Row><Row index="77">
+    <Independent name="wavelength">250.520000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23920.500000</Dependent>
+    </Column>
+	</Row><Row index="78">
+    <Independent name="wavelength">251.330000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22649.666667</Dependent>
+    </Column>
+	</Row><Row index="79">
+    <Independent name="wavelength">252.140000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">21499.916667</Dependent>
+    </Column>
+	</Row><Row index="80">
+    <Independent name="wavelength">252.960000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20494.333333</Dependent>
+    </Column>
+	</Row><Row index="81">
+    <Independent name="wavelength">253.770000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19448.416667</Dependent>
+    </Column>
+	</Row><Row index="82">
+    <Independent name="wavelength">254.580000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18751.083333</Dependent>
+    </Column>
+	</Row><Row index="83">
+    <Independent name="wavelength">255.400000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18188.458333</Dependent>
+    </Column>
+	</Row><Row index="84">
+    <Independent name="wavelength">256.210000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17659.291667</Dependent>
+    </Column>
+	</Row><Row index="85">
+    <Independent name="wavelength">257.030000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17237.791667</Dependent>
+    </Column>
+	</Row><Row index="86">
+    <Independent name="wavelength">257.840000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16917.125000</Dependent>
+    </Column>
+	</Row><Row index="87">
+    <Independent name="wavelength">258.660000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16694.083333</Dependent>
+    </Column>
+	</Row><Row index="88">
+    <Independent name="wavelength">259.470000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16565.458333</Dependent>
+    </Column>
+	</Row><Row index="89">
+    <Independent name="wavelength">260.280000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16528.791667</Dependent>
+    </Column>
+	</Row><Row index="90">
+    <Independent name="wavelength">261.100000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16564.458333</Dependent>
+    </Column>
+	</Row><Row index="91">
+    <Independent name="wavelength">261.910000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16701.375000</Dependent>
+    </Column>
+	</Row><Row index="92">
+    <Independent name="wavelength">262.730000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16894.250000</Dependent>
+    </Column>
+	</Row><Row index="93">
+    <Independent name="wavelength">263.540000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17182.083333</Dependent>
+    </Column>
+	</Row><Row index="94">
+    <Independent name="wavelength">264.360000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17512.750000</Dependent>
+    </Column>
+	</Row><Row index="95">
+    <Independent name="wavelength">265.170000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17915.375000</Dependent>
+    </Column>
+	</Row><Row index="96">
+    <Independent name="wavelength">265.990000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18377.791667</Dependent>
+    </Column>
+	</Row><Row index="97">
+    <Independent name="wavelength">266.800000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18854.375000</Dependent>
+    </Column>
+	</Row><Row index="98">
+    <Independent name="wavelength">267.620000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19318.208333</Dependent>
+    </Column>
+	</Row><Row index="99">
+    <Independent name="wavelength">268.430000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19792.625000</Dependent>
+    </Column>
+	</Row><Row index="100">
+    <Independent name="wavelength">269.250000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20211.833333</Dependent>
+    </Column>
+	</Row><Row index="101">
+    <Independent name="wavelength">270.060000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20572.041667</Dependent>
+    </Column>
+	</Row><Row index="102">
+    <Independent name="wavelength">270.880000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20811.375000</Dependent>
+    </Column>
+	</Row><Row index="103">
+    <Independent name="wavelength">271.690000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20926.291667</Dependent>
+    </Column>
+	</Row><Row index="104">
+    <Independent name="wavelength">272.510000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20917.041667</Dependent>
+    </Column>
+	</Row><Row index="105">
+    <Independent name="wavelength">273.330000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20757.125000</Dependent>
+    </Column>
+	</Row><Row index="106">
+    <Independent name="wavelength">274.140000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20453.500000</Dependent>
+    </Column>
+	</Row><Row index="107">
+    <Independent name="wavelength">274.960000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20030.416667</Dependent>
+    </Column>
+	</Row><Row index="108">
+    <Independent name="wavelength">275.770000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19491.000000</Dependent>
+    </Column>
+	</Row><Row index="109">
+    <Independent name="wavelength">276.590000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18868.666667</Dependent>
+    </Column>
+	</Row><Row index="110">
+    <Independent name="wavelength">277.400000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18200.166667</Dependent>
+    </Column>
+	</Row><Row index="111">
+    <Independent name="wavelength">278.220000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17509.708333</Dependent>
+    </Column>
+	</Row><Row index="112">
+    <Independent name="wavelength">279.040000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16808.541667</Dependent>
+    </Column>
+	</Row><Row index="113">
+    <Independent name="wavelength">279.850000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16120.083333</Dependent>
+    </Column>
+	</Row><Row index="114">
+    <Independent name="wavelength">280.670000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15469.000000</Dependent>
+    </Column>
+	</Row><Row index="115">
+    <Independent name="wavelength">281.480000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14868.250000</Dependent>
+    </Column>
+	</Row><Row index="116">
+    <Independent name="wavelength">282.300000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14333.958333</Dependent>
+    </Column>
+	</Row><Row index="117">
+    <Independent name="wavelength">283.110000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13843.125000</Dependent>
+    </Column>
+	</Row><Row index="118">
+    <Independent name="wavelength">283.930000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13411.666667</Dependent>
+    </Column>
+	</Row><Row index="119">
+    <Independent name="wavelength">284.750000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13042.791667</Dependent>
+    </Column>
+	</Row><Row index="120">
+    <Independent name="wavelength">285.560000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12725.500000</Dependent>
+    </Column>
+	</Row><Row index="121">
+    <Independent name="wavelength">286.380000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12485.708333</Dependent>
+    </Column>
+	</Row><Row index="122">
+    <Independent name="wavelength">287.190000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12284.916667</Dependent>
+    </Column>
+	</Row><Row index="123">
+    <Independent name="wavelength">288.010000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12140.833333</Dependent>
+    </Column>
+	</Row><Row index="124">
+    <Independent name="wavelength">288.830000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12055.833333</Dependent>
+    </Column>
+	</Row><Row index="125">
+    <Independent name="wavelength">289.640000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12028.125000</Dependent>
+    </Column>
+	</Row><Row index="126">
+    <Independent name="wavelength">290.460000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12031.458333</Dependent>
+    </Column>
+	</Row><Row index="127">
+    <Independent name="wavelength">291.270000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12098.833333</Dependent>
+    </Column>
+	</Row><Row index="128">
+    <Independent name="wavelength">292.090000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12201.708333</Dependent>
+    </Column>
+	</Row><Row index="129">
+    <Independent name="wavelength">292.910000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12341.625000</Dependent>
+    </Column>
+	</Row><Row index="130">
+    <Independent name="wavelength">293.720000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12519.833333</Dependent>
+    </Column>
+	</Row><Row index="131">
+    <Independent name="wavelength">294.540000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12727.166667</Dependent>
+    </Column>
+	</Row><Row index="132">
+    <Independent name="wavelength">295.350000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12961.708333</Dependent>
+    </Column>
+	</Row><Row index="133">
+    <Independent name="wavelength">296.170000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13212.541667</Dependent>
+    </Column>
+	</Row><Row index="134">
+    <Independent name="wavelength">296.990000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13515.875000</Dependent>
+    </Column>
+	</Row><Row index="135">
+    <Independent name="wavelength">297.800000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13811.708333</Dependent>
+    </Column>
+	</Row><Row index="136">
+    <Independent name="wavelength">298.620000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14140.500000</Dependent>
+    </Column>
+	</Row><Row index="137">
+    <Independent name="wavelength">299.430000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14467.875000</Dependent>
+    </Column>
+	</Row><Row index="138">
+    <Independent name="wavelength">300.250000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14798.291667</Dependent>
+    </Column>
+	</Row><Row index="139">
+    <Independent name="wavelength">301.060000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15146.041667</Dependent>
+    </Column>
+	</Row><Row index="140">
+    <Independent name="wavelength">301.880000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15479.500000</Dependent>
+    </Column>
+	</Row><Row index="141">
+    <Independent name="wavelength">302.700000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15780.083333</Dependent>
+    </Column>
+	</Row><Row index="142">
+    <Independent name="wavelength">303.510000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16077.416667</Dependent>
+    </Column>
+	</Row><Row index="143">
+    <Independent name="wavelength">304.330000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16358.083333</Dependent>
+    </Column>
+	</Row><Row index="144">
+    <Independent name="wavelength">305.140000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16596.458333</Dependent>
+    </Column>
+	</Row><Row index="145">
+    <Independent name="wavelength">305.960000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16799.916667</Dependent>
+    </Column>
+	</Row><Row index="146">
+    <Independent name="wavelength">306.780000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16962.166667</Dependent>
+    </Column>
+	</Row><Row index="147">
+    <Independent name="wavelength">307.590000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17071.791667</Dependent>
+    </Column>
+	</Row><Row index="148">
+    <Independent name="wavelength">308.410000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17127.125000</Dependent>
+    </Column>
+	</Row><Row index="149">
+    <Independent name="wavelength">309.220000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17107.291667</Dependent>
+    </Column>
+	</Row><Row index="150">
+    <Independent name="wavelength">310.040000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17027.583333</Dependent>
+    </Column>
+	</Row><Row index="151">
+    <Independent name="wavelength">310.850000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16888.791667</Dependent>
+    </Column>
+	</Row><Row index="152">
+    <Independent name="wavelength">311.670000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16696.458333</Dependent>
+    </Column>
+	</Row><Row index="153">
+    <Independent name="wavelength">312.480000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16446.875000</Dependent>
+    </Column>
+	</Row><Row index="154">
+    <Independent name="wavelength">313.300000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16162.666667</Dependent>
+    </Column>
+	</Row><Row index="155">
+    <Independent name="wavelength">314.110000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15813.625000</Dependent>
+    </Column>
+	</Row><Row index="156">
+    <Independent name="wavelength">314.930000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15446.875000</Dependent>
+    </Column>
+	</Row><Row index="157">
+    <Independent name="wavelength">315.750000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15049.458333</Dependent>
+    </Column>
+	</Row><Row index="158">
+    <Independent name="wavelength">316.560000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14630.375000</Dependent>
+    </Column>
+	</Row><Row index="159">
+    <Independent name="wavelength">317.380000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14203.833333</Dependent>
+    </Column>
+	</Row><Row index="160">
+    <Independent name="wavelength">318.190000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13767.250000</Dependent>
+    </Column>
+	</Row><Row index="161">
+    <Independent name="wavelength">319.010000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13336.791667</Dependent>
+    </Column>
+	</Row><Row index="162">
+    <Independent name="wavelength">319.820000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12938.208333</Dependent>
+    </Column>
+	</Row><Row index="163">
+    <Independent name="wavelength">320.640000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12559.750000</Dependent>
+    </Column>
+	</Row><Row index="164">
+    <Independent name="wavelength">321.450000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12206.833333</Dependent>
+    </Column>
+	</Row><Row index="165">
+    <Independent name="wavelength">322.260000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11871.750000</Dependent>
+    </Column>
+	</Row><Row index="166">
+    <Independent name="wavelength">323.080000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11564.125000</Dependent>
+    </Column>
+	</Row><Row index="167">
+    <Independent name="wavelength">323.890000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11272.583333</Dependent>
+    </Column>
+	</Row><Row index="168">
+    <Independent name="wavelength">324.710000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11013.458333</Dependent>
+    </Column>
+	</Row><Row index="169">
+    <Independent name="wavelength">325.520000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10745.125000</Dependent>
+    </Column>
+	</Row><Row index="170">
+    <Independent name="wavelength">326.340000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10482.041667</Dependent>
+    </Column>
+	</Row><Row index="171">
+    <Independent name="wavelength">327.150000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10224.125000</Dependent>
+    </Column>
+	</Row><Row index="172">
+    <Independent name="wavelength">327.970000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9979.375000</Dependent>
+    </Column>
+	</Row><Row index="173">
+    <Independent name="wavelength">328.780000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9736.791667</Dependent>
+    </Column>
+	</Row><Row index="174">
+    <Independent name="wavelength">329.590000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9516.833333</Dependent>
+    </Column>
+	</Row><Row index="175">
+    <Independent name="wavelength">330.410000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9315.750000</Dependent>
+    </Column>
+	</Row><Row index="176">
+    <Independent name="wavelength">331.220000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9124.875000</Dependent>
+    </Column>
+	</Row><Row index="177">
+    <Independent name="wavelength">332.040000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8946.916667</Dependent>
+    </Column>
+	</Row><Row index="178">
+    <Independent name="wavelength">332.850000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8779.625000</Dependent>
+    </Column>
+	</Row><Row index="179">
+    <Independent name="wavelength">333.660000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8616.750000</Dependent>
+    </Column>
+	</Row><Row index="180">
+    <Independent name="wavelength">334.480000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8481.958333</Dependent>
+    </Column>
+	</Row><Row index="181">
+    <Independent name="wavelength">335.290000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8335.250000</Dependent>
+    </Column>
+	</Row><Row index="182">
+    <Independent name="wavelength">336.100000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8200.750000</Dependent>
+    </Column>
+	</Row><Row index="183">
+    <Independent name="wavelength">336.920000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8077.875000</Dependent>
+    </Column>
+	</Row><Row index="184">
+    <Independent name="wavelength">337.730000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7954.125000</Dependent>
+    </Column>
+	</Row><Row index="185">
+    <Independent name="wavelength">338.540000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7834.791667</Dependent>
+    </Column>
+	</Row><Row index="186">
+    <Independent name="wavelength">339.350000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7722.208333</Dependent>
+    </Column>
+	</Row><Row index="187">
+    <Independent name="wavelength">340.170000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7615.458333</Dependent>
+    </Column>
+	</Row><Row index="188">
+    <Independent name="wavelength">340.980000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7525.666667</Dependent>
+    </Column>
+	</Row><Row index="189">
+    <Independent name="wavelength">341.790000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7430.625000</Dependent>
+    </Column>
+	</Row><Row index="190">
+    <Independent name="wavelength">342.610000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7338.625000</Dependent>
+    </Column>
+	</Row><Row index="191">
+    <Independent name="wavelength">343.420000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7258.458333</Dependent>
+    </Column>
+	</Row><Row index="192">
+    <Independent name="wavelength">344.230000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7189.291667</Dependent>
+    </Column>
+	</Row><Row index="193">
+    <Independent name="wavelength">345.040000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7132.083333</Dependent>
+    </Column>
+	</Row><Row index="194">
+    <Independent name="wavelength">345.850000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7088.958333</Dependent>
+    </Column>
+	</Row><Row index="195">
+    <Independent name="wavelength">346.670000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7051.500000</Dependent>
+    </Column>
+	</Row><Row index="196">
+    <Independent name="wavelength">347.480000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7011.291667</Dependent>
+    </Column>
+	</Row><Row index="197">
+    <Independent name="wavelength">348.290000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6977.625000</Dependent>
+    </Column>
+	</Row><Row index="198">
+    <Independent name="wavelength">349.100000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6952.750000</Dependent>
+    </Column>
+	</Row><Row index="199">
+    <Independent name="wavelength">349.910000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6928.833333</Dependent>
+    </Column>
+	</Row><Row index="200">
+    <Independent name="wavelength">350.720000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6917.458333</Dependent>
+    </Column>
+	</Row><Row index="201">
+    <Independent name="wavelength">351.530000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6904.083333</Dependent>
+    </Column>
+	</Row><Row index="202">
+    <Independent name="wavelength">352.340000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6890.000000</Dependent>
+    </Column>
+	</Row><Row index="203">
+    <Independent name="wavelength">353.150000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6884.375000</Dependent>
+    </Column>
+	</Row><Row index="204">
+    <Independent name="wavelength">353.970000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6875.500000</Dependent>
+    </Column>
+	</Row><Row index="205">
+    <Independent name="wavelength">354.780000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6862.375000</Dependent>
+    </Column>
+	</Row><Row index="206">
+    <Independent name="wavelength">355.590000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6852.625000</Dependent>
+    </Column>
+	</Row><Row index="207">
+    <Independent name="wavelength">356.400000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6836.708333</Dependent>
+    </Column>
+	</Row><Row index="208">
+    <Independent name="wavelength">357.210000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6817.708333</Dependent>
+    </Column>
+	</Row><Row index="209">
+    <Independent name="wavelength">358.020000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6786.833333</Dependent>
+    </Column>
+	</Row><Row index="210">
+    <Independent name="wavelength">358.830000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6750.083333</Dependent>
+    </Column>
+	</Row><Row index="211">
+    <Independent name="wavelength">359.640000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6714.833333</Dependent>
+    </Column>
+	</Row><Row index="212">
+    <Independent name="wavelength">360.440000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6669.583333</Dependent>
+    </Column>
+	</Row><Row index="213">
+    <Independent name="wavelength">361.250000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6611.583333</Dependent>
+    </Column>
+	</Row><Row index="214">
+    <Independent name="wavelength">362.060000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6547.833333</Dependent>
+    </Column>
+	</Row><Row index="215">
+    <Independent name="wavelength">362.870000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6485.208333</Dependent>
+    </Column>
+	</Row><Row index="216">
+    <Independent name="wavelength">363.680000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6408.666667</Dependent>
+    </Column>
+	</Row><Row index="217">
+    <Independent name="wavelength">364.490000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6336.500000</Dependent>
+    </Column>
+	</Row><Row index="218">
+    <Independent name="wavelength">365.300000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6260.791667</Dependent>
+    </Column>
+	</Row><Row index="219">
+    <Independent name="wavelength">366.110000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6177.458333</Dependent>
+    </Column>
+	</Row><Row index="220">
+    <Independent name="wavelength">366.910000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6086.250000</Dependent>
+    </Column>
+	</Row><Row index="221">
+    <Independent name="wavelength">367.720000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5981.750000</Dependent>
+    </Column>
+	</Row><Row index="222">
+    <Independent name="wavelength">368.530000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5854.333333</Dependent>
+    </Column>
+	</Row><Row index="223">
+    <Independent name="wavelength">369.340000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5713.125000</Dependent>
+    </Column>
+	</Row><Row index="224">
+    <Independent name="wavelength">370.140000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5562.500000</Dependent>
+    </Column>
+	</Row><Row index="225">
+    <Independent name="wavelength">370.950000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5414.541667</Dependent>
+    </Column>
+	</Row><Row index="226">
+    <Independent name="wavelength">371.760000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5278.541667</Dependent>
+    </Column>
+	</Row><Row index="227">
+    <Independent name="wavelength">372.570000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5154.125000</Dependent>
+    </Column>
+	</Row><Row index="228">
+    <Independent name="wavelength">373.370000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5038.375000</Dependent>
+    </Column>
+	</Row><Row index="229">
+    <Independent name="wavelength">374.180000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4932.041667</Dependent>
+    </Column>
+	</Row><Row index="230">
+    <Independent name="wavelength">374.980000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4833.541667</Dependent>
+    </Column>
+	</Row><Row index="231">
+    <Independent name="wavelength">375.790000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4743.583333</Dependent>
+    </Column>
+	</Row><Row index="232">
+    <Independent name="wavelength">376.600000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4662.125000</Dependent>
+    </Column>
+	</Row><Row index="233">
+    <Independent name="wavelength">377.400000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4592.583333</Dependent>
+    </Column>
+	</Row><Row index="234">
+    <Independent name="wavelength">378.210000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4518.666667</Dependent>
+    </Column>
+	</Row><Row index="235">
+    <Independent name="wavelength">379.010000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4453.750000</Dependent>
+    </Column>
+	</Row><Row index="236">
+    <Independent name="wavelength">379.820000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4374.166667</Dependent>
+    </Column>
+	</Row><Row index="237">
+    <Independent name="wavelength">380.620000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4278.750000</Dependent>
+    </Column>
+	</Row><Row index="238">
+    <Independent name="wavelength">381.430000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4173.208333</Dependent>
+    </Column>
+	</Row><Row index="239">
+    <Independent name="wavelength">382.230000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4068.875000</Dependent>
+    </Column>
+	</Row><Row index="240">
+    <Independent name="wavelength">383.040000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3976.541667</Dependent>
+    </Column>
+	</Row><Row index="241">
+    <Independent name="wavelength">383.840000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3898.625000</Dependent>
+    </Column>
+	</Row><Row index="242">
+    <Independent name="wavelength">384.640000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3824.375000</Dependent>
+    </Column>
+	</Row><Row index="243">
+    <Independent name="wavelength">385.450000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3766.208333</Dependent>
+    </Column>
+	</Row><Row index="244">
+    <Independent name="wavelength">386.250000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3710.416667</Dependent>
+    </Column>
+	</Row><Row index="245">
+    <Independent name="wavelength">387.050000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3661.666667</Dependent>
+    </Column>
+	</Row><Row index="246">
+    <Independent name="wavelength">387.860000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3622.833333</Dependent>
+    </Column>
+	</Row><Row index="247">
+    <Independent name="wavelength">388.660000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3591.291667</Dependent>
+    </Column>
+	</Row><Row index="248">
+    <Independent name="wavelength">389.460000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3567.333333</Dependent>
+    </Column>
+	</Row><Row index="249">
+    <Independent name="wavelength">390.260000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3545.875000</Dependent>
+    </Column>
+	</Row><Row index="250">
+    <Independent name="wavelength">391.070000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3526.416667</Dependent>
+    </Column>
+	</Row><Row index="251">
+    <Independent name="wavelength">391.870000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3513.416667</Dependent>
+    </Column>
+	</Row><Row index="252">
+    <Independent name="wavelength">392.670000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3505.666667</Dependent>
+    </Column>
+	</Row><Row index="253">
+    <Independent name="wavelength">393.470000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3481.166667</Dependent>
+    </Column>
+	</Row><Row index="254">
+    <Independent name="wavelength">394.270000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3369.000000</Dependent>
+    </Column>
+	</Row><Row index="255">
+    <Independent name="wavelength">395.070000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">3174.833333</Dependent>
+    </Column>
+	</Row><Row index="256">
+    <Independent name="wavelength">395.870000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">2839.750000</Dependent>
+    </Column>
+	</Row></CalibrationTable>
+    <CalibrationStandards CertNumber="">ZZ201701120003</CalibrationStandards>
+    <StreamID>0</StreamID>
+    <Uncertainty units="mg/L"> 
+		<Name>U_CVALD3</Name>
+		<Value>0</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALD2</Name>
+		<Value>0</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALD1</Name>
+		<Value>0</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALA3</Name>
+		<Value>0.0333</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALA2</Name>
+		<Value>0.3</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALA1</Name>
+		<Value>0.666</Value>
+	</Uncertainty>
+    <Trueness units="mg/L">0.000000</Trueness>
+    <ActivityTimeRange>
+      <StartTime>2018-06-22T17:06:24.8058</StartTime>
+      <EndTime>2018-06-22T17:35:09.3291</EndTime>
+    </ActivityTimeRange>
+    <CertificateNumber>144044</CertificateNumber>
+  </StreamCalVal>
+  <ValidTimeRange>
+    <StartTime>2018-06-22T17:35:09.3291</StartTime>
+    <EndTime>2019-10-25T17:35:09.0000</EndTime>
+  </ValidTimeRange>
+  <Comment>
+    <CommentDescription/>
+    <CommentCreator/>
+    <CommentDateTime/>
+  </Comment>
+  <DATA>
+		<MetaData>
+			<Equipment>21000000051559</Equipment>
+			<Operator>mmahal</Operator>
+			<WorkOrder>WO27197</WorkOrder>
+			<MaximoID>37144</MaximoID>
+			<AssetID>30000000015530</AssetID>
+			<Reference>16  Mohms DI</Reference>
+			<Fixture>L1F700</Fixture>
+			<NEONPN>0329950000</NEONPN>
+			<SN header=""/>
+			<FW header=""/>
+			<SOH header="Selftest reults">selftest
+System time           , 2018-06-22T17:07:41Z
+Extrn Disk Size; Free , 3954802688; 3954507776
+Intrn Disk Size; Free , 2043904; 1974272
+Fiberlite    Odometer , 0423:27:04 
+Temperatures Hs Sp Lm , 22.1 22.0 22.2 
+Humidity              , 0.0 
+Electrical Mn Bd Pr C , 12.1 12.0 5.0 45.9 
+Lamp            Power , 6941 mW
+Spec Dark av sd mi ma ,   676 (+/-    11) [  637:  695] 
+Spec Lght av sd mi ma , 11427 (+/-  6624) [  656:28162] 
+Spec Integration Time ,   250 ms
+$Ok 
+SUNA&gt; 
+</SOH>
+			<UncertaintyCtl>L1F700</UncertaintyCtl>
+		</MetaData>
+		<PreCALDATA header=""/>
+		<CALDATA header="TimeStamp,AmbC,AmbRH,AmbhPa,UUT">3612533079.110827,21.300000,58.800000,837.100000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+874.000000,2018173.000000,17.421503,0.000000,0.000000,0.000000,0.000000,0.000000,683.000000,0.000000,1.000000,681.000000,661.000000,660.000000,669.000000,663.000000,645.000000,655.000000,645.000000,645.000000,641.000000,651.000000,649.000000,649.000000,659.000000,670.000000,659.000000,666.000000,683.000000,668.000000,671.000000,675.000000,668.000000,661.000000,691.000000,688.000000,692.000000,690.000000,702.000000,692.000000,695.000000,694.000000,689.000000,682.000000,690.000000,671.000000,675.000000,679.000000,685.000000,684.000000,692.000000,695.000000,682.000000,679.000000,683.000000,688.000000,682.000000,679.000000,689.000000,698.000000,704.000000,692.000000,695.000000,689.000000,690.000000,685.000000,683.000000,695.000000,698.000000,695.000000,686.000000,687.000000,685.000000,685.000000,693.000000,691.000000,693.000000,699.000000,685.000000,685.000000,683.000000,685.000000,689.000000,686.000000,689.000000,693.000000,694.000000,695.000000,690.000000,688.000000,678.000000,669.000000,673.000000,667.000000,675.000000,673.000000,692.000000,677.000000,671.000000,689.000000,677.000000,689.000000,689.000000,685.000000,690.000000,685.000000,689.000000,689.000000,674.000000,679.000000,668.000000,689.000000,680.000000,678.000000,694.000000,684.000000,678.000000,695.000000,694.000000,689.000000,694.000000,685.000000,693.000000,700.000000,697.000000,687.000000,704.000000,689.000000,690.000000,685.000000,673.000000,685.000000,691.000000,685.000000,681.000000,679.000000,685.000000,676.000000,676.000000,672.000000,674.000000,686.000000,677.000000,684.000000,680.000000,689.000000,677.000000,689.000000,673.000000,687.000000,682.000000,682.000000,678.000000,672.000000,691.000000,683.000000,685.000000,686.000000,694.000000,680.000000,681.000000,684.000000,689.000000,681.000000,689.000000,679.000000,693.000000,677.000000,695.000000,696.000000,679.000000,691.000000,689.000000,683.000000,674.000000,679.000000,683.000000,695.000000,682.000000,685.000000,675.000000,698.000000,681.000000,682.000000,686.000000,692.000000,690.000000,689.000000,679.000000,693.000000,684.000000,679.000000,669.000000,674.000000,679.000000,687.000000,685.000000,680.000000,693.000000,690.000000,688.000000,682.000000,685.000000,679.000000,687.000000,680.000000,679.000000,682.000000,679.000000,683.000000,676.000000,677.000000,676.000000,691.000000,679.000000,675.000000,678.000000,673.000000,691.000000,693.000000,690.000000,682.000000,683.000000,698.000000,695.000000,686.000000,685.000000,691.000000,680.000000,685.000000,689.000000,690.000000,684.000000,697.000000,689.000000,693.000000,683.000000,697.000000,692.000000,693.000000,682.000000,689.000000,674.000000,679.000000,674.000000,683.000000,677.000000,689.000000,686.000000,683.000000,678.000000,683.000000,687.000000,685.000000,683.000000,681.000000,677.000000,661.000000,663.000000,681.000000,674.000000,679.000000,687.000000,705.000000,682.000000,686.000000,568.000000,23.400000,22.300000,23.700000,1524455.000000,0.000000,12.100000,0.100000,5.000000,54.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,194.000000,2018173.000000,17.422108,700.420000,9.810500,0.000300,-0.002100,0.000000,10885.000000,683.000000,1.000000,674.000000,659.000000,671.000000,653.000000,667.000000,662.000000,669.000000,665.000000,666.000000,662.000000,658.000000,658.000000,658.000000,665.000000,668.000000,673.000000,669.000000,675.000000,679.000000,669.000000,665.000000,662.000000,671.000000,674.000000,660.000000,669.000000,669.000000,669.000000,673.000000,659.000000,677.000000,662.000000,670.000000,669.000000,678.000000,675.000000,702.000000,729.000000,770.000000,809.000000,893.000000,1010.000000,1174.000000,1411.000000,1715.000000,2107.000000,2595.000000,3181.000000,3882.000000,4715.000000,5668.000000,6750.000000,7971.000000,9317.000000,10790.000000,12383.000000,14112.000000,15922.000000,17819.000000,19746.000000,21747.000000,23684.000000,25579.000000,27358.000000,28944.000000,30268.000000,31271.000000,31894.000000,32148.000000,32012.000000,31478.000000,30681.000000,29598.000000,28347.000000,27052.000000,25697.000000,24427.000000,23221.000000,22113.000000,21140.000000,20119.000000,19450.000000,18895.000000,18369.000000,17934.000000,17639.000000,17407.000000,17291.000000,17245.000000,17302.000000,17433.000000,17627.000000,17910.000000,18259.000000,18668.000000,19120.000000,19591.000000,20049.000000,20530.000000,20933.000000,21309.000000,21540.000000,21657.000000,21639.000000,21483.000000,21173.000000,20759.000000,20213.000000,19577.000000,18916.000000,18213.000000,17501.000000,16823.000000,16162.000000,15558.000000,15018.000000,14520.000000,14088.000000,13710.000000,13407.000000,13152.000000,12953.000000,12819.000000,12728.000000,12686.000000,12703.000000,12769.000000,12864.000000,13003.000000,13185.000000,13394.000000,13617.000000,13864.000000,14167.000000,14457.000000,14776.000000,15115.000000,15448.000000,15788.000000,16118.000000,16432.000000,16730.000000,17010.000000,17234.000000,17430.000000,17589.000000,17713.000000,17764.000000,17764.000000,17687.000000,17552.000000,17368.000000,17131.000000,16857.000000,16491.000000,16146.000000,15753.000000,15341.000000,14914.000000,14480.000000,14050.000000,13657.000000,13281.000000,12931.000000,12597.000000,12292.000000,12000.000000,11749.000000,11467.000000,11217.000000,10961.000000,10715.000000,10487.000000,10253.000000,10050.000000,9871.000000,9669.000000,9515.000000,9352.000000,9211.000000,9071.000000,8913.000000,8803.000000,8689.000000,8556.000000,8438.000000,8354.000000,8245.000000,8146.000000,8046.000000,7969.000000,7896.000000,7842.000000,7815.000000,7785.000000,7721.000000,7687.000000,7678.000000,7645.000000,7625.000000,7623.000000,7597.000000,7595.000000,7589.000000,7564.000000,7570.000000,7550.000000,7529.000000,7509.000000,7467.000000,7429.000000,7371.000000,7331.000000,7265.000000,7180.000000,7113.000000,7038.000000,6962.000000,6891.000000,6792.000000,6686.000000,6573.000000,6422.000000,6265.000000,6119.000000,5969.000000,5842.000000,5729.000000,5608.000000,5539.000000,5446.000000,5358.000000,5292.000000,5222.000000,5153.000000,5062.000000,4977.000000,4877.000000,4761.000000,4670.000000,4594.000000,4505.000000,4457.000000,4400.000000,4352.000000,4306.000000,4267.000000,4263.000000,4249.000000,4219.000000,4209.000000,4206.000000,4181.000000,4057.000000,3859.000000,3514.000000,23.400000,22.300000,23.600000,1524457.000000,0.000000,11.700000,12.000000,5.100000,559.000000,-1.000000,-1.000000,43.742200,-17.751861,0.007759,0.000000,0.000000,0.000000,0.000000,19.000000
+874.000000,2018173.000000,17.422108,700.420000,9.810500,0.000300,-0.002100,0.000000,10885.000000,683.000000,1.000000,674.000000,659.000000,671.000000,653.000000,667.000000,662.000000,669.000000,665.000000,666.000000,662.000000,658.000000,658.000000,658.000000,665.000000,668.000000,673.000000,669.000000,675.000000,679.000000,669.000000,665.000000,662.000000,671.000000,674.000000,660.000000,669.000000,669.000000,669.000000,673.000000,659.000000,677.000000,662.000000,670.000000,669.000000,678.000000,675.000000,702.000000,729.000000,770.000000,809.000000,893.000000,1010.000000,1174.000000,1411.000000,1715.000000,2107.000000,2595.000000,3181.000000,3882.000000,4715.000000,5668.000000,6750.000000,7971.000000,9317.000000,10790.000000,12383.000000,14112.000000,15922.000000,17819.000000,19746.000000,21747.000000,23684.000000,25579.000000,27358.000000,28944.000000,30268.000000,31271.000000,31894.000000,32148.000000,32012.000000,31478.000000,30681.000000,29598.000000,28347.000000,27052.000000,25697.000000,24427.000000,23221.000000,22113.000000,21140.000000,20119.000000,19450.000000,18895.000000,18369.000000,17934.000000,17639.000000,17407.000000,17291.000000,17245.000000,17302.000000,17433.000000,17627.000000,17910.000000,18259.000000,18668.000000,19120.000000,19591.000000,20049.000000,20530.000000,20933.000000,21309.000000,21540.000000,21657.000000,21639.000000,21483.000000,21173.000000,20759.000000,20213.000000,19577.000000,18916.000000,18213.000000,17501.000000,16823.000000,16162.000000,15558.000000,15018.000000,14520.000000,14088.000000,13710.000000,13407.000000,13152.000000,12953.000000,12819.000000,12728.000000,12686.000000,12703.000000,12769.000000,12864.000000,13003.000000,13185.000000,13394.000000,13617.000000,13864.000000,14167.000000,14457.000000,14776.000000,15115.000000,15448.000000,15788.000000,16118.000000,16432.000000,16730.000000,17010.000000,17234.000000,17430.000000,17589.000000,17713.000000,17764.000000,17764.000000,17687.000000,17552.000000,17368.000000,17131.000000,16857.000000,16491.000000,16146.000000,15753.000000,15341.000000,14914.000000,14480.000000,14050.000000,13657.000000,13281.000000,12931.000000,12597.000000,12292.000000,12000.000000,11749.000000,11467.000000,11217.000000,10961.000000,10715.000000,10487.000000,10253.000000,10050.000000,9871.000000,9669.000000,9515.000000,9352.000000,9211.000000,9071.000000,8913.000000,8803.000000,8689.000000,8556.000000,8438.000000,8354.000000,8245.000000,8146.000000,8046.000000,7969.000000,7896.000000,7842.000000,7815.000000,7785.000000,7721.000000,7687.000000,7678.000000,7645.000000,7625.000000,7623.000000,7597.000000,7595.000000,7589.000000,7564.000000,7570.000000,7550.000000,7529.000000,7509.000000,7467.000000,7429.000000,7371.000000,7331.000000,7265.000000,7180.000000,7113.000000,7038.000000,6962.000000,6891.000000,6792.000000,6686.000000,6573.000000,6422.000000,6265.000000,6119.000000,5969.000000,5842.000000,5729.000000,5608.000000,5539.000000,5446.000000,5358.000000,5292.000000,5222.000000,5153.000000,5062.000000,4977.000000,4877.000000,4761.000000,4670.000000,4594.000000,4505.000000,4457.000000,4400.000000,4352.000000,4306.000000,4267.000000,4263.000000,4249.000000,4219.000000,4209.000000,4206.000000,4181.000000,4057.000000,3859.000000,3514.000000,23.400000,22.300000,23.600000,1524457.000000,0.000000,11.700000,12.000000,5.100000,559.000000,-1.000000,-1.000000,43.742200,-17.751861,0.007759,0.000000,0.000000,0.000000,0.000000,19.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+
+
+
+
+----------------
+H,SUNA 0874 Cal A  extinction coefficients and reference spectra
+H,File generated by SUNACom 1.2.5
+H,File format version 3
+H,File creation time 22-Jun-2018 17:17:21
+H,File generated by SUNACom 3.0.11
+H,File format version 3
+H,File creation time 16-May-2018 09:25:08
+H,File generated by Internal Software Suite 1.9.23_30
+H,File format version 3
+H,File creation time 15-May-2018 10:26:30
+H,Operator production
+H,PATH_LENGTH 10
+H,INT_PERIOD 475
+H,CONC_CAL_NO3 400.00
+H,T_CAL_FWA 20.00
+H,HIGHNO3_CORRECTION 0.00E00
+H,NitrateFile SUNA_0874_001.xml
+H,DIW Log file SUNA0874_Cal02_DIW_1.raw
+H,Nitrate Log file SUNA0874_Cal02_LNO3_1.raw
+H,High Nitrate Log file SUNA0874_Cal02_HNO3_1.raw
+H,Wavelength,nm
+H,NITRATE,uM
+H,Reference,counts
+H,Wavelength,NO3,Reference
+E,189.11,0.00520690,-5.70833333
+E,189.91,0.00856057,-4.16666667
+E,190.71,0.01037433,-2.08333333
+E,191.51,-0.00181377,-4.83333333
+E,192.31,0.00138793,-3.87500000
+E,193.11,0.00619461,-4.41666667
+E,193.92,0.00459111,-2.54166667
+E,194.72,0.00440228,-6.29166667
+E,195.52,0.01608632,-4.62500000
+E,196.32,0.00181377,-6.91666667
+E,197.13,0.00000000,-4.16666667
+E,197.93,0.00720163,4.20833333
+E,198.73,0.00861603,78.83333333
+E,199.54,0.00900055,342.45833333
+E,200.34,0.00940544,1062.33333333
+E,201.14,0.00944234,2552.83333333
+E,201.95,0.00945869,4856.41666667
+E,202.75,0.00939260,7494.45833333
+E,203.56,0.00933058,9812.45833333
+E,204.36,0.00924004,11439.25000000
+E,205.17,0.00912829,12323.91666667
+E,205.97,0.00897572,12696.33333333
+E,206.78,0.00881277,12760.79166667
+E,207.58,0.00856361,12714.16666667
+E,208.39,0.00835830,12667.75000000
+E,209.19,0.00808689,12715.62500000
+E,210.00,0.00783433,12885.08333333
+E,210.81,0.00752114,13226.37500000
+E,211.61,0.00719466,13731.41666667
+E,212.42,0.00683766,14413.95833333
+E,213.23,0.00647859,15286.95833333
+E,214.03,0.00611029,16352.50000000
+E,214.84,0.00574660,17588.91666667
+E,215.65,0.00538574,18966.75000000
+E,216.46,0.00501386,20440.95833333
+E,217.26,0.00464064,21929.66666667
+E,218.07,0.00428671,23319.41666667
+E,218.88,0.00393939,24556.20833333
+E,219.69,0.00360437,25500.75000000
+E,220.50,0.00328488,26109.83333333
+E,221.31,0.00297872,26299.66666667
+E,222.12,0.00269149,26096.04166667
+E,222.92,0.00241248,25556.83333333
+E,223.73,0.00215982,24776.54166667
+E,224.54,0.00191043,23877.58333333
+E,225.35,0.00168463,22949.00000000
+E,226.16,0.00147261,22077.54166667
+E,226.97,0.00127997,21351.12500000
+E,227.78,0.00110110,20786.04166667
+E,228.59,0.00094686,20424.70833333
+E,229.40,0.00080509,20244.16666667
+E,230.21,0.00068959,20270.45833333
+E,231.02,0.00058364,20465.16666667
+E,231.83,0.00048849,20843.37500000
+E,232.65,0.00041948,21413.41666667
+E,233.46,0.00035705,22120.29166667
+E,234.27,0.00030449,22974.45833333
+E,235.08,0.00025819,23955.83333333
+E,235.89,0.00021805,25036.70833333
+E,236.70,0.00018370,26219.79166667
+E,237.51,0.00015431,27463.50000000
+E,238.33,0.00012913,28684.41666667
+E,239.14,0.00010784,29918.75000000
+E,239.95,0.00008984,31047.58333333
+E,240.76,0.00007465,32008.50000000
+E,241.57,0.00006182,32800.37500000
+E,242.39,0.00005111,33281.25000000
+E,243.20,0.00004212,33451.66666667
+E,244.01,0.00003464,33290.70833333
+E,244.82,0.00002840,32782.45833333
+E,245.64,0.00002310,31936.87500000
+E,246.45,0.00001881,30883.54166667
+E,247.26,0.00001517,29595.79166667
+E,248.08,0.00001217,28160.37500000
+E,248.89,0.00000978,26735.12500000
+E,249.70,0.00000780,25290.54166667
+E,250.52,0.00000621,23920.50000000
+E,251.33,0.00000495,22649.66666667
+E,252.14,0.00000378,21499.91666667
+E,252.96,0.00000292,20494.33333333
+E,253.77,0.00000219,19448.41666667
+E,254.58,0.00000160,18751.08333333
+E,255.40,0.00000114,18188.45833333
+E,256.21,0.00000091,17659.29166667
+E,257.03,0.00000055,17237.79166667
+E,257.84,0.00000042,16917.12500000
+E,258.66,0.00000018,16694.08333333
+E,259.47,0.00000000,16565.45833333
+E,260.28,-0.00000001,16528.79166667
+E,261.10,-0.00000008,16564.45833333
+E,261.91,-0.00000005,16701.37500000
+E,262.73,-0.00000010,16894.25000000
+E,263.54,-0.00000003,17182.08333333
+E,264.36,0.00000008,17512.75000000
+E,265.17,0.00000008,17915.37500000
+E,265.99,0.00000004,18377.79166667
+E,266.80,0.00000014,18854.37500000
+E,267.62,0.00000024,19318.20833333
+E,268.43,0.00000034,19792.62500000
+E,269.25,0.00000042,20211.83333333
+E,270.06,0.00000053,20572.04166667
+E,270.88,0.00000058,20811.37500000
+E,271.69,0.00000070,20926.29166667
+E,272.51,0.00000079,20917.04166667
+E,273.33,0.00000094,20757.12500000
+E,274.14,0.00000105,20453.50000000
+E,274.96,0.00000113,20030.41666667
+E,275.77,0.00000125,19491.00000000
+E,276.59,0.00000144,18868.66666667
+E,277.40,0.00000165,18200.16666667
+E,278.22,0.00000182,17509.70833333
+E,279.04,0.00000187,16808.54166667
+E,279.85,0.00000197,16120.08333333
+E,280.67,0.00000213,15469.00000000
+E,281.48,0.00000231,14868.25000000
+E,282.30,0.00000241,14333.95833333
+E,283.11,0.00000282,13843.12500000
+E,283.93,0.00000289,13411.66666667
+E,284.75,0.00000306,13042.79166667
+E,285.56,0.00000322,12725.50000000
+E,286.38,0.00000333,12485.70833333
+E,287.19,0.00000359,12284.91666667
+E,288.01,0.00000379,12140.83333333
+E,288.83,0.00000398,12055.83333333
+E,289.64,0.00000422,12028.12500000
+E,290.46,0.00000425,12031.45833333
+E,291.27,0.00000451,12098.83333333
+E,292.09,0.00000475,12201.70833333
+E,292.91,0.00000480,12341.62500000
+E,293.72,0.00000488,12519.83333333
+E,294.54,0.00000497,12727.16666667
+E,295.35,0.00000514,12961.70833333
+E,296.17,0.00000510,13212.54166667
+E,296.99,0.00000528,13515.87500000
+E,297.80,0.00000544,13811.70833333
+E,298.62,0.00000551,14140.50000000
+E,299.43,0.00000560,14467.87500000
+E,300.25,0.00000566,14798.29166667
+E,301.06,0.00000560,15146.04166667
+E,301.88,0.00000574,15479.50000000
+E,302.70,0.00000568,15780.08333333
+E,303.51,0.00000560,16077.41666667
+E,304.33,0.00000549,16358.08333333
+E,305.14,0.00000547,16596.45833333
+E,305.96,0.00000532,16799.91666667
+E,306.78,0.00000518,16962.16666667
+E,307.59,0.00000505,17071.79166667
+E,308.41,0.00000482,17127.12500000
+E,309.22,0.00000465,17107.29166667
+E,310.04,0.00000456,17027.58333333
+E,310.85,0.00000434,16888.79166667
+E,311.67,0.00000421,16696.45833333
+E,312.48,0.00000396,16446.87500000
+E,313.30,0.00000372,16162.66666667
+E,314.11,0.00000347,15813.62500000
+E,314.93,0.00000326,15446.87500000
+E,315.75,0.00000305,15049.45833333
+E,316.56,0.00000279,14630.37500000
+E,317.38,0.00000249,14203.83333333
+E,318.19,0.00000238,13767.25000000
+E,319.01,0.00000210,13336.79166667
+E,319.82,0.00000188,12938.20833333
+E,320.64,0.00000160,12559.75000000
+E,321.45,0.00000133,12206.83333333
+E,322.26,0.00000111,11871.75000000
+E,323.08,0.00000087,11564.12500000
+E,323.89,0.00000072,11272.58333333
+E,324.71,0.00000050,11013.45833333
+E,325.52,0.00000028,10745.12500000
+E,326.34,0.00000011,10482.04166667
+E,327.15,-0.00000015,10224.12500000
+E,327.97,-0.00000012,9979.37500000
+E,328.78,-0.00000021,9736.79166667
+E,329.59,-0.00000041,9516.83333333
+E,330.41,-0.00000048,9315.75000000
+E,331.22,-0.00000068,9124.87500000
+E,332.04,-0.00000074,8946.91666667
+E,332.85,-0.00000063,8779.62500000
+E,333.66,-0.00000074,8616.75000000
+E,334.48,-0.00000094,8481.95833333
+E,335.29,-0.00000075,8335.25000000
+E,336.10,-0.00000088,8200.75000000
+E,336.92,-0.00000099,8077.87500000
+E,337.73,-0.00000093,7954.12500000
+E,338.54,-0.00000091,7834.79166667
+E,339.35,-0.00000098,7722.20833333
+E,340.17,-0.00000099,7615.45833333
+E,340.98,-0.00000107,7525.66666667
+E,341.79,-0.00000093,7430.62500000
+E,342.61,-0.00000100,7338.62500000
+E,343.42,-0.00000127,7258.45833333
+E,344.23,-0.00000111,7189.29166667
+E,345.04,-0.00000115,7132.08333333
+E,345.85,-0.00000107,7088.95833333
+E,346.67,-0.00000119,7051.50000000
+E,347.48,-0.00000114,7011.29166667
+E,348.29,-0.00000097,6977.62500000
+E,349.10,-0.00000123,6952.75000000
+E,349.91,-0.00000112,6928.83333333
+E,350.72,-0.00000091,6917.45833333
+E,351.53,-0.00000099,6904.08333333
+E,352.34,-0.00000096,6890.00000000
+E,353.15,-0.00000098,6884.37500000
+E,353.97,-0.00000084,6875.50000000
+E,354.78,-0.00000088,6862.37500000
+E,355.59,-0.00000072,6852.62500000
+E,356.40,-0.00000102,6836.70833333
+E,357.21,-0.00000085,6817.70833333
+E,358.02,-0.00000105,6786.83333333
+E,358.83,-0.00000106,6750.08333333
+E,359.64,-0.00000099,6714.83333333
+E,360.44,-0.00000086,6669.58333333
+E,361.25,-0.00000098,6611.58333333
+E,362.06,-0.00000112,6547.83333333
+E,362.87,-0.00000088,6485.20833333
+E,363.68,-0.00000082,6408.66666667
+E,364.49,-0.00000094,6336.50000000
+E,365.30,-0.00000092,6260.79166667
+E,366.11,-0.00000113,6177.45833333
+E,366.91,-0.00000104,6086.25000000
+E,367.72,-0.00000100,5981.75000000
+E,368.53,-0.00000107,5854.33333333
+E,369.34,-0.00000084,5713.12500000
+E,370.14,-0.00000120,5562.50000000
+E,370.95,-0.00000090,5414.54166667
+E,371.76,-0.00000092,5278.54166667
+E,372.57,-0.00000053,5154.12500000
+E,373.37,-0.00000080,5038.37500000
+E,374.18,-0.00000064,4932.04166667
+E,374.98,-0.00000067,4833.54166667
+E,375.79,-0.00000059,4743.58333333
+E,376.60,-0.00000072,4662.12500000
+E,377.40,-0.00000095,4592.58333333
+E,378.21,-0.00000089,4518.66666667
+E,379.01,-0.00000072,4453.75000000
+E,379.82,-0.00000057,4374.16666667
+E,380.62,-0.00000087,4278.75000000
+E,381.43,-0.00000072,4173.20833333
+E,382.23,-0.00000032,4068.87500000
+E,383.04,-0.00000063,3976.54166667
+E,383.84,-0.00000058,3898.62500000
+E,384.64,-0.00000041,3824.37500000
+E,385.45,-0.00000006,3766.20833333
+E,386.25,-0.00000019,3710.41666667
+E,387.05,-0.00000023,3661.66666667
+E,387.86,-0.00000043,3622.83333333
+E,388.66,-0.00000012,3591.29166667
+E,389.46,-0.00000054,3567.33333333
+E,390.26,-0.00000024,3545.87500000
+E,391.07,-0.00000030,3526.41666667
+E,391.87,-0.00000042,3513.41666667
+E,392.67,-0.00000028,3505.66666667
+E,393.47,-0.00000014,3481.16666667
+E,394.27,0.00000025,3369.00000000
+E,395.07,0.00000047,3174.83333333
+E,395.87,0.00000056,2839.75000000
+</CALDATA>
+		<ValidationDATA header=""/>
+		<QCStatic header="">0.000000,0.000000,0.000000,0.950000,0.000000,0.000000,3,mg/L</QCStatic>
+		<QCDynamic header=""/>
+		<Precision header=""/>
+		<AsLeftCFG header="">set --msglevel Info
+$Ok 
+SUNA&gt; 
+set --msgfsize 2
+$Ok 
+SUNA&gt; 
+set --outfrtyp Full_ASCII
+$Ok 
+SUNA&gt; 
+set --logfrtyp Full_ASCII
+$Ok 
+SUNA&gt; 
+set --logftype Daily
+$Ok 
+SUNA&gt; 
+set --opermode Periodic
+$Ok 
+SUNA&gt; 
+set --operctrl Samples
+$Ok 
+SUNA&gt; 
+set --perdival 15m
+$Ok 
+SUNA&gt; 
+set --drksmpls 10
+$Ok 
+SUNA&gt; 
+set --lgtsmpls 50
+$Ok 
+SUNA&gt; 
+set --perdsmpl 50
+$Ok 
+SUNA&gt; 
+set --tempcomp Off
+$Ok 
+SUNA&gt; 
+set --brmtrace Off
+$Ok 
+SUNA&gt; 
+set --fitconcs 1
+$Ok 
+SUNA&gt; 
+set --drkcormt SpecAverage
+$Ok 
+SUNA&gt; 
+set --a_cutoff 10.0
+$Ok 
+SUNA&gt; 
+set --intpradj Off
+$Ok 
+SUNA&gt; 
+set --exdevtyp Wiper
+$Ok 
+SUNA&gt; 
+set --exdevpre 30
+$Ok 
+SUNA&gt; 
+set --exdevrun Off
+$Ok 
+SUNA&gt; 
+set --stbltime 10
+$Ok 
+SUNA&gt; 
+set --salinfit off
+$Ok 
+SUNA&gt; 
+exit
+$Ok 
+SUNA&gt; 
+</AsLeftCFG>
+		<AsReceived>
+			<ReceivedCFG header="">get cfg
+
+SENSTYPE SUNA
+SENSVERS V2
+SERIALNO 874
+THEBRAND SeabirdCoastal
+PATHLGTH 10mm
+INTWIPER Available
+EXTPPORT Missing
+SUPRCAPS Available
+PWRSVISR Available
+USBSWTCH Available
+RELAYBRD Missing
+SDI12BRD Missing
+ANALGBRD Missing
+INTDATLG Available
+APFIFACE Missing
+SCHDLING Available
+OWIRETLP 1041afbb020800d9
+OWIRETSP 104ae1ff02080084
+OWIRETHS 102717080308006b
+ZSPEC_SN 105693
+FIBERLSN C6.D01.2388
+CUSTOMID 37144
+STUPSTUS Done
+BAUDRATE 57600
+MSGLEVEL Info
+MSGFSIZE 2
+DATFSIZE 5
+OUTFRTYP Full_ASCII
+LOGFRTYP Full_ASCII
+OUTDRKFR Output
+LOGDRKFR Output
+LOGFTYPE Daily
+AFILEDUR 60
+ACQCOUNT 6
+CNTCOUNT 298
+DCMINNO3 -5.000
+DCMAXNO3 100.000
+WDAT_LOW 217.00
+WDAT_HGH 250.00
+SDI12ADD 48
+DATAMODE Real
+OPERMODE Polled
+OPERCTRL Samples
+EXDEVTYP Wiper
+EXDEVPRE 30
+EXDEVRUN Off
+EXDVIVAL 0
+COUNTDWN 3
+FIXDDURA 60
+PERDIVAL 15m
+PERDOFFS 0
+PERDDURA 130
+PERDSMPL 50
+POLLTOUT 15
+APFATOFF 10.0000
+STBLTIME 10
+SKPSLEEP Off
+LAMPTOFF 35
+SPINTPER 250
+DRKAVERS 1
+LGTAVERS 1
+DRKSMPLS 10
+LGTSMPLS 50
+DRKDURAT 2
+LGTDURAT 58
+TEMPCOMP Off
+SALINFIT Off
+BRMTRACE Off
+BL_ORDER 1
+FITCONCS 1
+DRKCORMT SpecAverage
+A_CUTOFF 10.0000
+INTPRADJ Off
+INTPRFAC 1
+INTADSTP 20
+INTADMAX 20
+WFIT_LOW 217.00
+WFIT_HGH 240.00
+LAMPTIME 1524455
+$Ok 
+SUNA&gt; 
+exit
+$Ok 
+SUNA&gt; 
+
+</ReceivedCFG>
+			<ReceivedCoefficient> 
+				<Name/>
+				<Value>9.85</Value>
+			</ReceivedCoefficient>
+			<ReceivedDATA header="">3612533227.538626,21.500000,57.400000,837.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+874.000000,2018173.000000,17.545848,0.000000,0.000000,0.000000,0.000000,0.000000,683.000000,0.000000,1.000000,674.000000,654.000000,661.000000,647.000000,673.000000,665.000000,680.000000,670.000000,683.000000,669.000000,670.000000,673.000000,661.000000,653.000000,657.000000,659.000000,669.000000,663.000000,669.000000,674.000000,670.000000,666.000000,663.000000,681.000000,682.000000,681.000000,679.000000,693.000000,695.000000,689.000000,696.000000,689.000000,706.000000,697.000000,695.000000,689.000000,688.000000,689.000000,686.000000,689.000000,683.000000,683.000000,684.000000,686.000000,685.000000,694.000000,690.000000,679.000000,677.000000,676.000000,681.000000,684.000000,682.000000,693.000000,697.000000,693.000000,693.000000,695.000000,695.000000,694.000000,679.000000,673.000000,683.000000,679.000000,677.000000,679.000000,693.000000,698.000000,681.000000,695.000000,693.000000,683.000000,691.000000,681.000000,683.000000,675.000000,684.000000,679.000000,677.000000,680.000000,680.000000,691.000000,691.000000,685.000000,704.000000,695.000000,703.000000,690.000000,701.000000,680.000000,687.000000,683.000000,681.000000,688.000000,673.000000,691.000000,697.000000,679.000000,694.000000,693.000000,698.000000,695.000000,693.000000,690.000000,667.000000,686.000000,674.000000,678.000000,677.000000,688.000000,674.000000,679.000000,689.000000,685.000000,681.000000,697.000000,681.000000,691.000000,696.000000,689.000000,696.000000,690.000000,693.000000,683.000000,685.000000,695.000000,685.000000,691.000000,678.000000,685.000000,681.000000,679.000000,678.000000,687.000000,689.000000,685.000000,693.000000,682.000000,672.000000,675.000000,683.000000,679.000000,679.000000,678.000000,688.000000,705.000000,699.000000,695.000000,683.000000,695.000000,700.000000,701.000000,692.000000,696.000000,688.000000,665.000000,674.000000,676.000000,661.000000,672.000000,684.000000,685.000000,689.000000,695.000000,696.000000,692.000000,690.000000,699.000000,693.000000,678.000000,679.000000,674.000000,679.000000,681.000000,674.000000,694.000000,680.000000,687.000000,695.000000,695.000000,691.000000,688.000000,681.000000,675.000000,688.000000,681.000000,680.000000,679.000000,670.000000,671.000000,673.000000,681.000000,680.000000,690.000000,688.000000,680.000000,689.000000,689.000000,696.000000,682.000000,692.000000,673.000000,675.000000,668.000000,673.000000,678.000000,691.000000,701.000000,689.000000,676.000000,691.000000,689.000000,674.000000,683.000000,687.000000,678.000000,683.000000,684.000000,679.000000,685.000000,666.000000,695.000000,685.000000,691.000000,681.000000,681.000000,689.000000,690.000000,693.000000,692.000000,689.000000,685.000000,693.000000,680.000000,683.000000,683.000000,692.000000,683.000000,696.000000,689.000000,685.000000,691.000000,676.000000,663.000000,677.000000,668.000000,673.000000,672.000000,665.000000,679.000000,677.000000,682.000000,681.000000,678.000000,686.000000,561.000000,23.400000,22.300000,23.600000,1524456.000000,0.000000,12.100000,0.100000,5.000000,54.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,4.000000,2018173.000000,17.546450,703.420000,9.852600,0.251000,0.255000,0.000000,10903.000000,683.000000,1.000000,673.000000,673.000000,672.000000,666.000000,669.000000,670.000000,668.000000,670.000000,672.000000,663.000000,675.000000,669.000000,671.000000,657.000000,659.000000,674.000000,668.000000,673.000000,672.000000,668.000000,675.000000,680.000000,669.000000,669.000000,681.000000,682.000000,677.000000,676.000000,666.000000,664.000000,672.000000,677.000000,669.000000,670.000000,696.000000,688.000000,702.000000,720.000000,753.000000,797.000000,878.000000,1011.000000,1178.000000,1405.000000,1729.000000,2125.000000,2599.000000,3205.000000,3906.000000,4724.000000,5685.000000,6780.000000,7981.000000,9323.000000,10811.000000,12407.000000,14118.000000,15931.000000,17821.000000,19786.000000,21772.000000,23703.000000,25628.000000,27400.000000,28965.000000,30307.000000,31284.000000,31937.000000,32184.000000,32058.000000,31508.000000,30723.000000,29640.000000,28378.000000,27076.000000,25729.000000,24448.000000,23228.000000,22120.000000,21163.000000,20130.000000,19451.000000,18893.000000,18385.000000,17956.000000,17668.000000,17429.000000,17304.000000,17281.000000,17300.000000,17451.000000,17656.000000,17949.000000,18273.000000,18691.000000,19140.000000,19626.000000,20081.000000,20546.000000,20969.000000,21333.000000,21565.000000,21672.000000,21682.000000,21515.000000,21202.000000,20772.000000,20234.000000,19622.000000,18946.000000,18251.000000,17541.000000,16868.000000,16189.000000,15598.000000,15051.000000,14554.000000,14122.000000,13760.000000,13417.000000,13171.000000,12951.000000,12823.000000,12738.000000,12705.000000,12716.000000,12795.000000,12878.000000,13026.000000,13209.000000,13404.000000,13637.000000,13893.000000,14198.000000,14490.000000,14814.000000,15138.000000,15475.000000,15810.000000,16134.000000,16437.000000,16729.000000,17022.000000,17252.000000,17467.000000,17638.000000,17745.000000,17797.000000,17793.000000,17714.000000,17587.000000,17393.000000,17145.000000,16876.000000,16513.000000,16163.000000,15784.000000,15360.000000,14928.000000,14512.000000,14086.000000,13689.000000,13312.000000,12949.000000,12629.000000,12310.000000,12045.000000,11776.000000,11510.000000,11257.000000,10982.000000,10723.000000,10489.000000,10269.000000,10064.000000,9880.000000,9698.000000,9524.000000,9377.000000,9241.000000,9084.000000,8950.000000,8823.000000,8702.000000,8573.000000,8442.000000,8345.000000,8264.000000,8169.000000,8068.000000,7989.000000,7940.000000,7862.000000,7816.000000,7778.000000,7744.000000,7698.000000,7675.000000,7654.000000,7634.000000,7648.000000,7621.000000,7609.000000,7605.000000,7600.000000,7573.000000,7557.000000,7536.000000,7506.000000,7472.000000,7420.000000,7385.000000,7331.000000,7268.000000,7208.000000,7130.000000,7057.000000,6985.000000,6906.000000,6817.000000,6701.000000,6571.000000,6429.000000,6276.000000,6125.000000,5992.000000,5865.000000,5743.000000,5643.000000,5554.000000,5450.000000,5381.000000,5303.000000,5228.000000,5173.000000,5084.000000,4989.000000,4881.000000,4784.000000,4672.000000,4607.000000,4536.000000,4469.000000,4423.000000,4377.000000,4329.000000,4299.000000,4279.000000,4241.000000,4231.000000,4209.000000,4189.000000,4187.000000,4074.000000,3877.000000,3545.000000,23.600000,22.400000,23.200000,1524458.000000,0.000000,11.700000,12.000000,5.000000,545.000000,-1.000000,-1.000000,58.803500,-13.725236,0.007626,0.000000,0.000000,0.000000,0.000000,19.000000
+874.000000,2018173.000000,17.546450,703.420000,9.852600,0.251000,0.255000,0.000000,10903.000000,683.000000,1.000000,673.000000,673.000000,672.000000,666.000000,669.000000,670.000000,668.000000,670.000000,672.000000,663.000000,675.000000,669.000000,671.000000,657.000000,659.000000,674.000000,668.000000,673.000000,672.000000,668.000000,675.000000,680.000000,669.000000,669.000000,681.000000,682.000000,677.000000,676.000000,666.000000,664.000000,672.000000,677.000000,669.000000,670.000000,696.000000,688.000000,702.000000,720.000000,753.000000,797.000000,878.000000,1011.000000,1178.000000,1405.000000,1729.000000,2125.000000,2599.000000,3205.000000,3906.000000,4724.000000,5685.000000,6780.000000,7981.000000,9323.000000,10811.000000,12407.000000,14118.000000,15931.000000,17821.000000,19786.000000,21772.000000,23703.000000,25628.000000,27400.000000,28965.000000,30307.000000,31284.000000,31937.000000,32184.000000,32058.000000,31508.000000,30723.000000,29640.000000,28378.000000,27076.000000,25729.000000,24448.000000,23228.000000,22120.000000,21163.000000,20130.000000,19451.000000,18893.000000,18385.000000,17956.000000,17668.000000,17429.000000,17304.000000,17281.000000,17300.000000,17451.000000,17656.000000,17949.000000,18273.000000,18691.000000,19140.000000,19626.000000,20081.000000,20546.000000,20969.000000,21333.000000,21565.000000,21672.000000,21682.000000,21515.000000,21202.000000,20772.000000,20234.000000,19622.000000,18946.000000,18251.000000,17541.000000,16868.000000,16189.000000,15598.000000,15051.000000,14554.000000,14122.000000,13760.000000,13417.000000,13171.000000,12951.000000,12823.000000,12738.000000,12705.000000,12716.000000,12795.000000,12878.000000,13026.000000,13209.000000,13404.000000,13637.000000,13893.000000,14198.000000,14490.000000,14814.000000,15138.000000,15475.000000,15810.000000,16134.000000,16437.000000,16729.000000,17022.000000,17252.000000,17467.000000,17638.000000,17745.000000,17797.000000,17793.000000,17714.000000,17587.000000,17393.000000,17145.000000,16876.000000,16513.000000,16163.000000,15784.000000,15360.000000,14928.000000,14512.000000,14086.000000,13689.000000,13312.000000,12949.000000,12629.000000,12310.000000,12045.000000,11776.000000,11510.000000,11257.000000,10982.000000,10723.000000,10489.000000,10269.000000,10064.000000,9880.000000,9698.000000,9524.000000,9377.000000,9241.000000,9084.000000,8950.000000,8823.000000,8702.000000,8573.000000,8442.000000,8345.000000,8264.000000,8169.000000,8068.000000,7989.000000,7940.000000,7862.000000,7816.000000,7778.000000,7744.000000,7698.000000,7675.000000,7654.000000,7634.000000,7648.000000,7621.000000,7609.000000,7605.000000,7600.000000,7573.000000,7557.000000,7536.000000,7506.000000,7472.000000,7420.000000,7385.000000,7331.000000,7268.000000,7208.000000,7130.000000,7057.000000,6985.000000,6906.000000,6817.000000,6701.000000,6571.000000,6429.000000,6276.000000,6125.000000,5992.000000,5865.000000,5743.000000,5643.000000,5554.000000,5450.000000,5381.000000,5303.000000,5228.000000,5173.000000,5084.000000,4989.000000,4881.000000,4784.000000,4672.000000,4607.000000,4536.000000,4469.000000,4423.000000,4377.000000,4329.000000,4299.000000,4279.000000,4241.000000,4231.000000,4209.000000,4189.000000,4187.000000,4074.000000,3877.000000,3545.000000,23.600000,22.400000,23.200000,1524458.000000,0.000000,11.700000,12.000000,5.000000,545.000000,-1.000000,-1.000000,58.803500,-13.725236,0.007626,0.000000,0.000000,0.000000,0.000000,19.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000
+
+
+
+------------
+H,SUNA 0874 Cal A  extinction coefficients and reference spectra
+H,File generated by SUNACom 3.0.11
+H,File format version 3
+H,File creation time 16-May-2018 09:25:08
+H,File generated by Internal Software Suite 1.9.23_30
+H,File format version 3
+H,File creation time 15-May-2018 10:26:30
+H,Operator production
+H,PATH_LENGTH 10
+H,INT_PERIOD 475
+H,CONC_CAL_NO3 400.00
+H,T_CAL_FWA 20.00
+H,HIGHNO3_CORRECTION 0.00E00
+H,NitrateFile SUNA_0874_001.xml
+H,DIW Log file SUNA0874_Cal02_DIW_1.raw
+H,Nitrate Log file SUNA0874_Cal02_LNO3_1.raw
+H,High Nitrate Log file SUNA0874_Cal02_HNO3_1.raw
+H,Wavelength,nm
+H,NITRATE,uM
+H,Reference,counts
+H,Wavelength,NO3,Reference
+E,189.11,0.00520690,2.75000000
+E,189.91,0.00856057,0.66666667
+E,190.71,0.01037433,5.37500000
+E,191.51,-0.00181377,4.08333333
+E,192.31,0.00138793,4.75000000
+E,193.11,0.00619461,4.25000000
+E,193.92,0.00459111,4.00000000
+E,194.72,0.00440228,4.16666667
+E,195.52,0.01608632,4.66666667
+E,196.32,0.00181377,3.54166667
+E,197.13,0.00000000,1.16666667
+E,197.93,0.00720163,10.50000000
+E,198.73,0.00861603,91.20833333
+E,199.54,0.00900055,403.91666667
+E,200.34,0.00940544,1334.12500000
+E,201.14,0.00944234,3433.04166667
+E,201.95,0.00945869,6983.33333333
+E,202.75,0.00939260,11424.50000000
+E,203.56,0.00933058,15638.87500000
+E,204.36,0.00924004,18784.20833333
+E,205.17,0.00912829,20634.20833333
+E,205.97,0.00897572,21513.87500000
+E,206.78,0.00881277,21789.45833333
+E,207.58,0.00856361,21809.91666667
+E,208.39,0.00835830,21798.20833333
+E,209.19,0.00808689,21929.20833333
+E,210.00,0.00783433,22267.62500000
+E,210.81,0.00752114,22883.83333333
+E,211.61,0.00719466,23786.12500000
+E,212.42,0.00683766,25002.33333333
+E,213.23,0.00647859,26544.83333333
+E,214.03,0.00611029,28425.50000000
+E,214.84,0.00574660,30604.20833333
+E,215.65,0.00538574,33022.83333333
+E,216.46,0.00501386,35609.16666667
+E,217.26,0.00464064,38238.83333333
+E,218.07,0.00428671,40692.29166667
+E,218.88,0.00393939,42884.25000000
+E,219.69,0.00360437,44557.75000000
+E,220.50,0.00328488,45653.58333333
+E,221.31,0.00297872,46005.54166667
+E,222.12,0.00269149,45693.16666667
+E,222.92,0.00241248,44775.41666667
+E,223.73,0.00215982,43448.54166667
+E,224.54,0.00191043,41890.20833333
+E,225.35,0.00168463,40297.08333333
+E,226.16,0.00147261,38802.04166667
+E,226.97,0.00127997,37544.04166667
+E,227.78,0.00110110,36586.37500000
+E,228.59,0.00094686,35966.70833333
+E,229.40,0.00080509,35687.54166667
+E,230.21,0.00068959,35753.66666667
+E,231.02,0.00058364,36119.95833333
+E,231.83,0.00048849,36807.04166667
+E,232.65,0.00041948,37825.66666667
+E,233.46,0.00035705,39096.45833333
+E,234.27,0.00030449,40624.00000000
+E,235.08,0.00025819,42384.87500000
+E,235.89,0.00021805,44314.29166667
+E,236.70,0.00018370,46428.91666667
+E,237.51,0.00015431,48648.45833333
+E,238.33,0.00012913,50821.87500000
+E,239.14,0.00010784,53018.16666667
+E,239.95,0.00008984,55036.70833333
+E,240.76,0.00007465,56764.91666667
+E,241.57,0.00006182,58173.62500000
+E,242.39,0.00005111,59034.04166667
+E,243.20,0.00004212,59358.62500000
+E,244.01,0.00003464,59082.16666667
+E,244.82,0.00002840,58186.12500000
+E,245.64,0.00002310,56709.75000000
+E,246.45,0.00001881,54853.66666667
+E,247.26,0.00001517,52575.41666667
+E,248.08,0.00001217,50051.50000000
+E,248.89,0.00000978,47523.62500000
+E,249.70,0.00000780,44983.50000000
+E,250.52,0.00000621,42545.79166667
+E,251.33,0.00000495,40312.75000000
+E,252.14,0.00000378,38286.00000000
+E,252.96,0.00000292,36499.95833333
+E,253.77,0.00000219,34658.95833333
+E,254.58,0.00000160,33430.12500000
+E,255.40,0.00000114,32445.20833333
+E,256.21,0.00000091,31513.91666667
+E,257.03,0.00000055,30771.12500000
+E,257.84,0.00000042,30209.50000000
+E,258.66,0.00000018,29822.79166667
+E,259.47,0.00000000,29596.70833333
+E,260.28,-0.00000001,29544.08333333
+E,261.10,-0.00000008,29624.41666667
+E,261.91,-0.00000005,29876.87500000
+E,262.73,-0.00000010,30239.62500000
+E,263.54,-0.00000003,30756.00000000
+E,264.36,0.00000008,31348.54166667
+E,265.17,0.00000008,32084.83333333
+E,265.99,0.00000004,32914.62500000
+E,266.80,0.00000014,33772.87500000
+E,267.62,0.00000024,34606.79166667
+E,268.43,0.00000034,35459.29166667
+E,269.25,0.00000042,36211.12500000
+E,270.06,0.00000053,36864.20833333
+E,270.88,0.00000058,37283.08333333
+E,271.69,0.00000070,37497.04166667
+E,272.51,0.00000079,37478.87500000
+E,273.33,0.00000094,37189.75000000
+E,274.14,0.00000105,36640.37500000
+E,274.96,0.00000113,35884.20833333
+E,275.77,0.00000125,34920.00000000
+E,276.59,0.00000144,33804.33333333
+E,277.40,0.00000165,32607.54166667
+E,278.22,0.00000182,31359.45833333
+E,279.04,0.00000187,30102.87500000
+E,279.85,0.00000197,28874.16666667
+E,280.67,0.00000213,27702.66666667
+E,281.48,0.00000231,26629.04166667
+E,282.30,0.00000241,25662.95833333
+E,283.11,0.00000282,24787.20833333
+E,283.93,0.00000289,24018.20833333
+E,284.75,0.00000306,23364.41666667
+E,285.56,0.00000322,22795.08333333
+E,286.38,0.00000333,22356.16666667
+E,287.19,0.00000359,22004.58333333
+E,288.01,0.00000379,21742.87500000
+E,288.83,0.00000398,21593.62500000
+E,289.64,0.00000422,21544.41666667
+E,290.46,0.00000425,21553.70833333
+E,291.27,0.00000451,21675.41666667
+E,292.09,0.00000475,21859.04166667
+E,292.91,0.00000480,22108.54166667
+E,293.72,0.00000488,22427.41666667
+E,294.54,0.00000497,22803.41666667
+E,295.35,0.00000514,23220.37500000
+E,296.17,0.00000510,23667.12500000
+E,296.99,0.00000528,24202.29166667
+E,297.80,0.00000544,24737.91666667
+E,298.62,0.00000551,25321.25000000
+E,299.43,0.00000560,25925.41666667
+E,300.25,0.00000566,26515.91666667
+E,301.06,0.00000560,27135.37500000
+E,301.88,0.00000574,27741.16666667
+E,302.70,0.00000568,28291.75000000
+E,303.51,0.00000560,28828.70833333
+E,304.33,0.00000549,29331.33333333
+E,305.14,0.00000547,29768.00000000
+E,305.96,0.00000532,30139.95833333
+E,306.78,0.00000518,30437.91666667
+E,307.59,0.00000505,30639.83333333
+E,308.41,0.00000482,30744.00000000
+E,309.22,0.00000465,30704.75000000
+E,310.04,0.00000456,30563.62500000
+E,310.85,0.00000434,30314.04166667
+E,311.67,0.00000421,29961.41666667
+E,312.48,0.00000396,29519.45833333
+E,313.30,0.00000372,29011.12500000
+E,314.11,0.00000347,28388.50000000
+E,314.93,0.00000326,27729.66666667
+E,315.75,0.00000305,27019.66666667
+E,316.56,0.00000279,26269.50000000
+E,317.38,0.00000249,25508.62500000
+E,318.19,0.00000238,24729.41666667
+E,319.01,0.00000210,23965.08333333
+E,319.82,0.00000188,23256.20833333
+E,320.64,0.00000160,22577.25000000
+E,321.45,0.00000133,21943.12500000
+E,322.26,0.00000111,21344.58333333
+E,323.08,0.00000087,20797.95833333
+E,323.89,0.00000072,20271.25000000
+E,324.71,0.00000050,19806.62500000
+E,325.52,0.00000028,19327.54166667
+E,326.34,0.00000011,18859.91666667
+E,327.15,-0.00000015,18398.66666667
+E,327.97,-0.00000012,17958.00000000
+E,328.78,-0.00000021,17532.87500000
+E,329.59,-0.00000041,17146.25000000
+E,330.41,-0.00000048,16776.75000000
+E,331.22,-0.00000068,16445.41666667
+E,332.04,-0.00000074,16133.41666667
+E,332.85,-0.00000063,15821.20833333
+E,333.66,-0.00000074,15542.95833333
+E,334.48,-0.00000094,15292.66666667
+E,335.29,-0.00000075,15038.66666667
+E,336.10,-0.00000088,14796.37500000
+E,336.92,-0.00000099,14576.45833333
+E,337.73,-0.00000093,14352.70833333
+E,338.54,-0.00000091,14141.75000000
+E,339.35,-0.00000098,13945.54166667
+E,340.17,-0.00000099,13761.12500000
+E,340.98,-0.00000107,13588.33333333
+E,341.79,-0.00000093,13418.25000000
+E,342.61,-0.00000100,13261.37500000
+E,343.42,-0.00000127,13113.95833333
+E,344.23,-0.00000111,12996.12500000
+E,345.04,-0.00000115,12888.83333333
+E,345.85,-0.00000107,12815.50000000
+E,346.67,-0.00000119,12754.16666667
+E,347.48,-0.00000114,12679.37500000
+E,348.29,-0.00000097,12624.04166667
+E,349.10,-0.00000123,12572.87500000
+E,349.91,-0.00000112,12538.54166667
+E,350.72,-0.00000091,12520.41666667
+E,351.53,-0.00000099,12503.83333333
+E,352.34,-0.00000096,12480.20833333
+E,353.15,-0.00000098,12465.54166667
+E,353.97,-0.00000084,12448.50000000
+E,354.78,-0.00000088,12425.37500000
+E,355.59,-0.00000072,12410.33333333
+E,356.40,-0.00000102,12385.12500000
+E,357.21,-0.00000085,12352.08333333
+E,358.02,-0.00000105,12298.12500000
+E,358.83,-0.00000106,12236.83333333
+E,359.64,-0.00000099,12165.37500000
+E,360.44,-0.00000086,12087.58333333
+E,361.25,-0.00000098,11985.12500000
+E,362.06,-0.00000112,11874.79166667
+E,362.87,-0.00000088,11756.29166667
+E,363.68,-0.00000082,11623.20833333
+E,364.49,-0.00000094,11491.20833333
+E,365.30,-0.00000092,11352.29166667
+E,366.11,-0.00000113,11206.50000000
+E,366.91,-0.00000104,11043.25000000
+E,367.72,-0.00000100,10859.41666667
+E,368.53,-0.00000107,10625.95833333
+E,369.34,-0.00000084,10365.08333333
+E,370.14,-0.00000120,10101.12500000
+E,370.95,-0.00000090,9826.70833333
+E,371.76,-0.00000092,9572.37500000
+E,372.57,-0.00000053,9350.20833333
+E,373.37,-0.00000080,9137.04166667
+E,374.18,-0.00000064,8950.29166667
+E,374.98,-0.00000067,8769.50000000
+E,375.79,-0.00000059,8602.75000000
+E,376.60,-0.00000072,8460.95833333
+E,377.40,-0.00000095,8335.25000000
+E,378.21,-0.00000089,8210.12500000
+E,379.01,-0.00000072,8093.79166667
+E,379.82,-0.00000057,7948.83333333
+E,380.62,-0.00000087,7769.50000000
+E,381.43,-0.00000072,7576.33333333
+E,382.23,-0.00000032,7388.75000000
+E,383.04,-0.00000063,7222.16666667
+E,383.84,-0.00000058,7074.33333333
+E,384.64,-0.00000041,6938.62500000
+E,385.45,-0.00000006,6830.66666667
+E,386.25,-0.00000019,6732.83333333
+E,387.05,-0.00000023,6645.00000000
+E,387.86,-0.00000043,6571.87500000
+E,388.66,-0.00000012,6513.75000000
+E,389.46,-0.00000054,6475.00000000
+E,390.26,-0.00000024,6436.70833333
+E,391.07,-0.00000030,6401.08333333
+E,391.87,-0.00000042,6380.95833333
+E,392.67,-0.00000028,6367.00000000
+E,393.47,-0.00000014,6322.12500000
+E,394.27,0.00000025,6115.37500000
+E,395.07,0.00000047,5761.12500000
+E,395.87,0.00000056,5265.25000000
+</ReceivedDATA>
+		</AsReceived>
+  </DATA>
+  </CalVal>
+  

@@ -80,7 +80,7 @@ class GeoJsonConverterTest(unittest.TestCase):
                                      end_date=date_formatter.to_datetime(end_date))
         prop = Property(name='prop1', value='value1')
         named_location = NamedLocation(name=name, type=location_type, description=description, site=site,
-                                       schema_name='prt', context=[context], active_periods=[active_period],
+                                       schema_names=set('prt'), context=[context], active_periods=[active_period],
                                        properties=[prop])
         feature = geojson_converter.convert_named_location(named_location)
         geojson_data = dumps(feature, indent=4, sort_keys=False, default=str)

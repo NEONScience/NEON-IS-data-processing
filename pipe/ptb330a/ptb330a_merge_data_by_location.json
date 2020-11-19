@@ -1,0 +1,34 @@
+{
+  "pipeline": {
+    "name": "ptb330a_merge_data_by_location"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.loc.data.trnc.comb.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirSubCombData=data|flags|uncertainty_data",
+      "DirSubCombUcrt=uncertainty_coef",
+      "DirSubCopy=location"
+      ],
+    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.22",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+      "pfs": {
+        "name": "DIR_IN",
+        "repo": "ptb330a_structure_repo_by_location",
+        "glob": "/ptb330a/*/*/*"
+      }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "80M",
+    "cpu": 0.3
+  }
+}

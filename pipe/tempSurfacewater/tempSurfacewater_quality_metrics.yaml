@@ -1,0 +1,35 @@
+---
+pipeline:
+  name: tempSurfacewater_quality_metrics
+transform:
+  cmd:
+  - Rscript
+  - "/flow.qaqc.qm.R"
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - FileSchmQm=$FILE_SCHEMA_QM
+  - WndwAgr=005|030
+  - WghtAlphBeta=2|1
+  - Thsh=0.2
+  image: quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.6
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: tempSurfacewater_qaqc_flags_group
+      glob: "/prt/*/*"
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: avro_schemas
+      glob: "/dp01/tempSurfacewater_dp01_quality_metrics.avsc"
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '2'
+resource_requests:
+  memory: 200Mi
+  cpu: 0

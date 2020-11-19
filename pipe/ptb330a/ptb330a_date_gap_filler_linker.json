@@ -1,0 +1,38 @@
+{
+  "pipeline": {
+    "name": "ptb330a_date_gap_filler_linker"
+  },
+  "transform": {
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/date_gap_filler_linker:5",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "python3 -m date_gap_filler_linker.app"
+    ],
+    "env": {
+      "LOG_LEVEL": "DEBUG",
+      "OUT_PATH": "/pfs/out",
+      "RELATIVE_PATH_INDEX": "3",
+      "LOCATION_INDEX": "7",
+      "EMPTY_FILE_SUFFIX": ".empty"
+    }
+  },
+  "parallelism_spec": {
+    "constant": "4"
+  },
+  "input": {
+    "pfs": {
+      "name": "IN_PATH",
+      "repo": "ptb330a_date_gap_filler",
+      "glob": "/ptb330a/*/*/*",
+      "empty_files": true
+    }
+  },
+  "enable_stats": false,
+  "standby": true
+}

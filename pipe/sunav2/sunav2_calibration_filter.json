@@ -3,8 +3,15 @@
     "name": "sunav2_calibration_filter"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.cal.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","PadDay=-1|1","DirSubCopy=data"],
-    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.33",
+    "cmd": [
+      "Rscript",
+      "/flow.cal.filt.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "PadDay=-1|1",
+      "DirSubCopy=data"
+      ],
+    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.34",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

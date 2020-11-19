@@ -14,8 +14,8 @@ def get_thresholds(connection: Connection) -> Iterator[Threshold]:
          select
              attr.column_name,
              threshold.term_name,
+             threshold.threshold_uuid,
              nam_locn.nam_locn_name,
-             condition.condition_uuid,
              condition.start_date,
              condition.end_date,
              condition.is_date_constrained,
@@ -43,8 +43,8 @@ def get_thresholds(connection: Connection) -> Iterator[Threshold]:
         for row in rows:
             threshold_name = row[0]
             term_name = row[1]
-            location_name = row[2]
-            condition_uuid = row[3]
+            threshold_uuid = row[2]
+            location_name = row[3]
             start_date = row[4]
             end_date = row[5]
             is_date_constrained = row[6]
@@ -63,7 +63,7 @@ def get_thresholds(connection: Connection) -> Iterator[Threshold]:
                 start_date = date_formatter.to_string(start_date)
             if end_date is not None:
                 end_date = date_formatter.to_string(end_date)
-            context: List[str] = get_threshold_context(connection, condition_uuid)
+            context: List[str] = get_threshold_context(connection, threshold_uuid)
             threshold = Threshold(threshold_name=threshold_name,
                                   term_name=term_name,
                                   location_name=location_name,

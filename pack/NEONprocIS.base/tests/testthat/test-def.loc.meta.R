@@ -2,17 +2,19 @@
 #source("R/def.loc.meta.R")
 
 
-test_that("When No restriction, get all locations",
+context("Location metadata tests")
+
+
+test_that("When no restriction, get all locations",
           {
             nameFile <- "def.loc.meta/test_input/pfs/prt_calibrated_location_group/prt/2019/01/01/16247/prt_16247_location.json"
-
             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile)
             expect_true (length(locationMetaData$site) > 0)
-
+            
           })
 
 
-test_that("When restricted to location, then return only that locaiton",
+test_that("When restricted to location, return only that location",
           {
             nameFile <- "def.loc.meta/test_input/pfs/prt_calibrated_location_group/prt/2019/01/01/16247/prt_16247_location.json"
             nameLoc <- "CFGLOC101663"
@@ -29,7 +31,6 @@ test_that("location that are install before or equal to time Begin ",
             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn)
             expect_true (length(locationMetaData$site) == 1)
 
-
           })
 
 test_that("location that have removal date before time Begin",
@@ -39,7 +40,6 @@ test_that("location that have removal date before time Begin",
             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn)
             expect_true (length(locationMetaData$site) == 0)
 
-
           })
 
 test_that("location that have removal date before time Begin",
@@ -48,7 +48,6 @@ test_that("location that have removal date before time Begin",
             timeBgn <- base::as.POSIXct('2019-09-05',tz='GMT')
             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn)
             expect_true (length(locationMetaData$site) == 1)
-
 
           })
 
@@ -76,8 +75,3 @@ test_that("location that have install, removal, and remove data after timeBgn",
             expect_true (length(locationMetaData$active_periods) == 1)
             
           })
-
-
-
-
-
