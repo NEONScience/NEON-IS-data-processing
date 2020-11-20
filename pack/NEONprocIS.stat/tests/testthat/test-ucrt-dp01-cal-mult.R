@@ -1,24 +1,24 @@
 ##############################################################################################
-#' @title Unit test of def.ucrt.dp01.cal.mult.R, compute L1 (temporally aggregated) calibration uncertainty represented as a multiplier to the max L0' value 
+#' @title Unit test of def.ucrt.dp01.cal.mult.R, compute L1 (temporally aggregated) calibration uncertainty represented as a multiplier to the max L0' value
 
 #' @author
 #' Mija Choi \email{choim@battelleecology.org}
 
 #' @description
 #' Definition function. Compute the L1 (temporally aggregated) calibration uncertainty due
-#' to the accuracy of the instrumentation in the form of Truth and Trueness. The uncertainty 
-#' is represented by a percentage multiplier (coefficient provided by CVAL) to the maximum L0' value. 
+#' to the accuracy of the instrumentation in the form of Truth and Trueness. The uncertainty
+#' is represented by a percentage multiplier (coefficient provided by CVAL) to the maximum L0' value.
 
 #' @param data Numeric vector of (calibrated) L0' data.
 #' A single aggregated uncertainty will be computed for the full timeseries.
-#' @param ucrtCoef A list of uncertainty coefficients, each a list containing at a minimum the list 
-#' elements: term (name of L0' term for which the coefficient applies - string), start_date (POSIX), 
-#' end_date(POSIX), Name (of the coefficient - string), 
-#' and Value (of the coefficient - string or numeric, to be interpreted as numeric). 
+#' @param ucrtCoef A list of uncertainty coefficients, each a list containing at a minimum the list
+#' elements: term (name of L0' term for which the coefficient applies - string), start_date (POSIX),
+#' end_date(POSIX), Name (of the coefficient - string),
+#' and Value (of the coefficient - string or numeric, to be interpreted as numeric).
 #' @param NameCoef The name of the coefficient that represents the value to be multiplied with
 #' the maximum L0' value. Defaults to U_CVALA3. Note that the units in the calibration file may say percent, but it is really a scale factor.
-#' @param VarUcrt A character string of the target variable/term for which uncertainty will be computed 
-#' (i.e. the name of the term/variable for the data in \code{data}). 
+#' @param VarUcrt A character string of the target variable/term for which uncertainty will be computed
+#' (i.e. the name of the term/variable for the data in \code{data}).
 #' @param TimeAgrBgn A POSIX time value indicating the beginning of the temporal aggregation interval (inclusive)
 #' @param TimeAgrEnd A POSIX time value indicating the end of the temporal aggregation interval (non-inclusive)
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -26,7 +26,7 @@
 #' created and used within the function.
 
 #' @return A single numeric value representing the aggregated L1 calibration uncertainty. If the aggregation
-#' interval spans multiple coefficient start and end periods, the maximum value of the applicable coefficients 
+#' interval spans multiple coefficient start and end periods, the maximum value of the applicable coefficients
 #' is used as the multiplier. Numeric NA is returned if no applicable coefficient is found, with warning.
 
 #' @references
@@ -62,7 +62,7 @@ test_that("Unit test of def.ucrt.dp01.cal.mult.R", {
   # The input is a json with elements of Name, Value, and .attrs
   # fileCal has the correct value for "resistance" calibration
   
-  data <- c(827.7,827.8,831.3)
+  data <- c(827.7, 827.8, 831.3)
   ucrtCoef <- list(
     list(
       term = 'linePAR',
@@ -82,7 +82,7 @@ test_that("Unit test of def.ucrt.dp01.cal.mult.R", {
   #  Happy Path 1 - If there are more than 1, indicating that the averaging period spans two uncertainty application ranges, the coef will be the larger of the two
   
   ucrtCal <- NEONprocIS.stat::def.ucrt.dp01.cal.mult(
-    data = data, 
+    data = data,
     ucrtCoef = ucrtCoef,
     NameCoef = 'U_CVALA3',
     VarUcrt = 'linePAR',
@@ -90,18 +90,19 @@ test_that("Unit test of def.ucrt.dp01.cal.mult.R", {
     TimeAgrEnd = as.POSIXct('2019-01-05 00:30', tz = 'GMT')
   )
   
-  testthat::expect_true(ucrtCal == 0.0143* max(data))
+  testthat::expect_true(ucrtCal == 0.0143 * max(data))
   
   # Sad Path 1 - When data is not numeric, returns NA
-  data <- c('827.7','827.8','831.3')
+  data <- c('827.7', '827.8', '831.3')
   ucrtCal <- try(NEONprocIS.stat::def.ucrt.dp01.cal.mult(
-    data = data, 
+    data = data,
     ucrtCoef = ucrtCoef,
     NameCoef = 'U_CVALA3',
     VarUcrt = 'linePAR',
     TimeAgrBgn = as.POSIXct('2019-02-05 00:00', tz = 'GMT'),
     TimeAgrEnd = as.POSIXct('2019-02-05 00:30', tz = 'GMT')
-  ), silent = TRUE)
+  ),
+  silent = TRUE)
   
   testthat::expect_true((class(ucrtCal)[1] == "try-error"))
 })
