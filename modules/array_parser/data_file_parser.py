@@ -1,95 +1,84 @@
 #!/usr/bin/env python3
 import pyarrow.parquet as pq
-import pandas as pd
 import pyarrow as pa
 from pathlib import Path
 import structlog
+from typing import List
 
 import array_parser.schema_parser as schema_parser
-
+from array_parser.schema_parser import SchemaData
 
 log = structlog.getLogger()
 
 
-def parse(path: Path, out_path: Path, schema: Path) -> None:
+def get_metadata(schema_data: SchemaData) -> dict:
+    """Get the metadata for the new file."""
+    return {'parquet.avro.schema': schema_data.schema, 'writer.model.name': 'avro'}
+
+
+def create_columns(field_names: List[str]) -> List[list]:
     """
-    Reorder the data value array to columns with the appropriate schema field names.
+    Create an empty column for each schema field name.
+
+    :param field_names: The schema data.
+    :return: The empty columns.
+    """
+    columns: List[list] = []
+    for n in range(0, len(field_names)):
+        columns.append([])
+    return columns
+
+
+def populate_columns(table: pa.Table, field_names: List[str],
+                     data_array: pa.ChunkedArray, new_columns: List[list]) -> None:
+    """
+    Add data values from the original data array to the new columns.
+
+    :param table: The original table.
+    :param field_names: The schema field names.
+    :param data_array: The original data array.
+    :param new_columns: The new empty columns.
+    :return: None
+    """
+    # loop over each table row, pull data values, and add them to the new columns
+    for row_index in range(0, table.num_rows):
+        for field_name_index in range(0, len(field_names)):
+            try:
+                # get values from the file's 2D data array
+                value = data_array[row_index][field_name_index].as_py()
+            except IndexError:
+                # If there are more field names than data values, fill extra columns with None.
+                value = None
+            # populate new columns
+            new_columns[field_name_index].append(value)
+
+
+def write_restructured_file(path: Path, out_path: Path, schema: Path) -> None:
+    """
+    Reorder the data value array to columns labelled with the appropriate schema field names
+    and write the new file.
 
     :param path: The data file path.
     :param out_path: The path to write the new file.
     :param schema: The new schema for the reordered file.
     :return: None
     """
-    # source_id, site, timestamp, water_temp
-    term_mapping = schema_parser.parse_schema(schema)
     table = pq.read_table(path)
-    # new_table = pa.Table.from_arrays(arrays=, names=, schema=, metadata=)
-    sources = table.column(0)
-    sites = table.column(1)
-    times = table.column(2)
-    values = table.column(3)
-    source_column = []
-    site_column = []
-    time_column = []
-    term_names: list = list(term_mapping.mapping.values())
-    print(f'term_names: {term_names}')
-    value_columns = []
-
-    i = 0
-    while i < len(term_names):
-        value_columns.append([])
-        i = i + 1
-
-    j = 0
-    while j < table.num_rows:
-        source = sources[j]
-        site = sites[j]
-        time = times[j]
-        # print(f'{j}. source: {source} site: {site} time: {time}')
-        source_column.append(source)
-        site_column.append(site)
-        time_column.append(time_column)
-        k = 0
-        while k < len(values[i]):
-            # term_name = term_mapping.mapping.get(str(k))
-            value = values[j][k]
-            # print(f'term: {term_name} value: {value}')
-            value_columns[k].append(value)
-            k = k + 1
-        j = j + 1
-
-    column_names = table.column_names
-    data = {'source_id': source_column, 'site': site_column, 'timestamp': time_column}
-    z = 0
-    while z < len(term_names):
-        term_name = term_names[z]
-        data[term_name] = value_columns[z]
-        z = z + 1
-
-    # fill extra columns with NaN.
-    if len(column_names) < len(term_names):
-
-    data_frame = pd.DataFrame(data=data)
-    # table = pa.Table.
-
-    # print(table.to_pandas())
-    parquet_file = pq.ParquetFile(path)
-    metadata = parquet_file.metadata
-    print(f'metadata: {metadata}')
-
-    # pq.write_table(table, path)
-
-    # table = pa.Table.from_pandas(df, preserve_index=False, nthreads=1, schema=arrow_schema).replace_schema_metadata({
-    #     'parquet.avro.schema': rawschema,
-    #     'writer.model.name': 'avro'
-    # })
-    #
-    # log.info(f"Writing parquet file: {out_path}")
-    # pq.write_table(
-    #     table,
-    #     out_path,
-    #     use_dictionary=dupcols,
-    #     compression=codec,
-    #     compression_level=5,
-    #     coerce_timestamps='ms',
-    #     allow_truncated_timestamps=False)
+    data_values = table.column(3)
+    data_type: pa.lib.ListType = data_values.type
+    schema_data: SchemaData = schema_parser.parse_schema_file(schema)
+    field_names = schema_data.field_names
+    new_columns: List[list] = create_columns(field_names)
+    populate_columns(table, field_names, data_values, new_columns)
+    for i in range(0, len(new_columns)):
+        # convert to arrays with the appropriate type
+        column: pa.Array = pa.array(new_columns[i], data_type.value_type)
+        table: pa.Table = table.append_column(field_names[i], column)  # add column to table
+    table = table.remove_column(3)  # remove original data array from table
+    metadata = get_metadata(schema_data)
+    table = table.replace_schema_metadata(metadata)
+    log.debug(f'modified_table:\n{table}')
+    file_path = Path(out_path, path.name)
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    file_path.touch()
+    pq.write_table(table, file_path)
