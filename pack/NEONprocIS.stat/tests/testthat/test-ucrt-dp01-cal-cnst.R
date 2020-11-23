@@ -11,11 +11,7 @@
 #' The negative tests are when a param(s) is empty or does not have valid values
 
 #' Refer to def.ucrt.dp01.cal.cnst.R for the details of the function.
-#' @description
-#' Definition function. Compute the L1 (temporally aggregated) calibration uncertainty due
-#' to the accuracy of the instrumentation in the form of Truth and Trueness. The uncertainty is
-#' a constant value stored in an uncertainty coefficient provided by CVAL. 
-
+#' 
 #' @param ucrtCoef A list of uncertainty coefficients, each a list containing at a minimum the list 
 #' elements: term (name of L0' varaible/term for which the coefficient applies - string), start_date (POSIX), 
 #' end_date(POSIX), Name (of the coefficient - string), 
