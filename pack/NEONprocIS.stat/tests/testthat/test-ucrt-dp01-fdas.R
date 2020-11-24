@@ -133,8 +133,21 @@ test_that("Unit test of def.ucrt.dp01.fdas.R", {
   
   testthat::expect_true(!is.na(ucrtFdas))
   
-  #  Sad Path 1 - - TypeFdas is nither "R", nor "V"
+  #  Sad Path 1 - num(data) != num(ucrtData)
+
+  data <- c(.599, .598)
+
+  ucrtFdas <- try(NEONprocIS.stat::def.ucrt.dp01.fdas(
+      data = data,
+      VarUcrt = 'temp',
+      TypeFdas = 'V',
+      ucrtCoef = ucrtCoef,
+      ucrtData = ucrtData
+    ), silent = TRUE)
+
+  #  Sad Path 2 - TypeFdas is neither "R", nor "V"
   
+  data <- c(.599, .598, .597)
   ucrtFdas <-  try(NEONprocIS.stat::def.ucrt.dp01.fdas(
     data = data,
     VarUcrt = 'temp',
@@ -146,7 +159,7 @@ test_that("Unit test of def.ucrt.dp01.fdas.R", {
   
   testthat::expect_true((class(ucrtFdas)[1] == "try-error"))
   
-  # Sad Path 2 - When all parameters are NULL, returns NA
+  # Sad Path 3 - When all parameters are NULL, returns NA
   
   ucrtFdas <- try(NEONprocIS.stat::def.ucrt.dp01.fdas(
     data = NULL,
