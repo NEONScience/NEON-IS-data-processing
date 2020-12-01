@@ -76,34 +76,32 @@ test_that("Unit test of def.ucrt.dp01.fdas.R", {
   # fileCal has the correct value for "resistance" calibration
   
   data <- c(.599, .598, .597)
-  ucrtCoef <-
+  ucrtCoef <- list(
     list(
-      list(
-        term = 'temp',
-        start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
-        end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
-        Name = 'U_CVALR3',
-        Value = '0.000195'
-      ),
-      list(
-        term = 'temp',
-        start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
-        end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
-        Name = 'U_CVALR4',
-        Value = '0.0067'
-      )
+      term = 'temp',
+      start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
+      end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
+      Name = 'U_CVALR3',
+      Value = '0.000195'
+    ),
+    list(
+      term = 'temp',
+      start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
+      end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
+      Name = 'U_CVALR4',
+      Value = '0.0067'
     )
-  ucrtData <-
-    data.frame(
-      readout_time = as.POSIXct(
-        c('2019-01-01 00:00', '2019-01-01 00:01', '2019-01-01 00:02'),
-        tz = 'GMT'
-      ),
-      temp_raw = c(100.187, 100.195, 100.203),
-      temp_dervCal = c(2.5483, 2.5481, 2.5484),
-      temp_ucrtComb = c(0.06861, 0.06860, 0.06863),
-      stringsAsFactors = FALSE
-    )
+  )
+  ucrtData <- data.frame(
+    readout_time = as.POSIXct(
+      c('2019-01-01 00:00', '2019-01-01 00:01', '2019-01-01 00:02'),
+      tz = 'GMT'
+    ),
+    temp_raw = c(100.187, 100.195, 100.203),
+    temp_dervCal = c(2.5483, 2.5481, 2.5484),
+    temp_ucrtComb = c(0.06861, 0.06860, 0.06863),
+    stringsAsFactors = FALSE
+  )
   
   #  Happy Path 1 - TypeFdas is 'R' for resistance measurement
   
@@ -133,21 +131,48 @@ test_that("Unit test of def.ucrt.dp01.fdas.R", {
   
   testthat::expect_true(!is.na(ucrtFdas))
   
-  #  Sad Path 1 - num(data) != num(ucrtData)
-
-  data <- c(.599, .598)
-
-  ucrtFdas <- try(NEONprocIS.stat::def.ucrt.dp01.fdas(
-      data = data,
-      VarUcrt = 'temp',
-      TypeFdas = 'V',
-      ucrtCoef = ucrtCoef,
-      ucrtData = ucrtData
-    ), silent = TRUE)
-
-  #  Sad Path 2 - TypeFdas is neither "R", nor "V"
+  #  Sad Path 1 - At least one of the expected FDAS uncertainty coefficients is not present for the term and aggregation interval.
   
-  data <- c(.599, .598, .597)
+  ucrtFdas <-  NEONprocIS.stat::def.ucrt.dp01.fdas(
+    data = data,
+    VarUcrt = 'temp',
+    TypeFdas = 'R',
+    ucrtCoef = ucrtCoef,
+    ucrtData = ucrtData
+  )
+  
+  testthat::expect_true(is.na(ucrtFdas))
+  
+  #  Sad Path 2 - column readout_time missing
+  
+  ucrtData_oneLessCol <- subset(ucrtData, select = -readout_time)
+  
+  ucrtFdas <-  try(NEONprocIS.stat::def.ucrt.dp01.fdas(
+    data = data,
+    VarUcrt = 'temp',
+    TypeFdas = 'V',
+    ucrtCoef = ucrtCoef,
+    ucrtData = ucrtData_oneLessCol
+  ),
+  silent = TRUE)
+  
+  testthat::expect_true((class(ucrtFdas)[1] == "try-error"))
+  
+  #  Sad Path 3 - num(data) != num(ucrtData)
+  
+  data_two <- c(.599, .598)
+  
+  ucrtFdas <- try(NEONprocIS.stat::def.ucrt.dp01.fdas(
+    data = data_two,
+    VarUcrt = 'temp',
+    TypeFdas = 'V',
+    ucrtCoef = ucrtCoef,
+    ucrtData = ucrtData
+  ),
+  silent = TRUE)
+  
+  #  Sad Path 4 - TypeFdas is neither "R", nor "V"
+  
   ucrtFdas <-  try(NEONprocIS.stat::def.ucrt.dp01.fdas(
     data = data,
     VarUcrt = 'temp',
@@ -159,7 +184,7 @@ test_that("Unit test of def.ucrt.dp01.fdas.R", {
   
   testthat::expect_true((class(ucrtFdas)[1] == "try-error"))
   
-  # Sad Path 3 - When all parameters are NULL, returns NA
+  # Sad Path 5 - When all parameters are NULL, returns NA
   
   ucrtFdas <- try(NEONprocIS.stat::def.ucrt.dp01.fdas(
     data = NULL,

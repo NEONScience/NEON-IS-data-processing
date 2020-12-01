@@ -105,4 +105,18 @@ test_that("Unit test of def.ucrt.dp01.cal.mult.R", {
   silent = TRUE)
   
   testthat::expect_true((class(ucrtCal)[1] == "try-error"))
+  
+  # Sad Path 2 - 
+  data <- c(827.7, 827.8, 831.3)
+  ucrtCal <- NEONprocIS.stat::def.ucrt.dp01.cal.mult(
+    data = data,
+    ucrtCoef = ucrtCoef,
+    NameCoef = 'U_CVALR3',
+    VarUcrt = 'linePAR',
+    TimeAgrBgn = as.POSIXct('2019-02-05 00:00', tz = 'GMT'),
+    TimeAgrEnd = as.POSIXct('2019-02-05 00:30', tz = 'GMT')
+  )
+  
+  testthat::expect_true(is.na(ucrtCal))
+  
 })
