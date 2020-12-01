@@ -1,0 +1,40 @@
+{
+  "pipeline": {
+    "name": "groundwaterPhysical_qaqc_plausibility"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.qaqc.plau.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS","TermTest1=pressure:null|gap|range|step|spike|persistence","TermTest2=temperature:null|gap|range|step|spike|persistence","TermTest3=conductivity:null|gap|range|step|spike|persistence"],
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.15",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "groundwaterPhysical_padded_timeseries_analyzer",
+          "glob": "/aquatroll200/*/*/*/*"
+        }
+      },
+      {
+        "pfs": {
+            "name": "SCHEMA_FLAGS",
+            "repo": "avro_schemas",
+            "glob": "/dp0p/flags_plausibility_aquatroll200.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "1"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}

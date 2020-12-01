@@ -1,0 +1,40 @@
+{
+  "pipeline": {
+    "name": "surfacewaterPhysical_qaqc_plausibility_leveltroll"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.qaqc.plau.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS","TermTest1=pressure:null|gap|range|step|spike|persistence","TermTest2=temperature:null|gap|range|step|spike|persistence"],
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.15",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "surfacewaterPhysical_padded_timeseries_analyzer",
+          "glob": "/leveltroll500/*/*/*/*"
+        }
+      },
+      {
+        "pfs": {
+            "name": "SCHEMA_FLAGS",
+            "repo": "avro_schemas",
+            "glob": "/dp0p/flags_plausibility_leveltroll500.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": false,
+  "parallelism_spec": {
+    "constant": "1"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}
