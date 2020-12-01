@@ -1,0 +1,75 @@
+{
+  "pipeline": {
+    "name": "exo2_date_gap_filler"
+  },
+  "transform": {
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/date_gap_filler:9",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "python3 -m date_gap_filler.date_gap_filler_main"
+    ],
+    "env": {
+      "LOG_LEVEL": "DEBUG",
+      "OUT_PATH": "/pfs/out",
+      "START_DATE": "2019-12-31",
+      "END_DATE": "2020-01-07",
+      "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags",
+      "DATA_SOURCE_TYPE_INDEX": "3",
+      "DATA_YEAR_INDEX": "4",
+      "DATA_MONTH_INDEX": "5",
+      "DATA_DAY_INDEX": "6",
+      "DATA_LOCATION_INDEX": "7",
+      "DATA_TYPE_INDEX": "8",
+      "LOCATION_SOURCE_TYPE_INDEX": "3",
+      "LOCATION_YEAR_INDEX": "4",
+      "LOCATION_MONTH_INDEX": "5",
+      "LOCATION_INDEX": "6",
+      "EMPTY_FILE_TYPE_INDEX": "4"
+    }
+  },
+  "parallelism_spec": {
+    "constant": "8"
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "EMPTY_FILE_PATH",
+          "repo": "empty_files",
+          "glob": "/exo2",
+          "empty_files": true
+        }
+      },
+      {
+        "union": [
+          {
+            "pfs": {
+              "name": "DATA_PATH",
+              "repo": "exo2_merge_data_by_location",
+              "glob": "/exo2/(*)/(*)",
+              "joinOn": "$1/$2",
+              "empty_files": true
+            }
+          },
+          {
+            "pfs": {
+              "name": "LOCATION_PATH",
+              "repo": "location_active_dates",
+              "glob": "/exo2/(*)/(*)",
+              "joinOn": "$1/$2",
+              "empty_files": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true
+}

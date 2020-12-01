@@ -5,12 +5,12 @@ from typing import List
 from cx_Oracle import Connection
 
 
-def get_threshold_context(connection: Connection, condition_uuid: str) -> List[str]:
+def get_threshold_context(connection: Connection, threshold_uuid: str) -> List[str]:
     """
     Get all context codes for a threshold.
 
     :param connection: A database connection.
-    :param condition_uuid: The condition UUID.
+    :param threshold_uuid: The threshold UUID.
     :return: The context codes.
     """
     context_codes: List[str] = []
@@ -19,11 +19,11 @@ def get_threshold_context(connection: Connection, condition_uuid: str) -> List[s
             select 
                 context_code 
             from 
-                condition_context 
+                threshold_context 
             where 
-                condition_uuid = :condition_uuid
+                threshold_uuid = :threshold_uuid
         '''
-        rows = cursor.execute(sql, condition_uuid=condition_uuid)
+        rows = cursor.execute(sql, threshold_uuid=threshold_uuid)
         for row in rows:
             context_code = row[0]
             context_codes.append(context_code)

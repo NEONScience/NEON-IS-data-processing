@@ -24,13 +24,13 @@ transform:
             name: UNCERTAINTY_COEF_PATH
             # Filter for data directory
             glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/li191r/*/*/*/*/uncertainty_coef/**
-            # Join on named location (already joined below by day
+            # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
             name: UNCERTAINTY_DATA_PATH
             # Filter for data directory
             glob_pattern: /pfs/UNCERTAINTY_DATA_PATH/li191r/*/*/*/*/uncertainty_data/**
-            # Join on named location (already joined below by day
+            # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
@@ -45,7 +45,7 @@ input:
       empty_files: true
   - pfs:
       name: UNCERTAINTY_COEF_PATH
-      repo: parQuantumLine_uncertainty_coefficients
+      repo: li191r_named_location_filter
       glob: /li191r/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true

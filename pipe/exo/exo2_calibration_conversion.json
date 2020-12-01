@@ -3,11 +3,19 @@
     "name": "exo2_calibration_conversion"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.cal.conv.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$FILE_SCHEMA_FLAGS","TermFuncUcrt=sensorDepth:def.ucrt.meas.mult","TermQf=sensorDepth"],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.37",
+    "cmd": [
+      "Rscript",
+      "/flow.cal.conv.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQf=$FILE_SCHEMA_FLAGS",
+      "TermFuncUcrt=depth:def.ucrt.meas.mult",
+      "TermQf=depth"
+      ],
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.38",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "DEBUG"
     }  
   },
   "input": {

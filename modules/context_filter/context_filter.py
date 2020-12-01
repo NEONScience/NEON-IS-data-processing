@@ -17,6 +17,7 @@ class ContextFilter:
         self.input_path = config.in_path
         self.output_path = config.out_path
         self.context = config.context
+        self.trim_index = config.trim_index
         self.path_parser = PathParser(config)
 
     def filter_files(self) -> None:
@@ -27,7 +28,7 @@ class ContextFilter:
         source_paths: Dict[str, List[Dict[str, Path]]] = {}
         for path in self.input_path.rglob('*'):
             if path.is_file():
-                source_type, year, month, day, source_id, data_type, remainder = self.path_parser.parse(path)
+                source_id, data_type = self.path_parser.parse(path)
                 log.debug(f'source_id: {source_id} data_type: {data_type}')
                 paths = source_paths.get(source_id)
                 # if first iteration for this data source
@@ -62,8 +63,8 @@ class ContextFilter:
         for path_list in matching_paths:
             for paths in path_list:
                 for path in paths.values():
-                    source_type, year, month, day, source_id, data_type, remainder = self.path_parser.parse(path)
-                    link_path = Path(self.output_path, source_type, year, month, day, source_id, data_type, *remainder)
+                    link_path = Path(self.output_path, *path.parts[self.trim_index:])
+                    log.debug(f'link_path: {link_path}')
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                     if not link_path.exists():
                         link_path.symlink_to(path)

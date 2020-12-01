@@ -76,10 +76,13 @@ class DateGapFillerTest(TestCase):
                                     f'{self.source}_location_year-month-day.ext')
         self.empty_uncertainty_data_file = Path(self.empty_path, DateGapFillerConfig.uncertainty_data_dir,
                                                 f'{self.source}_location_year-month-day_uncertaintyData.ext')
+        self.empty_uncertainty_coef_file = Path(self.empty_path, DateGapFillerConfig.uncertainty_coefficient_dir,
+                                                f'{self.source}_location_year-month-day_uncertaintyCoef.ext')
         self.empty_flag_file = Path(self.empty_path, DateGapFillerConfig.flag_dir,
                                     f'{self.source}_location_year-month-day_flagsCal.ext')
         self.fs.create_file(self.empty_data_file)
         self.fs.create_file(self.empty_uncertainty_data_file)
+        self.fs.create_file(self.empty_uncertainty_coef_file)
         self.fs.create_file(self.empty_flag_file)
 
     def test_date_between(self):
@@ -215,7 +218,8 @@ class DateGapFillerTest(TestCase):
         data_path = Path(metadata_path, DateGapFillerConfig.data_dir, f'{data_file}.empty')
         flag_path = Path(metadata_path, DateGapFillerConfig.flag_dir, f'{flag_file}.empty')
         location_path = Path(metadata_path, DateGapFillerConfig.location_dir)
-        uncertainty_coefficient_path = Path(metadata_path, DateGapFillerConfig.uncertainty_coefficient_dir)
+        uncertainty_coefficient_path = Path(metadata_path, DateGapFillerConfig.uncertainty_coefficient_dir,
+                                            f'{uncertainty_coefficient_file}.empty')
         uncertainty_data_path = Path(metadata_path, DateGapFillerConfig.uncertainty_data_dir,
                                      f'{uncertainty_data_file}.empty')
         self.assertTrue(calibration_path.exists())
@@ -230,7 +234,7 @@ class DateGapFillerTest(TestCase):
         flag_name = f'{self.source}_{self.location}_{self.year}-{self.month}-{day}_flagsCal.ext'
         location_name = f'{self.source}_{self.location}_locations.json'
         uncertainty_coefficient_name = f'{self.source}_{self.location}_{self.year}-{self.month}-{day}' \
-                                       f'_uncertaintyCoef.json'
+                                       f'_uncertaintyCoef.ext'
         uncertainty_data_name = f'{self.source}_{self.location}_{self.year}-{self.month}-{day}' \
                                 f'_uncertaintyData.ext'
         return data_name, flag_name, location_name, uncertainty_coefficient_name, uncertainty_data_name

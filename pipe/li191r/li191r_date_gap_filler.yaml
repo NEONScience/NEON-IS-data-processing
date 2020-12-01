@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/date_gap_filler:5
+  image: quay.io/battelleecology/date_gap_filler:9
   cmd:
   - /bin/bash
   stdin:

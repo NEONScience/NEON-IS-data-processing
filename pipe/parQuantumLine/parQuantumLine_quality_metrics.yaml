@@ -15,7 +15,7 @@ transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
 input:
   cross:
   - pfs:
@@ -27,7 +27,7 @@ input:
       repo: avro_schemas
       glob: /dp01/parQuantumLine_dp01_quality_metrics.avsc
 enable_stats: false
-standby: false
+standby: true
 parallelism_spec:
   constant: '2'
 resource_requests:
