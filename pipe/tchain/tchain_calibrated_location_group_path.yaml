@@ -14,7 +14,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
-    PATH_INDICES: 3, 7, 4, 5, 6, 8
+    PATH_INDICES: 3, 7, 4, 5, 6, 8, 9
 parallelism_spec:
   constant: '4'
 output_branch: master
