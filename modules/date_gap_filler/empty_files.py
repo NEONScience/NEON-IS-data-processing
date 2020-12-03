@@ -8,7 +8,7 @@ from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 log = structlog.getLogger()
 
 
-def link_files(config: DateGapFillerConfig, out_path: Path, location, year, month, day):
+def link_files(config: DateGapFillerConfig, out_path: Path, location, year, month, day) -> None:
     output_directories = config.output_directories
     index = config.empty_file_type_index
     empty_file_path = config.empty_file_path
@@ -20,7 +20,7 @@ def link_files(config: DateGapFillerConfig, out_path: Path, location, year, mont
                 link_empty_file(path, Path(out_path, empty_file_type), location, year, month, day)
 
 
-def create_directories(output_directories: list, out_path: Path):
+def create_directories(output_directories: list, out_path: Path) -> None:
     for directory in output_directories:
         path = Path(out_path, directory)
         path.mkdir(parents=True, exist_ok=True)
