@@ -93,9 +93,9 @@ test_that("Unit test of def.ucrt.dp01.cal.mult.R", {
   testthat::expect_true(ucrtCal == 0.0143 * max(data))
   
   # Sad Path 1 - When data is not numeric, returns NA
-  data <- c('827.7', '827.8', '831.3')
+  data_notNumeric <- c('827.7', '827.8', '831.3')
   ucrtCal <- try(NEONprocIS.stat::def.ucrt.dp01.cal.mult(
-    data = data,
+    data = data_notNumeric,
     ucrtCoef = ucrtCoef,
     NameCoef = 'U_CVALA3',
     VarUcrt = 'linePAR',
@@ -107,7 +107,7 @@ test_that("Unit test of def.ucrt.dp01.cal.mult.R", {
   testthat::expect_true((class(ucrtCal)[1] == "try-error"))
   
   # Sad Path 2 - 
-  data <- c(827.7, 827.8, 831.3)
+  
   ucrtCal <- NEONprocIS.stat::def.ucrt.dp01.cal.mult(
     data = data,
     ucrtCoef = ucrtCoef,
@@ -118,5 +118,18 @@ test_that("Unit test of def.ucrt.dp01.cal.mult.R", {
   )
   
   testthat::expect_true(is.na(ucrtCal))
+  
+  # Sad Path 3 - When all parameters are NULL, returns NA
+  
+  data_empty <- c()
+  ucrtCal <- try(NEONprocIS.stat::def.ucrt.dp01.cal.mult(
+    data = data_empty,
+    ucrtCoef = ucrtCoef,
+    NameCoef = 'U_CVALR3',
+    VarUcrt = NULL,
+    TimeAgrBgn = NULL,
+    TimeAgrEnd = NULL), silent = TRUE)
+  
+  testthat::expect_true((class(ucrtCal)[1] == "try-error"))
   
 })
