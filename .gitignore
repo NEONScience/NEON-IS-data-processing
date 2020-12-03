@@ -19,6 +19,6 @@ secrets
 [Ll]ocal
 [Ss]cripts
 pyvenv.cfg
-.venv
+venv
 pip-selfcheck.json
 __pycache__

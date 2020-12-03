@@ -9,7 +9,7 @@ from quality_regularized_flag_group.quality_regularized_flag_grouper import Qual
 log = get_logger()
 
 
-def main():
+def main() -> None:
     """Group quality and regularized data flags."""
     env = environs.Env()
     regularized_path: Path = env.path('REGULARIZED_PATH')
