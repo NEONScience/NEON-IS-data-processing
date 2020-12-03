@@ -13,8 +13,8 @@ transform:
   env:
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
-    START_DATE: '2018-12-31'
-    END_DATE: '2019-01-07'
+    START_DATE: '2019-01-07'
+    END_DATE: '2019-01-13'
     OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
