@@ -119,7 +119,7 @@ test_that("Unit test of def.ucrt.dp01.cal.mult.R", {
   
   testthat::expect_true(is.na(ucrtCal))
   
-  # Sad Path 3 - When all parameters are NULL, returns NA
+  # Sad Path 3 - When all parameters are NULL and data is an empty vector, returns ERROR
   
   data_empty <- c()
   ucrtCal <- try(NEONprocIS.stat::def.ucrt.dp01.cal.mult(
