@@ -153,8 +153,7 @@ test_that("Unit test of def.ucrt.dp01.fdas.R", {
     TypeFdas = 'V',
     ucrtCoef = ucrtCoef,
     ucrtData = ucrtData_oneLessCol
-  ),
-  silent = TRUE)
+  ), silent = TRUE)
   
   testthat::expect_true((class(ucrtFdas)[1] == "try-error"))
   
@@ -179,8 +178,7 @@ test_that("Unit test of def.ucrt.dp01.fdas.R", {
     TypeFdas = 'A',
     ucrtCoef = ucrtCoef,
     ucrtData = ucrtData
-  ),
-  silent = TRUE)
+  ),silent = TRUE)
   
   testthat::expect_true((class(ucrtFdas)[1] == "try-error"))
   
@@ -192,8 +190,7 @@ test_that("Unit test of def.ucrt.dp01.fdas.R", {
     TypeFdas = 'R',
     ucrtCoef = NULL,
     ucrtData = NULL
-  ),
-  silent = TRUE)
+  ),silent = TRUE)
   
   testthat::expect_true((class(ucrtFdas)[1] == "try-error"))
   
