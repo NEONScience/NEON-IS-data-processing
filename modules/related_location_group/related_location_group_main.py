@@ -11,7 +11,7 @@ from related_location_group.related_location_grouper import RelatedLocationGroup
 log = get_logger()
 
 
-def main():
+def main() -> None:
     """Group data by related location groups."""
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')

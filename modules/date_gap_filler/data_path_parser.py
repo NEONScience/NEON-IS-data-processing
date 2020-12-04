@@ -7,7 +7,7 @@ from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 
 class DataPathParser:
 
-    def __init__(self, config: DateGapFillerConfig):
+    def __init__(self, config: DateGapFillerConfig) -> None:
         self.source_type_index = config.data_source_type_index
         self.year_index = config.data_year_index
         self.month_index = config.data_month_index

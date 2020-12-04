@@ -31,7 +31,7 @@ class DagManager:
         """Delete a DAG beginning from the end node to the root nodes."""
         for pipeline in self.dag_builder.get_pipeline_names():
             print(f'deleting pipeline: {pipeline}')
-            os.system(f'pachctl delete pipeline {pipeline}')
+            os.system(f'pachctl delete pipeline --split-txn {pipeline}')
 
     def graph_dag(self):
         """Display a PDF of the DAG."""

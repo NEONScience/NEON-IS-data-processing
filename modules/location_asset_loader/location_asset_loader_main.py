@@ -15,7 +15,7 @@ import location_asset_loader.location_asset_loader as location_asset_loader
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     out_path: Path = env.path('OUT_PATH')
     db_url: str = env.str('DATABASE_URL')

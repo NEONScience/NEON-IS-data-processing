@@ -8,7 +8,7 @@ from context_filter.context_filter_config import Config
 from context_filter.context_filter import ContextFilter
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     in_path: Path = env.path('IN_PATH')
     out_path: Path = env.path('OUT_PATH')
