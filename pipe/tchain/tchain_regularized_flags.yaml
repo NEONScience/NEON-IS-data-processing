@@ -9,11 +9,11 @@ transform:
   - DirOut=/pfs/out
   - DirRglr=flags
   - FileSchmRglr=NA
-  - FreqRglr=1
+  - FreqRglr=0.01666667
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
-  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.22
+  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.23
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
