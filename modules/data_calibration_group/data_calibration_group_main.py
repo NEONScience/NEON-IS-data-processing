@@ -9,7 +9,7 @@ from data_calibration_group.data_calibration_group_config import Config
 from data_calibration_group.data_calibration_grouper import group_files
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     calibration_path: Path = env.path('CALIBRATION_PATH')

@@ -9,7 +9,7 @@ from grouper.grouper import group_files
 log = get_logger()
 
 
-def main():
+def main() -> None:
     """
     Link files in the data path into the output path. A specification file with multiple inputs
     will use the same 'DATA_PATH' name to group the inputs.
