@@ -67,45 +67,45 @@ context("\n                       Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc
 
 # Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc.R
 test_that("Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc.R", {
- 
-   data <- data.frame(readout_time = as.POSIXct(
+  data <- data.frame(readout_time = as.POSIXct(
+    c('2019-01-01 00:00', '2019-01-01 00:01', '2019-01-01 00:02'),
+    tz = 'GMT'
+  ),
+  temp = c(.599, .598, .597))
+  
+  ucrtCoef <- list(
+    list(
+      term = 'temp',
+      start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
+      end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
+      Name = 'U_CVALA3',
+      Value = '0.0141'
+    ),
+    list(
+      term = 'temp',
+      start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
+      end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
+      Name = 'U_CVALR3',
+      Value = '0.000195'
+    ),
+    list(
+      term = 'temp',
+      start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
+      end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
+      Name = 'U_CVALR4',
+      Value = '0.0067'
+    )
+  )
+  ucrtData <- data.frame(
+    readout_time = as.POSIXct(
       c('2019-01-01 00:00', '2019-01-01 00:01', '2019-01-01 00:02'),
       tz = 'GMT'
-    ),temp = c(.599, .598, .597))
-  
-   ucrtCoef <- list(
-      list(
-        term = 'temp',
-        start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
-        end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
-        Name = 'U_CVALA3',
-        Value = '0.0141'
-      ),
-      list(
-        term = 'temp',
-        start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
-        end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
-        Name = 'U_CVALR3',
-        Value = '0.000195'
-      ),
-      list(
-        term = 'temp',
-        start_date = as.POSIXct('2019-01-01', tz = 'GMT'),
-        end_date = as.POSIXct('2019-01-02', tz = 'GMT'),
-        Name = 'U_CVALR4',
-        Value = '0.0067'
-      )
-    )
-  ucrtData <- data.frame(
-      readout_time = as.POSIXct(
-        c('2019-01-01 00:00', '2019-01-01 00:01', '2019-01-01 00:02'),
-        tz = 'GMT'
-      ),
-      temp_raw = c(100.187, 100.195, 100.203),
-      temp_dervCal = c(2.5483, 2.5481, 2.5484),
-      temp_ucrtComb = c(0.06861, 0.06860, 0.06863),
-      stringsAsFactors = FALSE
-    )
+    ),
+    temp_raw = c(100.187, 100.195, 100.203),
+    temp_dervCal = c(2.5483, 2.5481, 2.5484),
+    temp_ucrtComb = c(0.06861, 0.06860, 0.06863),
+    stringsAsFactors = FALSE
+  )
   
   # Happy Path 1 - All params passed
   
@@ -127,7 +127,7 @@ test_that("Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc.R", {
       ucrtData = ucrtData
     ),silent = TRUE)
   
-  testthat::expect_true((class(ucrt_returned)[1] == "try-error"))
+  testthat::expect_true(class(ucrt_returned)[1] == "try-error")
   
   # Sad Path 2 - data input is not numeric
   
@@ -141,5 +141,16 @@ test_that("Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc.R", {
       ucrtData = ucrtData
     ),silent = TRUE)
   
-  testthat::expect_true((class(ucrt_returned)[1] == "try-error"))
+  testthat::expect_true(class(ucrt_returned)[1] == "try-error")
+  
+  # Sad Path 3 - When all parameters are NULL, returns NA
+  
+  data_empty <- c()
+  ucrt_returned <- NEONprocIS.stat::def.ucrt.dp01.cal.cnst(
+    data = data_empty,
+    VarUcrt = 'temp',
+    ucrtCoef = NULL,
+    ucrtData = NULL
+  )
+  testthat::expect_true(class(ucrt_returned)[1] == "try-error")
 })
