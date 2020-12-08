@@ -7,7 +7,7 @@ from timeseries_padder.timeseries_padder.timeseries_padder_config import Config
 
 class DataPathParser:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.year_index = config.year_index
         self.month_index = config.month_index
         self.day_index = config.day_index

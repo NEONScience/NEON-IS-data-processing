@@ -9,7 +9,7 @@ from data_calibration_linker.data_calibration_config import Config
 from data_calibration_linker.data_calibration_linker import process_files
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH', None)
     calibration_path: Path = env.path('CALIBRATION_PATH', None)

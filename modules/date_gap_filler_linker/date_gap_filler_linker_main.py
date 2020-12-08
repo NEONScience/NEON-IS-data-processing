@@ -9,7 +9,7 @@ from date_gap_filler_linker.date_gap_filler_linker import DataGapFillerLinker
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     in_path: Path = env.path('IN_PATH')
     out_path: Path = env.path('OUT_PATH')

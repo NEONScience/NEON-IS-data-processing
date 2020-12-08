@@ -5,7 +5,7 @@ from dag.pipeline_specification_parser import PipelineSpecificationParser
 from dag.dag_builder import DagBuilder
 
 
-class DagManager(object):
+class DagManager:
 
     def __init__(self, parser: PipelineSpecificationParser):
         """
@@ -31,7 +31,7 @@ class DagManager(object):
         """Delete a DAG beginning from the end node to the root nodes."""
         for pipeline in self.dag_builder.get_pipeline_names():
             print(f'deleting pipeline: {pipeline}')
-            os.system(f'pachctl delete pipeline {pipeline}')
+            os.system(f'pachctl delete pipeline --split-txn {pipeline}')
 
     def graph_dag(self):
         """Display a PDF of the DAG."""

@@ -8,7 +8,7 @@ from common import log_config as log_config
 from padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer import PaddedTimeSeriesAnalyzer
 
 
-def main():
+def main() -> None:
     """Analyze padded time series data"""
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')

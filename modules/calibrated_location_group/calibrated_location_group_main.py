@@ -10,7 +10,7 @@ from calibrated_location_group.calibrated_location_file_grouper import Calibrate
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     calibrated_path: Path = env.path('CALIBRATED_PATH')
     location_path: Path = env.path('LOCATION_PATH')

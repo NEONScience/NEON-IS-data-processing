@@ -11,7 +11,7 @@ from location_group_path.location_group_path import LocationGroupPath
 log = get_logger()
 
 
-def main():
+def main() -> None:
     """Add the location group name from the location file into the path."""
     env = environs.Env()
     source_path: Path = env.path('SOURCE_PATH')

@@ -7,7 +7,7 @@ import common.log_config as log_config
 from filter_joiner.filter_joiner import FilterJoiner
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     config: str = env.str('CONFIG')
     out_path: Path = env.path('OUT_PATH')

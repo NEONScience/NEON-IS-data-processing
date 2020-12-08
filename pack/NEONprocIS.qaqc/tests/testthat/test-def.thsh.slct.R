@@ -1,5 +1,5 @@
-library(testthat)
-source("R/def.thsh.slct.R")
+#library(testthat)
+#source("R/def.thsh.slct.R")
 test_that("when one of the threshold matches",
           {
             #thsh, Time, Term, Ctxt = NULL, Site=NULL, NameLoc=NULL, RptThsh = TRUE, log = NULL

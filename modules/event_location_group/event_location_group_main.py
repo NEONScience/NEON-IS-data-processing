@@ -11,7 +11,7 @@ from event_location_group.event_location_grouper import EventLocationGrouper
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     location_path: Path = env.path('LOCATION_PATH')

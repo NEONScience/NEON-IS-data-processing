@@ -8,7 +8,7 @@ from common import log_config as log_config
 from egress.egress.egress import Egress
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')

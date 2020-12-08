@@ -9,7 +9,7 @@ from timeseries_padder.timeseries_padder.timeseries_padder_config import Config
 from timeseries_padder.timeseries_padder.variable_pad import VariablePad
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')

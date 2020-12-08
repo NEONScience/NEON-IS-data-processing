@@ -10,7 +10,7 @@ from timeseries_padder.timeseries_padder.constant_pad import ConstantPad
 log = get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')

@@ -8,7 +8,7 @@ import common.log_config as log_config
 from directory_filter.directory_filter import filter_directory
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     in_path: Path = env.path('IN_PATH')
     out_path: Path = env.path('OUT_PATH')

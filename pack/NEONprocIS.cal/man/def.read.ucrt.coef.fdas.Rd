@@ -2,7 +2,7 @@
 % Please edit documentation in R/def.read.ucrt.coef.fdas.R
 \name{def.read.ucrt.coef.fdas}
 \alias{def.read.ucrt.coef.fdas}
-\title{Read NEON calibration XML file}
+\title{Read NEON FDAS uncertainty coefficients}
 \usage{
 def.read.ucrt.coef.fdas(NameFile, log = NULL)
 }
@@ -19,7 +19,7 @@ A data frame of FDAS uncertainty coefficients:\cr
 \code{.attrs} Character. Relevant attribute (i.e. units)\cr
 }
 \description{
-Definition function. Read in a NEON calibration XML file.
+Definition function. Read in NEON FDAS uncertainty coefficients
 }
 \examples{
 Currently none

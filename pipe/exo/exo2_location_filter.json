@@ -3,7 +3,13 @@
     "name": "exo2_location_filter"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.loc.filt.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=data|flags|uncertainty_coef|uncertainty_data"],
+    "cmd": [
+      "Rscript",
+      "/flow.loc.filt.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirSubCopy=data|flags|uncertainty_coef|uncertainty_data"
+      ],
     "image": "quay.io/battelleecology/neon-is-loc-filt-r:v0.0.13",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {

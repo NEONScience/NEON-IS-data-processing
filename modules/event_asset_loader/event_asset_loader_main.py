@@ -10,7 +10,7 @@ from event_asset_loader.event_asset_loader import EventAssetLoader
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     source_path: Path = env.path('SOURCE_PATH')
     out_path: Path = env.path('OUT_PATH')

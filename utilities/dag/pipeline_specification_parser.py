@@ -4,7 +4,7 @@ import yaml
 from pathlib import Path
 
 
-class PipelineSpecificationParser(object):
+class PipelineSpecificationParser:
 
     def __init__(self, end_node_specification: Path, specification_path: Path):
         """
@@ -57,10 +57,13 @@ class PipelineSpecificationParser(object):
             self.end_node_pipeline_name = pipeline_name
         # list to accumulate all the inputs for this pipeline file
         pipeline_input_repos = []
-        for key, value in file_data['input'].items():
-            pipeline_has_inputs = self.parse_pipeline_input(key, value, pipeline_input_repos, pipeline_has_inputs)
-        if pipeline_has_inputs:
-            self.pipeline_inputs[pipeline_name] = pipeline_input_repos
+        inputs = file_data.get('input')
+        if inputs is not None:
+            for key, value in inputs.items():
+                pipeline_has_inputs = self.parse_pipeline_input(
+                    key, value, pipeline_input_repos, pipeline_has_inputs)
+            if pipeline_has_inputs:
+                self.pipeline_inputs[pipeline_name] = pipeline_input_repos
 
     def parse_pipeline_input(self, key: str, value, pipeline_input_repos: list, has_input_repo=False):
         """
@@ -81,11 +84,13 @@ class PipelineSpecificationParser(object):
                 for value2 in value:
                     for key3, value3 in value2.items():
                         # recurse
-                        has_input_repo = self.parse_pipeline_input(key3, value3, pipeline_input_repos, has_input_repo)
+                        has_input_repo = self.parse_pipeline_input(
+                            key3, value3, pipeline_input_repos, has_input_repo)
             if isinstance(value, dict):
                 for key3, value3 in value.items():
                     # recurse
-                    has_input_repo = self.parse_pipeline_input(key3, value3, pipeline_input_repos, has_input_repo)
+                    has_input_repo = self.parse_pipeline_input(
+                        key3, value3, pipeline_input_repos, has_input_repo)
         return has_input_repo
 
     def get_end_node_pipeline(self) -> str:

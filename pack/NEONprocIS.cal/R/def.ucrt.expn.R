@@ -1,11 +1,11 @@
 ##############################################################################################
-#' @title Compute expanded measurement uncertainty (95% confidence)
+#' @title Compute expanded measurement uncertainty (95 percent confidence)
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description
-#' Definition function. Compute expanded measurement uncertainty at 95% confidence from combined
+#' Definition function. Compute expanded measurement uncertainty at 95 percent confidence from combined
 #' measurement uncertainty
 
 #' @param ucrt Numeric data vector of combined measurement uncertainty (1 sigma)

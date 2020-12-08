@@ -7,7 +7,7 @@ from parquet_linkmerge.parquet_linkmerge_config import Config
 
 class PathParser:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.source_type_index = config.source_type_index
         self.year_index = config.year_index
         self.month_index = config.month_index

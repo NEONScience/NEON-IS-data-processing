@@ -12,7 +12,7 @@ from data_access.get_thresholds import get_thresholds
 from threshold_loader.threshold_loader import load_thresholds
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     db_url: str = env.str('DATABASE_URL')
     out_path: Path = env.path('OUT_PATH')

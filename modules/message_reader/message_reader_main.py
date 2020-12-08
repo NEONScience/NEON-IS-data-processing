@@ -16,7 +16,7 @@ from message_reader.named_pipe import open_pipe
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     out_path: Path = env.path('OUT_PATH')
     bootstrap_server: str = env.str('BOOTSTRAP_SERVER')

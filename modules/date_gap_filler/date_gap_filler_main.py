@@ -9,7 +9,7 @@ from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 from date_gap_filler.date_gap_filler import DateGapFiller
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH', None)
     location_path: Path = env.path('LOCATION_PATH', None)

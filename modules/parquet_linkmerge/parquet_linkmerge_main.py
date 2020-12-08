@@ -11,7 +11,7 @@ from parquet_linkmerge.parquet_linkmerge_config import Config
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     in_path: Path = env.path('IN_PATH')
     out_path: Path = env.path('OUT_PATH')

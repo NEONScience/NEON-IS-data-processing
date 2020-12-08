@@ -7,7 +7,7 @@ from calibrated_location_group.calibrated_location_group_config import Config
 
 class CalibratedPathParser:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.source_type_index = config.source_type_index
         self.year_index = config.year_index
         self.month_index = config.month_index
