@@ -146,11 +146,11 @@ test_that("Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc.R", {
   # Sad Path 3 - When all parameters are NULL, returns NA
   
   data_empty <- c()
-  ucrt_returned <- NEONprocIS.stat::def.ucrt.dp01.cal.cnst(
+  ucrt_returned <- try(NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst.fdas.rstc(
     data = data_empty,
     VarUcrt = 'temp',
     ucrtCoef = NULL,
     ucrtData = NULL
-  )
+  ), silent = TRUE)
   testthat::expect_true(class(ucrt_returned)[1] == "try-error")
 })
