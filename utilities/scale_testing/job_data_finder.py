@@ -5,7 +5,7 @@ from python_pachyderm import Client
 from python_pachyderm.proto.pps.pps_pb2 import JobInfo
 
 
-def get_latest_job_stats(client: Client, pipeline_name: str):
+def get_latest_job_stats(client: Client, pipeline_name: str) -> JobInfo:
     max_milliseconds = 0
     latest_job = None
     for job_info in client.list_job(pipeline_name=pipeline_name, history=0, full=False):
@@ -18,7 +18,7 @@ def get_latest_job_stats(client: Client, pipeline_name: str):
     return latest_job
 
 
-def get_job_run_times(job_info: JobInfo):
+def get_job_run_times(job_info: JobInfo) -> dict:
     job_stats = job_info.stats
     if job_stats is not None:
         started = job_info.started
@@ -51,9 +51,10 @@ def get_job_run_times(job_info: JobInfo):
         return times
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--host', required=True, help='Only the hostname of a grpc URL.')
+    parser.add_argument('--host', required=True,
+                        help='Only the hostname part of a grpc URL.')
     parser.add_argument('--port', required=True, help='The port number.')
     parser.add_argument('--pipeline', required=True, help='A pipeline name.')
     args = parser.parse_args()
