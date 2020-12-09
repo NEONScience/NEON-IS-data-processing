@@ -10,7 +10,7 @@ from data_calibration_group.data_calibration_group_config import Config
 log = structlog.get_logger()
 
 
-def group_files(config: Config):
+def group_files(config: Config) -> None:
     parser = DataPathParser(config)
     for path in config.data_path.rglob('*'):
         if path.is_file():
@@ -20,7 +20,7 @@ def group_files(config: Config):
             link_calibrations(config, common_path, source_id)
 
 
-def link_calibrations(config: Config, common_path: Path, source_id: str):
+def link_calibrations(config: Config, common_path: Path, source_id: str) -> None:
     parser = CalibrationPathParser(config)
     for path in config.calibration_path.rglob('*'):
         log.debug(f'calibration file path: {path}')

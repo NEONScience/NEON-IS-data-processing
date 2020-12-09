@@ -10,7 +10,7 @@ from location_active_dates.location_active_dates import link_location_files
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     location_path: Path = env.path('LOCATION_PATH')
     out_path: Path = env.path('OUT_PATH')

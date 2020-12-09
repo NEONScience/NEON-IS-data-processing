@@ -7,7 +7,7 @@ from context_filter.context_filter_config import Config
 
 class PathParser:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.source_id_index = config.source_id_index
         self.data_type_index = config.data_type_index
 

@@ -7,7 +7,7 @@ from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 
 class LocationPathParser:
 
-    def __init__(self, config: DateGapFillerConfig):
+    def __init__(self, config: DateGapFillerConfig) -> None:
         self.source_type_index = config.location_source_type_index
         self.year_index = config.location_year_index
         self.month_index = config.location_month_index

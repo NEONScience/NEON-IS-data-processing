@@ -7,7 +7,7 @@ from data_calibration_linker.data_calibration_config import Config
 
 class DataPathParser:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.source_type_index = config.data_source_type_index
         self.source_id_index = config.data_source_id_index
         self.year_index = config.data_year_index
