@@ -12,9 +12,6 @@
 #' uncertainty coefficients are to be compiled. The data frame in each list element holds 
 #' information about the calibration files and time periods that apply to the variable, as returned 
 #' from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
-#' @param DirCal Character string. Relative or absolute path (minus file name) to the main calibration
-#' directory. Nested within this directory are directories for each variable in calSlct, each holding
-#' calibration files for that variable. Defaults to "./"
 #' @param mappNameVar A data frame with in/out variable name mapping as produced by 
 #' NEONprocIS.base::def.var.mapp.in.out. See documentation for that function.   
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -42,10 +39,11 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-02-13)
 #     original creation
+#   Cove Sturtevant (2020-12-09)
+#     removed DirCal from inputs since the calibration path is now included in calSlct
 ##############################################################################################
 wrap.qf.cal <- function(data,
                         calSlct,
-                        DirCal="./",
                         mappNameVar=NULL,
                         log=NULL){
   # initialize logging if necessary
@@ -85,7 +83,7 @@ wrap.qf.cal <- function(data,
       } 
       
       # We have a calibration file to open
-      fileCal <- base::paste0(DirCal,'/',idxVar,'/',calSlctIdx$file[idxRow])
+      fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
       infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
       
       # Populate suspect calibration flag

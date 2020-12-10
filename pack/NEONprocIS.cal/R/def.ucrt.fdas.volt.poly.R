@@ -109,9 +109,21 @@ def.ucrt.fdas.volt.poly <- function(data = data.frame(data=base::numeric(0)),
   coefUcrtFdas <-
     base::as.numeric(infoCal$ucrt$Value[infoCal$ucrt$Name == "U_CVALV1"])
   
+  # Check that we have only 1 coefficient to apply
+  if(base::length(coefUcrtFdas) > 1){
+    log$warn('Multiple "U_CVALV1" coefficients found in the uncertainty coefficients. Using the first encountered.')
+    coefUcrtFdas <- coefUcrtFdas[1]
+  }
+  
   # Offset imposed by the FDAS, in units of voltage (U_CVALV4)
   coefUcrtFdasOfst <-
     base::as.numeric(infoCal$ucrt$Value[infoCal$ucrt$Name == "U_CVALV4"])
+  
+  # Check that we have only 1 coefficient to apply
+  if(base::length(coefUcrtFdasOfst) > 1){
+    log$warn('Multiple "U_CVALV4" coefficients found in the uncertainty coefficients. Using the first encountered.')
+    coefUcrtFdasOfst <- coefUcrtFdasOfst[1]
+  }
   
   # Compute FDAS uncertainty
   ucrt$ucrtFdas <-

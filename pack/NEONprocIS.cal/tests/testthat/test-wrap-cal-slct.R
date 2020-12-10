@@ -76,7 +76,7 @@ test_that("testing calibration selection", {
   testthat::expect_true  (is.list(wcsList))
   
   if (!(length(wcsList) == 0)) {
-    testthat::expect_true (wcsList[[1]][4] == ID)
+    testthat::expect_true (wcsList[[1]][5] == ID)
   }
   
   cat("\n       |====== Positive test 1::                                    =========================|\n")
@@ -104,7 +104,7 @@ test_that("testing calibration selection", {
   testthat::expect_true (is.list(wcsList))
   
   if (!(length(wcsList) == 0)) {
-    testthat::expect_true (wcsList[[1]][4] == ID)
+    testthat::expect_true (wcsList[[1]][5] == ID)
   }
   cat("\n       |====== Positive test 2::                                        =====================|\n")
   cat("\n       |------ calibrations has calibration files but the expiration days have NA            |\n")

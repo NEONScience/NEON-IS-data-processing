@@ -157,7 +157,6 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
          FuncUcrt,
          ucrtCoefFdas = ucrtCoefFdas,
          calSlct = calSlct,
-         DirCal = DirCal,
          mappNameVar = mappNameVar
       )
    
@@ -204,7 +203,6 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
          FuncUcrt,
          ucrtCoefFdas = ucrtCoefFdas,
          calSlct = calSlct,
-         DirCal = DirCal,
          mappNameVar = mappNameVar
       )
    
@@ -243,7 +241,6 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
          FuncUcrt,
          ucrtCoefFdas = ucrtCoefFdas,
          calSlct = calSlct,
-         DirCal = DirCal,
          mappNameVar = mappNameVar
       )
 
