@@ -7,7 +7,7 @@
     "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.23",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO"
     }  
   },
   "input": {
