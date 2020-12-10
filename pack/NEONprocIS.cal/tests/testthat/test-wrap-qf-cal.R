@@ -89,7 +89,7 @@ test_that("Unit test of wrap-qf-cal.R", {
          log = NULL
       )
 
-   wrapQfCal <- NEONprocIS.cal::wrap.qf.cal (data=data, calSlct=calSlct,DirCal=DirCal,mappNameVar=NULL, log=NULL)
+   wrapQfCal <- NEONprocIS.cal::wrap.qf.cal (data=data, calSlct=calSlct,mappNameVar=NULL, log=NULL)
    
    expiredTrue = as.integer(0)
    suspectFalse = as.integer(0)
@@ -118,7 +118,7 @@ test_that("Unit test of wrap-qf-cal.R", {
       )
    
    
-   wrapQfCal <- NEONprocIS.cal::wrap.qf.cal (data=data, calSlct=calSlct,DirCal=DirCal,mappNameVar=NULL, log=NULL)
+   wrapQfCal <- NEONprocIS.cal::wrap.qf.cal (data=data, calSlct=calSlct,mappNameVar=NULL, log=NULL)
    
    expiredTrue = as.integer(1)
    noCalToEval = as.integer(-1)

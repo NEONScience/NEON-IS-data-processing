@@ -9,7 +9,6 @@ wrap.ucrt.dp0p(
   FuncUcrt,
   ucrtCoefFdas = NULL,
   calSlct,
-  DirCal = "./",
   mappNameVar = NULL,
   log = NULL
 )
@@ -44,10 +43,6 @@ time periods that apply to the variable, as returned from NEONprocIS.cal::def.ca
 See documentation for that function. Assign NULL to list elements (variables) for which calibration
 information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
 uncertainty).}
-
-\item{DirCal}{Character string. Relative or absolute path (minus file name) to the main calibration
-directory. Nested within this directory are directories for each variable in calSlct, each holding
-calibration files for that variable. Defaults to "./"}
 
 \item{mappNameVar}{A data frame with in/out variable name mapping as produced by 
 NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is NULL),

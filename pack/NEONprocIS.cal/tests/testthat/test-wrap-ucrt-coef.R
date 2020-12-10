@@ -114,7 +114,6 @@ test_that("Unit test of wrap.ucrt.coef.R", {
    # Test 1 - pass minimun parameters, i.e., NULL for ParaUcr and mappNameVar
    wucList_returned <-
       NEONprocIS.cal::wrap.ucrt.coef (calSlct, 
-                                      DirCal = DirCal,
                                       ucrtCoefFdas = rucfDf_returned
                                       )
    
@@ -145,7 +144,6 @@ test_that("Unit test of wrap.ucrt.coef.R", {
    wucList_returned <-
       NEONprocIS.cal::wrap.ucrt.coef (
          calSlct,
-         DirCal = DirCal,
          ucrtCoefFdas = rucfDf_returned,
          mappNameVar = mappNameVar
       )
