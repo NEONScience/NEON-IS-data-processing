@@ -12,9 +12,6 @@
 #' uncertainty coefficients are to be compiled. The data frame in each list element holds 
 #' information about the calibration files and time periods that apply to the variable, as returned 
 #' from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
-#' @param DirCal Character string. Relative or absolute path (minus file name) to the main calibration
-#' directory. Nested within this directory are directories for each variable in calSlct, each holding
-#' calibration files for that variable. Defaults to "./"
 #' @param ucrtCoefFdas A data frame of FDAS uncertainty coefficients, as read by 
 #' NEONprocIS.cal::def.read.ucrt.coef.fdas. Columns include:\cr
 #' \code{Name} Character. Name of the coefficient.\cr
@@ -49,9 +46,10 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-02-13)
 #     original creation
+#   Cove Sturtevant (2020-12-09)
+#     removed DirCal from inputs since the calibration path is now included in calSlct
 ##############################################################################################
 wrap.ucrt.coef <- function(calSlct,
-                           DirCal="./",
                            ucrtCoefFdas=NULL,
                            mappNameVar=NULL,
                            log=NULL){
@@ -84,8 +82,11 @@ wrap.ucrt.coef <- function(calSlct,
       } 
       
       # We have a calibration file to open
-      fileCal <- base::paste0(DirCal,'/',idxVar,'/',calSlctIdx$file[idxRow])
+      fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
       infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+      
+      # Get rid of the path in calSlctIdx, we don't want it in the output
+      calSlctIdx <- calSlctIdx[!(names(calSlctIdx) %in% 'path')]
       
       # Add in FDAS uncertainty
       if(!base::is.null(ucrtCoefFdas)){

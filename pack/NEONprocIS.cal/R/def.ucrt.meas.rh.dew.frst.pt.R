@@ -72,7 +72,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   }
   
   # Ensure input is data frame with the target variable in it
-  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=varUcrt,TestEmpty=FALSE, log = log)
+  chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c('readout_time',varUcrt),TestEmpty=FALSE, log = log)
   if (!chk) {
     stop()
   }
@@ -82,78 +82,12 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
     stop()
   }
   
+  # Basic starting info
+  timeMeas <- data$readout_time
+  
   # Initialize output data frame
   dataUcrt <- data[[varUcrt]] # Target variable to compute uncertainty for
   ucrt <- base::data.frame(ucrtMeas = NA * dataUcrt)
-  
-  # Get the temperature calibration for the times of interest
-  calSlctIdx <- calSlct$temperature
-  for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
-    
-    # What points in the output correspond to this row?
-    setCal <- timeMeas >= calSlctIdx$timeBgn[idxRow] & timeMeas < calSlctIdx$timeEnd[idxRow]
-    
-    # If a calibration file is available for this period, open it and get calibration information
-    if(!base::is.na(calSlctIdx$file[idxRow])){
-      fileCal <- base::paste0(DirCal,'/',"temperature",'/',calSlctIdx$file[idxRow])
-      infoCalTemp <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
-    } else {
-      infoCalTemp <- NULL
-    }
-  }
-  # Get the relative humidity calibration for the times of interest
-  calSlctIdx <- calSlct$relative_humidity
-  for(idxRow in base::seq_len(base::nrow(calSlctIdx))){
-    
-    # What points in the output correspond to this row?
-    setCal <- timeMeas >= calSlctIdx$timeBgn[idxRow] & timeMeas < calSlctIdx$timeEnd[idxRow]
-    
-    # If a calibration file is available for this period, open it and get calibration information
-    if(!base::is.na(calSlctIdx$file[idxRow])){
-      fileCal <- base::paste0(DirCal,'/',"relative_humidity",'/',calSlctIdx$file[idxRow])
-      infoCalRh <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
-    } else {
-      infoCalRh <- NULL
-    }
-  }
-  
-  # If infoCalTemp is NULL, return NA data
-  if(base::is.null(infoCalTemp)){
-    log$debug('No temperature calibration information supplied, returning NA values for individual measurement uncertainty.')
-    return(ucrt)
-  }
-  
-  # If infoCalRh is NULL, return NA data
-  if(base::is.null(infoCalRh)){
-    log$debug('No relative humidity calibration information supplied, returning NA values for individual measurement uncertainty.')
-    return(ucrt)
-  }
-
-  # Check format of infoCalTemp
-  if (!NEONprocIS.cal::def.validate.info.cal(infoCalTemp,CoefUcrt='U_CVALA1',log=log)){
-    stop()
-  }
-  
-  # Check format of infoCalRh
-  if (!NEONprocIS.cal::def.validate.info.cal(infoCalRh,CoefUcrt='U_CVALA1',log=log)){
-    stop()
-  }
-  
-  # Uncertainty coefficient U_CVALA1 represents the combined measurement uncertainty for an
-  # individual reading. It includes the repeatability and reproducibility of the sensor and the
-  # lab DAS and ii) uncertainty of the calibration procedures and coefficients including
-  # uncertainty in the standard (truth).
-  # Get the uncertainty coefficients for temperature and relative humidity
-  ucrtCoefTemp <- infoCalTemp$ucrt[infoCalTemp$ucrt$Name == 'U_CVALA1',]
-  ucrtCoefRh <- infoCalRh$ucrt[infoCalRh$ucrt$Name == 'U_CVALA1',]
-
-  # Issue warning if more than one matching uncertainty coefficient was found
-  if(base::nrow(ucrtCoefTemp) > 1){
-    log$warn("More than one matching uncertainty coefficient was found for temperature U_CVALA1. Using the first.")
-  }
-  if(base::nrow(ucrtCoefRh) > 1){
-    log$warn("More than one matching uncertainty coefficient was found for relative humidity U_CVALA1. Using the first.")
-  }
   
   # Specify constants based on relative humidity ATBD
   absZero <- -273.15 # (degrees C)
@@ -176,23 +110,27 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   a6 <- 4.1635019
   
   # Calculate saturation vapor pressure 
+  data$virtual_temperature <- NA*data$temperature
+  data$saturation_vapor_pressure <- data$virtual_temperature
+  data$derivative_dfpt_t_part1 <- data$virtual_temperature
+  data$derivative_dfpt_t_part2 <- data$virtual_temperature
   # Identify rows with temperature above 0 degrees C
   waterRows <- which(data$temperature > 0)
   if(length(waterRows)>0){
     # Calculate virtual temperature at temperatures above 0 degrees C
     data$virtual_temperature[waterRows] <- ((data$temperature[waterRows]-absZero)-
-                                             ((data$temperature[waterRows]-absZero)*c0+
-                                                (data$temperature[waterRows]-absZero)*c1+
-                                                (data$temperature[waterRows]-absZero)*c2+
-                                                (data$temperature[waterRows]-absZero)*c3) )
+                                              ((data$temperature[waterRows]-absZero)*c0+
+                                                 (data$temperature[waterRows]-absZero)*c1+
+                                                 (data$temperature[waterRows]-absZero)*c2+
+                                                 (data$temperature[waterRows]-absZero)*c3) )
     
     # Calculate saturation vapor pressure over water
     data$saturation_vapor_pressure[waterRows] <- exp((b0/data$virtual_temperature[waterRows])+
-                                            (data$virtual_temperature[waterRows]^0*b1+
-                                               data$virtual_temperature[waterRows]^1*b2+
-                                               data$virtual_temperature[waterRows]^2*b3+
-                                               data$virtual_temperature[waterRows]^3*b4)+
-                                            log(data$virtual_temperature[waterRows])*b5)/100
+                                                       (data$virtual_temperature[waterRows]^0*b1+
+                                                          data$virtual_temperature[waterRows]^1*b2+
+                                                          data$virtual_temperature[waterRows]^2*b3+
+                                                          data$virtual_temperature[waterRows]^3*b4)+
+                                                       log(data$virtual_temperature[waterRows])*b5)/100
   }
   # Identify rows with temperature above 0 degrees C
   iceRows <- which(data$temperature <= 0)
@@ -202,12 +140,12 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
     
     # Calculate saturation vapor pressure over ice
     data$saturation_vapor_pressure[iceRows] <- exp((a0/data$virtual_temperature[iceRows])+
-                                            (data$virtual_temperature[iceRows]^0*a1+
-                                               data$virtual_temperature[iceRows]^1*a2+
-                                               data$virtual_temperature[iceRows]^2*a3+
-                                               data$virtual_temperature[iceRows]^3*a4+
-                                               data$virtual_temperature[iceRows]^4*a5)+
-                                            log(data$virtual_temperature[iceRows])*a6)/100
+                                                     (data$virtual_temperature[iceRows]^0*a1+
+                                                        data$virtual_temperature[iceRows]^1*a2+
+                                                        data$virtual_temperature[iceRows]^2*a3+
+                                                        data$virtual_temperature[iceRows]^3*a4+
+                                                        data$virtual_temperature[iceRows]^4*a5)+
+                                                     log(data$virtual_temperature[iceRows])*a6)/100
   }
   
   # Calculate partial derivative (degrees C hPa-1) of ATBD Eq. 1, substituting Eq. 3 for P_pw and Eq. 5 for P_pi, with respect to P_ws_w/i
@@ -217,21 +155,21 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   # Do this for temperatures >273.15 K
   if(length(waterRows)>0){
     data$derivative_dfpt_t_part2[waterRows] <- 1/100*
-    (1-(0*c0*(data$temperature[waterRows]-absZero)^-1+
-          1*c1*(data$temperature[waterRows]-absZero)^0+
-          2*c2*(data$temperature[waterRows]-absZero)^1+
-          3*c3*(data$temperature[waterRows]-absZero)^2))*
-    (-(b0/data$virtual_temperature[waterRows]^2)+
-       1*b2*data$virtual_temperature[waterRows]^0+ 
-       2*b3*data$virtual_temperature[waterRows]^1+ 
-       3*b4*data$virtual_temperature[waterRows]^2+ 
-       b5/data$virtual_temperature[waterRows])*
-    (exp((b0/data$virtual_temperature[waterRows])+
-           b1*data$virtual_temperature[waterRows]^0+
-           b2*data$virtual_temperature[waterRows]^1+
-           b3*data$virtual_temperature[waterRows]^2+
-           b4*data$virtual_temperature[waterRows]^3+
-           b5*log(data$virtual_temperature[waterRows])))
+      (1-(0*c0*(data$temperature[waterRows]-absZero)^-1+
+            1*c1*(data$temperature[waterRows]-absZero)^0+
+            2*c2*(data$temperature[waterRows]-absZero)^1+
+            3*c3*(data$temperature[waterRows]-absZero)^2))*
+      (-(b0/data$virtual_temperature[waterRows]^2)+
+         1*b2*data$virtual_temperature[waterRows]^0+ 
+         2*b3*data$virtual_temperature[waterRows]^1+ 
+         3*b4*data$virtual_temperature[waterRows]^2+ 
+         b5/data$virtual_temperature[waterRows])*
+      (exp((b0/data$virtual_temperature[waterRows])+
+             b1*data$virtual_temperature[waterRows]^0+
+             b2*data$virtual_temperature[waterRows]^1+
+             b3*data$virtual_temperature[waterRows]^2+
+             b4*data$virtual_temperature[waterRows]^3+
+             b5*log(data$virtual_temperature[waterRows])))
   }
   # Do this for temperatures <=273.15 K
   if(length(iceRows)>0){
@@ -250,19 +188,99 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
                a5*(data$temperature[iceRows]-absZero)^4+
                a6*log(data$temperature[iceRows]-absZero)))
   }
-
+  
   # Calculate derivative of dew/frost point with respect to temperature (K)
   data$derivative_dfpt_t <- data$derivative_dfpt_t_part1*data$derivative_dfpt_t_part2
   
-  # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient temperature
-  data$ucrt_dfpt_t <- abs(data$derivative_dfpt_t)*base::as.numeric(ucrtCoefTemp$Value[1])
   
-  # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient relative humidity
-  data$ucrt_dfpt_rh <- abs(4719.72/(data$relative_humidity*(log10(data$saturation_vapor_pressure*data$relative_humidity)-30.605)^2 ))*base::as.numeric(ucrtCoefRh$Value[1])
+  
+  # Roll through the temperature and RH calibration files, applying the computations for the applicable time period(s)
+  calSlctTemp <- calSlct$temperature
+  for(idxRowTemp in base::seq_len(base::nrow(calSlctTemp))){
+    
+    # What points in the output correspond to this row?
+    setCalTemp <- timeMeas >= calSlctTemp$timeBgn[idxRowTemp] & timeMeas < calSlctTemp$timeEnd[idxRowTemp]
+    
+    # Move on if no data points fall within this cal window
+    if(base::sum(setCalTemp) == 0){
+      next
+    }
+    
+    # If a calibration file is available for this period, open it and get calibration information
+    if(!base::is.na(calSlctTemp$file[idxRowTemp])){
+      fileCal <- base::paste0(calSlctTemp$path[idxRowTemp],calSlctTemp$file[idxRowTemp])
+      infoCalTemp <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+    } else {
+      log$debug('No temperature calibration information supplied for at least a period of the data, returning NA values for individual measurement uncertainty during that interval.')
+      next
+    }
+    
+    # Check format of infoCalTemp
+    if (!NEONprocIS.cal::def.validate.info.cal(infoCalTemp,CoefUcrt='U_CVALA1',log=log)){
+      stop()
+    }
+    
+    
+    # Now roll through the relative humidity calibrations, applying the computations for the applicable time period(s)
+    calSlctRh <- calSlct$relative_humidity
+    for(idxRowRh in base::seq_len(base::nrow(calSlctRh))){
+      
+      # What points in the output correspond to this row?
+      setCalRh <- timeMeas >= calSlctRh$timeBgn[idxRowRh] & timeMeas < calSlctRh$timeEnd[idxRowRh]
+      
+      # Merge with setCalTemp to find the data points applicable to both the temp and RH calibration files
+      setCal <- setCalTemp & setCalRh
+      
+      # Move on if no data points fall within this joint cal window
+      if(base::sum(setCal) == 0){
+        next
+      }
+      
+      # If a calibration file is available for this period, open it and get calibration information
+      if(!base::is.na(calSlctRh$file[idxRowRh])){
+        fileCal <- base::paste0(calSlctRh$path[idxRowRh],calSlctRh$file[idxRowRh])
+        infoCalRh <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
+      } else {
+        log$debug('No relative humidity calibration information supplied for at least a period of the data, returning NA values for individual measurement uncertainty during that interval.')
+        next
+      }
+      
+      # Check format of infoCalRh
+      if (!NEONprocIS.cal::def.validate.info.cal(infoCalRh,CoefUcrt='U_CVALA1',log=log)){
+        stop()
+      }
+      
+      # Uncertainty coefficient U_CVALA1 represents the combined measurement uncertainty for an
+      # individual reading. It includes the repeatability and reproducibility of the sensor and the
+      # lab DAS and ii) uncertainty of the calibration procedures and coefficients including
+      # uncertainty in the standard (truth).
+      # Get the uncertainty coefficients for temperature and relative humidity
+      ucrtCoefTemp <- infoCalTemp$ucrt[infoCalTemp$ucrt$Name == 'U_CVALA1',]
+      ucrtCoefRh <- infoCalRh$ucrt[infoCalRh$ucrt$Name == 'U_CVALA1',]
+      
+      # Issue warning if more than one matching uncertainty coefficient was found
+      if(base::nrow(ucrtCoefTemp) > 1){
+        log$warn("More than one matching uncertainty coefficient was found for temperature U_CVALA1. Using the first.")
+      }
+      if(base::nrow(ucrtCoefRh) > 1){
+        log$warn("More than one matching uncertainty coefficient was found for relative humidity U_CVALA1. Using the first.")
+      }
+      
+      # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient temperature
+      ucrt_dfpt_t <- abs(data$derivative_dfpt_t[setCal])*base::as.numeric(ucrtCoefTemp$Value[1])
+      
+      # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient relative humidity
+      ucrt_dfpt_rh <- abs(4719.72/(data$relative_humidity[setCal]*(log10(data$saturation_vapor_pressure[setCal]*data$relative_humidity[setCal])-30.605)^2 ))*base::as.numeric(ucrtCoefRh$Value[1])
+      
+      # Calculate the combined uncertainty for each dew/frost point measurement
+      ucrt$ucrtMeas[setCal] <- sqrt((ucrt_dfpt_t^2)+(ucrt_dfpt_rh^2))
+      
+      
+    } # End loop around RH calibration files
+    
+  } # End loop around Temperature calibration files
 
-  # Calculate the combined uncertainty for each dew/frost point measurement
-  ucrt$ucrtMeas[] <- sqrt((data$ucrtMeas_dfpt_t^2)+(data$ucrtMeas_dfpt_rh^2))
-
+  
   return(ucrt)
   
 }
