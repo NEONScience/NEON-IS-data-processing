@@ -86,7 +86,7 @@ test_that("   Test of def.cal.meta.R, Compile metadata for calibrations",
             metaCal <-
               NEONprocIS.cal::def.cal.meta(fileCal = testFileCalPath)
             
-            NameList = c('file', 'timeValiBgn', 'timeValiEnd', 'id')
+            NameList = c('path', 'file', 'timeValiBgn', 'timeValiEnd', 'id')
             
             expect_true (is.data.frame(metaCal))
             expect_true (all(NameList %in% colnames(metaCal)))

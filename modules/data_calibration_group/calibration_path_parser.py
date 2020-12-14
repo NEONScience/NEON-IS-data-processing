@@ -7,7 +7,7 @@ from data_calibration_group.data_calibration_group_config import Config
 
 class CalibrationPathParser:
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config) -> None:
         self.source_type_index = config.calibration_source_type_index
         self.source_id_index = config.calibration_source_id_index
         self.stream_index = config.calibration_stream_index

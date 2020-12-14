@@ -12,7 +12,7 @@
       "TermFuncUcrt=depth:def.ucrt.meas.mult",
       "TermQf=depth"
       ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.38",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.43",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

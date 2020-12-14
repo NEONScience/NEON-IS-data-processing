@@ -11,7 +11,7 @@ from joiner.joiner import join_files
 log = get_logger()
 
 
-def main():
+def main() -> None:
     """Read files from the list of related paths and link them into the output path."""
     env = environs.Env()
     related_paths: list = env.list('RELATED_PATHS')

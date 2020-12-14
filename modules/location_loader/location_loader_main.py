@@ -13,7 +13,7 @@ from location_loader.location_loader import load_locations
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     env = environs.Env()
     location_type: str = env.str('LOCATION_TYPE')
     db_url: str = env.str('DATABASE_URL')

@@ -4,7 +4,7 @@
 \alias{wrap.qf.cal}
 \title{Wrapper for computing calibration flags for all variables and time ranges}
 \usage{
-wrap.qf.cal(data, calSlct, DirCal = "./", mappNameVar = NULL, log = NULL)
+wrap.qf.cal(data, calSlct, mappNameVar = NULL, log = NULL)
 }
 \arguments{
 \item{data}{Data frame of L0 data. Must include POSIXct time variable readout_time.}
@@ -13,10 +13,6 @@ wrap.qf.cal(data, calSlct, DirCal = "./", mappNameVar = NULL, log = NULL)
 uncertainty coefficients are to be compiled. The data frame in each list element holds 
 information about the calibration files and time periods that apply to the variable, as returned 
 from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
-
-\item{DirCal}{Character string. Relative or absolute path (minus file name) to the main calibration
-directory. Nested within this directory are directories for each variable in calSlct, each holding
-calibration files for that variable. Defaults to "./"}
 
 \item{mappNameVar}{A data frame with in/out variable name mapping as produced by 
 NEONprocIS.base::def.var.mapp.in.out. See documentation for that function.}
