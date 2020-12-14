@@ -34,9 +34,6 @@
 #' See documentation for that function. Assign NULL to list elements (variables) for which calibration
 #' information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
 #' uncertainty).
-#' @param DirCal Character string. Relative or absolute path (minus file name) to the main calibration
-#' directory. Nested within this directory are directories for each variable in calSlct, each holding
-#' calibration files for that variable. Defaults to "./"
 #' @param mappNameVar A data frame with in/out variable name mapping as produced by 
 #' NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is NULL),
 #' output variable names will be appended as prefixes to the column names in each output data frame. 
@@ -74,12 +71,13 @@
 #     Changed input to also specify the FDAS uncertainty function to use, instead of 
 #     determining it within the code 
 #     Changed input argument ParaUcrt to FuncUcrt, and changed input column names to support above changes
+#   Cove Sturtevant (2020-12-09)
+#     removed DirCal from inputs since the calibration path is now included in calSlct
 ##############################################################################################
 wrap.ucrt.dp0p <- function(data,
                            FuncUcrt,
                            ucrtCoefFdas=NULL,
                            calSlct,
-                           DirCal="./",
                            mappNameVar=NULL,
                            log=NULL){
   # initialize logging if necessary
@@ -118,7 +116,7 @@ wrap.ucrt.dp0p <- function(data,
       
       # If a calibration file is available for this period, open it and get calibration information
       if(!base::is.na(calSlctIdx$file[idxRow])){
-        fileCal <- base::paste0(DirCal,'/',idxVar,'/',calSlctIdx$file[idxRow])
+        fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
         infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
       } else {
         infoCal <- NULL
