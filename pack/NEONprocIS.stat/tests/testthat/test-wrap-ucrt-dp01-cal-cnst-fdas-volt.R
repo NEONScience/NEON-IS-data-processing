@@ -78,6 +78,7 @@ test_that("Unit test of wrap.ucrt.dp01.cal.cnst.fdas.volt.R", {
                          stringsAsFactors=FALSE)
    ucrt_volt_returned <- NEONprocIS.stat::wrap.ucrt.dp01.cal.mult.fdas.volt(data=data,VarUcrt='linePAR',ucrtCoef=ucrtCoef,ucrtData=ucrtData)
   
+   testthat::expect_true(!is.na(ucrt_volt_returned))
   
   # Sad Path 1 - - column readout_time missing
   
