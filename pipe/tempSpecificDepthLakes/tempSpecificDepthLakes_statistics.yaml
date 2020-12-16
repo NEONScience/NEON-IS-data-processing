@@ -8,21 +8,19 @@ transform:
   - "/flow.stat.basc.R"
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
-  #- FileSchmStat=$FILE_SCHEMA_STATS
-  # TODO Must regularize instantaneous data first!
+  - FileSchmStat=$FILE_SCHEMA_STATS
   - WndwAgr=030
   - TermStat1=depth0WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
-  - TermStat2=depth1WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst.fdas.rstc)
-  - TermStat3=depth2WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst.fdas.rstc)
-  - TermStat4=depth3WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst.fdas.rstc)
-  - TermStat5=depth4WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst.fdas.rstc)
-  - TermStat6=depth5WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst.fdas.rstc)
-  - TermStat7=depth6WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst.fdas.rstc)
-  - TermStat8=depth7WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst.fdas.rstc)
-  - TermStat9=depth8WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst.fdas.rstc)
-  - TermStat10=depth9WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst.fdas.rstc) 
-  #  Computing stats for aggregation interval: 30 minute(s)
-  #   Error in base::get(nameFunc, base::asNamespace("NEONprocIS.stat")) object 'R' not found
+  - TermStat2=depth1WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
+  - TermStat3=depth2WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
+  - TermStat4=depth3WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
+  - TermStat5=depth4WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
+  - TermStat6=depth5WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
+  - TermStat7=depth6WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
+  - TermStat8=depth7WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
+  - TermStat9=depth8WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
+  - TermStat10=depth9WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc) 
+
  # - TermStat11=depth10WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst) 
   env:
     LOG_LEVEL: DEBUG
@@ -36,6 +34,7 @@ resource_requests:
 input:
   cross:
   - pfs:
+  #pfs:
       name: DIR_IN
       repo: tchain_statistics_uncertainty_group
       branch: master
