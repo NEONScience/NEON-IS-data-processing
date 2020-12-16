@@ -122,4 +122,29 @@ test_that("Unit test of wrap.ucrt.dp01.R", {
   ),silent = TRUE)
   
   testthat::expect_true(class(ucrt_returned)[1] == "try-error")
+ 
+   # Sad Path 2 - data input is not numeric
+  
+  data_notNumeric <- data
+  data_notNumeric$temp <- as.character(data_notNumeric$temp)
+  
+  ucrt_returned <- try(NEONprocIS.stat::wrap.ucrt.dp01(
+    data = data_notNumeric,
+    FuncUcrt = FuncUcrt,
+    ucrtCoef = ucrtCoef,
+    ucrtData = ucrtData
+  ),silent = TRUE)
+  
+  testthat::expect_true(class(ucrt_returned)[1] == "try-error")
+  
+  # Sad Path 3 - When all parameters are NULL, returns NA
+  
+  data_empty <- c()
+  ucrt_returned <- try(NEONprocIS.stat::wrap.ucrt.dp01(
+    data = data_empty,
+    FuncUcrt = FuncUcrt,
+    ucrtCoef = ucrtCoef,
+    ucrtData = ucrtData
+  ), silent = TRUE)
+  testthat::expect_true(class(ucrt_returned)[1] == "try-error")
 })
