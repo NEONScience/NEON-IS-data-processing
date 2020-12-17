@@ -25,7 +25,7 @@
     "pfs": {
       "name": "IN_PATH",
       "repo": "tempSoil_context_filter",
-      "glob": "/*/*/*",
+      "glob": "/prt/*/*/*",
       "empty_files": true
     }
   },

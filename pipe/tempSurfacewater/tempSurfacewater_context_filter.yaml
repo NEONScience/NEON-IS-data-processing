@@ -4,26 +4,23 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/context_filter:25
+  image: quay.io/battelleecology/context_filter:27
   cmd:
   - "/bin/bash"
   stdin:
   - "#!/bin/bash"
-  - python3 -m context_filter.app
+  - python3 -m context_filter.context_filter_main
   env:
     OUT_PATH: "/pfs/out"
     CONTEXT: surfacewater
-    LOG_LEVEL: INFO
-    SOURCE_TYPE_INDEX: '3'
-    YEAR_INDEX: '4'
-    MONTH_INDEX: '5'
-    DAY_INDEX: '6'
+    LOG_LEVEL: DEBUG
+    TRIM_INDEX: '3'
     SOURCE_ID_INDEX: '7'
     DATA_TYPE_INDEX: '8'
 input:
   pfs:
     name: IN_PATH
-    repo: prt_date_gap_filler_linker
+    repo: prt_named_location_filter
     glob: "/prt/*/*/*"
 enable_stats: false
 standby: true

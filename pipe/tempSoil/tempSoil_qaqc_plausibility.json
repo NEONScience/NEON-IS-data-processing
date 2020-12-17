@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "tempSoil_padded_timeseries_analyzer",
-          "glob": "/prt/*/*"
+          "glob": "/prt/*/*/*"
         }
       },
       {

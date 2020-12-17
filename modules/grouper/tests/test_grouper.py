@@ -2,10 +2,8 @@
 import os
 from pathlib import Path
 
-import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from common import log_config as log_config
 from grouper.grouper import group_files
 import grouper.grouper_main as grouper_main
 

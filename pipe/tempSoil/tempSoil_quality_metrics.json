@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "tempSoil_qaqc_flags_group",
-          "glob": "/prt/*/*"
+          "glob": "/prt/*/*/*"
         }
       },
       {
