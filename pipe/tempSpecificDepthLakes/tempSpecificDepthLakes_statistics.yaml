@@ -35,7 +35,7 @@ input:
   - pfs:
   #pfs:
       name: DIR_IN
-      repo: tchain_statistics_uncertainty_group
+      repo: tempSpecificDepthLakes_statistics_uncertainty_group
       branch: master
       glob: "/tchain/*/*/*"
   - pfs:
