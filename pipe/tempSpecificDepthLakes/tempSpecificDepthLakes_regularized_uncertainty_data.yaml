@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirRglr=uncertainty_data
   - FileSchmRglr=NA
-  - FreqRglr=0.01666667
+  - FreqRglr=0.0166666666667
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
@@ -21,7 +21,7 @@ transform:
 input:
   pfs:
     name: DIR_IN
-    repo: tchain_uncertainty_data
+    repo: tempSpecificDepthLakes_uncertainty_data
     glob: "/tchain/*/*"
 enable_stats: false
 standby: true
