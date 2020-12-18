@@ -1,0 +1,37 @@
+---
+pipeline:
+  name: tempSpecificDepthLakes_regularized_data
+transform:
+  cmd:
+  - Rscript
+  - "/flow.rglr.R"
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirRglr=data
+  - FileSchmRglr=NA
+  - FreqRglr=0.0166666666667
+  - MethRglr=CybiEc
+  - WndwRglr=Trlg
+  - IdxWndw=IdxWndwMin
+  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.23
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: tempSpecificDepthLakes_calibrated_data
+      glob: "/*/*/*"
+  - pfs:
+      name: FILE_SCHEMA_RGLR
+      repo: avro_schemas
+      glob: "/dp0p/tchain_parsed.avsc"
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '2'
+resource_requests:
+  memory: 20M
+  cpu: 0.25
