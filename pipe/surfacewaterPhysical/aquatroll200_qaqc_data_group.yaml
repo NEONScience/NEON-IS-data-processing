@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: surfacewaterPhysical_qaqc_flags_group
+  name: aquatroll200_qaqc_data_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:6
@@ -17,23 +17,29 @@ transform:
         - path:
             name: QAQC_PLAUSIBILITY_AQUATROLL
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_AQUATROLL/aquatroll200/*/*/*/*/flags/**
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_AQUATROLL/aquatroll200/*/*/*/*/data/**
             # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
-            name: QAQC_PLAUSIBILITY_LEVELTROLL
+            name: UNCERTAINTY_DATA
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_LEVELTROLL/leveltroll500/*/*/*/*/flags/**
+            glob_pattern: /pfs/UNCERTAINTY_DATA/aquatroll200/*/*/*/*/uncertainty_data/**
+            # Join on context group (already joined below by day
+            join_indices: [7]
+        - path:
+            name: UNCERTAINTY_COEF_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/aquatroll200/*/*/*/*/uncertainty_coef/**
             # Join on named location (already joined below by day
             join_indices: [7]
         - path:
-            name: REGULARIZED_FLAGS
+            name: LOCATION_DATA
             # Filter for data directory
-            glob_pattern: /pfs/REGULARIZED_FLAGS/*/*/*/*/*/flags/**
+            glob_pattern: /pfs/LOCATION_DATA/aquatroll200/*/*/*/*/location/**
             # Join on named location (already joined below by day
             join_indices: [7]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_AQUA: DEBUG
     RELATIVE_PATH_INDEX: "3"
 input:
   join:
@@ -44,15 +50,21 @@ input:
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
-      name: QAQC_PLAUSIBILITY_LEVELTROLL
-      repo: surfacewaterPhysical_qaqc_plausibility_leveltroll
-      glob: /leveltroll500/(*)/(*)/(*)
+      name: UNCERTAINTY_DATA
+      repo: surfacewaterPhysical_context_filter
+      glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
-      name: REGULARIZED_FLAGS
-      repo: surfacewaterPhysical_regularized_flags
-      glob: /*/(*)/(*)/(*)
+      name: UNCERTAINTY_COEF_PATH
+      repo: surfacewaterPhysical_context_filter
+      glob: /aquatroll200/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
+  - pfs:
+      name: LOCATION_DATA
+      repo: surfacewaterPhysical_locations
+      glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
 parallelism_spec:
