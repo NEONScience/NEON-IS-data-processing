@@ -16,14 +16,14 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "relHumidity_calibrated_data",
-          "glob": "/prt/*/*"
+          "glob": "/hmp155/*/*"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_RGLR",
           "repo": "avro_schemas",
-          "glob": "/dp0p/prt_calibrated_wo_source.avsc"
+          "glob": "/dp0p/hmp155_calibrated_wo_source.avsc"
         }
       }
     ]

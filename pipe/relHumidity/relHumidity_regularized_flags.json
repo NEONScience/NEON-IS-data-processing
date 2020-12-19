@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "relHumidity_calibrated_flags",
-      "glob": "/prt/*/*"
+      "glob": "/hmp155/*/*"
     }
   },
   "enable_stats": false,
