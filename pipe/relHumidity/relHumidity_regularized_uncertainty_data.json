@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "relHumidity_regularized_data"
+    "name": "relHumidity_regularized_uncertainty_data"
   },
   "transform": {
     "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=uncertainty_data","FileSchmRglr=NA", "FreqRglr=1","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
@@ -13,7 +13,7 @@
   "input": {
       "pfs": {
         "name": "DIR_IN",
-        "repo": "relHumidity_calibrated_data",
+        "repo": "relHumidity_uncertainty_data",
         "glob": "/hmp155/*/*"
       }
   },
