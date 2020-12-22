@@ -20,7 +20,7 @@ transform:
   - TermStat8=depth7WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)
   - TermStat9=depth8WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)
   - TermStat10=depth9WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst) 
- # - TermStat11=depth10WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(def.ucrt.dp01.cal.cnst) 
+  #- TermStat11=depth10WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst) 
   env:
     LOG_LEVEL: INFO
   image_pull_secrets:
