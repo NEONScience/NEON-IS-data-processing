@@ -21,25 +21,25 @@ transform:
   - GrpQf8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF
   - GrpQf9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF
   - GrpQf10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF
-  #- GrpQf11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF
+  - GrpQf11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF
   image: quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.7
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
 input:
   cross:
   - pfs:
  #pfs:
       name: DIR_IN
-      repo: tchain_qaqc_flags_group
+      repo: tempSpecificDepthLakes_qaqc_flags_group
       glob: "/tchain/*/*"
   - pfs:
       name: FILE_SCHEMA_QM
       repo: avro_schemas
       glob: "/dp01/tempSpecificDepthLakes_dp01_quality_metrics.avsc"
 enable_stats: false
-standby: true
+standby: false
 parallelism_spec:
   constant: '2'
 resource_requests:
