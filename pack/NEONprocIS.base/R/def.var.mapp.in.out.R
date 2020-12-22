@@ -25,7 +25,7 @@
 #' @keywords Currently none
 
 #' @examples 
-#' NEONprocIS.base::def.var.mapp.in.out(nameVarIn=c('varIn1,'varIn2'),
+#' NEONprocIS.base::def.var.mapp.in.out(nameVarIn=c('varIn1','varIn2'),
 #'                                      nameVarOut=c('nameOut1','nameOut2'),
 #'                                      nameVarDfltSame=c('nameSame1','nameSame2'))
 
