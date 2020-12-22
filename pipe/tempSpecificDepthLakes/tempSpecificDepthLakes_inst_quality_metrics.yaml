@@ -7,10 +7,7 @@ transform:
   - "/flow.qaqc.qm.R"
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
-  #- FileSchmQm=$FILE_SCHEMA_QM
   - WndwAgr=001
-#  - WghtAlphBeta=2|1
-#  - Thsh=0.2
   - GrpQf1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF
   - GrpQf2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF
   - GrpQf3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF
@@ -28,16 +25,10 @@ transform:
   env:
     LOG_LEVEL: INFO
 input:
-  #cross:
-  #- pfs:
   pfs:
     name: DIR_IN
     repo: tempSpecificDepthLakes_qaqc_flags_group
     glob: "/tchain/*/*"
-  #- pfs:
-  #    name: FILE_SCHEMA_QM
-  #    repo: avro_schemas
-  #    glob: "/dp01/tempSpecificDepthLakes_dp01_quality_metrics.avsc"
 enable_stats: false
 standby: true
 parallelism_spec:
