@@ -33,7 +33,7 @@ input:
   join:
   - pfs:
       name: QAQC_PLAUSIBILITY_PATH
-      repo: tchain_qaqc_plausibility
+      repo: tempSpecificDepthLakes_qaqc_plausibility
       glob: /tchain/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
