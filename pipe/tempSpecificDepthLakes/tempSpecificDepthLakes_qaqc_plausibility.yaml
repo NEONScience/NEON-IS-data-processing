@@ -18,7 +18,7 @@ transform:
   - TermTest8=depth7WaterTemp:null|gap|range(rmv)|step(rmv)|spike(rmv)
   - TermTest9=depth8WaterTemp:null|gap|range(rmv)|step(rmv)|spike(rmv)
   - TermTest10=depth9WaterTemp:null|gap|range(rmv)|step(rmv)|spike(rmv)
-#  - TermTest11=depth10WaterTemp:null|gap|range(rmv)|step(rmv)|spike(rmv)
+  - TermTest11=depth10WaterTemp:null|gap|range(rmv)|step(rmv)|spike(rmv)
   image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.15
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -33,7 +33,7 @@ input:
   - pfs:
       name: SCHEMA_FLAGS
       repo: avro_schemas
-      glob: "/dp0p/flags_plausibility_tchain.avsc"
+      glob: "/dp0p/flags_plausibility_tempSpecificDepthLakes.avsc"
 enable_stats: false
 standby: true
 parallelism_spec:
