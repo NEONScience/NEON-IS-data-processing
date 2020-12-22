@@ -1,0 +1,1417 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><CalVal xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../CVALData.xsd ">
+   <SensorID>
+    <MxAssetID>46869</MxAssetID>
+    
+  </SensorID>
+  <StreamCalVal>
+    <CalFixture>
+      <CalFixtureID/>
+      <ActivityLocation/>
+      <SWVersion>1.0</SWVersion>
+      <ProcedureVersion/>
+      <Station/>
+    </CalFixture>
+    <CalEnvironment>
+      <AmbientTemperature>
+        <Min>25.0</Min>
+        <Max>25.0</Max>
+        <Mean>25.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientTemperature>
+      <AmbientPressure>
+        <Min>760.0</Min>
+        <Max>760.0</Max>
+        <Mean>760.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientPressure>
+      <AmbientHumidity>
+        <Min>25.0</Min>
+        <Max>25.0</Max>
+        <Mean>25.0</Mean>
+        <StdDev>0.00</StdDev>
+      </AmbientHumidity>
+    </CalEnvironment>
+    <CalibrationCoefficient> 
+		<Name>CVALR1</Name>
+		<Value>0</Value>
+    </CalibrationCoefficient>
+	<CalibrationTable name="CVALTABLEA1">
+    <Metadata>
+        <Entry>
+            <Name>wavelength</Name>
+            <Value>nm</Value>
+        </Entry> 
+    </Metadata>
+	<Row index="1">
+    <Independent name="wavelength">188.590000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5.541667</Dependent>
+    </Column>
+	</Row>
+	<Row index="2">
+    <Independent name="wavelength">189.400000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8.666667</Dependent>
+    </Column>
+	</Row><Row index="3">
+    <Independent name="wavelength">190.210000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12.625000</Dependent>
+    </Column>
+	</Row><Row index="4">
+    <Independent name="wavelength">191.020000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15.541667</Dependent>
+    </Column>
+	</Row><Row index="5">
+    <Independent name="wavelength">191.830000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17.250000</Dependent>
+    </Column>
+	</Row><Row index="6">
+    <Independent name="wavelength">192.640000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16.125000</Dependent>
+    </Column>
+	</Row><Row index="7">
+    <Independent name="wavelength">193.450000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17.666667</Dependent>
+    </Column>
+	</Row><Row index="8">
+    <Independent name="wavelength">194.260000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19.208333</Dependent>
+    </Column>
+	</Row><Row index="9">
+    <Independent name="wavelength">195.070000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19.625000</Dependent>
+    </Column>
+	</Row><Row index="10">
+    <Independent name="wavelength">195.880000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17.333333</Dependent>
+    </Column>
+	</Row><Row index="11">
+    <Independent name="wavelength">196.690000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16.375000</Dependent>
+    </Column>
+	</Row><Row index="12">
+    <Independent name="wavelength">197.500000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">21.791667</Dependent>
+    </Column>
+	</Row><Row index="13">
+    <Independent name="wavelength">198.320000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">59.208333</Dependent>
+    </Column>
+	</Row><Row index="14">
+    <Independent name="wavelength">199.130000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">458.333333</Dependent>
+    </Column>
+	</Row><Row index="15">
+    <Independent name="wavelength">199.940000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">2224.833333</Dependent>
+    </Column>
+	</Row><Row index="16">
+    <Independent name="wavelength">200.750000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6343.791667</Dependent>
+    </Column>
+	</Row><Row index="17">
+    <Independent name="wavelength">201.560000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12122.375000</Dependent>
+    </Column>
+	</Row><Row index="18">
+    <Independent name="wavelength">202.380000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17474.458333</Dependent>
+    </Column>
+	</Row><Row index="19">
+    <Independent name="wavelength">203.190000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">21029.958333</Dependent>
+    </Column>
+	</Row><Row index="20">
+    <Independent name="wavelength">204.000000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22855.666667</Dependent>
+    </Column>
+	</Row><Row index="21">
+    <Independent name="wavelength">204.810000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23544.583333</Dependent>
+    </Column>
+	</Row><Row index="22">
+    <Independent name="wavelength">205.620000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23756.208333</Dependent>
+    </Column>
+	</Row><Row index="23">
+    <Independent name="wavelength">206.440000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23879.500000</Dependent>
+    </Column>
+	</Row><Row index="24">
+    <Independent name="wavelength">207.250000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24094.291667</Dependent>
+    </Column>
+	</Row><Row index="25">
+    <Independent name="wavelength">208.060000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24592.875000</Dependent>
+    </Column>
+	</Row><Row index="26">
+    <Independent name="wavelength">208.880000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25375.375000</Dependent>
+    </Column>
+	</Row><Row index="27">
+    <Independent name="wavelength">209.690000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">26512.125000</Dependent>
+    </Column>
+	</Row><Row index="28">
+    <Independent name="wavelength">210.500000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">28014.875000</Dependent>
+    </Column>
+	</Row><Row index="29">
+    <Independent name="wavelength">211.320000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">29873.791667</Dependent>
+    </Column>
+	</Row><Row index="30">
+    <Independent name="wavelength">212.130000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">32073.833333</Dependent>
+    </Column>
+	</Row><Row index="31">
+    <Independent name="wavelength">212.940000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">34554.875000</Dependent>
+    </Column>
+	</Row><Row index="32">
+    <Independent name="wavelength">213.760000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">37188.041667</Dependent>
+    </Column>
+	</Row><Row index="33">
+    <Independent name="wavelength">214.570000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">39786.041667</Dependent>
+    </Column>
+	</Row><Row index="34">
+    <Independent name="wavelength">215.380000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">42138.750000</Dependent>
+    </Column>
+	</Row><Row index="35">
+    <Independent name="wavelength">216.200000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">44002.541667</Dependent>
+    </Column>
+	</Row><Row index="36">
+    <Independent name="wavelength">217.010000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">45167.833333</Dependent>
+    </Column>
+	</Row><Row index="37">
+    <Independent name="wavelength">217.820000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">45521.250000</Dependent>
+    </Column>
+	</Row><Row index="38">
+    <Independent name="wavelength">218.640000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">45002.000000</Dependent>
+    </Column>
+	</Row><Row index="39">
+    <Independent name="wavelength">219.450000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">43712.833333</Dependent>
+    </Column>
+	</Row><Row index="40">
+    <Independent name="wavelength">220.270000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">41981.875000</Dependent>
+    </Column>
+	</Row><Row index="41">
+    <Independent name="wavelength">221.080000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">39888.791667</Dependent>
+    </Column>
+	</Row><Row index="42">
+    <Independent name="wavelength">221.890000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">37794.708333</Dependent>
+    </Column>
+	</Row><Row index="43">
+    <Independent name="wavelength">222.710000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">35843.583333</Dependent>
+    </Column>
+	</Row><Row index="44">
+    <Independent name="wavelength">223.520000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">34124.666667</Dependent>
+    </Column>
+	</Row><Row index="45">
+    <Independent name="wavelength">224.340000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">32731.625000</Dependent>
+    </Column>
+	</Row><Row index="46">
+    <Independent name="wavelength">225.150000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">31709.083333</Dependent>
+    </Column>
+	</Row><Row index="47">
+    <Independent name="wavelength">225.970000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">31040.416667</Dependent>
+    </Column>
+	</Row><Row index="48">
+    <Independent name="wavelength">226.780000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">30713.000000</Dependent>
+    </Column>
+	</Row><Row index="49">
+    <Independent name="wavelength">227.600000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">30724.583333</Dependent>
+    </Column>
+	</Row><Row index="50">
+    <Independent name="wavelength">228.410000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">31046.916667</Dependent>
+    </Column>
+	</Row><Row index="51">
+    <Independent name="wavelength">229.230000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">31674.333333</Dependent>
+    </Column>
+	</Row><Row index="52">
+    <Independent name="wavelength">230.040000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">32624.541667</Dependent>
+    </Column>
+	</Row><Row index="53">
+    <Independent name="wavelength">230.860000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">33848.750000</Dependent>
+    </Column>
+	</Row><Row index="54">
+    <Independent name="wavelength">231.670000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">35337.666667</Dependent>
+    </Column>
+	</Row><Row index="55">
+    <Independent name="wavelength">232.490000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">37086.166667</Dependent>
+    </Column>
+	</Row><Row index="56">
+    <Independent name="wavelength">233.300000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">39000.041667</Dependent>
+    </Column>
+	</Row><Row index="57">
+    <Independent name="wavelength">234.120000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">41067.833333</Dependent>
+    </Column>
+	</Row><Row index="58">
+    <Independent name="wavelength">234.930000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">43207.833333</Dependent>
+    </Column>
+	</Row><Row index="59">
+    <Independent name="wavelength">235.750000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">45251.416667</Dependent>
+    </Column>
+	</Row><Row index="60">
+    <Independent name="wavelength">236.560000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">47213.250000</Dependent>
+    </Column>
+	</Row><Row index="61">
+    <Independent name="wavelength">237.380000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">48837.625000</Dependent>
+    </Column>
+	</Row><Row index="62">
+    <Independent name="wavelength">238.190000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">50038.958333</Dependent>
+    </Column>
+	</Row><Row index="63">
+    <Independent name="wavelength">239.010000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">50780.291667</Dependent>
+    </Column>
+	</Row><Row index="64">
+    <Independent name="wavelength">239.820000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">50933.750000</Dependent>
+    </Column>
+	</Row><Row index="65">
+    <Independent name="wavelength">240.640000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">50445.958333</Dependent>
+    </Column>
+	</Row><Row index="66">
+    <Independent name="wavelength">241.450000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">49398.125000</Dependent>
+    </Column>
+	</Row><Row index="67">
+    <Independent name="wavelength">242.270000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">47852.208333</Dependent>
+    </Column>
+	</Row><Row index="68">
+    <Independent name="wavelength">243.080000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">45881.875000</Dependent>
+    </Column>
+	</Row><Row index="69">
+    <Independent name="wavelength">243.900000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">43718.625000</Dependent>
+    </Column>
+	</Row><Row index="70">
+    <Independent name="wavelength">244.720000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">41401.708333</Dependent>
+    </Column>
+	</Row><Row index="71">
+    <Independent name="wavelength">245.530000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">39145.375000</Dependent>
+    </Column>
+	</Row><Row index="72">
+    <Independent name="wavelength">246.350000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">37024.166667</Dependent>
+    </Column>
+	</Row><Row index="73">
+    <Independent name="wavelength">247.160000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">35014.083333</Dependent>
+    </Column>
+	</Row><Row index="74">
+    <Independent name="wavelength">247.980000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">33203.625000</Dependent>
+    </Column>
+	</Row><Row index="75">
+    <Independent name="wavelength">248.790000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">31593.541667</Dependent>
+    </Column>
+	</Row><Row index="76">
+    <Independent name="wavelength">249.610000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">30201.625000</Dependent>
+    </Column>
+	</Row><Row index="77">
+    <Independent name="wavelength">250.420000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">28975.708333</Dependent>
+    </Column>
+	</Row><Row index="78">
+    <Independent name="wavelength">251.240000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">27955.708333</Dependent>
+    </Column>
+	</Row><Row index="79">
+    <Independent name="wavelength">252.050000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">27100.458333</Dependent>
+    </Column>
+	</Row><Row index="80">
+    <Independent name="wavelength">252.870000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">26398.125000</Dependent>
+    </Column>
+	</Row><Row index="81">
+    <Independent name="wavelength">253.690000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25859.166667</Dependent>
+    </Column>
+	</Row><Row index="82">
+    <Independent name="wavelength">254.500000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25445.375000</Dependent>
+    </Column>
+	</Row><Row index="83">
+    <Independent name="wavelength">255.320000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25189.250000</Dependent>
+    </Column>
+	</Row><Row index="84">
+    <Independent name="wavelength">256.130000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25054.041667</Dependent>
+    </Column>
+	</Row><Row index="85">
+    <Independent name="wavelength">256.950000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25053.541667</Dependent>
+    </Column>
+	</Row><Row index="86">
+    <Independent name="wavelength">257.760000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25165.166667</Dependent>
+    </Column>
+	</Row><Row index="87">
+    <Independent name="wavelength">258.580000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25418.333333</Dependent>
+    </Column>
+	</Row><Row index="88">
+    <Independent name="wavelength">259.390000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25753.750000</Dependent>
+    </Column>
+	</Row><Row index="89">
+    <Independent name="wavelength">260.210000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">26193.958333</Dependent>
+    </Column>
+	</Row><Row index="90">
+    <Independent name="wavelength">261.030000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">26690.083333</Dependent>
+    </Column>
+	</Row><Row index="91">
+    <Independent name="wavelength">261.840000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">27289.541667</Dependent>
+    </Column>
+	</Row><Row index="92">
+    <Independent name="wavelength">262.660000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">27924.166667</Dependent>
+    </Column>
+	</Row><Row index="93">
+    <Independent name="wavelength">263.470000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">28560.458333</Dependent>
+    </Column>
+	</Row><Row index="94">
+    <Independent name="wavelength">264.290000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">29161.583333</Dependent>
+    </Column>
+	</Row><Row index="95">
+    <Independent name="wavelength">265.100000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">29748.500000</Dependent>
+    </Column>
+	</Row><Row index="96">
+    <Independent name="wavelength">265.920000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">30212.833333</Dependent>
+    </Column>
+	</Row><Row index="97">
+    <Independent name="wavelength">266.730000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">30530.000000</Dependent>
+    </Column>
+	</Row><Row index="98">
+    <Independent name="wavelength">267.550000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">30659.291667</Dependent>
+    </Column>
+	</Row><Row index="99">
+    <Independent name="wavelength">268.360000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">30598.541667</Dependent>
+    </Column>
+	</Row><Row index="100">
+    <Independent name="wavelength">269.180000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">30282.625000</Dependent>
+    </Column>
+	</Row><Row index="101">
+    <Independent name="wavelength">269.990000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">29768.708333</Dependent>
+    </Column>
+	</Row><Row index="102">
+    <Independent name="wavelength">270.810000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">29002.875000</Dependent>
+    </Column>
+	</Row><Row index="103">
+    <Independent name="wavelength">271.620000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">28080.250000</Dependent>
+    </Column>
+	</Row><Row index="104">
+    <Independent name="wavelength">272.440000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">27048.583333</Dependent>
+    </Column>
+	</Row><Row index="105">
+    <Independent name="wavelength">273.250000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25911.541667</Dependent>
+    </Column>
+	</Row><Row index="106">
+    <Independent name="wavelength">274.070000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24751.000000</Dependent>
+    </Column>
+	</Row><Row index="107">
+    <Independent name="wavelength">274.880000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23649.958333</Dependent>
+    </Column>
+	</Row><Row index="108">
+    <Independent name="wavelength">275.700000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22559.750000</Dependent>
+    </Column>
+	</Row><Row index="109">
+    <Independent name="wavelength">276.510000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">21546.458333</Dependent>
+    </Column>
+	</Row><Row index="110">
+    <Independent name="wavelength">277.330000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20629.708333</Dependent>
+    </Column>
+	</Row><Row index="111">
+    <Independent name="wavelength">278.140000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19801.500000</Dependent>
+    </Column>
+	</Row><Row index="112">
+    <Independent name="wavelength">278.960000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19075.500000</Dependent>
+    </Column>
+	</Row><Row index="113">
+    <Independent name="wavelength">279.770000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18449.708333</Dependent>
+    </Column>
+	</Row><Row index="114">
+    <Independent name="wavelength">280.580000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17904.208333</Dependent>
+    </Column>
+	</Row><Row index="115">
+    <Independent name="wavelength">281.400000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17462.833333</Dependent>
+    </Column>
+	</Row><Row index="116">
+    <Independent name="wavelength">282.210000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17090.500000</Dependent>
+    </Column>
+	</Row><Row index="117">
+    <Independent name="wavelength">283.030000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16795.500000</Dependent>
+    </Column>
+	</Row><Row index="118">
+    <Independent name="wavelength">283.840000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16571.333333</Dependent>
+    </Column>
+	</Row><Row index="119">
+    <Independent name="wavelength">284.660000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16437.625000</Dependent>
+    </Column>
+	</Row><Row index="120">
+    <Independent name="wavelength">285.470000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16352.791667</Dependent>
+    </Column>
+	</Row><Row index="121">
+    <Independent name="wavelength">286.280000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16348.458333</Dependent>
+    </Column>
+	</Row><Row index="122">
+    <Independent name="wavelength">287.100000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16410.541667</Dependent>
+    </Column>
+	</Row><Row index="123">
+    <Independent name="wavelength">287.910000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16547.750000</Dependent>
+    </Column>
+	</Row><Row index="124">
+    <Independent name="wavelength">288.720000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16744.166667</Dependent>
+    </Column>
+	</Row><Row index="125">
+    <Independent name="wavelength">289.540000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17024.166667</Dependent>
+    </Column>
+	</Row><Row index="126">
+    <Independent name="wavelength">290.350000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17354.500000</Dependent>
+    </Column>
+	</Row><Row index="127">
+    <Independent name="wavelength">291.170000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17748.083333</Dependent>
+    </Column>
+	</Row><Row index="128">
+    <Independent name="wavelength">291.980000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18195.583333</Dependent>
+    </Column>
+	</Row><Row index="129">
+    <Independent name="wavelength">292.790000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18673.375000</Dependent>
+    </Column>
+	</Row><Row index="130">
+    <Independent name="wavelength">293.600000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19215.791667</Dependent>
+    </Column>
+	</Row><Row index="131">
+    <Independent name="wavelength">294.420000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19797.333333</Dependent>
+    </Column>
+	</Row><Row index="132">
+    <Independent name="wavelength">295.230000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20377.541667</Dependent>
+    </Column>
+	</Row><Row index="133">
+    <Independent name="wavelength">296.040000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20986.500000</Dependent>
+    </Column>
+	</Row><Row index="134">
+    <Independent name="wavelength">296.860000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">21595.000000</Dependent>
+    </Column>
+	</Row><Row index="135">
+    <Independent name="wavelength">297.670000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22189.375000</Dependent>
+    </Column>
+	</Row><Row index="136">
+    <Independent name="wavelength">298.480000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22784.416667</Dependent>
+    </Column>
+	</Row><Row index="137">
+    <Independent name="wavelength">299.290000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23332.833333</Dependent>
+    </Column>
+	</Row><Row index="138">
+    <Independent name="wavelength">300.110000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23817.500000</Dependent>
+    </Column>
+	</Row><Row index="139">
+    <Independent name="wavelength">300.920000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24261.833333</Dependent>
+    </Column>
+	</Row><Row index="140">
+    <Independent name="wavelength">301.730000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24624.791667</Dependent>
+    </Column>
+	</Row><Row index="141">
+    <Independent name="wavelength">302.540000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24910.083333</Dependent>
+    </Column>
+	</Row><Row index="142">
+    <Independent name="wavelength">303.350000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25077.291667</Dependent>
+    </Column>
+	</Row><Row index="143">
+    <Independent name="wavelength">304.170000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25163.416667</Dependent>
+    </Column>
+	</Row><Row index="144">
+    <Independent name="wavelength">304.980000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">25130.583333</Dependent>
+    </Column>
+	</Row><Row index="145">
+    <Independent name="wavelength">305.790000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24983.000000</Dependent>
+    </Column>
+	</Row><Row index="146">
+    <Independent name="wavelength">306.600000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24740.541667</Dependent>
+    </Column>
+	</Row><Row index="147">
+    <Independent name="wavelength">307.410000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">24390.000000</Dependent>
+    </Column>
+	</Row><Row index="148">
+    <Independent name="wavelength">308.220000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23980.833333</Dependent>
+    </Column>
+	</Row><Row index="149">
+    <Independent name="wavelength">309.030000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">23463.916667</Dependent>
+    </Column>
+	</Row><Row index="150">
+    <Independent name="wavelength">309.840000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22898.916667</Dependent>
+    </Column>
+	</Row><Row index="151">
+    <Independent name="wavelength">310.660000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">22292.833333</Dependent>
+    </Column>
+	</Row><Row index="152">
+    <Independent name="wavelength">311.470000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">21653.958333</Dependent>
+    </Column>
+	</Row><Row index="153">
+    <Independent name="wavelength">312.280000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20996.625000</Dependent>
+    </Column>
+	</Row><Row index="154">
+    <Independent name="wavelength">313.090000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">20342.000000</Dependent>
+    </Column>
+	</Row><Row index="155">
+    <Independent name="wavelength">313.900000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19661.250000</Dependent>
+    </Column>
+	</Row><Row index="156">
+    <Independent name="wavelength">314.710000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">19002.541667</Dependent>
+    </Column>
+	</Row><Row index="157">
+    <Independent name="wavelength">315.520000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">18361.875000</Dependent>
+    </Column>
+	</Row><Row index="158">
+    <Independent name="wavelength">316.330000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17729.541667</Dependent>
+    </Column>
+	</Row><Row index="159">
+    <Independent name="wavelength">317.140000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">17155.500000</Dependent>
+    </Column>
+	</Row><Row index="160">
+    <Independent name="wavelength">317.950000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16616.916667</Dependent>
+    </Column>
+	</Row><Row index="161">
+    <Independent name="wavelength">318.750000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">16102.500000</Dependent>
+    </Column>
+	</Row><Row index="162">
+    <Independent name="wavelength">319.560000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15657.666667</Dependent>
+    </Column>
+	</Row><Row index="163">
+    <Independent name="wavelength">320.370000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">15257.166667</Dependent>
+    </Column>
+	</Row><Row index="164">
+    <Independent name="wavelength">321.180000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14897.000000</Dependent>
+    </Column>
+	</Row><Row index="165">
+    <Independent name="wavelength">321.990000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14591.916667</Dependent>
+    </Column>
+	</Row><Row index="166">
+    <Independent name="wavelength">322.800000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14307.541667</Dependent>
+    </Column>
+	</Row><Row index="167">
+    <Independent name="wavelength">323.610000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">14047.583333</Dependent>
+    </Column>
+	</Row><Row index="168">
+    <Independent name="wavelength">324.420000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13812.500000</Dependent>
+    </Column>
+	</Row><Row index="169">
+    <Independent name="wavelength">325.220000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13580.833333</Dependent>
+    </Column>
+	</Row><Row index="170">
+    <Independent name="wavelength">326.030000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13349.541667</Dependent>
+    </Column>
+	</Row><Row index="171">
+    <Independent name="wavelength">326.840000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">13125.500000</Dependent>
+    </Column>
+	</Row><Row index="172">
+    <Independent name="wavelength">327.650000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12909.583333</Dependent>
+    </Column>
+	</Row><Row index="173">
+    <Independent name="wavelength">328.450000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12706.000000</Dependent>
+    </Column>
+	</Row><Row index="174">
+    <Independent name="wavelength">329.260000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12532.541667</Dependent>
+    </Column>
+	</Row><Row index="175">
+    <Independent name="wavelength">330.070000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12382.791667</Dependent>
+    </Column>
+	</Row><Row index="176">
+    <Independent name="wavelength">330.870000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12252.958333</Dependent>
+    </Column>
+	</Row><Row index="177">
+    <Independent name="wavelength">331.680000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12143.708333</Dependent>
+    </Column>
+	</Row><Row index="178">
+    <Independent name="wavelength">332.490000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">12043.708333</Dependent>
+    </Column>
+	</Row><Row index="179">
+    <Independent name="wavelength">333.290000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11971.125000</Dependent>
+    </Column>
+	</Row><Row index="180">
+    <Independent name="wavelength">334.100000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11916.958333</Dependent>
+    </Column>
+	</Row><Row index="181">
+    <Independent name="wavelength">334.910000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11866.166667</Dependent>
+    </Column>
+	</Row><Row index="182">
+    <Independent name="wavelength">335.710000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11825.500000</Dependent>
+    </Column>
+	</Row><Row index="183">
+    <Independent name="wavelength">336.520000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11795.666667</Dependent>
+    </Column>
+	</Row><Row index="184">
+    <Independent name="wavelength">337.320000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11764.333333</Dependent>
+    </Column>
+	</Row><Row index="185">
+    <Independent name="wavelength">338.130000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11724.833333</Dependent>
+    </Column>
+	</Row><Row index="186">
+    <Independent name="wavelength">338.930000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11688.583333</Dependent>
+    </Column>
+	</Row><Row index="187">
+    <Independent name="wavelength">339.740000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11657.291667</Dependent>
+    </Column>
+	</Row><Row index="188">
+    <Independent name="wavelength">340.540000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11628.875000</Dependent>
+    </Column>
+	</Row><Row index="189">
+    <Independent name="wavelength">341.350000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11591.666667</Dependent>
+    </Column>
+	</Row><Row index="190">
+    <Independent name="wavelength">342.150000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11541.833333</Dependent>
+    </Column>
+	</Row><Row index="191">
+    <Independent name="wavelength">342.950000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11496.375000</Dependent>
+    </Column>
+	</Row><Row index="192">
+    <Independent name="wavelength">343.760000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11464.083333</Dependent>
+    </Column>
+	</Row><Row index="193">
+    <Independent name="wavelength">344.560000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11430.583333</Dependent>
+    </Column>
+	</Row><Row index="194">
+    <Independent name="wavelength">345.360000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11399.708333</Dependent>
+    </Column>
+	</Row><Row index="195">
+    <Independent name="wavelength">346.170000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11381.708333</Dependent>
+    </Column>
+	</Row><Row index="196">
+    <Independent name="wavelength">346.970000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11345.958333</Dependent>
+    </Column>
+	</Row><Row index="197">
+    <Independent name="wavelength">347.770000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11320.291667</Dependent>
+    </Column>
+	</Row><Row index="198">
+    <Independent name="wavelength">348.570000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11278.500000</Dependent>
+    </Column>
+	</Row><Row index="199">
+    <Independent name="wavelength">349.380000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11233.125000</Dependent>
+    </Column>
+	</Row><Row index="200">
+    <Independent name="wavelength">350.180000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11200.750000</Dependent>
+    </Column>
+	</Row><Row index="201">
+    <Independent name="wavelength">350.980000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11163.791667</Dependent>
+    </Column>
+	</Row><Row index="202">
+    <Independent name="wavelength">351.780000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11117.208333</Dependent>
+    </Column>
+	</Row><Row index="203">
+    <Independent name="wavelength">352.580000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">11066.666667</Dependent>
+    </Column>
+	</Row><Row index="204">
+    <Independent name="wavelength">353.380000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10991.250000</Dependent>
+    </Column>
+	</Row><Row index="205">
+    <Independent name="wavelength">354.180000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10910.166667</Dependent>
+    </Column>
+	</Row><Row index="206">
+    <Independent name="wavelength">354.980000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10819.500000</Dependent>
+    </Column>
+	</Row><Row index="207">
+    <Independent name="wavelength">355.790000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10711.541667</Dependent>
+    </Column>
+	</Row><Row index="208">
+    <Independent name="wavelength">356.590000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10586.625000</Dependent>
+    </Column>
+	</Row><Row index="209">
+    <Independent name="wavelength">357.380000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10460.666667</Dependent>
+    </Column>
+	</Row><Row index="210">
+    <Independent name="wavelength">358.180000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10310.666667</Dependent>
+    </Column>
+	</Row><Row index="211">
+    <Independent name="wavelength">358.980000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">10148.875000</Dependent>
+    </Column>
+	</Row><Row index="212">
+    <Independent name="wavelength">359.780000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9981.416667</Dependent>
+    </Column>
+	</Row><Row index="213">
+    <Independent name="wavelength">360.580000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9753.125000</Dependent>
+    </Column>
+	</Row><Row index="214">
+    <Independent name="wavelength">361.380000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9523.833333</Dependent>
+    </Column>
+	</Row><Row index="215">
+    <Independent name="wavelength">362.180000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9384.791667</Dependent>
+    </Column>
+	</Row><Row index="216">
+    <Independent name="wavelength">362.980000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">9163.000000</Dependent>
+    </Column>
+	</Row><Row index="217">
+    <Independent name="wavelength">363.770000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8950.333333</Dependent>
+    </Column>
+	</Row><Row index="218">
+    <Independent name="wavelength">364.570000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8734.708333</Dependent>
+    </Column>
+	</Row><Row index="219">
+    <Independent name="wavelength">365.370000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8518.625000</Dependent>
+    </Column>
+	</Row><Row index="220">
+    <Independent name="wavelength">366.170000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8316.750000</Dependent>
+    </Column>
+	</Row><Row index="221">
+    <Independent name="wavelength">366.960000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">8111.458333</Dependent>
+    </Column>
+	</Row><Row index="222">
+    <Independent name="wavelength">367.760000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7896.916667</Dependent>
+    </Column>
+	</Row><Row index="223">
+    <Independent name="wavelength">368.560000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7671.708333</Dependent>
+    </Column>
+	</Row><Row index="224">
+    <Independent name="wavelength">369.350000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7451.750000</Dependent>
+    </Column>
+	</Row><Row index="225">
+    <Independent name="wavelength">370.150000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7233.250000</Dependent>
+    </Column>
+	</Row><Row index="226">
+    <Independent name="wavelength">370.940000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">7023.500000</Dependent>
+    </Column>
+	</Row><Row index="227">
+    <Independent name="wavelength">371.740000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6836.875000</Dependent>
+    </Column>
+	</Row><Row index="228">
+    <Independent name="wavelength">372.530000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6664.833333</Dependent>
+    </Column>
+	</Row><Row index="229">
+    <Independent name="wavelength">373.330000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6516.041667</Dependent>
+    </Column>
+	</Row><Row index="230">
+    <Independent name="wavelength">374.120000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6381.250000</Dependent>
+    </Column>
+	</Row><Row index="231">
+    <Independent name="wavelength">374.920000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6266.750000</Dependent>
+    </Column>
+	</Row><Row index="232">
+    <Independent name="wavelength">375.710000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6164.250000</Dependent>
+    </Column>
+	</Row><Row index="233">
+    <Independent name="wavelength">376.500000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6080.083333</Dependent>
+    </Column>
+	</Row><Row index="234">
+    <Independent name="wavelength">377.300000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">6004.583333</Dependent>
+    </Column>
+	</Row><Row index="235">
+    <Independent name="wavelength">378.090000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5940.208333</Dependent>
+    </Column>
+	</Row><Row index="236">
+    <Independent name="wavelength">378.880000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5877.000000</Dependent>
+    </Column>
+	</Row><Row index="237">
+    <Independent name="wavelength">379.670000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5808.791667</Dependent>
+    </Column>
+	</Row><Row index="238">
+    <Independent name="wavelength">380.470000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5738.166667</Dependent>
+    </Column>
+	</Row><Row index="239">
+    <Independent name="wavelength">381.260000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5658.791667</Dependent>
+    </Column>
+	</Row><Row index="240">
+    <Independent name="wavelength">382.050000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5573.833333</Dependent>
+    </Column>
+	</Row><Row index="241">
+    <Independent name="wavelength">382.840000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5496.375000</Dependent>
+    </Column>
+	</Row><Row index="242">
+    <Independent name="wavelength">383.630000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5420.958333</Dependent>
+    </Column>
+	</Row><Row index="243">
+    <Independent name="wavelength">384.420000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5359.000000</Dependent>
+    </Column>
+	</Row><Row index="244">
+    <Independent name="wavelength">385.210000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5299.375000</Dependent>
+    </Column>
+	</Row><Row index="245">
+    <Independent name="wavelength">386.000000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5244.458333</Dependent>
+    </Column>
+	</Row><Row index="246">
+    <Independent name="wavelength">386.790000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5192.166667</Dependent>
+    </Column>
+	</Row><Row index="247">
+    <Independent name="wavelength">387.580000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5145.041667</Dependent>
+    </Column>
+	</Row><Row index="248">
+    <Independent name="wavelength">388.370000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5102.458333</Dependent>
+    </Column>
+	</Row><Row index="249">
+    <Independent name="wavelength">389.160000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5073.500000</Dependent>
+    </Column>
+	</Row><Row index="250">
+    <Independent name="wavelength">389.950000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5039.166667</Dependent>
+    </Column>
+	</Row><Row index="251">
+    <Independent name="wavelength">390.730000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">5008.208333</Dependent>
+    </Column>
+	</Row><Row index="252">
+    <Independent name="wavelength">391.520000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4968.416667</Dependent>
+    </Column>
+	</Row><Row index="253">
+    <Independent name="wavelength">392.310000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4941.458333</Dependent>
+    </Column>
+	</Row><Row index="254">
+    <Independent name="wavelength">393.100000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4907.583333</Dependent>
+    </Column>
+	</Row><Row index="255">
+    <Independent name="wavelength">393.880000</Independent>
+    <Column index="1">
+        <Dependent name="spectrum">4881.791667</Dependent>
+    </Column>
+	</Row></CalibrationTable>
+    <CalibrationStandards CertNumber=""> </CalibrationStandards>
+    <StreamID>0</StreamID>
+    <Uncertainty units="mg/L"> 
+		<Name>U_CVALD3</Name>
+		<Value>0</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALD2</Name>
+		<Value>0</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALD1</Name>
+		<Value>0</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALA3</Name>
+		<Value>0.0333</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALA2</Name>
+		<Value>0.3</Value>
+	</Uncertainty><Uncertainty units="mg/L"> 
+		<Name>U_CVALA1</Name>
+		<Value>0.666</Value>
+	</Uncertainty>
+    <Trueness units="mg/L">0.000000</Trueness>
+    <ActivityTimeRange>
+      <StartTime>2018-12-17T13:13:07.0000</StartTime>
+      <EndTime>2018-12-17T13:17:17.0000</EndTime>
+    </ActivityTimeRange>
+    <CertificateNumber>162567</CertificateNumber>
+  </StreamCalVal>
+  <ValidTimeRange>
+    <StartTime>2018-12-17T13:17:17.0000</StartTime>
+    <EndTime>2019-01-14T13:17:17.0000</EndTime>
+  </ValidTimeRange>
+  <Comment>
+    <CommentDescription/>
+    <CommentCreator/>
+    <CommentDateTime/>
+  </Comment>
+  <DATA>
+		<MetaData>
+			<Equipment> </Equipment>
+			<Operator>jcoloso</Operator>
+			<WorkOrder>WO31764</WorkOrder>
+			<MaximoID>46869</MaximoID>
+			<AssetID>30000000023726</AssetID>
+			<Reference/>
+			<Fixture>L3F700</Fixture>
+			<NEONPN>f0329950000</NEONPN>
+			<SN header="">NTR-1188</SN>
+			<FW header=""/>
+			<SOH header=""/>
+			<UncertaintyCtl>L3F700</UncertaintyCtl>
+		</MetaData>
+		<PreCALDATA header=""/>
+		<CALDATA header="">H,SUNA 1188 Cal A  extinction coefficients and reference spectra
+H,File generated by SUNACom 2.0.0
+H,File format version 3
+H,File creation time 17-Dec-2018 13:17:17
+H,File generated by Internal Software Suite 1.9.23_30
+H,File format version 3
+H,File creation time 25-Sep-2018 15:25:54
+H,Operator NC
+H,PATH_LENGTH 10
+H,INT_PERIOD 250
+H,CONC_CAL_NO3 400.00
+H,T_CAL_FWA 20.00
+H,HIGHNO3_CORRECTION 0.00E00
+H,NitrateFile SUNA_1188_001.xml
+H,DIW Log file SUNA1188_CAL01_DIW_2.raw
+H,Nitrate Log file SUNA1188_CAL01_LNO3_1.raw
+H,High Nitrate Log file SUNA1188_CAL01_HNO3_1.raw
+H,Wavelength,nm
+H,NITRATE,uM
+H,Reference,counts
+H,Wavelength,NO3,Reference
+E,188.59,0.00098771,5.54166667
+E,189.40,0.01360170,8.66666667
+E,393.10,0.00001063,4907.58333333
+E,393.88,0.00001060,4881.79166667
+E,394.67,0.00001134,4733.04166667
+</CALDATA>
+		<ValidationDATA header=""/>
+		<QCStatic header="">2.000000,2.000000,10.000000,0.950000,0.000000,0.000000,3,mg/L</QCStatic>
+		<QCDynamic header=""/>
+		<Precision header=""/>
+		<AsLeftCFG header=""/>
+		<AsReceived>
+			<ReceivedCFG header=""/>
+			<ReceivedCoefficient> 
+				<Name> </Name>
+				<Value> </Value>
+			</ReceivedCoefficient>
+			<ReceivedDATA header=""/>
+		</AsReceived>
+  </DATA>
+  </CalVal>
+  
