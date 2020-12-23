@@ -41,5 +41,8 @@
   "resource_requests": {
     "memory": "12M",
     "cpu": 0.05
+  },
+  "parallelism_spec": {
+    "constant": 1
   }
 }

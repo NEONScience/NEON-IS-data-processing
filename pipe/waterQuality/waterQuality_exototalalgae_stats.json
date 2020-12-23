@@ -3,8 +3,19 @@
     "name": "waterQuality_exototalalgae_stats"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.data.comb.ts.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmComb=$SCHEMA_COMB","DirComb=data|uncertainty_data","NameDirCombOut=stats","NameVarTime=readout_time","ColKeep=readout_time|readout_time|chlorophyll|chlorophyll_ucrtExpn","NameFileSufx=_basicStats_100"],
-    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v0.0.4",
+    "cmd": [
+      "Rscript",
+      "/flow.data.comb.ts.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmComb=$SCHEMA_COMB",
+      "DirComb=data|uncertainty_data",
+      "NameDirCombOut=stats",
+      "NameVarTime=readout_time",
+      "ColKeep=readout_time|readout_time|chlorophyll|chlorophyll_ucrtExpn",
+      "NameFileSufx=_basicStats_100"
+      ],
+    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v0.0.5",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"

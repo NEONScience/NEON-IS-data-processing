@@ -55,6 +55,6 @@ if __name__ == '__main__':
     arg_parser.add_argument('--reprocess', default=False)
     args = arg_parser.parse_args()
     if args.reprocess == 'true':
-        process_paths(args.spec_path, args.image, True)
+        process_paths(Path(args.spec_path), args.image, True)
     else:
-        process_paths(args.spec_path, args.image, False)
+        process_paths(Path(args.spec_path), args.image, False)

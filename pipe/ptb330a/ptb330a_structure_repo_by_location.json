@@ -3,19 +3,27 @@
     "name": "ptb330a_structure_repo_by_location"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.loc.repo.strc.R","DirIn=$DIR_IN","DirOut=/pfs/out","Comb=TRUE"],
-    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.9",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "cmd": [
+      "Rscript",
+      "/flow.loc.repo.strc.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "Comb=TRUE"
+    ],
+    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.10",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "pfs": {
       "name": "DIR_IN",
       "repo": "ptb330a_location_filter",
       "glob": "/ptb330a/*/*/*"
-      }
+    }
   },
   "enable_stats": false,
   "standby": true,

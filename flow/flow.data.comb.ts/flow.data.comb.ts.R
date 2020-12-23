@@ -268,12 +268,12 @@ for (idxDirIn in DirIn) {
   nameFileOut <- base::paste0(idxDirOutComb, '/', fileOut)
   
   rptWrte <-
-    base::try(NEONprocIS.base::def.wrte.avro.deve(
+    base::try(NEONprocIS.base::def.wrte.parq(
       data = data,
       NameFile = nameFileOut,
       NameFileSchm = NULL,
       Schm = SchmComb,
-      NameLib = '/ravro.so'
+      log=log
     ),
     silent = TRUE)
   if (base::class(rptWrte) == 'try-error') {

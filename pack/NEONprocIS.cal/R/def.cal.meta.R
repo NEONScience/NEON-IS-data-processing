@@ -32,6 +32,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-02-04)
 #     original creation
+#   Cove Sturtevant (2020-12-08)
+#     added path to calibration directory in output
 ##############################################################################################
 def.cal.meta <- function(fileCal, log = NULL) {
   # Intialize logging if needed
@@ -42,7 +44,20 @@ def.cal.meta <- function(fileCal, log = NULL) {
   numCal <- base::length(fileCal)
   
   # Get the filenames of the calibration files without path information
-  nameFileCal <- base::unlist(base::lapply(strsplit(fileCal,'/'),utils::tail,n=1))
+  fileCalSplt <- strsplit(fileCal,'/')
+  nameFileCal <- base::unlist(base::lapply(fileCalSplt,utils::tail,n=1))
+  pathFileCal <- base::unlist(base::lapply(fileCalSplt,FUN=function(idxFileCalSplt){
+    
+    if(base::length(idxFileCalSplt) > 1){
+      pathIdx <- base::paste0(
+                  c(utils::head(idxFileCalSplt,n=-1),''),
+                  collapse='/'
+                  )
+    } else {
+      pathIdx <- ""
+    }
+
+  }))
   
   # intialize output
   metaCal <- base::vector(mode = "list", length = numCal)
@@ -66,8 +81,12 @@ def.cal.meta <- function(fileCal, log = NULL) {
     
     
     # output metadata
-    metaCal[[idxFileCal]] <- base::data.frame(file=nameFileCal[idxFileCal],timeValiBgn=infoCal$timeVali$StartTime,timeValiEnd=infoCal$timeVali$EndTime,
-                            id=base::as.numeric(infoCal$file$StreamCalVal$CertificateNumber),stringsAsFactors=FALSE)
+    metaCal[[idxFileCal]] <- base::data.frame(path=pathFileCal[idxFileCal],
+                                              file=nameFileCal[idxFileCal],
+                                              timeValiBgn=infoCal$timeVali$StartTime,
+                                              timeValiEnd=infoCal$timeVali$EndTime,
+                                              id=base::as.numeric(infoCal$file$StreamCalVal$CertificateNumber),
+                                              stringsAsFactors=FALSE)
     
   }
   metaCal <- base::Reduce(f=base::rbind,x=metaCal)

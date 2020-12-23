@@ -57,6 +57,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-02-06)
 #     original creation
+#   Cove Sturtevant (2020-12-08)
+#     added path to calibration directory in output
 ##############################################################################################
 def.cal.slct <-
   function(metaCal=NULL,
@@ -77,6 +79,7 @@ def.cal.slct <-
       base::data.frame(
         timeBgn = dmmyTime,
         timeEnd = dmmyTime,
+        path = base::character(0),
         file = base::character(0),
         id = base::character(0),
         expi = base::logical(0),
@@ -98,16 +101,21 @@ def.cal.slct <-
       stop("In def.cal.slct::::: Check the input, TimeEnd, needs to be later than TimeBgn")
     }
     
-    NameList = c('file', 'timeValiBgn', 'timeValiEnd', 'id')
+    NameList = c('path', 'file', 'timeValiBgn', 'timeValiEnd', 'id')
     
     if (!base::is.null(metaCal) && !(all(NameList %in% colnames(metaCal))))
     {
-      stop("In def.cal.slct::::: Check the input data frame has columns missing")
+      stop("In def.cal.slct::::: Check input metaCal - data frame has columns missing")
     }
     
     # What if metaCal is an empty data frame, or empty? Need to return the time period as if there were no applicable cal. Do so by creating a data frame with expected columns but zero rows.
     if ((base::is.null(metaCal)) || (nrow(metaCal) == 0)){
-      metaCal <- base::data.frame(file=base::character(0),timeValiBgn=dmmyTime,timeValiEnd=dmmyTime,id=base::numeric(0),stringsAsFactors=FALSE)
+      metaCal <- base::data.frame(path=base::character(0),
+                                  file=base::character(0),
+                                  timeValiBgn=dmmyTime,
+                                  timeValiEnd=dmmyTime,
+                                  id=base::numeric(0),
+                                  stringsAsFactors=FALSE)
     }
     
     # Sort the calibration IDs. Higher calibration ID (more recently generated) is always preferrable unless it is expired.
@@ -152,6 +160,7 @@ def.cal.slct <-
               base::data.frame(
                 timeBgn = timeBgnIdx,
                 timeEnd = timeEndIdx,
+                path = metaCal$path[idxRow],
                 file = metaCal$file[idxRow],
                 id = metaCal$id[idxRow],
                 expi = FALSE,
@@ -228,6 +237,7 @@ def.cal.slct <-
                 base::data.frame(
                   timeBgn = timeEndExpi,
                   timeEnd = timeMiss$timeEnd[idxTimeMiss],
+                  path = NA,
                   file = NA,
                   id = NA,
                   expi = TRUE,
@@ -244,6 +254,7 @@ def.cal.slct <-
             base::data.frame(
               timeBgn = timeMiss$timeBgn[idxTimeMiss],
               timeEnd = timeEndExpi,
+              path = metaCal$path[idxRowCalExpi],
               file = metaCal$file[idxRowCalExpi],
               id = idCalExpi,
               expi = TRUE,
@@ -260,6 +271,7 @@ def.cal.slct <-
             base::data.frame(
               timeBgn = timeMiss$timeBgn[idxTimeMiss],
               timeEnd = timeMiss$timeEnd[idxTimeMiss],
+              path = NA,
               file = NA,
               id = NA,
               expi = TRUE,

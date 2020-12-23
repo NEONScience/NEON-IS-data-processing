@@ -25,6 +25,7 @@ class DateGapFillerTest(TestCase):
         # empty files
         data_1 = Path(self.in_path, self.metadata_1, 'data/prt_CFG123_2019-01-01.parquet.empty')
         flags_1 = Path(self.in_path, self.metadata_1, 'flags/prt_CFG123_2019-01-01_flagsCal.parquet.empty')
+        flags_1_2 = Path(self.in_path, self.metadata_1, 'flags/prt_CFG123_2019-01-01_flagsPlausibility.parquet.empty')
         uncertainty_coef_1 = Path(self.in_path, self.metadata_1, 'uncertainty_coef/uncertainty_coef.json')
         location_1 = Path(self.in_path, self.metadata_1, 'location/location.json')
         calibration_1 = Path(self.in_path, self.metadata_1, 'calibration')
@@ -32,6 +33,7 @@ class DateGapFillerTest(TestCase):
                              'prt_CFG123_2019-01-01_uncertaintyData.parquet.empty')
         self.fs.create_file(data_1)
         self.fs.create_file(flags_1)
+        self.fs.create_file(flags_1_2)
         self.fs.create_file(location_1)
         self.fs.create_dir(calibration_1)
         self.fs.create_dir(uncertainty_coef_1)
@@ -89,6 +91,8 @@ class DateGapFillerTest(TestCase):
         # empty files
         self.assertTrue(Path(self.out_path, self.metadata_1, 'data/prt_CFG123_2019-01-01.parquet').exists())
         self.assertTrue(Path(self.out_path, self.metadata_1, 'flags/prt_CFG123_2019-01-01_flagsCal.parquet').exists())
+        self.assertTrue(Path(self.out_path, self.metadata_1,
+                             'flags/prt_CFG123_2019-01-01_flagsPlausibility.parquet').exists())
         self.assertTrue(Path(self.out_path, self.metadata_1, 'location/location.json').exists())
         self.assertTrue(Path(self.out_path, self.metadata_1, 'uncertainty_coef/uncertainty_coef.json').exists())
         # empty directory test

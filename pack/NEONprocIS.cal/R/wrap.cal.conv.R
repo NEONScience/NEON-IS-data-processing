@@ -21,9 +21,6 @@
 #' within the NEONprocIS.cal package that should be used. For most NEON data products, this will be 
 #' "def.cal.conv.poly". Note that any alternative function must accept the same arguments as 
 #' def.cal.conv.poly, even if they are unused. See that function for details. 
-#' @param DirCal Character string. Relative or absolute path (minus file name) to the main calibration
-#' directory. Nested within this directory are directories for each variable in calSlct, each holding
-#' calibration files for that variable. Defaults to "./"
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -49,11 +46,12 @@
 #     adjusted calls to cal funcs to conform to new generic format
 #     This includes inputting the entire data frame, the 
 #     variable to be calibrated, and the (unused) argument calSlct
+#   Cove Sturtevant (2020-12-09)
+#     removed DirCal from inputs since the calibration path is now included in calSlct
 ##############################################################################################
 wrap.cal.conv <- function(data,
                           calSlct,
                           FuncConv,
-                          DirCal="./",
                           log=NULL){
   # initialize logging if necessary
   if (base::is.null(log)) {
@@ -89,7 +87,7 @@ wrap.cal.conv <- function(data,
       
       # If a calibration file is available for this period, open it and get calibration information
       if(!base::is.na(calSlctIdx$file[idxRow])){
-        fileCal <- base::paste0(DirCal,'/',idxVarCal,'/',calSlctIdx$file[idxRow])
+        fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
         infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE,log=log)
       } else {
         infoCal <- NULL

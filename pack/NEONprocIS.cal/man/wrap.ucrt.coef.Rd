@@ -4,23 +4,13 @@
 \alias{wrap.ucrt.coef}
 \title{Wrapper for compiling uncertainty coefficients for all variables and time ranges}
 \usage{
-wrap.ucrt.coef(
-  calSlct,
-  DirCal = "./",
-  ucrtCoefFdas = NULL,
-  mappNameVar = NULL,
-  log = NULL
-)
+wrap.ucrt.coef(calSlct, ucrtCoefFdas = NULL, mappNameVar = NULL, log = NULL)
 }
 \arguments{
 \item{calSlct}{A named list of data frames, list element corresponding to the variable for which
 uncertainty coefficients are to be compiled. The data frame in each list element holds 
 information about the calibration files and time periods that apply to the variable, as returned 
 from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
-
-\item{DirCal}{Character string. Relative or absolute path (minus file name) to the main calibration
-directory. Nested within this directory are directories for each variable in calSlct, each holding
-calibration files for that variable. Defaults to "./"}
 
 \item{ucrtCoefFdas}{A data frame of FDAS uncertainty coefficients, as read by 
 NEONprocIS.cal::def.read.ucrt.coef.fdas. Columns include:\cr

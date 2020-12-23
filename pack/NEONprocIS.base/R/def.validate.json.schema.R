@@ -29,7 +29,7 @@
 #   Mija Choi (2020-01-27)
 #     original creation
 ##############################################################################################
-library(jsonvalidate)
+#library(jsonvalidate)
 
 def.validate.json.schema <-
   function(jsonIn, jsonSchemaIn, log = NULL) {

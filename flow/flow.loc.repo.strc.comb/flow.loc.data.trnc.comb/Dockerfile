@@ -1,7 +1,7 @@
-# Dockerfile for NEON IS Data Processing - Restructure repo by location
+# Dockerfile for NEON IS Data Processing - Truncate and merge data files by location
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.59
+FROM quay.io/battelleecology/neon-is-base-r:v0.0.60
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -12,4 +12,4 @@ COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in calibration filter workflow
-COPY ./flow.loc.repo.strc.R /flow.loc.repo.strc.R
+COPY ./flow.loc.data.trnc.comb.R /flow.loc.data.trnc.comb.R

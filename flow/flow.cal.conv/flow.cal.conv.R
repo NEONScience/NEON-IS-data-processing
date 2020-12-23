@@ -530,7 +530,6 @@ for (idxDirIn in DirIn) {
       data = data,
       calSlct = calSlct,
       FuncConv = FuncConv,
-      DirCal = idxDirCal,
       log = log
     )
   
@@ -541,7 +540,6 @@ for (idxDirIn in DirIn) {
     NEONprocIS.cal::wrap.qf.cal(
       data = data,
       calSlct = calSlct[Para$TermQf],
-      DirCal = idxDirCal,
       mappNameVar = mappNameVar,
       log = log
     )
@@ -563,7 +561,6 @@ for (idxDirIn in DirIn) {
   ucrtCoef <-
     NEONprocIS.cal::wrap.ucrt.coef(
       calSlct = calSlct,
-      DirCal = idxDirCal,
       ucrtCoefFdas = ucrtCoefFdas,
       mappNameVar = mappNameVar,
       log = log
@@ -608,7 +605,6 @@ for (idxDirIn in DirIn) {
       FuncUcrt = FuncUcrt,
       ucrtCoefFdas = ucrtCoefFdas,
       calSlct = calSlct,
-      DirCal = idxDirCal,
       mappNameVar = mappNameVar,
       log = log
     )

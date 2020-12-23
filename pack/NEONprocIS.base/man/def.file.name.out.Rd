@@ -31,6 +31,9 @@ A character vector of input directories (datums)
 Definition function. Construct an output file name from an input file name, adding a prefix, 
 appendix, extension, or all of the above.
 }
+\examples{
+NEONprocIS.base::def.file.name.out(nameFileIn='myFileName.json',prfx='Prefix_',sufx='_Suffix',ext='txt')
+}
 \references{
 Currently none
 }

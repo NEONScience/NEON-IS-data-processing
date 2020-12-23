@@ -4,7 +4,7 @@
 \alias{wrap.cal.conv}
 \title{Wrapper for applying calibration conversion to NEON L0 data}
 \usage{
-wrap.cal.conv(data, calSlct, FuncConv, DirCal = "./", log = NULL)
+wrap.cal.conv(data, calSlct, FuncConv, log = NULL)
 }
 \arguments{
 \item{data}{Data frame of L0 data. Must include POSIXct time variable readout_time.}
@@ -22,10 +22,6 @@ exist in the data, it must be created by the associated calibration function in 
 within the NEONprocIS.cal package that should be used. For most NEON data products, this will be 
 "def.cal.conv.poly". Note that any alternative function must accept the same arguments as 
 def.cal.conv.poly, even if they are unused. See that function for details.}
-
-\item{DirCal}{Character string. Relative or absolute path (minus file name) to the main calibration
-directory. Nested within this directory are directories for each variable in calSlct, each holding
-calibration files for that variable. Defaults to "./"}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}

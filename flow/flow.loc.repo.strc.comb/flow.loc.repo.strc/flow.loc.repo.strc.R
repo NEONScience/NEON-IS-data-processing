@@ -8,8 +8,7 @@
 #' The name of the location and its properties will be read from a location file in the 
 #' input repository. The output repository will nest the original sensor-based contents in a folder 
 #' named for the location. If there are multiple location names found in the location file, the original 
-#' contents will be copied to each one. Optionally, 1) the output repository may be filtered for 
-#' locations matching a context property found in the location file, and 2) the repo contents 
+#' contents will be copied to each one. Optionally, the repo contents 
 #' (not file contents) from separate sensors at the same location may be combined into a single
 #' folder for the location (this option drops the nested sensor folders).
 #' 
@@ -18,11 +17,10 @@
 #'    Determine datums to process (set of files/folders to process as a single unit)
 #'    For each datum:
 #'      Read in the location file and determine the locations applicable to the datum
-#'      If selected, ignore any locations not matching the specified context(s)
 #'      Nest the original folder contents into one or more folders named for the location(s) applicable to the datum
 #'      If selected, combine the folder contents for multiple sensors found at the same location
 #'     
-#' This script is run at the command line with the following rguments. Each argument must be a string in the 
+#' This script is run at the command line with the following arguments. Each argument must be a string in the 
 #' format "Para=value", where "Para" is the intended parameter name and "value" is the value of the 
 #' parameter. Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the parameter 
 #' will be assigned from the system environment variable matching the value string.
@@ -49,11 +47,7 @@
 #'    
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
-#' 3. "Ctxt=value" (optional), where the value is a string specifying one or more context properties that each 
-#' location must match (all of them) in order to be included in the output directory. Separate multiple contexts 
-#' with a pipe (|). For example "soil|aspirated-triple".
-#' 
-#' 4. "Comb=value" (optional), where value is either TRUE or FALSE whether to merge the contents of the nested 
+#' 3. "Comb=value" (optional), where value is either TRUE or FALSE whether to merge the contents of the nested 
 #' sensor-based directories that reside at the same location ID. Defaults to FALSE. If TRUE, the location name 
 #' will replace the source id in the repo structure, and the contents of subfolders will be combined across 
 #' source-ids. If FALSE, the location name will be inserted in the directory path above the level of source-id.
@@ -82,11 +76,11 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.loc.strc.repo.R "DirIn=/pfs/tempSoil_context_group/prt/2018/01/01" "DirOut=/pfs/out"  "Ctxt=soil" "Comb=TRUE"
+#' Rscript flow.loc.strc.repo.R "DirIn=/pfs/tempSoil_context_group/prt/2018/01/01" "DirOut=/pfs/out"  "Comb=TRUE"
 #' 
 #' Using environment variable for input directory
 #' Sys.setenv(DIR_IN='/pfs/tempSoil_context_group/prt/2018/01/01')
-#' Rscript flow.loc.strc.repo.R "DirIn=$DIR_IN" "DirOut=/pfs/out"  "Ctxt=soil" "Comb=TRUE"
+#' Rscript flow.loc.strc.repo.R "DirIn=$DIR_IN" "DirOut=/pfs/out"  "Comb=TRUE"
 
 #' @seealso None
 #' 
@@ -101,7 +95,13 @@
 #     added argument for output directory 
 #   Cove Sturtevant (2020-07-16)
 #     replaced reading of location file with NEONprocIS.base::def.loc.meta
+#   Cove Sturtevant (2020-12-18)
+#     moved main functionality into wrapper function
+#     removed context filtering (not needed at this stage)
 ##############################################################################################
+# Source the wrapper function. Assume it is in the working directory
+source("./wrap.loc.repo.strc.R")
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
 
@@ -109,8 +109,11 @@ log <- NEONprocIS.base::def.log.init()
 arg <- base::commandArgs(trailingOnly=TRUE)
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut"),NameParaOptn=c("Ctxt","Comb"),
-                                      TypePara=base::list(Comb="logical"),log=log)
+Para <- NEONprocIS.base::def.arg.pars(arg=arg,
+                                      NameParaReqd=c("DirIn","DirOut"),
+                                      NameParaOptn=c("Comb"),
+                                      TypePara=base::list(Comb="logical"),
+                                      log=log)
 
 # Retrieve datum path. 
 DirBgn <- Para$DirIn # Input directory. 
@@ -119,10 +122,6 @@ log$debug(base::paste0('Input directory: ',DirBgn))
 # Retrieve base output path
 DirOut <- Para$DirOut
 log$debug(base::paste0('Output directory: ',DirOut))
-
-# Context(s)
-Ctxt <- Para$Ctxt
-log$debug(base::paste0('Context(s) to filter locations by: ',base::paste0(Ctxt,collapse=",")))
 
 # Merge contents (TRUE/FALSE)
 Comb <- Para$Comb
@@ -141,92 +140,15 @@ nameDirSub <- base::list('location')
 # Find all the input paths. We will process each one.
 DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub,log=log)
 
-
 # Process each datum
 for(idxDirIn in DirIn){
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
-  # Gather info about the input directory and formulate the parent output directory
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
-  idSrc <- utils::tail(InfoDirIn$dirSplt,1)
-  idxDirOutPrnt <- base::paste0(c(DirOut,InfoDirIn$dirSplt[(InfoDirIn$idxRepo+1):(base::length(InfoDirIn$dirSplt)-1)]),collapse='/')
+  wrap.loc.repo.strc(DirIn=idxDirIn,
+                     DirOutBase=DirOut,
+                     Comb=Comb,
+                     log=log)
   
-  # Get a list of location files
-  idxDirInLoc <- base::paste0(idxDirIn,'/location')
-  fileLoc <- base::dir(idxDirInLoc)
-  
-  # If there is no location file, skip
-  numFileLoc <- base::length(fileLoc)
-  if(numFileLoc == 0){
-    log$warn(base::paste0('No location data in ',idxDirInLoc,'. Skipping...'))
-    next()
-  }
-  
-  # If there is more than one location file, use the first
-  if(numFileLoc > 1){
-    log$warn(base::paste0('There is more than one location file in ',idxDirInLoc,'. Using the first... (',fileLoc[1],')'))
-    fileLoc <- fileLoc[1]
-  }
-  
-  # Load in the location json
-  loc <- NEONprocIS.base::def.loc.meta(NameFile=base::paste0(idxDirInLoc,'/',fileLoc))
-  
-  # How many named locations do we have?
-  numLoc <- base::nrow(loc)
-  if(numLoc == 0){
-    log$warn(base::paste0('No named locations listed in ',base::paste0(idxDirInLoc,'/',fileLoc),'. Skipping...'))
-    next()
-  }
-  
-  # Go through each named location, restructuring the repo and copying the sensor data into it
-  for(idxLoc in base::seq_len(numLoc)){
-    # Get the named location name and any context
-    nameLoc <- loc$name[idxLoc]
-    
-    # Get contexts - # Split the parameter value into a character vector delimited by pipes, but not splitting if more than one pipe
-    ctxtLoc <- base::strsplit(loc$context[idxLoc],"(?<![|])[|]{1}(?![|])",perl=TRUE)[[1]]
-    
-    # Check for context match
-    if(base::sum(Ctxt %in% ctxtLoc)!=base::length(Ctxt)){
-      log$warn(base::paste0('Context properties "', base::paste0(ctxtLoc,collapse=','), '" of named location ',
-                            nameLoc, ' found in location file ', base::paste0(idxDirInLoc,'/',fileLoc), 
-                            ' do not contain a match for required context(s) "',base::paste0(Ctxt,collapse=','),
-                            '". Excluding this named location from output repo...'))
-      next()
-    }
-    
-    # Create output repo with location name
-    idxDirOut <- base::paste0(idxDirOutPrnt,'/',nameLoc)
-    base::suppressWarnings(base::dir.create(idxDirOut,recursive=TRUE))
-    
-    # Copy all folders to our output directory with a symbolic link. We won't be modifying them. 
-    if(Comb == TRUE){
-      
-      # We are going to merge the folder contents across source-ids and get rid of source-id in the repo structure 
-      fileCopy <- base::list.files(idxDirIn,recursive=TRUE) # Files to copy over
-      
-      # Get the parent directories so we can create them in the main output directory
-      idxDirSub <- base::unique(base::unlist(base::lapply(base::strsplit(fileCopy,'/'),FUN=function(vec){
-        base::paste0(utils::head(vec,n=-1),collapse='/')
-      })))
-      idxDirOutSub <- base::paste0(idxDirOut,'/',idxDirSub)
-      rptDir <- base::suppressWarnings(base::lapply(idxDirOutSub,base::dir.create,recursive=TRUE)) # Create subdirectories
-      
-      
-      # Symbolically link each file
-      for(idxFileCopy in fileCopy){
-        cmdCopy <- base::paste0('ln -s ',base::paste0(idxDirIn,'/',idxFileCopy),' ',base::paste0(idxDirOut,'/',idxFileCopy))
-        rptCopy <- base::system(cmdCopy)
-      }
-      
-      log$info(base::paste0('Restructured path to datum ',idxDirIn,' to ',idxDirOut, 
-                            '. Merged directory contents with any other source-ids at that named location.'))
-    
-    } else {
-      NEONprocIS.base::def.dir.copy.symb(idxDirIn,idxDirOut,log=log)
-    }
-    
-  } # End loop around named locations
 } # End loop around datum paths
 

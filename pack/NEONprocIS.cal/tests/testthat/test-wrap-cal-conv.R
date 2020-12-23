@@ -107,7 +107,7 @@ test_that("testing calibration conversion wrapper", {
       log = NULL
     )
   
-  df_wcc <- NEONprocIS.cal::wrap.cal.conv (data, calSlct, FuncConv, DirCal, log = NULL)
+  df_wcc <- NEONprocIS.cal::wrap.cal.conv (data, calSlct, FuncConv, log = NULL)
   
   expect_true (is.data.frame(df_wcc) & all(!(is.na(df_wcc[1:3, 1]))))
   
@@ -126,7 +126,7 @@ test_that("testing calibration conversion wrapper", {
   calSlct <- NEONprocIS.cal::wrap.cal.slct (DirCal = DirCal,NameVarExpc = character(0),TimeBgn = TimeBgn,
                                             TimeEnd = TimeEnd,NumDayExpiMax = NumDayExpiMax,log = NULL)
   
-  df_wcc <- NEONprocIS.cal::wrap.cal.conv (data, calSlct, FuncConv, DirCal, log = NULL)
+  df_wcc <- NEONprocIS.cal::wrap.cal.conv (data, calSlct, FuncConv, log = NULL)
   
   expect_true (is.data.frame(df_wcc) & all((is.na(df_wcc[]))))
   
@@ -150,5 +150,5 @@ test_that("testing calibration conversion wrapper", {
       NumDayExpiMax = NumDayExpiMax,
       log = NULL
     )
-  df_wcc <- NEONprocIS.cal::wrap.cal.conv (data, calSlct, FuncConv, DirCal, log = NULL)
+  df_wcc <- NEONprocIS.cal::wrap.cal.conv (data, calSlct, FuncConv, log = NULL)
 })

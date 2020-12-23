@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "tempSoil_calibrated_flags",
-      "glob": "/prt/*/*"
+      "glob": "/prt/*/*/*"
     }
   },
   "enable_stats": false,

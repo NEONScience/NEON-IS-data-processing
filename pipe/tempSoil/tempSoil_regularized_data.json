@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "tempSoil_calibrated_data",
-          "glob": "/prt/*/*"
+          "glob": "/prt/*/*/*"
         }
       },
       {

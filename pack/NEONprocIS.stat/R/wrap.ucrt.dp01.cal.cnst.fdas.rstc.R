@@ -91,7 +91,7 @@ wrap.ucrt.dp01.cal.cnst.fdas.rstc <- function(data,
   # Compute uncertainty of the mean due to natural variation, represented by the standard error of the mean
   #log$debug(base::paste0('Computing L1 uncertainty due to natural variation (standard error)'))
   numPts <- base::sum(x=!base::is.na(dataComp),na.rm=FALSE)
-  se <- stats::sd(dataComp)/base::sqrt(numPts)
+  se <- stats::sd(dataComp,na.rm=TRUE)/base::sqrt(numPts)
   
   # Compute calibration uncertainty (constant value from CVAL coefficient U_CVALA3)
   ucrtCal <- NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef=ucrtCoef,

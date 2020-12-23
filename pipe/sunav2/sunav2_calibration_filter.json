@@ -11,7 +11,7 @@
       "PadDay=-1|1",
       "DirSubCopy=data"
       ],
-    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.34",
+    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.35",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
