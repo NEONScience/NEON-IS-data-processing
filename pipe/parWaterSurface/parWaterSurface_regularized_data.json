@@ -1,0 +1,50 @@
+{
+  "pipeline": {
+    "name": "parWaterSurface_regularized_data"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.rglr.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirRglr=data",
+      "FileSchmRglr=$FILE_SCHEMA_RGLR",
+      "MethRglr=CybiEc",
+      "WndwRglr=Trlg",
+      "IdxWndw=IdxWndwMin"
+      ],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.23",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "parWaterSurface_calibrated_data",
+          "glob": "/pqs1/*/*/*"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_RGLR",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/pqs1_calibrated_wo_source.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "1"
+  },
+  "resource_requests": {
+      "memory": "20M",
+      "cpu": 0.25
+  }
+}

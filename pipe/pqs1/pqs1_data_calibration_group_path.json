@@ -25,7 +25,7 @@
       "name": "IN_PATH",
       "repo": "data_source_pqs1_linkmerge",
       "branch": "master",
-      "glob": "/pqs1/*/*",
+      "glob": "/pqs1/*/*/*",
       "empty_files": true
     }
   },
