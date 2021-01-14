@@ -5,7 +5,7 @@ from python_pachyderm import Client
 from python_pachyderm.proto.pps.pps_pb2 import JobInfo
 
 
-def get_latest_job_stats(client: Client, pipeline_name: str) -> JobInfo:
+def get_latest_job(client: Client, pipeline_name: str) -> JobInfo:
     max_milliseconds = 0
     latest_job = None
     for job_info in client.list_job(pipeline_name=pipeline_name, history=0, full=False):
@@ -19,6 +19,7 @@ def get_latest_job_stats(client: Client, pipeline_name: str) -> JobInfo:
 
 
 def get_job_run_times(job_info: JobInfo) -> dict:
+    datums_processed = job_info.data_processed
     job_stats = job_info.stats
     if job_stats is not None:
         started = job_info.started
@@ -46,7 +47,8 @@ def get_job_run_times(job_info: JobInfo) -> dict:
             'upload': upload_seconds,
             'upload_nanos': upload_nanos,
             'process': process_seconds,
-            'process_nanos': process_nanos
+            'process_nanos': process_nanos,
+            'datums_processed': datums_processed
         }
         return times
 
@@ -62,7 +64,7 @@ def main() -> None:
     port = int(args.port)
     pipeline_name = args.pipeline
     client = python_pachyderm.Client(host=host, port=port)
-    job = get_latest_job_stats(client, pipeline_name)
+    job = get_latest_job(client, pipeline_name)
     if job is None:
         print(f'No jobs are available for {pipeline_name}.')
     else:
