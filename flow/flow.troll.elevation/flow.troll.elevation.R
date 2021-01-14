@@ -94,9 +94,9 @@ log$debug(base::paste0('Output schema for data: ',base::paste0(FileSchmDataOut,c
 
 # Read in the schemas
 if(base::is.null(FileSchmDataOut) || FileSchmDataOut == 'NA'){
- SchmDataOut <- NULL
+  SchmDataOut <- NULL
 } else {
- SchmDataOut <- base::paste0(base::readLines(FileSchmDataOut),collapse='')
+  SchmDataOut <- base::paste0(base::readLines(FileSchmDataOut),collapse='')
 }
 
 
@@ -169,11 +169,24 @@ for (idxDirIn in DirIn){
     log$debug(base::paste0('No troll sensor data file in ',dirDataTbne))
   } else if (base::length(dirLocLocation)>1){
     log$warn(base::paste0('More than one troll sensor data file in ',dirLocLocation, '. Using only the first.'))
+    # Choose the second location file
+    LocationData <- base::paste0(dirLocLocation[2])
   } else{
-    LocationData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(dirLocLocation),log = log), silent = FALSE)
+    LocationData <- base::paste0(dirLocLocation)
     log$debug(base::paste0("One datum found, reading in: ",dirLocLocation))
   }
-
+  
+  
+  
+  
+  
+  ##############################
+  #need to figure out how to pull elevation and z-offsets from json...
+  
+  
+  
+  
+  
   
   ###### Compute water table elevation. Function of calibrated pressure, gravity, and density of water
   density <- 999   #future mod: temperature corrected density; conductivity correct density
@@ -184,7 +197,9 @@ for (idxDirIn in DirIn){
   trollData$zOffset    #need to figure out how to extract this from json
   
   #calculate water table elevation
+  trollData$elev_H2O<-NA
   trollData$elev_H2O<-trollData$elevation+trollData$zOffset+(1000*trollData$data/(density*gravity))
+  
   
   #Create dataframe for output data
   dataOut <- trollData
@@ -198,17 +213,20 @@ for (idxDirIn in DirIn){
     sensor<-"leveltroll500"
   }
   dataOut <- dataOut[,dataCol]
-
+  
   #Write out data
   fileOutSplt <- base::strsplit(idxDirIn,'[/]')[[1]] # Separate underscore-delimited components of the file name
   CFGLOC<-tail(x=fileOutSplt,n=1)
   rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
-                                                 NameFile = base::paste0(idxDirOutData,"/",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet"), 
-                                                 Schm = SchmDataOut),silent=FALSE)
+                                                   NameFile = base::paste0(idxDirOutData,"/",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet"), 
+                                                   Schm = SchmDataOut),silent=FALSE)
   if(class(rptDataOut) == 'try-error'){
     log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
     stop()
   } else {
     log$info("Data written out.")
   }
+  
+  #need to write out location data as well
+  
 }
