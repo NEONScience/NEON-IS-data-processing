@@ -10,8 +10,8 @@
     "env": {
         "OUT_PATH": "/pfs/out",
         "LOG_LEVEL": "DEBUG",
-        "BOOTSTRAP_SERVER": "10.206.27.129:30937",
-        "TOPIC": "debezium_test.pdr.customers",
+        "BOOTSTRAP_SERVER": "den-devrmarkel-1.ci.neoninternal.org:30937",
+        "TOPIC": "i_pdr.i_pdr.type_type",
         "GROUP_ID": "my-group",
         "AUTO_OFFSET_RESET": "earliest",
         "ENABLE_AUTO_COMMIT": "True"
