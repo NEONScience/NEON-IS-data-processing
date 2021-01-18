@@ -2,13 +2,13 @@
 from contextlib import closing
 from typing import List, Optional
 
-from cx_Oracle import Connection
+from psycopg2 import extensions, extras
 from geojson import Point, Feature, FeatureCollection
 
 import common.date_formatter as date_formatter
 
 
-def get_named_location_locations(connection: Connection, named_location_id: int) -> FeatureCollection:
+def get_named_location_locations(connection: extensions.connection, named_location_id: int) -> FeatureCollection:
     """
     Get the locations associated with the named location in GEOJson format.
 
@@ -18,7 +18,7 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
     """
     sql = '''
         select
-            locn_geom, 
+            ST_AsText(locn_geom) as point,
             locn_nam_locn_strt_date, 
             locn_nam_locn_end_date, 
             locn_alph_ortn, 
@@ -36,11 +36,12 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
         join 
             nam_locn on locn.nam_locn_id_off = nam_locn.nam_locn_id
         where
-            locn_nam_locn.nam_locn_id = :named_location_id
+            locn_nam_locn.nam_locn_id = 3
     '''
     features: List[Feature] = []
     with closing(connection.cursor()) as cursor:
-        rows = cursor.execute(sql, named_location_id=named_location_id)
+        cursor.execute(sql, [named_location_id])
+        rows = cursor.fetchall()
         for row in rows:
             geometry = row[0]
             start_date = row[1]
