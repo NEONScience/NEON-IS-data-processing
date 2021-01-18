@@ -2,7 +2,7 @@
 from contextlib import closing
 from typing import List, Optional
 
-from psycopg2 import extensions, extras
+from psycopg2 import extensions
 from geojson import Point, Feature, FeatureCollection
 
 import common.date_formatter as date_formatter

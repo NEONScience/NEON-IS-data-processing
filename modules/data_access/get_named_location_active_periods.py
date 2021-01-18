@@ -2,12 +2,10 @@
 from contextlib import closing
 from typing import List
 
-from cx_Oracle import Connection
-
 from data_access.types.active_period import ActivePeriod
 
 
-def get_active_periods(connection: Connection, named_location_id: int) -> List[ActivePeriod]:
+def get_active_periods(connection, named_location_id: int) -> List[ActivePeriod]:
     """
     Get the active time periods for a named location.
 

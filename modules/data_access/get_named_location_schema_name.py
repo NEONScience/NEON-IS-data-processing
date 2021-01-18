@@ -2,10 +2,10 @@
 from contextlib import closing
 from typing import Set
 
-from cx_Oracle import Connection
+from psycopg2 import extensions
 
 
-def get_named_location_schema_name(connection: Connection, named_location_id: int) -> Set[str]:
+def get_named_location_schema_name(connection: extensions.connection, named_location_id: int) -> Set[str]:
     """
     Get the schema name for a named location.
 

@@ -2,14 +2,14 @@
 from contextlib import closing
 from typing import List, Iterator
 
-from cx_Oracle import Connection
+from psycopg2 import extensions
 
 import common.date_formatter as date_formatter
 from data_access.types.threshold import Threshold
 from data_access.get_threshold_context import get_threshold_context
 
 
-def get_thresholds(connection: Connection) -> Iterator[Threshold]:
+def get_thresholds(connection: extensions.connection) -> Iterator[Threshold]:
     query = '''
          select
              attr.column_name,

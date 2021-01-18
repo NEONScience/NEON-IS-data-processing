@@ -2,7 +2,7 @@
 from contextlib import closing
 from typing import List, Set, Iterator
 
-from cx_Oracle import Connection
+from psycopg2 import extensions
 
 from data_access.types.active_period import ActivePeriod
 from data_access.types.named_location import NamedLocation
@@ -14,7 +14,7 @@ from data_access.get_named_location_site import get_named_location_site
 from data_access.get_named_location_schema_name import get_named_location_schema_name
 
 
-def get_named_locations(connection: Connection, location_type: str) -> Iterator[NamedLocation]:
+def get_named_locations(connection: extensions.connection, location_type: str) -> Iterator[NamedLocation]:
     """
     Get the named locations of the given type.
 

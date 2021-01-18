@@ -2,12 +2,12 @@
 from contextlib import closing
 from typing import Iterator
 
-from cx_Oracle import Connection
+from psycopg2 import extensions
 
 from data_access.types.asset import Asset
 
 
-def get_assets(connection: Connection) -> Iterator[Asset]:
+def get_assets(connection: extensions.connection) -> Iterator[Asset]:
     """
     Get assets.
 
