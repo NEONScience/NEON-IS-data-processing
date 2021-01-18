@@ -9,7 +9,6 @@ from data_access.get_named_location_locations import get_named_location_location
 from data_access.get_named_location_context import get_named_location_context
 from data_access.get_named_location_site import get_named_location_site
 from data_access.get_named_location_properties import get_named_location_properties
-from data_access.postgresql_config import config, access_pg
 from data_access.types.asset import Asset
 from data_access.types.asset_location import AssetLocation
 from data_access.types.property import Property
