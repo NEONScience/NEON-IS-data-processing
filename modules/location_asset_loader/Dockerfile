@@ -10,8 +10,6 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal
 ARG APP_DIR="location_asset_loader"
 ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
-ARG ORACLE_INSTANT_PKGNAME="oracle-instantclient19.9-basiclite-19.9.0.0.0-1.x86_64.rpm"
-ARG ORACLE_INSTANT_URI="https://neon-ci-software.s3.data.neonscience.org/oracle-instant/$ORACLE_INSTANT_PKGNAME"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
