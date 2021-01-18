@@ -3,9 +3,9 @@ import os
 from typing import List, Set
 import unittest
 
-import psycopg2
 from geojson import FeatureCollection
 
+from data_access.db_connector import connect
 from data_access.get_asset_locations import get_asset_locations
 from data_access.get_assets import get_assets
 from data_access.get_named_location_active_periods import get_active_periods
@@ -19,16 +19,14 @@ from data_access.get_thresholds import get_thresholds
 from data_access.types.active_period import ActivePeriod
 from data_access.types.asset import Asset
 from data_access.types.property import Property
-from psycopg2.extensions import parse_dsn
 
 
 class DataAccessTest(unittest.TestCase):
 
     def setUp(self):
-        # database URL in the form: postgresql://[user]@[url]:[port]/[sid]?password=[pass]
+        # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
         db_url = os.getenv('PG_DATABASE_URL')
-        params = parse_dsn(db_url)
-        self.connection = psycopg2.connect(**params)
+        self.connection = connect(db_url)
         self.named_location_id = 31720
 
     def test_get_asset_locations(self):

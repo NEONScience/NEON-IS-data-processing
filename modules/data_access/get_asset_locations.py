@@ -19,6 +19,7 @@ def get_asset_locations(connection: extensions.connection, asset: Asset) -> Feat
     """
     Get an asset's location history in GEOJson format.
 
+    :param connection: The database connection.
     :param asset: The asset.
     :return: The asset's location history.
     """

@@ -5,10 +5,11 @@ from contextlib import closing
 
 from structlog import get_logger
 import environs
-from cx_Oracle import connect
 
 import common.log_config as log_config
 from data_access.get_thresholds import get_thresholds
+from data_access.db_connector import connect
+
 from threshold_loader.threshold_loader import load_thresholds
 
 
