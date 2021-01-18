@@ -5,7 +5,7 @@
 # docker build -t location_loader:latest -f location_loader/Dockerfile .
 #
 ###
-FROM container-registry.oracle.com/os/oraclelinux:8-slim
+FROM registry.access.redhat.com/ubi8/ubi-minimal
 
 ARG APP_DIR="location_loader"
 ARG COMMON_DIR="common"
@@ -17,29 +17,25 @@ ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt
+COPY ${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt
 
 RUN update-ca-trust && \
-    microdnf update -y && \
-    curl -O "${ORACLE_INSTANT_URI}" 2>&1 && \
-    microdnf install -y \
+    microdnf update -y --disableplugin=subscription-manager && \
+    microdnf install -y --disableplugin=subscription-manager \
+            shadow-utils \
             gcc \
-            libaio \
-            libnsl \
-            libxml2 \
-            libxml2-devel \
+            libzstd  \
             python38 \
             python38-pip \
             python38-wheel \
             python38-devel \
             python38-setuptools && \
-    rpm -Uvh "${ORACLE_INSTANT_PKGNAME}" && \
-    ldconfig && \
-    python3 -mpip install --no-cache-dir --upgrade pip setuptools && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    microdnf remove -y gcc cpp && \
-    microdnf clean all && \
-    rm -f "/tmp/${ORACLE_INSTANT_PKGNAME}" && \
+    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt && \
+    microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
+    microdnf clean all --disableplugin=subscription-manager && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
