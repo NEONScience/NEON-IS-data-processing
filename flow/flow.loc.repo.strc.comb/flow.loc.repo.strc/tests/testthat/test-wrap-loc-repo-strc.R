@@ -15,7 +15,7 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   
   #testInputDir = "/scratch/pfs/prt_location_filter/2019/01/01/14491"
   
-  testInputDir= "C:/projects/NEON-IS-data-processing/flow/flow.loc.repo.strc.comb/flow.loc.repo.strc/testst/testthat/pfs/prt/2019/01/01/3119"
+  testInputDir= "C:/projects/NEON-IS-data-processing/flow/flow.loc.repo.strc.comb/flow.loc.repo.strc/tests/testthat/pfs/prt/2019/01/01/3119"
   
   testOutputDir = "pfs/out"
   
