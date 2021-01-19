@@ -19,11 +19,12 @@ def get_named_location_context(connection: extensions.connection, named_location
         from 
             nam_locn_context 
         where 
-            nam_locn_id = :named_location_id
+            nam_locn_id = %s
     '''
     contexts: List[str] = []
     with closing(connection.cursor()) as cursor:
-        rows = cursor.execute(sql, named_location_id=named_location_id)
+        cursor.execute(sql, [named_location_id])
+        rows = cursor.fetchall()
         for row in rows:
             context_code = row[0]
             group = row[1]

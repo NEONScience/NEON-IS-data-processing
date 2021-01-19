@@ -10,7 +10,7 @@ from data_access.get_threshold_context import get_threshold_context
 
 
 def get_thresholds(connection: extensions.connection) -> Iterator[Threshold]:
-    query = '''
+    sql = '''
          select
              attr.column_name,
              threshold.term_name,
@@ -39,7 +39,8 @@ def get_thresholds(connection: extensions.connection) -> Iterator[Threshold]:
              nam_locn.nam_locn_name
      '''
     with closing(connection.cursor()) as cursor:
-        rows = cursor.execute(query)
+        cursor.execute(sql)
+        rows = cursor.fetchall()
         for row in rows:
             threshold_name = row[0]
             term_name = row[1]

@@ -36,7 +36,7 @@ def get_named_location_locations(connection: extensions.connection, named_locati
         join 
             nam_locn on locn.nam_locn_id_off = nam_locn.nam_locn_id
         where
-            locn_nam_locn.nam_locn_id = 3
+            locn_nam_locn.nam_locn_id = %s
     '''
     features: List[Feature] = []
     with closing(connection.cursor()) as cursor:
@@ -83,9 +83,10 @@ def get_named_location_locations(connection: extensions.connection, named_locati
 
 def get_ordinates(geometry) -> Optional[List]:
     if geometry is not None:
-        ordinates = geometry.SDO_ORDINATES
+
+        ordinates = geometry[(geometry.find('(')+1):-1]
         if ordinates is not None:
-            ordinate_list = ordinates.aslist()
+            ordinate_list = list(ordinates.split(" "))
             if len(ordinate_list) == 3:
                 return ordinate_list
     return None

@@ -29,12 +29,12 @@ def get_named_location_schema_name(connection: extensions.connection, named_loca
         and 
             is_sensor_type.avro_schema_name is not null
         and 
-            nam_locn.nam_locn_id = :id
+            nam_locn.nam_locn_id = %s
     '''
     schema_names = set()
     with closing(connection.cursor()) as cursor:
-        cursor.prepare(sql)
-        rows = cursor.execute(None, id=named_location_id)
+        cursor.execute(sql, [named_location_id])
+        rows = cursor.fetchall()
         for row in rows:
             schema_name = row[0]
             schema_names.add(schema_name)

@@ -30,7 +30,8 @@ def get_assets(connection: extensions.connection) -> Iterator[Asset]:
              is_sensor_type.avro_schema_name is not null
     '''
     with closing(connection.cursor()) as cursor:
-        rows = cursor.execute(sql)
+        cursor.execute(sql)
+        rows = cursor.fetchall()
         for row in rows:
             asset_id = row[0]
             asset_type = row[1]

@@ -33,11 +33,11 @@ def get_named_locations(connection: extensions.connection, location_type: str) -
         where
             type.type_id = nam_locn.type_id
         and
-            type.type_name = :location_type
+            type.type_name = %s
     '''
     with closing(connection.cursor()) as cursor:
-        cursor.prepare(sql)
-        rows = cursor.execute(None, location_type=location_type)
+        cursor.execute(sql, [location_type])
+        rows = cursor.fetchall()
         for row in rows:
             key = row[0]
             name = row[1]
