@@ -18,11 +18,17 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   # Comb = FALSE
   wrap.loc.repo.strc(DirIn = testInputDir, DirOutBase = testOutputDir)
   
-  if (file.exists("pfs/out/2019/01/01/CFGLOC100241/3119/location/prt_3119_locations.json")) 
-    { unlink(testOutputDir, recursive = TRUE)}
+  if (dir.exists(testOutputDir)) { unlink(testOutputDir, recursive = TRUE)}
 
   wrap.loc.repo.strc(DirIn = testInputDir, DirOutBase = testOutputDir,Comb = TRUE)
   
-  if (file.exists("pfs/out/2019/01/01/CFGLOC100241/location/prt_3119_locations.json")) 
-  { unlink(testOutputDir, recursive = TRUE)}
+  if (dir.exists(testOutputDir))  { unlink(testOutputDir, recursive = TRUE)}
+  
+  testInputDir= "C:/projects/NEON-IS-data-processing/flow/flow.loc.repo.strc.comb/flow.loc.repo.strc/tests/testthat/pfs/prt_noFiles/2019/01/01/3119"
+  
+  wrap.loc.repo.strc(DirIn = testInputDir, DirOutBase = testOutputDir,Comb = TRUE)
+  
+  testInputDir= "C:/projects/NEON-IS-data-processing/flow/flow.loc.repo.strc.comb/flow.loc.repo.strc/tests/testthat/pfs/prt_moreThanOneFile/2019/01/01/3119"
+  
+  wrap.loc.repo.strc(DirIn = testInputDir, DirOutBase = testOutputDir,Comb = TRUE)
   })
