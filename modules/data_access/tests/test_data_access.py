@@ -66,10 +66,10 @@ class DataAccessTest(unittest.TestCase):
         self.assertTrue(prop.value == 'CFGLOC100805')
 
     def test_get_named_location_schema_name(self):
-        named_location_id = 156951
+        named_location_id = 158818
         schema_names: Set = get_named_location_schema_name(self.connection, named_location_id)
         print(f'schema_names: {schema_names}')
-        self.assertTrue(next(iter(schema_names)) == 'windobserverii')
+        self.assertTrue(next(iter(schema_names)) == 'prt')
 
     def test_get_named_location_site(self):
         site = get_named_location_site(self.connection, self.named_location_id)
