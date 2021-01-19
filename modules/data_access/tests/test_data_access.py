@@ -56,7 +56,7 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_named_location_locations(self):
         result = get_named_location_locations(self.connection, self.named_location_id)
-        # print(f'result: {result}')
+        print(f'result: {result}')
         self.assertTrue(result is not None)
 
     def test_get_named_location_properties(self):
