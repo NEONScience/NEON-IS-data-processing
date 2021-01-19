@@ -46,12 +46,12 @@ def get_named_location_locations(connection: extensions.connection, named_locati
             geometry = row[0]
             start_date = row[1]
             end_date = row[2]
-            alpha = row[3]
-            beta = row[4]
-            gamma = row[5]
-            x_offset = row[6]
-            y_offset = row[7]
-            z_offset = row[8]
+            alpha = float(row[3])
+            beta = float(row[4])
+            gamma = float(row[5])
+            x_offset = float(row[6])
+            y_offset = float(row[7])
+            z_offset = float(row[8])
             named_location_offset_id = row[9]
             named_location_offset_name = row[10]
             # convert dates
