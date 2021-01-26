@@ -6,6 +6,7 @@ from cx_Oracle import Connection
 from geojson import Point, Feature, FeatureCollection
 
 import common.date_formatter as date_formatter
+from data_access.get_geolocation_properties import get_geolocation_properties
 
 
 def get_named_location_locations(connection: Connection, named_location_id: int) -> FeatureCollection:
@@ -18,17 +19,18 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
     """
     sql = '''
         select
-            locn_geom, 
-            locn_nam_locn_strt_date, 
-            locn_nam_locn_end_date, 
-            locn_alph_ortn, 
-            locn_beta_ortn, 
-            locn_gama_ortn, 
-            locn_x_off, 
-            locn_y_off, 
-            locn_z_off, 
-            nam_locn_id_off, 
-            nam_locn_name
+            locn.locn_id,
+            locn.locn_geom, 
+            locn_nam_locn.locn_nam_locn_strt_date, 
+            locn_nam_locn.locn_nam_locn_end_date, 
+            locn.locn_alph_ortn, 
+            locn.locn_beta_ortn, 
+            locn.locn_gama_ortn, 
+            locn.locn_x_off, 
+            locn.locn_y_off, 
+            locn.locn_z_off, 
+            locn.nam_locn_id_off, 
+            nam_locn.nam_locn_name
         from 
             locn
         join 
@@ -42,17 +44,19 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
     with closing(connection.cursor()) as cursor:
         rows = cursor.execute(sql, named_location_id=named_location_id)
         for row in rows:
-            geometry = row[0]
-            start_date = row[1]
-            end_date = row[2]
-            alpha = row[3]
-            beta = row[4]
-            gamma = row[5]
-            x_offset = row[6]
-            y_offset = row[7]
-            z_offset = row[8]
-            named_location_offset_id = row[9]
-            named_location_offset_name = row[10]
+            location_id = row[0]
+            geometry = row[1]
+            start_date = row[2]
+            end_date = row[3]
+            alpha = row[4]
+            beta = row[5]
+            gamma = row[6]
+            x_offset = row[7]
+            y_offset = row[8]
+            z_offset = row[9]
+            named_location_offset_id = row[10]
+            named_location_offset_name = row[11]
+            location_properties = get_geolocation_properties(connection, location_id)
             # convert dates
             if start_date is not None:
                 start_date = date_formatter.to_string(start_date)
@@ -73,7 +77,8 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
                               x_offset=x_offset,
                               y_offset=y_offset,
                               z_offset=z_offset,
-                              reference_location=reference_feature)
+                              reference_location=reference_feature,
+                              location_properties=location_properties)
             point = get_point(geometry)
             feature = Feature(geometry=point, properties=properties)
             features.append(feature)
