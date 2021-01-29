@@ -3,7 +3,7 @@ from contextlib import closing
 from typing import List, Optional
 
 from psycopg2 import extensions
-from geojson import Point, Feature, FeatureCollection
+from geojson import Point, Polygon, Feature, FeatureCollection
 
 import common.date_formatter as date_formatter
 
@@ -75,28 +75,32 @@ def get_named_location_locations(connection: extensions.connection, named_locati
                               y_offset=y_offset,
                               z_offset=z_offset,
                               reference_location=reference_feature)
-            point = get_point(geometry)
-            feature = Feature(geometry=point, properties=properties)
+            geojson_geometry = parse_geometry(geometry)
+            feature = Feature(geometry=geojson_geometry, properties=properties)
             features.append(feature)
     return FeatureCollection(features)
 
 
-def get_ordinates(geometry) -> Optional[List]:
+def parse_geometry(geometry):
     if geometry is not None:
-
-        ordinates = geometry[(geometry.find('(')+1):-1]
+        ordinates: str = geometry[(geometry.find('(')+1):-1]
         if ordinates is not None:
-            ordinate_list = list(ordinates.split(" "))
+            ordinate_list = list(ordinates.split(' '))
             if len(ordinate_list) == 3:
-                return ordinate_list
-    return None
-
-
-def get_point(geometry) -> Optional[Point]:
-    ordinates = get_ordinates(geometry)
-    if ordinates is not None:
-        x = float(ordinates[0])
-        y = float(ordinates[1])
-        z = float(ordinates[2])
-        return Point((x, y, z))
+                x = float(ordinate_list[0])
+                y = float(ordinate_list[1])
+                z = float(ordinate_list[2])
+                return Point((x, y, z))
+            else:
+                ordinates = ordinates.replace('(', '')
+                ordinates = ordinates.replace(')', '')
+                coordinate_list = ordinates.split(',')
+                tuple_list = []
+                for xyz in coordinate_list:
+                    coordinates = xyz.split(' ')
+                    x = float(coordinates[0])
+                    y = float(coordinates[1])
+                    z = float(coordinates[2])
+                    tuple_list.append((x, y, z))
+                return Polygon(coordinates=[*tuple_list])
     return None
