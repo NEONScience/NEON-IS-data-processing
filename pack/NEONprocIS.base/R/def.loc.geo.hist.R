@@ -28,8 +28,9 @@
 #' # NameFile <- '~/pfs/aquatroll200_23614_locations.json'
 #' # locGeoHist <- NEONprocIS.base::def.loc.meta(NameFile=NameFile)
 
-#' @seealso \link[NEONprocIS.base]{def.read.avro.deve}
-#'
+#' @seealso \link[NEONprocIS.base]{def.loc.meta}
+#' @seealso \link[NEONprocIS.base]{def.loc.filt}
+
 #' @export
 
 # changelog and author contributions / copyrights
