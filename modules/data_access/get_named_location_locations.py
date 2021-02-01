@@ -3,7 +3,7 @@ from contextlib import closing
 from typing import List, Optional
 
 from cx_Oracle import Connection
-from geojson import Point, Feature, FeatureCollection
+from geojson import Point, Polygon, Feature, FeatureCollection
 
 import common.date_formatter as date_formatter
 from data_access.get_geolocation_properties import get_geolocation_properties
@@ -79,27 +79,22 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
                               z_offset=z_offset,
                               reference_location=reference_feature,
                               location_properties=location_properties)
-            point = get_point(geometry)
-            feature = Feature(geometry=point, properties=properties)
+            geojson_geometry = parse_geometry(geometry)
+            feature = Feature(geometry=geojson_geometry, properties=properties)
             features.append(feature)
     return FeatureCollection(features)
 
 
-def get_ordinates(geometry) -> Optional[List]:
+def parse_geometry(geometry):
     if geometry is not None:
         ordinates = geometry.SDO_ORDINATES
         if ordinates is not None:
             ordinate_list = ordinates.aslist()
             if len(ordinate_list) == 3:
-                return ordinate_list
-    return None
-
-
-def get_point(geometry) -> Optional[Point]:
-    ordinates = get_ordinates(geometry)
-    if ordinates is not None:
-        x = float(ordinates[0])
-        y = float(ordinates[1])
-        z = float(ordinates[2])
-        return Point((x, y, z))
+                x = float(ordinate_list[0])
+                y = float(ordinate_list[1])
+                z = float(ordinate_list[2])
+                return Point((x, y, z))
+            else:
+                return Polygon(zip(*[iter(geometry.SDO_ORDINATES.aslist())] * 3))
     return None
