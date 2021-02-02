@@ -2,7 +2,7 @@
 pipeline:
   name: tempSurfacewater_statistics
 transform:
-  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.9
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.14
   cmd:
   - Rscript
   - "/flow.stat.basc.R"
@@ -10,13 +10,13 @@ transform:
   - DirOut=/pfs/out
   - FileSchmStat=$FILE_SCHEMA_STATS
   - WndwAgr=005|030
-  - TermStat1=temp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(R)
+  - TermStat1=temp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
   env:
     LOG_LEVEL: INFO
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
 parallelism_spec:
-  constant: '2'
+  constant: '1'
 output_branch: master
 resource_requests:
   memory: 200Mi

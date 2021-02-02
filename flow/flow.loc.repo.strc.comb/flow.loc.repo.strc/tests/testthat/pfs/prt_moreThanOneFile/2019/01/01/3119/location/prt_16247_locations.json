@@ -1,0 +1,98 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC103459",
+                "site":"CARI",
+                "install_date":"2018-05-18T04:30:18Z",
+                "remove_date":"2019-05-04T01:07:18Z",
+                "transaction_date":"2018-05-18T04:30:44Z",
+                "context":[
+                    "surfacewater",
+                    "water-quality-274",
+                    "water-quality"
+                ],
+                "locations":{
+                    "type":"FeatureCollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "geometry":{
+                                "type":"Point",
+                                "coordinates":[
+                                                                        -147.502,
+                                                                        65.153078,
+                                                                        226.241608
+                                ]
+                            },
+                            "properties":{
+                                "start_date":"2010-01-01T00:00:00Z",
+                                "end_date":null,
+                                "transaction_date":"2016-09-12T20:26:17Z",
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "gamma":                                0,
+                                "x_offset":                                0.06731,
+                                "y_offset":                                0.12,
+                                "z_offset":                                -0.895,
+                                "reference_location":{
+                                    "type":"Feature",
+                                    "geometry":null,
+                                    "properties":{
+                                        "name":"S2LOC103456",
+                                        "locations":{
+                                            "type":"FeatureCollection",
+                                            "features":[
+                                                {
+                                                    "type":"Feature",
+                                                    "geometry":{
+                                                        "type":"Point",
+                                                        "coordinates":[
+                                                                                                                        -147.501999,
+                                                                                                                        65.153073,
+                                                                                                                        225.442
+                                                        ]
+                                                    },
+                                                    "properties":{
+                                                        "start_date":"2010-01-01T00:00:00Z",
+                                                        "end_date":null,
+                                                        "transaction_date":"2016-09-12T20:25:27Z",
+                                                        "alpha":                                                        0,
+                                                        "beta":                                                        0,
+                                                        "gamma":                                                        0,
+                                                        "x_offset":                                                        0,
+                                                        "y_offset":                                                        0,
+                                                        "z_offset":                                                        0,
+                                                        "reference_location":{
+                                                            "type":"Feature",
+                                                            "geometry":null,
+                                                            "properties":{
+                                                                "name":"S2LOC103456",
+                                                                "locations":null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "HOR":"102",
+            "VER":"100",
+            "TMI":"000",
+            "Data Rate":"1",
+            "Required Asset Management Location Code":"CFGLOC103459",
+            "Required Asset Management Location ID":            4866
+        }
+    ],
+    "source_type":"prt",
+    "source_id":    16247
+}

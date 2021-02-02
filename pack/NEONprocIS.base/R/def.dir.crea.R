@@ -39,7 +39,7 @@ def.dir.crea <- function(DirBgn=NULL, DirSub, log = NULL) {
     log <- NEONprocIS.base::def.log.init()
   }
   
-  if (base::nchar(DirBgn) == 0){
+  if (base::is.null(DirBgn) || base::nchar(DirBgn) == 0){
     dirCrea <- base::paste0(DirSub)
   } else {
     dirCrea <- base::paste0(DirBgn, '/', DirSub)
@@ -49,7 +49,7 @@ def.dir.crea <- function(DirBgn=NULL, DirSub, log = NULL) {
   rpt <- base::unlist(rpt)
   
   if (base::any(!rpt)){
-    log$warn(base::paste0('Could not create directories ', base::paste0(dirCrea[!rpt],collapse = ',')))
+    log$warn(base::paste0('Did not create directories ', base::paste0(dirCrea[!rpt],collapse = ','),'. This might be because they already exist.'))
   } 
   if(base::any(rpt)){
     log$debug(base::paste0('Successfully created directories ', base::paste0(dirCrea[rpt],collapse = ',')))
