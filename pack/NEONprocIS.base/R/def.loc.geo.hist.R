@@ -120,7 +120,7 @@ def.loc.geo.hist <- function(NameFile,log=NULL){
  
       # Follow the chain of reference locations to the end, nesting their location history
       locRef00 <- locHistIdx$properties$reference_location
-      nameLocRef=locRef$properties$name
+      nameLocRef=locRef00$properties$name
       idxRef <- 1
       cont <- TRUE
      
