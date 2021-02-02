@@ -167,6 +167,7 @@ for(idxDirIn in DirIn){
         log$error(base::paste0('Attempted to filter location information for location file ',
                                idxNameFileIn,', treating it as a sensor-based location file as well as a location-based location. ',
                                'Both attempts failed. Check file.'))
+        stop()
       }
     }
 

@@ -31,7 +31,9 @@ all the configured locations within the file.
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }
 \seealso{
-\link[NEONprocIS.base]{def.read.avro.deve}
+\link[NEONprocIS.base]{def.loc.meta}
+
+\link[NEONprocIS.base]{def.loc.filt}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
