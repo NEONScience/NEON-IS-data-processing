@@ -8,7 +8,7 @@
   "cmd": [ "/bin/bash" ],
   "stdin": [ "#!/bin/bash", "python3 -m location_group_path.location_group_path_main" ],
   "env": {
-    "GROUP": "par-met-",
+    "GROUP": "barometric-pressure",
     "LOG_LEVEL": "INFO",
     "OUT_PATH": "/pfs/out",
     "SOURCE_TYPE_INDEX": "3",
@@ -22,7 +22,7 @@
 "input": {
   "pfs": {
     "name": "SOURCE_PATH",
-    "repo": "ptb330a_date_gap_filler_linker",
+    "repo": "ptb330a_named_location_filter",
     "glob": "/ptb330a/*/*/*"
   }
 },
