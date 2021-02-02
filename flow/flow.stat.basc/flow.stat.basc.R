@@ -121,11 +121,27 @@
 #     Re-organize structure to loop around windows first, then stats (previously vice versa)
 #     Add MAD computation
 #     Pull out expanded uncertainty computation into exchangable function, with options in main code to specify function used
+#   Cove Sturtevant (2021-01-20)
+#     Applied internal parallelization
+#     bug fix for error when no uncertainty stats are selected for output
 ##############################################################################################
 options(digits.secs = 3)
+library(foreach)
+library(doParallel)
 
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly=TRUE)
@@ -250,7 +266,8 @@ for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
 
 
 # Process each datum path
-for(idxDirIn in DirIn){
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
@@ -275,6 +292,7 @@ for(idxDirIn in DirIn){
   }  
   
   # Are we computing uncertainty? If so, load the uncertainty coefficients file (there should be only 1)
+  ucrtData <- NULL
   if("expUncert" %in% stat){
     idxDirUcrtCoef <- base::paste0(idxDirIn,'/uncertainty_coef')
     
@@ -457,5 +475,6 @@ for(idxDirIn in DirIn){
     
   } # End loop around files
 
+  return()
 } # End loop around datum paths 
   

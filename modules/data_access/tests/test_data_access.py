@@ -2,9 +2,11 @@
 import os
 from typing import List, Set
 import unittest
+import json
 
 import cx_Oracle
 from geojson import FeatureCollection
+from geojson import dumps as geojson_dumps
 
 from data_access.get_asset_locations import get_asset_locations
 from data_access.get_assets import get_assets
@@ -30,8 +32,11 @@ class DataAccessTest(unittest.TestCase):
         self.named_location_id = 31720
 
     def test_get_asset_locations(self):
-        asset = Asset(id=41283, type='windobserverii')
+        # asset = Asset(id=41283, type='windobserverii')
+        asset = Asset(id=18521, type='prt')  # soil plot test
         feature_collection: FeatureCollection = get_asset_locations(self.connection, asset)
+        geojson_data = geojson_dumps(feature_collection, indent=4, sort_keys=False, default=str)
+        # print(f'asset_locations: \n{geojson_data}')
         self.assertTrue(feature_collection is not None)
 
     def test_get_assets(self):
@@ -57,10 +62,10 @@ class DataAccessTest(unittest.TestCase):
     def test_get_named_location_locations(self):
         # Point geometry
         result = get_named_location_locations(self.connection, self.named_location_id)
-        # print(f'result: {result}')
+        # print(f'result: {json.dumps(result, indent=2)}')
         # Polygon geometry
         result = get_named_location_locations(self.connection, 314)
-        # print(f'result: {result}')
+        # print(f'result: {json.dumps(result, indent=2)}')
         self.assertTrue(result is not None)
 
     def test_get_named_location_properties(self):
