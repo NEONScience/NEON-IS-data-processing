@@ -28,7 +28,7 @@
 #' @keywords Currently none
 
 #' @examples 
-#' NEONprocIS.base::def.file.name.out(nameFileIn='myFileName.json',prfx='Prefix_',sufx='_Suffix,ext='txt')
+#' NEONprocIS.base::def.file.name.out(nameFileIn='myFileName.json',prfx='Prefix_',sufx='_Suffix',ext='txt')
 
 
 #' @seealso Currently none

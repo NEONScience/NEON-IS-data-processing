@@ -45,7 +45,8 @@ class DateGapFillerTest(TestCase):
     def create_data_repo(self):
         self.data_path = Path('/data/repo', self.source, self.year, self.month)
         day = '02'
-        data_file, flag_file, location_file, uncertainty_coefficient_file, uncertainty_data_file = \
+        # flag_file_2 unused in data repo
+        data_file, flag_file, flag_file_2, location_file, uncertainty_coefficient_file, uncertainty_data_file = \
             self.get_file_names(day)
         self.data_file = Path(day, self.location, DateGapFillerConfig.data_dir, data_file)
         self.flags_file = Path(day, self.location, DateGapFillerConfig.flag_dir, flag_file)
@@ -80,10 +81,13 @@ class DateGapFillerTest(TestCase):
                                                 f'{self.source}_location_year-month-day_uncertaintyCoef.ext')
         self.empty_flag_file = Path(self.empty_path, DateGapFillerConfig.flag_dir,
                                     f'{self.source}_location_year-month-day_flagsCal.ext')
+        self.empty_flag_file_2 = Path(self.empty_path, DateGapFillerConfig.flag_dir,
+                                      f'{self.source}_location_year-month-day_flagsPlausibility.ext')
         self.fs.create_file(self.empty_data_file)
         self.fs.create_file(self.empty_uncertainty_data_file)
         self.fs.create_file(self.empty_uncertainty_coef_file)
         self.fs.create_file(self.empty_flag_file)
+        self.fs.create_file(self.empty_flag_file_2)
 
     def test_date_between(self):
         start_date = date(2020, 1, 1)
@@ -211,12 +215,13 @@ class DateGapFillerTest(TestCase):
         self.assertTrue(location_path.exists())
 
     def check_inactive_day(self, root_path: Path, day: str):
-        data_file, flag_file, location_file, uncertainty_coefficient_file, uncertainty_data_file = \
+        data_file, flag_file, flag_file_2, location_file, uncertainty_coefficient_file, uncertainty_data_file = \
             self.get_file_names(day)
         metadata_path = Path(root_path, day, self.location)
         calibration_path = Path(metadata_path, DateGapFillerConfig.calibration_dir)
         data_path = Path(metadata_path, DateGapFillerConfig.data_dir, f'{data_file}.empty')
         flag_path = Path(metadata_path, DateGapFillerConfig.flag_dir, f'{flag_file}.empty')
+        flag_path_2 = Path(metadata_path, DateGapFillerConfig.flag_dir, f'{flag_file_2}.empty')
         location_path = Path(metadata_path, DateGapFillerConfig.location_dir)
         uncertainty_coefficient_path = Path(metadata_path, DateGapFillerConfig.uncertainty_coefficient_dir,
                                             f'{uncertainty_coefficient_file}.empty')
@@ -225,6 +230,7 @@ class DateGapFillerTest(TestCase):
         self.assertTrue(calibration_path.exists())
         self.assertTrue(data_path.exists())
         self.assertTrue(flag_path.exists())
+        self.assertTrue(flag_path_2.exists())
         self.assertTrue(location_path.exists())
         self.assertTrue(uncertainty_coefficient_path.exists())
         self.assertTrue(uncertainty_data_path.exists())
@@ -232,9 +238,10 @@ class DateGapFillerTest(TestCase):
     def get_file_names(self, day):
         data_name = f'{self.source}_{self.location}_{self.year}-{self.month}-{day}.ext'
         flag_name = f'{self.source}_{self.location}_{self.year}-{self.month}-{day}_flagsCal.ext'
+        flag_name_2 = f'{self.source}_{self.location}_{self.year}-{self.month}-{day}_flagsPlausibility.ext'
         location_name = f'{self.source}_{self.location}_locations.json'
         uncertainty_coefficient_name = f'{self.source}_{self.location}_{self.year}-{self.month}-{day}' \
                                        f'_uncertaintyCoef.ext'
         uncertainty_data_name = f'{self.source}_{self.location}_{self.year}-{self.month}-{day}' \
                                 f'_uncertaintyData.ext'
-        return data_name, flag_name, location_name, uncertainty_coefficient_name, uncertainty_data_name
+        return data_name, flag_name, flag_name_2, location_name, uncertainty_coefficient_name, uncertainty_data_name

@@ -2,7 +2,7 @@
 % Please edit documentation in R/def.dir.copy.symb.R
 \name{def.dir.copy.symb}
 \alias{def.dir.copy.symb}
-\title{Copy all files in a directory with a symbolic link}
+\title{Copy a directory with a symbolic link}
 \usage{
 def.dir.copy.symb(DirSrc, DirDest, log = NULL)
 }
@@ -22,7 +22,7 @@ output. Defaults to NULL, in which the logger will be created and used within th
 No output from this function other than performing the intended action.
 }
 \description{
-Definition function. Copy all files in a source directory to a destination directory with a symbolic link
+Definition function. Copy a source directory to a destination directory with a symbolic link
 }
 \examples{
 def.dir.copy.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01/01')

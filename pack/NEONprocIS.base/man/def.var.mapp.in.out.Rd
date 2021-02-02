@@ -32,6 +32,11 @@ A data frame of \cr
 Definition function. Create a data frame that maps input variable names to output variable names
 given vectors of each. Option to add additional variable names that are the same in and out.
 }
+\examples{
+NEONprocIS.base::def.var.mapp.in.out(nameVarIn=c('varIn1','varIn2'),
+                                     nameVarOut=c('nameOut1','nameOut2'),
+                                     nameVarDfltSame=c('nameSame1','nameSame2'))
+}
 \references{
 Currently none
 }

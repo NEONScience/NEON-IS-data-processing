@@ -3,7 +3,7 @@
     "name": "surfacewaterPhysical_aquatroll200_QM"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.qm.R","DirIn=$DIR_IN","DirOut=/pfs/out","WndwAgr=005|030","WghtAlphBeta=2|1","Thsh=0.2"],
+    "cmd": ["Rscript","/flow.qaqc.qm.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQm=$FILE_SCHEMA_QM","WndwAgr=005|030","WghtAlphBeta=2|1","Thsh=0.2","GrpQf1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF","GrpQf2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|zeroPressureQF","GrpQf3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"],
     "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.7",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
@@ -18,11 +18,18 @@
           "repo": "aquatroll200_qaqc_flags_group",
           "glob": "/aquatroll200/*/*/*"
         }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_QM",
+          "repo": "avro_schemas",
+          "glob": "/dp01/surfacewaterPhysical_aquatroll200_dp01_quality_metricss.avsc"
+        }
       }
     ]
   },
   "enable_stats": false,
-  "standby": false,
+  "standby": true,
   "parallelism_spec": {
     "constant": "2"
   },

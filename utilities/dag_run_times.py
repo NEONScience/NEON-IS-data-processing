@@ -38,7 +38,7 @@ def main() -> None:
     total_download = 0
     total_process = 0
     for pipeline_name in pipeline_names:
-        job = data_finder.get_latest_job_stats(client, pipeline_name)
+        job = data_finder.get_latest_job(client, pipeline_name)
         if job is None:
             print(f'No jobs are available for {pipeline_name}')
         else:
@@ -46,10 +46,12 @@ def main() -> None:
             upload_time = job_data.get('upload')
             download_time = job_data.get('download')
             process_time = job_data.get('process')
+            datums_processed = job_data.get('datums_processed')
             print(f'pipeline: {pipeline_name} '
                   f'upload time: {upload_time} sec. '
                   f'download time: {download_time} sec. '
-                  f'process time {process_time} sec.')
+                  f'process time {process_time} sec. '
+                  f'datums processed {datums_processed}')
             if upload_time is not None:
                 total_upload += upload_time
             if download_time is not None:
@@ -58,8 +60,13 @@ def main() -> None:
                 total_process += process_time
     print(f'total upload: {total_upload} sec. '
           f'total download: {total_download} sec. '
-          f'total_process: {total_process} sec.')
+          f'total_process: {total_process} sec. ')
 
 
 if __name__ == '__main__':
+    """
+    Example usage:
+    python3 -B -m dag_run_times --host=<host> --port=<port> --specification=<full path>
+    --specifications=<full path>
+    """
     main()
