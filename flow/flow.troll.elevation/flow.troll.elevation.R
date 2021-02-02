@@ -58,10 +58,10 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/leveltroll500_qaqc_data_group')
+Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/leveltroll500_qaqc_data_group/leveltroll500/2020/01/03/CFGLOC101669')
 log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out")
-rm(list=setdiff(ls(),c('arg','log')))
+#rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
 
@@ -90,7 +90,7 @@ log$debug(base::paste0('Output directory: ',DirOut))
 # Retrieve output schema for data
 FileSchmDataOut <- Para$FileSchmData
 log$debug(base::paste0('Output schema for data: ',base::paste0(FileSchmDataOut,collapse=',')))
-# Retrieve output schema for flags; no need for new data schema
+# Retrieve output schema; no need for new data schema
 
 # Read in the schemas
 if(base::is.null(FileSchmDataOut) || FileSchmDataOut == 'NA'){
@@ -102,12 +102,14 @@ if(base::is.null(FileSchmDataOut) || FileSchmDataOut == 'NA'){
 
 
 # Retrieve optional sensor subdirectories to copy over
-nameDirSubCopy <- c('uncertainty_coef','uncertainty_data')
-DirUncertCoefCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[1]))
-DirUncertDataCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[2]))
+nameDirSubCopy <- c('location','uncertainty_coef','uncertainty_data')
+DirLocationCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[1]))
+DirUncertCoefCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[2]))
+DirUncertDataCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[3]))
+
 
 #what are the expected subdirectories of each input path
-nameDirSub <- c('data')
+nameDirSub <- c('data','location')
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
   base::paste0(nameDirSub, collapse = ',')
@@ -125,19 +127,20 @@ if(base::length(DirIn) < 1){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  idxDirIn<-DirIn[6]
+  #idxDirIn<-DirIn[1] for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
-  idxDirOut <- base::paste0(DirOut,'/pre_statistics',InfoDirIn$dirRepo)
+  idxDirOut <- base::paste0(DirOut,'/sci_corrected',InfoDirIn$dirRepo)
   idxDirOutData <- base::paste0(idxDirOut,'/data')
   base::dir.create(idxDirOutData,recursive=TRUE)
-  idxDirOutLocation <- base::paste0(idxDirOut,'/location')
-  base::dir.create(idxDirOutLocation,recursive=TRUE)
-  
+
   # Copy with a symbolic link the desired sensor subfolders 
+  if(base::length(DirLocationCopy) > 0){
+    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/location'),idxDirOut,log=log)
+  }
   if(base::length(DirUncertCoefCopy) > 0){
     NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/uncertainty_coef'),idxDirOut,log=log)
   } 
@@ -152,12 +155,10 @@ for (idxDirIn in DirIn){
   dirLocTroll <- base::dir(dirTroll,full.names=TRUE)
   
   if(base::length(dirLocTroll)<1){
-    log$debug(base::paste0('No troll sensor data file in ',dirDataTbne))
-  } else if (base::length(dirLocTroll)>1){
-    log$warn(base::paste0('More than one troll sensor data file in ',dirLocTroll, '. Using only the first.'))
+    log$debug(base::paste0('No troll sensor data file in ',dirTroll))
   } else{
     trollData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(dirLocTroll),log = log), silent = FALSE)
-    log$debug(base::paste0("One datum found, reading in: ",dirLocTroll))
+    log$debug(base::paste0("Reading in: ",dirLocTroll))
   }
   
   ##### Read in location data #####
@@ -166,26 +167,14 @@ for (idxDirIn in DirIn){
   dirLocLocation <- base::dir(dirLocation,full.names=TRUE)
   
   if(base::length(dirLocLocation)<1){
-    log$debug(base::paste0('No troll sensor data file in ',dirDataTbne))
-  } else if (base::length(dirLocLocation)>1){
-    log$warn(base::paste0('More than one troll sensor data file in ',dirLocLocation, '. Using only the first.'))
-    # Choose the second location file
-    LocationData <- base::paste0(dirLocLocation[2])
-  } else{
-    LocationData <- base::paste0(dirLocLocation)
-    log$debug(base::paste0("One datum found, reading in: ",dirLocLocation))
+    log$debug(base::paste0('No troll location data file in ',dirLocation))
+  } else {
+    # Choose the _locations.json file
+    LocationData <- base::paste0(dirLocLocation[grep("locations",dirLocLocation)])
+    log$debug(base::paste0("One datum found, reading in: ",LocationData))
   }
   
-  
-  
-  
-  
-  ##############################
-  #need to figure out how to pull elevation and z-offsets from json...
-  
-  
-  
-  
+  LocationHist <- NEONprocIS.base::def.loc.geo.hist(LocationData, log = NULL)
   
   
   ###### Compute water table elevation. Function of calibrated pressure, gravity, and density of water
@@ -193,12 +182,14 @@ for (idxDirIn in DirIn){
   gravity <- 9.81  #future mod: site specific gravity
   
   #incorporate locaiton data
-  trollData$elevation  #need to figure out how to extract this from json
-  trollData$zOffset    #need to figure out how to extract this from json
+  fileOutSplt <- base::strsplit(idxDirIn,'[/]')[[1]] # Separate underscore-delimited components of the file name
+  CFGLOC<-tail(x=fileOutSplt,n=1)
+  elevation<- LocationHist$CFGLOC[[1]]$geometry$coordinates[3]
+  z_offset<- LocationHist$CFGLOC[[1]]$z_offset
   
   #calculate water table elevation
   trollData$elev_H2O<-NA
-  trollData$elev_H2O<-trollData$elevation+trollData$zOffset+(1000*trollData$data/(density*gravity))
+  trollData$elev_H2O<-elevation+z_offset+(1000*trollData$pressure/(density*gravity))
   
   
   #Create dataframe for output data
@@ -215,8 +206,6 @@ for (idxDirIn in DirIn){
   dataOut <- dataOut[,dataCol]
   
   #Write out data
-  fileOutSplt <- base::strsplit(idxDirIn,'[/]')[[1]] # Separate underscore-delimited components of the file name
-  CFGLOC<-tail(x=fileOutSplt,n=1)
   rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
                                                    NameFile = base::paste0(idxDirOutData,"/",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet"), 
                                                    Schm = SchmDataOut),silent=FALSE)
@@ -228,5 +217,6 @@ for (idxDirIn in DirIn){
   }
   
   #need to write out location data as well
+  
   
 }
