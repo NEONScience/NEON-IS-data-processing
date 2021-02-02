@@ -62,13 +62,15 @@ def get_named_location_locations(connection: Connection, named_location_id: int)
                 start_date = date_formatter.to_string(start_date)
             if end_date is not None:
                 end_date = date_formatter.to_string(end_date)
-            # build the reference location
-            reference_locations: Optional[FeatureCollection] = None
+            # retrieve the reference locations
+            # reference_locations = None
+            reference_feature = None
             if (named_location_offset_id is not None) and (named_location_offset_id != named_location_id):
+                # recursively retrieve the reference locations
                 reference_locations = get_named_location_locations(connection, named_location_offset_id)
-            reference_location_properties = dict(name=named_location_offset_name, locations=reference_locations)
-            # build the location
-            reference_feature = Feature(geometry=None, properties=reference_location_properties)
+                # build the reference feature
+                reference_location_properties = dict(name=named_location_offset_name, locations=reference_locations)
+                reference_feature = Feature(geometry=None, properties=reference_location_properties)
             properties = dict(start_date=start_date,
                               end_date=end_date,
                               alpha=alpha,
@@ -96,5 +98,5 @@ def parse_geometry(geometry):
                 z = float(ordinate_list[2])
                 return Point((x, y, z))
             else:
-                return Polygon(zip(*[iter(geometry.SDO_ORDINATES.aslist())] * 3))
+                return Polygon(zip(*[iter(ordinate_list)] * 3))
     return None
