@@ -4,7 +4,8 @@
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org}
 
-#' @description Workflow. Flags conductivity for the Aqua Troll 200 when temperature stream is missing. Calculates specific conductance when temperature stream is available.
+#' @description Workflow. Flags conductivity for the Aqua Troll 200 when temperature stream is missing. 
+#' Calculates specific conductance when temperature stream is available.
 #' 
 #'
 #' The arguments are: 
@@ -38,12 +39,12 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 
-#' @return Corrected fdom data and associated flags for temperature and absorbance corrections.
+#' @return Corrected conductivity data and associated flags for missing temperature data.
 #' Filtered data and quality flags output in Parquet format in DirOut, where the terminal directory 
 #' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
 #' Directories 'data' and 'flags' are automatically populated in the output directory, where the files 
 #' for data and flags will be placed, respectively. Any other folders specified in argument
-#' DirSubCopy will be copied over unmodified with a symbolic link. Note that the 
+#' DirSubCopy will be copied over unmodified with a symbolic link. 
 #' 
 #' If no output schema is provided for the flags, the output column/variable names will be 
 #' readout_time, qfFlow, qfHeat, in that order. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS 
@@ -172,7 +173,7 @@ for (idxDirIn in DirIn){
   dirLocTroll <- base::dir(dirTroll,full.names=TRUE)
   
   if(base::length(dirLocTroll)<1){
-    log$debug(base::paste0('No troll sensor data file in ',dirDataTbne))
+    log$debug(base::paste0('No troll sensor data file in ',dirTroll))
   } else if (base::length(dirLocTroll)>1){
     log$warn(base::paste0('More than one troll sensor data file in ',dirLocTroll, '. Using only the first.'))
   } else{

@@ -4,7 +4,8 @@
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org}
 
-#' @description Workflow. Computes temperature corrected density and water table elevation for surface and groundwater elevation data products.
+#' @description Workflow. Computes temperature corrected density and water table elevation for surface and 
+#' groundwater elevation data products.
 #' 
 #'
 #' The arguments are: 
@@ -30,26 +31,24 @@
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA.
 #' 
-#' 4. Terms? 
-#'  
-#'    
-#' 5. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' 4. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
 #' pipes, at the same level as the flags folder in the input path that are to be copied with a 
 #' symbolic link to the output path. 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 
-#' @return Corrected fdom data and associated flags for temperature and absorbance corrections.
-#' Filtered data and quality flags output in Parquet format in DirOut, where the terminal directory 
+#' @return water table elevation calculated from calibrated pressure, density of water, gravity, and sensor elevation.
+#' Data and uncertainty values will be output in Parquet format in DirOut, where the terminal directory 
 #' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
-#' Directories 'data' and 'flags' are automatically populated in the output directory, where the files 
-#' for data and flags will be placed, respectively. Any other folders specified in argument
-#' DirSubCopy will be copied over unmodified with a symbolic link. Note that the 
-#' 
-#' If no output schema is provided for the flags, the output column/variable names will be 
-#' readout_time, qfFlow, qfHeat, in that order. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS 
-#' MATCHES THIS ORDER. Otherwise, they will be labeled incorrectly.
+#' Any other folders specified in argument DirSubCopy will be copied over unmodified with a symbolic link. 
+#'  
+#' If no output schema is provided for the data, the output column/variable names will be determined by the 
+#' sensor type (leveltroll500 or aquatroll200). Output column/variable names for the leveltroll500 will be
+#' readout_time, pressure, pressure_data_quality, temperature, temperature_data quality, elev_H2O, in that order. 
+#' Output column/variable names for the aquatroll200 will be readout_time, pressure, pressure_data_quality, 
+#' temperature, temperature_data quality, conductivity, conductivity_data_quality, elev_H2O, in that order.
+#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THIS ORDER. Otherwise, they will be labeled incorrectly.
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -58,15 +57,15 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/leveltroll500_qaqc_data_group/leveltroll500/2020/01/03/CFGLOC101669')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out")
+#Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/leveltroll500_qaqc_data_group')
+#log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out")
 #rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
 
 # changelog and author contributions / copyrights
-#   Nora Catolico (2020-12-18)
+#   Nora Catolico (2021-02-02)
 #     original creation
 ##############################################################################################
 
@@ -127,7 +126,7 @@ if(base::length(DirIn) < 1){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  #idxDirIn<-DirIn[1] for testing
+  #idxDirIn<-DirIn[6] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -161,20 +160,33 @@ for (idxDirIn in DirIn){
     log$debug(base::paste0("Reading in: ",dirLocTroll))
   }
   
+  
+  
   ##### Read in location data #####
   LocationData <- NULL
   dirLocation <- base::paste0(idxDirIn,'/location')
   dirLocLocation <- base::dir(dirLocation,full.names=TRUE)
   
+  #####if no "_locations" file then check that the data file is all NA's. If there is data, STOP. If NA's, move on.
   if(base::length(dirLocLocation)<1){
-    log$debug(base::paste0('No troll location data file in ',dirLocation))
-  } else {
+    #case where there are no files
+    log$debug(base::paste0('No troll location data files in ',dirLocation))
+  } else if(any(grepl("locations",dirLocLocation))){
     # Choose the _locations.json file
     LocationData <- base::paste0(dirLocLocation[grep("locations",dirLocLocation)])
     log$debug(base::paste0("One datum found, reading in: ",LocationData))
+    LocationHist <- NEONprocIS.base::def.loc.geo.hist(LocationData, log = NULL)
+  } else { 
+    #case where there is only a CFGLOC file
+    if(length(unique(trollData$pressure))<=1 & is.na(unique(trollData$pressure)[1])){
+      #check that the data file is indeed empty then move on to next datum
+      log$debug(base::paste0('Troll data file is empty in',dirTroll, '. Moving on to next datum.'))
+      LocationHist <-NULL
+    }else{
+      log$debug(base::paste0('Data exists in troll data file. Location file is missing for ',dirTroll))
+      stop()
+    }
   }
-  
-  LocationHist <- NEONprocIS.base::def.loc.geo.hist(LocationData, log = NULL)
   
   
   ###### Compute water table elevation. Function of calibrated pressure, gravity, and density of water
@@ -189,8 +201,9 @@ for (idxDirIn in DirIn){
   
   #calculate water table elevation
   trollData$elev_H2O<-NA
-  trollData$elev_H2O<-elevation+z_offset+(1000*trollData$pressure/(density*gravity))
-  
+  if(length(LocationHist)>0){
+    trollData$elev_H2O<-elevation+z_offset+(1000*trollData$pressure/(density*gravity))
+  }
   
   #Create dataframe for output data
   dataOut <- trollData
@@ -209,14 +222,10 @@ for (idxDirIn in DirIn){
   rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
                                                    NameFile = base::paste0(idxDirOutData,"/",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet"), 
                                                    Schm = SchmDataOut),silent=FALSE)
-  if(class(rptDataOut) == 'try-error'){
+  if(any(grepl('try-error',class(rptDataOut)))){
     log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
     stop()
   } else {
     log$info("Data written out.")
   }
-  
-  #need to write out location data as well
-  
-  
 }
