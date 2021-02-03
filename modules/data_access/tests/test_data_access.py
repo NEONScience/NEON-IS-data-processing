@@ -2,6 +2,7 @@
 import os
 from typing import List, Set
 import unittest
+from contextlib import closing
 
 from geojson import FeatureCollection
 
@@ -25,9 +26,18 @@ class DataAccessTest(unittest.TestCase):
 
     def setUp(self):
         # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
-        db_url = os.getenv('PG_DATABASE_URL')
-        self.connection = connect(db_url)
+        self.db_url = os.getenv('PG_DATABASE_URL')
+        self.connection = connect(self.db_url)
         self.named_location_id = 31720
+
+    def test_closing(self):
+        # Test if the connection is closed when established outside the closing context.
+        connection = connect(self.db_url)
+        with closing(connection) as connection:
+            print(f'connection status: {connection.closed}')
+            pass
+        print(f'connection status outside: {connection.closed}')
+        assert connection.closed != 0
 
     def test_get_asset_locations(self):
         asset = Asset(id=41283, type='windobserverii')
