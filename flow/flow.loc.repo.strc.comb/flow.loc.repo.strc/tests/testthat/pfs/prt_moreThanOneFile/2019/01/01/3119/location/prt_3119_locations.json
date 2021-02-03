@@ -1,0 +1,131 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC100241",
+                "site":"CPER",
+                "install_date":"2019-01-01T00:00:00Z",
+                "remove_date":"2019-01-02T00:00:00Z",
+                "context":[
+                    "aspirated-single",
+                    "aspirated-single-70"
+                ],
+                "locations":{
+                    "type":"FeatureCollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "geometry":null,
+                            "properties":{
+                                "start_date":"2019-01-01T00:00:00Z",
+                                "end_date":"2019-01-02T00:00:00Z",
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "gamma":                                0,
+                                "x_offset":                                5.36,
+                                "y_offset":                                2.36,
+                                "z_offset":                                1.81,
+                                "reference_location":{
+                                    "type":"Feature",
+                                    "geometry":null,
+                                    "properties":{
+                                        "name":"TOWER100223",
+                                        "locations":{
+                                            "type":"FeatureCollection",
+                                            "features":[
+                                                {
+                                                    "type":"Feature",
+                                                    "geometry":{
+                                                        "type":"Point",
+                                                        "coordinates":[
+                                                                                                                        -104.74559,
+                                                                                                                        40.815538,
+                                                                                                                        1653.9151
+                                                        ]
+                                                    },
+                                                    "properties":{
+                                                        "start_date":"2019-01-01T00:00:00Z",
+                                                        "end_date":"2019-01-02T00:00:00Z",
+                                                        "alpha":                                                        0,
+                                                        "beta":                                                        0,
+                                                        "gamma":                                                        0,
+                                                        "x_offset":                                                        0,
+                                                        "y_offset":                                                        0,
+                                                        "z_offset":                                                        0,
+                                                        "reference_location":{
+                                                            "type":"Feature",
+                                                            "geometry":null,
+                                                            "properties":{
+                                                                "name":"TOWER100223",
+                                                                "locations":null
+                                                            }
+                                                        },
+                                                        "location_properties":[
+                                                            [
+                                                                "Geodetic datum",
+                                                                "WGS84"
+                                                            ],
+                                                            [
+                                                                "State province",
+                                                                "CO"
+                                                            ],
+                                                            [
+                                                                "Country",
+                                                                "USA"
+                                                            ],
+                                                            [
+                                                                "County",
+                                                                "Weld"
+                                                            ],
+                                                            [
+                                                                "UTM Zone",
+                                                                "13N"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "location_properties":[
+                                    [
+                                        "State province",
+                                        "CO"
+                                    ],
+                                    [
+                                        "Country",
+                                        "USA"
+                                    ],
+                                    [
+                                        "UTM Zone",
+                                        "13N"
+                                    ],
+                                    [
+                                        "County",
+                                        "Weld"
+                                    ],
+                                    [
+                                        "Geodetic datum",
+                                        "WGS84"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "Required Asset Management Location Code":"CFGLOC100241",
+            "Required Asset Management Location ID":            1131,
+            "HOR":"000",
+            "VER":"020",
+            "TMI":"000",
+            "Data Rate":"1"
+        }
+    ],
+    "source_id":    3119,
+    "source_type":"prt"
+}

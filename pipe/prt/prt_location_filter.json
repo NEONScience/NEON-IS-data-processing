@@ -9,7 +9,7 @@
     "DirOut=/pfs/out",
     "DirSubCopy=data|flags|uncertainty_coef|uncertainty_data"
     ],
-    "image": "quay.io/battelleecology/neon-is-loc-filt-r:v0.0.13",
+    "image": "quay.io/battelleecology/neon-is-loc-filt-r:v0.0.15",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
