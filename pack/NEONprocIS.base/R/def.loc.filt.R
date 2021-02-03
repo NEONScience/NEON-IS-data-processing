@@ -355,8 +355,14 @@ def.loc.filt <-
           }
           
           # Insert filtered reference locations back into the geolocation information
-          locGeo[[idxGeo]]$properties$reference_location <-
+          if(base::is.null(locGeoRef00) && 'reference_location' %in% base::names(locGeo[[idxGeo]]$properties)){
+            # Cover the scenario where the first reference location is listed as null in the location file
+            locGeo[[idxGeo]]$properties['reference_location'] <- base::list(NULL)
+          } else {
+            locGeo[[idxGeo]]$properties$reference_location <-
             locGeoRef00
+          }
+          
           
         } # end loop around geolocations
         
