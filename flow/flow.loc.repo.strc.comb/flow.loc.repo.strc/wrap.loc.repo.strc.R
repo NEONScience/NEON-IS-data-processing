@@ -112,10 +112,10 @@ wrap.loc.repo.strc <- function(DirIn,
   
   # How many named locations do we have?
   numLoc <- base::nrow(loc)
-  if(numLoc == 0){
-    log$warn(base::paste0('No named locations listed in ',base::paste0(dirInLoc,'/',fileLoc),'. Skipping...'))
-    return()
-  }
+  # if(numLoc == 0){
+  #   log$warn(base::paste0('No named locations listed in ',base::paste0(dirInLoc,'/',fileLoc),'. Skipping...'))
+  #   return()
+  # }
   
   # Go through each named location, restructuring the repo and copying the sensor data into it
   for(idxLoc in base::seq_len(numLoc)){

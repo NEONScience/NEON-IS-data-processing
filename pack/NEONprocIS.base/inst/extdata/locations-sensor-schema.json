@@ -159,12 +159,7 @@
                             },
                             "reference_location": {
                               "minLength": 1,
-                              "type": "object",
-                              "required": [
-                                "type",
-                                "geometry",
-                                "properties"
-                              ],
+                              "type": ["object","null"],
                               "properties": {
                                 "type": {
                                   "minLength": 1,
@@ -269,12 +264,7 @@
                                                   },
                                                   "reference_location": {
                                                     "minLength": 1,
-                                                    "type": "object",
-                                                    "required": [
-                                                      "type",
-                                                      "geometry",
-                                                      "properties"
-                                                    ],
+                                                    "type": ["object","null"],
                                                     "properties": {
                                                       "type": {
                                                         "minLength": 1,

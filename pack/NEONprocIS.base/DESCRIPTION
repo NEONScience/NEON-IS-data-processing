@@ -1,6 +1,6 @@
 Package: NEONprocIS.base
 Title: Basic functions for NEON IS data processing
-Version: 0.0.27
+Version: 0.0.32
 Authors@R: 
     person(given = "Cove",
            family = "Sturtevant",
@@ -19,8 +19,10 @@ Imports:
     testthat (>= 2.3.0),
     arrow (>= 1.0.1),
     RJSONIO (>= 1.3-1.4),
-    jsonvalidate (>= 1.1.0)
+    jsonvalidate (>= 1.1.0),
+    foreach (>= 1.5.1),
+    doParallel (>= 1.0.16)
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
