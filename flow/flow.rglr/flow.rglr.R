@@ -553,8 +553,13 @@ for (idxDirIn in DirIn) {
         base::data.frame(readout_time = dataRglr$timeRglr,
                          stringsAsFactors = FALSE)
       rpt <- base::cbind(rpt, dataRglr$dataRglr)
+      
+      # Match the original column order (minus any variables we dropped)
+      setColOrd <- base::match(nameVarIn,base::names(rpt))
+      rpt <- rpt[,setColOrd[!is.na(setColOrd)]]
+      
+      # Tack on the time window start and end times to the end of the data frame
       if(ParaRglr$RptTimeWndw[idxRowParaRglr] == TRUE){
-        # Tack on the time window start and end times to the end of the data frame
         rpt <- base::cbind(rpt, dataRglr$timeWndw)
       }
       
