@@ -13,25 +13,22 @@ transform:
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
-  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.23
+  - RptTimeWndw=TRUE
+  - DropNotNumc=FALSE
+  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.24
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
 input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: tempSpecificDepthLakes_calibrated_data
-      glob: "/*/*/*"
-  - pfs:
-      name: FILE_SCHEMA_RGLR
-      repo: avro_schemas
-      glob: "/dp0p/tchain_parsed.avsc"
+  pfs:
+    name: DIR_IN
+    repo: tempSpecificDepthLakes_calibrated_data
+    glob: "/tchain/*/*/*"
 enable_stats: false
 standby: true
 parallelism_spec:
-  constant: '2'
+  constant: '1'
 resource_requests:
   memory: 20M
   cpu: 0.25

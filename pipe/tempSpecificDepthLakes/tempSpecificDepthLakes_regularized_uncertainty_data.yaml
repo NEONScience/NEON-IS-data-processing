@@ -13,7 +13,9 @@ transform:
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
-  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.23
+  - RptTimeWndw=TRUE
+  - DropNotNumc=FALSE
+  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.24
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -22,7 +24,7 @@ input:
   pfs:
     name: DIR_IN
     repo: tempSpecificDepthLakes_uncertainty_data
-    glob: "/tchain/*/*"
+    glob: "/tchain/*/*/*"
 enable_stats: false
 standby: true
 resource_requests:
