@@ -8,6 +8,8 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - Tmi=001
+  - VarTimeBgn=timeWndwBgn
+  - VarTimeEnd=timeWndwEnd
 
   - GrpQfAlph1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempValidCalQF|depth0WaterTempSpikeQF
   - GrpQfBeta1=depth0WaterTemp:depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempValidCalQF|depth0WaterTempSpikeQF
@@ -52,8 +54,8 @@ transform:
   - GrpQfAlph11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempValidCalQF|depth10WaterTempSpikeQF
   - GrpQfBeta11=depth10WaterTemp:depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempValidCalQF|depth10WaterTempSpikeQF
   - QfForc11=depth10WaterTempNullQF:1:depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempValidCalQF|depth10WaterTempSpikeQF:-1
-    
-  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.4
+  
+  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -62,11 +64,11 @@ input:
   pfs:
     name: DIR_IN
     repo: tempSpecificDepthLakes_qaqc_flags_group
-    glob: "/tchain/*/*"
+    glob: "/tchain/*/*/*"
 enable_stats: false
 standby: true
 parallelism_spec:
-  constant: '2'
+  constant: '1'
 resource_requests:
   memory: 200Mi
   cpu: 0
