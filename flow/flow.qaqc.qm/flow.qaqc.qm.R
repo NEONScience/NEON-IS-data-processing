@@ -70,8 +70,9 @@
 #' There is a limit of X=100 for GrpQfX arguments. Note that the group names must be unique among GrpQfX arguments.
 #'  
 #' N+1. "VarIgnr=value" (optional), where value contains the names of the variables that should be ignored if 
-#' found in the input files (do not include readout_time here). No quality metrics will be computed for these 
-#' variables and they will not be included in the output. Defaults to empty.
+#' found in the input files, separated by pipes (|) (e.g. "VarIgnr=timeWndwBgn|timeWndwEnd"). Do not include 
+#' readout_time here. No quality metrics will be computed for these variables and they will not be included 
+#' in the output. Defaults to empty. 
 #' 
 #' N+2. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
 #' pipes, at the same level as the flags folder in the input path that are to be copied with a 
