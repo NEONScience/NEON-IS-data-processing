@@ -8,6 +8,7 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - FileSchmQf=$SCHEMA_FLAGS
+  - VarAddFileQf=timeWndwBgn|timeWndwEnd
   - TermTest1=depth0WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - TermTest2=depth1WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - TermTest3=depth2WaterTemp:null|gap|range(rmv)|step(rmv)|spike
@@ -19,7 +20,7 @@ transform:
   - TermTest9=depth8WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - TermTest10=depth9WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - TermTest11=depth10WaterTemp:null|gap|range(rmv)|step(rmv)|spike
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.15
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.16
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
