@@ -23,7 +23,7 @@
         "pfs": {
           "name": "FILE_SCHEMA_QM",
           "repo": "avro_schemas",
-          "glob": "/dp01/surfacewaterPhysical_aquatroll200_dp01_quality_metricss.avsc"
+          "glob": "/dp01/surfacewaterPhysical_aquatroll200_dp01_quality_metrics.avsc"
         }
       }
     ]

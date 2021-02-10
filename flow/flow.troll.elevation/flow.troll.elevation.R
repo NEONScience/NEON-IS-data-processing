@@ -57,10 +57,10 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/leveltroll500_qaqc_data_group')
-#log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out")
-#rm(list=setdiff(ls(),c('arg','log')))
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/leveltroll500_qaqc_data_group')
+#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out")
+#' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
 
@@ -193,11 +193,13 @@ for (idxDirIn in DirIn){
   density <- 999   #future mod: temperature corrected density; conductivity correct density
   gravity <- 9.81  #future mod: site specific gravity
   
-  #incorporate locaiton data
+  #incorporate location data
   fileOutSplt <- base::strsplit(idxDirIn,'[/]')[[1]] # Separate underscore-delimited components of the file name
   CFGLOC<-tail(x=fileOutSplt,n=1)
   elevation<- LocationHist$CFGLOC[[1]]$geometry$coordinates[3]
   z_offset<- LocationHist$CFGLOC[[1]]$z_offset
+  
+  ###### NEED TO ADD CODE FOR WHEN THERE ARE MULTIPLE LOCATIONS IN A SINGLE DAY
   
   #calculate water table elevation
   trollData$elev_H2O<-NA

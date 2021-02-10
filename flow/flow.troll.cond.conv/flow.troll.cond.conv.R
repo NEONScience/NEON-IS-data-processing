@@ -190,7 +190,7 @@ for (idxDirIn in DirIn){
   #convert acutal conductivity to specific conductance
   trollData$specCond <- NA
   trollData$specCond <- trollData$conductivity/(1+0.0191*(trollData$temperature-25))
-  trollData$specCond[trollData$missingTempQF>0]<-NA
+  trollData$specCond[trollData$missingTempQF>0]<-NA #If no temp stream, then do not output specific conductance. Could potentially report acutal conductivity in future. 
   
   #Create dataframe for output data
   dataOut <- trollData
