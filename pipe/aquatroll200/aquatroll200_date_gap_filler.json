@@ -21,7 +21,7 @@
       "LOCATION_SOURCE_TYPE_INDEX": "3",
       "LOCATION_YEAR_INDEX": "4",
       "LOG_LEVEL": "DEBUG",
-      "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags",
+      "OUTPUT_DIRECTORIES": "data,uncertainty_data,uncertainty_coef,flags",
       "OUT_PATH": "/pfs/out",
       "START_DATE": "2019-12-31"
     },
