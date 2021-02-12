@@ -116,6 +116,8 @@ test_that("Unit test of wrap.ucrt.dp01.cal.cnst.fdas.rstc.R", {
       ucrtData = ucrtData
     )
   
+  testthat::expect_true(!is.na(ucrt_returned))
+  
   # Sad Path 1 - - column readout_time missing
   
   data_oneLessCol <- subset(data, select = -readout_time)
