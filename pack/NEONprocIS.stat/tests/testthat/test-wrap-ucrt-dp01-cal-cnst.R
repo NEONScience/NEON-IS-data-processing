@@ -17,6 +17,7 @@
 #' The positive test is for a case when all the params to the function are valid
 #' The negative tests are when a param(s) is empty or does not have valid values
 #'
+#' Input param s to wrap.ucrt.dp01.cal.cnst.R
 #' @param data Data frame of L0' (calibrated) data. Must contain columns \code{readout_time} (POSIX) and 
 #' whatever variable is specified in input parameter \code{VarUcrt} (numeric).
 #' A single aggregated uncertainty for the selected variable \code{VarUcrt} will be computed over the full timeseries.
