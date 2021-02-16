@@ -63,7 +63,7 @@ context("\n                       Unit test of def.ucrt.meas.rh.dew.frst.pt.R\n"
 test_that("Unit test of def.ucrt.meas.rh.dew.frst.pt.R", {
   log <- NEONprocIS.base::def.log.init()
   
-  data <- data.frame(dew_pont=c(1,-1,5,4,4.5), temperature=c(2,3,6,8,5), 
+  data <- data.frame(dew_pont=c(1,-1,5,4,4.5), temperature=c(2,-3,6,8,5), 
                      relative_humidity=c(1,6,7,0,10),readout_time=c(
     (as.POSIXct("2019-01-01 00:01:30",tz="GMT")), 
     (as.POSIXct("2019-01-01 02:01:30",tz="GMT")), 
@@ -83,7 +83,14 @@ test_that("Unit test of def.ucrt.meas.rh.dew.frst.pt.R", {
   
   #  Sad Path 1, if data input is not numeric then wrap.ucrt.dp01.cal.cnst will not be executed
   
+  calSlct_time_outOfRange=list("temperature"= data.frame(timeBgn=as.POSIXct("2019-02-01",tz="GMT"),
+                                         timeEnd=as.POSIXct("2019-02-02",tz="GMT"),file = "testdata/temperature/30000000000080_WO29705_157555.xml",id = 157555, expi= FALSE),
+               "relative_humidity"= data.frame(timeBgn=as.POSIXct("2019-02-01",tz="GMT"),
+                                               timeEnd=as.POSIXct("2019-02-02",tz="GMT"),file = "testdata/relHumidity/30000000000080_WO29705_157554.xml",id = 157554, expi= FALSE),
+               "dew_point"= data.frame(timeBgn=as.POSIXct("2019-02-01",tz="GMT"),timeEnd=as.POSIXct("2019-02-02",tz="GMT"),
+                                       file = "testdata/dewPoint/30000000000080_WO29705_157556.xml",id = 157556, expi= FALSE))
   
-  # ucrt <- try( ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data=data,calSlct=calSlct), silent = TRUE)
-  # expect_true((class(ucrt)[1] == "try-error"))
+   ucrt <- try( ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data=data,calSlct=calSlct_time_outOfRange), silent = TRUE)
+   expect_true(is.data.frame(ucrt) && is.na(ucrt$ucrtMeas))
+   
 })
