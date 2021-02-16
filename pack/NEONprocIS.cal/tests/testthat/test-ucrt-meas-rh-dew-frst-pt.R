@@ -15,7 +15,7 @@
 #' The positive test is for a case when all the params to the function are valid
 #' The negative tests are when a param(s) is empty or does not have valid values
 #'
-#' data <- data.frame(relative_humidity=c(1,6,7,0,10), temperature=c(2,3,6,8,5), dew_pont=c(1,-1,5,4,4.5))
+#' data <- data.frame(relative_humidity=c(1,6,7,0,10), temperature=c(2,3,6,8,5), dew_point=c(1,-1,5,4,4.5))
 #' calSlct=list("temperature"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
 #' timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "30000000000080_WO29705_157555.xml",id = 157555, expi= FALSE),
 #' "relative_humidity"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
@@ -63,14 +63,9 @@ context("\n                       Unit test of def.ucrt.meas.rh.dew.frst.pt.R\n"
 test_that("Unit test of def.ucrt.meas.rh.dew.frst.pt.R", {
   log <- NEONprocIS.base::def.log.init()
   
-  data <- data.frame(dew_pont=c(1,-1,5,4,4.5), temperature=c(2,-3,6,8,5), 
-                     relative_humidity=c(1,6,7,0,10),readout_time=c(
-    (as.POSIXct("2019-01-01 00:01:30",tz="GMT")), 
-    (as.POSIXct("2019-01-01 02:01:30",tz="GMT")), 
-    (as.POSIXct("2019-01-01 04:01:30",tz="GMT")), 
-    (as.POSIXct("2019-01-01 06:01:30",tz="GMT")),
-    (as.POSIXct("2019-01-01 08:01:30",tz="GMT"))
-    ))
+  data <- data.frame(dew_point=c(1,-1,5,4,4.5),temperature=c(2,-3,6,8,5),relative_humidity=c(1,6,7,0,10),
+           readout_time=as.POSIXct(c('2019-01-01 02:00','2019-01-01 04:01','2019-01-01 06:02','2019-01-01 08:01','2019-01-01 10:02'),tz='GMT'))
+ 
   calSlct=list("temperature"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
   timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "testdata/temperature/30000000000080_WO29705_157555.xml",id = 157555, expi= FALSE),
   "relative_humidity"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
@@ -81,16 +76,15 @@ test_that("Unit test of def.ucrt.meas.rh.dew.frst.pt.R", {
   ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data=data,calSlct=calSlct) 
   expect_true(is.data.frame(ucrt) && is.numeric(ucrt$ucrtMeas))
   
-  #  Sad Path 1, if data input is not numeric then wrap.ucrt.dp01.cal.cnst will not be executed
-  
-  calSlct_time_outOfRange=list("temperature"= data.frame(timeBgn=as.POSIXct("2019-02-01",tz="GMT"),
-                                         timeEnd=as.POSIXct("2019-02-02",tz="GMT"),file = "testdata/temperature/30000000000080_WO29705_157555.xml",id = 157555, expi= FALSE),
-               "relative_humidity"= data.frame(timeBgn=as.POSIXct("2019-02-01",tz="GMT"),
-                                               timeEnd=as.POSIXct("2019-02-02",tz="GMT"),file = "testdata/relHumidity/30000000000080_WO29705_157554.xml",id = 157554, expi= FALSE),
-               "dew_point"= data.frame(timeBgn=as.POSIXct("2019-02-01",tz="GMT"),timeEnd=as.POSIXct("2019-02-02",tz="GMT"),
-                                       file = "testdata/dewPoint/30000000000080_WO29705_157556.xml",id = 157556, expi= FALSE))
-  
-   ucrt <- try( ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data=data,calSlct=calSlct_time_outOfRange), silent = TRUE)
+  #  Sad Path 1, if 
+  data_outOfRange <- data.frame(dew_point=c(1,-1,5,4,4.5), temperature=c(2,-3,6,8,5), 
+                     relative_humidity=c(1,6,7,0,10),readout_time=c(
+                       (as.POSIXct("2021-01-01 00:01:30",tz="GMT")), 
+                       (as.POSIXct("2021-01-01 02:01:30",tz="GMT")), 
+                       (as.POSIXct("2021-01-01 04:01:30",tz="GMT")), 
+                       (as.POSIXct("2021-01-01 06:01:30",tz="GMT")),
+                       (as.POSIXct("2021-01-01 08:01:30",tz="GMT"))
+                     ))
+   ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data=data_outOfRange,calSlct=calSlct)
    expect_true(is.data.frame(ucrt) && is.na(ucrt$ucrtMeas))
-   
-})
+   })
