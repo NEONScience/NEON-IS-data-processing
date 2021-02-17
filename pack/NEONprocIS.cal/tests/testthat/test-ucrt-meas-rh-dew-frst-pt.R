@@ -32,8 +32,8 @@
 #' 
 #' @keywords calibration, uncertainty, fdas L1, average
 #' 
-#' data <- data.frame(readout_time=as.POSIXct(c('2019-01-01 00:00','2019-01-01 00:01','2019-01-01 00:02'),tz='GMT'),
-#'                    temp=c(.599,.598,.597))
+#' data <- data.frame(dew_point=c(1,-1,5,4,4.5),temperature=c(2,3,6,8,5),relative_humidity=c(1,6,7,0,10),
+#' readout_time=as.POSIXct(c('2019-01-01 02:00','2019-01-01 04:01','2019-01-01 06:02','2019-01-01 08:01','2019-01-01 10:02'),tz='GMT'))
 #' ucrtCoef <- list(list(term='temp',start_date=as.POSIXct('2019-01-01',tz='GMT'),end_date=as.POSIXct('2019-01-02',tz='GMT'),Name='U_CVALA3',Value='0.0141'))
 #' ucrtData <- data.frame(readout_time=as.POSIXct(c('2019-01-01 00:00','2019-01-01 00:01','2019-01-01 00:02'),tz='GMT'),
 #'                        temp=c(100.187,100.195,100.203))
@@ -77,14 +77,9 @@ test_that("Unit test of def.ucrt.meas.rh.dew.frst.pt.R", {
   expect_true(is.data.frame(ucrt) && is.numeric(ucrt$ucrtMeas))
   
   #  Sad Path 1, if 
-  data_outOfRange <- data.frame(dew_point=c(1,-1,5,4,4.5), temperature=c(2,-3,6,8,5), 
-                     relative_humidity=c(1,6,7,0,10),readout_time=c(
-                       (as.POSIXct("2021-01-01 00:01:30",tz="GMT")), 
-                       (as.POSIXct("2021-01-01 02:01:30",tz="GMT")), 
-                       (as.POSIXct("2021-01-01 04:01:30",tz="GMT")), 
-                       (as.POSIXct("2021-01-01 06:01:30",tz="GMT")),
-                       (as.POSIXct("2021-01-01 08:01:30",tz="GMT"))
-                     ))
-   ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data=data_outOfRange,calSlct=calSlct)
-   expect_true(is.data.frame(ucrt) && is.na(ucrt$ucrtMeas))
+  data_outOfRange <- data.frame(dew_point=c(1,-1,5,4,4.5),temperature=c(2,-3,6,8,5),relative_humidity=c(1,6,7,0,10),
+                     readout_time=as.POSIXct(c('2021-01-01 02:00','2021-01-01 04:01','2021-01-01 06:02','2021-01-01 08:01','2021-01-01 10:02'),tz='GMT'))
+  
+  ucrt <- NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data=data_outOfRange,calSlct=calSlct)
+  expect_true(is.data.frame(ucrt) && is.na(ucrt$ucrtMeas))
    })
