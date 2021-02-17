@@ -21,13 +21,13 @@ ARG auth_token
 ENV GITHUB_PAT=$auth_token
 
 # Clone the NEON-FIU-algorithm repo using our token
-RUN git clone -b rglr.rpt.time.wndw https://$GITHUB_PAT:x-oauth-basic@github.com/covesturtevant/NEON-FIU-algorithm-covesturtevant.git
+RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
 
 # Now make the final build, which will leave behind our access token
 FROM quay.io/battelleecology/neon-is-base-r:v0.0.62
 
 # copy the eddy4R.base package from the previous image
-COPY --from=intermediate /NEON-FIU-algorithm-covesturtevant/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
+COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
 
 
 
