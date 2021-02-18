@@ -13,7 +13,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: '3'
+    RELATIVE_PATH_INDEX: '3' #3
 parallelism_spec:
   constant: '1'
 output_branch: master
