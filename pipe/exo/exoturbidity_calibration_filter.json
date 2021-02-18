@@ -9,12 +9,14 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "DirSubCopy=data"
-      ],
-    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.35",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-cal-filt-r:v0.0.36",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "pfs": {
@@ -31,5 +33,5 @@
     "cpu": 0
   },
   "enable_stats": false,
-  "standby":true
+  "standby": true
 }

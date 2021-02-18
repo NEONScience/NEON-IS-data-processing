@@ -12,12 +12,14 @@
       "TermFuncUcrt=fDOM:def.ucrt.meas.cnst",
       "TermQf=fDOM",
       "DirSubCopy=calibration"
-      ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.43",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.44",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "cross": [
@@ -34,7 +36,6 @@
           "repo": "avro_schemas",
           "glob": "/dp0p/flags_calibration_exofdom.avsc"
         }
-
       }
     ]
   },

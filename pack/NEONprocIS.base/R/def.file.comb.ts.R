@@ -57,7 +57,7 @@ def.file.comb.ts <- function(file,nameVarTime,log = NULL) {
       log$error(base::paste0('Cannot determine file type for ',idxFile,'. Extension must be .avro or .parquet.'))
       stop()
     }
-    if(base::class(idxData) == 'try-error'){
+    if(base::any(base::class(idxData) == 'try-error')){
       log$error(base::paste0('File ', idxFile,' is unreadable.')) 
       stop()
     } else {
