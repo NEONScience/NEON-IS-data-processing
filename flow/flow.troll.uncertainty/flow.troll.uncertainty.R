@@ -208,7 +208,31 @@ for (idxDirIn in DirIn){
     trollData$elev_H2O<-elevation+z_offset+(1000*trollData$pressure/(density*gravity))
   }
   
-  #pull in uncertainty data
+
+  ##### Read in uncertainty data #####
+  uncertaintyData <- NULL
+  dirUncertainty <- base::paste0(idxDirIn,'/uncertainty_data')
+  dirUncertaintyLocation <- base::dir(dirUncertainty,full.names=TRUE)
+
+  if(base::length(dirUncertaintyLocation)<1){
+    log$debug(base::paste0('No troll uncertainty data file in ',dirUncertainty))
+  } else{
+    uncertaintyData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(dirUncertaintyLocation),log = log), silent = FALSE)
+    log$debug(base::paste0("Reading in: ",dirUncertaintyLocation))
+  }
+  
+  
+  
+  
+  
+  #--------left off here -----------
+  
+  
+  
+  
+  
+  
+  
   
   
   #### Uncertainty Calculations ####
