@@ -8,18 +8,18 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - Comb=TRUE
-  image: quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.8
+  image: quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.11
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
 input:
   pfs:
     name: DIR_IN
-    repo: tchain_calibrated_location_group
+    repo: tchain_location_filter
     glob: /tchain/*/*/*
 enable_stats: false
-standby: true
+standby: false
 resource_requests:
   memory: 100M
   cpu: 0.13
