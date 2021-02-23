@@ -1,0 +1,33 @@
+{
+  "pipeline": {
+    "name": "groundwaterPhysical_regularized_uncertainty"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=uncertainty_data","DirSubCopy=uncertainty_coef","FileSchmRglr=NA","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.26",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "groundwaterPhysical_uncertainty_data",
+          "glob": "/*/*/*/*"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+      "memory": "20M",
+      "cpu": 0.25
+  }
+}

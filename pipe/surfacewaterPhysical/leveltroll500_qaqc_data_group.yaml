@@ -51,13 +51,13 @@ input:
       empty_files: true
   - pfs:
       name: UNCERTAINTY_DATA
-      repo: surfacewaterPhysical_context_filter
+      repo: surfacewaterPhysical_regularized_uncertainty
       glob: /leveltroll500/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: UNCERTAINTY_COEF_PATH
-      repo: surfacewaterPhysical_context_filter
+      repo: surfacewaterPhysical_regularized_uncertainty
       glob: /leveltroll500/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true

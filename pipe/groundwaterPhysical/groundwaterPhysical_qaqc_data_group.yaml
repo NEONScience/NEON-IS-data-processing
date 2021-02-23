@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: aquatroll200_qaqc_data_group
+  name: groundwaterPhysical_qaqc_data_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:6
@@ -45,25 +45,25 @@ input:
   join:
   - pfs:
       name: QAQC_PLAUSIBILITY_AQUATROLL
-      repo: surfacewaterPhysical_qaqc_plausibility_aquatroll
+      repo: groundwaterPhysical_qaqc_plausibility
       glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: UNCERTAINTY_DATA
-      repo: surfacewaterPhysical_regularized_uncertainty
+      repo: groundwaterPhysical_regularized_uncertainty
       glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: UNCERTAINTY_COEF_PATH
-      repo: surfacewaterPhysical_regularized_uncertainty
+      repo: groundwaterPhysical_regularized_uncertainty
       glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: LOCATION_DATA
-      repo: surfacewaterPhysical_locations
+      repo: groundwaterPhysical_locations
       glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
