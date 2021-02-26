@@ -56,7 +56,7 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/out/sci_corrected/leveltroll500')
+Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_qaqc_data_group')
 log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out")
 #rm(list=setdiff(ls(),c('arg','log')))
@@ -124,7 +124,7 @@ if(base::length(DirIn) < 1){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  idxDirIn<-DirIn[6] #for testing
+  idxDirIn<-DirIn[20] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -191,7 +191,7 @@ for (idxDirIn in DirIn){
   density <- 999  #m/s2 #future mod: temperature corrected density; conductivity correct density
   gravity <- 9.81  #kg/m3 #future mod: site specific gravity
   
-  #incorporate locaiton data
+  #incorporate location data
   fileOutSplt <- base::strsplit(idxDirIn,'[/]')[[1]] # Separate underscore-delimited components of the file name
   CFGLOC<-tail(x=fileOutSplt,n=1)
   elevation<- LocationHist$CFGLOC[[1]]$geometry$coordinates[3]
@@ -213,7 +213,6 @@ for (idxDirIn in DirIn){
   uncertaintyData <- NULL
   dirUncertainty <- base::paste0(idxDirIn,'/uncertainty_data')
   dirUncertaintyLocation <- base::dir(dirUncertainty,full.names=TRUE)
-
   if(base::length(dirUncertaintyLocation)<1){
     log$debug(base::paste0('No troll uncertainty data file in ',dirUncertainty))
   } else{
@@ -221,12 +220,21 @@ for (idxDirIn in DirIn){
     log$debug(base::paste0("Reading in: ",dirUncertaintyLocation))
   }
   
-  
-  
-  
+  ##### Read in uncertainty coef #####
+  uncertaintyCoef <- NULL
+  dirUncertaintyCoef <- base::paste0(idxDirIn,'/uncertainty_coef')
+  dirUncertaintyCoefLocation <- base::dir(dirUncertaintyCoef,full.names=TRUE)
+    if(base::length(dirUncertaintyCoefLocation)<1){
+    log$debug(base::paste0('No troll uncertainty data file in ',dirUncertaintyCoef))
+  } else{
+    uncertaintyCoef <- rjson::fromJSON(file=dirUncertaintyCoefLocation,simplify=TRUE)
+    log$debug(base::paste0("Reading in: ",dirUncertaintyCoefLocation))
+  }
   
   #--------left off here -----------
   
+  infoCal <- list(ucrt = data.frame(Name='U_CVALA1',Value='Value',varUcrt='pressure',stringsAsFactors=FALSE))
+  NEONprocIS.cal::def.ucrt.meas.cnst(data=trollData$pressure,infoCal=infoCal)
   
   
   

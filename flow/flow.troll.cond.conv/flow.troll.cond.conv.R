@@ -57,9 +57,9 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/aquatroll200_flags_specific')
-#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","FileSchmData=~/R/NEON-IS-avro-schemas/dp0p/aquatroll200_calibrated.avsc","FileSchmQf=~/R/NEON-IS-avro-schemas/dp0p/flags_troll_specific_temp.avsc")
+ Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/aquatroll200_flags_specific')
+ log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+ arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","FileSchmData=~/R/NEON-IS-avro-schemas/dp0p/aquatroll200_calibrated.avsc","FileSchmQf=~/R/NEON-IS-avro-schemas/dp0p/flags_troll_specific_temp.avsc")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -137,6 +137,7 @@ if(base::length(DirIn) < 1){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
+  idxDirIn<-DirIn[20] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -194,8 +195,9 @@ for (idxDirIn in DirIn){
   
   #Create dataframe for output data
   dataOut <- trollData
+  dataOut$actual_conductivity <- dataOut$conductivity #need to keep for later calculations
   dataOut$conductivity <- dataOut$specCond #replace actual conductivity with specific conductance
-  dataCol <- c("source_id","site_id","readout_time","pressure","pressure_data_quality","temperature","temperature_data_quality","conductivity","conductivity_data_quality","internal_battery")
+  dataCol <- c("source_id","site_id","readout_time","pressure","pressure_data_quality","temperature","temperature_data_quality","actual_conductivity","conductivity_data_quality","conductivity","internal_battery")
   dataOut <- dataOut[,dataCol]
   
   #Create dataframe for just flags
