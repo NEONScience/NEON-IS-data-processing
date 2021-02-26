@@ -56,9 +56,9 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_qaqc_data_group')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out")
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_qaqc_data_group')
+#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out")
 #rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -124,7 +124,7 @@ if(base::length(DirIn) < 1){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  idxDirIn<-DirIn[20] #for testing
+  #idxDirIn<-DirIn[20] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -232,6 +232,51 @@ for (idxDirIn in DirIn){
   }
   
   #--------left off here -----------
+  
+  #Uncert for instantaneous 5-min aquatroll data
+  uncertaintyData$UTemp_inst_meas<-uncertaintyData$temperature_ucrtMeas
+  uncertaintyData$UTemp_inst_expn<-uncertaintyData$temperature_ucrtExpn
+  
+  uncertaintyData$UCond_inst_meas<-uncertaintyData$conductivity_ucrtMeas
+  uncertaintyData$UCond_inst_expn<-uncertaintyData$conductivity_ucrtExpn
+  
+  uncertaintyData$USpC_inst_meas<-((((1/(1+0.0191*(Temp-25)))^2)*U_CVALA1_cond^2)+(((1+0.0191*RawCond)/((1+0.0191*(Temp-25))^2))^2)*U_CVALA1_temp^2)
+  uncertaintyData$USpC_inst_expn<-2*USpC_inst_meas
+  
+  uncertaintyData$UPressure_inst_meas<-uncertaintyData$pressure_ucrtMeas
+  uncertaintyData$UPressure_inst_expn<-uncertaintyData$pressure_ucrtExpn
+  
+  uncertaintyData$UElev_inst_meas<-(1*survey_uncert^2+((1000/(density*gravity))^2)*U_CVALA1_pressure^2)^0.5
+  uncertaintyData$UElev_inst_expn<-2*UElev_inst_meas
+  
+  
+  #Uncert for L1 mean DP (5 min level troll, 30 min level and aqua)
+  
+  UNat_temp
+  UNat_cond
+  UNat_SpC
+  UNat_pressue
+  
+  uncertaintyData$UTemp_L1_comb<- (UNat_temp^2+U_CVALA3_temp^2)^0.5
+  uncertaintyData$UTemp_L1_expn<-2*UTemp_L1_comb
+  
+  uncertaintyData$UCond_L1_comb<-(UNat_cond^2+U_CVALA3_cond^2)^0.5
+  uncertaintyData$UCond_L1_expn<-2*UCond_L1_comb
+  
+  uncertaintyData$USpC_L1_comb<-(UNat_SpC^2+(((1/(1+0.0191*(Temp-25)))^2)*U_CVALA3_cond^2)+(((1+0.0191*RawCond)/((1+0.0191*(Temp-25))^2))^2)*U_CVALA3_temp^2)^0.5
+  uncertaintyData$USpC_L1_expn<-2*USpC_L1_comb
+  
+  uncertaintyData$ UPressure_L1_comb<-(UNat_pressue^2+U_CVALA3_pressure^2)^0.5
+  uncertaintyData$UPressure_L1_expn<-2*UPressure_L1_comb
+  
+  uncertaintyData$UElev_L1_comb<-(1*survey_uncert^2+((1000/(density*gravity))^2)*UPressure_L1_comb^2)^0.5
+  uncertaintyData$UElev_L1_expn<-2*UElev_L1_comb
+  
+  
+  
+  
+  
+  
   
   infoCal <- list(ucrt = data.frame(Name='U_CVALA1',Value='Value',varUcrt='pressure',stringsAsFactors=FALSE))
   NEONprocIS.cal::def.ucrt.meas.cnst(data=trollData$pressure,infoCal=infoCal)
