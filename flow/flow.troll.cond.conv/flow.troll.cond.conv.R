@@ -59,7 +59,7 @@
 #' Stepping through the code in Rstudio 
 #' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/aquatroll200_flags_specific')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","FileSchmData=~/R/NEON-IS-avro-schemas/dp0p/aquatroll200_calibrated.avsc","FileSchmQf=~/R/NEON-IS-avro-schemas/dp0p/flags_troll_specific_temp.avsc")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","FileSchmData=~/R/NEON-IS-avro-schemas/dp0p/aquatroll200_cond_corrected.avsc","FileSchmQf=~/R/NEON-IS-avro-schemas/dp0p/flags_troll_specific_temp.avsc")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
