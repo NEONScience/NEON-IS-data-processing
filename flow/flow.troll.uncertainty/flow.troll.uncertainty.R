@@ -233,104 +233,60 @@ for (idxDirIn in DirIn){
   
   #--------left off here -----------
   
-  #Uncert for instantaneous 5-min aquatroll data
-  uncertaintyData$UTemp_inst_meas<-uncertaintyData$temperature_ucrtMeas
-  uncertaintyData$UTemp_inst_expn<-uncertaintyData$temperature_ucrtExpn
-  
-  uncertaintyData$UCond_inst_meas<-uncertaintyData$conductivity_ucrtMeas
-  uncertaintyData$UCond_inst_expn<-uncertaintyData$conductivity_ucrtExpn
-  
-  uncertaintyData$USpC_inst_meas<-((((1/(1+0.0191*(Temp-25)))^2)*U_CVALA1_cond^2)+(((1+0.0191*RawCond)/((1+0.0191*(Temp-25))^2))^2)*U_CVALA1_temp^2)
-  uncertaintyData$USpC_inst_expn<-2*USpC_inst_meas
-  
-  uncertaintyData$UPressure_inst_meas<-uncertaintyData$pressure_ucrtMeas
-  uncertaintyData$UPressure_inst_expn<-uncertaintyData$pressure_ucrtExpn
-  
-  uncertaintyData$UElev_inst_meas<-(1*survey_uncert^2+((1000/(density*gravity))^2)*U_CVALA1_pressure^2)^0.5
-  uncertaintyData$UElev_inst_expn<-2*UElev_inst_meas
-  
-  
-  #Uncert for L1 mean DP (5 min level troll, 30 min level and aqua)
-  
-  UNat_temp
-  UNat_cond
-  UNat_SpC
-  UNat_pressue
-  
-  uncertaintyData$UTemp_L1_comb<- (UNat_temp^2+U_CVALA3_temp^2)^0.5
-  uncertaintyData$UTemp_L1_expn<-2*UTemp_L1_comb
-  
-  uncertaintyData$UCond_L1_comb<-(UNat_cond^2+U_CVALA3_cond^2)^0.5
-  uncertaintyData$UCond_L1_expn<-2*UCond_L1_comb
-  
-  uncertaintyData$USpC_L1_comb<-(UNat_SpC^2+(((1/(1+0.0191*(Temp-25)))^2)*U_CVALA3_cond^2)+(((1+0.0191*RawCond)/((1+0.0191*(Temp-25))^2))^2)*U_CVALA3_temp^2)^0.5
-  uncertaintyData$USpC_L1_expn<-2*USpC_L1_comb
-  
-  uncertaintyData$ UPressure_L1_comb<-(UNat_pressue^2+U_CVALA3_pressure^2)^0.5
-  uncertaintyData$UPressure_L1_expn<-2*UPressure_L1_comb
-  
-  uncertaintyData$UElev_L1_comb<-(1*survey_uncert^2+((1000/(density*gravity))^2)*UPressure_L1_comb^2)^0.5
-  uncertaintyData$UElev_L1_expn<-2*UElev_L1_comb
+  ######## Uncert for instantaneous 5-min aqua troll data #######
+  #existing conductivity uncertainty is for raw values, need additional columns for specific conductivity
+  uncertaintyData$rawConductivity_ucrtMeas<-uncertaintyData$conductivity_ucrtMeas
+  uncertaintyData$rawConductivity_ucrtComb<-uncertaintyData$conductivity_ucrtComb
+  uncertaintyData$rawConductivity_ucrtExpn<-uncertaintyData$conductivity_ucrtExpn
+  uncertaintyData$conductivity_ucrtMeas<-((((1/(1+0.0191*(Temp-25)))^2)*U_CVALA1_cond^2)+(((1+0.0191*RawCond)/((1+0.0191*(Temp-25))^2))^2)*U_CVALA1_temp^2)
+  uncertaintyData$conductivity_ucrtComb<-uncertaintyData$conductivity_ucrtMeas
+  uncertaintyData$conductivity_ucrtExpn<-2*uncertaintyData$conductivity_ucrtMeas
+  #temp and pressure uncert calculated earlier in pipeline
+  uncertaintyData$temperature_ucrtMeas
+  uncertaintyData$temperature_ucrtExpn
+  uncertaintyData$pressure_ucrtMeas
+  uncertaintyData$pressure_ucrtExpn
+  #calculate instantaneous elevation uncert
+  uncertaintyData$elevation_ucrtMeas<-(1*survey_uncert^2+((1000/(density*gravity))^2)*U_CVALA1_pressure^2)^0.5
+  uncertaintyData$elevation_ucrtExpn<-2*elevation_ucrtMeas
   
   
-  
-  
-  
-  
-  
-  infoCal <- list(ucrt = data.frame(Name='U_CVALA1',Value='Value',varUcrt='pressure',stringsAsFactors=FALSE))
-  NEONprocIS.cal::def.ucrt.meas.cnst(data=trollData$pressure,infoCal=infoCal)
-  
-  
-  
-  
-  
-  
-  
-  
-  #### Uncertainty Calculations ####
+  ######## Uncertainty for L1 mean 30 minute DP ########
   #the repeatability and reproducibility of the sensor and  uncertainty of the calibration procedures and coefficients including uncertainty in the standard
-  U_CVALA1 <- 1 #Combined, standard calibration uncertainty of the measurement by the sensor (uS,C,kPa)
-  U_CVALA2 <- 1
-  U_CVALA3 <- 1 #Combined, relative uncertainty (truth and trueness only) of the measurement by the sensor (%)
-  U_CVALD1 <- 1
-  U_CVALD2 <- 1
-  U_CVALD3 <- 1
-
   
   #Temperature Uncertainty
   #combined uncertainty of temperature is equal to the standard uncertainty values provided by CVAL
-  theta_T <- U_CVALA2_T  #experimental standard deviation of individual observations for a defined time period
-  n <-1  #number of observations made during the defined period
-  Unat_T <- ((theta_T^2)/n)^(0.5) #standard error of the mean (natural variation)
-  Uc_TGW <- ((Unat_T^2)+(U_CVALA3_T^2))^(0.5)  #combined uncertainty
-  #expanded is two times the combined uncertainty
-  U_Spc_exp<-2*Uc_TGW
-  
-  #Conductivity Uncertainty
-  #combined uncertainty of actual conductivity (not published) is equal to the standard uncertainty values provided by CVAL
-  theta_C <- U_CVALA1_C
-  n <-1  #number of observations made during the defined period
-  Unat_C <- ((theta_C^2)/n)^(0.5) #standard error of the mean (natural variation)
-  #uncertainty of individual specific conductivity measurements takes both conductivity and temp into account
-  Uc_SpcGWi <- (((1/(1+0.0191*(trollData$temperature-25)))^2)*(U_CVALA1_C^2)+((0.0191*(trollData$conductivity)/((1+0.0191*(trollData$temperature-25))^2))^2)*(U_CVALA1_T^2))^(0.5)
-  
-  Uc_CGW <- ((Unat_C^2)+(U_CVALA3_C^2))^(0.5)  #combined uncertainty for individual conductivity
-  #### combined uncertainty for specific conductivity
-  Uc_SpcGW
-  #expanded is two times the combined uncertainty
-  U_Spc_exp<-2*Uc_SpcGW
-  
+  #UTemp_L1_Expn<-2*(UNat_temp^2+U_CVALA3_temp^2)^0.5
+  UTemp_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='temperature',ucrtCoef=uncertaintyCoef)
+
+  #Pressure Uncertainty
+  #combined uncertainty of pressure is equal to the standard uncertainty values provided by CVAL
+  UPressure_L1_Comb<-(UNat_pressure^2+U_CVALA3_pressure^2)^0.5
+  #UPressure_L1_Expn<-2*(UNat_pressure^2+U_CVALA3_pressure^2)^0.5
+  UPressure_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='pressure',ucrtCoef=uncertaintyCoef)
+
   #Elevation Uncertainty
   #survey_uncert is the uncertainty of the sensor elevation relative to other aquatic instruments at the NEON site. 
   #survey_uncert includes the total station survey uncertainty and the uncertainty of hand measurements between the sensor and survey point.
-  theta_P <- U_CVALA2_P  #experimental standard deviation of individual observations for a defined time period
-  n <-1  #number of observations made during the defined period
-  Unat_P <- ((theta^2)/n)^(0.5) #standard error of the mean (natural variation)
-  Uc_EGWi <- ((survey_uncert^2)+((1000/(density*gravity))^2)*(U_CVALA1_P^2))^(0.5) #uncertainty of individual groundwater elevation measurements
-  Uc_PGW <- ((Unat_P^2)+(U_CVALA3_P^2))^(0.5) #combined uncertainty  for pressure
-  Uc_EGW <- ((survey_uncert^2)+((1000/(density*gravity))^2)*(Uc_PGW^2))^(0.5)  #combined uncertainty for groundwater surface elevation includes the combined uncertainties for sensor depth and ground surface
-  U_elev_exp <- 2*Uc_EGW  #expanded uncertainty
+  UElev_L1_Expn<-2*(1*survey_uncert^2+((1000/(density*gravity))^2)*UPressure_L1_Comb^2)^0.5
+  
+  #Raw Conductivity Uncertainty
+  #combined uncertainty of actual conductivity (not published) is equal to the standard uncertainty values provided by CVAL
+  #UCond_L1_Expn<-2*(UNat_cond^2+U_CVALA3_cond^2)^0.5
+  UCond_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='conductivity',ucrtCoef=uncertaintyCoef)
+  
+  #Specific Conductivity Uncertainty
+  UNat_SpC
+  #combined uncertainty for specific conductivity
+  USpC_L1_Comb<-(UNat_SpC^2+(((1/(1+0.0191*(Temp-25)))^2)*U_CVALA3_cond^2)+(((1+0.0191*RawCond)/((1+0.0191*(Temp-25))^2))^2)*U_CVALA3_temp^2)^0.5
+  USpC_L1_Expn<-2*USpC_L1_Comb
+  
+  
+  
+  
+ 
+  
+
   
 
   #Create dataframe for output data
@@ -345,6 +301,12 @@ for (idxDirIn in DirIn){
     sensor<-"leveltroll500"
   }
   dataOut <- dataOut[,dataCol]
+  
+  
+  ####write out uncertainty file
+  
+  
+  
   
   
   #Write out data
