@@ -73,7 +73,7 @@
 		<Name>U_CVALB1</Name>
 		<Value>1.1</Value>
 	</Uncertainty><Uncertainty units="%"> 
-		<Name>U_CVALA2</Name>
+		<Name>U_CVALAB2</Name>
 		<Value>0.0058</Value>
 	</Uncertainty><Uncertainty units="%"> 
 		<Name>U_CVALB1</Name>
