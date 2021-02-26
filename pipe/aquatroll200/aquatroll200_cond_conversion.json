@@ -11,7 +11,7 @@
       "FileSchmData=$FILE_SCHEMA_DATA",
       "FileSchmQf=$SCHEMA_FLAGS"
       ],
-    "image": "quay.io/battelleecology/neon-is-troll-cond-conv-r:v0.0.4",
+    "image": "quay.io/battelleecology/neon-is-troll-cond-conv-r:v0.0.6",
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
     "env": {
       "LOG_LEVEL": "DEBUG"
@@ -30,7 +30,7 @@
         "pfs": {
             "name": "FILE_SCHEMA_DATA",
             "repo": "avro_schemas",
-            "glob": "/dp0p/aquatroll200_cond_conversion.avsc"
+            "glob": "/dp0p/aquatroll200_cond_corrected.avsc"
         }
       },
       {
