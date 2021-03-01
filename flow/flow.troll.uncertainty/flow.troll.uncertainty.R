@@ -231,44 +231,81 @@ for (idxDirIn in DirIn){
     log$debug(base::paste0("Reading in: ",dirUncertaintyCoefLocation))
   }
   
-  #--------left off here -----------
   
-  ######## Uncert for instantaneous 5-min aqua troll data #######
-  #existing conductivity uncertainty is for raw values, need additional columns for specific conductivity
-  uncertaintyData$rawConductivity_ucrtMeas<-uncertaintyData$conductivity_ucrtMeas
-  uncertaintyData$rawConductivity_ucrtComb<-uncertaintyData$conductivity_ucrtComb
-  uncertaintyData$rawConductivity_ucrtExpn<-uncertaintyData$conductivity_ucrtExpn
-  uncertaintyData$conductivity_ucrtMeas<-((((1/(1+0.0191*(Temp-25)))^2)*U_CVALA1_cond^2)+(((1+0.0191*RawCond)/((1+0.0191*(Temp-25))^2))^2)*U_CVALA1_temp^2)
-  uncertaintyData$conductivity_ucrtComb<-uncertaintyData$conductivity_ucrtMeas
-  uncertaintyData$conductivity_ucrtExpn<-2*uncertaintyData$conductivity_ucrtMeas
-  #temp and pressure uncert calculated earlier in pipeline
-  uncertaintyData$temperature_ucrtMeas
-  uncertaintyData$temperature_ucrtExpn
-  uncertaintyData$pressure_ucrtMeas
-  uncertaintyData$pressure_ucrtExpn
-  #calculate instantaneous elevation uncert
-  uncertaintyData$elevation_ucrtMeas<-(1*survey_uncert^2+((1000/(density*gravity))^2)*U_CVALA1_pressure^2)^0.5
-  uncertaintyData$elevation_ucrtExpn<-2*elevation_ucrtMeas
+  #Define troll type and context
+  #include conductivity based on sensor type
+  if(grepl("aquatroll",idxDirIn)){
+    sensor<-"aquatroll200"
+  }else{
+    sensor<-"leveltroll500"
+  }
+  if(grepl("groundwater",idxDirIn)){
+    context<-"groundwater"
+  }else{ 
+    context<-"surfacewater"
+  }
+
+  
+  ######## Uncert for instantaneous 5-min groundwater aqua troll data #######
+  #surface water does not have instantaneous L1 output
+  if(context=="groundwater"){
+    #temp and pressure uncert calculated earlier in pipeline
+    #existing conductivity uncertainty is for raw values, need additional columns for specific conductivity
+    uncertaintyData$rawConductivity_ucrtMeas<-uncertaintyData$conductivity_ucrtMeas
+    uncertaintyData$conductivity_ucrtMeas<-NA
+    uncertaintyData$rawConductivity_ucrtComb<-uncertaintyData$conductivity_ucrtComb
+    uncertaintyData$conductivity_ucrtComb<-NA
+    uncertaintyData$rawConductivity_ucrtExpn<-uncertaintyData$conductivity_ucrtExpn
+    uncertaintyData$conductivity_ucrtExpn<-NA
+    #check that data frames are equal length
+    if(length(uncertaintyData$conductivity_ucrtMeas)!=length(trollData$raw_conductivity)){
+      log$warn("Conductivity data and uncertainty data frames are not of equal length")
+      stop()
+    }
+    if(length(uncertaintyData$temperature_ucrtMeas)!=length(trollData$temperature)){
+      log$warn("Temperature data and uncertainty data frames are not of equal length")
+      stop()
+    }
+    #calculate uncertainty for specific conductivity
+    for(i in 1:length(uncertaintyData$rawConductivity_ucrtMeas)){
+      U_CVALA1_cond<-uncertaintyData$rawConductivity_ucrtMeas[i]
+      U_CVALA1_temp<-uncertaintyData$temperature_ucrtMeas[i]
+      uncertaintyData$conductivity_ucrtMeas[i]<-((((1/(1+0.0191*(trollData$temperature[i]-25)))^2)*U_CVALA1_cond^2)+((((0.0191*trollData$raw_conductivity[i])/((1+0.0191*(trollData$temperature[i]-25))^2))^2)*U_CVALA1_temp^2))^0.5
+    }
+    uncertaintyData$conductivity_ucrtComb<-uncertaintyData$conductivity_ucrtMeas
+    uncertaintyData$conductivity_ucrtExpn<-2*uncertaintyData$conductivity_ucrtMeas
+    
+    #calculate instantaneous elevation uncert
+    uncertaintyData$elevation_ucrtMeas<-NA
+    for(i in 1:length(uncertaintyData$pressure_ucrtMeas)){
+      U_CVALA1_pressure<-uncertaintyData$pressure_ucrtMeas[i]
+      uncertaintyData$elevation_ucrtMeas[i]<-(1*survey_uncert^2+((1000/(density*gravity))^2)*U_CVALA1_pressure^2)^0.5
+    }
+    uncertaintyData$elevation_ucrtComb<-uncertaintyData$elevation_ucrtMeas
+    uncertaintyData$elevation_ucrtExpn<-2*uncertaintyData$elevation_ucrtMeas
+    # *need to add in code for when survey uncert changes during day
+  }
   
   
-  ######## Uncertainty for L1 mean 30 minute DP ########
+  
+  ######## Uncertainty for L1 mean 5 and 30 minute outputs ########
   #the repeatability and reproducibility of the sensor and  uncertainty of the calibration procedures and coefficients including uncertainty in the standard
   
   #Temperature Uncertainty
   #combined uncertainty of temperature is equal to the standard uncertainty values provided by CVAL
   #UTemp_L1_Expn<-2*(UNat_temp^2+U_CVALA3_temp^2)^0.5
-  UTemp_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='temperature',ucrtCoef=uncertaintyCoef)
+  uncertaintyData$UTemp_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='temperature',ucrtCoef=uncertaintyCoef)
 
   #Pressure Uncertainty
   #combined uncertainty of pressure is equal to the standard uncertainty values provided by CVAL
-  UPressure_L1_Comb<-(UNat_pressure^2+U_CVALA3_pressure^2)^0.5
   #UPressure_L1_Expn<-2*(UNat_pressure^2+U_CVALA3_pressure^2)^0.5
-  UPressure_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='pressure',ucrtCoef=uncertaintyCoef)
-
+  uncertaintyData$UPressure_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='pressure',ucrtCoef=uncertaintyCoef)
+  uncertaintyData$UPressure_L1_Comb<-uncertaintyData$UPressure_L1_Expn/2
+  
   #Elevation Uncertainty
   #survey_uncert is the uncertainty of the sensor elevation relative to other aquatic instruments at the NEON site. 
   #survey_uncert includes the total station survey uncertainty and the uncertainty of hand measurements between the sensor and survey point.
-  UElev_L1_Expn<-2*(1*survey_uncert^2+((1000/(density*gravity))^2)*UPressure_L1_Comb^2)^0.5
+  uncertaintyData$UElev_L1_Expn<-2*(1*survey_uncert^2+((1000/(density*gravity))^2)*uncertaintyData$UPressure_L1_Comb^2)^0.5
   
   #Raw Conductivity Uncertainty
   #combined uncertainty of actual conductivity (not published) is equal to the standard uncertainty values provided by CVAL
@@ -276,10 +313,41 @@ for (idxDirIn in DirIn){
   UCond_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='conductivity',ucrtCoef=uncertaintyCoef)
   
   #Specific Conductivity Uncertainty
-  UNat_SpC
-  #combined uncertainty for specific conductivity
-  USpC_L1_Comb<-(UNat_SpC^2+(((1/(1+0.0191*(Temp-25)))^2)*U_CVALA3_cond^2)+(((1+0.0191*RawCond)/((1+0.0191*(Temp-25))^2))^2)*U_CVALA3_temp^2)^0.5
-  USpC_L1_Expn<-2*USpC_L1_Comb
+  #grab U_CVALA3 values
+  U_CVALA3_cond<-NULL
+  ucrtCoef<-NULL
+  for(i in 1:length(uncertaintyCoef)){
+     if(uncertaintyCoef[[i]]$term =='conductivity' & uncertaintyCoef[[i]]$Name == 'U_CVALA3'){
+       ucrtCoef<-as.double(uncertaintyCoef[[i]]$Value)
+       U_CVALA3_cond<-append(U_CVALA3_cond,ucrtCoef)
+     }
+  }
+  if(length(U_CVALA3_cond)>1){
+    log$warn("Multiple conductivity U_CVALA3 coefficients")
+    stop()
+  }
+  U_CVALA3_temp<-NULL
+  for(i in 1:length(uncertaintyCoef)){
+    if(uncertaintyCoef[[i]]$term =='temperature' & uncertaintyCoef[[i]]$Name == 'U_CVALA3'){
+      ucrtCoef<-as.double(uncertaintyCoef[[i]]$Value)
+      U_CVALA3_temp<-append(U_CVALA3_temp,ucrtCoef)
+    }
+  }
+  if(length(U_CVALA3_temp)>1){
+    log$warn("Multiple temperature U_CVALA3 coefficients")
+    stop()
+  }
+  
+  # Compute uncertainty of the mean due to natural variation, represented by the standard error of the mean
+  #log$debug(base::paste0('Computing L1 uncertainty due to natural variation (standard error)'))
+  dataComp<-trollData$conductivity
+  numPts <- base::sum(x=!base::is.na(dataComp),na.rm=FALSE)
+  se <- stats::sd(dataComp,na.rm=TRUE)/base::sqrt(numPts)
+
+  for(i in 1:length(uncertaintyData$conductivity_ucrtMeas)){
+    uncertaintyData$USpC_L1_Comb[i]<-((se^2)*(((1/(1+0.0191*(trollData$temperature[i]-25)))^2)*U_CVALA3_cond^2)+((((0.0191*trollData$raw_conductivity[i])/((1+0.0191*(trollData$temperature[i]-25))^2))^2)*U_CVALA3_temp^2))^0.5
+  }
+  uncertaintyData$USpC_L1_Expn<-2*uncertaintyData$USpC_L1_Comb
   
   
   
@@ -291,15 +359,12 @@ for (idxDirIn in DirIn){
 
   #Create dataframe for output data
   dataOut <- trollData
-  
-  #include conductivity based on sensor type
-  if(grepl("aquatroll",idxDirIn)){
+  if(sensor=="aquatroll200"){
     dataCol <- c("readout_time","pressure","temperature","conductivity","elev_H2O")
-    sensor<-"aquatroll200"
   }else{
     dataCol <- c("readout_time","pressure","temperature","elev_H2O") 
-    sensor<-"leveltroll500"
   }
+  
   dataOut <- dataOut[,dataCol]
   
   
