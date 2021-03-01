@@ -186,6 +186,6 @@ test_that("Unit test of def.ucrt.meas.rh.dew.frst.pt.R", {
   calSlct_no$relative_humidity$file <- "testdata/noFiles"
   # 
   ucrt <- try(NEONprocIS.cal::def.ucrt.meas.rh.dew.frst.pt(data = data, calSlct = calSlct_no), silent = TRUE)
-  testthat::expect_true((class(ucrt)[1] == "try-error"))
+  expect_true(is.data.frame(ucrt) && is.na(ucrt$ucrtMeas))
   
 })
