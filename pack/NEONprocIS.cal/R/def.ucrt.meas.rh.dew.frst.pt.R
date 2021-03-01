@@ -62,10 +62,14 @@
 # changelog and author contributions / copyrights
 #   Edward Ayres (2020-10-07)
 #     original creation
+#   Mija Choi (2021-02-26)
+#     change an input param, varUcrt, from names(data)[1] to "dew_point"
+#     modify the comments of data under examples above  
+#     by adding readout_time, adding dew_point and removing dew_pont at the end
 ##############################################################################################
 def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)),
                           infoCal = NULL,
-                          varUcrt = base::names(data)[1],
+                          varUcrt = "dew_point",
                           calSlct=NULL,
                           log = NULL) {
   # Initialize logging if necessary
@@ -248,7 +252,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
       }
       
       # Check format of infoCalRh
-      if (!NEONprocIS.cal::def.validate.info.cal(infoCalRh,CoefUcrt='U_CVALA1',log=log)){
+      if (!NEONprocIS.cal::def.validate.info.cal(infoCal = infoCalRh,CoefUcrt='U_CVALA1',log=log)){
         stop()
       }
       
