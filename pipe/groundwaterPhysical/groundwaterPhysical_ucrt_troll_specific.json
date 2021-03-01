@@ -1,0 +1,33 @@
+{
+  "pipeline": {
+    "name": "groundwaterPhysical_ucrt_troll_specific"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.troll.uncertainty.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=locations","FileSchmData=NA","FileSchmUcrt=NA"],
+    "image": "quay.io/battelleecology/neon-troll-flow-uncertainty-r:v0.0.1",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "groundwaterPhysical_qaqc_data_group",
+          "glob": "/*/*/*/*"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+      "memory": "20M",
+      "cpu": 0.25
+  }
+}
