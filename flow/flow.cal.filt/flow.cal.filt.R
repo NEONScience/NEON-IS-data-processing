@@ -89,12 +89,27 @@
 #     added option to pad the days around the current day for filtering calibrations 
 #   Cove Sturtevant (2020-03-31)
 #     Create calibration directory on output even if there was not one on input
+#   Cove Sturtevant (2021-03-03)
+#     Applied internal parallelization
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+library(foreach)
+library(doParallel)
 
 # Options
 base::options(digits.secs = 3)
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -168,7 +183,8 @@ DirIn <-
                               log = log)
 
 # Process each file path
-for (idxDirIn in DirIn) {
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
   # Get directory listing of input directory. Expect subdirectories calibration(s)
@@ -254,4 +270,5 @@ for (idxDirIn in DirIn) {
     
   } # End loop around cal streams
   
+  return()
 } # End loop around file paths

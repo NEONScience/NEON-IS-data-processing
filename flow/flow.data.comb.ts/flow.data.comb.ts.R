@@ -99,9 +99,25 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-03-12)
 #     original creation
+#   Cove Sturtevant (2021-03-03)
+#     Applied internal parallelization
 ##############################################################################################
+library(foreach)
+library(doParallel)
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -182,7 +198,8 @@ DirIn <-
 
 
 # Process each datum path
-for (idxDirIn in DirIn) {
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
   # Get directory listing of input director(ies). We will combine these files.
@@ -289,4 +306,5 @@ for (idxDirIn in DirIn) {
                           nameFileOut))
   }
   
+  return()
 } # End loop around datum paths
