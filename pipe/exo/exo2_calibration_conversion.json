@@ -11,12 +11,14 @@
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
       "TermFuncUcrt=depth:def.ucrt.meas.mult",
       "TermQf=depth"
-      ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.43",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.44",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "DEBUG"
-    }  
+    }
   },
   "input": {
     "cross": [
@@ -29,10 +31,10 @@
       },
       {
         "pfs": {
-        "name": "FILE_SCHEMA_FLAGS",
-        "repo": "avro_schemas",
-        "glob": "/dp0p/flags_calibration_exo2.avsc"
-      }
+          "name": "FILE_SCHEMA_FLAGS",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/flags_calibration_exo2.avsc"
+        }
       }
     ]
   },

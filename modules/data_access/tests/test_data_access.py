@@ -54,7 +54,7 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_named_location_context(self):
         context: List[str] = get_named_location_context(self.connection, self.named_location_id)
-        # Context ddata is not in the database yet.
+        # Context data is not in the database yet.
         # expected_context = ['par-met-370', 'par-met', 'upward-facing']
         expected_context = []
         # print(f'context: {context}')
