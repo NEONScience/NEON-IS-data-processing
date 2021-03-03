@@ -49,9 +49,9 @@
 #'  
 #' If no output schema is provided for the data, the output column/variable names will be determined by the 
 #' sensor type (leveltroll500 or aquatroll200). Output column/variable names for the leveltroll500 will be
-#' readout_time, pressure, pressure_data_quality, temperature, temperature_data quality, elev_H2O, in that order. 
+#' readout_time, pressure, pressure_data_quality, temperature, temperature_data quality, elevation, in that order. 
 #' Output column/variable names for the aquatroll200 will be readout_time, pressure, pressure_data_quality, 
-#' temperature, temperature_data quality, conductivity, conductivity_data_quality, elev_H2O, in that order.
+#' temperature, temperature_data quality, conductivity, conductivity_data_quality, elevation, in that order.
 #' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THIS ORDER. Otherwise, they will be labeled incorrectly.
 
 #' @references
@@ -136,7 +136,7 @@ if(base::length(DirIn) < 1){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  #idxDirIn<-DirIn[20] #for testing
+  #idxDirIn<-DirIn[1] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -223,9 +223,9 @@ for (idxDirIn in DirIn){
   }
   
   #calculate water table elevation
-  trollData$elev_H2O<-NA
+  trollData$elevation<-NA
   if(length(LocationHist)>0){
-    trollData$elev_H2O<-trollData$elevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
+    trollData$elevation<-trollData$elevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
   }
   
 
@@ -385,9 +385,9 @@ for (idxDirIn in DirIn){
   #Create dataframe for output data
   dataOut <- trollData
   if(sensor=="aquatroll200"){
-    dataCol <- c("readout_time","pressure","temperature","conductivity","elev_H2O")
+    dataCol <- c("readout_time","pressure","temperature","conductivity","elevation")
   }else{
-    dataCol <- c("readout_time","pressure","temperature","elev_H2O") 
+    dataCol <- c("readout_time","pressure","temperature","elevation") 
   }
   dataOut <- dataOut[,dataCol]
   
@@ -419,14 +419,14 @@ for (idxDirIn in DirIn){
   }
   
   #Write out uncertainty data
-  rptucrtOut_05min <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_05min, 
+  rptUcrtOut_05min <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_05min, 
                                                    NameFile = base::paste0(idxDirOutUcrt,"/",context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_05minUcrt.parquet"), 
                                                    Schm = SchmUcrtOut),silent=FALSE)
   rptUcrtOut_30min <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_30min, 
                                                    NameFile = base::paste0(idxDirOutUcrt,"/",context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_30minUcrt.parquet"), 
                                                    Schm = SchmUcrtOut),silent=FALSE)
-  if(any(grepl('try-error',class(rptucrtOut_05min)))){
-    log$error(base::paste0('Writing the output data failed: ',attr(rptucrtOut_05min,"condition")))
+  if(any(grepl('try-error',class(rptUcrtOut_05min)))){
+    log$error(base::paste0('Writing the output data failed: ',attr(rptUcrtOut_05min,"condition")))
     stop()
   } else {
     log$info("Data written out.")

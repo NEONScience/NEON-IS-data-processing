@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: leveltroll500_qaqc_flags_group
+  name: swPhysical_aquatroll200_qaqc_flags_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:6
@@ -15,15 +15,15 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: QAQC_PLAUSIBILITY_LEVELTROLL
+            name: QAQC_PLAUSIBILITY_AQUATROLL
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_LEVELTROLL/leveltroll500/*/*/*/*/flags/**
-            # Join on named location (already joined below by day
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_AQUATROLL/aquatroll200/*/*/*/*/flags/**
+            # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
             name: REGULARIZED_FLAGS
             # Filter for data directory
-            glob_pattern: /pfs/REGULARIZED_FLAGS/leveltroll500/*/*/*/*/flags/**
+            glob_pattern: /pfs/REGULARIZED_FLAGS/aquatroll200/*/*/*/*/flags/**
             # Join on named location (already joined below by day
             join_indices: [7]
     OUT_PATH: /pfs/out
@@ -32,15 +32,15 @@ transform:
 input:
   join:
   - pfs:
-      name: QAQC_PLAUSIBILITY_LEVELTROLL
-      repo: surfacewaterPhysical_qaqc_plausibility_leveltroll
-      glob: /leveltroll500/(*)/(*)/(*)
+      name: QAQC_PLAUSIBILITY_AQUATROLL
+      repo: surfacewaterPhysical_qaqc_plausibility_aquatroll
+      glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: REGULARIZED_FLAGS
       repo: surfacewaterPhysical_regularized_flags
-      glob: /leveltroll500/(*)/(*)/(*)
+      glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
 parallelism_spec:

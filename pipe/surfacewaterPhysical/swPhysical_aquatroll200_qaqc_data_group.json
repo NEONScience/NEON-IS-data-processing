@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "surfacewaterPhysical_ucrt_troll_specific"
+    "name": "swPhysical_ucrt_aquatroll200_specific"
   },
   "transform": {
     "cmd": ["Rscript","/flow.troll.uncertainty.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCopy=locations","FileSchmData=NA","FileSchmUcrt=NA"],
@@ -15,7 +15,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "surfacewaterPhysical_qaqc_data_group",
+          "repo": "swPhysical_aquatroll200_qaqc_data_group",
           "glob": "/*/*/*/*"
         }
       }

@@ -15,7 +15,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "leveltroll500_qaqc_flags_group",
+          "repo": "swPhysical_leveltroll500_qaqc_flags_group",
           "glob": "/leveltroll500/*/*/*"
         }
       },

@@ -15,7 +15,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "aquatroll200_qaqc_flags_group",
+          "repo": "swPhysical_aquatroll200_qaqc_flags_group",
           "glob": "/aquatroll200/*/*/*"
         }
       },
