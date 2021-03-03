@@ -3,12 +3,24 @@
     "name": "tempSoil_regularized_data"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=data","FileSchmRglr=$FILE_SCHEMA_RGLR","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
-    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.26",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "cmd": [
+      "Rscript",
+      "/flow.rglr.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirRglr=data",
+      "FileSchmRglr=$FILE_SCHEMA_RGLR",
+      "MethRglr=CybiEc",
+      "WndwRglr=Trlg",
+      "IdxWndw=IdxWndwMin"
+    ],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.27",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "DEBUG"
-    }  
+    }
   },
   "input": {
     "cross": [
@@ -34,7 +46,7 @@
     "constant": "2"
   },
   "resource_requests": {
-      "memory": "20M",
-      "cpu": 0.25
+    "memory": "20M",
+    "cpu": 0.25
   }
 }
