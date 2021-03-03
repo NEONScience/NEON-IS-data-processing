@@ -80,7 +80,7 @@ log <- NEONprocIS.base::def.log.init()
 arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut"),NameParaOptn = c("FileSchmData","FileSchmUcrt"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut"),NameParaOptn = c("DirSubCopy","FileSchmData","FileSchmUcrt"),log = log)
 
 # Retrieve datum path. 
 DirBgn <- Para$DirIn # Input directory. 
@@ -275,8 +275,8 @@ for (idxDirIn in DirIn){
     uncertaintyData$conductivity_ucrtMeas<-NA
     uncertaintyData$rawConductivity_ucrtComb<-uncertaintyData$conductivity_ucrtComb
     uncertaintyData$conductivity_ucrtComb<-NA
-    uncertaintyData$rawConductivity_ucrtExpn<-uncertaintyData$conductivity_ucrtExpn
-    uncertaintyData$conductivity_ucrtExpn<-NA
+    uncertaintyData$rawConductivityExpUncert_Inst<-uncertaintyData$ConductivityExpUncert_Inst
+    uncertaintyData$ConductivityExpUncert_Inst<-NA
     #check that data frames are equal length
     if(length(uncertaintyData$conductivity_ucrtMeas)!=length(trollData$raw_conductivity)){
       log$warn("Conductivity data and uncertainty data frames are not of equal length")
@@ -293,7 +293,7 @@ for (idxDirIn in DirIn){
       uncertaintyData$conductivity_ucrtMeas[i]<-((((1/(1+0.0191*(trollData$temperature[i]-25)))^2)*U_CVALA1_cond^2)+((((0.0191*trollData$raw_conductivity[i])/((1+0.0191*(trollData$temperature[i]-25))^2))^2)*U_CVALA1_temp^2))^0.5
     }
     uncertaintyData$conductivity_ucrtComb<-uncertaintyData$conductivity_ucrtMeas
-    uncertaintyData$conductivity_ucrtExpn<-2*uncertaintyData$conductivity_ucrtMeas
+    uncertaintyData$ConductivityExpUncert_Inst<-2*uncertaintyData$conductivity_ucrtMeas
     
     #calculate instantaneous elevation uncert
     uncertaintyData$elevation_ucrtMeas<-NA
@@ -306,7 +306,7 @@ for (idxDirIn in DirIn){
       uncertaintyData$elevation_ucrtMeas<-NA
     }
     uncertaintyData$elevation_ucrtComb<-uncertaintyData$elevation_ucrtMeas
-    uncertaintyData$elevation_ucrtExpn<-2*uncertaintyData$elevation_ucrtMeas
+    uncertaintyData$ElevExpUncert_Inst<-2*uncertaintyData$elevation_ucrtMeas
   }
   
   
@@ -316,25 +316,25 @@ for (idxDirIn in DirIn){
   if(length(uncertaintyCoef)>0){
     #Temperature Uncertainty
     #combined uncertainty of temperature is equal to the standard uncertainty values provided by CVAL
-    #UTemp_L1_Expn<-2*(UNat_temp^2+U_CVALA3_temp^2)^0.5
-    uncertaintyData$UTemp_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='temperature',ucrtCoef=uncertaintyCoef)
+    #TemperatureExpUncert<-2*(UNat_temp^2+U_CVALA3_temp^2)^0.5
+    uncertaintyData$TemperatureExpUncert<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='temperature',ucrtCoef=uncertaintyCoef)
     
     #Pressure Uncertainty
     #combined uncertainty of pressure is equal to the standard uncertainty values provided by CVAL
-    #UPressure_L1_Expn<-2*(UNat_pressure^2+U_CVALA3_pressure^2)^0.5
-    uncertaintyData$UPressure_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='pressure',ucrtCoef=uncertaintyCoef)
-    uncertaintyData$UPressure_L1_Comb<-uncertaintyData$UPressure_L1_Expn/2
+    #PressureExpUncert<-2*(UNat_pressure^2+U_CVALA3_pressure^2)^0.5
+    uncertaintyData$PressureExpUncert<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='pressure',ucrtCoef=uncertaintyCoef)
+    uncertaintyData$UPressure_L1_Comb<-uncertaintyData$PressureExpUncert/2
     
     #Elevation Uncertainty
     #survey_uncert is the uncertainty of the sensor elevation relative to other aquatic instruments at the NEON site. 
     #survey_uncert includes the total station survey uncertainty and the uncertainty of hand measurements between the sensor and survey point.
-    uncertaintyData$UElev_L1_Expn<-2*((1*trollData$survey_uncert^2+((1000/(density*gravity))^2)*uncertaintyData$UPressure_L1_Comb^2)^0.5)
+    uncertaintyData$ElevExpUncert<-2*((1*trollData$survey_uncert^2+((1000/(density*gravity))^2)*uncertaintyData$UPressure_L1_Comb^2)^0.5)
     
     if(sensor=='aquatroll200'){
       #Raw Conductivity Uncertainty
       #combined uncertainty of actual conductivity (not published) is equal to the standard uncertainty values provided by CVAL
-      #UCond_L1_Expn<-2*(UNat_cond^2+U_CVALA3_cond^2)^0.5
-      uncertaintyData$UCond_L1_Expn<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='conductivity',ucrtCoef=uncertaintyCoef)
+      #RawConductivityExpUncert<-2*(UNat_cond^2+U_CVALA3_cond^2)^0.5
+      uncertaintyData$RawConductivityExpUncert<-NEONprocIS.stat::wrap.ucrt.dp01.cal.mult(data=trollData,VarUcrt='conductivity',ucrtCoef=uncertaintyCoef)
       
       #Specific Conductivity Uncertainty
       #grab U_CVALA3 values
@@ -367,17 +367,17 @@ for (idxDirIn in DirIn){
       dataComp<-trollData$conductivity
       numPts <- base::sum(x=!base::is.na(dataComp),na.rm=FALSE)
       se <- stats::sd(dataComp,na.rm=TRUE)/base::sqrt(numPts)
-      
+      # Compute expanded uncertainty for L1 specific conductivity
       for(i in 1:length(uncertaintyData$conductivity_ucrtMeas)){
         uncertaintyData$USpC_L1_Comb[i]<-((se^2)*(((1/(1+0.0191*(trollData$temperature[i]-25)))^2)*U_CVALA3_cond^2)+((((0.0191*trollData$raw_conductivity[i])/((1+0.0191*(trollData$temperature[i]-25))^2))^2)*U_CVALA3_temp^2))^0.5
       }
-      uncertaintyData$USpC_L1_Expn<-2*uncertaintyData$USpC_L1_Comb
+      uncertaintyData$ConductivityExpUncert<-2*uncertaintyData$USpC_L1_Comb
     }
   }else{
-    uncertaintyData$UTemp_L1_Expn<-NA
-    uncertaintyData$UPressure_L1_Expn<-NA
-    uncertaintyData$UElev_L1_Expn<-NA
-    uncertaintyData$USpC_L1_Expn<-NA
+    uncertaintyData$TemperatureExpUncert<-NA
+    uncertaintyData$PressureExpUncert<-NA
+    uncertaintyData$ElevExpUncert<-NA
+    uncertaintyData$ConductivityExpUncert<-NA
   }
   
 
@@ -394,14 +394,14 @@ for (idxDirIn in DirIn){
   #Create dataframe for output uncertainty
   ucrtOut <- uncertaintyData
   if(context=="GW"){
-    ucrtCol_05min <- c("readout_time","pressure_ucrtExpn","temperature_ucrtExpn","conductivity_ucrtExpn","elevation_ucrtExpn")
-    ucrtCol_30min <- c("readout_time","UTemp_L1_Expn","UPressure_L1_Expn","UElev_L1_Expn","USpC_L1_Expn")
+    ucrtCol_05min <- c("readout_time","PressureExpUncert_Inst","TemperatureExpUncert_Inst","ConductivityExpUncert_Inst","ElevExpUncert_Inst")
+    ucrtCol_30min <- c("readout_time","TemperatureExpUncert","PressureExpUncert","ElevExpUncert","ConductivityExpUncert")
   }else if(sensor=="aquatroll200"){
-    ucrtCol_05min <- c("readout_time","UTemp_L1_Expn","UPressure_L1_Expn","UElev_L1_Expn","USpC_L1_Expn")
-    ucrtCol_30min <- c("readout_time","UTemp_L1_Expn","UPressure_L1_Expn","UElev_L1_Expn","USpC_L1_Expn")
+    ucrtCol_05min <- c("readout_time","TemperatureExpUncert","PressureExpUncert","ElevExpUncert","ConductivityExpUncert")
+    ucrtCol_30min <- c("readout_time","TemperatureExpUncert","PressureExpUncert","ElevExpUncert","ConductivityExpUncert")
   }else{
-    ucrtCol_05min <- c("readout_time","UTemp_L1_Expn","UPressure_L1_Expn","UElev_L1_Expn")
-    ucrtCol_30min <- c("readout_time","UTemp_L1_Expn","UPressure_L1_Expn","UElev_L1_Expn")
+    ucrtCol_05min <- c("readout_time","TemperatureExpUncert","PressureExpUncert","ElevExpUncert")
+    ucrtCol_30min <- c("readout_time","TemperatureExpUncert","PressureExpUncert","ElevExpUncert")
   }
   ucrtOut_05min <- uncertaintyData[,ucrtCol_05min]
   ucrtOut_30min <- uncertaintyData[,ucrtCol_30min]
