@@ -3,35 +3,36 @@
     "name": "pressureAir_regularized_data"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=data","FileSchmRglr=$FILE_SCHEMA_RGLR","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
-    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.26",
+    "cmd": [
+      "Rscript",
+      "/flow.rglr.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirRglr=data",
+      "DropNotNumc=FALSE",
+      "MethRglr=CybiEc",
+      "WndwRglr=Trlg",
+      "IdxWndw=IdxWndwMin"
+      ],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.27",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
     }  
   },
   "input": {
-    "cross": [
-      {
-        "pfs": {
+    
+          "pfs": {
           "name": "DIR_IN",
           "repo": "pressureAir_calibrated_data",
-          "glob": "/ptb330a/*/*/*"
+          "glob": "/*/*/*"
         }
-      },
-      {
-        "pfs": {
-          "name": "FILE_SCHEMA_RGLR",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/ptb330a_calibrated_wo_source.avsc"
-        }
-      }
-    ]
+    
   },
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
       "memory": "20M",

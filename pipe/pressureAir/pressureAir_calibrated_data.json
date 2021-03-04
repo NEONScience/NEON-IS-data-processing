@@ -24,8 +24,8 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "pressureAir_locations",
-      "glob": "/pressureAir/*/*/*",
+      "repo": "pressureAir_related_location_group",
+      "glob": "/*/*/*",
       "empty_files": true
     }
   },

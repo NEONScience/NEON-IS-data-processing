@@ -3,8 +3,16 @@
     "name": "pressureAir_regularized_flags"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=flags","FileSchmRglr=NA", "FreqRglr=0.1","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
-    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.26",
+    "cmd": ["Rscript","/flow.rglr.R",
+    "DirIn=$DIR_IN",
+    "DirOut=/pfs/out",
+    "DirRglr=flags",
+    "DropNotNumc=FALSE",
+    "MethRglr=CybiEc",
+    "WndwRglr=Trlg",
+    "IdxWndw=IdxWndwMin"
+    ],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.27",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
@@ -14,7 +22,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "pressureAir_calibrated_flags",
-      "glob": "/ptb330a/*/*/*"
+      "glob": "/*/*/*"
     }
   },
   "enable_stats": false,
