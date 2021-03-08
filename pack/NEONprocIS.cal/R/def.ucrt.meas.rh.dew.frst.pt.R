@@ -256,7 +256,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
         log$debug('No relative humidity calibration information supplied for at least a period of the data, returning NA values for individual measurement uncertainty during that interval.')
         next
       }
-      
+  
       # Check format of infoCalRh
       if (!NEONprocIS.cal::def.validate.info.cal(infoCal = infoCalRh,CoefUcrt='U_CVALA1',log=log)){
         stop()
