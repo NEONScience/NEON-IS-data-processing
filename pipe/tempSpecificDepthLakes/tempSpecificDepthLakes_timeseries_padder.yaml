@@ -12,7 +12,7 @@ transform:
   - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 4 --monthindex 5 --dayindex 6 --locindex 7 --subdirindex 8
   env:
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
 parallelism_spec:
   constant: '1'
 output_branch: master
@@ -24,6 +24,6 @@ input:
     repo: tempSpecificDepthLakes_threshold_regularized_group
     branch: master
     glob: "/tchain/*/*/*"
-standby: false
+standby: true
 cache_size: 64M
 max_queue_size: '1'
