@@ -3,8 +3,16 @@
     "name": "waterQuality_qaqc_sensor_na"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.wq.sens.na.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS","DirTypeSrc=exoconductivity|exodissolvedoxygen|exophorp|exototalalgae|exoturbidity","DirSubAply=uncertainty_data"],
-    "image": "quay.io/battelleecology/neon-is-qaqc-wq-sens-na-r:v0.0.3",
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.wq.sens.na.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQf=$SCHEMA_FLAGS",
+      "DirTypeSrc=exoconductivity|exodissolvedoxygen|exophorp|exototalalgae|exoturbidity",
+      "DirSubAply=uncertainty_data"
+      ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-wq-sens-na-r:v0.0.4",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"

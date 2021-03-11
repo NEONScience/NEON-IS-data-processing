@@ -39,7 +39,7 @@ input:
   join:
   - pfs:
       name: STATISTICS_PATH
-      repo: tempAirSingle_qaqc_plausibility
+      repo: tempAirSingle_qaqc_data_group
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true

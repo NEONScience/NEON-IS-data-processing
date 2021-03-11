@@ -199,9 +199,25 @@
 #     add option to regularize non-numeric columns instead of dropping from output
 #     fix bug causing incorrect parameter assignment if regularization directories aren't 
 #        all in the same order in the input arguments
+#   Cove Sturtevant (2021-03-03)
+#     Applied internal parallelization
 ##############################################################################################
+library(foreach)
+library(doParallel)
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -402,7 +418,8 @@ DirIn <-
                               log = log)
 
 # Process each datum
-for (idxDirIn in DirIn) {
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing datum path: ', idxDirIn))
   
   # Gather info about the input directory (including date) and create the output directory.
@@ -604,4 +621,5 @@ for (idxDirIn in DirIn) {
     } # End loop around files to regularize
   } # End loop around directories to regularize
   
-}
+  return()
+} # End loop around datum paths
