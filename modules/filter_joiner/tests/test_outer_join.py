@@ -9,27 +9,34 @@ from filter_joiner.joiner import FilterJoiner
 import filter_joiner.filter_joiner_main as filter_joiner_main
 
 
-class FilterJoinerLocationGroupTest(TestCase):
-    """Class to simulate pipeline location/data join on source ID."""
+class OuterJoinTest(TestCase):
 
     def setUp(self):
         """Create files to join in fake filesystem."""
+        self.config_file = 'config-outer-join.yaml'
+        self.config_file_target_path = f'/{self.config_file}'
         self.setUpPyfakefs()
         self.input_path = Path('/in')
         self.output_path = Path('/out')
-        self.path_1 = Path('prt/1234/prt_1234_locations.json')
-        self.path_2 = Path('prt/2020/01/02/1234/prt_1234_2020-01-02.parquet')
-        self.input_path_1 = Path(self.input_path, 'location', self.path_1)
-        self.input_path_2 = Path(self.input_path, 'data', self.path_2)
+        # This path will be joined on 'dir2'.
+        self.path_1 = Path('dir1/dir2/file_1.txt')
+        # This path will be joined on 'dir2'.
+        self.path_2 = Path('dir1/dir2/file_2.txt')
+        # This path will not be joined on 'dir2' but will pass due to being outer joined.
+        self.path_3 = Path('dir1/dir3/file_3.txt')
+        self.input_path_1 = Path(self.input_path, 'INPUT_1', self.path_1)
+        self.input_path_2 = Path(self.input_path, 'INPUT_2', self.path_2)
+        self.input_path_3 = Path(self.input_path, 'INPUT_3', self.path_3)
         self.fs.create_file(self.input_path_1)
         self.fs.create_file(self.input_path_2)
+        self.fs.create_file(self.input_path_3)
         # Use real config file
-        config_file_path = Path(os.path.dirname(__file__), 'config-location-group.yaml')
-        self.fs.add_real_file(config_file_path, target_path='/config.yaml')
+        config_file_path = Path(os.path.dirname(__file__), self.config_file)
+        self.fs.add_real_file(config_file_path, target_path=self.config_file_target_path)
         self.relative_path_index = 3
 
     def test_joiner(self):
-        with open('/config.yaml') as f:
+        with open(self.config_file_target_path) as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
             config = yaml.dump(data, sort_keys=True)
         filter_joiner = FilterJoiner(config=config,
@@ -39,7 +46,7 @@ class FilterJoinerLocationGroupTest(TestCase):
         self.check_output()
 
     def test_main(self):
-        with open('/config.yaml') as f:
+        with open(self.config_file_target_path) as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
             config = yaml.dump(data, sort_keys=True)
         os.environ['CONFIG'] = config
@@ -52,5 +59,7 @@ class FilterJoinerLocationGroupTest(TestCase):
     def check_output(self):
         path_1 = Path(self.output_path, self.path_1)
         path_2 = Path(self.output_path, self.path_2)
+        path_3 = Path(self.output_path, self.path_3)
         self.assertTrue(path_1.exists())
         self.assertTrue(path_2.exists())
+        self.assertTrue(path_3.exists())
