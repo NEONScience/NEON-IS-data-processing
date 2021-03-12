@@ -9,7 +9,7 @@
       "DirIn=$REPO_LOCATIONS",
       "DirOut=/pfs/out",
       "FileThsh=$FILE_THRESHOLDS",
-      "TermCtxt1=temp|barometric-pressure",
+      "TermCtxt1=barometricPressure|barometric-pressure",
       "DirSubCopy=location"
       ],
     "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.13",
@@ -24,7 +24,7 @@
         "pfs": {
           "name": "REPO_LOCATIONS",
           "repo": "pressureAir_locations",
-          "glob": "/*/*/*"
+          "glob": "/ptb330a/*/*"
         }
       },
       {
