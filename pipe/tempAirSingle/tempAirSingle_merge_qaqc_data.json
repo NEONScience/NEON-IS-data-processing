@@ -3,8 +3,14 @@
     "name": "tempAirSingle_merge_qaqc_data"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.data.comb.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCombData=data"],
-    "image": "quay.io/battelleecology/neon-is-qaqc-data-comb-r:v0.0.5",
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.data.comb.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirSubCombData=data"
+      ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-data-comb-r:v0.0.6",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -20,7 +26,7 @@
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
     "memory": "200Mi",

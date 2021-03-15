@@ -6,7 +6,7 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from filter_joiner.filter_joiner import FilterJoiner
+from filter_joiner.joiner import FilterJoiner
 import filter_joiner.filter_joiner_main as filter_joiner_main
 
 

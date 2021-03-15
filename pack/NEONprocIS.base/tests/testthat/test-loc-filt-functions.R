@@ -61,7 +61,9 @@ test_that("   Testing Filter named location information by date-time range", {
   #        "install_date": "2017-02-07T00:17:20Z",
   #        "remove_date": "2017-02-07T00:18:28Z"
   
-  NameFileIn = 'locations.json'
+  testDir = "testdataJson/"
+  testFile = 'locations.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   NameFileOut = 'locations-out.json'
   
@@ -101,8 +103,9 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------                   will return 3 features                                            |\n")
   cat("\n       |------                   between '2017-02-06T00:10:20Z' and '2017-02-07T00:18:28Z'         |\n\n")
   
-  NameFileIn = 'locations-3-features.json'
- 
+  
+  testFile = 'locations-3-features.json'
+  NameFileIn <- paste0(testDir, testFile)
   TimeBgn <- base::as.POSIXct('2017-05-01 00:10:20', tz = 'GMT')
   TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
  
@@ -117,7 +120,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------                   will return 2 features (note that timeBgn to filter 1 feature out   |\n")
   cat("\n       |------                   between '2018-05-01 00:10:20Z' and '2020-03-09 00:18:28Z'           |\n\n")
   
-  NameFileIn = 'locations-3-features.json'
+  testFile = 'locations-3-features.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   TimeBgn <- base::as.POSIXct('2018-05-01 00:10:20', tz = 'GMT')
   TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
@@ -138,7 +142,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------                   between '2009-03-01 00:10:20Z' and '2020-03-09 00:18:28Z'         |\n")
   cat("\n       |------                   The feature in the input json will be returned                   |\n\n")
   
-  NameFileIn = 'locations-3lvl-ref-locs-out-of-range.json'
+  testFile = 'locations-3lvl-ref-locs-out-of-range.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   TimeBgn <- base::as.POSIXct('2009-03-01 00:10:20', tz = 'GMT')
   TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
@@ -155,7 +160,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------                   between '2011-03-01 00:10:20Z' and '2019-03-09 00:18:28Z'         |\n")
   cat("\n       |------                   No feature in the input json will be returned                     |\n\n")
   
-  NameFileIn = 'locations-3lvl-ref-locs-out-of-range.json'
+  testFile = 'locations-3lvl-ref-locs-out-of-range.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   TimeBgn <- base::as.POSIXct('2011-03-01 00:10:20', tz = 'GMT')
   TimeEnd <- base::as.POSIXct('2019-03-09 00:18:28', tz = 'GMT')
@@ -171,7 +177,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------                   locations json has 2 level nested reference_locations             |\n\n")
   cat("\n       |------                   between '2019-05-01 00:10:20Z' and '2020-03-09 00:18:28Z'         |\n\n")
   
-  NameFileIn = 'locations-2lvl-ref-locs.json'
+  testFile = 'locations-2lvl-ref-locs.json'
+  NameFileIn <- paste0(testDir, testFile)
  
   TimeBgn <- base::as.POSIXct('2019-05-01 00:10:20', tz = 'GMT')
   TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
@@ -188,7 +195,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------                   locations json has 3 lvl nested reference_locations                    |\n\n")
   cat("\n       |------                   between '2017-02-06T00:10:20Z' and '2017-02-07T00:18:28Z'         |\n\n")
   
-  NameFileIn = 'locations-3lvl-ref-locs.json'
+  testFile = 'locations-3lvl-ref-locs.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   NameFileOut = 'locations-out.json'
   
@@ -208,7 +216,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------                   locations json has 0 nested reference_locations                   |\n\n")
   cat("\n       |------                   between '2019-05-01 00:10:20Z' and '2020-03-09 00:18:28Z'         |\n\n")
   
-  NameFileIn = 'locations-0lvl-ref-locs.json'
+  testFile = 'locations-0lvl-ref-locs.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   TimeBgn <- base::as.POSIXct('2019-05-01 00:10:20', tz = 'GMT')
   TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
@@ -221,7 +230,8 @@ test_that("   Testing Filter named location information by date-time range", {
   #
   # Sad path test 1:  A blank json is passed on to def.loc.filt
   
-  NameFileIn = 'locations-empty.json'
+  testFile = 'locations-empty.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   TimeBgn <- base::as.POSIXct('2017-02-06T00:10:20Z')
   TimeEnd <- base::as.POSIXct('2017-02-07T00:18:28Z')
@@ -239,7 +249,9 @@ test_that("   Testing Filter named location information by date-time range", {
   #
   cat("\n       |------ Negative test 2::A json with syntax error(s) is passed on                           |\n")
   cat("\n       |------                  such as mismatching double quotes, missing values, etc...          |\n\n")
-  NameFileIn = 'locations-invalid.json'
+  
+  testFile = 'locations-invalid.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   locReturned <-
     try (NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
@@ -255,7 +267,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------ Negative test 3::An empty contents json, {}, is passed on                           |\n")
   cat("\n       |------                 That is strictly valid, but does not conforms to the schema         |\n\n")
   
-  NameFileIn = 'locations-emptyContents.json'
+  testFile = 'locations-emptyContents.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   locReturned <- try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
   
@@ -270,7 +283,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------ Negative test 4::A json with missing fields, is passed on                           |\n")
   cat("\n       |------                  That is strictly valid, but does not conforms to the schema        |\n\n")
   
-  NameFileIn = 'locations-invalidSchema.json'
+  testFile = 'locations-invalidSchema.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   locReturned <-
     try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
@@ -292,7 +306,8 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |----------- Return error, log the message and exit                                         |\n")
   cat("\n       |------                 This will err out due to input json missing                         |\n\n")
   
-  NameFileIn = 'not-existing.json'
+  testFile = 'not-existing.json'
+  NameFileIn <- paste0(testDir, testFile)
   
   locReturned <-
     try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))

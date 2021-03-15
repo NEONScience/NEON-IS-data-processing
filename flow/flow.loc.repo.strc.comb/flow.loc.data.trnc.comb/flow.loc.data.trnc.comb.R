@@ -103,11 +103,26 @@
 #   Cove Sturtevant (2020-09-22)
 #     added support for multiple data files with different schemas within the same folder. Grouping
 #     based on file names is now attempted, truncating and/or merging done within each group
+#   Cove Sturtevant (2021-03-03)
+#     Applied internal parallelization
 ##############################################################################################
 options(digits.secs = 3)
+library(foreach)
+library(doParallel)
 
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly=TRUE)
@@ -144,7 +159,8 @@ log$debug(base::paste0('Expected subdirectories of each datum path: ',base::past
 DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub,log=log)
 
 # Process each datum
-for(idxDirIn in DirIn){
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
@@ -389,4 +405,5 @@ for(idxDirIn in DirIn){
     
   } # End loop around uncertainty directories
   
+  return()
 } # End loop around datums

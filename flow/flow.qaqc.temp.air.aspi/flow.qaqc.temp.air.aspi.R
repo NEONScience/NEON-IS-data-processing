@@ -128,12 +128,28 @@
 #     initial creation
 #   Cove Sturtevant (2020-04-28)
 #     switch read/write data from avro to parquet
+#   Cove Sturtevant (2021-03-03)
+#     Applied internal parallelization
 ##############################################################################################
 options(digits.secs = 3)
+library(foreach)
+library(doParallel)
+
 TimeCool <- base::as.difftime(224,units='secs') # Cooling time after heater turns off. See NEON.DOC.000646 & NEON.DOC.000302
   
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly=TRUE)
@@ -251,7 +267,8 @@ flagFailSec30 <- base::rep(1,2880) # initialize flag to 1 (fail)
 naSec30 <- NA*flagFailSec30
 
 # Process each datum path
-for(idxDirIn in DirIn){
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
@@ -552,4 +569,5 @@ for(idxDirIn in DirIn){
     
   } # End loop around temp sensor location directories
 
+  return()
 } # End loop around datum paths

@@ -10,7 +10,7 @@ transform:
   - FileThsh=$FILE_THRESHOLDS
   - TermCtxt1=linePAR
   - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.13
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.14
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
