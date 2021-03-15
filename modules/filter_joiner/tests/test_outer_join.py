@@ -19,11 +19,11 @@ class OuterJoinTest(TestCase):
         self.input_path = Path('/in')
         self.output_path = Path('/out')
         # This path will be joined on 'dir2'.
-        self.path_1 = Path('dir1/dir2/file_1.txt')
+        self.path_1 = Path('dir1/dir2/extra/long/path/file_1.txt')
         # This path will be joined on 'dir2'.
-        self.path_2 = Path('dir1/dir2/file_2.txt')
+        self.path_2 = Path('dir1/dir2/extra/long/path/file_2.txt')
         # This path will not be joined on 'dir2' but will pass due to being outer joined.
-        self.path_3 = Path('dir1/dir3/file_3.txt')
+        self.path_3 = Path('dir1/dir3/extra/long/path/file_3.txt')
         self.input_path_1 = Path(self.input_path, 'INPUT_1', self.path_1)
         self.input_path_2 = Path(self.input_path, 'INPUT_2', self.path_2)
         self.input_path_3 = Path(self.input_path, 'INPUT_3', self.path_3)
