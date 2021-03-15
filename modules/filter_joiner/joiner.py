@@ -29,8 +29,12 @@ class FilterJoiner:
         """Join paths by common key."""
         key_paths = DictionaryList()
         keys: List[set] = []
-        for join_path in parse_config(self.config):
-            keys.append(self.get_keys(join_path, key_paths))
+        for input_path in parse_config(self.config):
+            if input_path.outer_join:
+                log.debug(f'Outer joining all paths matching {input_path.glob_pattern}')
+                self.link_paths(input_path)
+            else:
+                keys.append(self.get_keys(input_path, key_paths))
         # join using intersection to pull common keys
         joined_keys: set = keys[0].intersection(*keys[1:])
         for input_path_name, path in self.get_joined_paths(joined_keys, key_paths):
@@ -55,6 +59,15 @@ class FilterJoiner:
                 keys.add(key)
                 key_paths[key] = (input_path.path_name, path)
         return keys
+
+    def link_paths(self, input_path: InputPath) -> None:
+        """
+        Link filtered paths into the output directory.
+
+        :param input_path: The input path object.
+        """
+        for path in path_filter.filter_paths(glob_pattern=input_path.glob_pattern, output_path=self.out_path):
+            self.link_path(path)
 
     def link_path(self, path: Path):
         link_path = Path(self.out_path, *path.parts[self.relative_path_index:])
@@ -82,7 +95,7 @@ class FilterJoiner:
     @staticmethod
     def get_joined_paths(keys: set, key_paths: DictionaryList) -> Iterator[Tuple[str, Path]]:
         """
-        Loop through the joined keys and pull the associated paths.
+        Loop over joined keys and pull associated paths.
 
         :param keys: The joined keys.
         :param key_paths: Paths by key.
