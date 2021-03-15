@@ -31,12 +31,18 @@ class FilterJoiner:
         keys: List[set] = []
         for input_path in parse_config(self.config):
             if input_path.outer_join:
-                log.debug(f'Outer joining all paths matching pattern {input_path.glob_pattern}')
+                log.debug(f'{input_path.path_name} contains outer_join {input_path.glob_pattern}.')
                 self.link_paths(input_path)
+                input_path_keys = self.get_keys(input_path, key_paths)
+                log.debug(f'{input_path.path_name} outer keys: {input_path_keys}')
+                keys.append(input_path_keys)
             else:
-                keys.append(self.get_keys(input_path, key_paths))
+                input_path_keys = self.get_keys(input_path, key_paths)
+                log.debug(f'{input_path.path_name} keys: {input_path_keys}')
+                keys.append(input_path_keys)
         # join using intersection to pull common keys
         joined_keys: set = keys[0].intersection(*keys[1:])
+        log.debug(f'joined_keys: {joined_keys}')
         for input_path_name, path in self.get_joined_paths(joined_keys, key_paths):
             if path.is_file():
                 self.link(path)
