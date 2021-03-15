@@ -26,15 +26,24 @@ def update(source_path: Path, old_image: str, new_image: str):
                         json.dump(json_data, open(str(path), 'w'), indent=2)
             elif path.suffix == '.yaml':
                 with open(str(path), 'r') as open_file:
-                    data, indent, block_seq_indent = load_yaml_guess_indent(open_file, preserve_quotes=True)
+                    data, indent, block_seq_indent = load_yaml_guess_indent(
+                        open_file, preserve_quotes=True)
                     image = data['transform']['image']
                     if image == old_image:
                         print(f'updating file {path}')
                         data['transform']['image'] = new_image
-                        ruamel.yaml.round_trip_dump(data, open(str(path), 'w'), explicit_start=True)
+                        ruamel.yaml.round_trip_dump(data, open(
+                            str(path), 'w'), explicit_start=True)
 
 
 if __name__ == '__main__':
+    """
+    Example usage:
+    python3 -B image_update.py
+        --spec_path=/Users/home/git/NEON-IS-data-processing/pipe
+        --old_image=quay.io/battelleecology/parquet_linkmerge:14
+        --new_image=quay.io/battelleecology/parquet_linkmerge:15
+    """
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--spec_path')
     arg_parser.add_argument('--old_image')
