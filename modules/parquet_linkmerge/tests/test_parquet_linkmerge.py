@@ -25,19 +25,19 @@ class ParquetLinkMergeTest(TestCase):
         file_name_3 = 'WREF_prt_6848_2019-10-02.parquet'
         file_name_4 = 'CPER_prt_6848_2019-10-03.parquet'
 
-        data_path_1 = Path(self.in_path, self.metadata_path, '02', '6974', file_name_1)
+        data_path_1 = Path(self.in_path, self.metadata_path, '02/6974/data', file_name_1)
         actual_data_file_path = Path(os.path.dirname(__file__), file_name_1)
         self.fs.add_real_file(actual_data_file_path, target_path=data_path_1)
 
-        data_path_2 = Path(self.in_path, self.metadata_path, '02', '6848', file_name_2)
+        data_path_2 = Path(self.in_path, self.metadata_path, '02/6848/data', file_name_2)
         actual_data_file_path = Path(os.path.dirname(__file__), file_name_2)
         self.fs.add_real_file(actual_data_file_path, target_path=data_path_2)
 
-        data_path_3 = Path(self.in_path, self.metadata_path, '02', '6848', file_name_3)
+        data_path_3 = Path(self.in_path, self.metadata_path, '02/6848/data', file_name_3)
         actual_data_file_path = Path(os.path.dirname(__file__), file_name_3)
         self.fs.add_real_file(actual_data_file_path, target_path=data_path_3)
 
-        data_path_4 = Path(self.in_path, self.metadata_path, '03', '6848', file_name_4)
+        data_path_4 = Path(self.in_path, self.metadata_path, '03/6848/data', file_name_4)
         actual_data_file_path = Path(os.path.dirname(__file__), file_name_4)
         self.fs.add_real_file(actual_data_file_path, target_path=data_path_4)
 
@@ -67,6 +67,6 @@ class ParquetLinkMergeTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        self.assertTrue(Path(self.out_path, self.metadata_path, '02', '6974', 'prt_6974_2019-10-02.parquet').exists())
-        self.assertTrue(Path(self.out_path, self.metadata_path, '02', '6848', 'prt_6848_2019-10-02.parquet').exists())
-        self.assertTrue(Path(self.out_path, self.metadata_path, '03', '6848', 'prt_6848_2019-10-03.parquet').exists())
+        self.assertTrue(Path(self.out_path, self.metadata_path, '02/6974/data/prt_6974_2019-10-02.parquet').exists())
+        self.assertTrue(Path(self.out_path, self.metadata_path, '02/6848/data/prt_6848_2019-10-02.parquet').exists())
+        self.assertTrue(Path(self.out_path, self.metadata_path, '03/6848/data/prt_6848_2019-10-03.parquet').exists())
