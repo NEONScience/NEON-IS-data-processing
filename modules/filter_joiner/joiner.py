@@ -31,15 +31,21 @@ class FilterJoiner:
         keys: List[set] = []
         for input_path in parse_config(self.config):
             if input_path.outer_join:
-                log.debug(f'Outer joining all paths matching {input_path.glob_pattern}')
+                log.debug(f'{input_path.path_name} contains outer_join {input_path.glob_pattern}.')
                 self.link_paths(input_path)
+                input_path_keys = self.get_keys(input_path, key_paths)
+                log.debug(f'{input_path.path_name} outer keys: {input_path_keys}')
+                keys.append(input_path_keys)
             else:
-                keys.append(self.get_keys(input_path, key_paths))
+                input_path_keys = self.get_keys(input_path, key_paths)
+                log.debug(f'{input_path.path_name} keys: {input_path_keys}')
+                keys.append(input_path_keys)
         # join using intersection to pull common keys
         joined_keys: set = keys[0].intersection(*keys[1:])
+        log.debug(f'joined_keys: {joined_keys}')
         for input_path_name, path in self.get_joined_paths(joined_keys, key_paths):
             if path.is_file():
-                self.link_path(path)
+                self.link(path)
             else:
                 dir_path = Path(self.out_path, *path.parts[self.relative_path_index:])
                 dir_path.mkdir(parents=True, exist_ok=True)
@@ -67,12 +73,14 @@ class FilterJoiner:
         :param input_path: The input path object.
         """
         for path in path_filter.filter_paths(glob_pattern=input_path.glob_pattern, output_path=self.out_path):
-            self.link_path(path)
+            if path.is_file():
+                self.link(path)
 
-    def link_path(self, path: Path):
+    def link(self, path: Path):
         link_path = Path(self.out_path, *path.parts[self.relative_path_index:])
         link_path.parent.mkdir(parents=True, exist_ok=True)
         if not link_path.exists():
+            log.debug(f'Linking path {link_path} to {path}.')
             link_path.symlink_to(path)
 
     @staticmethod

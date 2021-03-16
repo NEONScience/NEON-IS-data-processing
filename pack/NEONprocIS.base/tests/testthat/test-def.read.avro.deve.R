@@ -46,7 +46,6 @@ test_that("   Testing Filter named location information by date-time range", {
     workingDirPath <- getwd()
     
     nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
-    nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
     nameFile2 <- file.path(workingDirPath, "def.read.avro.deve/prt_test2.avro")
     nameLib <- file.path(workingDirPath, "ravro.so")
     print(nameLib)
