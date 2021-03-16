@@ -46,27 +46,29 @@ test_that("   Testing Filter named location information by date-time range", {
     workingDirPath <- getwd()
     
     nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
-    nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
     nameFile2 <- file.path(workingDirPath, "def.read.avro.deve/prt_test2.avro")
     nameLib <- file.path(workingDirPath, "ravro.so")
     print(nameLib)
-    rpt <- try(def.read.avro.deve(NameFile = c(nameFile, nameFile2),NameLib = nameLib),silent = FALSE)
-    testthat::expect_true((class(rpt)[1] == "try-error"))
+    rpt <- def.read.avro.deve(NameFile = c(nameFile, nameFile2),NameLib = nameLib)
+    
+    col_List = c('source_id','site_id','readout_time','resistance')   
+    expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+    expect_true (all (names(rpt) == col_List ))
     
     
     cat("\n Check data types of the reutrn list\n")
     
-      workingDirPath <- getwd()
-      nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
-      nameLib <-  file.path(workingDirPath, "ravro.so")
-      rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib),silent = FALSE)
-      testthat::expect_true((class(rpt)[1] == "try-error"))
-      testthat::equals(length(rpt), 4)
-      testthat::equals(class(rpt$source_id), "character")
-      testthat::equals(class(rpt$site_id), "character")
-      testthat::equals(class(rpt$readout_time), "POSIXct")
-      testthat::equals(class(rpt$resistance), "numeric")
+    workingDirPath <- getwd()
+    nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
+    nameLib <-  file.path(workingDirPath, "ravro.so")
+    rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib),silent = FALSE)
     
+    testthat::equals(length(rpt), 4)
+    testthat::equals(class(rpt$source_id), "character")
+    testthat::equals(class(rpt$site_id), "character")
+    testthat::equals(class(rpt$readout_time), "POSIXct")
+    testthat::equals(class(rpt$resistance), "numeric")
     
   }
-})
+}
+)
