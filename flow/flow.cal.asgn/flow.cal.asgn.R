@@ -183,7 +183,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                 DirOutBase=Para$DirOut,
                 TimeBgn=timeBgn,
                 TimeEnd=timeEnd,
-                PadDay=c(timePadBgn,timePadEnd)
+                PadDay=c(timePadBgn,timePadEnd),
+                log=log
                 )
 
   return()

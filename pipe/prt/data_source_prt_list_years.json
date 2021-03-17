@@ -14,7 +14,7 @@
   "input": {
     "pfs": {
       "name": "REPO_IN",
-      "repo": "data_source_day_prt",
+      "repo": "data_source_prt_linkmerge",
       "glob": "/prt",
       "empty_files": true
     }
@@ -22,7 +22,7 @@
   "enable_stats": false,
   "standby": true,
   "resource_requests": {
-    "memory": "50M",
+    "memory": "1K",
     "cpu": 0.01
   }
 }

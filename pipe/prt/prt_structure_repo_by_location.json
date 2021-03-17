@@ -21,7 +21,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_location_filter",
+      "repo": "prt_calibrated_location_group",
       "glob": "/prt/*/*/*"
     }
   },
