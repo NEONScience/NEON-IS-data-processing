@@ -24,7 +24,7 @@
         "pfs": {
           "name": "REPO_LOCATIONS",
           "repo": "pressureAir_locations",
-          "glob": "/ptb330a/*/*"
+          "glob": "/*/*/*"
         }
       },
       {
