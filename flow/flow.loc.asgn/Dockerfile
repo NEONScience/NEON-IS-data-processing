@@ -1,4 +1,4 @@
-# Dockerfile for NEON IS Data Processing - Location Filter
+# Dockerfile for NEON IS Data Processing - Location Assignment
 
 # Start with the base image. 
 FROM quay.io/battelleecology/neon-is-base-r:v0.0.64
@@ -12,4 +12,6 @@ COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in calibration filter workflow
-COPY ./flow.qaqc.wq.sens.na.R /flow.qaqc.wq.sens.na.R
+COPY ./flow.loc.asgn.R /flow.loc.asgn.R
+COPY ./wrap.loc.asgn.R /wrap.loc.asgn.R
+
