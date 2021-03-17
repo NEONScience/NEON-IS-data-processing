@@ -3,19 +3,29 @@
     "name": "exoconductivity_merge_data_by_location"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.loc.data.trnc.comb.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirSubCombData=data|flags|uncertainty_data","DirSubCombUcrt=uncertainty_coef","DirSubCopy=location"],
-    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.22",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "cmd": [
+      "Rscript",
+      "/flow.loc.data.trnc.comb.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirSubCombData=data|flags|uncertainty_data",
+      "DirSubCombUcrt=uncertainty_coef",
+      "DirSubCopy=location"
+    ],
+    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.23",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
-      "pfs": {
-        "name": "DIR_IN",
-        "repo": "exoconductivity_structure_repo_by_location",
-        "glob": "/exoconductivity/*/*"
-      }
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "exoconductivity_structure_repo_by_location",
+      "glob": "/exoconductivity/*/*"
+    }
   },
   "enable_stats": false,
   "standby": true,

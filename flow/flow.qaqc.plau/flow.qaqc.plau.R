@@ -122,9 +122,25 @@
 #     Add check that terms slated for QA/QC are in the data
 #   Cove Sturtevant (2021-02-04)
 #     Add option to copy one or more variables found in the input file to the output flags file
+#   Cove Sturtevant (2021-01-20)
+#     Applied internal parallelization
 ##############################################################################################
+library(foreach)
+library(doParallel)
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly=TRUE)
@@ -206,7 +222,8 @@ log$debug(base::paste0('Expected subdirectories of each datum path: ',base::past
 DirIn <- NEONprocIS.base::def.dir.in(DirBgn=Para$DirIn,nameDirSub=nameDirSub,log=log)
 
 # Process each datum path
-for(idxDirIn in DirIn){
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
@@ -516,6 +533,8 @@ for(idxDirIn in DirIn){
   } else {
     log$info(base::paste0('Basic plausibility flags written successfully in ',NameFileOutQf))
   }
+  
+  return()
 } # End loop around datum paths
 
 

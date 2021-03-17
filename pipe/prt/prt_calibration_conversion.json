@@ -15,12 +15,13 @@
       "TermFuncUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly",
       "FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.44",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "2"
     }
   },
   "input": {

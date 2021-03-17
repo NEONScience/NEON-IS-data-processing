@@ -12,7 +12,7 @@
       "TermQf=temperature|relative_humidity|dew_point",
       "TermFuncUcrt=temperature:def.ucrt.meas.cnst|relative_humidity:def.ucrt.meas.cnst|dew_point:def.ucrt.meas.rh.dew.frst.pt"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.44",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
