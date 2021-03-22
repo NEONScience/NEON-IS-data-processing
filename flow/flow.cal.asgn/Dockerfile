@@ -1,7 +1,7 @@
-# Dockerfile for NEON IS Data Processing - Location Filter
+# Dockerfile for NEON IS Data Processing - Calibration assignment
 
-# Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.64
+# Start with the calibration package image. 
+FROM quay.io/battelleecology/neon-is-pack-cal-r:v0.0.38
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -12,4 +12,5 @@ COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in calibration filter workflow
-COPY ./flow.qaqc.wq.sens.na.R /flow.qaqc.wq.sens.na.R
+COPY ./flow.cal.asgn.R /flow.cal.asgn.R
+COPY ./wrap.cal.asgn.R /wrap.cal.asgn.R
