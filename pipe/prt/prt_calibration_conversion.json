@@ -21,7 +21,7 @@
     ],
     "env": {
       "LOG_LEVEL": "INFO",
-      "PARALLELIZATION_INTERNAL": "2"
+      "PARALLELIZATION_INTERNAL": "4"
     }
   },
   "input": {
@@ -29,8 +29,8 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "prt_calibration_filter",
-          "glob": "/prt/*/*/*/"
+          "repo": "prt_data_calibration_group",
+          "glob": "/prt/*/*/*"
         }
       },
       {
