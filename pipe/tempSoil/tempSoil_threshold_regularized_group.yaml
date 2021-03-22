@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: tempAirSingle_threshold_regularized_group
+  name: tempSoil_threshold_regularized_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:9
@@ -16,14 +16,16 @@ transform:
       input_paths:
         - path:
             name: REGULARIZED_PATH
-            glob_pattern: /pfs/REGULARIZED_PATH/**
-            # Join on year and month
-            join_indices: [6]
+            # Filter for data directory
+            glob_pattern: /pfs/REGULARIZED_PATH/prt/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
         - path:
             name: THRESHOLD_PATH
-            glob_pattern: /pfs/THRESHOLD_PATH/**
-            # Join on year and month
-            join_indices: [6]
+            # Filter for data directory
+            glob_pattern: /pfs/THRESHOLD_PATH/prt/*/*/*/*/**
+            # Join on named location (already joined below by day
+            join_indices: [7]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
@@ -31,14 +33,14 @@ input:
   join:
   - pfs:
       name: REGULARIZED_PATH
-      repo: tempAirSingle_regularized_data
-      glob: /(*)/(*)/(*)
+      repo: tempSoil_regularized_data
+      glob: /prt/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: THRESHOLD_PATH
-      repo: tempAirSingle_threshold_select
-      glob: /(*)/(*)/(*)
+      repo: tempSoil_threshold_select
+      glob: /prt/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
 parallelism_spec:
