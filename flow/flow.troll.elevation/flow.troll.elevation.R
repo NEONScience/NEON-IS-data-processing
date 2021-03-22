@@ -141,6 +141,8 @@ for (idxDirIn in DirIn){
   idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
   idxDirOutData <- base::paste0(idxDirOut,'/data')
   base::dir.create(idxDirOutData,recursive=TRUE)
+  idxDirOutUcrt <- base::paste0(idxDirOut,'/uncertainty_data')
+  base::dir.create(idxDirOutUcrt,recursive=TRUE)
   
   # Copy with a symbolic link the desired sensor subfolders 
   if(base::length(DirLocationCopy) > 0){
@@ -227,7 +229,7 @@ for (idxDirIn in DirIn){
       startDate<-LocationHist$CFGLOC[[i]]$start_date
       endDate<-LocationHist$CFGLOC[[i]]$end_date
       troll_sub<-trollData[trollData$readout_time>=startDate && trollData$readout_time<endDate,]
-      troll_sub$elevation<- LocationHist$CFGLOC[[i]]$geometry$coordinates[3]
+      troll_sub$sensorElevation<- LocationHist$CFGLOC[[i]]$geometry$coordinates[3]
       troll_sub$z_offset<- LocationHist$CFGLOC[[i]]$z_offset
       troll_sub$survey_uncert <- LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty` #includes survey uncertainty and hand measurements
       troll_sub$real_world_uncert <-LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`  
@@ -243,7 +245,7 @@ for (idxDirIn in DirIn){
   #calculate water table elevation
   trollData$elevation<-NA
   if(length(LocationHist)>0){
-    trollData$elevation<-trollData$elevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
+    trollData$elevation<-trollData$sensorElevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
   }
   
   
@@ -353,7 +355,7 @@ for (idxDirIn in DirIn){
                                                          NameFile = base::paste0(idxDirOutUcrt,"/",context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_05minUcrt.parquet"), 
                                                          Schm = SchmUcrtOut),silent=FALSE)
   
-  if(any(grepl('try-error',class(rptUcrtOut_05min)))){
+  if(any(grepl('try-error',class(rptUcrtOut)))){
     log$error(base::paste0('Writing the output data failed: ',attr(rptUcrtOut,"condition")))
     stop()
   } else {
