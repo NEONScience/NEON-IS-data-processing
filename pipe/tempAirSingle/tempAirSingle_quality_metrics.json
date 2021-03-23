@@ -46,7 +46,7 @@
     "constant": "1"
   },
   "resource_requests": {
-    "memory": "200Mi",
-    "cpu": 0
+    "memory": "1400Mi",
+    "cpu": 4
   }
 }
