@@ -16,7 +16,8 @@
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "4"
     }
   },
   "input": {
@@ -25,7 +26,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "tempAirSingle_padded_timeseries_analyzer",
-          "glob": "/*/*/*/"
+          "glob": "/*/*/*"
         }
       },
       {

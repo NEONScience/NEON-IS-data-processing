@@ -6,6 +6,13 @@ log = structlog.get_logger()
 
 
 class DataGapFillerLinker:
+    """
+    Class to link files from the input repository into the output repository.
+    The input repository is assumed to have a collection of empty files identified
+    by a particular suffix (passed in) and regular data files. If data files exist
+    in a directory with empty files the data files are linked, otherwise the empty files
+    are linked.
+    """
 
     def __init__(self, in_path: Path,  out_path: Path, relative_path_index: int,
                  location_index: int, empty_file_suffix: str) -> None:

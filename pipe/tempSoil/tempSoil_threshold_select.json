@@ -17,7 +17,8 @@
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "4"
     }
   },
   "input": {
@@ -26,7 +27,7 @@
         "pfs": {
           "name": "REPO_LOCATIONS",
           "repo": "tempSoil_locations",
-          "glob": "/prt/*/*/*/"
+          "glob": "/prt/*/*/*"
         }
       },
       {
@@ -41,7 +42,7 @@
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
     "memory": "200Mi",
