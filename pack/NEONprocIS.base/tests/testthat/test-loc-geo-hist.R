@@ -63,7 +63,38 @@ test_that("   Read sensor locations json file and return the geolocation history
   locGeoHist <- NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn)
   testthat::expect_true (is.list(locGeoHist))
   testthat::expect_match(names(locGeoHist), locMeta$name) 
+
+    # Happy path #2: a location json with StartDate and with EndDate
+  testFile = 'locations-wStartDate-wEndDate.json'
+  NameFileIn <- paste0(testDir, testFile)
+  locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
+  locGeoHist <- try(NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn), silent= TRUE)
+
+
+  # Happy path #3: a location json with null StartDate
+  testFile = 'locations-nullStartDate.json'
+  NameFileIn <- paste0(testDir, testFile)
+  locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
+  locGeoHist <- try(NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn), silent= TRUE)
+
+  # Happy path #4: a location json with #level= 2
+  testFile = 'locations-2lvl-ref-locs.json'
+  NameFileIn <- paste0(testDir, testFile)
+  locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
+  locGeoHist <- try(NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn), silent= TRUE)
+ 
+  # Happy path #4: a location json with #level= 3
+  testFile = 'locations-3lvl-ref-locs.json'
+  NameFileIn <- paste0(testDir, testFile)
+  locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
+  locGeoHist <- try(NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn), silent= TRUE)
   
-# Happy path #2: 
+  # Happy path #5: a location json with #level= 0
+  testFile = 'locations-0lvl-ref-locs.json'
+  NameFileIn <- paste0(testDir, testFile)
+  locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
+  locGeoHist <- try(NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn), silent= TRUE)
+  
+  
 }
 )
