@@ -10,10 +10,11 @@
       "DirOut=/pfs/out",
       "FileSchmStat=NA",
       "WndwAgr=030",
+      "DirSubCopy=data|uncertainty_data",
       "TermStat1=pressure:mean|minimum|maximum|variance|numPts|stdEr",
       "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr",
       "TermStat3=conductivity:mean|minimum|maximum|variance|numPts|stdEr",
-      "TermStat4=elev_H2O:mean|minimum|maximum|variance|numPts|stdEr"
+      "TermStat4=elevation:mean|minimum|maximum|variance|numPts|stdEr"
       ],
     "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.14",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
@@ -22,22 +23,11 @@
     }  
   },
   "input": {
-    "cross": [
-      {
         "pfs": {
           "name": "DIR_IN",
           "repo": "groundwaterPhysical_ucrt_troll_specific",
-          "glob": "/*/*/*"
+          "glob": "/*/*/*/*"
         }
-      },
-      {
-        "pfs": {
-          "name": "FILE_SCHEMA_STATS",
-          "repo": "avro_schemas",
-          "glob": "/dp01/groundwaterPhysical_dp01_stats.avsc"
-        }
-      }
-    ]
   },
   "enable_stats": false,
   "standby": true,
