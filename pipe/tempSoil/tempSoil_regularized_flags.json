@@ -13,14 +13,17 @@
       "FreqRglr=0.1",
       "MethRglr=CybiEc",
       "WndwRglr=Trlg",
-      "IdxWndw=IdxWndwMin"
+      "IdxWndw=IdxWndwMin",
+      "RptTimeWndw=FALSE",
+      "DropNotNumc=FALSE"
     ],
     "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.27",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "4"
     }
   },
   "input": {

@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: tempSoil_qaqc_flags_group
+  name: dualfan_data_location_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:9
@@ -15,32 +15,34 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: QAQC_PLAUSIBILITY_PATH
+            name: DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/prt/*/*/*/*/flags/**
+            glob_pattern: /pfs/DATA_PATH/dualfan/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
+            outer_join: true
         - path:
-            name: REGULARIZED_FLAGS_PATH
+            name: LOCATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/prt/*/*/*/*/flags/**
-            # Join on named location (already joined below by day
+            glob_pattern: /pfs/LOCATION_PATH/dualfan/*/*/*/*/**
+            # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
 input:
   join:
   - pfs:
-      name: QAQC_PLAUSIBILITY_PATH
-      repo: tempSoil_qaqc_plausibility
-      glob: /prt/(*)/(*)/(*)
+      name: DATA_PATH
+      repo: data_source_dualfan_linkmerge
+      glob: /dualfan/(*)/(*)/(*)
       joinOn: $1/$2/$3
+      outer_join: true
       empty_files: true
   - pfs:
-      name: REGULARIZED_FLAGS_PATH
-      repo: tempSoil_regularized_flags
-      glob: /prt/(*)/(*)/(*)
+      name: LOCATION_PATH
+      repo: dualfan_location_asset_assignment
+      glob: /dualfan/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
 parallelism_spec:

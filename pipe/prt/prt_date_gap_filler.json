@@ -29,6 +29,7 @@
       "LOCATION_SOURCE_TYPE_INDEX": "3",
       "LOCATION_YEAR_INDEX": "4",
       "LOCATION_MONTH_INDEX": "5",
+      "LOCATION_DAY_INDEX": "6",
       "LOCATION_INDEX": "7",
       "EMPTY_FILE_TYPE_INDEX": "4"
     }

@@ -16,7 +16,7 @@
     ],
     "env": {
       "GROUP": "aspirated-single-",
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
       "SOURCE_TYPE_INDEX": "3",
       "YEAR_INDEX": "4",

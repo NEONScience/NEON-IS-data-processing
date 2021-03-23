@@ -65,13 +65,13 @@
   "input": {
     "pfs": {
       "name": "import_trigger",
-      "repo": "import_trigger",
+      "repo": "import_trigger_prt",
       "glob": "/*/*/*"
     }
   },
   "cache_size": "64M",
   "max_queue_size": "1",
-  "enable_stats": true,
+  "enable_stats": false,
   "standby": true,
   "pod_patch": "[{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/memory\",\"value\":\"64M\"},{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/cpu\",\"value\":\"0.5\"}]"
 }
