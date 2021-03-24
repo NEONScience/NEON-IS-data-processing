@@ -56,6 +56,7 @@ test_that("   Read sensor locations json file and return the geolocation history
   # Happy path #1:Read sensor locations json file and return the geolocation history of all the configured locations within the file
 
   cat("\n       |=====================================   Test Summary   ====================================|\n")
+  cat("\n       |== Read sensor locations json file and return the geolocation history of all the configured locations within the file==|\n")
   
   testFile = 'locations.json'
   NameFileIn <- paste0(testDir, testFile)
@@ -65,6 +66,8 @@ test_that("   Read sensor locations json file and return the geolocation history
   testthat::expect_match(names(locGeoHist), locMeta$name) 
 
     # Happy path #2: a location json with StartDate and with EndDate
+ 
+  cat("\n       |== a location json with StartDate and with EndDate ==|\n")
   testFile = 'locations-wStartDate-wEndDate.json'
   NameFileIn <- paste0(testDir, testFile)
   locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
@@ -73,6 +76,7 @@ test_that("   Read sensor locations json file and return the geolocation history
   testthat::expect_match(names(locGeoHist), locMeta$name) 
   
   # Happy path #3: a location json with null StartDate
+  cat("\n       |== a location json with null StartDate             ==|\n")
   testFile = 'locations-nullStartDate.json'
   NameFileIn <- paste0(testDir, testFile)
   locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
@@ -81,12 +85,14 @@ test_that("   Read sensor locations json file and return the geolocation history
   testthat::expect_match(names(locGeoHist), locMeta$name) 
   
   # Happy path #4: a location json with #level= 2
+  cat("\n       |== a location json with #level= 2                  ==|\n")
   testFile = 'locations-2lvl-ref-locs.json'
   NameFileIn <- paste0(testDir, testFile)
   locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
   locGeoHist <- NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn)
   
   # Happy path #4: a location json with #level= 3
+  cat("\n       |== a location json with #level= 3                  ==|\n")
   testFile = 'locations-3lvl-ref-locs.json'
   NameFileIn <- paste0(testDir, testFile)
   locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
@@ -95,6 +101,7 @@ test_that("   Read sensor locations json file and return the geolocation history
   testthat::expect_match(names(locGeoHist), locMeta$name) 
   
   # Happy path #5: a location json with #level= 0
+  cat("\n       |== a location json with #level= 0                  ==|\n")
   testFile = 'locations-0lvl-ref-locs.json'
   NameFileIn <- paste0(testDir, testFile)
   locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
