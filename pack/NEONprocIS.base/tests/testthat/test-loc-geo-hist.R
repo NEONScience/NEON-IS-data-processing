@@ -56,9 +56,9 @@ test_that("   Read sensor locations json file and return the geolocation history
   # Happy path #1:Read sensor locations json file and return the geolocation history of all the configured locations within the file
 
   cat("\n       |=====================================   Test Summary   ====================================|\n")
-  cat("\n       |== Read sensor locations json file and return the geolocation history of all the configured locations within the file==|\n")
+  cat("\n       |== a location json with location_properties        ==|\n")
   
-  testFile = 'locations.json'
+  testFile = 'prt_24688_locations.json'
   NameFileIn <- paste0(testDir, testFile)
   locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
   locGeoHist <- NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn)
