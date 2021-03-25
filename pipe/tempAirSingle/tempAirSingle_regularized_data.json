@@ -3,30 +3,33 @@
     "name": "tempAirSingle_regularized_data"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=data","FileSchmRglr=$FILE_SCHEMA_RGLR","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
-    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.23",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "cmd": [
+      "Rscript",
+      "/flow.rglr.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirRglr=data",
+      "MethRglr=CybiEc",
+      "WndwRglr=Trlg",
+      "IdxWndw=IdxWndwMin",
+      "RptTimeWndw=FALSE",
+      "DropNotNumc=FALSE"
+    ],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.27",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
-      "LOG_LEVEL": "INFO"
-    }  
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "4"
+    }
   },
   "input": {
-    "cross": [
-      {
-        "pfs": {
-          "name": "DIR_IN",
-          "repo": "tempAirSingle_calibrated_data",
-          "glob": "/*/*/*"
-        }
-      },
-      {
-        "pfs": {
-          "name": "FILE_SCHEMA_RGLR",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/prt_calibrated_wo_source.avsc"
-        }
-      }
-    ]
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "tempAirSingle_calibrated_data",
+      "glob": "/*/*/*"
+    }
   },
   "enable_stats": false,
   "standby": true,

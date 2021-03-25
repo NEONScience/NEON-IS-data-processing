@@ -39,9 +39,10 @@
 #'         /flags
 #'
 #' The flags folder holds any number of daily files holding quality flags. All files will be combined. Ensure
-#' there are no overlapping column names between the files other than "readout_time". Note that the
-#' "readout_time" variable must exist in all files. Any non-matching timestamps among files will result in
-#' NA values for columns that do not have this timestamp.
+#' there are no overlapping column names between the files other than "readout_time" and the names of any other 
+#' time variables indicated in arguments VarTimeBgn and VarTimeEnd (see below). Note that the
+#' "readout_time" variable must exist in all files, as it is used to match up the measurements. 
+#' Any non-matching timestamps among files will result in NA values for columns that do not have this timestamp.
 #'
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
 #' of DirIn.
@@ -51,7 +52,17 @@
 #' the output data frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE STATS MATCHES THE ORDER OF THE FLAGS
 #' IN THE SORTED FILE LIST. See output information below for details.
 #'
-#' 4. "GrpQfAlphX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
+#' 4. "VarTimeBgn=value" (optional), where value is the name of the variable in the input files that signifies the
+#' start time of the instantaneous measurement. Defaults to 'readout_time'. This variable be reported in the output as 
+#' startDateTime and will not be treated as a flag (i.e. no quality metrics will be created for it). If it is not found
+#' in any of the input files, startDateTime will be populated with the values in readout_time.
+#' 
+#' 5. "VarTimeEnd=value" (optional), where value is the name of the variable in the input files that signifies the
+#' end time of the instantaneous measurement. Defaults to 'readout_time'. This variable be reported in the output as 
+#' endDateTime and will not be treated as a flag (i.e. no quality metrics will be created for it). If it is not found
+#' in any of the input files, endDateTime will be populated with the values in readout_time.
+#' 
+#' 6. "GrpQfAlphX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
 #' the quality flags that should be used in the computation of the alpha quality flag. Begin each argument with
 #' the group name (e.g. temp) to be used as a prefix to the output alpha flag, followed by a colon (:), and then
 #' the exact names of the quality flags, delimited by pipes (|). For example, if tempRangeQF and tempPersistenceQF
@@ -65,7 +76,7 @@
 #' arguments, and must match those found in GrpQfBetaX arguments. The group name will also be applied to the
 #' resultant final QF.
 #'
-#' 5. "GrpQfBetaX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
+#' 7. "GrpQfBetaX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
 #' the quality flags that should be used in the computation of the beta quality flag. Begin each argument with
 #' the group name (e.g. temp) to be used as a prefix to the output beta flag, followed by a colon (:), and then
 #' the exact names of the quality flags, delimited by pipes (|). For example, if tempRangeQF and tempPersistenceQF
@@ -79,7 +90,7 @@
 #' arguments, and must match those found in GrpQfAlphaX arguments. The group name will also be applied to the
 #' resultant final QF.
 #'
-#' 6. "QfForcX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
+#' 8. "QfForcX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
 #' the quality flags that should be forced to a particular value if the value of a "driver" flag equals a
 #' particular value. Begin each argument with the name of the driver flag (e.g. tempNullQF), followed by a colon (:),
 #' then the numeric "driver value" of the driver flag which activates the force, followed by a colon (:),
@@ -91,7 +102,7 @@
 #' Note that the logic described here occurs before the alpha, beta, and final quality flags are calculated, and
 #' forcing actions will occur following increasing value of X in QfForcX.
 #'
-#' 7. "GrpQfBetaIgnrX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names
+#' 9. "GrpQfBetaIgnrX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names
 #' of the quality flags that, if any of their values equals 1, the beta QF flag for the indicated group is
 #' set to 0. Begin each argument with the group name (e.g. temp) that corresponds to a group indicated in the
 #' GrpQfBetaX argument(s), followed by a colon (:), and then the exact names of the quality flags, delimited by
@@ -101,10 +112,10 @@
 #' colon as the first character of value (e.g. "GrpQfBetaIgnr1=:nullQF"). Note that the group names must be unique
 #' among GrpQfBetaIgnrX arguments, and must be a subset of those found in GrpQfAlphaX arguments.
 #'
-#' 8. "Tmi=value" (optional), where value is a 3-character index specifying the NEON timing index to include
+#' 10. "Tmi=value" (optional), where value is a 3-character index specifying the NEON timing index to include
 #' in the output file name. If not input, "000" is used.
 #'
-#' 9. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 11. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the flags folder in the input path that are to be copied with a
 #' symbolic link to the output path.
 #'
@@ -123,15 +134,16 @@
 #' be a combination of the group name and AlphaQF, BetaQF, or FinalQF. The order of the outputs will be all quality flags in
 #' the same order they were found in the sorted (increasing order) input file list, followed by the alpha QF, betaQF, and
 #' finalQF for each group in the same order as the GrpQfAlphaX inputs. Additionally, the first two columns of the output file
-#' will contain the start and end times (they will be the same) for the measurement, labeled "startDateTime" and "endDateTime",
-#' respectively. Example column ordering: Say there are two input files named outflagsA.parquet and outflagsB.parquet, where
+#' will contain the start and end times for the measurement, labeled "startDateTime" and "endDateTime",
+#' respectively, and populated with the variables indicated in input arguments VarTimeBgn and varTimeEnd. 
+#' Example column ordering: Say there are two input files named outflagsA.parquet and outflagsB.parquet, where
 #' outflagsA.parquet contains flag tempValidCalQF, RHValidCalQF and outflagsB.parquet contains flags tempRangeQF, RHRangeQF
 #' and the grouping arguments are "GrpQfAlpha1=temp:tempRangeQf|tempValidCalQF", "GrpQfAlpha2=RH:RHRangeQf|RHValidCalQF",
 #' "GrpQfBeta1=temp:tempRangeQf", "GrpQfBeta2=RH:tempRangeQf".
 #' The ordering of the output columns will be startDateTime, endDateTime, tempValidCalQF, RHValidCalQF, tempValidCalQF,
-#' RHValidCalQF, tempAlphaQF, tempBetaQF, tempFinalQF, RHAlphaQF, RHBetaQF, RHFinalQF. The names of the output columns
-#' may be changed by providing an output schema in argument FileSchmQm. However, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA
-#' MATCHES THIS COLUMN ORDERING. Otherwise, column names will not pertain to the flag in the column.
+#' RHValidCalQF, tempAlphaQF, tempBetaQF, tempFinalQF, RHAlphaQF, RHBetaQF, RHFinalQF. The names (but not the order) of the 
+#' output columns may be changed by providing an output schema in argument FileSchmQm. However, ENSURE THAT ANY PROVIDED 
+#' OUTPUT SCHEMA MATCHES THIS COLUMN ORDERING. Otherwise, column names will not pertain to the flag in the column.
 #'
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -152,9 +164,27 @@
 #     original creation
 #   Cove Sturtevant (2020-04-28)
 #     switch read/write data from avro to parquet
+#   Cove Sturtevant (2021-02-04)
+#     added option to specify the columns that are reported as the startDateTime and endDateTime in the output
+#   Cove Sturtevant (2021-03-03)
+#     Applied internal parallelization
 ##############################################################################################
+library(foreach)
+library(doParallel)
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -166,6 +196,8 @@ Para <-
     NameParaReqd = c("DirIn", "DirOut"),
     NameParaOptn = c(
       "FileSchmQm",
+      "VarTimeBgn",
+      "VarTimeEnd",
       base::paste0("GrpQfAlph", 1:100),
       base::paste0("GrpQfBeta", 1:100),
       base::paste0("QfForc", 1:100),
@@ -173,7 +205,11 @@ Para <-
       "Tmi",
       "DirSubCopy"
     ),
-    ValuParaOptn=list(Tmi="000"),
+    ValuParaOptn=list(
+      Tmi="000",
+      VarTimeBgn="readout_time",
+      VarTimeEnd="readout_time"
+      ),
     log = log
   )
 
@@ -192,6 +228,10 @@ if (base::is.null(Para$FileSchmQm) || Para$FileSchmQm == 'NA') {
 } else {
   SchmQm <- base::paste0(base::readLines(Para$FileSchmQm), collapse = '')
 }
+
+# Echo arguments
+log$debug(base::paste0('Variable to be used for startDateTime: ', Para$VarTimeBgn))
+log$debug(base::paste0('Variable to be used for endDateTime: ', Para$VarTimeBgn))
 
 # Parse the groups of flags feeding into alpha quality flags 
 nameParaGrpQfAlph <-
@@ -418,7 +458,8 @@ DirIn <-
                               log = log)
 
 # Process each datum path
-for (idxDirIn in DirIn) {
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
   # Get directory listing of input directory. Expect subdirectories for flags
@@ -473,7 +514,8 @@ for (idxDirIn in DirIn) {
   
   
   # Figure out the names of the output columns
-  nameQfIn <- base::setdiff(base::names(qf), "readout_time")
+  nameVarIn <- base::names(qf)
+  nameQfIn <- base::setdiff(nameVarIn, c("readout_time",Para$VarTimeBgn,Para$VarTimeEnd))
   nameQfOut <- c(nameQfIn, nameQfGrp)
   log$debug(
     base::paste0(
@@ -484,10 +526,20 @@ for (idxDirIn in DirIn) {
     )
   )
   
+  # Are the variables indicated in VarTimeBgn and VarTimeEnd present?
+  VarTimeBgnIdx <- Para$VarTimeBgn
+  if(!(VarTimeBgnIdx %in% nameVarIn)){
+    VarTimeBgnIdx <- 'readout_time'
+  }
+  VarTimeEndIdx <- Para$VarTimeEnd
+  if(!(VarTimeEndIdx %in% nameVarIn)){
+    VarTimeEndIdx <- 'readout_time'
+  }
+  
   # Initialize the output
   qf <-
-    qf[c('readout_time',
-         'readout_time',
+    qf[c(VarTimeBgnIdx,
+         VarTimeEndIdx,
          nameQfIn,
          base::rep(nameQfIn[1], base::length(nameQfGrp)))]
   base::names(qf) <- c('startDateTime', 'endDateTime', nameQfOut)
@@ -581,4 +633,5 @@ for (idxDirIn in DirIn) {
     ))
   }
   
+  return()
 } # End loop around datum paths

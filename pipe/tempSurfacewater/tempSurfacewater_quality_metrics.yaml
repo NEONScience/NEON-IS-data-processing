@@ -11,7 +11,7 @@ transform:
   - WndwAgr=005|030
   - WghtAlphBeta=2|1
   - Thsh=0.2
-  image: quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.6
+  image: quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.10
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

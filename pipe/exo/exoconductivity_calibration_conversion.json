@@ -11,12 +11,14 @@
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
       "TermFuncUcrt=surfaceWaterTemperature:def.ucrt.wq.temp.conc|specificConductance:def.ucrt.meas.mult",
       "TermQf=specificConductance"
-      ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.43",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "cross": [
@@ -29,10 +31,10 @@
       },
       {
         "pfs": {
-        "name": "FILE_SCHEMA_FLAGS",
-        "repo": "avro_schemas",
-        "glob": "/dp0p/flags_calibration_exoconductivity.avsc"
-      }
+          "name": "FILE_SCHEMA_FLAGS",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/flags_calibration_exoconductivity.avsc"
+        }
       }
     ]
   },

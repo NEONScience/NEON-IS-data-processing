@@ -3,12 +3,21 @@
     "name": "waterQuality_exoconductivity_qaqc_plausibility"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.plau.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS","TermTest1=specificConductance:null|gap|range|step|spike|persistence"],
-    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.15",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.plau.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQf=$SCHEMA_FLAGS",
+      "TermTest1=specificConductance:null|gap|range|step|spike|persistence"
+    ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.17",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "cross": [
@@ -21,9 +30,9 @@
       },
       {
         "pfs": {
-            "name": "SCHEMA_FLAGS",
-            "repo": "avro_schemas",
-            "glob": "/dp0p/flags_plausibility_exoconductivity.avsc"
+          "name": "SCHEMA_FLAGS",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/flags_plausibility_exoconductivity.avsc"
         }
       }
     ]

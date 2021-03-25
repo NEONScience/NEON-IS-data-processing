@@ -17,7 +17,7 @@
     "pfs": {
       "name": "DATA_PATH",
       "repo": "data_source_exodissolvedoxygen_linkmerge",
-      "glob": "/exodissolvedoxygen/2019/01/05/*",
+      "glob": "/exodissolvedoxygen/2019/01/05",
       "empty_files": true
     }
   },

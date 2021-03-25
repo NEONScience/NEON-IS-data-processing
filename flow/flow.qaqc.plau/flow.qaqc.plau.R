@@ -56,7 +56,15 @@
 #' number X by 1 with each additional argument. TermTest1 must be an input, and there is
 #' a limit of X=100 for additional TermTestX arguments. 
 #' 
-#' N+1. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' N+1. "VarAddFileQf=value" (optional), where value contains the names of any variables in the input data file,
+#' separated by pipes (|) that should be copied over to the output flags files. Do not include readout_time.
+#' In normal circumstances there should be none, as flags files should only contain a timestamp and flags, 
+#' but in rare cases additional variables may desired to be included in the flags files (such as source ID, site, 
+#' or additional timing information produced from upstream modules). Defaults to empty. Note that these will be 
+#' tacked on to the end of the output columns produced by the selections in TermTestX, and any output schema 
+#' should account for this.
+#' 
+#' N+2. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
 #' pipes, at the same level as the data & threshold folders in the input path that are to be copied with a 
 #' symbolic link to the output path. Be sure to specify 'DirSubCopy=threshold" if you want to retain this 
 #' and any other directories in the output directory structure.
@@ -73,14 +81,14 @@
 #' 
 #' The flags file will contain a column for the readout time followed by columns for quality flags grouped by 
 #' variable/term in the same order as the variables/terms and the tests were provided in the input arguments 
-#' (test nested within term).
+#' (test nested within term), followed by additional variables, if any, specified in argument VarAddFileQf.
 #'  
 #' If no output schema is provided for the flags, the variable names will be a camelCase combination of the term, 
 #' the test, and the characters "QF", in that order. For example, if the input arguments 5-6 are 
-#' "TermTest1=temp:null|range(rmv)" and "TermTest1=resistance:spike|gap", the output columns will be 
-#' readout_time, tempNullQF, tempRangeQF, resistanceSpikeQF, resistanceGapQF, in that order. ENSURE THAT ANY 
-#' PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS. Otherwise, they will be 
-#' labeled incorrectly.
+#' "TermTest1=temp:null|range(rmv)" and "TermTest1=resistance:spike|gap" and the argument VarAddFileQf is omitted,
+#' the output columns will be readout_time, tempNullQF, tempRangeQF, resistanceSpikeQF, resistanceGapQF, in that order. 
+#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS. 
+#' Otherwise, they will be labeled incorrectly.
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -112,9 +120,27 @@
 #     Adjust code to accommodate new (faster!) despike algorithm and efficient plausibility code
 #   Cove Sturtevant (2020-10-09)
 #     Add check that terms slated for QA/QC are in the data
+#   Cove Sturtevant (2021-02-04)
+#     Add option to copy one or more variables found in the input file to the output flags file
+#   Cove Sturtevant (2021-01-20)
+#     Applied internal parallelization
 ##############################################################################################
+library(foreach)
+library(doParallel)
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly=TRUE)
@@ -128,6 +154,7 @@ Para <-
       "FileSchmData",
       "FileSchmQf",
       base::paste0("TermTest", 2:100),
+      "VarAddFileQf",
       "DirSubCopy"
     ),
     log = log
@@ -178,6 +205,11 @@ names(ParaTest) <- termTest
 mapNameQf <- base::data.frame(nameTest=c('null','gap','range','step','spike','persistence'),
                               nameQf=c('qfNull','qfGap','qfRng','qfStep','qfSpk','qfPers'),stringsAsFactors = FALSE)
 
+# Retrieve variables to ignore in the flags files
+VarAddFileQf <- setdiff(Para$VarAddFileQf,'readout_time')
+log$debug(base::paste0('Variables from input files to be added to the output flags files: ',
+                       base::paste0(VarAddFileQf,collapse=',')))
+
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'data'))
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
@@ -190,7 +222,8 @@ log$debug(base::paste0('Expected subdirectories of each datum path: ',base::past
 DirIn <- NEONprocIS.base::def.dir.in(DirBgn=Para$DirIn,nameDirSub=nameDirSub,log=log)
 
 # Process each datum path
-for(idxDirIn in DirIn){
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
@@ -239,7 +272,9 @@ for(idxDirIn in DirIn){
   valiData <-
     NEONprocIS.base::def.validate.dataframe(dfIn = data,
                                             TestNameCol = base::unique(c(
-                                              'readout_time', termTest
+                                              'readout_time', 
+                                              termTest,
+                                              VarAddFileQf
                                             )),
                                             log = log)
   if(valiData != TRUE){
@@ -445,16 +480,16 @@ for(idxDirIn in DirIn){
   qf <- base::do.call(base::rbind.data.frame, base::list(qf,make.row.names = FALSE,stringsAsFactors=FALSE))
   base::names(qf) <- base::sub(pattern='.',replacement='',x=base::names(qf),fixed=TRUE) # Get rid of the '.' between the term name and the flag name
   
-  # Add in the time variable
-  qf <- base::cbind(base::data.frame(readout_time=base::as.POSIXct(data$readout_time)),qf)
+  # Use as.integer in order to write out as integer with the avro schema
+  qf <- base::apply(X=qf,MARGIN=2,FUN=base::as.integer)
   
+  # Add in the time variable and any variables we want to copy into the flags files
+  qf <- base::cbind(data['readout_time'],qf,base::subset(data,select=VarAddFileQf))
+
   # Retain only the flags and data for the data date we are interested in
   setKeep <- qf$readout_time >= timeBgn & qf$readout_time < timeBgn+base::as.difftime(1,units='days')
   qf <- qf[setKeep,]
   dataOut <- dataOut[setKeep,]
-  
-  # Use as.integer in order to write out as integer with the avro schema
-  qf[,2:base::ncol(qf)] <- base::apply(X=base::subset(x=qf,select=2:base::ncol(qf)),MARGIN=2,FUN=base::as.integer)
   
   
   # Determine the input filename we will base our output filename on - it is the filename with this data day embedded
@@ -482,7 +517,7 @@ for(idxDirIn in DirIn){
   # Write the data
   NameFileOut <- base::paste0(idxDirOutData,'/',fileDataOut)
   rptData <- base::try(NEONprocIS.base::def.wrte.parq(data=dataOut,NameFile=NameFileOut,NameFileSchm=NULL,Schm=idxSchmDataOut),silent=TRUE)
-  if(base::class(rptData) == 'try-error'){
+  if(base::any(base::class(rptData) == 'try-error')){
     log$error(base::paste0('Cannot write Quality controlled data in file ', NameFileOut,'. ',attr(rptData,"condition"))) 
     stop()
   } else {
@@ -492,12 +527,14 @@ for(idxDirIn in DirIn){
   # Write out the flags 
   NameFileOutQf <- NEONprocIS.base::def.file.name.out(nameFileIn = fileDataOut, prfx=base::paste0(idxDirOutQf,'/'), sufx='_flagsPlausibility')
   rptQf <- base::try(NEONprocIS.base::def.wrte.parq(data=qf,NameFile=NameFileOutQf,NameFileSchm=NULL,Schm=SchmQfOut),silent=TRUE)
-  if(base::class(rptQf) == 'try-error'){
+  if(base::any(base::class(rptQf) == 'try-error')){
     log$error(base::paste0('Cannot write plausibility flags  in file ', NameFileOutQf,'. ',attr(rptQf,"condition"))) 
     stop()
   } else {
     log$info(base::paste0('Basic plausibility flags written successfully in ',NameFileOutQf))
   }
+  
+  return()
 } # End loop around datum paths
 
 
