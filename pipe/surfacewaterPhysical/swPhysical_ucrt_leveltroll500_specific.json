@@ -3,8 +3,8 @@
     "name": "swPhysical_ucrt_leveltroll500_specific"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.troll.uncertainty.R","DirIn=$DIR_IN","DirOut=/pfs/out","WndwAgr=005|030","DirSubCopy=location|uncertainty_coef","FileSchmData=NA","FileSchmUcrt=NA"],
-    "image": "quay.io/battelleecology/neon-is-troll-uncertainty-r:v0.0.5",
+    "cmd": ["Rscript","/flow.troll.uncertainty.R","DirIn=$DIR_IN","DirOut=/pfs/out","Context=surfacewater","WndwInst=FALSE","WndwAgr=005|030","DirSubCopy=location|uncertainty_coef","FileSchmData=NA","FileSchmUcrt=NA"],
+    "image": "quay.io/battelleecology/neon-is-troll-uncertainty-r:v0.0.7",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

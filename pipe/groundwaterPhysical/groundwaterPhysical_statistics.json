@@ -9,8 +9,8 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmStat=NA",
-      "WndwAgr=030",
       "DirSubCopy=data|uncertainty_data",
+      "WndwAgr=030",
       "TermStat1=pressure:mean|minimum|maximum|variance|numPts|stdEr",
       "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr",
       "TermStat3=conductivity:mean|minimum|maximum|variance|numPts|stdEr",
@@ -26,7 +26,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "groundwaterPhysical_ucrt_troll_specific",
-          "glob": "/*/*/*/*"
+          "glob": "/*/*/*"
         }
   },
   "enable_stats": false,

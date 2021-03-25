@@ -24,7 +24,9 @@
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
 #' of DirIn.
 #' 
-#' 3. "WndwAgr=value", (optional) where value is the aggregation interval for which to compute unceratainty. It is 
+#' 3. "Context=value", where the value must be designated as either "surfacewater" or "groundwater".
+#' 
+#' 4. "WndwAgr=value", (optional) where value is the aggregation interval for which to compute unceratainty. It is 
 #' formatted as a 3 character sequence, typically representing the number of minutes over which to compute unceratainty 
 #' For example, "WndwAgr=001" refers to a 1-minute aggregation interval, while "WndwAgr=030" refers to a 
 #' 30-minute aggregation interval. Multiple aggregation intervals may be specified by delimiting with a pipe 
@@ -32,17 +34,16 @@
 #' It is assumed that the length of the file is one day. The aggregation interval must divide one day into 
 #' complete intervals. No uncertainty data will be output if both "WndwAgr" and "WndwInst" are NULL.
 #' 
-#' 4. "WndwInst=value", (optional) where value is the instantaneous data ouptut frequency, formatted as a 3 character 
-#' sequence. For example, "WndwInst=001" refers to a 1-minute sampling frequency. "WndwInst" must be included if instantaneous
-#' uncertainty data output is desired. No uncertainty data will be output if both "WndwAgr" and "WndwInst" are NULL.
+#' 5. "WndwInst=TRUE", (optional) set to TRUE to include instantaneous uncertainty data output. The defualt value is FALSE. 
+#' No uncertainty data will be output if both "WndwAgr" and "WndwInst" are NULL.
 #' 
-#' 5. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
+#' 6. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
 #' leveltroll500 (does not output conductivity) in your schema.
 #' 
-#' 6. "FileSchmUcrt=value" (optional), where values is the full path to the avro schema for the output uncertainty data 
+#' 7. "FileSchmUcrt=value" (optional), where values is the full path to the avro schema for the output uncertainty data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
@@ -72,9 +73,9 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/swPhysical_leveltroll500_qaqc_data_group')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_qaqc_data_group')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","WndwAgr=005|030")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030")
 #' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
@@ -90,7 +91,7 @@ log <- NEONprocIS.base::def.log.init()
 arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut"),NameParaOptn = c("DirSubCopy","FileSchmData","FileSchmUcrt","WndwInst","WndwAgr"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","Context"),NameParaOptn = c("DirSubCopy","FileSchmData","FileSchmUcrt","WndwInst","WndwAgr"),log = log)
 
 # Retrieve datum path. 
 DirBgn <- Para$DirIn # Input directory. 
@@ -120,12 +121,23 @@ if(base::is.null(FileSchmUcrtOut) || FileSchmUcrtOut == 'NA'){
   SchmUcrtOut <- base::paste0(base::readLines(FileSchmUcrtOut),collapse='')
 }
 
-# Retrieve instantaneous and aggregation intervals
-if(base::is.null(Para$WndwInst) || Para$WndwInst == 'NA'){
-  WndwInst <- NULL
+# Retrieve context
+if(Para$Context=="groundwater"){
+  Context<-"GW"
+}else if(Para$Context=="surfacewater"){
+  Context<-"SW"
 }else{
-  WndwInst <- base::as.difftime(base::as.numeric(Para$WndwInst),units="mins")
-  log$debug(base::paste0('Instantaneous interval(s), in minutes: ',base::paste0(WndwInst,collapse=',')))
+  log$fatal('Context must equal groundwater or surfacewater.')
+  stop()
+}
+log$debug(base::paste0('Outputs will be calculated for ',base::paste0(Para$Context,collapse=','),' data products.'))
+
+# Retrieve instantaneous and aggregation intervals
+if(base::is.null(Para$WndwInst) || Para$WndwInst == 'NA'|| Para$WndwInst == "FALSE"){
+  WndwInst <- FALSE
+}else{
+  WndwInst <- TRUE
+  log$debug(base::paste0('Instantaneous uncertainty data will be included in the output.'))
 }
 
 if(base::is.null(Para$WndwAgr) || Para$WndwAgr == 'NA'){
@@ -230,7 +242,7 @@ for (idxDirIn in DirIn){
       stop()
     }
   }
-  
+
   
   ###### Compute water table elevation. Function of calibrated pressure, gravity, and density of water
   density <- 999  #m/s2 #future mod: temperature corrected density; conductivity correct density
@@ -266,17 +278,12 @@ for (idxDirIn in DirIn){
     trollData$elevation<-trollData$sensorElevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
   }
   
-  #Define troll type and context
+  #Define troll type
   #include conductivity based on sensor type
   if(grepl("aquatroll",idxDirIn)){
     sensor<-"aquatroll200"
   }else{
     sensor<-"leveltroll500"
-  }
-  if(grepl("groundwater",idxDirIn)){
-    context<-"GW"
-  }else{ 
-    context<-"SW"
   }
   
   #Create dataframe for output data
@@ -289,7 +296,7 @@ for (idxDirIn in DirIn){
   dataOut <- dataOut[,dataCol]
   #Write out data
   rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
-                                                   NameFile = base::paste0(idxDirOutData,"/",context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet"), 
+                                                   NameFile = base::paste0(idxDirOutData,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet"), 
                                                    Schm = SchmDataOut),silent=FALSE)
   if(any(grepl('try-error',class(rptDataOut)))){
     log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
@@ -337,7 +344,7 @@ for (idxDirIn in DirIn){
   
   ######## Uncert for instantaneous 5-min groundwater aqua troll data #######
   #surface water does not have instantaneous L1 output
-  if(length(WndwInst)>0){
+  if(WndwInst==TRUE){
     if(sensor=="aquatroll200"){
       #temp and pressure uncert calculated earlier in pipeline
       #existing conductivity uncertainty is for raw values, need additional columns for specific conductivity
@@ -386,7 +393,7 @@ for (idxDirIn in DirIn){
     
     #write out instantaneous uncertainty data
     rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
-                                                          NameFile = base::paste0(idxDirOutUcrt,"/",context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_",WndwInst[1],"_minUcrt.parquet"), 
+                                                          NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_inst_ucrt.parquet"), 
                                                           Schm = SchmUcrtOut),silent=FALSE)
     
     if(any(grepl('try-error',class(ucrtOut_inst)))){
@@ -511,7 +518,7 @@ for (idxDirIn in DirIn){
       }
       ucrtOut_agr <- uncertaintyData[,ucrtCol_agr]
       #standardize column names
-      if(context=="GW"){
+      if(Context=="GW"){
         names(ucrtOut_agr)<- c("readout_time","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
       }else if(sensor=="aquatroll200"){
         names(ucrtOut_agr)<- c("readout_time","surfacewaterTempExpUncert","surfacewaterPressureExpUncert","surfacewaterElevExpUncert","surfacewaterCondExpUncert")
@@ -521,7 +528,7 @@ for (idxDirIn in DirIn){
       
       #Write out aggregate uncertainty data
       rptUcrtOut_Agr <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_agr, 
-                                                           NameFile = base::paste0(idxDirOutUcrt,"/",context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_",WndwAgr[idxWndwAgr],"_minUcrt.parquet"), 
+                                                           NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_",WndwAgr[idxWndwAgr],"min_ucrt.parquet"), 
                                                            Schm = SchmUcrtOut),silent=FALSE)
       
       if(any(grepl('try-error',class(rptUcrtOut_Agr)))){
