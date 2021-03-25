@@ -1,12 +1,11 @@
 ##############################################################################################
-#' @title Sensor-specific QA/QC for Single/Triple-Aspirated Air Temperature data products.
+#' @title Sensor-specific QA/QC for relative humidity data products.
 
 #' @author 
-#' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
+#' Edward Ayres \email{eayres@battelleecology.org} \cr
 
-#' @description Workflow. Sensor-specific QA/QC for Single/Triple-Aspirated Air Temperature data products. 
-#' Evaluates heater status and adequate flow through the aspirated shield considering the turbine speed of 
-#' the fan in the aspirated shield and the ambient wind speed. 
+#' @description Workflow. Sensor-specific QA/QC for relative humidity data products. 
+#' Evaluates error status of the sensor. 
 #' 
 #' This script is run at the command line with 6+ arguments. Each argument must be a string in 
 #' the format "Para=value", where "Para" is the intended parameter name and "value" is the value of 
