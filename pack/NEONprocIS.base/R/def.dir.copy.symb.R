@@ -1,11 +1,11 @@
 ##############################################################################################
-#' @title Copy all files in a directory with a symbolic link
+#' @title Copy a directory with a symbolic link
 
 #' @author 
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description 
-#' Definition function. Copy all files in a source directory to a destination directory with a symbolic link 
+#' Definition function. Copy a source directory to a destination directory with a symbolic link 
 
 #' @param DirSrc String vector. Source directories. All files in these source directories will be copied to the 
 #' destination directories. 
