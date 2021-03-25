@@ -1,21 +1,34 @@
 {
   "pipeline": {
-  "name": "waterQuality_exoconductivity_quality_metrics"
+    "name": "waterQuality_exoconductivity_quality_metrics"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.qm.dp0p.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQm=$FILE_SCHEMA_QM", "GrpQfAlph1=specificConductance:sensorNAQF|specificConductanceValidCalQF|specificCondSuspectCalQF|specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductanceStepQF|specificConductanceSpikeQF|specificConductancePersistQF","GrpQfBeta1=specificConductance:specificConductanceRangeQF","QfForc1=sensorNAQF:1:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductanceStepQF|specificConductanceSpikeQF|specificConductancePersistQF:-1","GrpQfBetaIgnr1=specificConductance:specificConductanceNullQF|sensorNAQF","Tmi=100"],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.4",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.qm.dp0p.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQm=$FILE_SCHEMA_QM",
+      "GrpQfAlph1=specificConductance:sensorNAQF|specificConductanceValidCalQF|specificCondSuspectCalQF|specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductanceStepQF|specificConductanceSpikeQF|specificConductancePersistQF",
+      "GrpQfBeta1=specificConductance:specificConductanceRangeQF",
+      "QfForc1=sensorNAQF:1:specificConductanceNullQF|specificConductanceGapQF|specificConductanceRangeQF|specificConductanceStepQF|specificConductanceSpikeQF|specificConductancePersistQF:-1",
+      "GrpQfBetaIgnr1=specificConductance:specificConductanceNullQF|sensorNAQF",
+      "Tmi=100"
+    ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.6",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "DEBUG"
-    }  
+    }
   },
   "input": {
     "cross": [
       {
         "pfs": {
           "name": "DIR_IN",
-        "repo": "waterQuality_exoconductivity_qaqc_flags_group",
+          "repo": "waterQuality_exoconductivity_qaqc_flags_group",
           "glob": "/*/*/*"
         }
       },

@@ -1,0 +1,49 @@
+{
+  "pipeline": {
+    "name": "prt_location_active_dates_assignment"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.loc.asgn.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileYear=$FILE_YEAR",
+      "TypeFile=namedLocation"
+    ],
+    "image": "quay.io/battelleecology/neon-is-loc-asgn-r:v0.0.2",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }
+  },
+  "input": {
+    "cross":[
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "location_loader",
+          "glob": "/prt/*"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_YEAR",
+          "repo": "data_source_prt_list_years",
+          "glob": "/data_years.txt"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "200M",
+    "cpu": 1
+  },
+  "parallelism_spec": {
+    "constant": "8"
+  }
+}

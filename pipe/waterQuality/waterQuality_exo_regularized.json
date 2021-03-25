@@ -3,19 +3,34 @@
     "name": "waterQuality_exo_regularized"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=data|flags|uncertainty_data","FileSchmRglr=NA", "MethRglr=CybiEcTimeMeas","WndwRglr=Trlg","IdxWndw=IdxWndwMin","DirSubCopy=uncertainty_coef|location|calibration","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
-    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.23",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "cmd": [
+      "Rscript",
+      "/flow.rglr.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirRglr=data|flags|uncertainty_data",
+      "FileSchmRglr=NA",
+      "MethRglr=CybiEcTimeMeas",
+      "WndwRglr=Trlg",
+      "IdxWndw=IdxWndwMin",
+      "DirSubCopy=uncertainty_coef|location|calibration",
+      "WndwRglr=Trlg",
+      "IdxWndw=IdxWndwMin"
+    ],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.27",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "DEBUG"
-    }  
+    }
   },
   "input": {
-      "pfs": {
-        "name": "DIR_IN",
-        "repo": "waterQuality_qaqc_sensor_na",
-        "glob": "/*/*/*"
-      }
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "waterQuality_qaqc_sensor_na",
+      "glob": "/*/*/*"
+    }
   },
   "enable_stats": false,
   "standby": true

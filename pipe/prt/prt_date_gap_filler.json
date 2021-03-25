@@ -29,7 +29,8 @@
       "LOCATION_SOURCE_TYPE_INDEX": "3",
       "LOCATION_YEAR_INDEX": "4",
       "LOCATION_MONTH_INDEX": "5",
-      "LOCATION_INDEX": "6",
+      "LOCATION_DAY_INDEX": "6",
+      "LOCATION_INDEX": "7",
       "EMPTY_FILE_TYPE_INDEX": "4"
     }
   },
@@ -52,17 +53,17 @@
             "pfs": {
               "name": "DATA_PATH",
               "repo": "prt_merge_data_by_location",
-              "glob": "/prt/(*)/(*)",
-              "joinOn": "$1/$2",
+              "glob": "/prt/(*)/(*)/(*)",
+              "joinOn": "$1/$2/$3",
               "empty_files": true
             }
           },
           {
             "pfs": {
               "name": "LOCATION_PATH",
-              "repo": "location_active_dates",
-              "glob": "/prt/(*)/(*)",
-              "joinOn": "$1/$2",
+              "repo": "prt_location_active_dates_assignment",
+              "glob": "/prt/(*)/(*)/(*)",
+              "joinOn": "$1/$2/$3",
               "empty_files": true
             }
           }

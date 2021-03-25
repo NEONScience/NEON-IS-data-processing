@@ -56,8 +56,8 @@
 #' For example, "FileSchmRglr=data:/path/to/schemaData.avsc|flags:NA" indicates that the regularized
 #' output from the data directory will be written with the schema /path/to/schemaData.avsc and the
 #' regularized output from the flags directory will be the same as the input files found in that
-#' directory.  NOTE: With the exception of the readout_time variable, any non-numeric data stream will
-#' be dropped in the regularized data. Ensure that the output schema reflects this constraint. Default
+#' directory.  NOTE: The choice of inputs RptTimeBin and DropNotNumc will add or remove columns from 
+#' the output. Ensure that the output schema reflects the behavior chosen in these parameters. Default
 #' value is NA.
 #'
 #' 5. "FreqRglr=value" (optional), where value is the regularization frequency in Hz. The value may be a single
@@ -104,8 +104,39 @@
 #' regularized with the IdxWndwMin index allocation method, and files in the flags directory will be
 #' regularized with the "Cntr" index allocation method. Default value is IdxWndwMin, and should be used
 #' in most cases.
+#' 
+#' 9. "RptTimeWndw=value" (optional), where value is logical TRUE or FALSE (default), and pertains to the 
+#' choices in eddy4R.base::def.rglr for input parameter RptTimeWndw. TRUE will output
+#' two additional columns at the end of the output data file for the start and end times of the time windows
+#' used in the regularization. Note that the output variable readout_time will be included in the output
+#' regardless of the choice made here, and will probably match the start time of the bin unless 
+#' MethRglr=CybiEcTimeMeas. The value in RptTimeWndw=value may be a single string, in which
+#' case it will apply to all terminal directories specified in the DirRglr argument, or multiple values
+#' in which case the argument is formatted as dir:value|dir:value...
+#' where dir is one of the directories specified in DirRglr and value is the selection of RptTimeWndw
+#' for the data in that directory. Multiple dir:value pairs are separated by pipes (|). For example,
+#' "RptTimeWndw=data:TRUE|flags:FALSE" indicates that the regularization windows will be added to the output
+#' files in the data directory, but will not be added to the output in the flags directory. Note that TRUE
+#' is typically used for instantaneous L1 output so that the start and end times of the regularization bins
+#' are used in place of the start and end times of the averaging intervals. The default names for the 
+#' additional output columns are timeWndwBgn and timeWndwEnd, corresponding to the start (inclusive) and end 
+#' (exclusive) times of the regularization bin for each output record. These may be renamed using the 
+#' schema provided in argument FileSchmRglr.
+#' 
+#' 10. "DropNotNumc=value" (optional), where value is logical TRUE (default) or FALSE, and pertains to the 
+#' choices in eddy4R.base::def.rglr for input parameter DropNotNumc. TRUE will drop
+#' all non-numeric columns prior to the regularization (except for readout_time). Dropped columns will 
+#' not be included in the output. The value may be a single string, in which
+#' case it will apply to all terminal directories specified in the DirRglr argument, or multiple values
+#' in which case the argument is formatted as dir:value|dir:value...
+#' where dir is one of the directories specified in DirRglr and value is the selection of DropNotNumc
+#' for the data in that directory. Multiple dir:value pairs are separated by pipes (|). For example,
+#' "DropNotNumc=data:TRUE|flags:FALSE" indicates that the non numeric columns will be dropped in the output 
+#' files in the data directory, but non-numeric columns will be retained (and regularized) for data in the 
+#' flags directory. Ensure that any schemas provided for the output files account for the choice(s) made
+#' here (i.e. there may be fewer columns if DropNotNumc=TRUE)
 #'
-#' 9. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 11. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the regularization folder in the input path that are to be copied with a
 #' symbolic link to the output path.
 #'
@@ -113,7 +144,7 @@
 #' which uses system environment variables if available.
 #'
 #' @return Regularized data output in Parquet format in DirOut, where DirOut directory
-#' replaces BASE_REPO but otherwise retains the child directory structure of the input path.
+#' replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -163,9 +194,30 @@
 #     pulled out some code into functions
 #   Cove Sturtevant (2020-04-15)
 #     switch read/write data from avro to parquet
+#   Cove Sturtevant (2021-02-02)
+#     add option to include the start and end times for the bins in the output
+#     add option to regularize non-numeric columns instead of dropping from output
+#     fix bug causing incorrect parameter assignment if regularization directories aren't 
+#        all in the same order in the input arguments
+#   Cove Sturtevant (2021-03-03)
+#     Applied internal parallelization
 ##############################################################################################
+library(foreach)
+library(doParallel)
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -181,16 +233,22 @@ Para <-
       "MethRglr",
       "WndwRglr",
       "IdxWndw",
-      "DirSubCopy"
+      "DirSubCopy",
+      "RptTimeWndw",
+      "DropNotNumc"
     ),
     ValuParaOptn = base::list(
       FileSchmRglr = "NA",
       FreqRglr = NA,
       MethRglr = "CybiEc",
       WndwRglr = "Trlg",
-      IdxWndw = "IdxWndwMin"
+      IdxWndw = "IdxWndwMin",
+      RptTimeWndw=FALSE,
+      DropNotNumc=TRUE
     ),
-    TypePara = base::list(FreqRglr = "numeric"),
+    TypePara = base::list(
+      FreqRglr = "numeric"
+    ),
     log = log
   )
 
@@ -225,6 +283,7 @@ for (idxSchmRglr in 1:base::length(Para$DirRglr)) {
                    collapse = '')
   }
 }
+SchmRglr <- SchmRglr[base::match(Para$DirRglr, SchmRglr$DirRglr),]
 
 # Retrieve regularization frequency
 log$debug(base::paste0(
@@ -240,6 +299,7 @@ FreqRglr <-
     Type = c('character', 'numeric'),
     log = log
   )
+FreqRglr <- FreqRglr[base::match(Para$DirRglr, FreqRglr$DirRglr),]
 
 # Retrieve regularization method
 log$debug(base::paste0(
@@ -254,6 +314,7 @@ MethRglr <-
     NameCol = c('DirRglr', 'MethRglr'),
     log = log
   )
+MethRglr <- MethRglr[base::match(Para$DirRglr, MethRglr$DirRglr),]
 
 # Retrieve windowing parameter
 log$debug(base::paste0(
@@ -268,6 +329,7 @@ WndwRglr <-
     NameCol = c('DirRglr', 'WndwRglr'),
     log = log
   )
+WndwRglr <- WndwRglr[base::match(Para$DirRglr, WndwRglr$DirRglr),]
 
 # Retrieve Index allocation method
 log$debug(base::paste0(
@@ -282,9 +344,49 @@ IdxWndw <-
     NameCol = c('DirRglr', 'IdxWndw'),
     log = log
   )
+IdxWndw <- IdxWndw[base::match(Para$DirRglr, IdxWndw$DirRglr),]
+
+# Retrieve choice to output regularization windows
+log$debug(base::paste0(
+  'Choice(s) to report regularization windows in the output: ',
+  base::paste0(Para$RptTimeWndw, collapse = ',')
+))
+RptTimeWndw <-
+  NEONprocIS.base::def.vect.pars.pair(
+    vect = Para$RptTimeWndw,
+    KeyExp = Para$DirRglr,
+    ValuDflt = FALSE,
+    NameCol = c('DirRglr', 'RptTimeWndw'),
+    Type = c('character', 'logical'),
+    log = log
+  )
+RptTimeWndw <- RptTimeWndw[base::match(Para$DirRglr, RptTimeWndw$DirRglr),]
+
+# Retrieve choice to drop non-numeric columns from output
+log$debug(base::paste0(
+  'Choice(s) to drop non-numeric columns from output: ',
+  base::paste0(Para$DropNotNumc, collapse = ',')
+))
+DropNotNumc <-
+  NEONprocIS.base::def.vect.pars.pair(
+    vect = Para$DropNotNumc,
+    KeyExp = Para$DirRglr,
+    ValuDflt = TRUE,
+    NameCol = c('DirRglr', 'DropNotNumc'),
+    Type = c('character', 'logical'),
+    log = log
+  )
+DropNotNumc <- DropNotNumc[base::match(Para$DirRglr, DropNotNumc$DirRglr),]
 
 # Group all the regularization parameters into a single data frame
-ParaRglr = base::cbind(SchmRglr, FreqRglr['FreqRglr'], MethRglr['MethRglr'], WndwRglr['WndwRglr'], IdxWndw['IdxWndw'])
+ParaRglr = base::cbind(
+  SchmRglr, 
+  FreqRglr['FreqRglr'], 
+  MethRglr['MethRglr'], 
+  WndwRglr['WndwRglr'], 
+  IdxWndw['IdxWndw'],
+  RptTimeWndw['RptTimeWndw'],
+  DropNotNumc['DropNotNumc'])
 expcLoc <-
   base::any(base::is.na(ParaRglr$FreqRglr)) # Do we need location info?
 
@@ -316,7 +418,8 @@ DirIn <-
                               log = log)
 
 # Process each datum
-for (idxDirIn in DirIn) {
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing datum path: ', idxDirIn))
   
   # Gather info about the input directory (including date) and create the output directory.
@@ -421,7 +524,7 @@ for (idxDirIn in DirIn) {
         base::try(NEONprocIS.base::def.read.parq(NameFile = fileIn,
                                                  log = log),
                   silent = FALSE)
-      if (base::class(data) == 'try-error') {
+      if (base::any(base::class(data) == 'try-error')) {
         log$error(base::paste0('File ', fileIn, ' is unreadable.'))
         stop()
       }
@@ -451,7 +554,9 @@ for (idxDirIn in DirIn) {
           FreqRglr = FreqRglrIdx,
           MethRglr = ParaRglr$MethRglr[idxRowParaRglr],
           WndwRglr = ParaRglr$WndwRglr[idxRowParaRglr],
-          IdxWndw = ParaRglr$IdxWndw[idxRowParaRglr]
+          IdxWndw = ParaRglr$IdxWndw[idxRowParaRglr],
+          DropNotNumc = ParaRglr$DropNotNumc[idxRowParaRglr],
+          RptTimeWndw = ParaRglr$RptTimeWndw[idxRowParaRglr]
         )
       
       # Make sure we return the regularized data as the same class it came in with
@@ -460,31 +565,29 @@ for (idxDirIn in DirIn) {
           base::class(data[[idxVarRglr]])
       }
       
-      # Add the readout time back in
+      # Add the readout time back in, and potentially the bin start and end times
       rpt <-
         base::data.frame(readout_time = dataRglr$timeRglr,
                          stringsAsFactors = FALSE)
       rpt <- base::cbind(rpt, dataRglr$dataRglr)
       
+      # Match the original column order (minus any variables we dropped)
+      setColOrd <- base::match(nameVarIn,base::names(rpt))
+      rpt <- rpt[,setColOrd[!is.na(setColOrd)]]
+      
+      # Tack on the time window start and end times to the end of the data frame
+      if(ParaRglr$RptTimeWndw[idxRowParaRglr] == TRUE){
+        rpt <- base::cbind(rpt, dataRglr$timeWndw)
+      }
+      
       # Remove any data points outside this day
       rpt <-
         rpt[rpt$readout_time >= BgnRglr & rpt$readout_time < EndRglr, ]
       
-      # If no output schema was provided, use the same schema as the input data
+      # select output schema
       if (base::is.na(ParaRglr$SchmRglr[idxRowParaRglr])) {
-        # Use the same schema as the input data to write the output data.
-        idxSchmRglr <- base::attr(data, 'schema')
-        
-        # Ensure output data has same columns as input data. Note that character columns
-        # are dropped in regularized output. NAs will be filled in here.
-        rpt <-
-          NEONprocIS.base::def.data.mapp.schm.parq(
-            data = rpt,
-            schm = idxSchmRglr,
-            ConvType = FALSE,
-            log = log
-          )
-        
+        # use the output data to generate a schema
+        idxSchmRglr <- base::attr(rpt, 'schema')
       } else {
         idxSchmRglr <- ParaRglr$SchmRglr[idxRowParaRglr]
       }
@@ -518,4 +621,5 @@ for (idxDirIn in DirIn) {
     } # End loop around files to regularize
   } # End loop around directories to regularize
   
-}
+  return()
+} # End loop around datum paths

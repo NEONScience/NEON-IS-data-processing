@@ -13,7 +13,7 @@ transform:
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
-  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.22
+  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.27
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

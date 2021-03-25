@@ -8,7 +8,7 @@
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m grouper.grouper_main" ],
     "env": {
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
       "RELATIVE_PATH_INDEX": "3"
     }
