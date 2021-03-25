@@ -8,6 +8,7 @@
       "/flow.cal.conv.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "FileSchmData=$FILE_SCHEMA_DATA",
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
       "TermQf=temperature|relative_humidity|dew_point",
       "TermFuncUcrt=temperature:def.ucrt.meas.cnst|relative_humidity:def.ucrt.meas.cnst|dew_point:def.ucrt.meas.rh.dew.frst.pt"
@@ -27,6 +28,13 @@
           "name": "DIR_IN",
           "repo": "hmp155_calibration_filter",
           "glob": "/hmp155/*/*/*/"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_DATA",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/hmp155_calibrated.avsc"
         }
       },
       {
