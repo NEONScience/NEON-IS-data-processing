@@ -53,7 +53,7 @@ test_that("   Read sensor locations json file and return the geolocation history
 
   testDir = "testdataJson/"
 
-  # Happy path #1:Read sensor locations json file and return the geolocation history of all the configured locations within the file
+  # Happy path #1:a valid location json with location_properties 
 
   cat("\n       |=====================================   Test Summary   ====================================|\n")
   cat("\n       |== a location json with location_properties        ==|\n")
@@ -65,7 +65,7 @@ test_that("   Read sensor locations json file and return the geolocation history
   testthat::expect_true (is.list(locGeoHist))
   testthat::expect_match(names(locGeoHist), locMeta$name) 
 
-    # Happy path #2: a location json with StartDate and with EndDate
+ # Happy path #2: a location json with StartDate and with EndDate
  
   cat("\n       |== a location json with StartDate and with EndDate ==|\n")
   testFile = 'locations-wStartDate-wEndDate.json'
