@@ -19,7 +19,7 @@ input:
   pfs:
     name: IN_PATH
     repo: tchain_date_gap_filler_linker
-    glob: "/tchain/*/*"
+    glob: "/tchain/*/*/*"
     empty_files: true
 enable_stats: false
 standby: true

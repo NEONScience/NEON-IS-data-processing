@@ -11,7 +11,7 @@ transform:
   - FileSchmQf=$FILE_SCHEMA_FLAGS
   - TermQf=depth0WaterTemp|depth1WaterTemp|depth2WaterTemp|depth3WaterTemp|depth4WaterTemp|depth5WaterTemp|depth6WaterTemp|depth7WaterTemp|depth8WaterTemp|depth9WaterTemp|depth10WaterTemp
   - TermFuncUcrt=depth0WaterTemp:def.ucrt.meas.cnst|depth1WaterTemp:def.ucrt.meas.cnst|depth2WaterTemp:def.ucrt.meas.cnst|depth3WaterTemp:def.ucrt.meas.cnst|depth4WaterTemp:def.ucrt.meas.cnst|depth5WaterTemp:def.ucrt.meas.cnst|depth6WaterTemp:def.ucrt.meas.cnst|depth7WaterTemp:def.ucrt.meas.cnst|depth8WaterTemp:def.ucrt.meas.cnst|depth9WaterTemp:def.ucrt.meas.cnst|depth10WaterTemp:def.ucrt.meas.cnst
-  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.42
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -20,7 +20,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: tchain_calibration_filter
+      repo: tchain_array_parser
       glob: /tchain/*/*/*/
   - pfs:
       name: FILE_SCHEMA_DATA
