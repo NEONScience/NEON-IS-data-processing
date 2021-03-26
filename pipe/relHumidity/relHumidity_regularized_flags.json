@@ -1,0 +1,26 @@
+{
+  "pipeline": {
+    "name": "relHumidity_regularized_flags"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=flags","FileSchmRglr=NA", "FreqRglr=0.5","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.23",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }  
+  },
+  "input": {
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "relHumidity_calibrated_flags",
+      "glob": "/hmp155/*/*"
+    }
+  },
+  "enable_stats": false,
+    "standby": true,
+    "resource_requests": {
+      "memory": "20M",
+      "cpu": 0.25
+    }
+}

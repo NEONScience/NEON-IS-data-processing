@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Location Filter
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.62
+FROM quay.io/battelleecology/neon-is-base-r:v0.0.64
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

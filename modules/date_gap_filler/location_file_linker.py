@@ -12,6 +12,11 @@ log = structlog.get_logger()
 
 
 class LocationFileLinker:
+    """
+    Class to link location files from the input repository into the output
+    repository. If the day is missing from a location file path empty placeholder
+    files are linked into each day for the month containing the missing day.
+    """
 
     def __init__(self, config: DateGapFillerConfig) -> None:
         self.config = config

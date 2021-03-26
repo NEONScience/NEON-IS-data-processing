@@ -1,0 +1,37 @@
+{
+  "pipeline": {
+    "name": "csat3_structure_repo_by_location"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.loc.repo.strc.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "Comb=TRUE"
+    ],
+    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.12",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }
+  },
+  "input": {
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "csat3_data_location_group",
+      "glob": "/csat3/*/*/*"
+    }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "1"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}
