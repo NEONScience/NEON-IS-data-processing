@@ -24,8 +24,8 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "hmp155_named_location_filter",
-      "glob": "/*/*/*",
+      "repo": "hmp155_date_gap_filler_linker",
+      "glob": "/hmp155/*/*/*",
       "empty_files": true
     }
   },
