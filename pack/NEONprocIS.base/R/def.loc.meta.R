@@ -47,6 +47,8 @@
 #     original creation
 #   Cove Sturtevant (2020-07-16)
 #     output source_type and source_id from location file
+#   Cove Sturtevant (2021-03-16)
+#     Add parsing of active periods
 ##############################################################################################
 def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NULL){
 
@@ -96,6 +98,11 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   # Properties of each named location listed in the locations file
   # Lists the named location, site, install_date, remove_date, active periods
   locProp <- geojsonsf::geojson_sf(NameFile) # data frame
+  if(!base::is.data.frame(locProp) || base::nrow(locProp) == 0){
+    log$error(base::paste0('There is no relevant location information in file ',NameFile,'. Returning empty output...'))
+    return(rpt)
+  }
+  
   if(!base::is.null(locProp$install_date)){
     locProp$install_date <- base::as.POSIXct(locProp$install_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
   } else {
@@ -164,21 +171,50 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
       ctxt <- NA
     }
     
-    rpt <- base::rbind(rpt,base::data.frame(name=locProp$name[idxLoc],
-                                            site=locProp$site[idxLoc],
-                                            source_type=srcType,
-                                            source_id=srcId,
-                                            install_date=locProp$install_date[idxLoc],
-                                            remove_date=locProp$remove_date[idxLoc],
-                                            transaction_date=locProp$transaction_date[idxLoc],
-                                            context=ctxt,
-                                            active_periods=locProp$active_periods[idxLoc],
-                                            location_id=propFill[['Required Asset Management Location ID']],
-                                            location_code=propFill[['Required Asset Management Location Code']],
-                                            HOR=propFill$HOR,
-                                            VER=propFill$VER,
-                                            dataRate=propFill[['Data Rate']],
-                                            stringsAsFactors = FALSE))
+    # Parse any active dates
+    if(!base::is.na(locProp$active_periods[idxLoc])){
+
+      timeActvList <- rjson::fromJSON(json_str=locProp$active_periods[idxLoc])
+      timeActvChar <- base::unlist(timeActvList)
+      typeTime <- base::names(timeActvChar)
+      numBgn <- base::sum(typeTime=='start_date')
+      numEnd <- base::sum(typeTime=='end_date')
+      dmmyChar <- base::rep(NA,times=base::max(numBgn,numEnd))
+      
+      # Make a data frame
+      timeActv <- base::data.frame(start_date=dmmyChar,end_date=dmmyChar,stringsAsFactors = FALSE)
+      timeActv$start_date[base::seq_len(numBgn)] <- timeActvChar[typeTime=='start_date']
+      timeActv$end_date[base::seq_len(numEnd)] <- timeActvChar[typeTime=='end_date']
+      
+      # Convert to POSIX
+      timeActv$start_date <- base::as.POSIXct(timeActv$start_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
+      timeActv$end_date <- base::as.POSIXct(timeActv$end_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
+      
+      # put in a list so we can embed it in the data frame
+      timeActv <- base::list(timeActv)
+      
+    } else {
+      timeActv <- NA
+    }
+    
+    rptIdx <- base::data.frame(name=locProp$name[idxLoc],
+                                    site=locProp$site[idxLoc],
+                                    source_type=srcType,
+                                    source_id=srcId,
+                                    install_date=locProp$install_date[idxLoc],
+                                    remove_date=locProp$remove_date[idxLoc],
+                                    transaction_date=locProp$transaction_date[idxLoc],
+                                    context=ctxt,
+                                    active_periods=NA,
+                                    location_id=propFill[['Required Asset Management Location ID']],
+                                    location_code=propFill[['Required Asset Management Location Code']],
+                                    HOR=propFill$HOR,
+                                    VER=propFill$VER,
+                                    dataRate=propFill[['Data Rate']],
+                                    stringsAsFactors = FALSE)
+    rptIdx$active_periods <- timeActv # Add in the (potential) data frame of active periods.
+    
+    rpt <- base::rbind(rpt,rptIdx)
   }
   
   return(rpt)

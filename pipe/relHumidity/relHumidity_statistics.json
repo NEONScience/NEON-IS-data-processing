@@ -1,0 +1,48 @@
+{
+  "pipeline": {
+    "name": "relHumidity_statistics"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.stat.basc.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmStat=$FILE_SCHEMA_STATS",
+      "WndwAgr=001|030",
+      "TermStat1=temp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)"
+      ],
+    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.13",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "relHumidity_pre_statistics_group",
+          "glob": "/hmp155/*/*/*"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_STATS",
+          "repo": "avro_schemas",
+          "glob": "/dp01/relHumidity_dp01_stats.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}

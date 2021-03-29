@@ -16,7 +16,7 @@
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO",
-      "PARALLELIZATION_INTERNAL": "2"
+      "PARALLELIZATION_INTERNAL": "4"
     }  
   },
   "input": {
@@ -24,7 +24,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "tempAirSingle_statistics_uncertainty_group",
+          "repo": "tempAirSingle_pre_statistics_group",
           "glob": "/*/*/*"
         }
       },
@@ -40,10 +40,10 @@
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
-    "memory": "200Mi",
-    "cpu": 0
+    "memory": "1400Mi",
+    "cpu": 4
   }
 }

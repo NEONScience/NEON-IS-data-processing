@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempSoil_threshold_regularized_group"
+    "name": "relHumidity_threshold_regularized_group"
   },
   "transform": {
     "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
@@ -19,8 +19,8 @@
       {
         "pfs": {
           "name": "REGULARIZED_PATH",
-          "repo": "tempSoil_regularized_data",
-          "glob": "/prt/(*)/(*)/(*)",
+          "repo": "relHumidity_regularized_data",
+          "glob": "/hmp155/(*)/(*)/(*)",
           "joinOn": "$1/$2/$3",
           "empty_files": true
         } 
@@ -28,8 +28,8 @@
       {
         "pfs": {
           "name": "THRESHOLD_PATH",
-          "repo": "tempSoil_threshold_select",
-          "glob": "/prt/(*)/(*)/(*)",
+          "repo": "relHumidity_threshold_select",
+          "glob": "/hmp155/(*)/(*)/(*)",
           "joinOn": "$1/$2/$3",
           "empty_files": true
         }
