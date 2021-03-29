@@ -18,12 +18,12 @@ transform:
             name: REGULARIZED_PATH
             glob_pattern: /pfs/REGULARIZED_PATH/**
             # Join on year and month
-            join_indices: [3, 4, 5, 6]
+            join_indices: [7]
         - path:
             name: THRESHOLD_PATH
             glob_pattern: /pfs/THRESHOLD_PATH/**
             # Join on year and month
-            join_indices: [3, 4, 5, 6]
+            join_indices: [7]
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
@@ -32,14 +32,14 @@ input:
   - pfs:
       name: REGULARIZED_PATH
       repo: surfacewaterPhysical_regularized_data
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*)/(*)/(*)/(*)
+      joinOn: $1/$2/$3/$4
       empty_files: true
   - pfs:
       name: THRESHOLD_PATH
       repo: surfacewaterPhysical_threshold_select
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*)/(*)/(*)/(*)
+      joinOn: $1/$2/$3/$4
       empty_files: true
 parallelism_spec:
   constant: "1"

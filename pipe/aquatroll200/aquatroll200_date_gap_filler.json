@@ -3,80 +3,74 @@
     "name": "aquatroll200_date_gap_filler"
   },
   "transform": {
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "image": "quay.io/battelleecology/date_gap_filler:9",
     "cmd": [
       "/bin/bash"
     ],
-    "env": {
-      "DATA_DAY_INDEX": "6",
-      "DATA_LOCATION_INDEX": "7",
-      "DATA_MONTH_INDEX": "5",
-      "DATA_SOURCE_TYPE_INDEX": "3",
-      "DATA_TYPE_INDEX": "8",
-      "DATA_YEAR_INDEX": "4",
-      "EMPTY_FILE_TYPE_INDEX": "4",
-      "END_DATE": "2020-01-07",
-      "LOCATION_INDEX": "6",
-      "LOCATION_MONTH_INDEX": "5",
-      "LOCATION_SOURCE_TYPE_INDEX": "3",
-      "LOCATION_YEAR_INDEX": "4",
-      "LOG_LEVEL": "DEBUG",
-      "OUTPUT_DIRECTORIES": "data,uncertainty_data,uncertainty_coef,flags",
-      "OUT_PATH": "/pfs/out",
-      "START_DATE": "2019-12-31"
-    },
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
     "stdin": [
       "#!/bin/bash",
       "python3 -m date_gap_filler.date_gap_filler_main"
-    ]
+    ],
+    "env": {
+      "LOG_LEVEL": "DEBUG",
+      "OUT_PATH": "/pfs/out",
+      "START_DATE": "2019-12-31",
+      "END_DATE": "2020-01-06",
+      "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags",
+      "DATA_SOURCE_TYPE_INDEX": "3",
+      "DATA_YEAR_INDEX": "4",
+      "DATA_MONTH_INDEX": "5",
+      "DATA_DAY_INDEX": "6",
+      "DATA_LOCATION_INDEX": "7",
+      "DATA_TYPE_INDEX": "8",
+      "LOCATION_SOURCE_TYPE_INDEX": "3",
+      "LOCATION_YEAR_INDEX": "4",
+      "LOCATION_MONTH_INDEX": "5",
+      "LOCATION_DAY_INDEX": "6",
+      "LOCATION_INDEX": "7",
+      "EMPTY_FILE_TYPE_INDEX": "4"
+    }
   },
   "parallelism_spec": {
-    "constant": "8"
+    "constant": "1"
   },
-  "output_branch": "master",
   "input": {
     "cross": [
       {
-        "union": [
+        "pfs": {
+          "name": "EMPTY_FILE_PATH",
+          "repo": "empty_files",
+          "glob": "/aquatroll200",
+          "empty_files": true
+        }
+      },
+      {
+        "join": [
           {
             "pfs": {
               "name": "DATA_PATH",
               "repo": "aquatroll200_merge_data_by_location",
-              "branch": "master",
-              "glob": "/aquatroll200/(*)/(*)",
-              "join_on": "$1/$2",
+              "glob": "/aquatroll200/(*)/(*)/(*)",
+              "joinOn": "$1/$2/$3",
               "empty_files": true
             }
           },
           {
             "pfs": {
               "name": "LOCATION_PATH",
-              "repo": "location_active_dates",
-              "branch": "master",
-              "glob": "/aquatroll200/(*)/(*)",
-              "join_on": "$1/$2",
+              "repo": "aquatroll200_location_active_dates_assignment",
+              "glob": "/aquatroll200/(*)/(*)/(*)",
+              "joinOn": "$1/$2/$3",
               "empty_files": true
             }
           }
         ]
-      },
-      {
-        "pfs": {
-          "name": "EMPTY_FILE_PATH",
-          "repo": "empty_files",
-          "branch": "master",
-          "glob": "/aquatroll200",
-          "empty_files": true
-        }
       }
     ]
   },
-  "cache_size": "64M",
-  "max_queue_size": "1",
-  "salt": "85def3f642b84f4cb629b5a05cfa4fce",
-  "standby": true,
-  "datum_tries": "3"
+  "enable_stats": false,
+  "standby": true
 }

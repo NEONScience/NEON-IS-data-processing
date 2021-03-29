@@ -14,7 +14,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "groundwaterPhysical_calibrated_flags",
-      "glob": "/*/*/*/*"
+      "glob": "/aquatroll200/*/*/*"
     }
   },
   "enable_stats": false,

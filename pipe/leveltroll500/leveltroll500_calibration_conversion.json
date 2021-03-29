@@ -25,7 +25,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "leveltroll500_calibration_filter",
+          "repo": "leveltroll500_data_calibration_group",
           "glob": "/leveltroll500/*/*/*/"
         }
       },

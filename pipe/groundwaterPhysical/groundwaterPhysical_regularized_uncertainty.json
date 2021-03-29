@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "groundwaterPhysical_uncertainty_data",
-          "glob": "/*/*/*/*"
+          "glob": "/aquatroll200/*/*/*"
         }
       }
     ]
@@ -24,7 +24,7 @@
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
       "memory": "20M",

@@ -27,7 +27,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "swPhysical_ucrt_leveltroll500_specific",
-          "glob": "/*/*/*"
+          "glob": "/leveltroll500/*/*/*"
         }
       }
     ]
@@ -35,7 +35,7 @@
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
     "memory": "200Mi",

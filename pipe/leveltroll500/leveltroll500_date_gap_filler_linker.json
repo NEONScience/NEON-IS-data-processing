@@ -23,7 +23,7 @@
     }
   },
   "parallelism_spec": {
-    "constant": "4"
+    "constant": "1"
   },
   "input": {
     "pfs": {

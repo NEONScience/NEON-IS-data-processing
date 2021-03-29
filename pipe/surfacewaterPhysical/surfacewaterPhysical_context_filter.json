@@ -21,14 +21,14 @@
       {
         "pfs": {
           "name": "IN_PATH",
-          "repo": "aquatroll200_named_location_filter",
+          "repo": "aquatroll200_date_gap_filler_linker",
           "glob": "/aquatroll200/*/*/*"
        }
       },
       {
         "pfs": {
           "name": "IN_PATH",
-          "repo": "leveltroll500_named_location_filter",
+          "repo": "leveltroll500_date_gap_filler_linker",
           "glob": "/leveltroll500/*/*/*"
         }
       }

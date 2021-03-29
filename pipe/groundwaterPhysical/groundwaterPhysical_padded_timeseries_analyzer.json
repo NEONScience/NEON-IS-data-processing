@@ -27,7 +27,7 @@
       "name": "DATA_PATH",
       "repo": "groundwaterPhysical_timeseries_padder",
       "branch": "master",
-      "glob": "/*/*/*/*"
+      "glob": "/aquatroll200/*/*/*"
     }
   },
   "standby": true,

@@ -14,7 +14,7 @@
       "TermQf=pressure|temperature|conductivity",
       "TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst|conductivity:def.ucrt.meas.cnst"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.37",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
@@ -25,7 +25,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "aquatroll200_calibration_filter",
+          "repo": "aquatroll200_data_calibration_group",
           "glob": "/aquatroll200/*/*/*/"
         }
       },

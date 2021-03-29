@@ -31,7 +31,7 @@
       "name": "DATA_PATH",
       "repo": "groundwaterPhysical_threshold_regularized_group",
       "branch": "master",
-      "glob": "/*/*/*/*"
+      "glob": "/aquatroll200/*/*/*"
     }
   },
   "standby": true,

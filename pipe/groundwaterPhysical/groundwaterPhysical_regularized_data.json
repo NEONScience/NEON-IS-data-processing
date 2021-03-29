@@ -3,7 +3,17 @@
     "name": "groundwaterPhysical_regularized_data"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=data","FileSchmRglr=$FILE_SCHEMA_RGLR","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
+    "cmd": [
+      "Rscript",
+      "/flow.rglr.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirRglr=data",
+      "FileSchmRglr=$FILE_SCHEMA_RGLR",
+      "MethRglr=CybiEc",
+      "WndwRglr=Trlg",
+      "IdxWndw=IdxWndwMin"
+      ],
     "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.26",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
@@ -16,7 +26,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "groundwaterPhysical_calibrated_data",
-          "glob": "/*/*/*/*"
+          "glob": "/aquatroll200/*/*/*"
         }
       },
       {
@@ -32,7 +42,7 @@
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
       "memory": "20M",

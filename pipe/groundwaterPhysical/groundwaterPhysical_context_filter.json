@@ -17,22 +17,11 @@
     }
   },
   "input": {
-    "union": [
-      {
-        "pfs": {
-          "name": "IN_PATH",
-          "repo": "aquatroll200_named_location_filter",
-          "glob": "/aquatroll200/*/*/*"
-       }
-      },
-      {
-        "pfs": {
-          "name": "IN_PATH",
-          "repo": "leveltroll500_named_location_filter",
-          "glob": "/leveltroll500/*/*/*"
-        }
-      }
-    ]
+    "pfs": {
+      "name": "IN_PATH",
+      "repo": "aquatroll200_date_gap_filler_linker",
+      "glob": "/aquatroll200/*/*/*"
+   }
   },
   "enable_stats": false,
   "standby": true,

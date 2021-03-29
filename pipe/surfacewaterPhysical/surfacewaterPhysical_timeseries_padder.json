@@ -31,7 +31,7 @@
       "name": "DATA_PATH",
       "repo": "surfacewaterPhysical_threshold_regularized_group",
       "branch": "master",
-      "glob": "/*/*/*/*/"
+      "glob": "/*/*/*/*"
     }
   },
   "standby": true,

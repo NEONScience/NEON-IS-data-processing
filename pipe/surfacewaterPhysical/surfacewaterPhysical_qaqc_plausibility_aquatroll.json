@@ -16,7 +16,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "surfacewaterPhysical_padded_timeseries_analyzer",
-          "glob": "/aquatroll200/*/*/*/*"
+          "glob": "/aquatroll200/*/*/*"
         }
       },
       {
