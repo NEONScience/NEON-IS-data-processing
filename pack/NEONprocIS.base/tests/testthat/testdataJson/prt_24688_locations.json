@@ -1,0 +1,145 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC101754",
+                "site": "CPER",
+                "install_date": "2016-06-07T06:00:00Z",
+                "remove_date": null,
+                "context": [
+                    "soil"
+                ],
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": null,
+                            "properties": {
+                                "start_date": "2010-01-01T00:00:00Z",
+                                "end_date": null,
+                                "alpha": 2,
+                                "beta": 0,
+                                "gamma": 45,
+                                "x_offset": 0.5,
+                                "y_offset": 2.8,
+                                "z_offset": -1.96,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "SOILPL100212",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Polygon",
+                                                        "coordinates": [
+                                                            [
+                                                                -104.74572,
+                                                                40.81567,
+                                                                1654.5211512
+                                                            ],
+                                                            [
+                                                                -104.74568,
+                                                                40.8157,
+                                                                1654.1166816
+                                                            ],
+                                                            [
+                                                                -104.74572,
+                                                                40.81573,
+                                                                1654.0980888
+                                                            ],
+                                                            [
+                                                                -104.74576,
+                                                                40.8157,
+                                                                1654.4732976
+                                                            ],
+                                                            [
+                                                                -104.74572,
+                                                                40.81567,
+                                                                1654.5211512
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2015-02-01T00:00:00Z",
+                                                        "end_date": null,
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": null,
+                                                        "location_properties": [
+                                                            [
+                                                                "UTM Zone",
+                                                                "13N"
+                                                            ]
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": null,
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": "2015-01-31T23:59:59Z",
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": null,
+                                                        "location_properties": []
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "location_properties": [
+                                    [
+                                        "UTM Zone",
+                                        "13N"
+                                    ],
+                                    [
+                                        "Geodetic datum",
+                                        "WGS84"
+                                    ],
+                                    [
+                                        "Country",
+                                        "USA"
+                                    ],
+                                    [
+                                        "State province",
+                                        "CO"
+                                    ],
+                                    [
+                                        "County",
+                                        "Weld"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "Required Asset Management Location ID": 3103,
+            "Required Asset Management Location Code": "CFGLOC101754",
+            "HOR": "001",
+            "VER": "509",
+            "TMI": "000",
+            "Data Rate": "0.1"
+        }
+    ],
+    "source_id": 24688,
+    "source_type": "prt"
+}
