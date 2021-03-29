@@ -12,7 +12,7 @@
     ],
     "stdin": [
       "#!/bin/bash",
-      "python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9"
+      "python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 4 --monthindex 5 --dayindex 6 --locindex 7 --subdirindex 8"
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
@@ -31,7 +31,7 @@
       "name": "DATA_PATH",
       "repo": "pressureAir_threshold_regularized_group",
       "branch": "master",
-      "glob": "/*/*/*"
+      "glob": "/ptb330a/*/*/*"
     }
   },
   "standby": true,

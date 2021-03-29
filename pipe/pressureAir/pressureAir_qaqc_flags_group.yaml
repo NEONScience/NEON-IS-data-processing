@@ -3,7 +3,7 @@ pipeline:
   name: pressureAir_qaqc_flags_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:6
+  image: quay.io/battelleecology/filter_joiner:9
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -16,43 +16,31 @@ transform:
       input_paths:
         - path:
             name: QAQC_PLAUSIBILITY_PATH
-            # Filter for flags directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
-            # Join on context group (already joined below by day)
-            join_indices: [6]
-        - path:
-            name: QAQC_SPECIFIC_PATH
-            # Filter for flags directory
-            glob_pattern: /pfs/QAQC_SPECIFIC_PATH/*/*/*/*/*/*/flags/**
-            # Join on context group (already joined below by day)
-            join_indices: [6]
+            # Filter for data directory
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/ptb330a/*/*/*/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
         - path:
             name: REGULARIZED_FLAGS_PATH
-            # Filter for flags directory
-            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
-            # Join on context group (already joined below by day)
-            join_indices: [6]
+            # Filter for data directory
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/ptb330a/*/*/*/*/flags/**
+            # Join on named location (already joined below by day
+            join_indices: [7]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
 input:
   join:
   - pfs:
       name: QAQC_PLAUSIBILITY_PATH
       repo: pressureAir_qaqc_plausibility
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: true
-  - pfs:
-      name: QAQC_SPECIFIC_PATH
-      repo: pressureAir_qaqc_specific
-      glob: /(*)/(*)/(*)
+      glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: REGULARIZED_FLAGS_PATH
       repo: pressureAir_regularized_flags
-      glob: /(*)/(*)/(*)
+      glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
 parallelism_spec:

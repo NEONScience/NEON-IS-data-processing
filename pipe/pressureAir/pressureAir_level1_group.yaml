@@ -18,12 +18,12 @@ transform:
             name: REGULARIZED_PATH
             glob_pattern: /pfs/STATISTICS_PATH/**
             # Join on context group (already joined by day below)
-            join_indices: [6]
+            join_indices: [7]
         - path:
             name: THRESHOLD_PATH
             glob_pattern: /pfs/QUALITY_METRICS_PATH/**
             # Join on context group (already joined by day below)
-            join_indices: [6]
+            join_indices: [7]
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
@@ -32,13 +32,13 @@ input:
   - pfs:
       name: STATISTICS_PATH
       repo: pressureAir_statistics
-      glob: /(*)/(*)/(*)
+      glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: QUALITY_METRICS_PATH
       repo: pressureAir_quality_metrics
-      glob: /(*)/(*)/(*)
+      glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
 parallelism_spec:

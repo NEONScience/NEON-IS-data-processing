@@ -17,7 +17,8 @@
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "4"
     }
   },
   "input": {

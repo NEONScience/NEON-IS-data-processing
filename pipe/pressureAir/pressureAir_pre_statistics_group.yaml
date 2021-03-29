@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: tempSoil_pre_statistics_group
+  name: pressureAir_pre_statistics_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:9
@@ -17,19 +17,13 @@ transform:
         - path:
             name: QAQC_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PATH/*/*/*/*/data/**
+            glob_pattern: /pfs/QAQC_PATH/ptb330a/*/*/*/*/data/**
             # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
             name: UNCERTAINTY_COEF_PATH
             # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/*/*/*/*/uncertainty_coef/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
-        - path:
-            name: UNCERTAINTY_DATA_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_DATA_PATH/*/*/*/*/uncertainty_data/**
+            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/ptb330a/*/*/*/*/uncertainty_coef/**
             # Join on named location (already joined below by day
             join_indices: [7]
     OUT_PATH: /pfs/out
@@ -40,19 +34,13 @@ input:
   - pfs:
       name: QAQC_PATH
       repo: pressureAir_qaqc_plausibility
-      glob: /(*)/(*)/(*)
+      glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: UNCERTAINTY_COEF_PATH
-      repo: pressureAir_related_location_group
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: true
-  - pfs:
-      name: UNCERTAINTY_DATA_PATH
-      repo: pressureAir_regularized_uncertainty_data
-      glob: /(*)/(*)/(*)
+      repo: ptb330a_date_gap_filler_linker
+      glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
 parallelism_spec:

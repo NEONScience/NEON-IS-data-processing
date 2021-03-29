@@ -27,7 +27,7 @@
       "name": "DATA_PATH",
       "repo": "pressureAir_timeseries_padder",
       "branch": "master",
-      "glob": "/*/*/*"
+      "glob": "/ptb330a/*/*/*"
     }
   },
   "standby": true,
