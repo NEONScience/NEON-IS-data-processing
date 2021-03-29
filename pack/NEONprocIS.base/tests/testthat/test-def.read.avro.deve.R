@@ -69,6 +69,6 @@ test_that("   Testing Filter named location information by date-time range", {
     testthat::equals(class(rpt$readout_time), "POSIXct")
     testthat::equals(class(rpt$resistance), "numeric")
     
-    
   }
-})
+}
+)
