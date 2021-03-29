@@ -1,0 +1,47 @@
+{
+  "pipeline": {
+    "name": "groundwaterPhysical_QM_inst"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.qm.dp0p.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "Tmi=001",
+      "VarTimeBgn=timeWndwBgn",
+      "VarTimeEnd=timeWndwEnd",
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF", 
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF",
+      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|zeroPressureQF",
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|zeroPressureQF",
+      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF",
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
+      ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.5",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "groundwaterPhysical_qaqc_flags_group",
+          "glob": "/aquatroll200/*/*/*"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}
