@@ -11,9 +11,9 @@
       "FileSchmStat=NA",
       "DirSubCopy=data|uncertainty_data",
       "WndwAgr=005|030",
-      "TermStat1=pressure:mean|minimum|maximum|variance|numPts|stdEr",
+      "TermStat1=pressure:minimum|maximum|variance|numPts|stdEr",
       "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr",
-      "TermStat3=elevation:mean|minimum|maximum|variance|numPts|stdEr"
+      "TermStat3=elevation:minimum|maximum|variance|numPts|stdEr"
       ],
     "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.17",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],

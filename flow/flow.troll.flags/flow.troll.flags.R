@@ -28,9 +28,14 @@
 #'        
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
 #' of DirIn.
-#' 
-#' 
-#' 3. "FileSchmQf=value" (optional), where values is the full path to the avro schema for the output flags file. 
+#'  
+#' 3. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
+#'
+#' 4. "FileSchmQf=value" (optional), where values is the full path to the avro schema for the output flags file. 
 #' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
 #' nested within term/variable). See below for details.
@@ -69,6 +74,8 @@
 #   Cove Sturtevant (2020-09-22)
 #     placed output flags in existing flags directory
 #     symbolically linked any files already in the flags directory to the output
+#   Nora Catolico (2020-08-01)
+#     added code to set pressure data to NA when zeroPressure flag is raised
 ##############################################################################################
 
 # Start logging
@@ -78,7 +85,7 @@ log <- NEONprocIS.base::def.log.init()
 arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut"),NameParaOptn = c("FileSchmQf"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut"),NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
 
 # Retrieve datum path. 
 DirBgn <- Para$DirIn # Input directory. 
@@ -88,27 +95,37 @@ log$debug(base::paste0('Input directory: ',DirBgn))
 DirOut <- Para$DirOut
 log$debug(base::paste0('Output directory: ',DirOut))
 
+# Retrieve output schema for Data
+FileSchmDataOut <- Para$FileSchmData
+log$debug(base::paste0('Output schema for flags: ',base::paste0(FileSchmDataOut,collapse=',')))
 
-# Retrieve output schema for flags; no need for new data schema
+# Read in the schema s
+if(base::is.null(FileSchmDataOut) || FileSchmDataOut == 'NA'){
+  SchmDataOut <- NULL
+} else {
+  SchmDataOut <- base::paste0(base::readLines(FileSchmDataOut),collapse='')
+}
+
+# Retrieve output schema for flags
 FileSchmQfOut <- Para$FileSchmQf
 log$debug(base::paste0('Output schema for flags: ',base::paste0(FileSchmQfOut,collapse=',')))
 
-# Read in the schema 
+# Read in the schema s
 if(base::is.null(FileSchmQfOut) || FileSchmQfOut == 'NA'){
   SchmQfOut <- NULL
 } else {
   SchmQfOut <- base::paste0(base::readLines(FileSchmQfOut),collapse='')
 }
 
+
 # Retrieve optional sensor subdirectories to copy over
-nameDirSubCopy <- c('data','uncertainty_coef','uncertainty_data')
-DirDataCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[1]))
-DirUncertCoefCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[3]))
-DirUncertDataCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[4]))
+nameDirSubCopy <- c('uncertainty_coef','uncertainty_data')
+DirUncertCoefCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[1]))
+DirUncertDataCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[2]))
 
 
 #what are the expected subdirectories of each input path
-nameDirSub <- c('data')
+nameDirSub <- c('data','flags')
 
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
@@ -134,14 +151,14 @@ for (idxDirIn in DirIn){
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
+  idxDirInData <- base::paste0(idxDirIn,'/data')
+  idxDirOutData <- base::paste0(idxDirOut,'/data')
+  base::dir.create(idxDirOutData,recursive=TRUE) 
   idxDirInFlags <- base::paste0(idxDirIn,'/flags')
   idxDirOutFlags <- base::paste0(idxDirOut,'/flags')
   base::dir.create(idxDirOutFlags,recursive=TRUE) 
   
   # Copy with a symbolic link the desired sensor subfolders 
-  if(base::length(DirDataCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/data'),idxDirOut,log=log)
-  } 
   if(base::length(DirUncertCoefCopy) > 0){
     NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/uncertainty_coef'),idxDirOut,log=log)
   } 
@@ -173,11 +190,41 @@ for (idxDirIn in DirIn){
     log$debug(base::paste0("One datum found, reading in: ",dirLocTroll))
   }
   
+  
   #create zero pressure flag; default all flags to -1 then change them as the test can be performed
   trollData$zeroPressureQF <- -1
   trollData$zeroPressureQF[trollData$pressure>0]<-0
   trollData$zeroPressureQF[trollData$pressure<=0]<-1
+  trollData$pressure[trollData$zeroPressureQF==1]<-NA
   source_id<-trollData$source_id[1]
+  
+  #Define troll type
+  #include conductivity based on sensor type
+  if(grepl("aquatroll",idxDirIn)){
+    sensor<-"aquatroll200"
+  }else{
+    sensor<-"leveltroll500"
+  }
+  
+  #Create dataframe for output data
+  dataOut <- trollData
+  if(sensor=="aquatroll200"){
+    dataCol <- c("source_id","site_id","readout_time","pressure","pressure_data_quality","temperature","temperature_data_quality","conductivity","conductivity_data_quality","internal_battery")
+  }else{
+    dataCol <- c("source_id","site_id","readout_time","pressure","pressure_data_quality","temperature","temperature_data_quality","internal_battery") 
+  }
+  dataOut <- dataOut[,dataCol]
+  #Write out data
+  rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
+                                                   NameFile = base::paste0(idxDirOutData,"/",sensor,"_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet"), 
+                                                   Schm = SchmDataOut),silent=FALSE)
+  if(any(grepl('try-error',class(rptDataOut)))){
+    log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
+    stop()
+  } else {
+    log$info("Data written out.")
+  }
+  
   
   #Create dataframe for just flags
   QF <- c("readout_time", "zeroPressureQF")

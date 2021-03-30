@@ -17,7 +17,7 @@ transform:
         - path:
             name: QAQC_PLAUSIBILITY_AQUATROLL
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_AQUATROLL/aquatroll200/*/*/*/*/data/**
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_AQUATROLL/aquatroll200/*/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
