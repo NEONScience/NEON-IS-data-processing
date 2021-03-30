@@ -29,7 +29,8 @@
       "LOCATION_SOURCE_TYPE_INDEX": "3",
       "LOCATION_YEAR_INDEX": "4",
       "LOCATION_MONTH_INDEX": "5",
-      "LOCATION_INDEX": "6",
+      "LOCATION_DAY_INDEX": "6",
+      "LOCATION_INDEX": "7",
       "EMPTY_FILE_TYPE_INDEX": "4"
     }
   },
@@ -47,22 +48,22 @@
         }
       },
       {
-        "union": [
+        "join": [
           {
             "pfs": {
               "name": "DATA_PATH",
               "repo": "pqs1_merge_data_by_location",
-              "glob": "/pqs1/(*)/(*)",
-              "joinOn": "$1/$2",
+              "glob": "/pqs1/(*)/(*)/(*)",
+              "joinOn": "$1/$2/$3",
               "empty_files": true
             }
           },
           {
             "pfs": {
               "name": "LOCATION_PATH",
-              "repo": "location_active_dates",
-              "glob": "/pqs1/(*)/(*)",
-              "joinOn": "$1/$2",
+              "repo": "pqs1_location_active_dates_assignment",
+              "glob": "/pqs1/(*)/(*)/(*)",
+              "joinOn": "$1/$2/$3",
               "empty_files": true
             }
           }

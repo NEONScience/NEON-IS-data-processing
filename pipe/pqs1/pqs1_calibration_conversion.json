@@ -15,7 +15,7 @@
       "TermFuncUcrt=voltage:def.ucrt.meas.mult,def.ucrt.fdas.volt.poly",
       "FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"
       ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.43",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -26,7 +26,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "pqs1_calibration_filter",
+          "repo": "pqs1_data_calibration_group",
           "glob": "/pqs1/*/*/*/"
         }
       },
