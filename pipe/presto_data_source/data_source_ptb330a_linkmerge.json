@@ -3,8 +3,10 @@
     "name": "data_source_ptb330a_linkmerge"
   },
   "transform": {
-    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-    "image": "quay.io/battelleecology/parquet_linkmerge:14",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/parquet_linkmerge:15",
     "cmd": [
       "bash"
     ],

@@ -13,12 +13,15 @@
       "NameDirCombOut=stats",
       "NameVarTime=readout_time",
       "ColKeep=readout_time|readout_time|dissolvedOxygen|dissolvedOxygen_ucrtExpn|dissolvedOxygenSaturation|dissolvedOxygenSaturation_ucrtExpn",
-      "NameFileSufx=_basicStats_100"],
-    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v0.0.5",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+      "NameFileSufx=_basicStats_100"
+    ],
+    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v0.0.6",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "cross": [
@@ -31,9 +34,9 @@
       },
       {
         "pfs": {
-            "name": "SCHEMA_COMB",
-            "repo": "avro_schemas",
-            "glob": "/dp01/waterQuality_exodissolvedoxygen_dp01_stats.avsc"
+          "name": "SCHEMA_COMB",
+          "repo": "avro_schemas",
+          "glob": "/dp01/waterQuality_exodissolvedoxygen_dp01_stats.avsc"
         }
       }
     ]

@@ -10,7 +10,7 @@ transform:
   - DirSubCombData=data|flags|uncertainty_data
   - DirSubCombUcrt=uncertainty_coef
   - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.19
+  image: quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.23
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

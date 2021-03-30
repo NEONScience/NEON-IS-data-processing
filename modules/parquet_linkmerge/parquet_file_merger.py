@@ -16,6 +16,12 @@ from parquet_linkmerge.path_parser import PathParser
 log = structlog.get_logger()
 
 
+def link(path: Path, link_path: Path) -> None:
+    if not link_path.exists():
+        log.info(f"Linking {path} to {link_path}")
+        link_path.symlink_to(path)
+
+
 class ParquetFileMerger:
 
     def __init__(self, config: Config) -> None:
@@ -38,10 +44,7 @@ class ParquetFileMerger:
             paths = key_files[key]
             if len(key_files[key]) == 1:
                 path = key_files[key][0]
-                link_path = self.convert_path(path)
-                if not link_path.exists():
-                    log.info(f"Linking {path} to {link_path}")
-                    link_path.symlink_to(path)
+                link(path, self.to_output_path(path))
             else:
                 site_keys = {}
                 for path in paths:
@@ -59,11 +62,7 @@ class ParquetFileMerger:
                     for site_key in site_keys:
                         paths = site_keys[site_key]
                         for path in paths:
-                            link_path = self.convert_path(path)
-                            if not link_path.exists():
-                                log.info(f"Linking {path} to {link_path}")
-                                link_path.symlink_to(path)
-                    # self.write_merged_files(key_files[key])
+                            link(path, self.to_output_path(path))
 
     def write_merged_files(self, input_files: List[Path]) -> None:
         """
@@ -103,27 +102,25 @@ class ParquetFileMerger:
             'parquet.avro.schema': tb1_schema,
             'writer.model.name': 'avro'
         })
-        output_file_path = self.convert_path(path)
+        output_file_path = self.to_output_path(path)
         log.info(f"writing merged parquet file {output_file_path}")
-        pq.write_table(
-            table,
-            output_file_path,
-            use_dictionary=duplicated_columns,
-            compression='gzip',
-            compression_level=5,
-            coerce_timestamps='ms',
-            allow_truncated_timestamps=False
-        )
+        pq.write_table(table,
+                       output_file_path,
+                       use_dictionary=duplicated_columns,
+                       compression='gzip',
+                       compression_level=5,
+                       coerce_timestamps='ms',
+                       allow_truncated_timestamps=False)
 
-    def convert_path(self, path: Path) -> Path:
+    def to_output_path(self, path: Path) -> Path:
         """
-        Generate the output path for a path.
+        Get a structured output path for an input path.
 
         :param path: A file path.
         :return: The output path.
         """
-        filename = '_'.join(path.name.split('_')[1:])
+        filename = '_'.join(path.name.split('_')[1:])  # remove the site and first '_' from the filename
         source_type, year, month, day, source_id = self.path_parser.parse(path)
-        output_path = Path(self.out_path, source_type, year, month, day, source_id, filename)
+        output_path = Path(self.out_path, source_type, year, month, day, source_id, 'data', filename)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         return output_path
