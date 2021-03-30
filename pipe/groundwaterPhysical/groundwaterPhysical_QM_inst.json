@@ -8,17 +8,19 @@
       "/flow.qaqc.qm.dp0p.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
-      "Tmi=001",
-      "VarTimeBgn=timeWndwBgn",
-      "VarTimeEnd=timeWndwEnd",
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF", 
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF",
+      "Tmi=005",
+      "VarTimeBgn=readout_time",
+      "VarTimeEnd=readout_time",
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF", 
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF",
       "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|zeroPressureQF",
       "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|zeroPressureQF",
       "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF",
-      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF",
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1",
+      "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
       ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.5",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.6",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
