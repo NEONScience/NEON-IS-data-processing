@@ -22,7 +22,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: li191r_calibration_filter
+      repo: li191r_data_calibration_group
       glob: /li191r/*/*/*/
   - pfs:
       name: FILE_SCHEMA_DATA
