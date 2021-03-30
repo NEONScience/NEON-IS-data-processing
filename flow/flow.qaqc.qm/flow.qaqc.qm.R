@@ -25,9 +25,9 @@
 #'         /flags 
 #'         
 #' The flags folder holds any number of daily files holding quality flags. All files will be combined. Ensure
-#' there are no overlapping column names between the files other than "readout_time". Note that the 
-#' "readout_time" variable must exist in all files. Any non-matching timestamps among files will result in
-#' NA values for columns that do not have this timestamp.
+#' there are no overlapping column names between the files other than "readout_time", otherwise only one of the 
+#' columns will be retained. Note that the "readout_time" variable must exist in all files. Any non-matching 
+#' timestamps among files will result in NA values for columns that do not have this timestamp.
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
 #' of DirIn. 
@@ -69,7 +69,12 @@
 #' multiple assignments of GrpQfX, specified by incrementing the number X by 1 with each additional argument. 
 #' There is a limit of X=100 for GrpQfX arguments. Note that the group names must be unique among GrpQfX arguments.
 #'  
-#' N+1. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' N+1. "VarIgnr=value" (optional), where value contains the names of the variables that should be ignored if 
+#' found in the input files, separated by pipes (|) (e.g. "VarIgnr=timeWndwBgn|timeWndwEnd"). Do not include 
+#' readout_time here. No quality metrics will be computed for these variables and they will not be included 
+#' in the output. Defaults to empty. 
+#' 
+#' N+2. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
 #' pipes, at the same level as the flags folder in the input path that are to be copied with a 
 #' symbolic link to the output path. 
 #' 
@@ -118,23 +123,55 @@
 #     original creation 
 #   Cove Sturtevant (2020-04-23)
 #     switch read/write data from avro to parquet
+#   Cove Sturtevant (2021-02-04)
+#     added option to ignore particular variables in the input files
+#   Cove Sturtevant (2021-03-03)
+#     Applied internal parallelization
 ##############################################################################################
+library(foreach)
+library(doParallel)
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
+
+# Use environment variable to specify how many cores to run on
+numCoreUse <- base::as.numeric(Sys.getenv('PARALLELIZATION_INTERNAL'))
+numCoreAvail <- parallel::detectCores()
+if (base::is.na(numCoreUse)){
+  numCoreUse <- 1
+} 
+if(numCoreUse > numCoreAvail){
+  numCoreUse <- numCoreAvail
+}
+log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly=TRUE)
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut","WndwAgr"),
-                                      NameParaOptn=c("FileSchmQm",base::paste0("GrpQf",1:100),
-                                                     "DirSubCopy","Thsh","WghtAlphBeta"), 
-                                      ValuParaOptn=base::list(Thsh=0.2,
-                                                              WghtAlphBeta=c(2,1)),
-                                      TypePara=base::list(Thsh="numeric",
-                                                          WghtAlphBeta="numeric"),
+Para <- NEONprocIS.base::def.arg.pars(arg=arg,
+                                      NameParaReqd=c(
+                                        "DirIn",
+                                        "DirOut",
+                                        "WndwAgr"
+                                        ),
+                                      NameParaOptn=c(
+                                        "FileSchmQm",
+                                        base::paste0("GrpQf",1:100),
+                                        "DirSubCopy",
+                                        "Thsh",
+                                        "WghtAlphBeta",
+                                        "VarIgnr"
+                                        ), 
+                                      ValuParaOptn=base::list(
+                                        Thsh=0.2,
+                                        WghtAlphBeta=c(2,1)
+                                        ),
+                                      TypePara=base::list(
+                                        Thsh="numeric",
+                                        WghtAlphBeta="numeric"
+                                        ),
                                       log=log)
-
 
 # Retrieve datum path. 
 DirBgn <- Para$DirIn # Input directory. 
@@ -197,6 +234,10 @@ if(base::length(nameParaGrpQf) > 0){
   nameQmGrp <- c("AlphaQM","BetaQM","FinalQF") # Note that a match for FinalQF columns are used below. Don't change.
 }
 
+# Retrieve variables to ignore in the flags files
+VarIgnr <- setdiff(Para$VarIgnr,'readout_time')
+log$debug(base::paste0('Variables to ingnore if found in input files: ',base::paste0(VarIgnr,collapse=',')))
+
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'quality_metrics'))
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
@@ -231,7 +272,8 @@ for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
 
 
 # Process each datum path
-for(idxDirIn in DirIn){
+doParallel::registerDoParallel(numCoreUse)
+foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
@@ -254,40 +296,17 @@ for(idxDirIn in DirIn){
   }  
   
   # Combine flags files
-  for(idxFileQf in fileQf){
-    
-    # Load in flags file in parquet format into data frame 'qf'.  
-    fileIn <- base::paste0(idxDirQf,'/',idxFileQf)
-    idxQf  <- base::try(NEONprocIS.base::def.read.parq(NameFile=fileIn,log=log),silent=FALSE)
-    if(base::class(idxQf) == 'try-error'){
-      log$error(base::paste0('File ', fileIn,' is unreadable.')) 
-      stop()
-    } else {
-      log$debug(base::paste0('Successfully read in flags file: ',fileIn))
-    }
-    nameVarIn <- base::names(idxQf)
-    
-    # Pull out the time variable
-    if(!('readout_time' %in% nameVarIn)){
-      log$error(base::paste0('Variable "readout_time" is required, but cannot be found in file: ',fileIn)) 
-      stop()
-    }
-    
-    # If this is the first file, use it as the basis for adding onto in subsequent files
-    if(idxFileQf == fileQf[1]){
-      qf <- idxQf
-    } else {
-      # Make sure there are no duplicate columns
-      if(base::sum(base::names(idxQf) %in% base::setdiff(base::names(qf),"readout_time")) > 0){
-        log$error(base::paste0('The flags contained in the files of ', idxDirQf, ' overlap. This is not allowed.'))
-        stop()
-      }
-      
-      # Merge the flags 
-      qf <- base::merge(x=qf,y=idxQf,by="readout_time",all=TRUE,sort=FALSE)
-    }
-  } # End loop around input flags files
-    
+  qf <- NULL
+  qf <-
+    NEONprocIS.base::def.file.comb.ts(
+      file = base::paste0(idxDirQf, '/', fileQf),
+      nameVarTime = 'readout_time',
+      log = log
+    )
+  
+  # Remove any columns for variables we should ignore
+  qf <- qf[,!(base::names(qf) %in% VarIgnr)]
+  
   # Take stock of our quality flags
   numQf <- base::ncol(qf)-1 # Minus the readout_time column
   numNa <- base::apply(X=base::is.na(qf),MARGIN=2,FUN=base::sum)
@@ -363,7 +382,7 @@ for(idxDirIn in DirIn){
     
     # Write out the file for this aggregation interval. Replace the final underscore-delimited component of one of the input 
     # filenames, assuming this final component denotes the type of flags that are in the file
-    fileQmOutSplt <- base::strsplit(idxFileQf,'[_]')[[1]] # Separate underscore-delimited components of the file name
+    fileQmOutSplt <- base::strsplit(utils::tail(fileQf,1),'[_]')[[1]] # Separate underscore-delimited components of the file name
     fileQmOutSplt[base::length(fileQmOutSplt)] <- base::paste(base::paste('qualityMetrics',Para$WndwAgr[idxWndwAgr],sep='_'),utils::tail(x=base::strsplit(utils::tail(x=fileQmOutSplt,n=1),'[.]')[[1]],n=-1),sep='.') # Replace last component, but try to keep the extension
     fileQmOut <- base::paste(fileQmOutSplt,collapse='_')
     NameFileOutQm <- base::paste0(idxDirOutQm,'/',fileQmOut)
@@ -378,5 +397,6 @@ for(idxDirIn in DirIn){
     
   } # End loop around aggregation intervals
 
+  return()
 } # End loop around datum paths 
   

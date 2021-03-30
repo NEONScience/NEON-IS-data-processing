@@ -3,7 +3,7 @@ pipeline:
   name: tempAirSingle_threshold_regularized_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:6
+  image: quay.io/battelleecology/filter_joiner:9
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -18,14 +18,14 @@ transform:
             name: REGULARIZED_PATH
             glob_pattern: /pfs/REGULARIZED_PATH/**
             # Join on year and month
-            join_indices: [3, 4, 5, 6]
+            join_indices: [6]
         - path:
             name: THRESHOLD_PATH
             glob_pattern: /pfs/THRESHOLD_PATH/**
             # Join on year and month
-            join_indices: [3, 4, 5, 6]
+            join_indices: [6]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
 input:
   join:

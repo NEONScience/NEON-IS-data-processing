@@ -1,0 +1,28 @@
+{
+  "pipeline": {
+    "name": "data_source_dualfan_list_years"
+  },
+  "transform": {
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "ls $REPO_IN > /pfs/out/data_years.txt"
+    ]
+  },
+  "input": {
+    "pfs": {
+      "name": "REPO_IN",
+      "repo": "data_source_dualfan_linkmerge",
+      "glob": "/dualfan",
+      "empty_files": true
+    }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "1K",
+    "cpu": 0.01
+  }
+}

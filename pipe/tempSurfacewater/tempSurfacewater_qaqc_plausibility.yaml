@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - FileSchmQf=$SCHEMA_FLAGS
   - TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.14
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.17
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

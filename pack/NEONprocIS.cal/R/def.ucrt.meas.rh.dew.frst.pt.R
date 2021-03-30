@@ -39,7 +39,9 @@
 #' @keywords calibration, uncertainty, L0', hmp155, dew point, frost point
 
 #' @examples
-#' data <- data.frame(relative_humidity=c(1,6,7,0,10), temperature=c(2,3,6,8,5), dew_pont=c(1,-1,5,4,4.5))
+#' data <- data.frame(dew_point=c(1,-1,5,4,4.5),temperature=c(2,3,6,8,5),relative_humidity=c(1,6,7,0,10),
+#' readout_time=as.POSIXct(c('2019-01-01 02:00','2019-01-01 04:01','2019-01-01 06:02','2019-01-01 08:01','2019-01-01 10:02'),tz='GMT'))
+
 #' calSlct=list("temperature"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
 #' timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "30000000000080_WO29705_157555.xml",id = 157555, expi= FALSE),
 #' "relative_humidity"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
@@ -60,12 +62,16 @@
 # changelog and author contributions / copyrights
 #   Edward Ayres (2020-10-07)
 #     original creation
+#   Mija Choi (2021-02-26)
+#     change an input param, varUcrt, from names(data)[1] to "dew_point"
+#     modify the comments of data under examples above  
+#     by adding readout_time, adding dew_point and removing dew_pont at the end
 ##############################################################################################
 def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)),
-                          infoCal = NULL,
-                          varUcrt = base::names(data)[1],
-                          calSlct=NULL,
-                          log = NULL) {
+                                         infoCal = NULL,
+                                         varUcrt = "dew_point",
+                                         calSlct=NULL,
+                                         log = NULL) {
   # Initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -207,13 +213,17 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
     }
     
     # If a calibration file is available for this period, open it and get calibration information
-    if(!base::is.na(calSlctTemp$file[idxRowTemp])){
-      fileCal <- base::paste0(calSlctTemp$path[idxRowTemp],calSlctTemp$file[idxRowTemp])
+    
+    fileCal <- base::paste0(calSlctTemp$path[idxRowTemp],calSlctTemp$file[idxRowTemp])
+    fileCal_Chk <- try(NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE),silent = TRUE)
+    
+    if(!(class(fileCal_Chk)[1] == "try-error")){
       infoCalTemp <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
     } else {
       log$debug('No temperature calibration information supplied for at least a period of the data, returning NA values for individual measurement uncertainty during that interval.')
       next
     }
+    
     
     # Check format of infoCalTemp
     if (!NEONprocIS.cal::def.validate.info.cal(infoCalTemp,CoefUcrt='U_CVALA1',log=log)){
@@ -237,16 +247,18 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
       }
       
       # If a calibration file is available for this period, open it and get calibration information
-      if(!base::is.na(calSlctRh$file[idxRowRh])){
-        fileCal <- base::paste0(calSlctRh$path[idxRowRh],calSlctRh$file[idxRowRh])
+      fileCal <- base::paste0(calSlctRh$path[idxRowRh],calSlctRh$file[idxRowRh])
+      fileCal_Chk <- try(NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE),silent = TRUE)
+      
+      if(!(class(fileCal_Chk)[1] == "try-error")){
         infoCalRh <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
       } else {
         log$debug('No relative humidity calibration information supplied for at least a period of the data, returning NA values for individual measurement uncertainty during that interval.')
         next
       }
-      
+  
       # Check format of infoCalRh
-      if (!NEONprocIS.cal::def.validate.info.cal(infoCalRh,CoefUcrt='U_CVALA1',log=log)){
+      if (!NEONprocIS.cal::def.validate.info.cal(infoCal = infoCalRh,CoefUcrt='U_CVALA1',log=log)){
         stop()
       }
       
@@ -279,7 +291,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
     } # End loop around RH calibration files
     
   } # End loop around Temperature calibration files
-
+  
   
   return(ucrt)
   

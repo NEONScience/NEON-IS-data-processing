@@ -9,19 +9,21 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "Comb=TRUE"
-      ],
-    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.10",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.12",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "prt_location_filter",
+      "repo": "prt_calibrated_location_group",
       "glob": "/prt/*/*/*"
-      }
+    }
   },
   "enable_stats": false,
   "standby": true,

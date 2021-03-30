@@ -1,0 +1,65 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": null,
+      "properties": {
+        "name": "CFGLOC108440",
+        "site": "HARV",
+        "install_date": "2017-02-07T00:17:20Z",
+        "remove_date": "2017-02-07T00:18:28Z",
+        "context": [
+          "soil"
+        ],
+        "locations": {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": null,
+              "properties": {
+                "start_date": "2010-01-01T00:00:00Z",
+                "end_date": "2010-01-02T00:00:00Z",
+                "z_offset": -0.02,
+                "reference_location": {
+                  "type": "Feature",
+                  "geometry": null,
+                  "properties": {
+                    "name": "SOILPL100441",
+                    "locations": {
+                      "type": "FeatureCollection",
+                      "features": [
+                        {
+                          "type": "Feature",
+                          "geometry": null,
+                          "properties": {
+                            "start_date": "2010-01-01T00:00:00Z",
+                            "end_date": "2010-01-02T00:00:00Z",
+                            "z_offset": 0,
+                            "reference_location": {
+                              "type": "Feature",
+                              "geometry": null,
+                              "properties": {
+                                "name": "SOILPL100441",
+                                "locations": null
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Required Asset Management Location ID": 9915,
+      "Required Asset Management Location Code": "CFGLOC108440"
+    }
+  ],
+  "source_type": "prt",
+  "source_id": 19963
+}

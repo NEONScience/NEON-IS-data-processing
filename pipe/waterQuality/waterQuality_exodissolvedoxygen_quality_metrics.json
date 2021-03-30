@@ -1,21 +1,38 @@
 {
   "pipeline": {
-  "name": "waterQuality_exodissolvedoxygen_quality_metrics"
+    "name": "waterQuality_exodissolvedoxygen_quality_metrics"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.qm.dp0p.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQm=$FILE_SCHEMA_QM", "GrpQfAlph1=dissolvedOxygen:sensorNAQF|dissolvedOxygenValidCalQF|dissolvedOxygenSuspectCalQF|dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenPersistenceQF","GrpQfBeta1=dissolvedOxygen:dissolvedOxygenRangeQF","QfForc1=sensorNAQF:1:dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenPersistenceQF:-1","GrpQfBetaIgnr1=dissolvedOxygen:dissolvedOxygenNullQF|sensorNAQF", "GrpQfAlph2=dissolvedOxygenSat:sensorNAQF|dissolvedOxygenValidCalQF|dissolvedOxygenSuspectCalQF|dissolvedOxygenSatNullQF|dissolvedOxygenSatGapQF|dissolvedOxygenSatRangeQF|dissolvedOxygenSatStepQF|dissolvedOxygenSatSpikeQF|dissolvedOxygenSatPersistQF","GrpQfBeta2=dissolvedOxygenSat:dissolvedOxygenSatRangeQF","QfForc2=sensorNAQF:1:dissolvedOxygenSatNullQF|dissolvedOxygenSatGapQF|dissolvedOxygenSatRangeQF|dissolvedOxygenSatStepQF|dissolvedOxygenSatSpikeQF|dissolvedOxygenSatPersistQF:-1","GrpQfBetaIgnr2=dissolvedOxygenSat:dissolvedOxygenSatNullQF|sensorNAQF","Tmi=100"],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.4",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.qm.dp0p.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQm=$FILE_SCHEMA_QM",
+      "GrpQfAlph1=dissolvedOxygen:sensorNAQF|dissolvedOxygenValidCalQF|dissolvedOxygenSuspectCalQF|dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenPersistenceQF",
+      "GrpQfBeta1=dissolvedOxygen:dissolvedOxygenRangeQF",
+      "QfForc1=sensorNAQF:1:dissolvedOxygenNullQF|dissolvedOxygenGapQF|dissolvedOxygenRangeQF|dissolvedOxygenStepQF|dissolvedOxygenSpikeQF|dissolvedOxygenPersistenceQF:-1",
+      "GrpQfBetaIgnr1=dissolvedOxygen:dissolvedOxygenNullQF|sensorNAQF",
+      "GrpQfAlph2=dissolvedOxygenSat:sensorNAQF|dissolvedOxygenValidCalQF|dissolvedOxygenSuspectCalQF|dissolvedOxygenSatNullQF|dissolvedOxygenSatGapQF|dissolvedOxygenSatRangeQF|dissolvedOxygenSatStepQF|dissolvedOxygenSatSpikeQF|dissolvedOxygenSatPersistQF",
+      "GrpQfBeta2=dissolvedOxygenSat:dissolvedOxygenSatRangeQF",
+      "QfForc2=sensorNAQF:1:dissolvedOxygenSatNullQF|dissolvedOxygenSatGapQF|dissolvedOxygenSatRangeQF|dissolvedOxygenSatStepQF|dissolvedOxygenSatSpikeQF|dissolvedOxygenSatPersistQF:-1",
+      "GrpQfBetaIgnr2=dissolvedOxygenSat:dissolvedOxygenSatNullQF|sensorNAQF",
+      "Tmi=100"
+    ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.6",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "DEBUG"
-    }  
+    }
   },
   "input": {
     "cross": [
       {
         "pfs": {
           "name": "DIR_IN",
-        "repo": "waterQuality_exodissolvedoxygen_qaqc_flags_group",
+          "repo": "waterQuality_exodissolvedoxygen_qaqc_flags_group",
           "glob": "/*/*/*"
         }
       },

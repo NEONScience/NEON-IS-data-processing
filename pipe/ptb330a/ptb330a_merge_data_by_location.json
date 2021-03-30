@@ -11,19 +11,21 @@
       "DirSubCombData=data|flags|uncertainty_data",
       "DirSubCombUcrt=uncertainty_coef",
       "DirSubCopy=location"
-      ],
-    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.22",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.23",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
-      "pfs": {
-        "name": "DIR_IN",
-        "repo": "ptb330a_structure_repo_by_location",
-        "glob": "/ptb330a/*/*/*"
-      }
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "ptb330a_structure_repo_by_location",
+      "glob": "/ptb330a/*/*/*"
+    }
   },
   "enable_stats": false,
   "standby": true,
