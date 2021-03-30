@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "parWaterSurface_threshold_select"
+    "name": "par_threshold_select_upward_facing"
   },
   "transform": {
     "cmd": [
@@ -9,7 +9,7 @@
       "DirIn=$REPO_LOCATIONS",
       "DirOut=/pfs/out",
       "FileThsh=$FILE_THRESHOLDS",
-      "TermCtxt1=par|par-surfacewater",
+      "TermCtxt1=par|par-met|upward-facing",
       "DirSubCopy=location"
       ],
     "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.14",
@@ -23,14 +23,14 @@
       {
         "pfs": {
           "name": "REPO_LOCATIONS",
-          "repo": "parWaterSurface_locations",
-          "glob": "/pqs1/*/*/*/"
+          "repo": "par_locations_upward_facing",
+          "glob": "/*/*/*"
         }
       },
       {
         "pfs": {
           "name": "FILE_THRESHOLDS",
-          "repo": "parWaterSurface_threshold_filter",
+          "repo": "par_threshold_filter_upward_facing",
           "glob": "/thresholds.json"
         }
       }
@@ -38,10 +38,8 @@
   },
   "enable_stats": false,
   "standby": true,
-  "parallelism_spec": {
-    "constant": "1"
-  },
   "resource_requests": {
-    "memory": "200Mi"
+    "memory": "12M",
+    "cpu": 0.05
   }
 }

@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "parWaterSurface_qaqc_plausibility"
+    "name": "par_qaqc_plausibility"
   },
   "transform": {
     "cmd": [
@@ -22,8 +22,8 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "parWaterSurface_padded_timeseries_analyzer",
-          "glob": "/pqs1/*/*/*"
+          "repo": "par_padded_timeseries_analyzer",
+          "glob": "/*/*/*"
         }
       },
       {
@@ -36,7 +36,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": true,
+  "standby": false,
   "parallelism_spec": {
     "constant": "1"
   },

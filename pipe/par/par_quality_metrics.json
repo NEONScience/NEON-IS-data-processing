@@ -1,18 +1,19 @@
 {
   "pipeline": {
-    "name": "parWaterSurface_statistics"
+    "name": "par_quality_metrics"
   },
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.stat.basc.R",
+      "/flow.qaqc.qm.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
-      "FileSchmStat=$FILE_SCHEMA_STATS",
-      "WndwAgr=001|005|030",
-      "TermStat1=par:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.fdas.volt)"
+      "FileSchmQm=$FILE_SCHEMA_QM",
+      "WndwAgr=001|030",
+      "WghtAlphBeta=2|1",
+      "Thsh=0.2"
       ],
-    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.17",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.10",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -23,15 +24,15 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "parWaterSurface_pre_statistics_group",
-          "glob": "/pqs1/*/*/*"
+          "repo": "par_qaqc_flags_group",
+          "glob": "/*/*/*"
         }
       },
       {
         "pfs": {
-          "name": "FILE_SCHEMA_STATS",
+          "name": "FILE_SCHEMA_QM",
           "repo": "avro_schemas",
-          "glob": "/dp01/parWaterSurface_dp01_stats.avsc"
+          "glob": "/dp01/par_dp01_quality_metrics.avsc"
         }
       }
     ]

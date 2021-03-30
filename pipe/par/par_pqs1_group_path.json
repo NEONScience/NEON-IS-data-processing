@@ -22,7 +22,7 @@
   "input": {
     "pfs": {
       "name": "SOURCE_PATH",
-      "repo": "pqs1_named_location_filter",
+      "repo": "pqs1_date_gap_filler_linker",
       "glob": "/pqs1/*/*/*"
     }
   },

@@ -1,9 +1,16 @@
 {
   "pipeline": {
-    "name": "par_threshold_filter"
+    "name": "par_threshold_filter_downward_facing"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.thsh.filt.R","DirIn=$threshold","DirOut=/pfs/out","Term=inPAR|outPAR","Ctxt=par-met"],
+    "cmd": [
+      "Rscript",
+      "/flow.thsh.filt.R",
+      "DirIn=$threshold",
+      "DirOut=/pfs/out",
+      "Term=par",
+      "Ctxt=par-met|downward-facing"
+      ],
     "image": "quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.7",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {

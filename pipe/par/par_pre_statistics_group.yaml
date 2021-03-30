@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: parWaterSurface_pre_statistics_group
+  name: par_pre_statistics_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:9
@@ -17,21 +17,21 @@ transform:
         - path:
             name: QAQC_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PATH/pqs1/*/*/*/*/data/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
+            glob_pattern: /pfs/QAQC_PATH/*/*/*/*/pqs1/*/data/**
+            # Join on context group
+            join_indices: [6]
         - path:
             name: UNCERTAINTY_COEF_PATH
             # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/pqs1/*/*/*/*/uncertainty_coef/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
+            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/*/*/*/*/pqs1/*/uncertainty_coef/**
+            # Join on context group
+            join_indices: [6]
         - path:
             name: UNCERTAINTY_DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_DATA_PATH/pqs1/*/*/*/*/uncertainty_data/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
+            glob_pattern: /pfs/UNCERTAINTY_DATA_PATH/*/*/*/*/pqs1/*/uncertainty_data/**
+            # Join on context group
+            join_indices: [6]
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
@@ -39,20 +39,20 @@ input:
   join:
   - pfs:
       name: QAQC_PATH
-      repo: parWaterSurface_qaqc_plausibility
-      glob: /pqs1/(*)/(*)/(*)
+      repo: par_qaqc_plausibility
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: UNCERTAINTY_COEF_PATH
-      repo: parWaterSurface_context_filter
-      glob: /pqs1/(*)/(*)/(*)
+      repo: par_related_location_group
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
       name: UNCERTAINTY_DATA_PATH
-      repo: parWaterSurface_regularized_uncertainty_data
-      glob: /pqs1/(*)/(*)/(*)
+      repo: par_regularized_uncertainty_data
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
 parallelism_spec:

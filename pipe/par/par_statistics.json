@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "parWaterSurface_statistics"
+    "name": "par_statistics"
   },
   "transform": {
     "cmd": [
@@ -9,7 +9,7 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmStat=$FILE_SCHEMA_STATS",
-      "WndwAgr=001|005|030",
+      "WndwAgr=001|030",
       "TermStat1=par:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.fdas.volt)"
       ],
     "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.17",
@@ -23,15 +23,15 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "parWaterSurface_pre_statistics_group",
-          "glob": "/pqs1/*/*/*"
+          "repo": "par_pre_statistics_group",
+          "glob": "/*/*/*"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_STATS",
           "repo": "avro_schemas",
-          "glob": "/dp01/parWaterSurface_dp01_stats.avsc"
+          "glob": "/dp01/par_dp01_stats.avsc"
         }
       }
     ]
