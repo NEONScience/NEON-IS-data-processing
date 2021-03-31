@@ -44,31 +44,34 @@ test_that("   Testing Filter named location information by date-time range", {
     cat("\n When more than one input is sent as an input, consider just the first one\n")
     
     workingDirPath <- getwd()
+    nameLib <- file.path(workingDirPath, "ravro.so")
     
     nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
     nameFile2 <- file.path(workingDirPath, "def.read.avro.deve/prt_test2.avro")
-    nameLib <- file.path(workingDirPath, "ravro.so")
-    print(nameLib)
+ 
     rpt <- def.read.avro.deve(NameFile = c(nameFile, nameFile2),NameLib = nameLib)
     
     col_List = c('source_id','site_id','readout_time','resistance')   
     expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
     expect_true (all (names(rpt) == col_List ))
+  
+    cat("\n When one input is sent as an input, consider just the first one\n")
     
-    
-    cat("\n Check data types of the reutrn list\n")
-    
-    workingDirPath <- getwd()
     nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
-    nameLib <-  file.path(workingDirPath, "ravro.so")
-    rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib),silent = FALSE)
+   
+    rpt <- def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
     
-    testthat::equals(length(rpt), 4)
-    testthat::equals(class(rpt$source_id), "character")
-    testthat::equals(class(rpt$site_id), "character")
-    testthat::equals(class(rpt$readout_time), "POSIXct")
-    testthat::equals(class(rpt$resistance), "numeric")
+    expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+    expect_true (all (names(rpt) == col_List ))
     
+    # test avro file has one column, resistance, missing
+    nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test2_oneColMissing.avro")
+    col_List_lessCol = c('source_id','site_id','readout_time')
+    
+    rpt <- def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
+    
+    expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+    expect_true (all (names(rpt) == col_List_lessCol ))
   }
 }
 )
