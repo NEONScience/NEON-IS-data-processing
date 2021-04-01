@@ -3,7 +3,12 @@
     "name": "relHumidity_qaqc_plausibility"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.plau.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS",
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.plau.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQf=$SCHEMA_FLAGS",
     "TermTest1=relativeHumidity:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
     "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
     "TermTest3=dewPoint:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)"],
@@ -32,7 +37,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": false,
+  "standby": true,
   "parallelism_spec": {
     "constant": "1"
   },

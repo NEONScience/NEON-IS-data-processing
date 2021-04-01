@@ -26,7 +26,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "hmp155_calibration_filter",
+          "repo": "hmp155_data_calibration_group",
           "glob": "/hmp155/*/*/*/"
         }
       },
