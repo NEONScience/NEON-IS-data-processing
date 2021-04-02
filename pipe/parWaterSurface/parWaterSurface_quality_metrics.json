@@ -1,0 +1,48 @@
+{
+  "pipeline": {
+    "name": "parWaterSurface_quality_metrics"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.qm.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQm=$FILE_SCHEMA_QM",
+      "WndwAgr=001|005|030",
+      "WghtAlphBeta=2|1",
+      "Thsh=0.2"
+      ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.10",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "parWaterSurface_qaqc_flags_group",
+          "glob": "/pqs1/*/*/*"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_QM",
+          "repo": "avro_schemas",
+          "glob": "/dp01/parWaterSurface_dp01_quality_metrics.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "1"
+  },
+  "resource_requests": {
+    "memory": "200Mi"
+  }
+}

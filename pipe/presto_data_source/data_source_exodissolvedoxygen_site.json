@@ -24,7 +24,7 @@
       "  site=${arr[5]}",
       "  export GEN_DATE=$year-$month-$day",
       "  export GEN_SITE_NAME=$site",
-      "  export GEN_OUTPUT_DIR=/pfs/out/dissolvedoxygen/$year/$month/$day",
+      "  export GEN_OUTPUT_DIR=/pfs/out/exodissolvedoxygen/$year/$month/$day",
       "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem",
       "  mkdir -p $GEN_OUTPUT_DIR",
       "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip",

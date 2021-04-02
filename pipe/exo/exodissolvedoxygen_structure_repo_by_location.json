@@ -21,17 +21,14 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "exodissolvedoxygen_location_filter",
-      "glob": "/exodissolvedoxygen/*/*"
+      "repo": "exodissolvedoxygen_calibrated_location_group",
+      "glob": "/exodissolvedoxygen/*/*/*"
     }
   },
   "enable_stats": false,
   "standby": true,
-  "parallelism_spec": {
-    "constant": "2"
-  },
   "resource_requests": {
-    "memory": "200Mi",
-    "cpu": 0
+    "memory": "100M",
+    "cpu": 0.13
   }
 }
