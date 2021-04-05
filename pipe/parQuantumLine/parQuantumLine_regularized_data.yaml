@@ -9,29 +9,25 @@ transform:
   - DirOut=/pfs/out
   - DirRglr=data
   - FreqRglr=1
-  - FileSchmRglr=$FILE_SCHEMA_RGLR
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
+  - RptTimeWndw=FALSE
+  - DropNotNumc=FALSE
   image: quay.io/battelleecology/neon-is-rglr-r:v0.0.27
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: DEBUG
 input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: parQuantumLine_calibrated_data
-      glob: /li191r/*/*
-  - pfs:
-      name: FILE_SCHEMA_RGLR
-      repo: avro_schemas
-      glob: /dp0p/li191r_calibrated_wo_source.avsc
+  pfs:
+    name: DIR_IN
+    repo: parQuantumLine_calibrated_data
+    glob: /li191r/*/*/*
 enable_stats: false
 standby: true
 parallelism_spec:
-  constant: '2'
+  constant: '1'
 resource_requests:
   memory: 20M
   cpu: 0.25

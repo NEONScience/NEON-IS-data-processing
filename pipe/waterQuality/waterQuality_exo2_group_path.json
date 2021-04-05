@@ -29,7 +29,7 @@
   "input": {
     "pfs": {
       "name": "SOURCE_PATH",
-      "repo": "exo2_merge_data_by_location",
+      "repo": "exo2_date_gap_filler_linker",
       "glob": "/exo2/*/*/*"
     }
   },

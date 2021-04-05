@@ -8,7 +8,7 @@ humidity transition}
 def.ucrt.meas.rh.dew.frst.pt(
   data = data.frame(data = base::numeric(0)),
   infoCal = NULL,
-  varUcrt = base::names(data)[1],
+  varUcrt = "dew_point",
   calSlct = NULL,
   log = NULL
 )
@@ -44,7 +44,8 @@ by NEONprocIS.cal::def.read.cal.xml and returns a vector of individual measureme
 uncertainties for each data value.
 }
 \examples{
-data <- data.frame(relative_humidity=c(1,6,7,0,10), temperature=c(2,3,6,8,5), dew_pont=c(1,-1,5,4,4.5))
+data <- data.frame(dew_point=c(1,-1,5,4,4.5),temperature=c(2,3,6,8,5),relative_humidity=c(1,6,7,0,10),
+readout_time=as.POSIXct(c('2019-01-01 02:00','2019-01-01 04:01','2019-01-01 06:02','2019-01-01 08:01','2019-01-01 10:02'),tz='GMT'))
 calSlct=list("temperature"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
 timeEnd=as.POSIXct("2019-01-02",tz="GMT"),file = "30000000000080_WO29705_157555.xml",id = 157555, expi= FALSE),
 "relative_humidity"= data.frame(timeBgn=as.POSIXct("2019-01-01",tz="GMT"),
