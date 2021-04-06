@@ -1,0 +1,32 @@
+{
+  "pipeline": {
+    "name": "par_locations_upward_facing"
+  },
+  "transform": {
+    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
+    "image": "quay.io/battelleecology/context_filter:27",
+    "cmd": [ "/bin/bash" ],
+    "stdin": [ "#!/bin/bash", "python3 -m context_filter.context_filter_main" ],
+    "env": {
+      "OUT_PATH": "/pfs/out",
+      "CONTEXT": "upward-facing",
+      "LOG_LEVEL": "INFO",
+      "TRIM_INDEX": "3",
+      "SOURCE_ID_INDEX": "8",
+      "DATA_TYPE_INDEX": "9"
+    }
+  },
+  "input": {
+      "pfs": {
+        "name": "IN_PATH",
+        "repo": "par_locations",
+        "glob": "/*/*/*"
+      }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "20M",
+    "cpu": 0.05
+  }
+}

@@ -1,0 +1,33 @@
+---
+pipeline:
+  name: par_threshold_select_group
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/joiner:2
+  cmd:
+  - "/bin/bash"
+  stdin:
+  - "#!/bin/bash"
+  - python3 -m joiner.app
+  env:
+    RELATED_PATHS: PAR_INCOMING_PATH,PAR_OUTGOING_PATH
+    LOG_LEVEL: INFO
+    OUT_PATH: "/pfs/out"
+    RELATIVE_PATH_INDEX: '3'
+input:
+  join:
+  - pfs:
+      name: PAR_INCOMING_PATH
+      repo: par_threshold_select_upward_facing
+      glob: "/(*)/(*)/(*)/"
+      joinOn: "$1/$2/$3"
+      empty_files: true
+  - pfs:
+      name: PAR_OUTGOING_PATH
+      repo: par_threshold_select_downward_facing
+      glob: "/(*)/(*)/(*)/"
+      joinOn: "$1/$2/$3"
+      empty_files: true
+enable_stats: false
+standby: true
