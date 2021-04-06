@@ -8,6 +8,7 @@
       "/flow.qaqc.qm.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "FileSchmQm=$FILE_SCHEMA_QM",
       "WndwAgr=001|030",
       "WghtAlphBeta=2|1",
       "Thsh=0.2"
@@ -25,6 +26,13 @@
           "name": "DIR_IN",
           "repo": "pressureAir_qaqc_flags_group",
           "glob": "/ptb330a/*/*/*/"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_QM",
+          "repo": "avro_schemas",
+          "glob": "/dp01/pressureAir_dp01_quality_metrics.avsc"
         }
       }
     ]
