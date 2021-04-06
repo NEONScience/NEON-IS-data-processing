@@ -41,29 +41,32 @@ test_that("   Testing Filter named location information by date-time range", {
   # Execute the test when the OS is Linux-based, skip otherwise
   if (os_type == "Linux")
   {
-    cat("\n When more than one input is sent as an input, consider just the first one\n")
-    
     workingDirPath <- getwd()
+    
     nameLib <- file.path(workingDirPath, "ravro.so")
+    col_List = c('source_id','site_id','readout_time','resistance')   
+    
+    cat("\n When one input is sent as an input, consider just the first one\n")
+    
+    nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
+    
+    rpt <- def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
+    
+    expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+    expect_true (all (names(rpt) == col_List ) && rpt$site_id =="HARV")
+    
+    cat("\n When more than one input is sent as an input, consider just the first one\n")
     
     nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
     nameFile2 <- file.path(workingDirPath, "def.read.avro.deve/prt_test2.avro")
  
-    rpt <- def.read.avro.deve(NameFile = c(nameFile, nameFile2),NameLib = nameLib)
+    rpt <- def.read.avro.deve(NameFile = c(nameFile2, nameFile),NameLib = nameLib)
     
-    col_List = c('source_id','site_id','readout_time','resistance')   
-    expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
-    expect_true (all (names(rpt) == col_List ))
-  
-    cat("\n When one input is sent as an input, consider just the first one\n")
-    
-    nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
    
-    rpt <- def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
-    
     expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
-    expect_true (all (names(rpt) == col_List ))
-    
+    expect_true (all (names(rpt) == col_List ) && rpt$site_id =="not-HARV")
+  
+
     # test avro file has one column, resistance, missing
     nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test2_oneColMissing.avro")
     col_List_lessCol = c('source_id','site_id','readout_time')
