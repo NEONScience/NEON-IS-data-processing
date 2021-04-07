@@ -61,20 +61,18 @@ test_that("   Testing Filter named location information by date-time range", {
     nameFile2 <- file.path(workingDirPath, "def.read.avro.deve/prt_test2.avro")
  
     rpt <- def.read.avro.deve(NameFile = c(nameFile2, nameFile),NameLib = nameLib)
-    
-   
+
     expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
     expect_true (all (names(rpt) == col_List ) && rpt$site_id =="not-HARV")
-  
-
+ 
     # test avro file has one column, resistance, missing
-    nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test2_oneColMissing.avro")
-    col_List_lessCol = c('source_id','site_id','readout_time')
-    
-    rpt <- def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
-    
-    expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
-    expect_true (all (names(rpt) == col_List_lessCol ))
+#     nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test_NAcolumn.avro")
+# #    col_List_lessCol = c('source_id','site_id','readout_time')
+#     
+#     rpt <- def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
+#     
+#     expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+ #   expect_true (all (names(rpt) == col_List_lessCol ))
   }
 }
 )
