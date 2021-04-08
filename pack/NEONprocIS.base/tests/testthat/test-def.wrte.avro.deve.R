@@ -24,6 +24,12 @@
 #' @param NameLib String. Name (including relative or absolute path) of AVRO library. Defaults to ./ravro.so.
 
 #' @return Numeric. 0 = successful write.
+#' 
+#' @examples
+#  data <- data.frame(x=c(1,2,3), y=c('one','two','three'), stringsAsFactors=FALSE)
+#  NameFile <- file.path(workingDirPath,"out.avro")
+#  Schm <- file.path(workingDirPath,"tests/testthat/def.schm.avro.pars/prt_19963_2019-01-01.avro")
+#  writeSuccess <- NEONprocIS.base::def.wrte.avro.deve(data=base::data.frame(), NameFile = NameFile, NameSchm = Schm, NameLib='ravro.so')
 
 # changelog and author contributions / copyrights
 #     revised the test
@@ -33,14 +39,15 @@
 
 
 test_that("When only required parameters are sent to the def.wrte.avro.deve function ",
-          {
+          { 
+            writeSuccess = -1
             data <- data.frame(x=c(1,2,3), y=c('one','two','three'), stringsAsFactors=FALSE)
             workingDirPath <- getwd()
-            NameFile <- file.path(workingDirPath,"out.avro")
+            outFile <- file.path(workingDirPath,"testdata/out.avro")
             schm <- file.path(workingDirPath,"tests/testthat/def.wrte.parq/prt_calibrated.avsc")
-            outputData <- NEONprocIS.base::def.wrte.avro.deve(data=data, NameFile = NameFile, NameLib='ravro.so')
-            expect_true (file.exists(NameFile))
-            if (file.exists(NameFile)) { file.remove(NameFile)}
+            writeSuccess <- NEONprocIS.base::def.wrte.avro.deve(data=data, NameFile = outFile, NameLib='ravro.so')
+            expect_true (file.exists(outFile))
+            if (file.exists(outFile)) { file.remove(outFile)}
 
           })
 
@@ -48,9 +55,9 @@ test_that("When only required parameters are sent to the def.wrte.avro.deve func
 #           {
 #             data <- data.frame(x=c(1,2,3), y=c('one','two','three'), stringsAsFactors=FALSE)
 #             workingDirPath <- getwd()
-#             NameFile <- file.path(workingDirPath,"out.avro")
+#             outFile <- file.path(workingDirPath,"testdata/out.avro")
 #             Schm <- file.path(workingDirPath,"tests/testthat/def.schm.avro.pars/prt_19963_2019-01-01.avro")
-#             outputData <- NEONprocIS.base::def.wrte.avro.deve(data=base::data.frame(), NameFile = NameFile, NameSchm = Schm, NameLib='ravro.so')
+#             writeSuccess <- NEONprocIS.base::def.wrte.avro.deve(data=base::data.frame(), NameFile = outFile, NameSchm = Schm, NameLib='ravro.so')
 #             expect_true (file.exists(NameFile))
 #             if (file.exists(NameFile)) { file.remove(NameFile)}
 # 
