@@ -21,17 +21,14 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "exoconductivity_location_filter",
-      "glob": "/exoconductivity/*/*"
+      "repo": "exoconductivity_calibrated_location_group",
+      "glob": "/exoconductivity/*/*/*"
     }
   },
   "enable_stats": false,
   "standby": true,
-  "parallelism_spec": {
-    "constant": "2"
-  },
   "resource_requests": {
-    "memory": "200Mi",
-    "cpu": 0
+    "memory": "100M",
+    "cpu": 0.13
   }
 }

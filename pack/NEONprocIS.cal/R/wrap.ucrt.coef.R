@@ -48,6 +48,8 @@
 #     original creation
 #   Cove Sturtevant (2020-12-09)
 #     removed DirCal from inputs since the calibration path is now included in calSlct
+#   Cove Sturtevant (2021-04-01)
+#     fix bug that deleted the directory path to the cal file before all cal files were read in
 ##############################################################################################
 wrap.ucrt.coef <- function(calSlct,
                            ucrtCoefFdas=NULL,
@@ -85,23 +87,20 @@ wrap.ucrt.coef <- function(calSlct,
       fileCal <- base::paste0(calSlctIdx$path[idxRow],calSlctIdx$file[idxRow])
       infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal,Vrbs=TRUE)
       
-      # Get rid of the path in calSlctIdx, we don't want it in the output
-      calSlctIdx <- calSlctIdx[!(names(calSlctIdx) %in% 'path')]
-      
       # Add in FDAS uncertainty
       if(!base::is.null(ucrtCoefFdas)){
         # Add the applicable FDAS uncertainty coefs to those from the cal file
         infoCal$ucrt <- base::rbind(infoCal$ucrt,ucrtCoefFdas,stringsAsFactors=FALSE)
       }
       
-      # Add in cal metadata to the coefs
+      # Add in cal metadata to the coefs, excluding the directory path
       infoCal$ucrt$id <- calSlctIdx$id[idxRow]
       if(!base::is.null(idxVarOut)){
         infoCal$ucrt$var <- idxVarOut
       } else {
         infoCal$ucrt$var <- idxVar
       }
-      ucrtCoefIdx[[idxRow]] <- base::merge(x=calSlctIdx[idxRow,],y=infoCal$ucrt,by='id')
+      ucrtCoefIdx[[idxRow]] <- base::merge(x=calSlctIdx[idxRow,!(names(calSlctIdx) %in% 'path')],y=infoCal$ucrt,by='id')
       
     } # End loop around selected calibrations 
     
