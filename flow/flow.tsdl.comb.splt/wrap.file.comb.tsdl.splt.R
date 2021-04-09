@@ -44,7 +44,7 @@
 #' @param locDir The expected directory name containing the location file(s). Default "location"
 #' @param statDir The expected directory name containing the basicStats file. Default "stats"
 #' @param qmDir The expected directory name containing the qualityMetrics file. Default "quality_metrics"
-#' @param corrColNams Should column names attempt to be corrected to match pub wb? Default TRUE
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log.
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -60,7 +60,9 @@
 #' filePths <- c('/path/to/qmDir/qmfile.parquet','/path/to/statDir/statfile.parquet', 'path/to/locDir/locfile.json)
 #' def.file.comb.tsdl.splt(file=file,nameVarTime=c('001','030')
 
-
+# nameSchmMapCols <- "~/pfs/avro_schemas/tsdl_col_term_subs.avsc"
+rm(corrColNams)
+#@param corrColNams Should column names attempt to be corrected to match pub wb? Default TRUE
 
 
 #' @export
@@ -68,8 +70,9 @@
 # TODO remove ConsistencyFail/Pass/NAQM from pub wb?
 # TODO add tsdWaterTempFinalQFSciRvw to dataset?
 # TODO depth11 doesn't exist yet for Mean/Minimum/Maximum/Variance stats (probably changes once CVAL files change)
+# TODO add a colsKeep term??
 
-
+# nameSchmMapCols <- "~/pfs/avro_schemas/tsdl_col_term_subs.avsc"
 # changelog and author contributions / copyrights
 #   Guy Litt (2021-04-09)
 #     original creation
@@ -83,7 +86,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
                                     locDir = "location",
                                     statDir = "stats",
                                     qmDir = "quality_metrics",
-                                    corrColNams = TRUE,
+                                    #corrColNams = TRUE,
                                     log = NULL) {
   # initialize logging if necessary
   if (base::is.null(log)) {
@@ -174,11 +177,15 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     stop()
   } # End location file prep
   
+  
+ 
+  
+  
   # ======================================================================= #
   # ================== STATS AND QUALITY METRICS ORG ====================== #
   #  =====================================================================  #
   lsDataVarTime <- base::list()
-  
+  # Loop by time variable for organizing data
   for(varTime in nameVarTime){
     filzSameTime <- filePths[base::grep(base::paste0("_",varTime), filePths)]
     
@@ -267,7 +274,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     # Parse columns based on the mapping
 
     
-    testing <- base::lapply(mapDpth$term2, function(x) wrap.map.char.gsub(pattFind = x, replStr = "", obj = cols) )
+    testing <- base::lapply(mapDpth$term2, function(x) def.map.char.gsub(pattFind = x, replStr = "", obj = cols) )
     
     
    
@@ -276,83 +283,164 @@ wrap.file.comb.tsdl.splt <- function(filePths,
    
    
     
-    # Identify the columns without any depth term:
+    # Identify the columns without any depth term & columns w/ depth terms:
     idxsMapDpthAll <- base::lapply(mapDpth$term2, function(x) base::grep(x, cols)) 
     colsNonDpth <- cols[-base::unlist(idxsMapDpthAll)]
+    colsData <- cols[-base::which(cols %in% colsNonDpth)]
     
+    # Note that just colsData and colsMrge will be kept
+    
+    # TODO add a colsKeep term??
+  
+    
+    # # Identify the columns corresponding to actual depths for this site-loc
+    # idxsMapDpthActl <- base::lapply(mapDpth$term2, function(x) base::grepl(x, cols))
+    # 
+    
+    
+    # Search for a pattern across all search terms, and choose whichever string match is longest. 
+    # e.g. depth1 matches depth10 w/ 6 chars, but depth10 matches depth10 w/ 7 chars.
+    matSnglDigMl <- base::sapply(colsData, function(col) base::sapply(mapDpth$term2, 
+                                          function(x) base::attributes(base::gregexpr(pattern = x ,text = col)[[1]])$match.length ) ) 
+    # The indices corresponding to the maximum match length:
+    idxMax <- sapply(1:base::ncol(matSnglDigMl), function(i) base::as.integer(base::which.max(matSnglDigMl[,i]) ) )
+    
+    # create the full column name - depth mapping df:
+    dfMtch <- base::data.frame(colNam = colsData, idxMtch = idxMax, mtchGrp = mapDpth$term2[idxMax], stringsAsFactors = FALSE)
+    
+  
+    
+    # TODO adapt test logic to dfMtch...
     # These should all be the same length:
     totlNumCols <- (base::unlist(base::lapply(idxsMapDpthAll, function(x) base::length(x))))
     
     if(base::length(base::unique(totlNumCols)) == 2) {
       # TODO option B - find the indices that have more columns than they should, and determine appropriate substitution
       idxsGood <- base::which(totlNumCols == base::min(totlNumCols))
-      idxsXtra
-    
+      # idxsXtra
+      
     } else if (base::length(base::unique(totlNumCols)) > 2){
       log$error("Should not expect varying numbers of columns.")
       
     }
     
     
-    # Identify the columns corresponding to actual depths for this site-loc
-    idxsMapDpthActl <- base::lapply(mapDpth$term2, function(x) base::grepl(x, cols))
     
-    
-    
-    
-    
-    # TODO if gsub can happen in reverse depth11, depth10, ... depth1, etc. then this might work. BUT Depth 1 will always pick up depth10,depth11,depth12...
-    # TODO this needs to distinguish b/w depth10 and depth1, depth11, etc.  
-    # idxsRevMapDpthActl <- base::lapply(base::rev(mapDpth$term2), function(x) base::grepl(x, cols) )
-    # colsMapDpthRev <- base::lapply(idxsRevMapDpthActl, function(x) base::c(colsNonDpth, cols[x]))
-    
-    # --------------------------------------------------------------------------------
-    colsMapDpth <- base::lapply(idxsMapDpthActl, function(x) base::c(colsNonDpth, cols[x]))
-    
-    # A list of dataframes for each depth
-    lsDpthDat <- base::lapply(1:base::length(colsMapDpth), function(i) cmboStatQm[,colsMapDpth[[i]] ])
-    
-    # Add the depth name to each data.frame of data
-    lsDpthDat <- base::lapply(1:base::length(lsDpthDat),
-                           function(i) {
-                             lsDpthDat[[i]]$depthName <- mapDpth$term2[i];
-                             return(lsDpthDat[[i]]) } )
-    
-    # Now merge the data.frame with the location characteristics
-    lsDpth <- base::lapply(1:base::length(lsDpthDat), function(i) {
-       base::merge(lsDpthDat[[i]], thrmDpthDf, by = "depthName", all.y = FALSE) })
-    
-    # Standardize column names by removing depth# based on the schema substitution term
-    lsDpth <- base::lapply(1:base::length(lsDpth), function(i) {
-      base::colnames(lsDpth[[i]]) <- base::gsub(thrmDpthDf$depthName[i],"",base::colnames(lsDpth[[i]]) );
-      return(lsDpth[[i]])
-    })
-    
-    
-    allNams <- base::lapply(1:base::length(lsDpth), function(i) base::colnames(lsDpth[[i]]))
-    if(base::any(base::unlist(base::lapply(1:base::length(thrmDpthDf$depthName),
-                               function(i) base::grepl(thrmDpthDf$depthName[i],base::unlist(allNams)))))){
-      # This test identifies any depth map schema names that were not removed from the data column names
-      idxsFindDpth <- base::lapply(1:base::length(thrmDpthDf$depthName),
-                             function(i) base::grep(thrmDpthDf$depthName[i],base::names(lsDpth[[1]])))
-      # the problematic depth strings
-      dpthProb <- thrmDpthDf$depthName[base::which(base::length(idxsFindDpth)>0)]
+   
+    # ----------------------------------------------------------------------- #
+    #  -------------------------- Clean up colnames ------------------------  #
+    #   -------------------------------------------------------------------   #
+    # The new column name removes the depth term in the names:
+    dfMtch$newColNam <- base::sapply(1:base::nrow(dfMtch), function(i)
+      base::gsub(pattern = dfMtch$mtchGrp[i], replacement = "", x = dfMtch$colNam[i]) )
 
-      log$error(base::paste0("Error in substituting depth## out of column names. 
-                             Reconsider the mapping schema 'nameSchmMapDpth' terms: ",
-                             base::paste0(dpthProb, collapse = ",")))
-      stop()
+    #  ==================== LOAD Col Substitution schema =====================  #
+    if(NEONprocIS.base::def.validate.json(nameSchmMapCols)){
+      
+      # Generate the depth-location term mapping:
+      rsltParsMapCols <- def.schm.avro.pars.map(FileSchm = nameSchmMapCols,log = log)
+      
+      mapCols <- rsltParsMapCols$map
+      
+    } else {
+      log$warn(base::paste0("Column rename mapping schema ", nameSchmMapCols, 
+                            " could not be loaded. No column renaming will occur."))
+      
+      mapCols <- NULL
+    }
+    # ----------------------------------------------------------------------- #
+    #  ----------------- Perform Col Substitution schema -------------------  #
+    if (!base::is.null(mapCols)){
+      log$info(paste0("Performing column name substitution using ", nameSchmMapCols))
+ 
+      newColNam <- dfMtch$newColNam
+      for(idxColRenm in 1:base::nrow(mapCols)){
+        newColNam <- def.map.char.gsub(pattFind=mapCols$term1[idxColRenm],
+                                       replStr = mapCols$term2[idxColRenm],
+                                       obj = newColNam)
+      }
+      dfMtch$newColNam <- newColNam
     }
     
-    # All the column names (should now be identical)
-    allNams
     
     
-    # Remove the "depthName" column
-    lsDpthTst  <- base::lapply(1:base::length(lsDpth), function(i) {
-     lsDpth[[i]][["depthName"]] <- NA})
+    # ----------------------------------------------------------------------- #
+    # Split data into a list of dataframes by the matching group:
+    # Loop by depth for merging in location information
+    lsDpth <- base::list()
+    for(dpth in base::unique(dfMtch$mtchGrp)){
+      
+      # Subset data.frame by depth:
+      idxsColsDpth <- base::which(dfMtch$mtchGrp == dpth)
+      colsSel <- base::c(mrgeCols,dfMtch$colNam[idxsColsDpth] )
+      lsDpth[[dpth]] <- cmboStatQm[, colsSel]
+      
+      
+      colsRenm <- base::c(mrgeCols, dfMtch$newColNam[idxsColsDpth])
+      base::colnames(lsDpth[[dpth]])  <- colsRenm
+     
+      # 
+      # #lsDpth[[dpth]]$depthName <- dpth 
+      # base::colnames(lsDpth[[dpth]]) <- base::gsub(pattern = dpth,
+      #                                              replacement = "",
+      #                                              base::colnames(lsDpth[[dpth]]) )
+      # 
+      # # -------------- Merge in location information with data ----------------
+      # lsDpth[[dpth]] <- base::merge(lsDpth[[dpth]], thrmDpthDf, by = "depthName", all.y = FALSE)
+      # lsDpth[[dpth]] <- dplyr::select(lsDpth[[dpth]], -"depthName") # don't pub this col
+      # 
+      
+    }
     
+
     
+    # # --------------------------------------------------------------------------------
+    # colsMapDpth <- base::lapply(idxsMapDpthActl, function(x) base::c(colsNonDpth, cols[x]))
+    # 
+    # # A list of dataframes for each depth
+    # lsDpthDat <- base::lapply(1:base::length(colsMapDpth), function(i) cmboStatQm[,colsMapDpth[[i]] ])
+    # 
+    # # Add the depth name to each data.frame of data
+    # lsDpthDat <- base::lapply(1:base::length(lsDpthDat),
+    #                        function(i) {
+    #                          lsDpthDat[[i]]$depthName <- mapDpth$term2[i];
+    #                          return(lsDpthDat[[i]]) } )
+    # 
+    # # Now merge the data.frame with the location characteristics
+    # lsDpth <- base::lapply(1:base::length(lsDpthDat), function(i) {
+    #    base::merge(lsDpthDat[[i]], thrmDpthDf, by = "depthName", all.y = FALSE) })
+    # 
+    # # Standardize column names by removing depth# based on the schema substitution term
+    # lsDpth <- base::lapply(1:base::length(lsDpth), function(i) {
+    #   base::colnames(lsDpth[[i]]) <- base::gsub(thrmDpthDf$depthName[i],"",base::colnames(lsDpth[[i]]) );
+    #   return(lsDpth[[i]])
+    # })
+    # 
+    # 
+    # allNams <- base::lapply(1:base::length(lsDpth), function(i) base::colnames(lsDpth[[i]]))
+    # if(base::any(base::unlist(base::lapply(1:base::length(thrmDpthDf$depthName),
+    #                            function(i) base::grepl(thrmDpthDf$depthName[i],base::unlist(allNams)))))){
+    #   # This test identifies any depth map schema names that were not removed from the data column names
+    #   idxsFindDpth <- base::lapply(1:base::length(thrmDpthDf$depthName),
+    #                          function(i) base::grep(thrmDpthDf$depthName[i],base::names(lsDpth[[1]])))
+    #   # the problematic depth strings
+    #   dpthProb <- thrmDpthDf$depthName[base::which(base::length(idxsFindDpth)>0)]
+    # 
+    #   log$error(base::paste0("Error in substituting depth## out of column names. 
+    #                          Reconsider the mapping schema 'nameSchmMapDpth' terms: ",
+    #                          base::paste0(dpthProb, collapse = ",")))
+    #   stop()
+    # }
+    # 
+    # # All the column names (should now be identical)
+    # allNams
+    # 
+    # 
+    # # Remove the "depthName" column
+    # lsDpthTst  <- base::lapply(1:base::length(lsDpth), function(i) {
+    #  lsDpth[[i]][["depthName"]] <- NA})
+    # 
+    # 
     # -----------------
     uniqCols <- base::unique(base::substr(cols, start = 1, stop = 7))
     uniqCols <- uniqCols[base::grep("depth", uniqCols)]
@@ -384,8 +472,8 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       #  -------------------------- Clean up colnames ----------------------  #
       #   -----------------------------------------------------------------   #
       
-      wrap.schm.map.char.gsub(obj = cols, FileSchm = )
-      
+      # wrap.schm.map.char.gsub(obj = cols, FileSchm = )
+      # 
       if(corrColNams){
         # Remove the spurious QF from column name when it's actually a time-averaged QM
         idxsQm <- base::grep("QM",base::colnames(lsDpth[[dpth]]) ) 
