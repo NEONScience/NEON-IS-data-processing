@@ -38,7 +38,7 @@
 #' @param filePths Character vector of full or relative file paths. Must be avro or parquet format.
 #' @param nameVarTime Character value. The name(s) of the time variable common across QM and stats files. E.g. c("001", "030")
 #' @param nameSchmMapDpth The filepath to the schema that maps named location depths to data's depth column naming convention
-#' @param nameSchmMapSub The filepath to the schema that maps column name strings to be replaced with other column name strings
+#' @param nameSchmMapCols Optional. The filepath to the schema that maps column name strings to be replaced with other column name strings
 #' @param mrgeCols Character vector. The column names for merging stat and QM files.
 #'  Default \code{c("startDateTime", "endDateTime")}
 #' @param locDir The expected directory name containing the location file(s). Default "location"
@@ -61,7 +61,7 @@
 #' def.file.comb.tsdl.splt(file=file,nameVarTime=c('001','030')
 
 # nameSchmMapCols <- "~/pfs/avro_schemas/tsdl_col_term_subs.avsc"
-rm(corrColNams)
+# rm(corrColNams)
 #@param corrColNams Should column names attempt to be corrected to match pub wb? Default TRUE
 
 
@@ -74,7 +74,7 @@ rm(corrColNams)
 
 # nameSchmMapCols <- "~/pfs/avro_schemas/tsdl_col_term_subs.avsc"
 # changelog and author contributions / copyrights
-#   Guy Litt (2021-04-09)
+#   Guy Litt (2021-04-12)
 #     original creation
 
 ##############################################################################################
@@ -86,7 +86,6 @@ wrap.file.comb.tsdl.splt <- function(filePths,
                                     locDir = "location",
                                     statDir = "stats",
                                     qmDir = "quality_metrics",
-                                    #corrColNams = TRUE,
                                     log = NULL) {
   # initialize logging if necessary
   if (base::is.null(log)) {
@@ -126,7 +125,6 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     
     # Generate the depth-location term mapping:
     rsltParsMap <- def.schm.avro.pars.map(FileSchm = nameSchmMapDpth,log = log)
-    
     mapDpth <- rsltParsMap$map
     
     # The features contains the information on depth and horizontal position
@@ -189,7 +187,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
   for(varTime in nameVarTime){
     filzSameTime <- filePths[base::grep(base::paste0("_",varTime), filePths)]
     
-    log$info(base::paste0("Beginning to process ", base::paste(filzSameTime, collapse = " and ")))
+    log$info(base::paste0("Beginning to process ",varTime, " time interval data with ", base::paste(filzSameTime, collapse = " and ")))
     
     if(base::length(filzSameTime) != 2 || 
        !base::any(base::grepl(paste0("/",statDir ,"/"),filzSameTime)) || 
@@ -250,7 +248,8 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     }
     
     # Ensure merge columns (timeCols) equal    
-    sameMrgeColsBool <- base::unlist(base::lapply(1:length(mrgeCols), function(i) base::all.equal(lsFnsSame[1][[mrgeCols[i]]],lsFnsSame[2][[mrgeCols[i]]])) )
+    sameMrgeColsBool <- base::unlist(base::lapply(1:base::length(mrgeCols),
+                                                  function(i) base::all.equal(lsFnsSame[1][[mrgeCols[i]]],lsFnsSame[2][[mrgeCols[i]]])) )
     # Issue a warning if the timestamps are not identical
     if(!base::any(sameMrgeColsBool)){
       log$warn(base::paste0('Timestamps in file ',filzSameTime[1], ' are not fully consistent with timestamps in ', filzSameTime[2]))
@@ -266,67 +265,55 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     # ----------------------------------------------------------------------- #
     #             Generate a list of dataframes for each depth 
     # ----------------------------------------------------------------------- #
-    # Create individual data.frames of each depth
     cols <- base::colnames(cmboStatQm)
-    # This assumes the standard format "depth#WaterTemp" or "depth##WaterTemp"
-    
-    # -----------------
-    # Parse columns based on the mapping
 
-    
-    testing <- base::lapply(mapDpth$term2, function(x) def.map.char.gsub(pattFind = x, replStr = "", obj = cols) )
-    
-    
-   
-    
-    
-   
-   
-    
     # Identify the columns without any depth term & columns w/ depth terms:
-    idxsMapDpthAll <- base::lapply(mapDpth$term2, function(x) base::grep(x, cols)) 
+    idxsMapDpthAll <- base::lapply(thrmDpthDf$depthName, function(x) base::grep(x, cols)) 
     colsNonDpth <- cols[-base::unlist(idxsMapDpthAll)]
     colsData <- cols[-base::which(cols %in% colsNonDpth)]
-    
-    # Note that just colsData and colsMrge will be kept
-    
-    # TODO add a colsKeep term??
   
-    
-    # # Identify the columns corresponding to actual depths for this site-loc
-    # idxsMapDpthActl <- base::lapply(mapDpth$term2, function(x) base::grepl(x, cols))
-    # 
-    
+    # Note that just colsData and colsMrge will be kept
     
     # Search for a pattern across all search terms, and choose whichever string match is longest. 
     # e.g. depth1 matches depth10 w/ 6 chars, but depth10 matches depth10 w/ 7 chars.
-    matSnglDigMl <- base::sapply(colsData, function(col) base::sapply(mapDpth$term2, 
+    matSnglDigMl <- base::sapply(colsData, function(col) base::sapply(thrmDpthDf$depthName, 
                                           function(x) base::attributes(base::gregexpr(pattern = x ,text = col)[[1]])$match.length ) ) 
-    # The indices corresponding to the maximum match length:
-    idxMax <- sapply(1:base::ncol(matSnglDigMl), function(i) base::as.integer(base::which.max(matSnglDigMl[,i]) ) )
     
-    # create the full column name - depth mapping df:
-    dfMtch <- base::data.frame(colNam = colsData, idxMtch = idxMax, mtchGrp = mapDpth$term2[idxMax], stringsAsFactors = FALSE)
     
-  
+    # Check for faulty match situation based on an extra digit at the end of the match pattern, e.g. depth1 matches both depth10 & depth1
+    matLogMoreDigt <-  base::sapply(colsData, function(col) base::sapply(thrmDpthDf$depthName, 
+                                            function(x) (base::regexec(pattern = paste0(x,"\\d"), text = col)[[1]][1]) == 1))
     
-    # TODO adapt test logic to dfMtch...
-    # These should all be the same length:
-    totlNumCols <- (base::unlist(base::lapply(idxsMapDpthAll, function(x) base::length(x))))
-    
-    if(base::length(base::unique(totlNumCols)) == 2) {
-      # TODO option B - find the indices that have more columns than they should, and determine appropriate substitution
-      idxsGood <- base::which(totlNumCols == base::min(totlNumCols))
-      # idxsXtra
-      
-    } else if (base::length(base::unique(totlNumCols)) > 2){
-      log$error("Should not expect varying numbers of columns.")
-      
+    if(!base::identical(base::dim(matLogMoreDigt), base::dim(matSnglDigMl))){
+      log$error("Expect matrices of the same dimension when identifying name matches.")
+      stop()
     }
     
+    # The indices corresponding to the maximum match length:
+    idxMax <- base::sapply(1:base::ncol(matSnglDigMl), function(i) base::as.integer(base::which.max(matSnglDigMl[,i]) ) )
+
+    # create the full column name - depth mapping df:
+    dfMtch <- base::data.frame(colNam = colsData, idxMtch = idxMax, mtchGrp = thrmDpthDf$depthName[idxMax], stringsAsFactors = FALSE)
     
+    # identify the indices where matLogMoreDigt is TRUE 
+    idxsMoreDigt <- base::unlist(base::lapply(1:base::nrow(matLogMoreDigt),
+                                             function(i) 
+                                             {x <- base::which(matLogMoreDigt[i,] == TRUE);
+                                             return(x)}))
     
-   
+    if(base::length(idxsMoreDigt) >0){
+      # remove match columns corresponding to excess digits
+      dfMtch <- dfMtch[-base::as.integer(idxsMoreDigt),]
+    }
+    
+    # The # of columns for each depth should all be the same length:
+    totlNumCols <- dfMtch %>% dplyr::group_by(idxMtch) %>% dplyr::summarise(count = n()) %>% dplyr::select(count) #%>% base::unique()
+  
+    if(base::length(base::unique(totlNumCols$count)) >= 2) {
+      log$error("Should not expect varying numbers of columns.")
+      stop()
+      
+    } 
     # ----------------------------------------------------------------------- #
     #  -------------------------- Clean up colnames ------------------------  #
     #   -------------------------------------------------------------------   #
@@ -362,13 +349,12 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       dfMtch$newColNam <- newColNam
     }
     
-    
-    
+
     # ----------------------------------------------------------------------- #
     # Split data into a list of dataframes by the matching group:
     # Loop by depth for merging in location information
     lsDpth <- base::list()
-    for(dpth in base::unique(dfMtch$mtchGrp)){
+    for(dpth in thrmDpthDf$depthName){
       
       # Subset data.frame by depth:
       idxsColsDpth <- base::which(dfMtch$mtchGrp == dpth)
@@ -379,6 +365,14 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       colsRenm <- base::c(mrgeCols, dfMtch$newColNam[idxsColsDpth])
       base::colnames(lsDpth[[dpth]])  <- colsRenm
      
+      # -------------- Merge in location information with data ----------------
+      lsDpth[[dpth]]$depthName <- dpth 
+      lsDpth[[dpth]] <- base::merge(lsDpth[[dpth]], thrmDpthDf, by = "depthName", all.y = FALSE)
+      lsDpth[[dpth]] <- dplyr::select(lsDpth[[dpth]], -"depthName") # don't pub this col
+      
+      
+      log$info(paste0("Merged data and locations at ", dpth, " with the ", varTime, " time interval."))
+      
       # 
       # #lsDpth[[dpth]]$depthName <- dpth 
       # base::colnames(lsDpth[[dpth]]) <- base::gsub(pattern = dpth,
@@ -442,74 +436,53 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     # 
     # 
     # -----------------
-    uniqCols <- base::unique(base::substr(cols, start = 1, stop = 7))
-    uniqCols <- uniqCols[base::grep("depth", uniqCols)]
-    uniqCols <- base::gsub(uniqCols, pattern = "W", replacement = "")
-    
-    # separate depths by term "WaterTemp"
-    dpthCols <- base::unlist(base::lapply(cols, function(col) base::strsplit(col, split = "WaterTemp", fixed = TRUE)[[1]][1]) )
-    nonDpthCols <- base::unlist(base::lapply(cols, function(col) base::strsplit(col, split = "WaterTemp", fixed = TRUE)[[1]][2]) ) 
-    
-    uniqCols <- base::unique(dpthCols)
-    uniqCols <- uniqCols[base::grep("depth", uniqCols)]
-    
-    # Loop by depth for merging in location information
-    lsDpth <- base::list()
-    for(dpth in uniqCols){
-      idxsColsDpth <- base::which(dpthCols == dpth)
-      colsSel <- base::c(mrgeCols,cols[idxsColsDpth] )
-      lsDpth[[dpth]] <- cmboStatQm[, colsSel]
-      lsDpth[[dpth]]$depthName <- dpth 
-      base::colnames(lsDpth[[dpth]]) <- base::gsub(pattern = dpth,
-                                                   replacement = "",
-                                                   base::colnames(lsDpth[[dpth]]) )
-      
-      # -------------- Merge in location information with data ----------------
-      lsDpth[[dpth]] <- base::merge(lsDpth[[dpth]], thrmDpthDf, by = "depthName", all.y = FALSE)
-      lsDpth[[dpth]] <- dplyr::select(lsDpth[[dpth]], -"depthName") # don't pub this col
-      
-      # --------------------------------------------------------------------- #
-      #  -------------------------- Clean up colnames ----------------------  #
-      #   -----------------------------------------------------------------   #
-      
-      # wrap.schm.map.char.gsub(obj = cols, FileSchm = )
-      # 
-      if(corrColNams){
-        # Remove the spurious QF from column name when it's actually a time-averaged QM
-        idxsQm <- base::grep("QM",base::colnames(lsDpth[[dpth]]) ) 
-        if(base::length(idxsQm) > 0 ){
-          base::colnames(lsDpth[[dpth]])[idxsQm] <- base::gsub(pattern = "QF", replacement = "",  base::colnames(lsDpth[[dpth]])[idxsQm])
-        }
-        # Change WaterTemp to tsdWaterTemp:
-        idxsWatrTemp <- base::grep("WaterTemp", base::colnames(lsDpth[[dpth]]))
-        idxsWatrTemp <- idxsWatrTemp[base::which(!base::grepl("tsd",base::colnames(lsDpth[[dpth]])[idxsWatrTemp]))]
-        if(base::length(idxsWatrTemp) > 0){
-          base::colnames(lsDpth[[dpth]])[idxsWatrTemp] <- base::gsub("WaterTemp","tsdWaterTemp",base::colnames(lsDpth[[dpth]])[idxsWatrTemp])
-        }
-      }
-      #   -----------------------------------------------------------------   #
-      #  -------------------------------------------------------------------  #
-      # --------------------------------------------------------------------- #
-    } # end loop by depth
-    
+    # uniqCols <- base::unique(base::substr(cols, start = 1, stop = 7))
+    # uniqCols <- uniqCols[base::grep("depth", uniqCols)]
+    # uniqCols <- base::gsub(uniqCols, pattern = "W", replacement = "")
+    # 
+    # # separate depths by term "WaterTemp"
+    # dpthCols <- base::unlist(base::lapply(cols, function(col) base::strsplit(col, split = "WaterTemp", fixed = TRUE)[[1]][1]) )
+    # nonDpthCols <- base::unlist(base::lapply(cols, function(col) base::strsplit(col, split = "WaterTemp", fixed = TRUE)[[1]][2]) ) 
+    # 
+    # uniqCols <- base::unique(dpthCols)
+    # uniqCols <- uniqCols[base::grep("depth", uniqCols)]
+    # 
+    # # Loop by depth for merging in location information
+    # lsDpth <- base::list()
+    # for(dpth in thrmDpthDf$depthName){
+    #   idxsColsDpth <- base::which(dpthCols == dpth)
+    #   colsSel <- base::c(mrgeCols,cols[idxsColsDpth] )
+    #   lsDpth[[dpth]] <- cmboStatQm[, colsSel]
+    #   lsDpth[[dpth]]$depthName <- dpth 
+    #   base::colnames(lsDpth[[dpth]]) <- base::gsub(pattern = dpth,
+    #                                                replacement = "",
+    #                                                base::colnames(lsDpth[[dpth]]) )
+    #   
+    #   # -------------- Merge in location information with data ----------------
+    #   lsDpth[[dpth]]$depthName <- dpth # create a temp col
+    #   lsDpth[[dpth]] <- base::merge(lsDpth[[dpth]], thrmDpthDf, by = "depthName", all.y = FALSE)
+    #   lsDpth[[dpth]] <- dplyr::select(lsDpth[[dpth]], -"depthName") # remove temp col
+    #   
+    #   log$info(paste0("Merged data and locations at ", dpth, " with the ", varTime, " time interval."))
+    # } # end loop by depth
+    #   -----------------------------------------------------------------   #
+    #  -------------------------------------------------------------------  #
+    # --------------------------------------------------------------------- #
     # Check total column numbers - should be similar
     totColsEachDf <- base::lapply(1:base::length(lsDpth), function(i) base::ncol(lsDpth[[i]]) ) 
     if(base::length(base::unique(base::unlist(totColsEachDf))) != 1){
-      log$debug(base::paste0("The combined basicStats and qualityMetrics dataframes exhibit differing numbers of columns for each depth with ",base::paste(filzSameTime, collapse = ", and ") ))
+      log$error(base::paste0("The combined basicStats and qualityMetrics dataframes exhibit differing numbers of columns for each depth with ",base::paste(filzSameTime, collapse = ", and ") ))
+      stop()
     }
     
-    # Remove Depths absent from the location file
-    maxVer <- base::max(thrmDpthDf$verticalPosition)
-    lsDpthSub <- lsDpth[base::which(base::names(lsDpth) %in% thrmDpthDf$depthName)]
-    
     # Rename to HOR.VER
-    base::names(lsDpthSub) <- base::unlist(base::lapply(1:base::length(lsDpthSub),
-                        function(i) base::unique(base::paste(lsDpthSub[[i]]$horizontalPosition,
-                                                             lsDpthSub[[i]]$verticalPosition,
+    base::names(lsDpth) <- base::unlist(base::lapply(1:base::length(lsDpth),
+                        function(i) base::unique(base::paste(lsDpth[[i]]$horizontalPosition,
+                                                             lsDpth[[i]]$verticalPosition,
                                                              sep ="."))))
     
     # A list of times and a list of depths containing dataframes of data
-    lsDataVarTime[[varTime]] <- lsDpthSub
+    lsDataVarTime[[varTime]] <- lsDpth
     log$info(base::paste0('Successfully merged the contents of ', varTime,' files.'))
   } # End loop around time variables
   
