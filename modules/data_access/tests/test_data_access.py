@@ -55,7 +55,7 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_named_location_context(self):
         context: List[str] = get_named_location_context(self.connection, self.named_location_id)
-        expected_context = ['par-met-343', 'par-met', 'upward-facing']
+        expected_context = ['par-met-346', 'par-met', 'upward-facing']
         print(f'context: {context}')
         self.assertTrue(context == expected_context)
 
