@@ -41,10 +41,9 @@
 test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file",
           {
             os_type = Sys.info()["sysname"]
-            
+            # Execute the test when the OS is Linux-based, skip otherwise
             if (os_type == "Linux")
             {
-              
               workingDirPath <- getwd()
               
               nameFile <- file.path(workingDirPath, "testdata/HART_data.avro")
@@ -71,9 +70,9 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
               cat("\n\n   Test 1: When only the input data, output file and the avro ibrary are passed in.")
               cat("\n   Write successful.")
               cat("\n |=================================================================================|\n")
-              # reset avro_write_success
-              avro_write_success = -1
-              avro_write_success <- NEONprocIS.base::def.wrte.avro.deve (
+              # reset writeSuccess
+              writeSuccess = -1
+              writeSuccess <- NEONprocIS.base::def.wrte.avro.deve (
                     data = data_df, 
                     NameFile = outFile,
                     NameSchm = NULL, 
@@ -81,9 +80,10 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
                     Schm = NULL, 
                     NameFileSchm = NULL, 
                     NameLib = 'ravro.so')
-              expect_true (file.exists(outFile) &&avro_write_success == 0 ) 
+              expect_true (file.exists(outFile) && writeSuccess == 0 ) 
               # remove the test ouput file
               if (file.exists(outFile)) {file.remove(outFile)}
+ 
               # reset
               writeSuccess = -1
               
@@ -93,12 +93,12 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
               cat("\n   Write successful.")
               cat("\n |=================================================================================|\n")
               
-              avro_write_success <- NEONprocIS.base::def.wrte.avro.deve(
+              writeSuccess <- NEONprocIS.base::def.wrte.avro.deve(
                   data = data_df,
                   NameFile = outFile,
                   NameFileSchm = schm,
-                  NameLib = 'ravro.so')
-              expect_true (file.exists(outFile) &&avro_write_success == 0 ) 
+                  NameLib = 'ravro.so') 
+              expect_true (file.exists(outFile) && writeSuccess == 0 ) 
               # remove the test ouput file
               if (file.exists(outFile)) {file.remove(outFile)}
               
@@ -111,7 +111,7 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
               cat("\n  Write successful.")
               cat("\n |=================================================================================|\n")
               
-              avro_write_success <- NEONprocIS.base::def.wrte.avro.deve(
+              writeSuccess <- NEONprocIS.base::def.wrte.avro.deve(
                 data = data_df,
                 NameFile = outFile,
                 NameSchm = "ST",
@@ -121,7 +121,7 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
                 NameLib = 'ravro.so'
               )
               
-              expect_true (file.exists(outFile) &&avro_write_success == 0 ) 
+              expect_true (file.exists(outFile) && writeSuccess == 0 ) 
               
               # reset the value of writeSuccess
               writeSuccess = -1
@@ -132,12 +132,12 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
               cat("\n Write fails.")
               cat("\n |=================================================================================|\n")
               
-              avro_write_success <- try(NEONprocIS.base::def.wrte.avro.deve(
+              writeSuccess <- try(NEONprocIS.base::def.wrte.avro.deve(
                   data = data,
                   NameFile = outFile,
                   NameFileSchm = schm,
                   NameLib = 'ravro.so'),silent = TRUE)
-              expect_true (class(avro_write_success) == 'try-error')
+              expect_true (class(writeSuccess) == 'try-error')
  
              }
           })
