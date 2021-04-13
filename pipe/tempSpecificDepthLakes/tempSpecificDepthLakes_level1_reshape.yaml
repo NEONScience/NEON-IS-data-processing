@@ -7,9 +7,18 @@ transform:
   image: quay.io/battelleecology/filter_joiner:6
   cmd:
   - Rscript
-  - "/flow.stat.basc.R"
+  - "/flow.tsdl.comb.splt.R"
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
+  - NameDirCombOut=/level1_reshape
+  - NameVarTime=001|030
+  - MrgeCols=startDateTime|endDateTime
+  - LocDir=location
+  - StatDir=stats
+  - QmDir=quality_metrics
+  - FileSchmMapDepth=$FILE_SCHEMA_MAP_DEPTH
+  - FileSchmMapCols=$FILE_SCHEMA_MAP_COLS
+  - NameFileSufxRm=basicStats|qualityMetrics
   env:
     LOG_LEVEL: INFO
   image_pull_secrets:
@@ -26,10 +35,15 @@ input:
       branch: master
       glob: "/tchain/*/*/*"
   - pfs:
-      name: FILE_SCHEMA_STATS
+      name: FILE_SCHEMA_MAP_DEPTH
       repo: avro_schemas
       branch: master
-      glob: "/dp01/tempSpecificDepthLakes_dp01_stats.avsc"
+      glob: "/dp01/tempSpecificDepthLakes_dp01_map_loc.avsc"
+   - pfs:
+      name: FILE_SCHEMA_MAP_COLS
+      repo: avro_schemas
+      branch: master
+      glob: "/dp01/tempSpecificDepthLakes_dp01_map_cols_str.avsc"
 cache_size: 64M
 max_queue_size: '1'
 #salt: 1a066393a052492e9bed6fb2970742a9

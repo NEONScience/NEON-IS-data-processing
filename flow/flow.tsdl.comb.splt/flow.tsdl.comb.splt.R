@@ -90,6 +90,8 @@
 #' @keywords Currently none
 
 #' @examples Currently none
+#' Rscript ./flow.tsdl.comb.splt.R "DirIn=~/pfs/tsdl_comb_long/" "NameDirCombOut=/testingcmd" "NameVarTime=001|030" "FileSchmMapDepth=./tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc" "FileSchmMapCols=./tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc"
+#' 
 # setwd("~/R/NEON-IS-data-processing-glitt/flow/flow.tsdl.comb.splt/")
 # Para <- base::list(DirIn = "~/pfs/tempSpecificDepthLakes_level1_group/tchain/2019/01/10/",
 #                                       DirOut = "~/pfs/tsdl_comb_long/",
@@ -184,7 +186,7 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 
 log$debug(
-  base::paste0( # NameFileSufx="_basicStats_001" in tempSpecificDepthLakes_stats_instantaneous.yaml :paste0(
+  base::paste0(
     'All files found in the following directories will be combined: ',
     base::paste0(Para$DirComb, collapse = ',')
   )
@@ -197,39 +199,6 @@ log$debug(
 )
 
 log$debug(base::paste0('Common time intervals expected in directories: ', base::paste(Para$NameVarTime, collapse = ", ") ))
-# --------------------------------------------------------------------------- #
-# # Read in the mapping schema
-# log$debug(base::paste0(
-#   'Output schema: ',
-#   base::paste0(Para$FileSchmMapDepth, collapse = ',')
-# ))
-# 
-# # TODO why parse nameSchmMapDpth here? The wrapper does this too, if nameSchmMapDpth = Para$FileSchmMapDepth
-# if (base::is.null(Para$FileSchmMapDepth) || Para$FileSchmMapDepth == 'NA') {
-#   # SchmComb <- NULL
-#   nameSchmMapDpth <- NULL
-# } else {
-#   # SchmComb <-
-#   #   base::paste0(base::readLines(Para$FileSchmMapDepth), collapse = '')
-# 
-#   # Parse the avro schema for output variable names
-#   nameSchmMapDpth <- Para$FileSchmMapDepth#NEONprocIS.base::def.schm.avro.pars(Schm=SchmComb,log=log)$schmList$map  #$var$name
-# }
-# 
-# if (base::is.null(Para$FileSchmMapCols) || Para$FileSchmMapCols == 'NA') {
-#   nameSchmMapCols <- NULL
-# } else {
-#   nameSchmMapCols <- Para$FileSchmMapCols
-# }
-
-
-# Echo more arguments
-log$debug(
-  base::paste0(
-    'Input columns (and their order) to populate in the combined output file (all if empty): ',
-    base::paste0(Para$ColKeep, collapse = ',')
-  )
-)
 
 # What are the expected subdirectories of each input path
 log$debug(base::paste0(
@@ -302,7 +271,6 @@ for (idxDirIn in DirIn) {
       
       # TODO add Para$ColAdd based on a file schema of expected columns that don't yet exist?
       
-      
       # ----------------------------------------------------------------------- #
       # Filter and re-order the output columns
       # ----------------------------------------------------------------------- #
@@ -326,20 +294,12 @@ for (idxDirIn in DirIn) {
         # Turn any periods in the column names to underscores
         base::names(data) <- base::sub(pattern='[.]',replacement='_',x=base::names(data))
         
-        
-        # if(base::is.null(SchmComb)){
-        #   log$debug(base::paste0(
-        #     'Filtered and re-ordered output columns : ',
-        #     base::paste0(base::names(data), collapse = ',')
-        #   ))
-        # } else {
         log$debug(base::paste0(
           'Filtered and re-ordered input columns: ',
           base::paste0(base::names(data), collapse = ','),
           ' have had column names substituted using ',
           base::paste0(nameSchmMapDpth, collapse = ',')
         ))      
-        # }
       } # data column filter/re-order
         
       # ----------------------------------------------------------------------- #
