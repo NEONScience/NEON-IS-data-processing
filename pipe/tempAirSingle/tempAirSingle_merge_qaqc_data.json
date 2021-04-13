@@ -13,14 +13,15 @@
     "image": "quay.io/battelleecology/neon-is-qaqc-data-comb-r:v0.0.6",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "4"
     }  
   },
   "input": {
       "pfs": {
         "name": "DIR_IN",
         "repo": "tempAirSingle_qaqc_data_group",
-        "glob": "/*/*/*/"
+        "glob": "/*/*/*"
       }
   },
   "enable_stats": false,

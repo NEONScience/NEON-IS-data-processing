@@ -1,0 +1,37 @@
+{
+  "pipeline": {
+    "name": "par_regularized_flags"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.rglr.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirRglr=flags",
+      "MethRglr=CybiEc",
+      "WndwRglr=Trlg",
+      "IdxWndw=IdxWndwMin",
+      "RptTimeWndw=FALSE",
+      "DropNotNumc=FALSE"
+      ],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.27",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "par_calibrated_flags",
+      "glob": "/*/*/*/"
+    }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "50M",
+    "cpu": 0.1
+  }
+}

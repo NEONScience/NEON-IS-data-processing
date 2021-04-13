@@ -1,0 +1,32 @@
+{
+  "pipeline": {
+    "name": "parWaterSurface_threshold_filter"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.thsh.filt.R",
+      "DirIn=$threshold",
+      "DirOut=/pfs/out",
+      "Term=par",
+      "Ctxt=par-surfacewater"
+      ],
+    "image": "quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.7",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "pfs": {
+      "repo": "threshold",
+      "glob": "/"
+    }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "13M",
+    "cpu": 0.01
+  }
+}

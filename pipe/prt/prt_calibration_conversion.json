@@ -15,13 +15,13 @@
       "TermFuncUcrt=resistance:def.ucrt.meas.cnst,def.ucrt.fdas.rstc.poly",
       "FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.46",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
       "LOG_LEVEL": "INFO",
-      "PARALLELIZATION_INTERNAL": "2"
+      "PARALLELIZATION_INTERNAL": "4"
     }
   },
   "input": {
@@ -29,8 +29,8 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "prt_calibration_filter",
-          "glob": "/prt/*/*/*/"
+          "repo": "prt_data_calibration_group",
+          "glob": "/prt/*/*/*"
         }
       },
       {

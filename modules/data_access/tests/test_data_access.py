@@ -55,8 +55,8 @@ class DataAccessTest(unittest.TestCase):
     def test_get_named_location_context(self):
         context: List[str] = get_named_location_context(self.connection, self.named_location_id)
         # Context data is not in the database yet.
-        # expected_context = ['par-met-370', 'par-met', 'upward-facing']
-        expected_context = []
+        expected_context = ['par-met', 'upward-facing', 'par-met-351']
+        # expected_context = []
         # print(f'context: {context}')
         self.assertTrue(context == expected_context)
 
@@ -72,8 +72,9 @@ class DataAccessTest(unittest.TestCase):
     def test_get_named_location_properties(self):
         properties: List[Property] = get_named_location_properties(self.connection, self.named_location_id)
         prop = properties[0]
-        self.assertTrue(prop.name == 'Required Asset Management Location Code')
-        self.assertTrue(prop.value == 'CFGLOC100805')
+        print(f'prop: {prop}')
+        self.assertTrue(prop.name == 'Required Asset Management Location ID')
+        self.assertTrue(prop.value == 1834)
 
     def test_get_named_location_schema_name(self):
         named_location_id = 158818

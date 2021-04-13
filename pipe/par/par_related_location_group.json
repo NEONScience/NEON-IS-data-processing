@@ -1,0 +1,39 @@
+{
+  "pipeline": {
+    "name": "par_related_location_group"
+  },
+  "transform": {
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/related_location_group:11",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "python3 -m related_location_group.related_location_group_main"
+    ],
+    "env": {
+      "LOG_LEVEL": "INFO",
+      "OUT_PATH": "/pfs/out",
+      "SOURCE_TYPE_INDEX": "3",
+      "YEAR_INDEX": "4",
+      "MONTH_INDEX": "5",
+      "DAY_INDEX": "6",
+      "GROUP_INDEX": "7",
+      "LOCATION_INDEX": "8",
+      "DATA_TYPE_INDEX": "9"
+    }
+  },
+  "input": {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "par_pqs1_group_path",
+          "glob": "/pqs1/*/*/*",
+          "empty_files": true
+        }
+  },
+  "enable_stats": false,
+  "standby": true
+}

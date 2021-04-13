@@ -1,0 +1,61 @@
+---
+pipeline:
+  name: tempAirSingle_pre_statistics_group
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/filter_joiner:9
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m filter_joiner.filter_joiner_main"
+  env:
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: STATISTICS_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/prt/*/data/**
+            # Join on context group (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: UNCERTAINTY_COEF_PATH
+            # Filter for uncertainty_coef directory
+            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/*/*/*/*/prt/*/uncertainty_coef/**
+            # Join on context group (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: UNCERTAINTY_DATA_PATH
+            # Filter for uncertainty_data directory
+            glob_pattern: /pfs/UNCERTAINTY_DATA_PATH/*/*/*/*/prt/*/uncertainty_data/**
+            # Join on context group (already joined below by day)
+            join_indices: [6]
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: DEBUG
+    RELATIVE_PATH_INDEX: "3"
+input:
+  join:
+  - pfs:
+      name: STATISTICS_PATH
+      repo: tempAirSingle_qaqc_data_group
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
+  - pfs:
+      name: UNCERTAINTY_COEF_PATH
+      repo: tempAirSingle_prt
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
+  - pfs:
+      name: UNCERTAINTY_DATA_PATH
+      repo: tempAirSingle_regularized_uncertainty_data
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
+parallelism_spec:
+  constant: "1"
+enable_stats: false
+standby: true

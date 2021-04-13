@@ -1,0 +1,40 @@
+{
+  "pipeline": {
+    "name": "relHumidity_threshold_select"
+  },
+  "transform": {
+    "cmd": ["Rscript","/flow.thsh.slct.R","DirIn=$REPO_LOCATIONS","DirOut=/pfs/out","FileThsh=$FILE_THRESHOLDS","TermCtxt1=relativeHumidity","TermCtxt2=temperature","TermCtxt3=dewPoint","DirSubCopy=location"],
+    "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.13",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "REPO_LOCATIONS",
+          "repo": "relHumidity_locations",
+          "glob": "/hmp155/*/*/*/"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_THRESHOLDS",
+          "repo": "relHumidity_threshold_filter",
+          "glob": "/thresholds.json"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "2"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}

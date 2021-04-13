@@ -10,17 +10,19 @@
       "DirOut=/pfs/out",
       "DirRglr=uncertainty_data",
       "FileSchmRglr=NA",
-      "FreqRglr=0.1",
       "MethRglr=CybiEc",
       "WndwRglr=Trlg",
-      "IdxWndw=IdxWndwMin"
+      "IdxWndw=IdxWndwMin",
+      "RptTimeWndw=FALSE",
+      "DropNotNumc=FALSE"
     ],
     "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.27",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "4"
     }
   },
   "input": {
@@ -33,7 +35,7 @@
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
     "memory": "20M",
