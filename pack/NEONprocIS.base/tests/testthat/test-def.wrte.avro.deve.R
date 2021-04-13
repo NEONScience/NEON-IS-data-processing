@@ -44,21 +44,16 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
             
             if (os_type == "Linux")
             {
-              avro_write_success = -1
               
               workingDirPath <- getwd()
               
               nameFile <- file.path(workingDirPath, "testdata/HART_data.avro")
+              outFile <- file.path(workingDirPath, "testdata/HART_out.avro")
+              schm <- file.path(workingDirPath, "testdata/HART_data.avsc")
               nameLib <- file.path(workingDirPath, "ravro.so")
-              
-              # Load the library
-              # base::dyn.load(NameLib=nameLib)
-              # Read the data.
-              # Note: The package argument is needed to include this as a function in the NEONprocIS.base package
-              
-              # data_df <- base::.Call('readavro',NameFile=nameFile,PACKAGE='ravro')
-              
+              # valid data, data_df
               data_df <- NEONprocIS.base::def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
+              # invalid data, data
               data <- data.frame(
                 "source_id" = (c("19963", "19963", "19963", "19963", "19963")),
                 "site_id" = c('HARV', 'HARV', 'HARV', 'HARV', 'HARV'),
@@ -69,9 +64,15 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
                                               ('2019-01-01 00:00:40'))),
                 "resistance" = c(100.0767, 100.0769, 100.0771, 100.0771, 100.0763)
               )
-              
-              outFile <- file.path(workingDirPath, "testdata/HART_out.avro")
-              
+ 
+            # Happy path 1: When the minimal parameters,input data, output file and the avro ibrary, are passed in
+            # returns success, 0  
+              cat("\n |=================================================================================|")
+              cat("\n\n   Test 1: When only the input data, output file and the avro ibrary are passed in.")
+              cat("\n   Write successful.")
+              cat("\n |=================================================================================|\n")
+              # reset avro_write_success
+              avro_write_success = -1
               avro_write_success <- NEONprocIS.base::def.wrte.avro.deve (
                     data = data_df, 
                     NameFile = outFile,
@@ -80,46 +81,63 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
                     Schm = NULL, 
                     NameFileSchm = NULL, 
                     NameLib = 'ravro.so')
-              expect_true (file.exists(outFile))
+              expect_true (file.exists(outFile) &&avro_write_success == 0 ) 
+              # remove the test ouput file
               if (file.exists(outFile)) {file.remove(outFile)}
-              
-              cat("\n When schema param is passed along with required parameters to the def.wrte.avro.deve function\n")
+              # reset
               writeSuccess = -1
-              outFile <- file.path(workingDirPath, "testdata/HART_out.avro")
-              schm <- file.path(workingDirPath, "testdata/HART_data.avsc")
+              
+              # Happy path 2: When the schema file is passed in with input data, output file and the avro ibrary 
+              
+              cat("\n\n   Test 2: When the schema file is passed in with input data, output file and the avro ibrary")
+              cat("\n   Write successful.")
+              cat("\n |=================================================================================|\n")
+              
               avro_write_success <- NEONprocIS.base::def.wrte.avro.deve(
                   data = data_df,
                   NameFile = outFile,
                   NameFileSchm = schm,
                   NameLib = 'ravro.so')
-              expect_true (file.exists(outFile))
+              expect_true (file.exists(outFile) &&avro_write_success == 0 ) 
+              # remove the test ouput file
               if (file.exists(outFile)) {file.remove(outFile)}
               
-              cat("\n When schema param is passed along with required parameters to the def.wrte.avro.deve function\n")
+              # reset the value of writeSuccess
               writeSuccess = -1
               
-              schm <- file.path(workingDirPath, "testdata/HART_data.avsc")
+              # Happy path 3:When schema name and namespace are passed in, the schema file is NOT
+              # 
+              cat("\n\n  Test 3: When schema name and namespace are passed in, the schema file is NOT")
+              cat("\n  Write successful.")
+              cat("\n |=================================================================================|\n")
+              
+              avro_write_success <- NEONprocIS.base::def.wrte.avro.deve(
+                data = data_df,
+                NameFile = outFile,
+                NameSchm = "ST",
+                NameSpceSchm = "org.neonscience.schema.device",
+                Schm = NULL,
+                NameFileSchm = NULL,
+                NameLib = 'ravro.so'
+              )
+              
+              expect_true (file.exists(outFile) &&avro_write_success == 0 ) 
+              
+              # reset the value of writeSuccess
+              writeSuccess = -1
+              
+              # Sad path 1: When the input data has data of class factor
+              # Errs out with the message, 'Cannot write data of class factor.'
+              cat("\n\n Test 4 - negative: When the input data has data of class factor, catch the error")
+              cat("\n Write fails.")
+              cat("\n |=================================================================================|\n")
+              
               avro_write_success <- try(NEONprocIS.base::def.wrte.avro.deve(
                   data = data,
                   NameFile = outFile,
                   NameFileSchm = schm,
                   NameLib = 'ravro.so'),silent = TRUE)
-              
-              # expect_true (file.exists(outFile))
-              # if (file.exists(outFile)) {
-              #   file.remove(outFile)
-              # }
-              
-              writeSuccess = -1
-              
-              avro_write_success <- NEONprocIS.base::def.wrte.avro.deve(
-                  data = data_df,
-                  NameFile = outFile,
-                  NameSchm = "ST",
-                  NameSpceSchm = "org.neonscience.schema.device",
-                  Schm = NULL,
-                  NameFileSchm = NULL,
-                  NameLib = 'ravro.so'
-                )
+              expect_true (class(avro_write_success) == 'try-error')
+ 
              }
           })
