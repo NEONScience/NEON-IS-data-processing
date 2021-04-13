@@ -47,72 +47,79 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
               avro_write_success = -1
               
               workingDirPath <- getwd()
-
+              
               nameFile <- file.path(workingDirPath, "testdata/HART_data.avro")
               nameLib <- file.path(workingDirPath, "ravro.so")
-              data_df <- NEONprocIS.base::def.read.avro.deve(NameFile = nameFile, NameLib = nameLib) 
+              
+              # Load the library
+              # base::dyn.load(NameLib=nameLib)
+              # Read the data.
+              # Note: The package argument is needed to include this as a function in the NEONprocIS.base package
+              
+              # data_df <- base::.Call('readavro',NameFile=nameFile,PACKAGE='ravro')
+              
+              data_df <- NEONprocIS.base::def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
               data <- data.frame(
-                "source_id"=(c("19963","19963","19963","19963","19963" )),
-                "site_id"=c('HARV','HARV','HARV','HARV','HARV'),
-                "readout_time"=as.POSIXct(c(('2019-01-01 00:00:00'), ('2019-01-01 00:00:10'),('2019-01-01 00:00:20'),('2019-01-01 00:00:30'),('2019-01-01 00:00:40'))),
-                "resistance"=c(100.0767,100.0769,100.0771,100.0771,100.0763))
+                "source_id" = (c("19963", "19963", "19963", "19963", "19963")),
+                "site_id" = c('HARV', 'HARV', 'HARV', 'HARV', 'HARV'),
+                "readout_time" = as.POSIXct(c(('2019-01-01 00:00:00'),
+                                              ('2019-01-01 00:00:10'),
+                                              ('2019-01-01 00:00:20'),
+                                              ('2019-01-01 00:00:30'),
+                                              ('2019-01-01 00:00:40'))),
+                "resistance" = c(100.0767, 100.0769, 100.0771, 100.0771, 100.0763)
+              )
               
               outFile <- file.path(workingDirPath, "testdata/HART_out.avro")
               
-              avro_write_success <- NEONprocIS.base::def.wrte.avro.deve (data =data_df,
-                                                                         NameFile= outFile,
-                                                                         NameSchm=NULL,
-                                                                         NameSpceSchm=NULL,
-                                                                         Schm=NULL,
-                                                                         NameFileSchm=NULL,
-                                                                         NameLib='ravro.so')
+              avro_write_success <- NEONprocIS.base::def.wrte.avro.deve (
+                    data = data_df, 
+                    NameFile = outFile,
+                    NameSchm = NULL, 
+                    NameSpceSchm =  NULL, 
+                    Schm = NULL, 
+                    NameFileSchm = NULL, 
+                    NameLib = 'ravro.so')
               expect_true (file.exists(outFile))
-              if (file.exists(outFile)) {
-                file.remove(outFile)
-              }
+              if (file.exists(outFile)) {file.remove(outFile)}
               
-            cat("\n When schema param is passed along with required parameters to the def.wrte.avro.deve function\n")
-            writeSuccess = -1
-            outFile <- file.path(workingDirPath, "testdata/HART_out.avro")
-            schm <- file.path(workingDirPath, "testdata/HART_data.avsc")
-            avro_write_success <- NEONprocIS.base::def.wrte.avro.deve(
-              data =data_df,
-              NameFile=outFile,
-              NameFileSchm=schm,
-              NameLib='ravro.so')
-            expect_true (file.exists(outFile))
-            if (file.exists(outFile)) {
-              file.remove(outFile)
-            }
-            
-            
-            cat("\n When schema param is passed along with required parameters to the def.wrte.avro.deve function\n")
-            writeSuccess = -1
-            
-            schm <- file.path(workingDirPath, "testdata/HART_data.avsc")
-            avro_write_success <- try(NEONprocIS.base::def.wrte.avro.deve(
-              data =data,
-              NameFile=outFile,
-              NameFileSchm=schm,
-              NameLib='ravro.so'), silent = TRUE)
-            
-            # expect_true (file.exists(outFile))
-            # if (file.exists(outFile)) {
-            #   file.remove(outFile)
-            # }
-            
-            writeSuccess = -1
-            
-            schm <- file.path(workingDirPath, "testdata/HART_data.avsc")
-            avro_write_success <- NEONprocIS.base::def.wrte.avro.deve(
-              data =data_df,
-              NameFile=outFile,
-              NameSchm= "ST",
-              NameSpceSchm="org.neonscience.schema.device",
-              Schm=NULL,
-              NameFileSchm=schm,
-              NameLib='ravro.so')
-                       
-            }
-  }
-  )
+              cat("\n When schema param is passed along with required parameters to the def.wrte.avro.deve function\n")
+              writeSuccess = -1
+              outFile <- file.path(workingDirPath, "testdata/HART_out.avro")
+              schm <- file.path(workingDirPath, "testdata/HART_data.avsc")
+              avro_write_success <- NEONprocIS.base::def.wrte.avro.deve(
+                  data = data_df,
+                  NameFile = outFile,
+                  NameFileSchm = schm,
+                  NameLib = 'ravro.so')
+              expect_true (file.exists(outFile))
+              if (file.exists(outFile)) {file.remove(outFile)}
+              
+              cat("\n When schema param is passed along with required parameters to the def.wrte.avro.deve function\n")
+              writeSuccess = -1
+              
+              schm <- file.path(workingDirPath, "testdata/HART_data.avsc")
+              avro_write_success <- try(NEONprocIS.base::def.wrte.avro.deve(
+                  data = data,
+                  NameFile = outFile,
+                  NameFileSchm = schm,
+                  NameLib = 'ravro.so'),silent = TRUE)
+              
+              # expect_true (file.exists(outFile))
+              # if (file.exists(outFile)) {
+              #   file.remove(outFile)
+              # }
+              
+              writeSuccess = -1
+              
+              avro_write_success <- NEONprocIS.base::def.wrte.avro.deve(
+                  data = data_df,
+                  NameFile = outFile,
+                  NameSchm = "ST",
+                  NameSpceSchm = "org.neonscience.schema.device",
+                  Schm = NULL,
+                  NameFileSchm = NULL,
+                  NameLib = 'ravro.so'
+                )
+             }
+          })
