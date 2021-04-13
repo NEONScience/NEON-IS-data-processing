@@ -24,6 +24,7 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   source('../../def.schm.avro.pars.map.R')
   source('../../wrap.schm.map.char.gsub.R')
   source('../../def.map.char.gsub.R')
+  source("../../def.find.mtch.str.best.R")
   wk_dir <- getwd()
   
   # ----------------------------------------------------------------
