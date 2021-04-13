@@ -11,10 +11,17 @@
 DirWrk00 <-
   
   # Cove
-  "/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
+  #"/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
+
+  # Guy
+  "/home/NEON/glitt/R/NEON-IS-data-processing-glitt"
 
   # Feel free to add your repo path! Just comment the ones not being used.
+  
 
+if(!base::dir.exists(DirWrk00)){
+  stop(paste0(DirWrk00, " doesn't exist. Try again."))
+}
 
 #name(s) of package(s)
 namePack <- c("NEONprocIS.base",
