@@ -1,0 +1,24 @@
+{
+  "type": "record",
+  "name": "tempSpecificDepthLakes_dp01_term_map",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "L1 location term map for temperature at specific depths in water",
+  "map": {
+      "description": "Map tempSpecificDepthLakes named location depth terms to pachyderm data column naming convention",
+      "notes": [ "The first mapping term corresponds to depths from the Named Location file, and the second mapping term comes from the convention used in pachyderm pipeline transitions. The first mapping terms must contain the VER location code in the string, e.g. 501." ],
+      "type": "map",
+      "values": {  "ThermistorDepth501" : "depth0",
+                   "ThermistorDepth502" : "depth1",
+                   "ThermistorDepth503" : "depth2",
+                   "ThermistorDepth504" : "depth3",
+                   "ThermistorDepth505" : "depth4",
+                   "ThermistorDepth506" : "depth5",
+                   "ThermistorDepth507" : "depth6",
+                   "ThermistorDepth508" : "depth7",
+                   "ThermistorDepth509" : "depth8",
+                   "ThermistorDepth510" : "depth9",
+                   "ThermistorDepth511" : "depth10"
+                   }
+      
+    }
+}

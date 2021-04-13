@@ -47,22 +47,34 @@
 #   Guy Litt (2021-04-01)
 #     Originallly created
 
-def.map.char.gsub <- function(pattFind, replStr, obj){
+def.map.char.gsub <- function(pattFind,
+                              replStr,
+                              obj,
+                              log = NULL){
+  
+  # initialize logging if necessary
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
   
   if(base::length(pattFind) != base::length(replStr)){
-    stop("pattFind and replStr must have lengths.")
+    log$error("pattFind and replStr must have lengths.")
+    stop()
   }
   
   if(!"character" %in% base::class(pattFind)){
-    stop("pattFind must be a character class.")
+    log$error("pattFind must be a character class.")
+    stop()
   }
   
   if(!"character" %in% base::class(replStr)){
-    stop("replStr must be a character class.")
+    log$error("replStr must be a character class.")
+    stop()
   }
   
   if(!"character" %in% base::class(obj)){
-    stop("obj must be a character class.")
+    log$error("obj must be a character class.")
+    stop()
   }
   
   for(idx in 1:base::length(pattFind)){

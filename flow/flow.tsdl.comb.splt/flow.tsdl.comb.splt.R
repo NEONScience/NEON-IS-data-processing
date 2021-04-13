@@ -49,26 +49,32 @@
 #' files, separated by pipes. Note that any missing timestamps among the files will be filled with NA values.
 #' e.g. "001|030"
 #'
-#' 5. "NameFileSufxRm=value" (optional), where value is a character vector of suffix(es) to remove from the output
+#' 5. "FileSchmMapDepth=value", where value is the file path to the schema that maps named location depths
+#'  to data's depth column naming convention.
+#'
+#'
+#' 6. "FileSchmMapCols=value" (optional), where CorrColNams is a logical value, instructing 
+#' wrap.file.comb.tsdl.splt to attempt to correct column names (e.g. WaterTemp becomes tsdWaterTemp). 
+#' Default TRUE.
+#'
+#' 7. "NameFileSufxRm=value" (optional), where value is a character vector of suffix(es) to remove from the output
 #' file name (before any extension). For example, if the shortest file name found in the input files is 
 #' "prt_CFGLOC12345_2019-01-01_basicStats.parquet", and the input argument is "NameFileSufxRm=_basicStats", then the 
 #' output file will be "prt_CFGLOC12345_2019-01-01.parquet". Default is c("basicStats","qualityMetrics") for removal.
 #'  
-#' 6. "MrgeCols=value" (optional), where values is the name of the columns that all data files contain 
+#' 8. "MrgeCols=value" (optional), where values is the name of the columns that all data files contain 
 #' for merging. Each column name is separated by pipes. Default "startDateTime|endDateTime".
 #' 
-#' 7. "LocDir=value" (optional), where LocDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
+#' 9. "LocDir=value" (optional), where LocDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  location file(s). Default "location".
 #' 
-#' 8. "StatDir=value" (optional), where StatDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
+#' 10. "StatDir=value" (optional), where StatDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  the stats data files for each time variable. Default "stats".
 #' 
-#' 9. "QmDir=value" (optional), where QmDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
+#' 11. "QmDir=value" (optional), where QmDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  quality metrics files for each time variable. Default "quality_metrics".
 #'
-#' 10. "CorrColNams=value" (optional), where CorrColNams is a logical value, instructing 
-#' wrap.file.comb.tsdl.splt to attempt to correct column names (e.g. WaterTemp becomes tsdWaterTemp). 
-#' Default TRUE.
+#' 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
@@ -93,7 +99,8 @@
 #                                       LocDir = "location",
 #                                       StatDir = "stats",
 #                                       QmDir = "quality_metrics",
-#                                       FileSchmMapDepth = "~/pfs/avro_schemas/test_map2.avsc",
+#                                       FileSchmMapDepth = "./tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc",
+#                                       FileSchmMapCols = "./tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc",
 #                                       NameFileSufxRm = c("basicStats","qualityMetrics") )
 #' @seealso Currently none.
 
@@ -101,13 +108,18 @@
 #   Guy Litt (2021-03-30)
 #     original creation/adapted from flow.data.comb.ts.R by CS
 
-# TODO Rename column names in dp01/tempSpecificDepthLakes_stats_instantaneous.avsc to jive w/ pub wb:
-#  1. _UcrtExpn should be ExpUncert
-#  2. WaterTemp should be tsdWaterTemp
-#  3. Where does the extra QF come from for the QMs?
+# XTODO Rename column names in dp01/tempSpecificDepthLakes_stats_instantaneous.avsc to jive w/ pub wb:
+# X 1. _UcrtExpn should be ExpUncert
+# X 2. WaterTemp should be tsdWaterTemp
+# X 3. Where does the extra QF come from for the QMs?
+# TODO remove tsdWaterTempAlphaQF and tsdWaterTempBetaQF from instantaneous 001 data?
 
-
-# TODO devise approach for multiple mapping schemas
+# FROM wrap.file.comb.tsdl.splt:
+# TODO add SuspectCal to pub wb?
+# TODO remove ConsistencyFail/Pass/NAQM from pub wb?
+# X TODO add tsdWaterTempFinalQFSciRvw to dataset? -> NOT YET
+# TODO depth11 doesn't exist yet for Mean/Minimum/Maximum/Variance stats (probably changes once CVAL files change)
+# TODO add a colsKeep term or schema??
 
 ##############################################################################################
 library(dplyr)
@@ -118,7 +130,7 @@ source("./wrap.file.comb.tsdl.splt.R")
 source("./wrap.schm.map.char.gsub.R")
 source("./def.map.char.gsub.R")
 source("./def.schm.avro.pars.map.R")
-
+source("./def.find.mtch.str.best.R")
 # Start logging
 log <- NEONprocIS.base::def.log.init()
 
@@ -186,23 +198,30 @@ log$debug(
 
 log$debug(base::paste0('Common time intervals expected in directories: ', base::paste(Para$NameVarTime, collapse = ", ") ))
 # --------------------------------------------------------------------------- #
-# Read in the mapping schema
-log$debug(base::paste0(
-  'Output schema: ',
-  base::paste0(Para$FileSchmMapDepth, collapse = ',')
-))
+# # Read in the mapping schema
+# log$debug(base::paste0(
+#   'Output schema: ',
+#   base::paste0(Para$FileSchmMapDepth, collapse = ',')
+# ))
+# 
+# # TODO why parse nameSchmMapDpth here? The wrapper does this too, if nameSchmMapDpth = Para$FileSchmMapDepth
+# if (base::is.null(Para$FileSchmMapDepth) || Para$FileSchmMapDepth == 'NA') {
+#   # SchmComb <- NULL
+#   nameSchmMapDpth <- NULL
+# } else {
+#   # SchmComb <-
+#   #   base::paste0(base::readLines(Para$FileSchmMapDepth), collapse = '')
+# 
+#   # Parse the avro schema for output variable names
+#   nameSchmMapDpth <- Para$FileSchmMapDepth#NEONprocIS.base::def.schm.avro.pars(Schm=SchmComb,log=log)$schmList$map  #$var$name
+# }
+# 
+# if (base::is.null(Para$FileSchmMapCols) || Para$FileSchmMapCols == 'NA') {
+#   nameSchmMapCols <- NULL
+# } else {
+#   nameSchmMapCols <- Para$FileSchmMapCols
+# }
 
-# TODO why parse nameSchmMapDpth here? The wrapper does this too, if nameSchmMapDpth = Para$FileSchmMapDepth
-if (base::is.null(Para$FileSchmMapDepth) || Para$FileSchmMapDepth == 'NA') {
-  SchmComb <- NULL
-  nameSchmMapDpth <- NULL
-} else {
-  SchmComb <-
-    base::paste0(base::readLines(Para$FileSchmMapDepth), collapse = '')
-
-  # Parse the avro schema for output variable names
-  nameSchmMapDpth <- NEONprocIS.base::def.schm.avro.pars(Schm=SchmComb,log=log)$schmList$map  #$var$name
-}
 
 # Echo more arguments
 log$debug(
@@ -257,8 +276,8 @@ for (idxDirIn in DirIn) {
                            locDir = Para$LocDir,
                            statDir = Para$StatDir,
                            qmDir = Para$QmDir,
-                           nameSchmMapDpth = nameSchmMapDpth,
-                           corrColNams = Para$CorrColNams,
+                           nameSchmMapDpth = Para$FileSchmMapDepth,
+                           nameSchmMapCols = Para$FileSchmMapCols,
                            log = log)
   
   # Separate by timing index:
@@ -280,6 +299,9 @@ for (idxDirIn in DirIn) {
         'Columns found in the combined data files: ',
         base::paste0(nameCol, collapse = ',')
       ))
+      
+      # TODO add Para$ColAdd based on a file schema of expected columns that don't yet exist?
+      
       
       # ----------------------------------------------------------------------- #
       # Filter and re-order the output columns
@@ -305,25 +327,24 @@ for (idxDirIn in DirIn) {
         base::names(data) <- base::sub(pattern='[.]',replacement='_',x=base::names(data))
         
         
-        if(base::is.null(SchmComb)){
-          log$debug(base::paste0(
-            'Filtered and re-ordered output columns : ',
-            base::paste0(base::names(data), collapse = ',')
-          ))
-        } else {
-          log$debug(base::paste0(
-            'Filtered and re-ordered input columns: ',
-            base::paste0(base::names(data), collapse = ','),
-            ' have had column names substituted using ',
-            base::paste0(nameSchmMapDpth, collapse = ',')
-          ))      
-        }
+        # if(base::is.null(SchmComb)){
+        #   log$debug(base::paste0(
+        #     'Filtered and re-ordered output columns : ',
+        #     base::paste0(base::names(data), collapse = ',')
+        #   ))
+        # } else {
+        log$debug(base::paste0(
+          'Filtered and re-ordered input columns: ',
+          base::paste0(base::names(data), collapse = ','),
+          ' have had column names substituted using ',
+          base::paste0(nameSchmMapDpth, collapse = ',')
+        ))      
+        # }
       } # data column filter/re-order
         
       # ----------------------------------------------------------------------- #
       # Remove suffix strings, Take the shortest file name, insert HOR.VER.TMI
       # ----------------------------------------------------------------------- #
-      
       # Subset to dat files that should begin with 'tchain'
       fileDat <- fileNamz[base::intersect(base::grep("tchain", fileNamz), base::grep(nameVarTime,fileNamz))] 
       
@@ -359,7 +380,7 @@ for (idxDirIn in DirIn) {
           data = data,
           NameFile = nameFileOut,
           NameFileSchm = NULL,
-          Schm = SchmComb,
+          Schm = NULL,
           log=log
         ),
         silent = TRUE)
@@ -375,7 +396,6 @@ for (idxDirIn in DirIn) {
         log$info(base::paste0('Combined data written successfully in file: ',
                               nameFileOut))
       }
-        
     } # end loop on HOR.VER
   }
   

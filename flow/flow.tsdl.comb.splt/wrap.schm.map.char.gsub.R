@@ -46,15 +46,16 @@ wrap.schm.map.char.gsub <- function(obj,
                                     FileSchm=NULL,
                                     Schm=NULL,
                                     log = NULL){
-  
+  # initialize logging if necessary
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
   
   if(base::is.null(FileSchm) && base::is.null(Schm)){
     # Generate error and stop execution
     msg <- base::paste0('One of FileSchm or Schm must be provided')
-    if(!base::is.null(log)){
-      log$fatal(msg)
-    } 
-    stop(msg)
+    log$fatal(msg)
+    stop()
   }
   
   if(base::is.null(FileSchm)){
@@ -67,9 +68,7 @@ wrap.schm.map.char.gsub <- function(obj,
   
   if(!"term1" %in% base::names(map)){
     msg <- "The map object does not have term1 in the column name. Choosing first column."
-    if(!base::is.null(log)){
-      log$warn(msg)
-    } 
+    log$warn(msg)
     warning(msg)
     term1 <- map[,1]
   } else {
@@ -78,21 +77,19 @@ wrap.schm.map.char.gsub <- function(obj,
   
   if(!"term2" %in% base::names(map)){
     msg <- "The map object does not have term2 in the column name. Choosing second column."
-    if(!base::is.null(log)){
-      log$warn(msg)
-    } 
+    log$warn(msg)
     warning(msg)
     term2 <- map[,2]
   } else {
     term2 <- map$term2
   }
   # Perform text substituion based on term mappings
-  objSub <- def.map.char.gsub(pattFind = term1, replStr = term2, obj = obj)
+  objSub <- def.map.char.gsub(pattFind = term1, replStr = term2, obj = obj, log = log)
   
   # Check how many terms were substituted
   objDiff <- base::setdiff(obj,objSub)
   msgDiff <- base::paste0("Given ", base::length(obj), " character names, substituted ", base::length(objDiff), " total names based on the mapping schema.")
-  log$info(msgDiff)
+  log$debug(msgDiff)
   
   mapRpt <- base::list(obj = objSub, map = map)
   

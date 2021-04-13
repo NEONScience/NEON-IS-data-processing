@@ -45,6 +45,11 @@ def.schm.avro.pars.map <- function(FileSchm=NULL,
                                log=NULL
 ){
   
+  # initialize logging if necessary
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
+  
   # Error check
   if(base::is.null(FileSchm) && base::is.null(Schm)){
     # Generate error and stop execution
@@ -67,7 +72,9 @@ def.schm.avro.pars.map <- function(FileSchm=NULL,
         log$fatal(msg)
       } 
       stop(msg)
-    }    
+    } else {
+      log$debug(base::paste0("Successfuly read in ", FileSchm))
+    }
   }
   
   # Interpret as list
@@ -92,6 +99,8 @@ def.schm.avro.pars.map <- function(FileSchm=NULL,
   if("type" %in% base::names(schmList$map)){
     map$type <- schmList$map$type
   }  
+  
+  log$debug(base::paste0("Mapping created with ", base::nrow(base::unique(map)), " unique mapping options."))
   
   # Output
   rpt <- base::list()

@@ -1,10 +1,7 @@
-#' @title Unit test for def.file.comb.tsdl.splt called in flow.tsdl.comb.splt
+#' @title Unit test for wrap.file.comb.tsdl.splt called in flow.tsdl.comb.splt
 #' @author Guy Litt
 #' @description 
 #' @seealso flow.tsdl.comb.splt
-
-
-
 
 # unit test Flow scripts
 # changelog and author contributions / copyrights
@@ -13,17 +10,20 @@
 ##############################################################################################
 # Define test context
 library(testthat)
+# setwd("~/R/NEON-IS-data-processing-glitt/flow/flow.tsdl.comb.splt/")
 setwd("./tests/testthat/")
 
-testthat::context("\n  Unit test of def.file.comb.tsdl.ong.R\n")
+testthat::context("\n  Unit test of wrap.file.comb.tsdl.splt.R\n")
 
 
 # TODO consider calling a pachyderm data pull/refresh to detect format change?
 
 # Unit test of wrap.loc.repo.strc.R
 test_that("Unit test of wrap.loc.repo.strc.R", {
-  source('../../def.file.comb.tsdl.splt.R')
-  
+  source('../../wrap.file.comb.tsdl.splt.R')
+  source('../../def.schm.avro.pars.map.R')
+  source('../../wrap.schm.map.char.gsub.R')
+  source('../../def.map.char.gsub.R')
   wk_dir <- getwd()
   
   # ----------------------------------------------------------------
@@ -32,6 +32,8 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   Para$LocDir <- "location"
   Para$StatDir <- "stats"
   Para$QmDir <- "quality_metrics"
+  Para$FileSchmMapDepth <- base::paste0(wk_dir,"/pfs/schemas/tsdl_map_loc_names.avsc")
+  Para$FileSchmMapCols <-  base::paste0(wk_dir,"/pfs/schemas/tsdl_col_term_subs.avsc")
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/tempSpecificDepthLakes_level1_group/tchain/2019/01/10/CFGLOC110702/')
   nameVarTime <- c("001","030")
   dirInLoc <- base::paste0(testInputDir, '/', Para$LocDir)
@@ -50,13 +52,14 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
     base::list.files(base::paste0(DirIn, '/', Para$DirComb), full.names =
                        TRUE)
   
-  rsltGoodEval <- testthat::evaluate_promise(def.file.comb.tsdl.splt(file = filePath,
+  rsltGoodEval <- testthat::evaluate_promise(wrap.file.comb.tsdl.splt(filePths = filePath,
                           nameVarTime = nameVarTime, 
                           mrgeCols = c("startDateTime", "endDateTime"),
                           locDir = "location",
                           statDir = "stats",
                           qmDir = "quality_metrics",
-                          corrColNams = TRUE,
+                          nameSchmMapDpth = Para$FileSchmMapDepth,
+                          nameSchmMapCols = Para$FileSchmMapCols,
                           log = NULL))
   rsltGood <- rsltGoodEval$result
   
@@ -104,13 +107,14 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   # ---------- Test an incorrect time interval
   nameVarTimeBad <- c("002","030")
   
-  badTimeEval <- testthat::evaluate_promise(try(def.file.comb.tsdl.splt(file = filePath,
+  badTimeEval <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = filePath,
                              nameVarTime = nameVarTimeBad, 
                              mrgeCols = c("startDateTime", "endDateTime"),
                              locDir = "location",
                              statDir = "stats",
                              qmDir = "quality_metrics",
-                             corrColNams = TRUE,
+                             nameSchmMapDpth = Para$FileSchmMapDepth,
+                             nameSchmMapCols = Para$FileSchmMapCols,
                              log = NULL)))
   
   badTime <- badTimeEval$result
@@ -121,13 +125,14 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   
   # --------- Test a bad file path:
   filePathBad <- file
-  badFilePathEval <- testthat::evaluate_promise(try(def.file.comb.tsdl.splt(file = filePathBad,
+  badFilePathEval <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = filePathBad,
                                              nameVarTime = nameVarTime, 
                                              mrgeCols = c("startDateTime", "endDateTime"),
                                              locDir = "location",
                                              statDir = "stats",
                                              qmDir = "quality_metrics",
-                                             corrColNams = TRUE,
+                                             nameSchmMapDpth = Para$FileSchmMapDepth,
+                                             nameSchmMapCols = Para$FileSchmMapCols,
                                              log = NULL)))
   
   badFilePath <- badFilePathEval$result
@@ -139,13 +144,14 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   
   
   # ---------- Test an incorrect location directory
-  badLocEval <- testthat::evaluate_promise(try(def.file.comb.tsdl.splt(file = filePathBad,
+  badLocEval <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = filePathBad,
                                           nameVarTime = nameVarTime, 
                                           mrgeCols = c("startDateTime", "endDateTime"),
                                           locDir = "location1",
                                           statDir = "stats",
                                           qmDir = "quality_metrics",
-                                          corrColNams = TRUE,
+                                          nameSchmMapDpth = Para$FileSchmMapDepth,
+                                          nameSchmMapCols = Para$FileSchmMapCols,
                                           log = NULL)) )
   
   badLoc <- badLocEval$result
@@ -158,171 +164,106 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
 
   # ------------------ Test a single merge column
   # Merging R dataframes with non-unique column names can yield a ".x" and a ".y" in the filename
-  rsltSnglColEval <- testthat::evaluate_promise(def.file.comb.tsdl.splt(file = filePath,
+  rsltSnglColEval <- testthat::evaluate_promise(wrap.file.comb.tsdl.splt(file = filePath,
                                                                      nameVarTime = nameVarTime, 
                                                                      mrgeCols = c("endDateTime"),
                                                                      locDir = "location",
                                                                      statDir = "stats",
                                                                      qmDir = "quality_metrics",
-                                                                     corrColNams = TRUE,
+                                                                     nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                     nameSchmMapCols = Para$FileSchmMapCols,
                                                                      log = NULL))
   rsltSnglCol <- rsltGoodEval$result
   
   # Ensure no duplicate column names generated
-  chckMrgeName <- lapply(1:length(rsltSnglCol), function(i)  lapply(1:length(rsltSnglCol[[i]]), function(j) grep("\\.x", names(rsltSnglCol[[i]][[j]])) )   )
-  testthat::expect_equal(0, length(unlist(chckMrgeName) ) )
+  chckMrgeName <- base::lapply(1:base::length(rsltSnglCol), function(i) 
+    base::lapply(1:base::length(rsltSnglCol[[i]]), function(j) base::grep("\\.x", base::names(rsltSnglCol[[i]][[j]])) )   )
+  testthat::expect_equal(0, base::length(base::unlist(chckMrgeName) ) )
+
   
-  
-  
-  # ------------------------------------------
-  
-  
-  
-  # ===============================================================================================================================================
-  # Test scenario 1::
-  # if Comb = FALSE, default when Comb is not passed in to wrap.loc.repo.strc,
-  # then pfs/prt/2019/01/01/3119 copied to pfs/out/2019/01/01/CFGLOC100241/3119/location/
-  
-  wrap.loc.repo.strc(DirIn = testInputDir, DirOutBase = testOutputDir)
-  testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", nameLoc, "/", sourceId, "/location")
-  expect_true (dir.exists(testOutputDirnamedLoc))
-  
-  # clean out the test output dirs and file recursively
-  if (dir.exists(testOutputDir)) {
-    unlink(testOutputDir, recursive = TRUE)
-  }
-  
-  # Test scenario 2::
-  # if Comb = TRUE then 3119 is replaced with the NAME, CFGLOC100241.
-  # pfs/prt/2019/01/01/3119/location/ copied to pfs/out/2019/01/01/CFGLOC100241/location/
-  #                   =====                                       ==============
-  
-  wrap.loc.repo.strc(DirIn = testInputDir,DirOutBase = testOutputDir,Comb = TRUE)
-  
-  testOutputDirSourceIdLoc <- base::paste0(testOutputDirPath, "/", nameLoc, "/location")
-  expect_true (dir.exists(testOutputDirSourceIdLoc))
-  # clean out the test output dirs and file recursively
-  #
-  if (dir.exists(testOutputDir))  {
-    unlink(testOutputDir, recursive = TRUE)
-  }
-  
-  # Test scenario 3::
-  # If there is no location file, skip
-  #  testInputDir = "C:/projects/NEON-IS-data-processing/flow/flow.loc.repo.strc.comb/flow.loc.repo.strc/tests/testthat/pfs/prt_noFiles/2019/01/01/3119"
-  
-  testInputDir <- base::paste0(wk_dir, '/', 'pfs/prt_noFiles/2019/01/01/3119')
-  
-  wrap.loc.repo.strc(DirIn = testInputDir, DirOutBase = testOutputDir, Comb = TRUE)
-  
-  expect_true (!dir.exists(testOutputDir))
-  
-  # Test scenario 4::
-  # If there is more than one location file, use the first
-  testInputDir <-
-    base::paste0(wk_dir, '/', 'pfs/prt_moreThanOneFile/2019/01/01/3119')
-  dirInLoc <- base::paste0(testInputDir, '/location')
-  fileLoc <- base::dir(dirInLoc)
-  # numFileLoc <- base::length(fileLoc)
-  
-  # Load in the location json and get the location name to verify the test
-  loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(dirInLoc, '/', fileLoc[1]))
-  nameLoc <- loc$name
-  sourceId <- loc$source_id
-  
-  testOutputDir = "pfs/out"
-  testOutputDirPath <- base::paste0(testOutputDir, "/", installdate, collapse = '/')
-  
-  wrap.loc.repo.strc(DirIn = testInputDir, DirOutBase = testOutputDir, Comb = TRUE)
-  testOutputDirSourceIdLoc <- base::paste0(testOutputDirPath, "/", nameLoc, "/location")
-  expect_true (dir.exists(testOutputDirSourceIdLoc))
-  
-  if (dir.exists(testOutputDir))  {
-    unlink(testOutputDir, recursive = TRUE)
-  }
 })
 
 
+# 
+# 
+# test_that("wrong file format",
+#           {
+#             file <- c('wrap.file.comb.tsdl.splt/validFiles/testdata.txt', 'wrap.file.comb.tsdl.splt/validFiles/testflagsdata.parquet')
+#             
+#             returnedData <- try(wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time'),
+#                                 silent = TRUE)
+#             
+#             testthat::expect_true((class(returnedData)[1] == "try-error"))
+#             
+#           })
+# 
+# test_that("duplicate columns in the input files",
+#           {
+#             file <- c('wrap.file.comb.tsdl.splt/invalidFiles/testdata.parquet', 'wrap.file.comb.tsdl.splt/invalidFiles/testflagsdatadup.parquet')
+#             
+#             returnedData <- wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time')
+#             
+#             expect_true (length(returnedData) == 6)
+#             testthat::expect_true(is.list(returnedData))
+#             if (!(length(returnedData) == 0)) {
+#               testthat::expect_true (returnedData$source_id[2] == '16247')
+#               testthat::equals (returnedData$temp[5], 0.007209014)
+#               testthat::equals (returnedData$validCalQF[1], 0)
+#               #testthat::expect_null(returnedData$time[1])
+#             }
+#             
+#           })
+# 
 
 
-test_that("wrong file format",
-          {
-            file <- c('def.file.comb.ts/validFiles/testdata.txt', 'def.file.comb.ts/validFiles/testflagsdata.parquet')
-            
-            returnedData <- try(def.file.comb.ts(file = file, nameVarTime='readout_time'),
-                                silent = TRUE)
-            
-            testthat::expect_true((class(returnedData)[1] == "try-error"))
-            
-          })
-
-test_that("duplicate columns in the input files",
-          {
-            file <- c('def.file.comb.ts/invalidFiles/testdata.parquet', 'def.file.comb.ts/invalidFiles/testflagsdatadup.parquet')
-            
-            returnedData <- def.file.comb.ts(file = file, nameVarTime='readout_time')
-            
-            expect_true (length(returnedData) == 6)
-            testthat::expect_true(is.list(returnedData))
-            if (!(length(returnedData) == 0)) {
-              testthat::expect_true (returnedData$source_id[2] == '16247')
-              testthat::equals (returnedData$temp[5], 0.007209014)
-              testthat::equals (returnedData$validCalQF[1], 0)
-              #testthat::expect_null(returnedData$time[1])
-            }
-            
-          })
-
-
-
-
-# ########################################################################################################################
-# ########################################################################################################################
-# ########################################################################################################################
-test_that("valid files to merge",
-          {
-            file <- c('def.file.comb.ts/validFiles/testdata.parquet', 'def.file.comb.ts/validFiles/testflagsdata.parquet')
-           
-            returnedData <- def.file.comb.ts(file = file, nameVarTime='readout_time')
-            
-            expect_true (length(returnedData) == 6)
-            testthat::expect_true(is.list(returnedData))
-            if (!(length(returnedData) == 0)) {
-              testthat::expect_true (returnedData$source_id[2] == '16247')
-              testthat::equals (returnedData$temp[5], 0.007209014)
-              testthat::equals (returnedData$validCalQF[1], 0)
-              #testthat::expect_null(returnedData$time[1])
-            }
-            
-          })
-
-test_that("wrong file format",
-          {
-            file <- c('def.file.comb.ts/validFiles/testdata.txt', 'def.file.comb.ts/validFiles/testflagsdata.parquet')
-            
-            returnedData <- try(def.file.comb.ts(file = file, nameVarTime='readout_time'),
-                                silent = TRUE)
-            
-            testthat::expect_true((class(returnedData)[1] == "try-error"))
-            
-          })
-
-test_that("duplicate columns in the input files",
-          {
-            file <- c('def.file.comb.ts/invalidFiles/testdata.parquet', 'def.file.comb.ts/invalidFiles/testflagsdatadup.parquet')
-            
-            returnedData <- def.file.comb.ts(file = file, nameVarTime='readout_time')
-            
-            expect_true (length(returnedData) == 6)
-            testthat::expect_true(is.list(returnedData))
-            if (!(length(returnedData) == 0)) {
-              testthat::expect_true (returnedData$source_id[2] == '16247')
-              testthat::equals (returnedData$temp[5], 0.007209014)
-              testthat::equals (returnedData$validCalQF[1], 0)
-              #testthat::expect_null(returnedData$time[1])
-            }
-            
-          })
-
+# 
+# # ########################################################################################################################
+# # ########################################################################################################################
+# # ########################################################################################################################
+# test_that("valid files to merge",
+#           {
+#             file <- c('wrap.file.comb.tsdl.splt/validFiles/testdata.parquet', 'wrap.file.comb.tsdl.splt/validFiles/testflagsdata.parquet')
+#            
+#             returnedData <- wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time')
+#             
+#             expect_true (length(returnedData) == 6)
+#             testthat::expect_true(is.list(returnedData))
+#             if (!(length(returnedData) == 0)) {
+#               testthat::expect_true (returnedData$source_id[2] == '16247')
+#               testthat::equals (returnedData$temp[5], 0.007209014)
+#               testthat::equals (returnedData$validCalQF[1], 0)
+#               #testthat::expect_null(returnedData$time[1])
+#             }
+#             
+#           })
+# 
+# test_that("wrong file format",
+#           {
+#             file <- c('wrap.file.comb.tsdl.splt/validFiles/testdata.txt', 'wrap.file.comb.tsdl.splt/validFiles/testflagsdata.parquet')
+#             
+#             returnedData <- try(wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time'),
+#                                 silent = TRUE)
+#             
+#             testthat::expect_true((class(returnedData)[1] == "try-error"))
+#             
+#           })
+# 
+# test_that("duplicate columns in the input files",
+#           {
+#             file <- c('wrap.file.comb.tsdl.splt/invalidFiles/testdata.parquet', 'wrap.file.comb.tsdl.splt/invalidFiles/testflagsdatadup.parquet')
+#             
+#             returnedData <- wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time')
+#             
+#             expect_true (length(returnedData) == 6)
+#             testthat::expect_true(is.list(returnedData))
+#             if (!(length(returnedData) == 0)) {
+#               testthat::expect_true (returnedData$source_id[2] == '16247')
+#               testthat::equals (returnedData$temp[5], 0.007209014)
+#               testthat::equals (returnedData$validCalQF[1], 0)
+#               #testthat::expect_null(returnedData$time[1])
+#             }
+#             
+#           })
+# 
 
 
