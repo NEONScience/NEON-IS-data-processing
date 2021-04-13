@@ -252,48 +252,9 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     idxsMapDpthAll <- base::lapply(thrmDpthDf$depthName, function(x) base::grep(x, cols)) 
     colsNonDpth <- cols[-base::unlist(idxsMapDpthAll)]
     colsData <- cols[-base::which(cols %in% colsNonDpth)]
-    # # Note that just colsData and colsMrge will be kept, but also removing horizontalPosition/verticalPosition at end of loop
-    # 
-    # # Search for a pattern across all search terms, and choose whichever string match is longest. 
-    # # e.g. depth1 matches depth10 w/ 6 chars, but depth10 matches depth10 w/ 7 chars.
-    # matSnglDigMl <- base::sapply(colsData, function(col) base::sapply(thrmDpthDf$depthName, 
-    #                                       function(x) base::attributes(base::gregexpr(pattern=x,text=col)[[1]])$match.length ) ) 
-    # 
-    # 
-    # # Check for faulty match situation based on an extra digit at the end of the match pattern, e.g. depth1 matches both depth10 & depth1
-    # matLogMoreDigt <-  base::sapply(colsData, function(col) base::sapply(thrmDpthDf$depthName, 
-    #                                         function(x) (base::regexec(pattern=paste0(x,"\\d"), text=col)[[1]][1]) == 1))
-    # 
-    # if(!base::identical(base::dim(matLogMoreDigt), base::dim(matSnglDigMl))){
-    #   log$error("Expect matrices of the same dimension when identifying name matches.")
-    #   stop()
-    # }
-    # 
-    # # The indices corresponding to the maximum match length:
-    # idxMax <- base::sapply(1:base::ncol(matSnglDigMl), function(i) base::as.integer(base::which.max(matSnglDigMl[,i]) ) )
-    # 
-    # # create the full column name - depth mapping df:
-    # dfMtch <- base::data.frame(colNam=colsData, idxMtch=idxMax, mtchGrp=thrmDpthDf$depthName[idxMax], stringsAsFactors=FALSE)
-    # 
-    # # identify the indices where matLogMoreDigt is TRUE 
-    # idxsMoreDigt <- base::unlist(base::lapply(1:base::nrow(matLogMoreDigt),
-    #                                          function(i) 
-    #                                          {x <- base::which(matLogMoreDigt[i,] == TRUE);
-    #                                          return(x)}))
-    # 
-    # if(base::length(idxsMoreDigt) >0){
-    #   # remove match columns corresponding to excess digits
-    #   dfMtch <- dfMtch[-base::as.integer(idxsMoreDigt),]
-    # }
-    # 
-    # # The # of columns for each depth should all be the same length:
-    # totlNumCols <- dfMtch %>% dplyr::group_by(idxMtch) %>% dplyr::summarise(count=n()) %>% dplyr::select(count)
-    # 
-    # if(base::length(base::unique(totlNumCols$count)) >= 2) {
-    #   log$error("Should not expect varying numbers of columns.")
-    #   stop()
-    #   
-    # } 
+    # Note that just colsData and colsMrge will be kept, but also removing horizontalPosition/verticalPosition at end of loop
+    
+    # Search for a pattern across all search terms, and choose whichever string match is best 
     dfMtch <- def.find.mtch.str.best(obj = colsData, subFind = thrmDpthDf$depthName, log=log)
     
     # ----------------------------------------------------------------------- #
