@@ -37,13 +37,13 @@
 #' in the folder.
 #'
 #' For example:
-#' Input path = /pfs/proc_group/tchain/2019/01/01
+#' 1. "DirIn=value", where DirIn is the Input path = /pfs/proc_group/tchain/2019/01/01
 #'
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
 #' of DirIn.
 #'
 #' 3. "NameDirCombOut=value", where value is the name of the output directory that will be created to
-#' hold the combined file.
+#' hold the combined file, e.g. "level1_reshape".
 #'
 #' 4. "NameVarTime=value", where value is the name of the time variable(s) common across all
 #' files, separated by pipes. Note that any missing timestamps among the files will be filled with NA values.
@@ -53,9 +53,8 @@
 #'  to data's depth column naming convention.
 #'
 #'
-#' 6. "FileSchmMapCols=value" (optional), where CorrColNams is a logical value, instructing 
-#' wrap.file.comb.tsdl.splt to attempt to correct column names (e.g. WaterTemp becomes tsdWaterTemp). 
-#' Default TRUE.
+#' 6. "FileSchmMapCols=value" (optional), where value is the file path to the schema that maps existing
+#' strings in data column names to substitute values. (e.g. WaterTemp becomes tsdWaterTemp). 
 #'
 #' 7. "NameFileSufxRm=value" (optional), where value is a character vector of suffix(es) to remove from the output
 #' file name (before any extension). For example, if the shortest file name found in the input files is 
@@ -74,14 +73,12 @@
 #' 11. "QmDir=value" (optional), where QmDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  quality metrics files for each time variable. Default "quality_metrics".
 #'
-#' 
-#'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #'
-#' @return A single file containined the merged data in DirOut, where DirOut replaces BASE_REPO but
+#' @return A single file for each HOR.VER contained the merged data in DirOut, where DirOut replaces BASE_REPO but
 #' otherwise retains the child directory structure of the input path. The file name will be the same
-#' as the shortest file name found in the input files, with '_combined' added as suffix prior to the
+#' as the shortest file name found in the input files, with '_HOR.VER.TMI' added as suffix prior to the
 #' file extension.
 #'
 #' @references
@@ -89,9 +86,19 @@
 
 #' @keywords Currently none
 
-#' @examples Currently none
-#' Rscript ./flow.tsdl.comb.splt.R "DirIn=~/pfs/tsdl_comb_long/" "NameDirCombOut=/testingcmd" "NameVarTime=001|030" "FileSchmMapDepth=./tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc" "FileSchmMapCols=./tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc"
-#' 
+#' @examples 
+#' Rscript ./flow.tsdl.comb.splt.R "DirIn=/home/NEON/glitt/pfs/tempSpecificDepthLakes_level1_group/tchain/2019/01/10/" 
+#' "DirOut=/home/NEON/glitt/pfs/tsdl_comb_long" "NameDirCombOut=/level1_reshape" "NameVarTime=001|030" 
+#' "FileSchmMapDepth=./tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc" 
+#' "FileSchmMapCols=./tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc"
+
+#' @seealso Currently none.
+
+# changelog and author contributions / copyrights
+#   Guy Litt (2021-04-13)
+#     original creation/adapted from flow.data.comb.ts.R by CS
+
+
 # setwd("~/R/NEON-IS-data-processing-glitt/flow/flow.tsdl.comb.splt/")
 # Para <- base::list(DirIn = "~/pfs/tempSpecificDepthLakes_level1_group/tchain/2019/01/10/",
 #                                       DirOut = "~/pfs/tsdl_comb_long/",
@@ -104,11 +111,6 @@
 #                                       FileSchmMapDepth = "./tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc",
 #                                       FileSchmMapCols = "./tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc",
 #                                       NameFileSufxRm = c("basicStats","qualityMetrics") )
-#' @seealso Currently none.
-
-# changelog and author contributions / copyrights
-#   Guy Litt (2021-03-30)
-#     original creation/adapted from flow.data.comb.ts.R by CS
 
 # XTODO Rename column names in dp01/tempSpecificDepthLakes_stats_instantaneous.avsc to jive w/ pub wb:
 # X 1. _UcrtExpn should be ExpUncert
@@ -122,11 +124,12 @@
 # X TODO add tsdWaterTempFinalQFSciRvw to dataset? -> NOT YET
 # TODO depth11 doesn't exist yet for Mean/Minimum/Maximum/Variance stats (probably changes once CVAL files change)
 # TODO add a colsKeep term or schema??
-
+# TODO are mixes of NaN and NA allowed? E.g. depth0WaterTempMean=NaN, depth0WaterTempMinimum=NA
 ##############################################################################################
 library(dplyr)
 library(data.table)
 library(NEONprocIS.base)
+library(stringr)
 
 source("./wrap.file.comb.tsdl.splt.R")
 source("./wrap.schm.map.char.gsub.R")
@@ -144,7 +147,7 @@ Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
     NameParaReqd = c("DirIn", "DirOut", "NameDirCombOut", "NameVarTime", "FileSchmMapDepth"),
-    NameParaOptn = c("ColKeep",
+    NameParaOptn = c("FileSchmMapCols",
                      "MrgeCols",
                      "LocDir",
                      "StatDir",
@@ -269,39 +272,6 @@ for (idxDirIn in DirIn) {
         base::paste0(nameCol, collapse = ',')
       ))
       
-      # TODO add Para$ColAdd based on a file schema of expected columns that don't yet exist?
-      
-      # ----------------------------------------------------------------------- #
-      # Filter and re-order the output columns
-      # ----------------------------------------------------------------------- #
-      if (!base::is.null(Para$ColKeep)) {
-        # Check whether the desired columns to keep are found in the combined data
-        chkCol <- Para$ColKeep %in% nameCol
-        if (base::any(!chkCol)) {
-          log$error(
-            base::paste0(
-              'Columns: ',
-              base::paste0(nameCol[!chkCol], collapse = ','),
-              'were not found in the input data. Check ColKeep input argument.'
-            )
-          )
-          stop()
-        }
-        
-        # Reorder and filter the output columns
-        data <- data[Para$ColKeep]
-        
-        # Turn any periods in the column names to underscores
-        base::names(data) <- base::sub(pattern='[.]',replacement='_',x=base::names(data))
-        
-        log$debug(base::paste0(
-          'Filtered and re-ordered input columns: ',
-          base::paste0(base::names(data), collapse = ','),
-          ' have had column names substituted using ',
-          base::paste0(nameSchmMapDpth, collapse = ',')
-        ))      
-      } # data column filter/re-order
-        
       # ----------------------------------------------------------------------- #
       # Remove suffix strings, Take the shortest file name, insert HOR.VER.TMI
       # ----------------------------------------------------------------------- #

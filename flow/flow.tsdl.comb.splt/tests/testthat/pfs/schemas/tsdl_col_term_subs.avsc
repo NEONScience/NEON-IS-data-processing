@@ -6,14 +6,15 @@
   "map": {
       "description": "Map tempSpecificDepthLakes column name substitution strings",
       "notes": [ "The first mapping term corresponds to column name substrings, and the second mapping term
-      represents replacement substitution strings" ],
+      represents replacement substitution strings. Note that 'thermistorDepth' is hard-coded in wrap.file.comb.tsdl.splt.R, so 
+      alternative column names may be defined here." ],
       "type": "map",
       "values": {  "WaterTemp"  : "tsdWaterTemp",
                    "_ucrtExpn" : "ExpUncert",
-                   "readout_time" : "NULL",
                    "QFNAQM" : "NAQM",
                    "QFFailQM" : "FailQM",
-                   "QFPassQM" : "PassQM"
+                   "QFPassQM" : "PassQM",
+                   "thermistorDepth" : "thermistorDepth"
                    }
       
     }
