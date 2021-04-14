@@ -14,7 +14,7 @@
       "TermQf=pressure|temperature",
       "TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst"
       ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.37",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.46",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
