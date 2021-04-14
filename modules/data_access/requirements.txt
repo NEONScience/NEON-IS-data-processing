@@ -1,4 +1,4 @@
+common==0.1.2
 geojson==2.4.1
 structlog==20.1.0
-common==0.1.2
-cx_Oracle==7.3.0
+psycopg2-binary==2.8.6

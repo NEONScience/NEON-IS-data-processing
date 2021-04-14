@@ -8,29 +8,23 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirRglr=data
-  - FileSchmRglr=$FILE_SCHEMA_RGLR
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
+  - RptTimeWndw=FALSE
+  - DropNotNumc=FALSE
   image: quay.io/battelleecology/neon-is-rglr-r:v0.0.27
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
 input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: tempSurfacewater_calibrated_data
-      glob: "/prt/*/*"
-  - pfs:
-      name: FILE_SCHEMA_RGLR
-      repo: avro_schemas
-      glob: "/dp0p/prt_calibrated_wo_source.avsc"
+  pfs:
+    name: DIR_IN
+    repo: tempSurfacewater_calibrated_data
+    glob: "/prt/*/*/*"
 enable_stats: false
 standby: true
-parallelism_spec:
-  constant: '2'
 resource_requests:
   memory: 20M
   cpu: 0.25

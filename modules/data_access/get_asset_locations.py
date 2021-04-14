@@ -3,7 +3,7 @@ from contextlib import closing
 from typing import List
 
 from geojson import Feature, FeatureCollection
-from cx_Oracle import Connection
+from psycopg2 import extensions
 
 from data_access.get_named_location_locations import get_named_location_locations
 from data_access.get_named_location_context import get_named_location_context
@@ -15,11 +15,11 @@ from data_access.types.property import Property
 import data_access.types.geojson_converter as geojson_converter
 
 
-def get_asset_locations(connection: Connection, asset: Asset) -> FeatureCollection:
+def get_asset_locations(connection: extensions.connection, asset: Asset) -> FeatureCollection:
     """
     Get an asset's location history in GEOJson format.
 
-    :param connection: A database connection.
+    :param connection: The database connection.
     :param asset: The asset.
     :return: The asset's location history.
     """
@@ -33,7 +33,7 @@ def get_asset_locations(connection: Connection, asset: Asset) -> FeatureCollecti
         from
             is_asset_location, nam_locn, type
         where
-            is_asset_location.asset_uid = :asset_id
+            is_asset_location.asset_uid = %s
         and
             nam_locn.nam_locn_id = is_asset_location.nam_locn_id
         and
@@ -41,8 +41,8 @@ def get_asset_locations(connection: Connection, asset: Asset) -> FeatureCollecti
     '''
     features: List[Feature] = []
     with closing(connection.cursor()) as cursor:
-        cursor.prepare(sql)
-        rows = cursor.execute(None, asset_id=asset.id)
+        cursor.execute(sql, [asset.id])
+        rows = cursor.fetchall()
         for row in rows:
             key = row[0]
             install_date = row[1]
