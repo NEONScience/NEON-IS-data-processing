@@ -29,15 +29,15 @@ input:
       branch: master
       glob: "/tchain/*/*/*"
   - pfs:
-      name: FILE_SCHEMA_MAP_DEPTH
-      repo: avro_schemas
-      branch: master
-      glob: "/dp01/tempSpecificDepthLakes_dp01_depth_term_map.avsc"
-   - pfs:
       name: FILE_SCHEMA_MAP_COLS
       repo: avro_schemas
       branch: master
       glob: "/dp01/tempSpecificDepthLakes_dp01_column_term_substitutions.avsc"
+  - pfs:
+      name: FILE_SCHEMA_MAP_DEPTH
+      repo: avro_schemas
+      branch: master
+      glob: "/dp01/tempSpecificDepthLakes_dp01_depth_term_map.avsc"
 enable_stats: false
 standby: true
 parallelism_spec:
