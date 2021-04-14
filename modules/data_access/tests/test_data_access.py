@@ -2,12 +2,10 @@
 import os
 from typing import List, Set
 import unittest
-import json
 
-import cx_Oracle
 from geojson import FeatureCollection
-from geojson import dumps as geojson_dumps
 
+from data_access.db_connector import connect
 from data_access.get_asset_locations import get_asset_locations
 from data_access.get_assets import get_assets
 from data_access.get_named_location_active_periods import get_active_periods
@@ -26,16 +24,17 @@ from data_access.types.property import Property
 class DataAccessTest(unittest.TestCase):
 
     def setUp(self):
-        # database URL in the form: [user]/[pass]@[url]:[port]/[sid]
-        db_url = os.getenv('DATABASE_URL')
-        self.connection = cx_Oracle.connect(db_url)
+        # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
+        self.db_url = os.getenv('PG_DATABASE_URL')
+        self.connection = connect(self.db_url)
         self.named_location_id = 31720
 
     def test_get_asset_locations(self):
         # asset = Asset(id=41283, type='windobserverii')
         asset = Asset(id=18521, type='prt')  # soil plot test
         feature_collection: FeatureCollection = get_asset_locations(self.connection, asset)
-        geojson_data = geojson_dumps(feature_collection, indent=4, sort_keys=False, default=str)
+        # from geojson import dumps as geojson_dumps
+        # geojson_data = geojson_dumps(feature_collection, indent=4, sort_keys=False, default=str)
         # print(f'asset_locations: \n{geojson_data}')
         self.assertTrue(feature_collection is not None)
 
@@ -55,8 +54,10 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_named_location_context(self):
         context: List[str] = get_named_location_context(self.connection, self.named_location_id)
-        expected_context = ['par-met-343', 'par-met', 'upward-facing']
-        print(f'context: {context}')
+        # Context data is not in the database yet.
+        expected_context = ['par-met', 'upward-facing', 'par-met-351']
+        # expected_context = []
+        # print(f'context: {context}')
         self.assertTrue(context == expected_context)
 
     def test_get_named_location_locations(self):
@@ -71,14 +72,15 @@ class DataAccessTest(unittest.TestCase):
     def test_get_named_location_properties(self):
         properties: List[Property] = get_named_location_properties(self.connection, self.named_location_id)
         prop = properties[0]
-        self.assertTrue(prop.name == 'HOR')
-        self.assertTrue(prop.value == '000')
+        print(f'prop: {prop}')
+        self.assertTrue(prop.name == 'Required Asset Management Location ID')
+        self.assertTrue(prop.value == 1834)
 
     def test_get_named_location_schema_name(self):
-        named_location_id = 156951
+        named_location_id = 158818
         schema_names: Set = get_named_location_schema_name(self.connection, named_location_id)
         # print(f'schema_names: {schema_names}')
-        self.assertTrue(next(iter(schema_names)) == 'windobserverii')
+        self.assertTrue(next(iter(schema_names)) == 'prt')
 
     def test_get_named_location_site(self):
         site = get_named_location_site(self.connection, self.named_location_id)

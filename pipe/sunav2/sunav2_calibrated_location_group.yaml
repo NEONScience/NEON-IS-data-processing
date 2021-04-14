@@ -1,0 +1,51 @@
+---
+pipeline:
+  name: sunav2_calibrated_location_group
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/filter_joiner:9
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m filter_joiner.filter_joiner_main"
+  env:
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH/sunav2/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/sunav2/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: DEBUG
+    RELATIVE_PATH_INDEX: "3"
+input:
+  join:
+  - pfs:
+      name: DATA_PATH
+      repo: sunav2_data_calibration_group
+      glob: /sunav2/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      outer_join: true
+      empty_files: true
+  - pfs:
+      name: LOCATION_PATH
+      repo: sunav2_location_asset_assignment
+      glob: /sunav2/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
+parallelism_spec:
+  constant: "1"
+enable_stats: false
+standby: true

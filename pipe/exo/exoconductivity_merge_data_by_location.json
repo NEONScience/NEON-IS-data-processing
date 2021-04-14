@@ -17,23 +17,21 @@
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "1"
     }
   },
   "input": {
     "pfs": {
       "name": "DIR_IN",
       "repo": "exoconductivity_structure_repo_by_location",
-      "glob": "/exoconductivity/*/*"
+      "glob": "/exoconductivity/*/*/*"
     }
   },
   "enable_stats": false,
   "standby": true,
-  "parallelism_spec": {
-    "constant": "2"
-  },
   "resource_requests": {
-    "memory": "200Mi",
-    "cpu": 0
+    "memory": "80M",
+    "cpu": 0.3
   }
 }

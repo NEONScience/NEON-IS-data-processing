@@ -2,15 +2,15 @@
 from contextlib import closing
 from typing import List, Iterator
 
-from cx_Oracle import Connection
+from psycopg2 import extensions
 
 import common.date_formatter as date_formatter
 from data_access.types.threshold import Threshold
 from data_access.get_threshold_context import get_threshold_context
 
 
-def get_thresholds(connection: Connection) -> Iterator[Threshold]:
-    query = '''
+def get_thresholds(connection: extensions.connection) -> Iterator[Threshold]:
+    sql = '''
          select
              attr.column_name,
              threshold.term_name,
@@ -39,7 +39,8 @@ def get_thresholds(connection: Connection) -> Iterator[Threshold]:
              nam_locn.nam_locn_name
      '''
     with closing(connection.cursor()) as cursor:
-        rows = cursor.execute(query)
+        cursor.execute(sql)
+        rows = cursor.fetchall()
         for row in rows:
             threshold_name = row[0]
             term_name = row[1]

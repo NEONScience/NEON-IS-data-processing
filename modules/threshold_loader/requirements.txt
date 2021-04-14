@@ -1,3 +1,2 @@
 environs==6.0.0
 structlog==19.1.0
-cx_Oracle==7.3.0

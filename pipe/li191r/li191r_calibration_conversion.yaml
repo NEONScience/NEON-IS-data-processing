@@ -13,7 +13,7 @@ transform:
   - TermQf=voltage
   - TermFuncUcrt=voltage:def.ucrt.meas.mult,def.ucrt.fdas.volt.poly
   - FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
-  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.46
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -22,7 +22,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: li191r_calibration_filter
+      repo: li191r_data_calibration_group
       glob: /li191r/*/*/*/
   - pfs:
       name: FILE_SCHEMA_DATA
