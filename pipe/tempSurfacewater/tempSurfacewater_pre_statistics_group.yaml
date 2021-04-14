@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: tempSurfacewater_statistics_uncertainty_group
+  name: tempSurfacewater_pre_statistics_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:9
