@@ -3,6 +3,7 @@
     "name": "data_source_ptb330a_list_years"
   },
   "transform": {
+    "image":"registry.access.redhat.com/ubi8/ubi-minimal:8.3",
     "cmd": [
       "/bin/bash"
     ],
