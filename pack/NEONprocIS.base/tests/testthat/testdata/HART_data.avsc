@@ -1,0 +1,43 @@
+{
+  "type" : "record",
+ "name" : "ST",
+ "namespace" : "org.neonscience.schema.device",
+ "fields" : [
+    {
+      "name": "source_id",
+      "type": "string",
+      "doc": "Source serial number or mac address"
+    },
+    {
+      "name": "site_id",
+      "type": [
+          "null",
+          {
+            "type": "fixed",
+            "size": 4,
+            "name": "utf8"
+          }
+      ],
+      "doc": "NEON site identifier"
+    },
+    {
+      "name": "readout_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp of readout expressed in milliseconds since epoch",
+      "__neon_units": "millisecond"
+    },
+    {
+      "name": "resistance",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "The temperature measured by the PRT as determined by applying the calibration polynomial coefficients to the measured resistance.",
+      "__neon_units": "celcius"
+    }
+    ]
+}

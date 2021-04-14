@@ -72,8 +72,8 @@ class ThresholdLoaderTest(TestCase):
 
     @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
-        #  database URL in the form: [user]/[pass]@[url]:[port]/[sid]
-        database_url = os.getenv('DATABASE_URL')
+        # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
+        database_url = os.getenv('PG_DATABASE_URL')
         os.environ['DATABASE_URL'] = database_url
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'

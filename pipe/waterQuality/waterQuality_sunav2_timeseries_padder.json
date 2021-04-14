@@ -36,9 +36,9 @@
   "input": {
     "pfs": {
       "name": "DATA_PATH",
-      "repo": "sunav2_fill_date_gaps_by_location",
+      "repo": "sunav2_merge_data_by_location",
       "branch": "master",
-      "glob": "/sunav2/*/*"
+      "glob": "/sunav2/*/*/*"
     }
   },
   "standby": true,

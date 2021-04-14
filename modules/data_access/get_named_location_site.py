@@ -2,16 +2,33 @@
 from typing import List, Optional
 from contextlib import closing
 
-from cx_Oracle import Connection, Cursor
+from psycopg2 import extensions
 
 
-def get_named_location_site(connection: Connection, named_location_id: int) -> Optional[str]:
+def get_named_location_site(connection: extensions.connection, named_location_id: int) -> Optional[str]:
     """
     Get the site of a named location.
 
     :param connection: A database connection.
     :param named_location_id: A named location ID.
     :return: The site.
+    """
+    parents: List[str] = []
+    with closing(connection.cursor()) as cursor:
+        find_site(cursor, named_location_id, parents)
+    if not parents:
+        return None
+    else:
+        return parents[0]
+
+
+def find_site(cursor: extensions.cursor, named_location_id: int, parents: List[str]):
+    """
+    Recursively search for the site.
+
+    :param cursor: A database cursor object.
+    :param named_location_id: The named location ID.
+    :param parents: Collection to append to.
     """
     sql = '''
         select
@@ -23,28 +40,10 @@ def get_named_location_site(connection: Connection, named_location_id: int) -> O
         join
             type on type.type_id = nam_locn.type_id
         where
-            chld_nam_locn_id = :named_location_id
+            chld_nam_locn_id = %s
     '''
-    parents: List[str] = []
-    with closing(connection.cursor()) as cursor:
-        cursor.prepare(sql)
-        find_site(cursor, named_location_id, parents)
-    if not parents:
-        return None
-    else:
-        return parents[0]
-
-
-def find_site(cursor: Cursor, named_location_id: int, parents: List[str]):
-    """
-    Recursively search for the site.
-
-    :param cursor: A database cursor object.
-    :param named_location_id: The named location ID.
-    :param parents: Collection to append to.
-    """
-    result = cursor.execute(None, named_location_id=named_location_id)
-    row = result.fetchone()
+    cursor.execute(sql, [named_location_id])
+    row = cursor.fetchone()
     if row is not None:
         parent_id = row[0]
         name = row[1]
