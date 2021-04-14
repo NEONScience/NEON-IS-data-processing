@@ -10,11 +10,11 @@ transform:
   - NameDirCombOut=/level1_reshape
   - NameVarTime=001|030
   - MrgeCols=startDateTime|endDateTime
+  - FileSchmMapDepth=$FILE_SCHEMA_MAP_DEPTH
+  - FileSchmMapCols=$FILE_SCHEMA_MAP_COLS
   - LocDir=location
   - StatDir=stats
   - QmDir=quality_metrics
-  - FileSchmMapDepth=$FILE_SCHEMA_MAP_DEPTH
-  - FileSchmMapCols=$FILE_SCHEMA_MAP_COLS
   - NameFileSufxRm=basicStats|qualityMetrics
   image: quay.io/battelleecology/neon-is-tsdl-comb-splt-r:v0.0.1
   image_pull_secrets:
@@ -49,4 +49,4 @@ resource_requests:
 cache_size: 64M
 max_queue_size: '1'
 #salt: 1a066393a052492e9bed6fb2970742a9
-datum_tries: '3'
+#datum_tries: '3'
