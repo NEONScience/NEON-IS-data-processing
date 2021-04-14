@@ -26,8 +26,8 @@ class LocationLoaderTest(TestCase):
 
     @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
-        #  Database URL in the form: [user]/[pass]@[url]:[port]/[sid]
-        database_url = os.getenv('DATABASE_URL')
+        # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
+        database_url = os.getenv('PG_DATABASE_URL')
         os.environ['LOCATION_TYPE'] = 'CONFIG'
         os.environ['DATABASE_URL'] = database_url
         os.environ['OUT_PATH'] = str(self.out_path)
@@ -36,7 +36,7 @@ class LocationLoaderTest(TestCase):
         file_path = Path(self.out_path, 'pqs1/CFGLOC100243/CFGLOC100243.json')
         self.assertTrue(file_path.exists())
 
-    # @unittest.skip('Test skipped.')
+    @unittest.skip('Test skipped.')
     def test_location_loader(self):
         site = 'CPER'
         location = 'CFGLOC123'

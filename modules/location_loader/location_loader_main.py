@@ -3,10 +3,10 @@ import environs
 import structlog
 from pathlib import Path
 from contextlib import closing
-from cx_Oracle import connect
 from functools import partial
 
 import common.log_config as log_config
+from data_access.db_connector import connect
 from data_access.get_named_locations import get_named_locations
 from location_loader.location_loader import load_locations
 
