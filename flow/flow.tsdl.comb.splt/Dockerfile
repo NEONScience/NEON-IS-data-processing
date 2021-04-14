@@ -11,6 +11,10 @@ MAINTAINER "Guy Litt" glitt@battelleecology.org, Cove Sturtevant" csturtevant@ba
 COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
-# Copy in calibration filter workflow
+# Copy in tempSpecificDepthLakes L1 reshape workflow
 COPY ./flow.tsdl.comb.splt.R /flow.tsdl.comb.splt.R
 COPY ./wrap.file.comb.tsdl.splt.R /wrap.file.comb.tsdl.splt.R
+COPY ./wrap.schm.map.char.gsub.R /wrap.schm.map.char.gsub.R
+COPY ./def.map.char.gsub.R /def.map.char.gsub.R
+COPY ./def.schm.avro.pars.map.R /def.schm.avro.pars.map.R
+COPY ./def.find.mtch.str.best.R /def.find.mtch.str.best.R
