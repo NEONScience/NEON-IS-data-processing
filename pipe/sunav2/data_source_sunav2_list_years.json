@@ -1,0 +1,29 @@
+{
+  "pipeline": {
+    "name": "data_source_sunav2_list_years"
+  },
+  "transform": {
+    "image":"registry.access.redhat.com/ubi8/ubi-minimal:8.3",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "ls $REPO_IN > /pfs/out/data_years.txt"
+    ]
+  },
+  "input": {
+    "pfs": {
+      "name": "REPO_IN",
+      "repo": "data_source_sunav2",
+      "glob": "/sunav2",
+      "empty_files": true
+    }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "1K",
+    "cpu": 0.01
+  }
+}

@@ -8,7 +8,7 @@ from ruamel.yaml.util import load_yaml_guess_indent
 
 def update(source_path: Path, old_image: str, new_image: str):
     """
-    Update to the new image all pipeline specifications using the old image.
+    Update to the new image all pipeline specifications containing the old image.
 
     :param source_path: Path containing specification files.
     :param old_image: The image to replace.
@@ -19,7 +19,11 @@ def update(source_path: Path, old_image: str, new_image: str):
             if path.suffix == '.json':
                 with open(str(path)) as json_file:
                     json_data = json.load(json_file)
-                    image = json_data['transform']['image']
+                    try:
+                        image = json_data['transform']['image']
+                    except KeyError:
+                        # file is not a pipeline specification.
+                        continue
                     if image == old_image:
                         print(f'updating file {path}')
                         json_data['transform']['image'] = new_image
@@ -28,7 +32,11 @@ def update(source_path: Path, old_image: str, new_image: str):
                 with open(str(path), 'r') as open_file:
                     data, indent, block_seq_indent = load_yaml_guess_indent(
                         open_file, preserve_quotes=True)
-                    image = data['transform']['image']
+                    try:
+                        image = data['transform']['image']
+                    except KeyError:
+                        # file is not a pipeline specification.
+                        continue
                     if image == old_image:
                         print(f'updating file {path}')
                         data['transform']['image'] = new_image

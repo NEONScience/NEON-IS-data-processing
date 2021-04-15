@@ -1,0 +1,34 @@
+{
+  "pipeline": {
+    "name": "pqs1_structure_repo_by_location"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.loc.repo.strc.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "Comb=TRUE"
+    ],
+    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.12",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }
+  },
+  "input": {
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "pqs1_calibrated_location_group",
+      "glob": "/pqs1/*/*/*"
+    }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "100M",
+    "cpu": 0.13
+  }
+}

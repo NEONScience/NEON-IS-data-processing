@@ -9,30 +9,29 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "DirSubCombData=data|flags|uncertainty_data",
-      "DirSubCopy=location|uncertainty_coef"
+      "DirSubCombUcrt=uncertainty_coef",
+      "DirSubCopy=location"
     ],
     "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.23",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "1"
     }
   },
   "input": {
     "pfs": {
       "name": "DIR_IN",
       "repo": "exo2_structure_repo_by_location",
-      "glob": "/exo2/*/*"
+      "glob": "/exo2/*/*/*"
     }
   },
   "enable_stats": false,
   "standby": true,
-  "parallelism_spec": {
-    "constant": "2"
-  },
   "resource_requests": {
-    "memory": "200Mi",
-    "cpu": 0
+    "memory": "80M",
+    "cpu": 0.3
   }
 }

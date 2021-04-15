@@ -21,17 +21,14 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "exo2_location_filter",
-      "glob": "/exo2/*/*"
+      "repo": "exo2_calibrated_location_group",
+      "glob": "/exo2/*/*/*"
     }
   },
   "enable_stats": false,
   "standby": true,
-  "parallelism_spec": {
-    "constant": "2"
-  },
   "resource_requests": {
-    "memory": "200Mi",
-    "cpu": 0
+    "memory": "100M",
+    "cpu": 0.13
   }
 }

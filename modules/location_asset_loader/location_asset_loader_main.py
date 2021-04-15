@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import environs
 import structlog
-import cx_Oracle
 from contextlib import closing
 from pathlib import Path
 from functools import partial
 
 import common.log_config as log_config
+from data_access.db_connector import connect
 from data_access.get_assets import get_assets
 from data_access.get_asset_locations import get_asset_locations
 
@@ -23,7 +23,7 @@ def main() -> None:
     log_config.configure(log_level)
     log.debug(f'out_path: {out_path}')
 
-    with closing(cx_Oracle.connect(db_url)) as connection:
+    with closing(connect(db_url)) as connection:
         get_assets_partial = partial(get_assets, connection)
         get_asset_locations_partial = partial(get_asset_locations, connection)
         location_asset_loader.write_files(get_assets=get_assets_partial,

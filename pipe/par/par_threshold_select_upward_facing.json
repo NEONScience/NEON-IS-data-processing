@@ -1,0 +1,45 @@
+{
+  "pipeline": {
+    "name": "par_threshold_select_upward_facing"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.thsh.slct.R",
+      "DirIn=$REPO_LOCATIONS",
+      "DirOut=/pfs/out",
+      "FileThsh=$FILE_THRESHOLDS",
+      "TermCtxt1=par|par-met|upward-facing",
+      "DirSubCopy=location"
+      ],
+    "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.14",
+    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }  
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "REPO_LOCATIONS",
+          "repo": "par_locations_upward_facing",
+          "glob": "/*/*/*"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_THRESHOLDS",
+          "repo": "par_threshold_filter_upward_facing",
+          "glob": "/thresholds.json"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "12M",
+    "cpu": 0.05
+  }
+}
