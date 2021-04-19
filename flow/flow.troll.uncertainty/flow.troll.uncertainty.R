@@ -370,15 +370,34 @@ for (idxDirIn in DirIn){
         #idxWndwTime<-1 #for testing
         # Rows to pull
         flagDataWndwTime <- base::subset(flagData,subset=setTime==idxWndwTime)  
+        flagDataWndwTime<-flagDataWndwTime[!is.na(flagDataWndwTime$pressure)&flagDataWndwTime$pressureSpikeQF==0,]
+        # Compute stats excluding flagged data
+        groundwaterPressureMean<-mean(flagDataWndwTime$pressure)
+        groundwaterPressureMin<-min(flagDataWndwTime$pressure)
+        groundwaterPressureMax<-max(flagDataWndwTime$pressure)
+        groundwaterPressureVariance<-var(flagDataWndwTime$pressure)
+        groundwaterPressureStdEr<-sd(flagDataWndwTime$pressure)/base::sqrt(nrow(flagDataWndwTime))
+        groundwaterPressureNumPts<-base::as.integer(nrow(flagDataWndwTime))
+        groundwaterElevMean<-mean(flagDataWndwTime$elevation)
+        groundwaterElevMin<-min(flagDataWndwTime$elevation)
+        groundwaterElevMax<-max(flagDataWndwTime$elevation)
+        groundwaterElevVariance<-var(flagDataWndwTime$elevation)
+        groundwaterElevStdEr<-sd(flagDataWndwTime$elevation)/base::sqrt(nrow(flagDataWndwTime))
+        groundwaterElevNumPts<-base::as.integer(nrow(flagDataWndwTime))
         
-        # Compute mean excluding flagged data
-        groundwaterPressureMean<-mean(flagDataWndwTime$pressure[!is.na(flagDataWndwTime$pressure)&flagDataWndwTime$pressureSpikeQF==0])
-        #groundwaterPressureMean<-round(groundwaterPressureMean,3)
-        groundwaterElevMean<-mean(flagDataWndwTime$elevation[!is.na(flagDataWndwTime$elevation)&flagDataWndwTime$pressureSpikeQF==0])
-        #groundwaterElevMean<-round(groundwaterElevMean,2)
         #copy info to output dataframe
         rptSciStats$groundwaterPressureMean[idxWndwTime] <- groundwaterPressureMean
+        rptSciStats$groundwaterPressureMin[idxWndwTime] <- groundwaterPressureMin
+        rptSciStats$groundwaterPressureMax[idxWndwTime] <- groundwaterPressureMax
+        rptSciStats$groundwaterPressureVariance[idxWndwTime] <- groundwaterPressureVariance
+        rptSciStats$groundwaterPressureStdEr[idxWndwTime] <- groundwaterPressureStdEr
+        rptSciStats$groundwaterPressureNumPts[idxWndwTime] <- groundwaterPressureNumPts
         rptSciStats$groundwaterElevMean[idxWndwTime] <- groundwaterElevMean
+        rptSciStats$groundwaterElevMin[idxWndwTime] <- groundwaterElevMin
+        rptSciStats$groundwaterElevMax[idxWndwTime] <- groundwaterElevMax
+        rptSciStats$groundwaterElevVariance[idxWndwTime] <- groundwaterElevVariance
+        rptSciStats$groundwaterElevStdEr[idxWndwTime] <- groundwaterElevStdEr
+        rptSciStats$groundwaterElevNumPts[idxWndwTime] <- groundwaterElevNumPts
       } # End loop through time windows
       
       #Write out aggregate uncertainty data
@@ -394,7 +413,6 @@ for (idxDirIn in DirIn){
       }
     }
   }
-  
   
   
   ##### Read in uncertainty data #####

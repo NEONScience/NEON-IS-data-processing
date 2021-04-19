@@ -3,7 +3,7 @@
     "name": "groundwaterPhysical_ucrt_troll_specific"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.troll.uncertainty.R","DirIn=$DIR_IN","DirOut=/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030","DirSubCopy=location|uncertainty_coef","FileSchmData=NA","FileSchmUcrt=NA"],
+    "cmd": ["Rscript","/flow.troll.uncertainty.R","DirIn=$DIR_IN","DirOut=/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030","DirSubCopy=location|uncertainty_coef","FileSchmData=SCHEMA_DATA","FileSchmUcrt=SCHEMA_UCRT", "FileSchmSciStats = SCHEMA_SCI"],
     "image": "quay.io/battelleecology/neon-is-troll-uncertainty-r:v0.0.9",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
@@ -11,11 +11,36 @@
     }  
   },
   "input": {
-    "pfs": {
+    "cross": [
+      {
+        "pfs": {
           "name": "DIR_IN",
           "repo": "groundwaterPhysical_qaqc_data_group",
           "glob": "/aquatroll200/*/*/*"
-    }
+        }
+      },
+      {
+        "pfs": {
+          "name": "SCHEMA_DATA",
+           "repo": "avro_schemas",
+           "glob": "/dp01/groundwaterPhysical_dp01_troll_specific_data.avsc"
+        }
+      },
+      {
+        "pfs": {
+          "name": "SCHEMA_UCRT",
+           "repo": "avro_schemas",
+           "glob": "/dp0p/groundwaterPhysical_dp01_troll_specific_ucrt.avsc"
+        }
+      },
+      {
+        "pfs": {
+          "name": "SCHEMA_SCI",
+           "repo": "avro_schemas",
+           "glob": "/dp0p/groundwaterPhysical_dp01_troll_specific_sci_stats.avsc"
+        }
+      }
+    ]
   },
   "enable_stats": false,
   "standby": true,
