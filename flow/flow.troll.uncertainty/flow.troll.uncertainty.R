@@ -361,7 +361,9 @@ for (idxDirIn in DirIn){
       
       # Intialize the output
       rptSciStats <- base::data.frame(startDateTime=timeAgrBgn,endDateTime=timeAgrEnd)
-      nameSciStatsTerm <- c("groundwaterPressureMean","groundwaterElevMean")
+      nameSciStatsTerm <- c("groundwaterPressureMean","groundwaterPressureMin","groundwaterPressureMax","groundwaterPressureVariance",
+                            "groundwaterPressureNumPts","groundwaterPressureStdEr","groundwaterElevMean","groundwaterElevMin",
+                            "groundwaterElevMax","groundwaterElevVariance","groundwaterElevNumPts","groundwaterElevStdEr")
       rptSciStats[,3:(base::length(nameSciStatsTerm)+2)] <- base::as.numeric(NA)
       base::names(rptSciStats)[3:(base::length(nameSciStatsTerm)+2)] <- nameSciStatsTerm
       
@@ -390,14 +392,14 @@ for (idxDirIn in DirIn){
         rptSciStats$groundwaterPressureMin[idxWndwTime] <- groundwaterPressureMin
         rptSciStats$groundwaterPressureMax[idxWndwTime] <- groundwaterPressureMax
         rptSciStats$groundwaterPressureVariance[idxWndwTime] <- groundwaterPressureVariance
-        rptSciStats$groundwaterPressureStdEr[idxWndwTime] <- groundwaterPressureStdEr
         rptSciStats$groundwaterPressureNumPts[idxWndwTime] <- groundwaterPressureNumPts
+        rptSciStats$groundwaterPressureStdEr[idxWndwTime] <- groundwaterPressureStdEr
         rptSciStats$groundwaterElevMean[idxWndwTime] <- groundwaterElevMean
         rptSciStats$groundwaterElevMin[idxWndwTime] <- groundwaterElevMin
         rptSciStats$groundwaterElevMax[idxWndwTime] <- groundwaterElevMax
         rptSciStats$groundwaterElevVariance[idxWndwTime] <- groundwaterElevVariance
-        rptSciStats$groundwaterElevStdEr[idxWndwTime] <- groundwaterElevStdEr
         rptSciStats$groundwaterElevNumPts[idxWndwTime] <- groundwaterElevNumPts
+        rptSciStats$groundwaterElevStdEr[idxWndwTime] <- groundwaterElevStdEr
       } # End loop through time windows
       
       #Write out aggregate uncertainty data
