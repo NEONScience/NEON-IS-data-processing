@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: surfacewaterPhysical_level1_group
+  name: surfacewaterPhysical_leveltroll500_level1_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:9
@@ -20,18 +20,8 @@ transform:
             # Join on context group (already joined by day below)
             join_indices: [6]
         - path:
-            name: STATISTICS_PATH_AQUATROLL
-            glob_pattern: /pfs/STATISTICS_PATH_AQUATROLL/**
-            # Join on context group (already joined by day below)
-            join_indices: [6]
-        - path:
             name: QUALITY_METRICS_PATH_LEVELTROLL
             glob_pattern: /pfs/QUALITY_METRICS_PATH_LEVELTROLL/**
-            # Join on context group (already joined by day below)
-            join_indices: [6]
-        - path:
-            name: QUALITY_METRICS_PATH_AQUATROLL
-            glob_pattern: /pfs/QUALITY_METRICS_PATH_AQUATROLL/**
             # Join on context group (already joined by day below)
             join_indices: [6]
     OUT_PATH: /pfs/out
@@ -46,20 +36,8 @@ input:
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
-      name: STATISTICS_PATH_AQUATROLL
-      repo: surfacewaterPhysical_aquatroll200_statistics
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: true
-  - pfs:
       name: QUALITY_METRICS_PATH_LEVELTROLL
       repo: surfacewaterPhysical_leveltroll500_QM
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: true
-  - pfs:
-      name: QUALITY_METRICS_PATH_AQUATROLL
-      repo: surfacewaterPhysical_aquatroll200_QM
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
