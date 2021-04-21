@@ -36,7 +36,7 @@
     "pfs": {
       "name": "IN_PATH",
       "repo": "data_source_csat3_site",
-      "glob": "/*/*/*/*",
+      "glob": "/*/*/*",
       "lazy": true
     }
   },
