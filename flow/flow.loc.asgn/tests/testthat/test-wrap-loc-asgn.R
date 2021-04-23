@@ -33,7 +33,7 @@
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 #'
-#' @return A directory structure in the format DirOutBase/SOURCE_TYPE/YEAR/MONTH/DAY/ID,
+#' @return A directory structure in the format DirOutBase/SOURCE_TYPE/YEAR/MONTH/DAY/ID/location/,
 #' where DirOutBase replaces the input directory structure up to #/pfs/BASE_REPO (see inputs above) and the
 #' terminal path (ID) is populated with the filtered location files applicable to the year, month, and
 #' day indicated in the path.
@@ -78,7 +78,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir,'/',fileLoc))
   
   installdate <- str_replace_all(loc$install_date, "-", "/")
-  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,collapse='/','/location')
+  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,"/location",collapse='/')
   
   # clean out the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
@@ -104,7 +104,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir, '/', fileLoc))
   
   installdate <- str_replace_all(as.Date(loc$install_date), "-", "/")
-  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,collapse = '/')
+  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,"/location",collapse = '/')
   
   # clean out the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
@@ -129,7 +129,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir, '/', fileLoc))
   
   installdate <- str_replace_all(loc$install_date, "-", "/")
-  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,collapse = '/')
+  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,"/location",collapse = '/')
   
   # clean out the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
