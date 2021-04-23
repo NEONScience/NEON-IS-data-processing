@@ -74,12 +74,11 @@ test_that("Unit test of wrap.cal.asgn.R", {
   
   # Test scenario 1:: within the valid time range
   # 10312 does not have "active_periods" pass TypeFile = 'asset'
-  testInputDir <- base::paste0(wk_dir, '/', 'pfs/location_asset/ptb330a/10312')
-  fileLoc <- base::dir(testInputDir)
+  testInputDir <- base::paste0(wk_dir, '/', 'pfs/calibration/prt/17596/resistance/')
+  fileCal <- base::dir(testInputDir)
   
   # Load in the location json and get the location name to verify the test
-  loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir,'/',fileLoc))
-  
+  metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = base::paste0(DirIn, '/', fileCal),log = log)
   installdate <- str_replace_all(loc$install_date, "-", "/")
   testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,collapse='/')
   
