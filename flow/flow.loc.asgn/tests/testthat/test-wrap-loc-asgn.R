@@ -76,7 +76,6 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   # Load in the location json and get the location name to verify the test
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir,'/',fileLoc))
-  
   installdate <- str_replace_all(loc$install_date, "-", "/")
   testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,"/location",collapse='/')
   
@@ -102,7 +101,6 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   # Load in the location json and get the location name to verify the test
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir, '/', fileLoc))
-  
   installdate <- str_replace_all(as.Date(loc$install_date), "-", "/")
   testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,"/location",collapse = '/')
   
@@ -127,7 +125,6 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   # Load in the location json and get the location name to verify the test
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir, '/', fileLoc))
-  
   installdate <- str_replace_all(loc$install_date, "-", "/")
   testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,"/location",collapse = '/')
   
