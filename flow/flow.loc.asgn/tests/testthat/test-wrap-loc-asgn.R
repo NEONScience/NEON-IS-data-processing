@@ -78,7 +78,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir,'/',fileLoc))
   
   installdate <- str_replace_all(loc$install_date, "-", "/")
-  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,collapse='/')
+  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,collapse='/','/location')
   
   # clean out the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
