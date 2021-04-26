@@ -76,12 +76,26 @@ test_that("Unit test of wrap.cal.asgn.R", {
   # 10312 does not have "active_periods" pass TypeFile = 'asset'
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/calibration/prt/17596/resistance/')
   fileCal <- base::dir(testInputDir)
+  fileCalPath <- base::paste0(testInputDir, fileCal)
   
   # Load in the location json and get the location name to verify the test
-  metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = base::paste0(DirIn, '/', fileCal),log = log)
-  installdate <- str_replace_all(loc$install_date, "-", "/")
-  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,collapse='/')
-  
+  metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = fileCalPath,log = log)
+ 
+  #==========================================================================================
+  # The metadata of test calibration files
+  #==========================================================================================
+  # #                                 file |       timeValiBgn |        timeValiEnd |    id |
+  #------------------------------------------------------------------------------------------
+  # 1     30000000009997_WO7799_122595.xml |2019-01-14 21:22:11| 2055-12-31 00:00:00| 122595|
+  # 2 30000000009997_WO7799_122595_dup.xml |2018-01-14 21:22:11| 2055-12-31 00:00:00| 122595|
+  # 3      30000000009997_WO7799_60924.xml |2019-01-01 21:22:11| 2020-08-21 21:22:11|  60924|
+  # 4  30000000009997_WO7799_60924_dup.xml |2016-03-14 21:22:11| 2017-08-21 21:22:11|  60924|
+  #==========================================================================================
+  #
+  # Happy path 1: 30000000009997_WO7799_122595_dup.xml and 30000000009997_WO7799_60924_dup.xml
+  #               have timeValid. 30000000009997_WO7799_122595_dup.xml higher ID. 
+  #               This will be written to the output directory
+  #
   # clean out the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
@@ -91,10 +105,28 @@ test_that("Unit test of wrap.cal.asgn.R", {
     DirOutBase = testOutputDir,
     TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
     TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
-    TypeFile = 'asset'
+    PadDay=base::as.difftime(c(0,0),units='days')
   )
   
-  testthat::expect_true (dir.exists(testOutputDirPath))
+  testthat::expect_true (dir.exists(testOutputDir))
+  #
+  # Happy path 2: 30000000009997_WO7799_122595.xmland 30000000009997_WO7799_60924.xml
+  #               have timeValid with starting pad= 13 days, 30000000009997_WO7799_122595.xml higher ID. 
+  #               This will be written to the output directory
+  #
+  # clean out the test output dirs and file recursively
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  returnedOutputDir <- wrap.cal.asgn(
+    DirIn = testInputDir,
+    DirOutBase = testOutputDir,
+    TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
+    TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
+    PadDay=base::as.difftime(c(13,0),units='days')
+  )
+  
+  testthat::expect_true (dir.exists(testOutputDir))
   #
 
 })

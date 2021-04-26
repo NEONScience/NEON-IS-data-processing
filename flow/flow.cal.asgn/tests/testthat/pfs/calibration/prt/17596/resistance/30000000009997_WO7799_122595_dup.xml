@@ -64,14 +64,14 @@
 	</Uncertainty>
     <Trueness units="deg C">0.000338</Trueness>
     <ActivityTimeRange>
-      <StartTime>2019-01-01T19:38:45.0417</StartTime>
+      <StartTime>2018-01-14T19:38:45.0417</StartTime>
       <EndTime>2019-03-14T21:22:11.6463</EndTime>
     </ActivityTimeRange>
-    <CertificateNumber>60924</CertificateNumber>
+    <CertificateNumber>122595</CertificateNumber>
   </StreamCalVal>
   <ValidTimeRange>
-    <StartTime>2019-01-01T21:22:11.6463</StartTime>
-    <EndTime>2020-08-21T21:22:11.0000</EndTime>
+    <StartTime>2018-01-14T21:22:11.6463</StartTime>
+    <EndTime>2055-12-31T00:00:00.0000</EndTime>
   </ValidTimeRange>
   <Comment>
     <CommentDescription/>
