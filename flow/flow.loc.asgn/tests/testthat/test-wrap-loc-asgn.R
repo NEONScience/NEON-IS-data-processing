@@ -120,7 +120,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   testthat::expect_true (any(file.exists(testOutputDir,fileLocPath, recursive = TRUE)))
   #
   # Test scenario 3:: within the valid time range
-  # 10312 does not have "active_periods", but pass TypeFile = 'namedLocation', an invalid value in this case 
+  # pass TypeFile = 'namedLocation', but the json does not have "active_periods" 
   # Errs out
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/location_asset/ptb330a/10312')
   fileLoc <- base::dir(testInputDir)
