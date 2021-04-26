@@ -71,27 +71,29 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   # Test scenario 1:: within the valid time range
   # 10312 does not have "active_periods" pass TypeFile = 'asset'
+  #
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/location_asset/ptb330a/10312')
   fileLoc <- base::dir(testInputDir)
   
   # Load in the location json and get the location name to verify the test
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir,'/',fileLoc))
-  installdate <- str_replace_all(loc$install_date, "-", "/")
-  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,"/location",collapse='/')
-  
+
   # clean out the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
+  TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT')
   returnedOutputDir <- wrap.loc.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
-    TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
+    TimeBgn =   TimeBgn,
     TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
     TypeFile = 'asset'
   )
   
-  testthat::expect_true (dir.exists(testOutputDirPath))
+  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",format(TimeBgn,format="%Y"),"/",format(TimeBgn,format="%m"),"/")
+  fileLocPath <- base::paste0("location/", fileLoc)
+  testthat::expect_true (any(file.exists(testOutputDir,fileLocPath, recursive = TRUE)))
   #
   # Test scenario 2:: within the valid time range
   # 100959 has "active_periods" pass TypeFile = 'namedLocation'
@@ -101,9 +103,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   # Load in the location json and get the location name to verify the test
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir, '/', fileLoc))
-  installdate <- str_replace_all(as.Date(loc$install_date), "-", "/")
-  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,"/location",collapse = '/')
-  
+
   # clean out the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
@@ -111,35 +111,37 @@ test_that("Unit test of wrap.loc.asgn.R", {
   returnedOutputDir <- wrap.loc.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
-    TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
+    TimeBgn = TimeBgn,
     TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
     TypeFile = 'namedLocation'
   )
-  testthat::expect_true (dir.exists(testOutputDirPath))
+  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",format(TimeBgn,format="%Y"),"/",format(TimeBgn,format="%m"),"/",collapse='/')
+  fileLocPath <- base::paste0("location/", fileLoc)
+  testthat::expect_true (any(file.exists(testOutputDir,fileLocPath, recursive = TRUE)))
   #
   # Test scenario 3:: within the valid time range
-  #
-  # 10754 does not have "active_periods" pass TypeFile = 'asset'
-  testInputDir <- base::paste0(wk_dir, '/', 'pfs/locations/prt/24688')
+  # 1705454 does not have "active_periods" pass TypeFile = 'namedLocation', which is invalid value 
+  # Errs out
+  testInputDir <- base::paste0(wk_dir, '/', 'pfs/locations/prt/17054')
   fileLoc <- base::dir(testInputDir)
   
   # Load in the location json and get the location name to verify the test
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(testInputDir, '/', fileLoc))
-  installdate <- str_replace_all(loc$install_date, "-", "/")
-  testOutputDirPath <- base::paste0(testOutputDir,"/",loc$source_type,"/",installdate,"/",loc$source_id,"/location",collapse = '/')
-  
+
   # clean out the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-  returnedOutputDir <- wrap.loc.asgn(
+  returnedOutputDir <- try (wrap.loc.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
-    TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
+    TimeBgn = TimeBgn,
     TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
-    TypeFile = 'asset'
-  )
-  testthat::expect_true (dir.exists(testOutputDirPath))
+    TypeFile = 'namedLocation'
+  ), silent = TRUE)
+  
+  testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
+  
   #
   # Test scenario 4:: pass invalid TypeFile
   if (dir.exists(testOutputDir)) {
@@ -162,7 +164,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
     unlink(testOutputDir, recursive = TRUE)
   }
   returnedOutputDir <- try(wrap.loc.asgn(
-    DirIn = testInputDir,
+    DirIn = 'pfs/location_asset/ptb330a/10312',
     DirOutBase = testOutputDir,
     TimeBgn = as.POSIXct('2018-01-01', tz = 'GMT'),
     TimeEnd = as.POSIXct('2018-01-10', tz = 'GMT'),
@@ -170,7 +172,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   ),silent = TRUE)
   
   testthat::expect_true (!(dir.exists(testOutputDir)))
-  
+ 
   # Test scenario 6: more than 1 file
   
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/locations_2files/hmp155/10267')
@@ -196,5 +198,5 @@ test_that("Unit test of wrap.loc.asgn.R", {
   )
   
   testthat::expect_true (!dir.exists(testOutputDir))
-  
+
 })
