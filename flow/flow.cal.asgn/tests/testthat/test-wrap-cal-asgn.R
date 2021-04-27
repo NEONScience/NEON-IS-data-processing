@@ -69,19 +69,20 @@ context("\n                       Unit test of wrap.cal.asgn.R\n")
 test_that("Unit test of wrap.cal.asgn.R", {
   source('../../wrap.cal.asgn.R')
   library(stringr)
-  
+  #
   wk_dir <- getwd()
   testOutputDir = "pfs/out"
-  
+  #
   # Test scenario 1:: within the valid time range
   # 17596 does not have "active_periods" pass TypeFile = 'asset'
+  #
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/calibration/prt/17596/resistance/')
   fileCal <- base::dir(testInputDir)
   fileCalPath <- base::paste0(testInputDir, fileCal)
-  
+  #
   # Load in the location json and get the location name to verify the test
   metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = fileCalPath,log = log)
-  
+  #
   #==========================================================================================
   # The metadata of test calibration files
   #==========================================================================================
@@ -98,6 +99,7 @@ test_that("Unit test of wrap.cal.asgn.R", {
   #               This will be written to the output directory
   #
   # clean out the test output dirs and file recursively
+  #
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
@@ -113,11 +115,13 @@ test_that("Unit test of wrap.cal.asgn.R", {
   fileCalexpectedPath <- base::paste0(fileCalInfo$file$DATA$MetaData$MaximoID,"/","calibration/resistance/",fileCalExpected)
   testthat::expect_true (any(file.exists(testOutputDir,fileCalexpectedPath, recursive = TRUE)))
   #
-  # Happy path 2: 30000000009997_WO7799_122595.xmland 30000000009997_WO7799_60924.xml
-  #               have timeValid with starting pad= 13 days, 30000000009997_WO7799_122595.xml higher ID. 
+  # Happy path 2: adding pad= 13 days
+  #               30000000009997_WO7799_122595.xml and 30000000009997_WO7799_60924.xml
+  #               have timeValid, 30000000009997_WO7799_122595.xml higher ID. 
   #               This will be written to the output directory
   #
   # clean out the test output dirs and file recursively
+  #
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
@@ -134,5 +138,40 @@ test_that("Unit test of wrap.cal.asgn.R", {
   fileCalexpectedPath <- base::paste0(fileCalInfo$file$DATA$MetaData$MaximoID,"/","calibration/resistance/",fileCalExpected)
   testthat::expect_true (any(file.exists(testOutputDir,fileCalexpectedPath, recursive = TRUE)))
   #
+  # Happy path 3: no calibrations apply during the time interval
+  #
+  # clean out the test output dirs and file recursively
+  #
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  
+  returnedOutputDir <- wrap.cal.asgn(
+    DirIn = testInputDir,
+    DirOutBase = testOutputDir,
+    TimeBgn = as.POSIXct('2016-01-01', tz = 'GMT'),
+    TimeEnd = as.POSIXct('2016-01-30', tz = 'GMT'),
+    PadDay=base::as.difftime(c(0,0),units='days')
+  )
+  
+  testthat::expect_true (!dir.exists(testOutputDir))
+  #
+  # Sad path 1:  no calibration files
+  #
+  # clean out the test output dirs and file recursively
+  #
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  testInputDir <- base::paste0(wk_dir, '/', 'pfs/calibration_noCals/prt/17596/resistance/')
+  returnedOutputDir <- wrap.cal.asgn(
+    DirIn = testInputDir,
+    DirOutBase = testOutputDir,
+    TimeBgn = as.POSIXct('2016-01-01', tz = 'GMT'),
+    TimeEnd = as.POSIXct('2016-01-30', tz = 'GMT'),
+    PadDay=base::as.difftime(c(0,0),units='days')
+  )
+  
+  testthat::expect_true (!dir.exists(testOutputDir))
   
 })
