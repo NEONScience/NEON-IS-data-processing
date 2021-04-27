@@ -21,6 +21,12 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
+            name: LOCATIONS_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATIONS_PATH/ptb330a/*/*/*/*/location/**
+            # Join on named location (already joined below by day
+            join_indices: [7]
+        - path:
             name: STATISTICS_PATH
             # Filter for data directory
             glob_pattern: /pfs/STATISTICS_PATH/ptb330a/*/*/*/*/stats/**
@@ -40,6 +46,12 @@ input:
   - pfs:
       name: STATISTICS_PATH
       repo: pressureAir_statistics
+      glob: /ptb330a/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
+  - pfs:
+      name: LOCATIONS_PATH
+      repo: pressureAir_locations
       glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
