@@ -1,3 +1,4 @@
+
 ##############################################################################################
 #' @title Unit test of def.wrap.cal.asgn.R, assign the calibration file(s) for a sensor ID to each data day for which each should be used
 
@@ -73,14 +74,14 @@ test_that("Unit test of wrap.cal.asgn.R", {
   testOutputDir = "pfs/out"
   
   # Test scenario 1:: within the valid time range
-  # 10312 does not have "active_periods" pass TypeFile = 'asset'
+  # 17596 does not have "active_periods" pass TypeFile = 'asset'
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/calibration/prt/17596/resistance/')
   fileCal <- base::dir(testInputDir)
   fileCalPath <- base::paste0(testInputDir, fileCal)
   
   # Load in the location json and get the location name to verify the test
   metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = fileCalPath,log = log)
- 
+  
   #==========================================================================================
   # The metadata of test calibration files
   #==========================================================================================
@@ -107,8 +108,10 @@ test_that("Unit test of wrap.cal.asgn.R", {
     TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
     PadDay=base::as.difftime(c(0,0),units='days')
   )
-  
-  testthat::expect_true (dir.exists(testOutputDir))
+  fileCalExpected <- fileCal[2]
+  fileCalInfo <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::paste0(testInputDir, fileCalExpected),log = log)
+  fileCalexpectedPath <- base::paste0(fileCalInfo$file$DATA$MetaData$MaximoID,"/","calibration/resistance/",fileCalExpected)
+  testthat::expect_true (any(file.exists(testOutputDir,fileCalexpectedPath, recursive = TRUE)))
   #
   # Happy path 2: 30000000009997_WO7799_122595.xmland 30000000009997_WO7799_60924.xml
   #               have timeValid with starting pad= 13 days, 30000000009997_WO7799_122595.xml higher ID. 
@@ -122,11 +125,14 @@ test_that("Unit test of wrap.cal.asgn.R", {
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
     TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
-    TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
+    TimeEnd = as.POSIXct('2019-01-30', tz = 'GMT'),
     PadDay=base::as.difftime(c(13,0),units='days')
   )
-  
-  testthat::expect_true (dir.exists(testOutputDir))
+ 
+  fileCalExpected <- fileCal[1]
+  fileCalInfo <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::paste0(testInputDir, fileCalExpected),log = log)
+  fileCalexpectedPath <- base::paste0(fileCalInfo$file$DATA$MetaData$MaximoID,"/","calibration/resistance/",fileCalExpected)
+  testthat::expect_true (any(file.exists(testOutputDir,fileCalexpectedPath, recursive = TRUE)))
   #
-
+  
 })
