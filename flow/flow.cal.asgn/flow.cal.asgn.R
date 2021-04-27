@@ -65,6 +65,14 @@
 #' that are applicable between 2019-01-15 00:00 and 2019-01-17 24:00. To provide both negative and positive pads 
 #' (a window around a given day), separate the values with pipes (e.g. "PadDay=-2|2"). 
 #'
+#' 5. "Arry=value" (optional), where value is either TRUE or FALSE (default) indicating whether the calibration files 
+#' found within each TERM folder should be assigned separately for each stream ID. (Normally there would be a single 
+#' stream ID that corresponds to each TERM, so no checking for streamID is needed). A value of TRUE would be needed 
+#' if the TERM is an array, meaning that calibrations for multiple stream IDs are stored within the same TERM folder 
+#' and should really be treated as separate terms (one for each stream ID). This is relatively rare, but is the case 
+#' for e.g. the tchain source type. The default is FALSE, but there is also really no harm in setting it to TRUE unless 
+#' the stream ID for a SOURCE_ID changes over its lifetime. 
+#' 
 #' Note: This script implements optional parallelization as well as logging (described in 
 #' \code{\link[NEONprocIS.base]{def.log.init}}), both of which use system environment variables if available. 
 
@@ -87,6 +95,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-03-03)
 #     original creation, refactored from flow.cal.filt
+#   Cove Sturtevant (2021-04-15)
+#     add support for array variables/calibrations that utilize multiple stream IDs for the same term
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -119,9 +129,11 @@ Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
     NameParaReqd = c("DirIn", "DirOut","FileYear"),
-    NameParaOptn = c("PadDay"),
-    ValuParaOptn = base::list(PadDay=0),
-    TypePara = base::list(PadDay="integer"),
+    NameParaOptn = c("PadDay","Arry"),
+    ValuParaOptn = base::list(PadDay=0,
+                              Arry=FALSE),
+    TypePara = base::list(PadDay="integer",
+                          Arry="logical"),
     log = log
   )
 
@@ -184,6 +196,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                 TimeBgn=timeBgn,
                 TimeEnd=timeEnd,
                 PadDay=c(timePadBgn,timePadEnd),
+                Arry=Para$Arry,
                 log=log
                 )
 

@@ -38,6 +38,13 @@
 #' that are applicable between 2019-01-13 00:00 and 2019-01-15 24:00. "PadDay=2" will copy in calibration file(s) 
 #' that are applicable between 2019-01-15 00:00 and 2019-01-17 24:00. To provide both negative and positive pads 
 #' (a window around a given day), separate the values with pipes (e.g. "PadDay=-2|2"). 
+#' @param Arry(optional). Logical value indicating whether the calibration files should be assigned separately for 
+#' each stream ID. (Normally there would be a single stream ID corresponding to a given TERM, so no checking for 
+#' multiple stream IDs is needed). A value of TRUE would be needed if the TERM is an array, meaning that calibrations 
+#' for multiple stream IDs are stored within the same TERM folder and should really be treated as separate terms 
+#' (one for each stream ID). This is relatively rare, but is the case for e.g. the tchain source type. The default is 
+#' FALSE, but there is also really no harm in setting it to TRUE unless the stream ID for a SOURCE_ID changes over 
+#' its lifetime.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 #' 
@@ -66,12 +73,15 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-03-04)
 #     original creation
+#   Cove Sturtevant (2021-04-15)
+#     add support for array variables/calibrations that utilize multiple stream IDs for the same term
 ##############################################################################################
 wrap.cal.asgn <- function(DirIn,
                           DirOutBase,
                           TimeBgn,
                           TimeEnd,
                           PadDay=base::as.difftime(c(0,0),units='days'),
+                          Arry=FALSE,
                           log=NULL
                           ){
 
@@ -101,14 +111,21 @@ wrap.cal.asgn <- function(DirIn,
     NEONprocIS.cal::def.cal.meta(fileCal = base::paste0(DirIn, '/', fileCal),
                                  log = log)
   
-  # Determine the calibrations that apply for each time period
-  calSlct <-
-    NEONprocIS.cal::def.cal.slct(
-      metaCal = metaCal,
-      TimeBgn = TimeBgn,
-      TimeEnd = TimeEnd,
-      log = log
-    )
+  # In the case of arrays, there can be multiple stream IDs for the same term name.
+  # We want to treat each stream ID as if it were a separate term 
+  if(Arry==TRUE){
+    metaCal <- base::split(metaCal,metaCal$strm)
+  } else {
+    metaCal <- base::list(metaCal)
+  }
+  
+  # Determine the calibrations that apply for each time period (and each streamID if an array)
+  calSlct <- base::lapply(X=metaCal,
+                          FUN=NEONprocIS.cal::def.cal.slct,
+                          TimeBgn = TimeBgn,
+                          TimeEnd = TimeEnd,
+                          log = log)
+  calSlct <- base::do.call(base::rbind,calSlct) # Recombine into single data frame
   calSlct <- calSlct[!base::is.na(calSlct$file),] # Get rid of periods where no appropriate cal exists
   
   # Move on if no calibrations apply during the time interval
