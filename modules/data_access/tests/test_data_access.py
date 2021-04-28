@@ -25,7 +25,7 @@ class DataAccessTest(unittest.TestCase):
 
     def setUp(self):
         # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
-        self.db_url = os.getenv('PG_DATABASE_URL')
+        self.db_url = os.getenv('DATABASE_URL')
         self.connection = connect(self.db_url)
         self.named_location_id = 31720
 
@@ -75,6 +75,7 @@ class DataAccessTest(unittest.TestCase):
         print(f'prop: {prop}')
         self.assertTrue(prop.name == 'Required Asset Management Location ID')
         self.assertTrue(prop.value == 1834)
+        self.assertTrue(type(prop.value) == int)
 
     def test_get_named_location_schema_name(self):
         named_location_id = 158818
