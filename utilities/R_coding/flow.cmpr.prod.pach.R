@@ -22,8 +22,12 @@ log <- NULL
 
 # ------------------------------- RUN SCRIPT -------------------------------- #
 
-# Set the S3 bucket read creds: Note that this requires adding write creds to your ~/.profile file.
-def.set.s3.env(bucket = "prod-is-transition-output",AWS_ACCESS_KEY_ID = 'prod-is-reader', AWS_DEFAULT_REGION = "s3.data",AWS_S3_ENDPOINT = "neonscience.org",scrtTitl = "AWS_PROD_TRANS_SECRET=")
+# Set the S3 bucket read creds: Note that this requires adding read creds to your ~/.profile file.
+def.set.s3.env(bucket = "prod-is-transition-output",
+               AWS_ACCESS_KEY_ID = 'prod-is-reader',
+               AWS_DEFAULT_REGION = "s3.data",
+               AWS_S3_ENDPOINT = "neonscience.org",
+               scrtTitl = "AWS_PROD_TRANS_SECRET=")
 
 def.download.data(pachydermrepo = pachydermrepo,
                   subDir = subDir,
@@ -41,5 +45,4 @@ def.download.data(pachydermrepo = pachydermrepo,
 print("Inspect the following: ")
 list.files(outputfilepath,recursive = TRUE)
 
-def.data.comp(avroFile = )
 
