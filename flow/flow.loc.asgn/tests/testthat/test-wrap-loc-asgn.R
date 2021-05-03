@@ -188,7 +188,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   # Test scenario 7:: no files in the input dir
   
-  testInputDir <- base::paste0(wk_dir, '/', 'pfs/locations_nofiles')
+  testInputDir <- base::paste0(wk_dir, '/', 'pfs/locations_nofiles/prt/10312/')
   returnedOutputDir <- wrap.loc.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
