@@ -8,7 +8,6 @@ transform:
   - "/flow.stat.basc.R"
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
-  - FileSchmStat=$FILE_SCHEMA_STATS
   - WndwAgr=030
   - TermStat1=depth0WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)
   - TermStat2=depth1WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)
@@ -33,16 +32,10 @@ resource_requests:
 input:
   cross:
   - pfs:
-  #pfs:
       name: DIR_IN
       repo: tempSpecificDepthLakes_statistics_uncertainty_group
       branch: master
       glob: "/tchain/*/*/*"
-  - pfs:
-      name: FILE_SCHEMA_STATS
-      repo: avro_schemas
-      branch: master
-      glob: "/dp01/tempSpecificDepthLakes_dp01_stats.avsc"
 cache_size: 64M
 max_queue_size: '1'
 salt: 1a066393a052492e9bed6fb2970742a9
