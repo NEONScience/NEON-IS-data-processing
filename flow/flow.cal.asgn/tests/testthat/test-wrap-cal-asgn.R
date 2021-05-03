@@ -61,6 +61,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2021-04-22)
 #     Original Creation
+#   Mija Choi (2021-05-03)
+#     Added ARRY=TRUE testing
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of wrap.cal.asgn.R\n")
