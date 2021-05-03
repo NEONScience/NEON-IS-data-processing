@@ -66,6 +66,9 @@
 #     change an input param, varUcrt, from names(data)[1] to "dew_point"
 #     modify the comments of data under examples above  
 #     by adding readout_time, adding dew_point and removing dew_pont at the end
+#   Edward Ayres (2021-04-29)
+#     Added partial uncertainty of individual dew/frost point temperature measurements with respect to ambient 
+#     temperature and relative humidity for Level 1 Mean uncertainty calculations
 ##############################################################################################
 def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)),
                                          infoCal = NULL,
@@ -93,7 +96,7 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   
   # Initialize output data frame
   dataUcrt <- data[[varUcrt]] # Target variable to compute uncertainty for
-  ucrt <- base::data.frame(ucrtMeas = NA * dataUcrt)
+  ucrt <- base::data.frame(ucrtMeas = NA * dataUcrt, ucrt_dfpt_t_L1 = NA * dataUcrt, ucrt_dfpt_rh_L1 = NA * dataUcrt)
   
   # Specify constants based on relative humidity ATBD
   absZero <- -273.15 # (degrees C)
@@ -286,6 +289,27 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
       
       # Calculate the combined uncertainty for each dew/frost point measurement
       ucrt$ucrtMeas[setCal] <- sqrt((ucrt_dfpt_t^2)+(ucrt_dfpt_rh^2))
+      
+      
+      
+
+      # Get the uncertainty coefficients for temperature and relative humidity that are needed to calculate the uncertainty of the L1 Mean data product
+      ucrtCoefTempUa3 <- infoCalTemp$ucrt[infoCalTemp$ucrt$Name == 'U_CVALA3',]
+      ucrtCoefRhUa3 <- infoCalRh$ucrt[infoCalRh$ucrt$Name == 'U_CVALA3',]
+      
+      # Issue warning if more than one matching uncertainty coefficient was found
+      if(base::nrow(ucrtCoefTempUa3) > 1){
+        log$warn("More than one matching uncertainty coefficient was found for temperature U_CVALA3. Using the first.")
+      }
+      if(base::nrow(ucrtCoefRhUa3) > 1){
+        log$warn("More than one matching uncertainty coefficient was found for relative humidity U_CVALA3. Using the first.")
+      }
+      
+      # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient temperature for Level 1 Mean uncertainty calculations
+      ucrt$ucrt_dfpt_t_L1[setCal] <- abs(data$derivative_dfpt_t[setCal])*base::as.numeric(ucrtCoefTempUa3$Value[1])
+      
+      # Calculate partial uncertainty (degrees C) of individual dew/frost point temperature measurements with respect to ambient relative humidity for Level 1 Mean uncertainty calculations
+      ucrt$ucrt_dfpt_rh_L1[setCal] <- abs(4719.72/(data$relative_humidity[setCal]*(log10(data$saturation_vapor_pressure[setCal]*data$relative_humidity[setCal])-30.605)^2 ))*base::as.numeric(ucrtCoefRhUa3$Value[1])
       
       
     } # End loop around RH calibration files
