@@ -110,7 +110,8 @@ test_that("Unit test of wrap.cal.asgn.R", {
     DirOutBase = testOutputDir,
     TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
     TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
-    PadDay=base::as.difftime(c(0,0),units='days')
+    PadDay=base::as.difftime(c(0,0),units='days'),
+    Arry=FALSE
   )
   fileCalExpected <- fileCal[2]
   fileCalInfo <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::paste0(testInputDir, fileCalExpected),log = log)
