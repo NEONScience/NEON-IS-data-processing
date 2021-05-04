@@ -30,12 +30,11 @@ output_branch: master
 resource_requests:
   memory: 200Mi
 input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: tempSpecificDepthLakes_statistics_uncertainty_group
-      branch: master
-      glob: "/tchain/*/*/*"
+  pfs:
+    name: DIR_IN
+    repo: tempSpecificDepthLakes_statistics_uncertainty_group
+    branch: master
+    glob: "/tchain/*/*/*"
 cache_size: 64M
 max_queue_size: '1'
 salt: 1a066393a052492e9bed6fb2970742a9
