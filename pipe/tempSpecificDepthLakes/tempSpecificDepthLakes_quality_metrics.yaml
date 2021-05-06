@@ -31,7 +31,6 @@ transform:
 input:
   cross:
   - pfs:
- #pfs:
       name: DIR_IN
       repo: tempSpecificDepthLakes_qaqc_flags_group
       glob: "/tchain/*/*/*"
