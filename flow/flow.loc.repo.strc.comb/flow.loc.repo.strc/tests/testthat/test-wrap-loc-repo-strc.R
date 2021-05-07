@@ -126,7 +126,4 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   testOutputDirSourceIdLoc <- base::paste0(testOutputDirPath, "/", nameLoc, "/location")
   expect_true (dir.exists(testOutputDirSourceIdLoc))
   
-  if (dir.exists(testOutputDir))  {
-    unlink(testOutputDir, recursive = TRUE)
-  }
 })
