@@ -107,6 +107,9 @@ library(doParallel)
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.loc.repo.strc.R")
 
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly=TRUE)
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
 
@@ -120,9 +123,6 @@ if(numCoreUse > numCoreAvail){
   numCoreUse <- numCoreAvail
 }
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
-
-# Pull in command line arguments (parameters)
-arg <- base::commandArgs(trailingOnly=TRUE)
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg=arg,
