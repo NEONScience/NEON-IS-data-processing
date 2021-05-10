@@ -10,9 +10,11 @@
       "DirOut=/pfs/out",
       "FileSchmStat=$FILE_SCHEMA_STATS",
       "WndwAgr=001|030",
-      "TermStat1=temp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)"
+      "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)",
+      "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)",
+      "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
       ],
-    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.13",
+    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.17",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -39,7 +41,7 @@
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
     "memory": "200Mi",
