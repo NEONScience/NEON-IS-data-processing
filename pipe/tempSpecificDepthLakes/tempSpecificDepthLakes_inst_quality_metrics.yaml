@@ -11,48 +11,26 @@ transform:
   - VarTimeBgn=timeWndwBgn
   - VarTimeEnd=timeWndwEnd
 
-  - GrpQfAlph1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF
-  - GrpQfBeta1=depth0WaterTemp:depth0WaterTempRangeQF|depth0WaterTempStepQF
   - QfForc1=depth0WaterTempNullQF:1:depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempValidCalQF|depth0WaterTempSpikeQF:-1
 
-  - GrpQfAlph2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF
-  - GrpQfBeta2=depth1WaterTemp:depth1WaterTempRangeQF|depth1WaterTempStepQF
   - QfForc2=depth1WaterTempNullQF:1:depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempValidCalQF|depth1WaterTempSpikeQF:-1
   
-  - GrpQfAlph3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF
-  - GrpQfBeta3=depth2WaterTemp:depth2WaterTempRangeQF|depth2WaterTempStepQF
   - QfForc3=depth2WaterTempNullQF:1:depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempValidCalQF|depth2WaterTempSpikeQF:-1
   
-  - GrpQfAlph4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF
-  - GrpQfBeta4=depth3WaterTemp:depth3WaterTempRangeQF|depth3WaterTempStepQF
   - QfForc4=depth3WaterTempNullQF:1:depth3WaterTempRangeQF|depth3WaterTempStepQF|depth3WaterTempValidCalQF|depth3WaterTempSpikeQF:-1
   
-  - GrpQfAlph5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF
-  - GrpQfBeta5=depth4WaterTemp:depth4WaterTempRangeQF|depth4WaterTempStepQF
   - QfForc5=depth4WaterTempNullQF:1:depth4WaterTempRangeQF|depth4WaterTempStepQF|depth4WaterTempValidCalQF|depth4WaterTempSpikeQF:-1
   
-  - GrpQfAlph6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF
-  - GrpQfBeta6=depth5WaterTemp:depth5WaterTempRangeQF|depth5WaterTempStepQF
   - QfForc6=depth5WaterTempNullQF:1:depth5WaterTempRangeQF|depth5WaterTempStepQF|depth5WaterTempValidCalQF|depth5WaterTempSpikeQF:-1
   
-  - GrpQfAlph7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF
-  - GrpQfBeta7=depth6WaterTemp:depth6WaterTempRangeQF|depth6WaterTempStepQF
   - QfForc7=depth6WaterTempNullQF:1:depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempValidCalQF|depth6WaterTempSpikeQF:-1
   
-  - GrpQfAlph8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF
-  - GrpQfBeta8=depth7WaterTemp:depth7WaterTempRangeQF|depth7WaterTempStepQF
   - QfForc8=depth7WaterTempNullQF:1:depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempValidCalQF|depth7WaterTempSpikeQF:-1
   
-  - GrpQfAlph9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF
-  - GrpQfBeta9=depth8WaterTemp:depth8WaterTempRangeQF|depth8WaterTempStepQF
   - QfForc9=depth8WaterTempNullQF:1:depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempValidCalQF|depth8WaterTempSpikeQF:-1
   
-  - GrpQfAlph10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF
-  - GrpQfBeta10=depth9WaterTemp:depth9WaterTempRangeQF|depth9WaterTempStepQF
   - QfForc10=depth9WaterTempNullQF:1:depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempValidCalQF|depth9WaterTempSpikeQF:-1
   
-  - GrpQfAlph11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF
-  - GrpQfBeta11=depth10WaterTemp:depth10WaterTempRangeQF|depth10WaterTempStepQF
   - QfForc11=depth10WaterTempNullQF:1:depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempValidCalQF|depth10WaterTempSpikeQF:-1
   
   image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.5
