@@ -16,7 +16,7 @@ setwd("./tests/testthat/")
 testthat::context("\n  Unit test of def.find.mtch.str.best.R\n")
 
 
-test_that("Unit test of wrap.loc.repo.strc.R", {
+test_that("Unit test of def.find.mtch.str.best.R", {
   source('../../def.find.mtch.str.best.R')
   # Test all good
   obj <- base::c("depth1tsdWaterTempMean", "depth2tsdWaterTempMean","depth9tsdWaterTempMean","depth10tsdWaterTempMean","depth11tsdWaterTempMean",

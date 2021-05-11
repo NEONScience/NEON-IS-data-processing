@@ -1,12 +1,7 @@
 #' @title Unit test for def.schm.avro.pars.map.R called in wrap.file.comb.tsdl.splt
 #' @author Guy Litt
-#' @description 
 #' @seealso flow.tsdl.comb.splt
 
-
-
-
-# unit test Flow scripts
 # changelog and author contributions / copyrights
 #   Guy Litt (2021-04-09)
 #     Original Creation
@@ -19,7 +14,7 @@ setwd("./tests/testthat/")
 testthat::context("\n  Unit test of def.schm.avro.pars.map.R\n")
 
 
-test_that("Unit test of wrap.loc.repo.strc.R", {
+test_that("Unit test of def.schm.avro.pars.map.R", {
   source('../../def.schm.avro.pars.map.R')
   
   Para <- base::list()

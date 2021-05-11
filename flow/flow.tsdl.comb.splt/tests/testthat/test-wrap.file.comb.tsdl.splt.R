@@ -1,6 +1,6 @@
 #' @title Unit test for wrap.file.comb.tsdl.splt called in flow.tsdl.comb.splt
 #' @author Guy Litt
-#' @description 
+#' @description Unit tests for wrap.file.comb.tsdl.splt
 #' @seealso flow.tsdl.comb.splt
 
 # unit test Flow scripts
@@ -19,7 +19,7 @@ testthat::context("\n  Unit test of wrap.file.comb.tsdl.splt.R\n")
 # TODO consider calling a pachyderm data pull/refresh to detect format change?
 
 # Unit test of wrap.loc.repo.strc.R
-test_that("Unit test of wrap.loc.repo.strc.R", {
+test_that("Unit test of wrap.file.comb.tsdl.splt.R", {
   source('../../wrap.file.comb.tsdl.splt.R')
   source('../../def.schm.avro.pars.map.R')
   source('../../wrap.schm.map.char.gsub.R')
@@ -183,88 +183,3 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
 
   
 })
-
-
-# 
-# 
-# test_that("wrong file format",
-#           {
-#             file <- c('wrap.file.comb.tsdl.splt/validFiles/testdata.txt', 'wrap.file.comb.tsdl.splt/validFiles/testflagsdata.parquet')
-#             
-#             returnedData <- try(wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time'),
-#                                 silent = TRUE)
-#             
-#             testthat::expect_true((class(returnedData)[1] == "try-error"))
-#             
-#           })
-# 
-# test_that("duplicate columns in the input files",
-#           {
-#             file <- c('wrap.file.comb.tsdl.splt/invalidFiles/testdata.parquet', 'wrap.file.comb.tsdl.splt/invalidFiles/testflagsdatadup.parquet')
-#             
-#             returnedData <- wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time')
-#             
-#             expect_true (length(returnedData) == 6)
-#             testthat::expect_true(is.list(returnedData))
-#             if (!(length(returnedData) == 0)) {
-#               testthat::expect_true (returnedData$source_id[2] == '16247')
-#               testthat::equals (returnedData$temp[5], 0.007209014)
-#               testthat::equals (returnedData$validCalQF[1], 0)
-#               #testthat::expect_null(returnedData$time[1])
-#             }
-#             
-#           })
-# 
-
-
-# 
-# # ########################################################################################################################
-# # ########################################################################################################################
-# # ########################################################################################################################
-# test_that("valid files to merge",
-#           {
-#             file <- c('wrap.file.comb.tsdl.splt/validFiles/testdata.parquet', 'wrap.file.comb.tsdl.splt/validFiles/testflagsdata.parquet')
-#            
-#             returnedData <- wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time')
-#             
-#             expect_true (length(returnedData) == 6)
-#             testthat::expect_true(is.list(returnedData))
-#             if (!(length(returnedData) == 0)) {
-#               testthat::expect_true (returnedData$source_id[2] == '16247')
-#               testthat::equals (returnedData$temp[5], 0.007209014)
-#               testthat::equals (returnedData$validCalQF[1], 0)
-#               #testthat::expect_null(returnedData$time[1])
-#             }
-#             
-#           })
-# 
-# test_that("wrong file format",
-#           {
-#             file <- c('wrap.file.comb.tsdl.splt/validFiles/testdata.txt', 'wrap.file.comb.tsdl.splt/validFiles/testflagsdata.parquet')
-#             
-#             returnedData <- try(wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time'),
-#                                 silent = TRUE)
-#             
-#             testthat::expect_true((class(returnedData)[1] == "try-error"))
-#             
-#           })
-# 
-# test_that("duplicate columns in the input files",
-#           {
-#             file <- c('wrap.file.comb.tsdl.splt/invalidFiles/testdata.parquet', 'wrap.file.comb.tsdl.splt/invalidFiles/testflagsdatadup.parquet')
-#             
-#             returnedData <- wrap.file.comb.tsdl.splt(file = file, nameVarTime='readout_time')
-#             
-#             expect_true (length(returnedData) == 6)
-#             testthat::expect_true(is.list(returnedData))
-#             if (!(length(returnedData) == 0)) {
-#               testthat::expect_true (returnedData$source_id[2] == '16247')
-#               testthat::equals (returnedData$temp[5], 0.007209014)
-#               testthat::equals (returnedData$validCalQF[1], 0)
-#               #testthat::expect_null(returnedData$time[1])
-#             }
-#             
-#           })
-# 
-
-
