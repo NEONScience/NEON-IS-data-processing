@@ -1,9 +1,9 @@
 ---
 pipeline:
-  name: relHumidity_pre_statistics_group
+  name: relHumidity_threshold_regularized_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:6
+  image: quay.io/battelleecology/filter_joiner:9
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -15,43 +15,31 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: QAQC_PATH
+            name: REGULARIZED_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PATH/hmp155/*/*/*/*/data/**
+            glob_pattern: /pfs/REGULARIZED_PATH/hmp155/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
-            name: UNCERTAINTY_COEF_PATH
+            name: THRESHOLD_PATH
             # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/hmp155/*/*/*/*/uncertainty_coef/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
-        - path:
-            name: UNCERTAINTY_DATA_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_DATA_PATH/hmp155/*/*/*/*/uncertainty_data/**
+            glob_pattern: /pfs/THRESHOLD_PATH/hmp155/*/*/*/*/**
             # Join on named location (already joined below by day
             join_indices: [7]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
 input:
   join:
   - pfs:
-      name: QAQC_PATH
-      repo: relHumidity_qaqc_plausibility
+      name: REGULARIZED_PATH
+      repo: relHumidity_regularized_data
       glob: /hmp155/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
-      name: UNCERTAINTY_COEF_PATH
-      repo: hmp155_date_gap_filler_linker
-      glob: /hmp155/(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: true
-  - pfs:
-      name: UNCERTAINTY_DATA_PATH
-      repo: relHumidity_regularized_uncertainty_data
+      name: THRESHOLD_PATH
+      repo: relHumidity_threshold_select
       glob: /hmp155/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
