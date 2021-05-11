@@ -16,8 +16,9 @@
 #'      Create output directories and copy (by symbolic link) unmodified components
 #'      Read in and combine location, stats, and quality metrics files for each input datum
 #'      Rename 
-#'      Organize data as a list of time variable, list of HOR.VER locations, data.frame
-#'      Write out the combined data file for each time variable and HOR.VER location
+#'      Organize data as a list of time variable(interval), sub-list of HOR.VER locations each containing
+#'      a data.frame object. Thus each data.frame represents a unique time interval and depth combination.
+#'      Write out the combined data file for each time variable and HOR.VER (depth) location
 #'
 #' This script is run at the command line with the following arguments. Each argument must be a string
 #' in the format "Para=value", where "Para" is the intended parameter name and "value" is the value of
@@ -36,8 +37,7 @@
 #' structure which indicates the 4-digit year, 2-digit month, and 2-digit day of the data contained
 #' in the folder.
 #'
-#' For example:
-#' 1. "DirIn=value", where DirIn is the Input path = /pfs/proc_group/tchain/2019/01/01
+#' For example: "DirIn=value", where DirIn is the Input path = /pfs/proc_group/tchain/2019/01/01
 #'
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
 #' of DirIn.
@@ -51,7 +51,6 @@
 #'
 #' 5. "FileSchmMapDepth=value", where value is the file path to the schema that maps named location depths
 #'  to data's depth column naming convention.
-#'
 #'
 #' 6. "FileSchmMapCols=value" (optional), where value is the file path to the schema that maps existing
 #' strings in data column names to substitute values. (e.g. WaterTemp becomes tsdWaterTemp). 
@@ -97,34 +96,9 @@
 # changelog and author contributions / copyrights
 #   Guy Litt (2021-04-13)
 #     original creation/adapted from flow.data.comb.ts.R by CS
+#   Guy Litt (2021-05-11)
+#     update documentation
 
-
-# setwd("~/R/NEON-IS-data-processing-glitt/flow/flow.tsdl.comb.splt/")
-# Para <- base::list(DirIn = "~/pfs/tempSpecificDepthLakes_level1_group/tchain/2019/01/10/",
-#                                       DirOut = "~/pfs/tsdl_comb_long/",
-#                                       NameDirCombOut = "",
-#                                       NameVarTime = c("001","030"),
-#                                       MrgeCols =  c("startDateTime", "endDateTime"),
-#                                       LocDir = "location",
-#                                       StatDir = "stats",
-#                                       QmDir = "quality_metrics",
-#                                       FileSchmMapDepth = "./tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc",
-#                                       FileSchmMapCols = "./tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc",
-#                                       NameFileSufxRm = c("basicStats","qualityMetrics") )
-
-# XTODO Rename column names in dp01/tempSpecificDepthLakes_stats_instantaneous.avsc to jive w/ pub wb:
-# X 1. _UcrtExpn should be ExpUncert
-# X 2. WaterTemp should be tsdWaterTemp
-# X 3. Where does the extra QF come from for the QMs?
-# TODO remove tsdWaterTempAlphaQF and tsdWaterTempBetaQF from instantaneous 001 data?
-
-# FROM wrap.file.comb.tsdl.splt:
-# TODO add SuspectCal to pub wb?
-# TODO remove ConsistencyFail/Pass/NAQM from pub wb?
-# X TODO add tsdWaterTempFinalQFSciRvw to dataset? -> NOT YET
-# TODO depth11 doesn't exist yet for Mean/Minimum/Maximum/Variance stats (probably changes once CVAL files change)
-# TODO add a colsKeep term or schema??
-# TODO are mixes of NaN and NA allowed? E.g. depth0WaterTempMean=NaN, depth0WaterTempMinimum=NA
 ##############################################################################################
 library(dplyr)
 library(data.table)
