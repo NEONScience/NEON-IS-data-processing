@@ -132,16 +132,17 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   #                                                         data/
   # for example, /pfs/out/prt_moreThanOneFile/2019/01/01/CFGLOC100241/3119/location/ & 
   #                                                       /data/
-  testInputDir <- base::paste0(wk_dir, '/', 'pfs/proc_group/prt_moreThanOneFile/2019/01/01/3119')
+  testInputDir <- base::paste0(wk_dir, '/', 'pfs/proc_group/prt_moreThanOneFile/2019/01/01/16247')
   dirInLoc <- base::paste0(testInputDir, '/location')
   fileLoc <- base::dir(dirInLoc)
-  numFileLoc <- base::length(fileLoc)
-  
+  dirInData <- base::paste0(testInputDir, '/data')
+  fileData <- base::dir(dirInData)
+
   # Load in the location json and get the location name to verify the test
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(dirInLoc, '/', fileLoc[1]))
   nameLoc <- loc$name
   sourceId <- loc$source_id
-  
+
   testOutputDir = "pfs/out"
   testOutputDirPath <- base::paste0(testOutputDir, "/","prt_moreThanOneFile/", installdate, collapse = '/')
   # Remove the test output dirs and file recursively
