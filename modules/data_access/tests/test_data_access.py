@@ -25,7 +25,9 @@ class DataAccessTest(unittest.TestCase):
 
     def setUp(self):
         # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
-        self.db_url = os.getenv('DATABASE_URL')
+        self.db_url = os.getenv('DATABASE_URL1')
+        if self.db_url is None:
+            raise unittest.SkipTest('DATABASE_URL environment variable not set, skipping tests.')
         self.connection = connect(self.db_url)
         self.named_location_id = 31720
 
