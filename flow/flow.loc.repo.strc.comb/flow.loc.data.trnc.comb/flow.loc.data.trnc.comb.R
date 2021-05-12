@@ -105,10 +105,18 @@
 #     based on file names is now attempted, truncating and/or merging done within each group
 #   Cove Sturtevant (2021-03-03)
 #     Applied internal parallelization
+#   Cove Sturtevant (2021-05-10)
+#     moved main functionality into wrapper function
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
 library(doParallel)
+
+# Source the wrapper function. Assume it is in the working directory
+source("./wrap.loc.data.trnc.comb.R")
+
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly=TRUE)
 
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -124,12 +132,11 @@ if(numCoreUse > numCoreAvail){
 }
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
-# Pull in command line arguments (parameters)
-arg <- base::commandArgs(trailingOnly=TRUE)
-
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut"),
-                                      NameParaOptn=c("DirSubCombData","DirSubCombUcrt","DirSubCopy"),log=log)
+Para <- NEONprocIS.base::def.arg.pars(arg=arg,
+                                      NameParaReqd=c("DirIn","DirOut"),
+                                      NameParaOptn=c("DirSubCombData","DirSubCombUcrt","DirSubCopy"),
+                                      log=log)
 
 # Retrieve datum path. 
 DirBgn <- Para$DirIn # Input directory. 
@@ -164,246 +171,12 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
-  # Gather info about the input directory and formulate the parent output directory
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
-  nameLoc <- utils::tail(InfoDirIn$dirSplt,1) # Location identifier
-  idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
-  
-  # Copy with a symbolic link the desired subfolders we aren't modifying
-  if(base::length(DirSubCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
-  }  
-  
-  # Get a list of location files
-  idxDirInLoc <- base::paste0(idxDirIn,'/location')
-  fileLoc <- base::dir(idxDirInLoc)
+  wrap.loc.data.trnc.comb(DirIn=idxDirIn,
+                          DirOutBase=DirOut,
+                          DirSubCombData=DirSubCombData,
+                          DirSubCombUcrt=DirSubCombUcrt,
+                          DirSubCopy=DirSubCopy,
+                          log=log)
 
-  # Pull all source IDs installed at this location for this day from the location files 
-  locMeta <- base::do.call(base::rbind,base::lapply(base::paste0(idxDirInLoc,'/',fileLoc), 
-                                                    NEONprocIS.base::def.loc.meta,
-                                                    TimeBgn=InfoDirIn$time,
-                                                    TimeEnd=InfoDirIn$time+as.difftime(1,units='days'),
-                                                    log=log))
-  idSrc <- base::unique(locMeta$source_id)
   
-  # For each data directory, truncate/merge the data within based on its installation period at the specified named location
-  for (idxDirSubCombData in DirSubCombData){
-    
-    # Create the output directory
-    base::suppressWarnings(base::dir.create( base::paste0(idxDirOut,'/',idxDirSubCombData),recursive=TRUE))
-
-    # Get a file listing
-    fileData <- base::dir(base::paste0(idxDirIn,'/',idxDirSubCombData))
-    
-    
-    # Parse the names of the files to form groupings of files to be merged. Files that should be merged will have 
-    # the same name except for the source ID. 
-    fileDataNoSrc <- fileData
-    for(idxIdSrc in idSrc){
-        fileDataNoSrc <- base::sub(pattern=idxIdSrc,replacement='SOURCEID',x=fileDataNoSrc)
-    }
-    grpFileData <- base::unique(fileDataNoSrc)
-    grpFileData <- lapply(grpFileData,FUN=function(idxGrpFileData){
-      return(fileData[fileDataNoSrc==idxGrpFileData])
-    })
-    
-    # Do a quick check: are any groups empty? Something went wrong so let's assume there are no groups
-    numFileGrp <- base::unlist(base::lapply(grpFileData,base::length))
-    if(base::any(numFileGrp == 0)){
-      grpFileData <- list(grp=fileData)
-    }
-    
-    # Go through each group of similar files
-    for(idxGrp in base::seq_len(base::length(grpFileData))){
-      
-      dataOut <- NULL # Initialize output
-      
-      # Go through each sensor file, grabbing data installed at the location
-      for(idxFileData in grpFileData[[idxGrp]]){
-        
-        nameFileData <- base::paste0(idxDirIn,'/',idxDirSubCombData,'/',idxFileData) # Full path to file
-        
-        # Determine its source id
-        idSrcIdx <- idSrc[base::unlist(base::lapply(idSrc,base::grepl,x=idxFileData,fixed=TRUE))] # source id
-        if(base::length(idSrcIdx) != 1){
-          # Generate error and stop execution
-          log$error(base::paste0('Cannot unambiguously determine source id and matching location info for file name: ', nameFileData)) 
-          stop()
-        }
-        
-        # Open the data file
-        data  <- base::try(NEONprocIS.base::def.read.parq(NameFile=nameFileData,log=log),silent=FALSE)
-        if(base::any(base::class(data) == 'try-error')){
-          # Generate error and stop execution
-          log$error(base::paste0('File: ', nameFileData, ' is unreadable.')) 
-          stop()
-        }
-        
-        # If we haven't saved any data. Initialize columns
-        if(base::is.null(dataOut)){
-          dataOut <- data[base::numeric(0),]
-        }
-        
-        # Pull the location metadata for this sensor & location
-        loc <- locMeta[locMeta$source_id==idSrcIdx & locMeta$name==nameLoc,]
-        
-        # Find the location id in the locations file
-        numLoc <- base::nrow(loc)
-        if(numLoc == 0){
-          log$warn(base::paste0('No matching location information for location',nameLoc,' and source id ',
-                                idSrcIdx, ' was found in the location files ', 
-                                ' as part of processing data file: ',nameFileData,
-                                ' . This should not happen. You should investigate...'))
-          next()
-        }
-        
-        # For each install and removal at this location, mark the data to pull over to the output
-        setData <- base::numeric(0)
-        for (idxLoc in base::seq_len(numLoc)){
-          if(base::is.na(loc$remove_date[idxLoc])){
-            setData <- c(setData,base::which(data$readout_time >= loc$install_date[idxLoc]))
-          } else {
-            setData <- c(setData,base::which(data$readout_time >= loc$install_date[idxLoc] & 
-                                               data$readout_time < loc$remove_date[idxLoc]))
-          }
-        }
-        setData <- base::unique(setData)
-        
-        # Put data applicable to this named location into the output
-        dataOut <- base::rbind(dataOut,data[setData,])
-        
-      } # End loop around sensor files
-      
-      # Sort the output by date and write the output
-      if(!base::is.null(dataOut)){
-        dataOut <- dataOut[base::order(dataOut$readout_time),]
-        
-        # Replace the source id in the file name with the location id
-        fileDataOut <- base::sub(pattern=idSrcIdx,replacement=nameLoc,x=idxFileData)
-        nameFileDataOut <- base::paste0(idxDirOut,'/',idxDirSubCombData,'/',fileDataOut) # Full path to output file
-        
-        # Write the data
-        rptDataOut <- base::try(NEONprocIS.base::def.wrte.parq(data=dataOut,NameFile=nameFileDataOut,log=log),silent=TRUE)
-        if(base::any(base::class(rptDataOut) == 'try-error')){
-          log$error(base::paste0('Cannot write Truncated/merged file ', nameFileDataOut,'. ',attr(rptDataOut,"condition"))) 
-          stop()
-        } else {
-          log$info(base::paste0('Truncated/merged timeseries data (by location) written successfully in ',nameFileDataOut))
-        }
-      }
-      
-    } # End loop around file groups
-    
-    
-  } # End loop around data directories
-  
-    
-  # For each uncertainty directory, truncate/merge the data within based on its installation period at the specified named location
-  for (idxDirSubCombUcrt in DirSubCombUcrt){
-    
-    # Get a file listing
-    fileUcrt <- base::dir(base::paste0(idxDirIn,'/',idxDirSubCombUcrt))
-    
-    # Create the output directory
-    base::suppressWarnings(base::dir.create( base::paste0(idxDirOut,'/',idxDirSubCombUcrt),recursive=TRUE))
-    
-    ucrtOut <- NULL # Initialize output
-    
-    # Go through each sensor file, adjusting the start/end dates to match the time period it was installed at the location
-    for(idxFileUcrt in fileUcrt){
-      
-      nameFileUcrt <- base::paste0(idxDirIn,'/',idxDirSubCombUcrt,'/',idxFileUcrt) # Full path to file
-      
-      # Determine its source id and find its matching location file
-      idSrcIdx <- idSrc[base::unlist(base::lapply(idSrc,base::grepl,x=idxFileUcrt,fixed=TRUE))] # source id
-      if(base::length(idSrcIdx) != 1){
-        # Generate error and stop execution
-        log$error(base::paste0('Cannot unambiguously determine source id and matching location info for file name: ', nameFileUcrt))
-        stop()
-      }
-      
-      # Open the uncertainty file
-      ucrt  <- base::try(rjson::fromJSON(file=nameFileUcrt,simplify=TRUE),silent=FALSE)
-      if(base::class(ucrt) == 'try-error'){
-        # Generate error and stop execution
-        log$error(base::paste0('File: ', nameFileUcrt, ' is unreadable.')) 
-        stop()
-      }
-      
-      # If we haven't saved any data, initialize uncertainty output
-      if(base::is.null(ucrtOut)){
-        ucrtOut <- base::list()
-      }
-      
-      # Pull the location metadata for this sensor & location
-      loc <- locMeta[locMeta$source_id==idSrcIdx & locMeta$name==nameLoc,]
-      
-      # Find the location id in the locations file
-      numLoc <- base::nrow(loc)
-      if(numLoc == 0){
-        log$warn(base::paste0('No matching location information for location',nameLoc,' and source id ',
-                              idSrcIdx, ' was found in the location files ', 
-                              ' as part of processing data file: ',nameFileUcrt,
-                              ' . This should not happen. You should investigate...'))
-        next()
-      }
-      
-      # For each install and removal at this location, find the matching uncertainty info, adjust dates as needed, and save to the output
-      for (idxLoc in base::seq_len(numLoc)){
-        ucrtIdxLoc <- base::lapply(ucrt,FUN=function(idxUcrt){
-          # Turn uncertainty dates to POSIX
-          timeUcrtBgn <- base::strptime(x=idxUcrt$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
-          timeUcrtEnd <- base::strptime(x=idxUcrt$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
-          
-          # Does this uncertainty application period overlap with this install period
-          NaTimeLocEnd <- base::is.na(loc$remove_date[idxLoc]) # Is the remove date NA?
-          if(loc$install_date[idxLoc] < timeUcrtEnd && (NaTimeLocEnd || loc$remove_date[idxLoc] > timeUcrtBgn)){
-            # It does, so do we need to truncate the uncertainty application period to match the install period?
-            if(timeUcrtBgn < loc$install_date[idxLoc]){
-              # Bump up uncertainty start date to match install date
-              idxUcrt$start_date <- base::format(loc$install_date[idxLoc],format='%Y-%m-%dT%H:%M:%OSZ')
-            }
-            if(!base::is.na(loc$remove_date[idxLoc]) && timeUcrtEnd > loc$remove_date[idxLoc]){
-              # Truncate uncertainty end date to match remove date
-              idxUcrt$end_date <- base::format(loc$remove_date[idxLoc],format='%Y-%m-%dT%H:%M:%OSZ')
-            }
-            return(idxUcrt)
-          } else {
-            return(NULL)
-          }
-        })
-        
-        # Get rid of NULL entries
-        ucrtIdxLoc <- ucrtIdxLoc[base::unlist(base::lapply(ucrtIdxLoc,FUN=function(idx){!base::is.null(idx)}))]
-        
-        # Append remaining/updated entries to output list
-        numUcrtAdd <- base::length(ucrtIdxLoc)
-        if(numUcrtAdd > 0){
-          numUcrtOut <- base::length(ucrtOut)
-          ucrtOut[(numUcrtOut+1):(numUcrtOut+numUcrtAdd)] <- ucrtIdxLoc
-        }
-      } # End loop around install/removal dates for this sensor at this location
-
-    } # End loop around sensor files
-    
-    # Write the output
-    if(!base::is.null(ucrtOut)){
-
-      # Replace the source id in the file name with the location id
-      fileUcrtOut <- base::sub(pattern=idSrcIdx,replacement=nameLoc,x=idxFileUcrt)
-      nameFileUcrtOut <- base::paste0(idxDirOut,'/',idxDirSubCombUcrt,'/',fileUcrtOut) # Full path to output file
-      
-      # Write
-      rptUcrt <- base::try(base::write(rjson::toJSON(ucrtOut,indent=3),file=nameFileUcrtOut),silent=TRUE)
-      if(base::class(rptUcrt) == 'try-error'){
-        log$error(base::paste0('Cannot write truncated/merged uncertainty file ', nameFileUcrtOut,'. ',attr(rptUcrt,"condition"))) 
-        stop()
-      } else {
-        log$info(base::paste0('Truncated/merged uncertainty information (by location) written successfully in ',nameFileUcrtOut))
-      }
-    }
-    
-  } # End loop around uncertainty directories
-  
-  return()
 } # End loop around datums
