@@ -50,7 +50,7 @@ ucrtData <- data.frame(readout_time=as.POSIXct(c('2019-01-01 00:00','2019-01-01 
                        dewPoint_ucrt_dfpt_t_L1=c(0.05,0.06,0.055),
                        dewPoint_ucrt_dfpt_rh_L1=c(0.065,0.055,0.054),
                        stringsAsFactors=FALSE)
-ucrt <- NEONprocIS.stat::wrap.ucrt.dp01.rh.dew.frst.pt(data=data,VarUcrt='dewPoint',ucrtCoef=ucrtCoef)
+ucrt <- NEONprocIS.stat::wrap.ucrt.dp01.rh.dew.frst.pt(data=data,VarUcrt='dewPoint',ucrtData=ucrtData)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
