@@ -89,7 +89,9 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
   wrap.loc.repo.strc(DirIn = testInputDir,DirOutBase = testOutputDir,Comb = TRUE)
   
   testOutputDirSourceIdLoc <- base::paste0(testOutputDirPath, "/", nameLoc, "/location")
+  testOutputDirSourceIdCal <- base::paste0(testOutputDirPath, "/", nameLoc, "/calibration")
   expect_true (dir.exists(testOutputDirSourceIdLoc))
+  expect_true (dir.exists(testOutputDirSourceIdCal))
   # clean out the test output dirs and file recursively
   #
   if (dir.exists(testOutputDir))  {
