@@ -21,7 +21,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "csat3_data_location_group",
+      "repo": "csat3_data_calibration_location_group",
       "glob": "/csat3/*/*/*"
     }
   },
