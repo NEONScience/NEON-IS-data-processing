@@ -46,7 +46,8 @@
 # changelog and author contributions / copyrights
 #   Guy Litt (2021-04-01)
 #     Originallly created
-
+#   Guy Litt (2021-05-20)
+#     Added multiple matching warning
 def.map.char.gsub <- function(pattFind,
                               replStr,
                               obj,
@@ -58,7 +59,7 @@ def.map.char.gsub <- function(pattFind,
   }
   
   if(base::length(pattFind) != base::length(replStr)){
-    log$error("pattFind and replStr must have lengths.")
+    log$error("pattFind and replStr must have same lengths.")
     stop()
   }
   
@@ -80,6 +81,18 @@ def.map.char.gsub <- function(pattFind,
   for(idx in 1:base::length(pattFind)){
     patt <- pattFind[idx]
     repl <- replStr[idx]
+    
+    # Check for multiple pattern matches in a single obj, and generate warning if multiple matches exist:
+    locsStrObjAll <- base::gregexpr(patt,obj)
+    lenStrObj <- base::lapply(1:base::length(locsStrObjAll), function(i) base::length(locsStrObjAll[[i]]) )
+    if(base::any(lenStrObj>1)){
+      idxsMult <- base::which(lenStrObj > 1)
+      warning(base::paste0("String match for '", patt, "' in '", paste0(obj[idxsMult], collapse = "' & '"),
+                           "' found at multiple positions: ", base::paste0(paste0(locsStrObjAll[idxsMult],
+                                                                                  collapse=" &"),
+                                                                           collapse = ", ")))
+    }
+    
     obj <- base::gsub(pattern = patt, replacement = repl, x = obj)
   }
   
