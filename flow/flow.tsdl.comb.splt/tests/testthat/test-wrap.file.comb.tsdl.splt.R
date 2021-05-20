@@ -181,5 +181,4 @@ test_that("Unit test of wrap.file.comb.tsdl.splt.R", {
     base::lapply(1:base::length(rsltSnglCol[[i]]), function(j) base::grep("\\.x", base::names(rsltSnglCol[[i]][[j]])) )   )
   testthat::expect_equal(0, base::length(base::unlist(chckMrgeName) ) )
 
-  
 })
