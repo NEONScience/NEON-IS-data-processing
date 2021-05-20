@@ -39,6 +39,8 @@
 # changelog and author contributions / copyrights
 #   Guy Litt (2021-04-01)
 #     adapted for avro mappings from def.schm.avro.pars.R by Cove Sturtevant
+#   Guy Litt (2021-05-20)
+#     added extra FileSchm error handling
 ##############################################################################################
 def.schm.avro.pars.map <- function(FileSchm=NULL,
                                Schm=NULL,
@@ -62,6 +64,15 @@ def.schm.avro.pars.map <- function(FileSchm=NULL,
   
   # Read in the schema file
   if(!base::is.null(FileSchm)){
+    
+    # Ensure file exists:
+    if(!base::file.exists(FileSchm)){
+      msg <- base::paste0("The FileSchm does not exist: ",FileSchm)
+      if(!base::is.null(log)){
+        log$fatal(msg)
+      } 
+      stop(msg)
+    }
     
     Schm <- base::try(base::paste0(base::readLines(FileSchm),collapse=''),silent=true)
     if(base::class(Schm) == 'try-error'){

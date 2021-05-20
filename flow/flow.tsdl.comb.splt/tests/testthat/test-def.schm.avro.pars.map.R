@@ -5,6 +5,8 @@
 # changelog and author contributions / copyrights
 #   Guy Litt (2021-04-09)
 #     Original Creation
+#   Guy Litt (2021-05-20)
+#     Added file does not exist test logic
 ##############################################################################################
 # Define test context
 library(testthat)
@@ -47,11 +49,21 @@ test_that("Unit test of def.schm.avro.pars.map.R", {
   # ---------------------------------------------------------------
   # TEST SCENARIO #2, INPUT FAILURE
   # ---------------------------------------------------------------
-  
+  # A file that is not a mapping avro schema
   rsltBadInpt <- testthat::evaluate_promise(try(def.schm.avro.pars.map(FileSchm=Para$FileSchmNotMap,
                                                                    Schm=NULL,
                                                                    log=NULL)
                                                                    ))
   
   testthat::expect_identical("try-error", base::class(rsltBadInpt$result))
+  testthat::expect_true(base::grepl("format", rsltBadInpt$output))
+  
+  # A file that doesn't exist:
+  rsltNonExst <- testthat::evaluate_promise(try(def.schm.avro.pars.map(FileSchm="./tchain.avsc",
+                                                                       Schm=NULL,
+                                                                       log=NULL)
+                                                ))
+  testthat::expect_true(base::grepl("FATAL", rsltNonExst$output) )
+  testthat::expect_true(base::grepl("does not exist", rsltNonExst$output) )
+  
 })
