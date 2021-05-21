@@ -73,6 +73,8 @@
 #     replaced reading of location file with NEONprocIS.base::def.loc.meta
 #   Cove Sturtevant (2020-12-18)
 #     converted to a wrapper function
+#   Cove Sturtevant (2021-05-18)
+#     fixed bug causing empty folders to be omitted from the output
 ##############################################################################################
 wrap.loc.repo.strc <- function(DirIn,
                                DirOutBase,
@@ -112,11 +114,7 @@ wrap.loc.repo.strc <- function(DirIn,
   
   # How many named locations do we have?
   numLoc <- base::nrow(loc)
-  # if(numLoc == 0){
-  #   log$warn(base::paste0('No named locations listed in ',base::paste0(dirInLoc,'/',fileLoc),'. Skipping...'))
-  #   return()
-  # }
-  
+
   # Go through each named location, restructuring the repo and copying the sensor data into it
   for(idxLoc in base::seq_len(numLoc)){
     # Get the named location name
@@ -130,15 +128,12 @@ wrap.loc.repo.strc <- function(DirIn,
     if(Comb == TRUE){
       
       # We are going to merge the folder contents across source-ids and get rid of source-id in the repo structure 
-      fileCopy <- base::list.files(DirIn,recursive=TRUE) # Files to copy over
-      
-      # Get the parent directories so we can create them in the main output directory
-      dirSub <- base::unique(base::unlist(base::lapply(base::strsplit(fileCopy,'/'),FUN=function(vec){
-        base::paste0(utils::head(vec,n=-1),collapse='/')
-      })))
+      # Get the subdirectories so we can create them in the main output directory
+      dirSub <- base::list.dirs(DirIn,recursive=TRUE,full.names=FALSE) # All the subdirectories to copy (some may be empty)
       NEONprocIS.base::def.dir.crea(DirBgn=dirOut,DirSub=dirSub,log=log)
 
-      # Symbolically link each file
+      # Symbolically link each file. We can't symbolically link whole directories because multiple sensors may have data files to contribute.
+      fileCopy <- base::list.files(DirIn,recursive=TRUE) # Files to copy over
       for(idxFileCopy in fileCopy){
         cmdCopy <- base::paste0('ln -s ',base::paste0(DirIn,'/',idxFileCopy),' ',base::paste0(dirOut,'/',idxFileCopy))
         rptCopy <- base::system(cmdCopy)

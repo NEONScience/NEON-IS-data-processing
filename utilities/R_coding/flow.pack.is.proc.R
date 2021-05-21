@@ -11,7 +11,11 @@
 DirWrk00 <-
   
   # Cove
-  "/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
+  # "/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
+  
+  # Ed
+  "/home/NEON/ayres/R/NEON-IS-data-processing"
+
 
   # Feel free to add your repo path! Just comment the ones not being used.
 
