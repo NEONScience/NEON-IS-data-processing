@@ -11,7 +11,7 @@
 # Define test context
 library(testthat)
 # setwd("~/R/NEON-IS-data-processing-glitt/flow/flow.tsdl.comb.splt/")
-setwd("./tests/testthat/")
+# setwd("./tests/testthat/")
 
 testthat::context("\n  Unit test of wrap.file.comb.tsdl.splt.R\n")
 
@@ -116,7 +116,7 @@ test_that("Unit test of wrap.file.comb.tsdl.splt.R", {
                              qmDir = "quality_metrics",
                              nameSchmMapDpth = Para$FileSchmMapDepth,
                              nameSchmMapCols = Para$FileSchmMapCols,
-                             log = NULL)))
+                             log = NULL), silent = TRUE))
   
   badTime <- badTimeEval$result
 
@@ -134,7 +134,7 @@ test_that("Unit test of wrap.file.comb.tsdl.splt.R", {
                                              qmDir = "quality_metrics",
                                              nameSchmMapDpth = Para$FileSchmMapDepth,
                                              nameSchmMapCols = Para$FileSchmMapCols,
-                                             log = NULL)))
+                                             log = NULL), silent = TRUE))
   
   badFilePath <- badFilePathEval$result
   
@@ -153,7 +153,7 @@ test_that("Unit test of wrap.file.comb.tsdl.splt.R", {
                                           qmDir = "quality_metrics",
                                           nameSchmMapDpth = Para$FileSchmMapDepth,
                                           nameSchmMapCols = Para$FileSchmMapCols,
-                                          log = NULL)) )
+                                          log = NULL), silent = TRUE) )
   
   badLoc <- badLocEval$result
   # The result should be a try-error:
@@ -180,5 +180,176 @@ test_that("Unit test of wrap.file.comb.tsdl.splt.R", {
   chckMrgeName <- base::lapply(1:base::length(rsltSnglCol), function(i) 
     base::lapply(1:base::length(rsltSnglCol[[i]]), function(j) base::grep("\\.x", base::names(rsltSnglCol[[i]][[j]])) )   )
   testthat::expect_equal(0, base::length(base::unlist(chckMrgeName) ) )
+  
+  # ----------------------- Wrong depth with vertical position location:
+  testInptDirBadOrdr <- base::paste0(wk_dir, '/', 'pfs/tsdl_bad_data/tchain/2019/01/09/CFGLOC110702/')
+  DirInBadOrdr <- 
+    NEONprocIS.base::def.dir.in(DirBgn = testInptDirBadOrdr,
+                                nameDirSub =  Para$DirComb)
+  filePathBadOrdr <-
+    base::list.files(base::paste0(DirInBadOrdr, '/', Para$DirComb), full.names =
+                       TRUE)
+  
+  rsltBadOrdr <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(filePths = filePathBadOrdr,
+                                                                      nameVarTime = nameVarTime, 
+                                                                      mrgeCols = c("startDateTime", "endDateTime"),
+                                                                      locDir = "location",
+                                                                      statDir = "stats",
+                                                                      qmDir = "quality_metrics",
+                                                                      nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                      nameSchmMapCols = Para$FileSchmMapCols,
+                                                                      log = NULL),silent=TRUE))
+  testthat::expect_true(base::grepl("increment", rsltBadOrdr$output))
+  
+  # ----------- No loc file:
+  testInptDirNoLoc <- base::paste0(wk_dir, '/', 'pfs/tsdl_bad_data/tchain/2019/01/09/CFGLOC110820/')
+  DirInNoLoc <- 
+    NEONprocIS.base::def.dir.in(DirBgn = testInptDirNoLoc,
+                                nameDirSub =  Para$DirComb)
+  filePathNoLoc <-
+    base::list.files(base::paste0(DirInNoLoc, '/', Para$DirComb), full.names = TRUE)
+  
+  rsltNoLoc <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(filePths = filePathNoLoc,
+                                                                         nameVarTime = nameVarTime, 
+                                                                         mrgeCols = c("startDateTime", "endDateTime"),
+                                                                         locDir = "location",
+                                                                         statDir = "stats",
+                                                                         qmDir = "quality_metrics",
+                                                                         nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                         nameSchmMapCols = Para$FileSchmMapCols,
+                                                                         log = NULL),silent=TRUE))
+  testthat::expect_true(base::grepl("Could not find", rsltNoLoc$output))
+  
+  
+  # TODO ------------- Bad loc file:
+  # testInptDirBadLoc <- base::paste0(wk_dir, '/', 'pfs/tsdl_bad_data/tchain/2019/01/10/CFGLOC110820/')
+  # DirInBadLoc <- 
+  #   NEONprocIS.base::def.dir.in(DirBgn = testInptDirBadLoc,
+  #                               nameDirSub =  Para$DirComb)
+  # filePathBadLoc <-
+  #   base::list.files(base::paste0(DirInBadLoc, '/', Para$DirComb), full.names = TRUE)
+  # 
+  # rsltBadLoc <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(filePths = filePathBadLoc,
+  #                                                                      nameVarTime = nameVarTime, 
+  #                                                                      mrgeCols = c("startDateTime", "endDateTime"),
+  #                                                                      locDir = "location",
+  #                                                                      statDir = "stats",
+  #                                                                      qmDir = "quality_metrics",
+  #                                                                      nameSchmMapDpth = Para$FileSchmMapDepth,
+  #                                                                      nameSchmMapCols = Para$FileSchmMapCols,
+  #                                                                      log = NULL),silent=TRUE))
+  # testthat::expect_true(base::grepl("invalid", rsltBadLoc$output))
+  
+  
+  # ----------- No map schemas 
+  
+  noMapColFp <-  base::gsub(".avsc", "nothere.avsc", Para$FileSchmMapCols)
+  
+  rsltNoMapCols <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = filePath,
+                                                                             nameVarTime = nameVarTime, 
+                                                                             mrgeCols = c("endDateTime"),
+                                                                             locDir = "location",
+                                                                             statDir = "stats",
+                                                                             qmDir = "quality_metrics",
+                                                                             nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                             nameSchmMapCols = noMapColFp,
+                                                                             log = NULL), silent=TRUE))
+  testthat::expect_true(base::grepl("could not be loaded", rsltNoMapCols$output))
+  
+  
+  # ---------------- bad merge cols:
+  
+  rsltBadMrge <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = filePath,
+                                                                           nameVarTime = nameVarTime, 
+                                                                           mrgeCols = c("endDateTimeZZZZ"),
+                                                                           locDir = "location",
+                                                                           statDir = "stats",
+                                                                           qmDir = "quality_metrics",
+                                                                           nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                           nameSchmMapCols = Para$FileSchmMapCols,
+                                                                           log = NULL), silent=TRUE))
+  testthat::expect_true(base::grepl("merge columns", rsltBadMrge$output))
+  
+  # --------- wrong file type for .parquet or .json:
+  fpType <- base::gsub("01/10", "01/11", filePath)
+  fpType <- base::gsub("01-10","01-11", fpType)
+  fpType <- base::gsub("tempSpecificDepthLakes_level1_group","tsdl_bad_data",fpType)
+  fpBase <- base::dirname(fpType)
+  fpTypeFns <- base::unique(base::list.files(fpBase,full.names = TRUE))
+  rsltBadType <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = fpTypeFns,
+                                                                         nameVarTime = "001", 
+                                                                         mrgeCols = c("endDateTime"),
+                                                                         locDir = "location",
+                                                                         statDir = "stats",
+                                                                         qmDir = "quality_metrics",
+                                                                         nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                         nameSchmMapCols = Para$FileSchmMapCols,
+                                                                         log = NULL), silent=TRUE))
+  testthat::expect_true(base::grepl("Extension must be", rsltBadType$output))
+  
+  
+  # ---------------- missing merge cols:
+  fpMissCol <- base::gsub("CFGLOC110702", "CFGLOC112538", filePath)
+  fpMissCol <- base::gsub("tempSpecificDepthLakes_level1_group","tsdl_bad_data",fpMissCol) 
+  fpMissCol <- base::gsub("01/10/","01/09/",fpMissCol) 
+  fpMissCol <- base::gsub("-01-10","-01-09",fpMissCol) 
+  # missColDat <- arrow::read_parquet(fpMissCol[4])
+  # rmColDat <- missColDat %>% dplyr::select(-"endDateTime")
+  # arrow::write_parquet(rmColDat, fpMissCol[4])
+  
+  rsltMissCol <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = fpMissCol,
+                                                                         nameVarTime = "030", 
+                                                                         mrgeCols = c("endDateTime"),
+                                                                         locDir = "location",
+                                                                         statDir = "stats",
+                                                                         qmDir = "quality_metrics",
+                                                                         nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                         nameSchmMapCols = Para$FileSchmMapCols,
+                                                                         log = NULL), silent=TRUE))
+  testthat::expect_true(base::grepl("missing", rsltMissCol$output))
+  
+  # ------------ diff rows basicStats and qualityMetrics
+  
+  fpBadRows <- base::gsub("CFGLOC110702", "CFGLOC112538", filePath)
+  fpBadRows <- base::gsub("tempSpecificDepthLakes_level1_group","tsdl_bad_data",fpBadRows)
+  # badDat <- arrow::read_parquet(fpBadRows[4])
+  # badDat <- head(badDat)
+  # arrow::write_parquet(badDat, fpBadRows[4])
+  
+  rsltBadMrge <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = fpBadRows,
+                                                                         nameVarTime = "030", 
+                                                                         mrgeCols = c("endDateTime"),
+                                                                         locDir = "location",
+                                                                         statDir = "stats",
+                                                                         qmDir = "quality_metrics",
+                                                                         nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                         nameSchmMapCols = Para$FileSchmMapCols,
+                                                                         log = NULL), silent=TRUE))
+  testthat::expect_true(base::grepl("differing number of rows", rsltBadMrge$output) )
+  
+  # -------- wrong location directory
+  rsltWrngLoc <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = filePath,
+                                                                         nameVarTime = nameVarTime, 
+                                                                         mrgeCols = c("endDateTime"),
+                                                                         locDir = "stats",
+                                                                         statDir = "stats",
+                                                                         qmDir = "quality_metrics",
+                                                                         nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                         nameSchmMapCols = Para$FileSchmMapCols,
+                                                                         log = NULL), silent=TRUE))
+  
+  testthat::expect_true(base::grepl("Invalid", rsltWrngLoc$output))
 
+  
+  rsltWrngLocData <- testthat::evaluate_promise(try(wrap.file.comb.tsdl.splt(file = list.files(base::paste0(wk_dir,"/pfs/schemas/")),
+                                                                              nameVarTime = nameVarTime, 
+                                                                              mrgeCols = c("endDateTime"),
+                                                                              locDir = "location",
+                                                                              statDir = "stats",
+                                                                              qmDir = "quality_metrics",
+                                                                              nameSchmMapDpth = Para$FileSchmMapDepth,
+                                                                              nameSchmMapCols = Para$FileSchmMapCols,
+                                                                              log = NULL), silent=TRUE))
+  testthat::expect_true(base::grepl("Could not find", rsltWrngLocData$output))
+  
 })

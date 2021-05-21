@@ -11,7 +11,7 @@
 # Define test context
 library(testthat)
 # setwd("~/R/NEON-IS-data-processing-glitt/flow/flow.tsdl.comb.splt/")
-setwd("./tests/testthat/")
+# setwd("./tests/testthat/")
 
 testthat::context("\n  Unit test of def.schm.avro.pars.map.R\n")
 
@@ -23,8 +23,8 @@ test_that("Unit test of def.schm.avro.pars.map.R", {
   Para$FileSchmMapDepth <- "./pfs/schemas/tsdl_map_loc_names.avsc"
   Para$FileSchmMapCols <-  "./pfs/schemas/tsdl_col_term_subs.avsc"
   Para$FileSchmNotMap <- "./pfs/schemas/tchain.avsc"
-  
-  
+  Para$FileSchmCrpt <- "./pfs/schemas/tsdl_map_loc_names_Corrupt.avsc"
+  Para$FileSchmCrpt2 <- "./pfs/schemas/tsdl_map_loc_names_Corrupt2.avsc"
   # ----------------------------------------------------------------
   # TEST SCENARIO #1 it all works and data return in expected format
   # ----------------------------------------------------------------
@@ -46,13 +46,16 @@ test_that("Unit test of def.schm.avro.pars.map.R", {
   # The mapping should contain expected column names:
   testthat::expect_identical(base::names(rsltGood$map), c("term1","term2","desc","type"))
   
+  # Ensure term1 and term2 returend in the mapping df, and ordered appropriately
+  testthat::expect_equal(1,base::grep("term1", names(rsltGood$map)))
+  testthat::expect_equal(2,base::grep("term2", names(rsltGood$map)))
   # ---------------------------------------------------------------
   # TEST SCENARIO #2, INPUT FAILURE
   # ---------------------------------------------------------------
   # A file that is not a mapping avro schema
   rsltBadInpt <- testthat::evaluate_promise(try(def.schm.avro.pars.map(FileSchm=Para$FileSchmNotMap,
                                                                    Schm=NULL,
-                                                                   log=NULL)
+                                                                   log=NULL), silent = TRUE
                                                                    ))
   
   testthat::expect_identical("try-error", base::class(rsltBadInpt$result))
@@ -61,9 +64,25 @@ test_that("Unit test of def.schm.avro.pars.map.R", {
   # A file that doesn't exist:
   rsltNonExst <- testthat::evaluate_promise(try(def.schm.avro.pars.map(FileSchm="./tchain.avsc",
                                                                        Schm=NULL,
-                                                                       log=NULL)
+                                                                       log=NULL), silent = TRUE
                                                 ))
   testthat::expect_true(base::grepl("FATAL", rsltNonExst$output) )
   testthat::expect_true(base::grepl("does not exist", rsltNonExst$output) )
+  
+  
+  # Both files NULL
+  rsltNull <- testthat::evaluate_promise(try(def.schm.avro.pars.map(FileSchm=NULL,
+                                                                Schm=NULL,
+                                                                log=NULL), silent = TRUE)
+  )
+  testthat::expect_true(base::grepl("provided", rsltNull$output))
+  
+  
+  # A file that is completely wrong format:
+  rsltBadFmt <- testthat::evaluate_promise(try( def.schm.avro.pars.map(FileSchm=Para$FileSchmCrpt,
+                                                         Schm=NULL,
+                                                         log=NULL), silent = TRUE))
+  
+  testthat::expect_true('try-error' %in% class(rsltBadFmt$result))
   
 })

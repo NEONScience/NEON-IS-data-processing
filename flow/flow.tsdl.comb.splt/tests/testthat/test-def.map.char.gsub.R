@@ -11,7 +11,7 @@
 # Define test context
 library(testthat)
 # setwd("./flow/flow.tsdl.comb.splt/")
-setwd("./tests/testthat/")
+# setwd("./tests/testthat/")
 
 testthat::context("\n  Unit test of def.map.char.gsub.R\n")
 
@@ -61,10 +61,32 @@ test_that("Unit test of def.map.char.gsub.R", {
   
   
   # TEST SCENARIO #2 Incorrect inputs:
-  rsltNotEnufRepl <- try(testthat::evaluate_promise(def.map.char.gsub(pattFind = c("this","hur"),
+  rsltNotEnufRepl <- testthat::evaluate_promise(try(def.map.char.gsub(pattFind = c("this","hur"),
                                                            replStr = c("that"),
                                                            obj = c("testingthisrighthurhur","thishurstring"),
-                                                           log = NULL)))
-  testthat::expect_identical(class(rsltNotEnufRepl), "try-error")
+                                                           log = NULL), silent = TRUE))
+  testthat::expect_identical(class(rsltNotEnufRepl$result), "try-error")
+  
+  
+  rsltNum <-  testthat::evaluate_promise(try(def.map.char.gsub(pattFind = 7,
+                                                               replStr = c("that"),
+                                                               obj = c("testingthisrighthurhur","thishurstring"),
+                                                               log = NULL), silent = TRUE))
+  
+  testthat::expect_true(base::grepl("character class", rsltNum$output))
+  
+  rsltNumRepl <-  testthat::evaluate_promise(try(def.map.char.gsub(pattFind = "this",
+                                                               replStr = Inf,
+                                                               obj = c("testingthisrighthurhur","thishurstring"),
+                                                               log = NULL), silent = TRUE))
+  
+  testthat::expect_true(base::grepl("character class", rsltNumRepl$output))
+  
+  
+  rsltNumObj <- rsltNumRepl <-  testthat::evaluate_promise(try(def.map.char.gsub(pattFind = "this",
+                                                                                 replStr = "that",
+                                                                                 obj = 8979,
+                                                                                 log = NULL), silent = TRUE))
+  testthat::expect_true(base::grepl("character class", rsltNumObj$output))
   
 })

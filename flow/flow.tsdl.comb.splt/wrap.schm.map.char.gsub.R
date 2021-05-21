@@ -64,25 +64,11 @@ wrap.schm.map.char.gsub <- function(obj,
     mapRpt <- def.schm.avro.pars.map(FileSchm = FileSchm, log = log)
   }
   
+  # Generate map report with columns 'term1'
   map <- mapRpt$map
+  term1 <- map$term1
+  term2 <- map$term2
   
-  if(!"term1" %in% base::names(map)){
-    msg <- "The map object does not have term1 in the column name. Choosing first column."
-    log$warn(msg)
-    warning(msg)
-    term1 <- map[,1]
-  } else {
-    term1 <- map$term1
-  }
-  
-  if(!"term2" %in% base::names(map)){
-    msg <- "The map object does not have term2 in the column name. Choosing second column."
-    log$warn(msg)
-    warning(msg)
-    term2 <- map[,2]
-  } else {
-    term2 <- map$term2
-  }
   # Perform text substituion based on term mappings
   objSub <- def.map.char.gsub(pattFind = term1, replStr = term2, obj = obj, log = log)
   

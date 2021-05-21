@@ -11,7 +11,7 @@
 # Define test context
 library(testthat)
 # setwd("./flow/flow.tsdl.comb.splt/")
-setwd("./tests/testthat/")
+#setwd("./tests/testthat/")
 
 testthat::context("\n  Unit test of wrap.schm.map.char.gsub.R\n")
 
@@ -44,11 +44,42 @@ test_that("Unit test of wrap.schm.map.char.gsub.R", {
   testthat::expect_true(findAllSubBool)
   testthat::expect_equal(1, base::length(findAllSubBool))
   
+  # Read in file schema & test as alternate input which should be identical to FileSchm:
+  Schm <- base::try(base::paste0(base::readLines(FileSchm),collapse=''),silent=true)
+  
+  rsltSchm <- testthat::evaluate_promise(wrap.schm.map.char.gsub(obj =objTest1,
+                                                                 FileSchm=NULL,
+                                                                 Schm=Schm,
+                                                                 log = NULL) )
+  testthat::expect_identical(rslt$result, rsltSchm$result)
   
   # TEST SCENARIO #2: Wrong file input
   rsltWrngFile <- testthat::evaluate_promise(try(wrap.schm.map.char.gsub(obj =objTest1,
                                                                      FileSchm="./pfs/tchain.avsc",
                                                                      Schm=NULL,
-                                                                     log = NULL) ) )
+                                                                     log = NULL), silent = TRUE ) )
   testthat::expect_true('try-error' %in% base::class(rsltWrngFile$result))
+  
+  testNullFile <-  testthat::evaluate_promise(try(wrap.schm.map.char.gsub(obj =objTest1,
+                                                                           FileSchm=NULL,
+                                                                           Schm=NULL,
+                                                                           log = NULL), silent = TRUE ) )
+  testthat::expect_true(base::grepl("provided", testNullFile$output))
+  
+  # TEST SCENARIO #3: WRONG obj
+  SchmBad <- base::gsub('\"values\":',"'\"yadda\":'",x = Schm)
+ 
+  
+  
+  testBadSchm <- testthat::evaluate_promise(try(wrap.schm.map.char.gsub(obj =objTest1,
+                                                                    FileSchm=NULL,
+                                                                    Schm=SchmBad,
+                                                                    log = NULL), silent = TRUE) )
+  
+  testthat::expect_true("try-error" %in% base::class(testBadSchm$result))
+  # grep(pattern = '\"values\":', x = Schm)
+  
+  
+  
 })
+  

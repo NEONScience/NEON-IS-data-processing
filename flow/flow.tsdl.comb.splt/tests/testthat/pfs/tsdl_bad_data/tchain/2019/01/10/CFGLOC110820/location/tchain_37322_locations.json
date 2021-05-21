@@ -1,6 +1,6 @@
 {
     "type":"FeatureCollection",
-    "features":[
+    "featuresz":[
         {
             "type":"Feature",
             "geometry":null,
@@ -13,7 +13,7 @@
                     "water-profile",
                     "buoy"
                 ],
-                "locations":{
+                "locationszzzzz":{
                     "type":"FeatureCollection",
                     "features":[
                         {

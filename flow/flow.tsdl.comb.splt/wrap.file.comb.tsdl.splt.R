@@ -88,7 +88,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
  
   locFile <- locFilePths[1]
   
-  if(base::length(locFile) != 1){
+  if(base::length(locFilePths) ==0){
     log$error(base::paste0("Could not find a location file in provided files: ",
                            base::paste(filePths, collapse=", ")))
     stop()

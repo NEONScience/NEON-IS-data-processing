@@ -11,7 +11,7 @@
 # Define test context
 library(testthat)
 # setwd("~/R/NEON-IS-data-processing-glitt/flow/flow.tsdl.comb.splt/")
-setwd("./tests/testthat/")
+# setwd("./tests/testthat/")
 
 testthat::context("\n  Unit test of def.find.mtch.str.best.R\n")
 
@@ -31,7 +31,7 @@ test_that("Unit test of def.find.mtch.str.best.R", {
   objSub <- base::gsub(pattern="tsdWaterTempMean",replacement = "", objSub)
   testthat::expect_identical(objSub, rsltGood$result$mtchGrp)
   testthat::expect_identical(rsltGood$output,"")
-  testthat::expect_equal(nrow(rsltGood$result),6)
+  testthat::expect_equal(nrow(rsltGood$result),length(objSub))
   
   # Shuffle the order of strings:
   obj2 <- base::c("depth13tsdWaterTempMean", "depth2tsdWaterTempMean","depth9tsdWaterTempMean","depth10tsdWaterTempMean","depth1tsdWaterTempMean",
@@ -51,15 +51,15 @@ test_that("Unit test of def.find.mtch.str.best.R", {
   
   # TESTS on things that don't work:
   # Test a single obj and multiple subFinds
-  rsltSnglObjRpt <- testthat::evaluate_promise(try(def.find.mtch.str.best(obj = "depth1tsdWaterTempMean", subFind = subFind2)))
+  rsltSnglObjRpt <- testthat::evaluate_promise(try(def.find.mtch.str.best(obj = "depth1tsdWaterTempMean", subFind = subFind2),silent = TRUE))
   testthat::expect_true("try-error" %in% base::class(rsltSnglObjRpt$result))
   testthat::expect_true(base::grepl("ERROR",rsltSnglObjRpt$output))
   
   # Test non-character inputs
-  rsltNonCharObj <- testthat::evaluate_promise(try(def.find.mtch.str.best(obj = c(3, 2), subFind = subFind2)))
+  rsltNonCharObj <- testthat::evaluate_promise(try(def.find.mtch.str.best(obj = c(3, 2), subFind = subFind2),silent = TRUE))
   testthat::expect_true(base::grepl("ERROR",rsltNonCharObj$output ))
   
-  rsltNonCharFind <- testthat::evaluate_promise(try(def.find.mtch.str.best(obj = objSub2, subFind = c(NULL,"depth2"))))
+  rsltNonCharFind <- testthat::evaluate_promise(try(def.find.mtch.str.best(obj = objSub2, subFind = c(NULL,"depth2")),silent=TRUE))
   testthat::expect_true(base::grepl("ERROR",rsltNonCharObj$output ))
 
   
