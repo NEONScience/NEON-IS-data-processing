@@ -1,0 +1,37 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC110702",
+                "type": "CONFIG",
+                "description": "Barco Lake Temperature Chain Buoy",
+                "site": "BARC",
+                "context": [
+                    "water-profile",
+                    "buoy"
+                ],
+                "active_periods": [
+                    {
+                        "start_date": "2017-08-27T00:00:00Z"
+                    }
+                ]
+            },
+            "Required Asset Management Location ID": 12201,
+            "Required Asset Management Location Code": "CFGLOC110702",
+            "ThermistorDepth506": 2.55,
+            "ThermistorDepth502": 0.55,
+            "ThermistorDepth507": 3.05,
+            "ThermistorDepth501": 0.05,
+            "ThermistorDepth503": 1.05,
+            "ThermistorDepth505": 2.05,
+            "ThermistorDepth504": 1.55,
+            "HOR": "103",
+            "VER": "100",
+            "TMI": "000",
+            "Data Rate": "0.0166666666667"
+        }
+    ]
+}

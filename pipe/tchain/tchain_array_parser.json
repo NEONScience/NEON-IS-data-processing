@@ -40,9 +40,9 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "tchain_data_calibration_linker",
+          "repo": "tchain_data_calibration_group",
           "branch": "master",
-          "glob": "/tchain/*/*"
+          "glob": "/tchain/*/*/*"
         }
       }
     ]
