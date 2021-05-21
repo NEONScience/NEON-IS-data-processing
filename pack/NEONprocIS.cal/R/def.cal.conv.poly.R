@@ -90,7 +90,7 @@ def.cal.conv.poly <- function(data = data.frame(data=base::numeric(0)),
   }
   
   # If infoCal is NULL, return NA data
-  if ((is.null(infoCal)) || any (is.na(unlist((infoCal))))) {
+  if (is.null(infoCal)) {
     log$warn('No calibration information supplied, returning NA values for converted data.')
     dataConv <- NA * data[[varConv]]
     return(dataConv)

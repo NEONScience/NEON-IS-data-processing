@@ -30,8 +30,6 @@ def get_write_file(open_pipe: Callable[[Path], Any], out_path: Path) -> Callable
     :param out_path: The path to open as a named pipe.
     :return: The function.
     """
-    open_pipe = open_pipe
-    out_path = out_path
 
     def write_file(filename: str, file_bytes: bytes) -> None:
         """
