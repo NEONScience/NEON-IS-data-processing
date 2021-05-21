@@ -177,6 +177,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                           DirSubCombUcrt=DirSubCombUcrt,
                           DirSubCopy=DirSubCopy,
                           log=log)
-
+  
   
 } # End loop around datums
