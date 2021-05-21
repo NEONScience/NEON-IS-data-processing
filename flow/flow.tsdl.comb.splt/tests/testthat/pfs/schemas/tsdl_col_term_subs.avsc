@@ -1,0 +1,21 @@
+{
+  "type": "record",
+  "name": "tempSpecificDepthLakes_dp01_column_term_substitutions",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "L1 instantaneous statistics for temperature at specific depths in water",
+  "map": {
+      "description": "Map tempSpecificDepthLakes column name substitution strings",
+      "notes": [ "The first mapping term corresponds to column name substrings, and the second mapping term
+      represents replacement substitution strings. Note that 'thermistorDepth' is hard-coded in wrap.file.comb.tsdl.splt.R, so 
+      alternative column names may be defined here." ],
+      "type": "map",
+      "values": {  "WaterTemp"  : "tsdWaterTemp",
+                   "_ucrtExpn" : "ExpUncert",
+                   "QFNAQM" : "NAQM",
+                   "QFFailQM" : "FailQM",
+                   "QFPassQM" : "PassQM",
+                   "thermistorDepth" : "thermistorDepth"
+                   }
+      
+    }
+}
