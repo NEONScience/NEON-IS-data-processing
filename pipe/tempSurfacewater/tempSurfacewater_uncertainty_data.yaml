@@ -12,14 +12,14 @@ transform:
   - python3 -m directory_filter.app
   env:
     OUT_PATH: "/pfs/out"
-    FILTER_DIR: uncertainty_data
+    FILTER_DIR: uncertainty_data,location
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
 input:
   pfs:
     name: IN_PATH
     repo: tempSurfacewater_context_filter
-    glob: "/*/*/*"
+    glob: "/prt/*/*/*"
     empty_files: true
 enable_stats: false
 standby: true

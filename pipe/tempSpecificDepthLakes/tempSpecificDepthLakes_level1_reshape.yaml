@@ -1,0 +1,49 @@
+---
+pipeline:
+  name: tempSpecificDepthLakes_level1_reshape
+transform:
+  cmd:
+  - Rscript
+  - "/flow.tsdl.comb.splt.R"
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - NameDirCombOut=/level1_reshape
+  - NameVarTime=001|030
+  - MrgeCols=startDateTime|endDateTime
+  - FileSchmMapDepth=$FILE_SCHEMA_MAP_DEPTH
+  - FileSchmMapCols=$FILE_SCHEMA_MAP_COLS
+  - LocDir=location
+  - StatDir=stats
+  - QmDir=quality_metrics
+  - NameFileSufxRm=basicStats|qualityMetrics
+  image: quay.io/battelleecology/neon-is-tsdl-comb-splt-r:v0.0.1
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: tempSpecificDepthLakes_level1_group
+      branch: master
+      glob: "/tchain/*/*/*"
+  - pfs:
+      name: FILE_SCHEMA_MAP_COLS
+      repo: avro_schemas
+      branch: master
+      glob: "/dp01/tempSpecificDepthLakes_dp01_column_term_substitutions.avsc"
+  - pfs:
+      name: FILE_SCHEMA_MAP_DEPTH
+      repo: avro_schemas
+      branch: master
+      glob: "/dp01/tempSpecificDepthLakes_dp01_depth_term_map.avsc"
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '1'
+resource_requests:
+  memory: 200Mi
+  cpu: 0
+cache_size: 64M
+max_queue_size: '1'

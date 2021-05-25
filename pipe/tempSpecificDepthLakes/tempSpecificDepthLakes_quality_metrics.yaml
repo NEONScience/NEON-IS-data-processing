@@ -1,0 +1,47 @@
+---
+pipeline:
+  name: tempSpecificDepthLakes_quality_metrics
+transform:
+  cmd:
+  - Rscript
+  - "/flow.qaqc.qm.R"
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - FileSchmQm=$FILE_SCHEMA_QM
+  - WndwAgr=030
+  - WghtAlphBeta=2|1
+  - Thsh=0.2
+  - VarIgnr=timeWndwBgn|timeWndwEnd
+  - GrpQf1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF
+  - GrpQf2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF
+  - GrpQf3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF
+  - GrpQf4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF
+  - GrpQf5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF
+  - GrpQf6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF
+  - GrpQf7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF
+  - GrpQf8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF
+  - GrpQf9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF
+  - GrpQf10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF
+  - GrpQf11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF
+  image: quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.9
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: tempSpecificDepthLakes_qaqc_flags_group
+      glob: "/tchain/*/*/*"
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: avro_schemas
+      glob: "/dp01/tempSpecificDepthLakes_dp01_quality_metrics.avsc"
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '1'
+resource_requests:
+  memory: 200Mi
+  cpu: 0

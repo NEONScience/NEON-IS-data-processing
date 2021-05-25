@@ -1,0 +1,63 @@
+{
+    "type": "record",
+    "name": "tchain",
+    "namespace": "org.neonscience.schema.device",
+    "doc": "YSI T-Chain Water Column Temperature",
+    "__version": "1.0",
+    "__neon_parts": [
+        "0351721801",
+        "0351720812",
+        "0351720301",
+        "0351720302",
+        "0351720811",
+        "0351720501",
+        "0351720311",
+        "0351720502",
+        "0351720902",
+        "0351720901"
+    ],
+    "fields": [
+        {
+            "name": "source_id",
+            "type": "string",
+            "doc": "Source serial number or MAC address"
+        },
+        {
+            "name": "site_id",
+            "type": "string",
+            "doc": "NEON site identifier"
+        },
+        {
+            "name": "readout_time",
+            "type": {
+                "type": "long",
+                "logicalType": "timestamp-millis"
+            },
+            "doc": "Timestamp of readout expressed in milliseconds since epoch",
+            "__neon_units": "millisecond"
+        },
+        {
+            "name": "water_temperature",
+            "type": {
+                "type": "array",
+                "items": {
+                    "name": "at_depth",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "readout",
+                            "type": [
+                                "null",
+                                "float"
+                            ],
+                            "default": null,
+                            "doc": "Measurement of water temperature along a fixed chain at a specific depth with array index 0 being the shallowest and deeper at each subsequent index"
+                        }
+                    ]
+                }
+            },
+            "doc": "Measurement of water temperature along a fixed chain",
+            "__neon_units": "celsius"
+        }
+    ]
+}

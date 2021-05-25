@@ -21,7 +21,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: tempSurfacewater_qaqc_flags_group
-      glob: "/prt/*/*"
+      glob: "/prt/*/*/*"
   - pfs:
       name: FILE_SCHEMA_QM
       repo: avro_schemas
@@ -29,7 +29,7 @@ input:
 enable_stats: false
 standby: true
 parallelism_spec:
-  constant: '2'
+  constant: '1'
 resource_requests:
   memory: 200Mi
   cpu: 0
