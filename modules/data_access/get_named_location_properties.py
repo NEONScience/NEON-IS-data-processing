@@ -41,7 +41,7 @@ def get_named_location_properties(connection: extensions.connection, named_locat
             if string_value is not None:
                 properties.append(Property(name=name, value=string_value))
             if number_value is not None:
-                if(name == 'Required Asset Management Location ID'):
+                if name == 'Required Asset Management Location ID':
                     properties.append(Property(name=name, value=int(number_value)))
                 else:
                     properties.append(Property(name=name, value=number_value))
