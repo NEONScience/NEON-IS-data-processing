@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: csat3_data_calibration_location_group
+  name: csat3_calibrated_location_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:9
@@ -22,12 +22,6 @@ transform:
             join_indices: [7]
             outer_join: true
         - path:
-            name: CALIBRATION_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/csat3/*/*/*/*/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
-        - path:
             name: LOCATION_PATH
             # Filter for data directory
             glob_pattern: /pfs/LOCATION_PATH/csat3/*/*/*/*/**
@@ -40,20 +34,14 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: data_source_csat3_linkmerge
+      repo: csat3_calibration_validation
       glob: /csat3/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true
       empty_files: true
   - pfs:
-      name: CALIBRATION_PATH
-      repo: csat3_calibration_assignment
-      glob: /csat3/(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: true
-  - pfs:
       name: LOCATION_PATH
-      repo: csat3_location_asset_assignment_testing_1
+      repo: csat3_location_asset_assignment
       glob: /csat3/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true

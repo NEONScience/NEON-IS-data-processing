@@ -1,0 +1,39 @@
+---
+pipeline:
+  name: csat3_threshold_select
+transform:
+  cmd:
+  - Rscript
+  - /flow.thsh.slct.R
+  - DirIn=$REPO_LOCATIONS
+  - DirOut=/pfs/out
+  - FileThsh=$FILE_THRESHOLDS
+  - TermCtxt1=veloXaxs
+  - TermCtxt2=veloYaxs
+  - TermCtxt3=veloZaxs
+  - TermCtxt4=veloSoni
+  - TermCtxt5=tempSoni
+  - DirSubCopy=location
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.14
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: REPO_LOCATIONS
+      repo: csat3_location_filter
+      glob: /csat3/*/*/*/
+  - pfs:
+      name: FILE_THRESHOLDS
+      repo: csat3_threshold_filter
+      glob: /thresholds.json
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '1'
+resource_requests:
+  memory: 200Mi
+  cpu: 0.1
+
