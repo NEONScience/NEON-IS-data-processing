@@ -77,17 +77,23 @@ def l0tol0p(in_path: Path, out_path: Path, file_dirs: list, relative_path_index:
                 outfile = ''
         if len(files) > 0:
             if len(files) > 1:
-                log.warn("There are more than 1 files:")
+                log.warn("There are more than 1 files under " + root)
                 log.warn(files)
             for file in files:
                 path = Path(root, file)
                 if "flag" in str(path):
-                    outputdf = outputdf.append(get_cal_val_flags(path, term_map), ignore_index=True, sort=False)
+                    if outputdf.empty:
+                        outputdf = get_cal_val_flags(path, term_map)
+                    else:
+                        outputdf = pd.merge(outputdf, get_cal_val_flags(path, term_map), how='inner', left_on=['time'], right_on=['time'])
                     outputdf['qfCalTempSoni'] = outputdf['qfCalVeloSoni']
                 else:
-                    outfile = Path(out_path, *Path(path).parts[4:])
+                    outfile = Path(out_path, *Path(path).parts[relative_path_index:])
                     outfile.parent.mkdir(parents=True, exist_ok=True)
-                    outputdf = pd.merge(outputdf, data_conversion(path), how='inner', left_on=['time'], right_on=['time'])
+                    if outputdf.empty:
+                        outputdf = data_conversion(path)
+                    else:
+                        outputdf = pd.merge(data_conversion(path), outputdf, how='inner', left_on=['time'], right_on=['time'])
 
 
 def main() -> None:
