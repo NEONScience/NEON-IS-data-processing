@@ -8,7 +8,7 @@
       "/flow.rglr.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
-      "DirRglr=data",
+      "DirRglr=data|flags",
       "MethRglr=CybiEc",
       "WndwRglr=Trlg",
       "IdxWndw=IdxWndwMin",
@@ -24,7 +24,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "csat3_data_filter",
+      "repo": "csat3_merge_data_by_location",
       "glob": "/csat3/*/*/*"
     }
   },

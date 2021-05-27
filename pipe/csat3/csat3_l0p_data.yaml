@@ -3,22 +3,22 @@ pipeline:
   name: csat3_l0p_data
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/sae_transition:1.0.0
+  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:v0.0.1
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - "python3 -m sae_transition.csat3"
+  - "python3 -m flow_sae_trst_dp0p.csat3"
   env:
     OUT_PATH: /pfs/out
-    #FILE_DIR: data,flags
+    FILE_DIR: data,flags
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
 input:
-  - pfs:
-      name: DATA_PATH
-      repo: csat3_regularized_data
-      glob: /csat3/(*)/(*)/(*)
+  pfs:
+    name: DATA_PATH
+    repo: csat3_regularized_data
+    glob: /csat3/(*)/(*)/(*)
 parallelism_spec:
   constant: "1"
-enable_stats: false
-standby: true
+enable_stats: true
+standby: false

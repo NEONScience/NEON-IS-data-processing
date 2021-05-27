@@ -2,13 +2,13 @@
 #
 # This dockerfile will build the sae_transition module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t sae_transition:latest -f sae_transition/Dockerfile .
+# docker build -t flow_sae_trst_dp0p:latest -f flow_sae_trst_dp0p/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="sae_transition"
-ARG COMMON_DIR="common"
+ARG APP_DIR="flow_sae_trst_dp0p"
+#ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${CONTAINER_APP_DIR}:${CONTAINER_APP_DIR}"
 
@@ -35,6 +35,6 @@ RUN update-ca-trust && \
     useradd -r -u 9999 -g appuser appuser
 
 COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+#COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser

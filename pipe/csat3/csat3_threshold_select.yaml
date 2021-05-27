@@ -23,7 +23,7 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: csat3_location_filter
+      repo: csat3_merge_data_by_location
       glob: /csat3/*/*/*/
   - pfs:
       name: FILE_THRESHOLDS

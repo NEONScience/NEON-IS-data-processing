@@ -2,13 +2,13 @@
 from pathlib import Path
 from structlog import get_logger
 
-import common.log_config as log_config
 import environs
 import math
 import os
 import pandas as pd
 
-from sae_transitions.cal_flags import get_cal_val_flags
+from flow_sae_trst_dp0p.cal_flags import get_cal_val_flags
+from flow_sae_trst_dp0p import log_config
 
 log = get_logger()
 
@@ -21,22 +21,6 @@ term_map = {'ux_wind_speed': 'veloXaxs', 'uy_wind_speed': 'veloYaxs',
 data_columns = ['time', 'veloXaxs', 'veloYaxs', 'veloZaxs', 'veloSoni', 'tempSoni', 'idx',
                         'qfSoniUnrs', 'qfSoniData', 'qfSoniTrig', 'qfSoniComm', 'qfSoniCode',
                         'qfSoniTemp', 'qfSoniSgnlPoor', 'qfSoniSgnlHigh', 'qfSoniSgnlLow']
-
-'''
-def get_cal_val_flags(filename:str) -> pd.DataFrame:
-    df = pd.read_parquet(filename)
-    outputdf = df.copy()
-    for key,value in term_map.items():
-        qfExpi = key + "_qfExpi"
-        qfSusp = key + '_qfSusp'
-        del outputdf[qfSusp]
-        del outputdf[qfExpi]
-        qfname = 'qfCal' + value[0].upper() + value[1:]
-        outputdf[qfname] = df[qfExpi]
-        outputdf.loc[df[qfSusp] == -1, qfname] = -1
-    outputdf.rename(columns={'readout_time': 'time'}, inplace=True)
-    return outputdf
-'''
 
 
 def data_conversion(filename: str) -> pd.DataFrame:
