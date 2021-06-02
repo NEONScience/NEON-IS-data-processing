@@ -18,5 +18,5 @@ def get_cal_val_flags(filename: str, term_map: Dict) -> pd.DataFrame:
         qfname = 'qfCal' + value[0].upper() + value[1:]
         outputdf[qfname] = df[qfExpi]
         outputdf.loc[df[qfSusp] == -1, qfname] = -1
-    outputdf.rename(columns={'readout_time': 'time'}, inplace=True)
+    #outputdf.rename(columns={'readout_time': 'time'}, inplace=True)
     return outputdf

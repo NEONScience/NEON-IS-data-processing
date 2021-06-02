@@ -10,8 +10,8 @@
       "DirOut=/pfs/out",
       "DirRglr=data|flags",
       "MethRglr=CybiEc",
-      "WndwRglr=Trlg",
-      "IdxWndw=IdxWndwMin",
+      "WndwRglr=Cntr",
+      "IdxWndw=Clst",
       "RptTimeWndw=FALSE",
       "DropNotNumc=FALSE"
       ],

@@ -18,7 +18,7 @@ mdry = 28.9645
 r = 8314.4621
 term_map = {'ux_wind_speed': 'veloXaxs', 'uy_wind_speed': 'veloYaxs',
             'uz_wind_speed': 'veloZaxs', 'speed_of_sound': 'veloSoni'}
-data_columns = ['time', 'veloXaxs', 'veloYaxs', 'veloZaxs', 'veloSoni', 'tempSoni', 'idx',
+data_columns = ['readout_time', 'veloXaxs', 'veloYaxs', 'veloZaxs', 'veloSoni', 'tempSoni', 'idx',
                         'qfSoniUnrs', 'qfSoniData', 'qfSoniTrig', 'qfSoniComm', 'qfSoniCode',
                         'qfSoniTemp', 'qfSoniSgnlPoor', 'qfSoniSgnlHigh', 'qfSoniSgnlLow']
 
@@ -85,7 +85,7 @@ def l0tol0p(in_path: Path, out_path: Path, file_dirs: list, relative_path_index:
                     if outputdf.empty:
                         outputdf = get_cal_val_flags(path, term_map)
                     else:
-                        outputdf = pd.merge(outputdf, get_cal_val_flags(path, term_map), how='inner', left_on=['time'], right_on=['time'])
+                        outputdf = pd.merge(outputdf, get_cal_val_flags(path, term_map), how='inner', left_on=['readout_time'], right_on=['readout_time'])
                     outputdf['qfCalTempSoni'] = outputdf['qfCalVeloSoni']
                 else:
                     outfile = Path(out_path, *Path(path).parts[relative_path_index:])
@@ -93,7 +93,7 @@ def l0tol0p(in_path: Path, out_path: Path, file_dirs: list, relative_path_index:
                     if outputdf.empty:
                         outputdf = data_conversion(path)
                     else:
-                        outputdf = pd.merge(data_conversion(path), outputdf, how='inner', left_on=['time'], right_on=['time'])
+                        outputdf = pd.merge(data_conversion(path), outputdf, how='inner', left_on=['readout_time'], right_on=['readout_time'])
 
 
 def main() -> None:
