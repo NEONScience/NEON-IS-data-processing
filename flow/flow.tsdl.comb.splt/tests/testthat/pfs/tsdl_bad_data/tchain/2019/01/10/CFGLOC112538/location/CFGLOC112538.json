@@ -1,0 +1,33 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC112538",
+                "type": "CONFIG",
+                "description": "Flint River Temperature Chain Buoy",
+                "site": "FLNT",
+                "context": [
+                    "water-profile",
+                    "buoy"
+                ],
+                "active_periods": [
+                    {
+                        "start_date": "2018-02-07T00:00:00Z"
+                    }
+                ]
+            },
+            "ThermistorDepth503": 4.5,
+            "ThermistorDepth501": 0.05,
+            "ThermistorDepth502": 2.25,
+            "Required Asset Management Location Code": "CFGLOC112538",
+            "Required Asset Management Location ID": 14120,
+            "HOR": "103",
+            "VER": "100",
+            "TMI": "000",
+            "Data Rate": "0.0166666666667"
+        }
+    ]
+}
