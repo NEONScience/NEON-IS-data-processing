@@ -47,7 +47,7 @@
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 #' 
-#' @return A repository structure in DirOut, where DirOut replaces the input directory 
+#' @return A repository structure in DirOutBase, where DirOutBase replaces the input directory 
 #' structure up to #/pfs/BASE_REPO (see inputs above) but otherwise retains the child directory structure 
 #' of the input path. A single merged file will replace the originals in each of the subdirectories
 #' specified in the input arguments. The merged files will be written with the same schema as returned from 
@@ -89,7 +89,7 @@ wrap.loc.data.trnc.comb <- function(DirIn,
   # Gather info about the input directory and formulate the parent output directory
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
   nameLoc <- utils::tail(InfoDirIn$dirSplt,1) # Location identifier
-  dirOutPrnt <- base::paste0(DirOut,InfoDirIn$dirRepo)
+  dirOutPrnt <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   
   # Copy with a symbolic link the desired subfolders we aren't modifying
   if(base::length(DirSubCopy) > 0){
