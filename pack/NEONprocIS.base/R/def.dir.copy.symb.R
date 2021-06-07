@@ -23,7 +23,7 @@
 #' @keywords Currently none
 
 #' @examples 
-#' def.dir.copy.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01/01')
+#' def.dir.copy.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01')
 
 
 #' @seealso Currently none
@@ -35,6 +35,8 @@
 #     original creation
 #   Cove Sturtevant (2020-02-04)
 #     added logging
+#   Cove Sturtevant (2021-06-07)
+#     add support for relative paths
 ##############################################################################################
 def.dir.copy.symb <- function(DirSrc,DirDest,log=NULL){
   # initialize logging if necessary
@@ -62,8 +64,16 @@ def.dir.copy.symb <- function(DirSrc,DirDest,log=NULL){
     }
   }
   
+  # Check for relative paths
+  rltvDirSrc <- base::substr(x=DirSrc,start=1,stop=1) != '/'
+  rltvDirDest <- base::substr(x=DirDest,start=1,stop=1) != '/'
+  
   # Set up the command to copy
   cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
+  
+  # Modify the copy command for the relative paths
+  setRltv <- rltvDirSrc | rltvDirDest
+  cmdCopy[setRltv] <- base::paste0('ln -s -r ',base::paste0(DirSrc[setRltv]),' ',base::paste0(DirDest[setRltv]))
   
   # perform symbolic link
   rptDir <- base::suppressWarnings(base::lapply(DirDest,base::dir.create,recursive=TRUE)) # Create the destination directories
