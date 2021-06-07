@@ -74,7 +74,7 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   source('../../wrap.loc.data.trnc.comb.R')
   library(stringr)
   
-  testInputDir <- 'pfs/proc_group/prt/2019/01/01/14491'
+  testInputDir <- 'pfs/proc_group/prt/2019/01/01/CFGLOC101670'
   dirInLoc <- base::paste0(testInputDir,'/',base::dir(testInputDir))
   fileLoc <- base::dir(dirInLoc)
   testOutputDir = "pfs/out"
@@ -106,8 +106,8 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   }
   wrap.loc.data.trnc.comb(DirIn = testInputDir, DirOutBase = testOutputDir, DirSubCopy='location')
   dirLoc <- c('location') 
-  testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", loc$source_id, "/", dirLoc)
- # testthat::expect_true (file.exists(testOutputDirnamedLoc))
+  testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", loc$name, "/", dirLoc)
+  testthat::expect_true (file.exists(testOutputDirnamedLoc))
   
   # Test scenario 3:: only DirSubCombData passed in 
   # The output dir will have data and flags folder only 
@@ -119,7 +119,7 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   
   wrap.loc.data.trnc.comb(DirIn = testInputDir, DirOutBase = testOutputDir, DirSubCombData=c('data','flags'))
   dirLoc <- c('data','flags')
-  testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", loc$source_id, "/", dirLoc)
+  testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", loc$name, "/", dirLoc)
   testthat::expect_true (all(file.exists(testOutputDirnamedLoc)))
    
   # Test scenario 4::  only DirSubCombUcrt, DirSubCopy and DirSubCombData passed in, not DirSubCopy 
@@ -133,7 +133,7 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   
   wrap.loc.data.trnc.comb(DirIn = testInputDir, DirOutBase = testOutputDir, DirSubCombData=c('data','flags'),DirSubCombUcrt='uncertainty_coef')
   dirLoc <- c('data','flags','uncertainty_coef')
-  testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", loc$source_id, "/", dirLoc)
+  testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", loc$name, "/", dirLoc)
   testthat::expect_true (all(file.exists(testOutputDirnamedLoc)))
   
   # Test scenario 5:: All the params are passed in
@@ -149,7 +149,7 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
                           DirSubCopy='location')
   
   dirLoc <- c('data','flags','location','uncertainty_coef')
-  testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", loc$source_id, "/", dirLoc)
-#  testthat::expect_true (all(file.exists(testOutputDirnamedLoc)))
+  testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", loc$name, "/", dirLoc)
+  testthat::expect_true (all(file.exists(testOutputDirnamedLoc)))
   
 })
