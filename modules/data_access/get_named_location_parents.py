@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-from typing import List, Optional
+from typing import Dict, List, Optional
 from contextlib import closing
 
 from psycopg2 import extensions
 
 
-def get_named_location_site(connection: extensions.connection, named_location_id: int) -> Optional[str]:
+def get_named_location_parents(connection: extensions.connection, named_location_id: int) -> Optional[Dict[str,str]]:
     """
     Get the site of a named location.
 
@@ -13,16 +13,16 @@ def get_named_location_site(connection: extensions.connection, named_location_id
     :param named_location_id: A named location ID.
     :return: The site.
     """
-    parents: List[str] = []
+    parents: Dict[str,str] = {}
     with closing(connection.cursor()) as cursor:
-        find_site(cursor, named_location_id, parents)
+        find_parent(cursor, named_location_id, parents)
     if not parents:
         return None
     else:
-        return parents[0]
+        return parents
 
 
-def find_site(cursor: extensions.cursor, named_location_id: int, parents: List[str]):
+def find_parent(cursor: extensions.cursor, named_location_id: int, parents: Dict[str,str]):
     """
     Recursively search for the site.
 
@@ -49,5 +49,7 @@ def find_site(cursor: extensions.cursor, named_location_id: int, parents: List[s
         name = row[1]
         type_name = row[2]
         if type_name.lower() == 'site':
-            parents.append(name)
-        find_site(cursor, parent_id, parents)
+            parents['site'] = name
+        if type_name.lower() == 'domain':
+            parents['domain'] = name        
+        find_parent(cursor, parent_id, parents)

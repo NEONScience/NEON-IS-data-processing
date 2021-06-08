@@ -14,7 +14,7 @@ from data_access.get_named_location_context import get_named_location_context
 from data_access.get_named_location_locations import get_named_location_locations
 from data_access.get_named_location_properties import get_named_location_properties
 from data_access.get_named_location_schema_name import get_named_location_schema_name
-from data_access.get_named_location_site import get_named_location_site
+from data_access.get_named_location_parents import get_named_location_parents
 from data_access.get_named_locations import get_named_locations
 from data_access.get_thresholds import get_thresholds
 from data_access.types.active_period import ActivePeriod
@@ -60,7 +60,7 @@ class DataAccessTest(unittest.TestCase):
     def test_get_named_location_context(self):
         context: List[str] = get_named_location_context(self.connection, self.named_location_id)
         # Context data is not in the database yet.
-        expected_context = ['par-met', 'upward-facing', 'par-met-351']
+        expected_context = ['par-met', 'upward-facing', 'par-met-351', 'ir-biological-temperature']
         self.assertTrue(context == expected_context)
 
     def test_get_named_location_locations(self):
@@ -74,7 +74,7 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_named_location_properties(self):
         properties: List[Property] = get_named_location_properties(self.connection, self.named_location_id)
-        prop = properties[0]
+        prop = properties[4]
         print(f'prop: {prop}')
         self.assertTrue(prop.name == 'Required Asset Management Location ID')
         self.assertTrue(prop.value == 1834)
@@ -87,8 +87,14 @@ class DataAccessTest(unittest.TestCase):
         self.assertTrue(next(iter(schema_names)) == 'prt')
 
     def test_get_named_location_site(self):
-        site = get_named_location_site(self.connection, self.named_location_id)
+        parents = get_named_location_parents(self.connection, self.named_location_id)
+        site = parents['site']
         self.assertTrue(site == 'ORNL')
+
+    def test_get_named_location_domain(self):
+        parents = get_named_location_parents(self.connection, self.named_location_id)
+        site = parents['domain']
+        self.assertTrue(site == 'D07')
 
     def test_get_named_locations(self):
         location = None

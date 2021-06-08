@@ -8,6 +8,7 @@ class NamedLocation(NamedTuple):
     name: str
     type: str
     description: str
+    domain: str
     site: str
     schema_names: Set[str]
     context: List[str]
