@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+import json
 import os
-from typing import List, Set
 import unittest
+from typing import List, Set
 
-from geojson import FeatureCollection
+from geojson import FeatureCollection, dumps as geojson_dumps
 
 from data_access.db_connector import connect
 from data_access.get_asset_locations import get_asset_locations
@@ -23,19 +24,23 @@ from data_access.types.property import Property
 
 class DataAccessTest(unittest.TestCase):
 
+    @staticmethod
+    def print_geojson(feature_collection: FeatureCollection) -> None:
+        geojson_data = geojson_dumps(feature_collection, indent=4, sort_keys=False, default=str)
+        print(f'Geojson data: \n{geojson_data}')
+
     def setUp(self):
         # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
         self.db_url = os.getenv('DATABASE_URL')
+        if self.db_url is None:
+            raise unittest.SkipTest('DATABASE_URL environment variable not set, skipping tests.')
         self.connection = connect(self.db_url)
         self.named_location_id = 31720
 
     def test_get_asset_locations(self):
-        # asset = Asset(id=41283, type='windobserverii')
         asset = Asset(id=18521, type='prt')  # soil plot test
         feature_collection: FeatureCollection = get_asset_locations(self.connection, asset)
-        # from geojson import dumps as geojson_dumps
-        # geojson_data = geojson_dumps(feature_collection, indent=4, sort_keys=False, default=str)
-        # print(f'asset_locations: \n{geojson_data}')
+        self.print_geojson(feature_collection)
         self.assertTrue(feature_collection is not None)
 
     def test_get_assets(self):
@@ -44,7 +49,7 @@ class DataAccessTest(unittest.TestCase):
         for asset in get_assets(self.connection):
             if i > 0:
                 break
-            # print(f'asset id: {asset.id} type: {asset.type}')
+            print(f'asset id: {asset.id} type: {asset.type}')
             i += 1
         self.assertTrue(asset is not None)
 
@@ -56,17 +61,15 @@ class DataAccessTest(unittest.TestCase):
         context: List[str] = get_named_location_context(self.connection, self.named_location_id)
         # Context data is not in the database yet.
         expected_context = ['par-met', 'upward-facing', 'par-met-351']
-        # expected_context = []
-        # print(f'context: {context}')
         self.assertTrue(context == expected_context)
 
     def test_get_named_location_locations(self):
         # Point geometry
         result = get_named_location_locations(self.connection, self.named_location_id)
-        # print(f'result: {json.dumps(result, indent=2)}')
+        print(f'result: {json.dumps(result, indent=2)}')
         # Polygon geometry
         result = get_named_location_locations(self.connection, 314)
-        # print(f'result: {json.dumps(result, indent=2)}')
+        print(f'result: {json.dumps(result, indent=2)}')
         self.assertTrue(result is not None)
 
     def test_get_named_location_properties(self):
@@ -80,7 +83,7 @@ class DataAccessTest(unittest.TestCase):
     def test_get_named_location_schema_name(self):
         named_location_id = 158818
         schema_names: Set = get_named_location_schema_name(self.connection, named_location_id)
-        # print(f'schema_names: {schema_names}')
+        print(f'schema_names: {schema_names}')
         self.assertTrue(next(iter(schema_names)) == 'prt')
 
     def test_get_named_location_site(self):
@@ -94,7 +97,7 @@ class DataAccessTest(unittest.TestCase):
             if i > 0:
                 break
             i += 1
-        # print(f'location: {location}')
+        print(f'location: {location}')
         self.assertTrue(location is not None)
 
     def test_get_thresholds(self):
@@ -102,7 +105,7 @@ class DataAccessTest(unittest.TestCase):
         for threshold in get_thresholds(self.connection):
             if i > 0:
                 break
-            # print(f'threshold: {threshold}')
+            print(f'threshold: {threshold}')
             i += 1
             self.assertTrue(threshold is not None)
 
