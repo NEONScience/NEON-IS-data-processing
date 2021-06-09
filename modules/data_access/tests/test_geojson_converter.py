@@ -15,6 +15,7 @@ class GeoJsonConverterTest(unittest.TestCase):
 
     def test_convert_asset_location(self):
         name = 'CFG123'
+        domain = 'D10'
         site = 'CPER'
         install_date = '2020-01-01T00:00:00Z'
         remove_date = '2020-01-02T00:00:00Z'
@@ -43,8 +44,9 @@ class GeoJsonConverterTest(unittest.TestCase):
         location = Feature(properties=location_properties)
         location['prop1'] = 'value1'
         locations = FeatureCollection([location])
-        asset_location = AssetLocation(name=name, site=site, install_date=install_datetime, remove_date=remove_datetime,
-                                       context=context_list, properties=properties, locations=locations)
+        asset_location = AssetLocation(name=name, domain=domain, site=site, install_date=install_datetime, 
+                                       remove_date=remove_datetime, context=context_list, properties=properties, 
+                                       locations=locations)
         feature = geojson_converter.convert_asset_location(asset_location)
         geojson_data = dumps(feature, indent=4, sort_keys=False, default=str)
         json_data = json.loads(geojson_data)
@@ -72,6 +74,7 @@ class GeoJsonConverterTest(unittest.TestCase):
         name = 'CFG123'
         location_type = 'CONFIG'
         description = 'A named location.'
+        domain = 'D10'
         site = 'CPER'
         start_date = '2020-01-01T00:00:00Z'
         end_date = '2020-01-02T00:00:00Z'
@@ -79,7 +82,7 @@ class GeoJsonConverterTest(unittest.TestCase):
         active_period = ActivePeriod(start_date=date_formatter.to_datetime(start_date),
                                      end_date=date_formatter.to_datetime(end_date))
         prop = Property(name='prop1', value='value1')
-        named_location = NamedLocation(name=name, type=location_type, description=description, site=site,
+        named_location = NamedLocation(name=name, type=location_type, description=description, domain=domain, site=site,
                                        schema_names=set('prt'), context=[context], active_periods=[active_period],
                                        properties=[prop])
         feature = geojson_converter.convert_named_location(named_location)

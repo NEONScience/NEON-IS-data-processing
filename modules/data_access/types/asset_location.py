@@ -8,6 +8,7 @@ from data_access.types.property import Property
 
 class AssetLocation(NamedTuple):
     name: str
+    domain: str
     site: str
     install_date: datetime
     remove_date: datetime

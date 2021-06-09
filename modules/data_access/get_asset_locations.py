@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from typing import List
+from typing import Dict, List
 
 from geojson import Feature, FeatureCollection
 from psycopg2 import extensions
 
 from data_access.get_named_location_locations import get_named_location_locations
 from data_access.get_named_location_context import get_named_location_context
-from data_access.get_named_location_site import get_named_location_site
+from data_access.get_named_location_parents import get_named_location_parents
 from data_access.get_named_location_properties import get_named_location_properties
 from data_access.types.asset import Asset
 from data_access.types.asset_location import AssetLocation
@@ -50,9 +50,11 @@ def get_asset_locations(connection: extensions.connection, asset: Asset) -> Feat
             name = row[3]
             locations: FeatureCollection = get_named_location_locations(connection, key)
             properties: List[Property] = get_named_location_properties(connection, key)
-            site: str = get_named_location_site(connection, key)
+            parents: Dict[str,str] = get_named_location_parents(connection, key)
+            domain: str = parents['domain'] if parents else None
+            site: str = parents['site'] if parents else None
             context: List[str] = get_named_location_context(connection, key)
-            asset_location = AssetLocation(name=name, site=site, install_date=install_date,
+            asset_location = AssetLocation(name=name, domain=domain, site=site, install_date=install_date,
                                            remove_date=remove_date, context=context, properties=properties,
                                            locations=locations)
             features.append(geojson_converter.convert_asset_location(asset_location))
