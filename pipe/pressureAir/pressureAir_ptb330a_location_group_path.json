@@ -22,7 +22,7 @@
 "input": {
   "pfs": {
     "name": "SOURCE_PATH",
-    "repo": "ptb330a_named_location_filter",
+    "repo": "pressureAir_level1_group",
     "glob": "/ptb330a/*/*/*"
   }
 },
