@@ -3,6 +3,7 @@
     "name": "group_test_list_datum"
   },
   "transform": {
+    "image":"registry.access.redhat.com/ubi8/ubi-minimal:8.3",
     "cmd": [
       "/bin/bash"
     ],

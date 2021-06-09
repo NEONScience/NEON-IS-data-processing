@@ -36,39 +36,55 @@
 #     add the OS info due to ravro filetype constraint and execute this test only if the OS is Linux based
 ##############################################################################################
 
-test_that("   Testing Filter named location information by date-time range", {
-  os_type = Sys.info()["sysname"]
-  # Execute the test when the OS is Linux-based, skip otherwise
-  if (os_type == "Linux")
-  {
-    cat("\n When more than one input is sent as an input, consider just the first one\n")
-    
-    workingDirPath <- getwd()
-    
-    nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
-    nameFile2 <- file.path(workingDirPath, "def.read.avro.deve/prt_test2.avro")
-    nameLib <- file.path(workingDirPath, "ravro.so")
-    print(nameLib)
-    rpt <- def.read.avro.deve(NameFile = c(nameFile, nameFile2),NameLib = nameLib)
-    
-    col_List = c('source_id','site_id','readout_time','resistance')   
-    expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
-    expect_true (all (names(rpt) == col_List ))
-    
-    
-    cat("\n Check data types of the reutrn list\n")
-    
-    workingDirPath <- getwd()
-    nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
-    nameLib <-  file.path(workingDirPath, "ravro.so")
-    rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib),silent = FALSE)
-    
-    testthat::equals(length(rpt), 4)
-    testthat::equals(class(rpt$source_id), "character")
-    testthat::equals(class(rpt$site_id), "character")
-    testthat::equals(class(rpt$readout_time), "POSIXct")
-    testthat::equals(class(rpt$resistance), "numeric")
-    
-  }
-}
-)
+test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file",
+          {
+            os_type = Sys.info()["sysname"]
+            # Execute the test when the OS is Linux-based, skip otherwise
+            if (os_type == "Linux")
+            {
+              workingDirPath <- getwd()
+              
+              nameLib <- file.path(workingDirPath, "ravro.so")
+              col_List = c('source_id', 'site_id', 'readout_time', 'resistance')
+              
+              nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
+              #
+              # Happy path 1: When one input data is passed in,
+              #
+              cat("\n |=================================================================================|\n")
+              cat("\n   Test 1: When one input data is passed in.")
+              cat("\n |=================================================================================|\n")
+              
+              rpt <- def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
+              
+              expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+              expect_true (all (names(rpt) == col_List) && rpt$site_id == "HARV")
+              
+              nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
+              nameFile2 <- file.path(workingDirPath, "def.read.avro.deve/prt_test2.avro")
+              #
+              # Happy path 2: When more than one input are passed in, the first one will be selected
+              #
+              cat("\n |=================================================================================|")
+              cat("\n   Test 2: When more than one input are passed in, the first one will be taken.")
+              cat("\n |=================================================================================|\n")
+              
+              rpt <- def.read.avro.deve(NameFile = c(nameFile2, nameFile), NameLib = nameLib)
+              
+              expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+              expect_true (all (names(rpt) == col_List) && rpt$site_id == "not-HARV")
+              
+              # Sad path 1: avro file has one column, resistance, missing
+              cat("\n |=================================================================================|")
+              cat("\n  Test 3 - negative: avro file has one column, resistance, missing.")
+              cat("\n |=================================================================================|\n")
+              
+              nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test_noResistance.avro")
+              col_List_noResistance = c('source_id', 'site_id', 'readout_time')
+              rpt <- def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
+              
+              expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+              expect_true (all (names(rpt) == col_List_noResistance))
+
+            }
+          })

@@ -4,7 +4,7 @@
     },
     "transform": {
         "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-        "image": "quay.io/battelleecology/threshold_loader:8",
+        "image": "quay.io/battelleecology/threshold_loader:9",
         "cmd": [ "/bin/bash" ],
         "stdin": [ "#!/bin/bash", "python3 -m threshold_loader.threshold_loader_main" ],
         "env": {
@@ -26,6 +26,6 @@
             "overwrite": true
         }
     },
-    "enable_stats": true,
+    "enable_stats": false,
     "standby": true 
 }

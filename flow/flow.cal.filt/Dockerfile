@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Calibration Filter
 
 # Start with the calibration package image. 
-FROM quay.io/battelleecology/neon-is-pack-cal-r:v0.0.38
+FROM quay.io/battelleecology/neon-is-pack-cal-r:v0.0.41
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

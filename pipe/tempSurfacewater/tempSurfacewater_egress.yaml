@@ -19,7 +19,7 @@ input:
     name: DATA_PATH
     repo: tempSurfacewater_level1_group
     branch: master
-    glob: "/prt/*/*"
+    glob: "/prt/*/*/*"
 egress:
   URL: s3://int-omnipipe
 standby: true

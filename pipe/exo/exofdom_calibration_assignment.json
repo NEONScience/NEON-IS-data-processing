@@ -1,0 +1,48 @@
+{
+  "pipeline": {
+    "name": "exofdom_calibration_assignment"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.cal.asgn.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileYear=$FILE_YEAR"
+    ],
+    "image": "quay.io/battelleecology/neon-is-cal-asgn-r:v0.0.4",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "calibration",
+          "glob": "/exofdom/*"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_YEAR",
+          "repo": "data_source_exofdom_list_years",
+          "glob": "/data_years.txt"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "210M",
+    "cpu": 0.3
+  },
+  "parallelism_spec": {
+    "constant": "4"
+  }
+}

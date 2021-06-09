@@ -8,11 +8,11 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirRglr=uncertainty_data
-  - FileSchmRglr=NA
-  - FreqRglr=1
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
+  - RptTimeWndw=FALSE
+  - DropNotNumc=FALSE
   image: quay.io/battelleecology/neon-is-rglr-r:v0.0.27
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -22,11 +22,9 @@ input:
   pfs:
     name: DIR_IN
     repo: tempSurfacewater_uncertainty_data
-    glob: "/*/*/*/"
+    glob: "/prt/*/*/*"
 enable_stats: false
 standby: true
-parallelism_spec:
-  constant: '2'
 resource_requests:
   memory: 200Mi
-  cpu: 0
+  cpu: 0.1

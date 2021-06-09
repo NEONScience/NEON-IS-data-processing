@@ -15,10 +15,8 @@
       "python3 -m date_gap_filler.date_gap_filler_main"
     ],
     "env": {
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
-      "START_DATE": "2019-12-31",
-      "END_DATE": "2020-01-07",
       "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags",
       "DATA_SOURCE_TYPE_INDEX": "3",
       "DATA_YEAR_INDEX": "4",
@@ -29,7 +27,8 @@
       "LOCATION_SOURCE_TYPE_INDEX": "3",
       "LOCATION_YEAR_INDEX": "4",
       "LOCATION_MONTH_INDEX": "5",
-      "LOCATION_INDEX": "6",
+      "LOCATION_DAY_INDEX": "6",
+      "LOCATION_INDEX": "7",
       "EMPTY_FILE_TYPE_INDEX": "4"
     }
   },
@@ -52,19 +51,32 @@
             "pfs": {
               "name": "DATA_PATH",
               "repo": "exoturbidity_merge_data_by_location",
-              "glob": "/exoturbidity/(*)/(*)",
-              "joinOn": "$1/$2",
+              "glob": "/exoturbidity/(*)/(*)/(*)",
+              "joinOn": "$1/$2/$3",
               "empty_files": true
             }
           },
           {
-            "pfs": {
-              "name": "LOCATION_PATH",
-              "repo": "location_active_dates",
-              "glob": "/exoturbidity/(*)/(*)",
-              "joinOn": "$1/$2",
-              "empty_files": true
-            }
+            "join": [
+              {
+                "pfs": {
+                  "name": "LOCATION_PATH",
+                  "repo": "exoturbidity_location_active_dates_assignment",
+                  "glob": "/exoturbidity/(*)/(*)/(*)",
+                  "joinOn": "$1/$2/$3",
+                  "empty_files": true
+                }
+              },
+              {
+                "pfs": {
+                  "name": "DATE_LIMITER_PATH",
+                  "repo": "exo_date_gap_filler_limiter",
+                  "glob": "/(*)/(*)/(*)",
+                  "joinOn": "$1/$2/$3",
+                  "empty_files": true
+                }
+              }
+            ]
           }
         ]
       }

@@ -2,13 +2,13 @@
 from contextlib import closing
 from typing import List
 
-from cx_Oracle import Connection
+from psycopg2 import extensions
 
 import common.date_formatter as date_formatter
 from data_access.types.property import Property
 
 
-def get_geolocation_properties(connection: Connection, geolocation_id: int) -> List[Property]:
+def get_geolocation_properties(connection: extensions.connection, geolocation_id: int) -> List[Property]:
     """
     Get the properties associated with a geolocation.
 
@@ -27,11 +27,12 @@ def get_geolocation_properties(connection: Connection, geolocation_id: int) -> L
         join
             attr on property.attr_id = attr.attr_id
         where
-            property.locn_id = :geolocation_id
+            property.locn_id = %s
     '''
     properties: List[Property] = []
     with closing(connection.cursor()) as cursor:
-        rows = cursor.execute(sql, geolocation_id=geolocation_id)
+        cursor.execute(sql, [geolocation_id])
+        rows = cursor.fetchall()
         for row in rows:
             name = row[0]
             string_value = row[1]
@@ -40,7 +41,7 @@ def get_geolocation_properties(connection: Connection, geolocation_id: int) -> L
             if string_value is not None:
                 properties.append(Property(name=name, value=string_value))
             if number_value is not None:
-                properties.append(Property(name=name, value=number_value))
+                properties.append(Property(name=name, value=float(number_value)))
             if date_value is not None:
                 date_value = date_formatter.to_string(date_value)
                 properties.append(Property(name=name, value=date_value))

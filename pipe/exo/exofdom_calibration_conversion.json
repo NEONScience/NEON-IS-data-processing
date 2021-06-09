@@ -8,12 +8,13 @@
       "/flow.cal.conv.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "FileSchmData=$FILE_SCHEMA_DATA",
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
-      "TermFuncUcrt=fDOM:def.ucrt.meas.cnst",
-      "TermQf=fDOM",
+      "TermFuncUcrt=fdom_qsu:def.ucrt.meas.cnst",
+      "TermQf=fdom_qsu",
       "DirSubCopy=calibration"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.47",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
@@ -26,8 +27,15 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "exofdom_calibration_filter",
-          "glob": "/exofdom/*/*"
+          "repo": "exofdom_data_calibration_group",
+          "glob": "/exofdom/*/*/*"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_DATA",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/exofdom_calibrated.avsc"
         }
       },
       {
@@ -42,7 +50,7 @@
   "enable_stats": false,
   "standby": true,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
     "memory": "200Mi",

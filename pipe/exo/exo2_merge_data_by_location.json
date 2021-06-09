@@ -12,13 +12,13 @@
       "DirSubCombUcrt=uncertainty_coef",
       "DirSubCopy=location"
     ],
-    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.23",
+    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.24",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
     "env": {
       "LOG_LEVEL": "INFO",
-      "PARALLELIZATION_INTERNAL": "4"
+      "PARALLELIZATION_INTERNAL": "1"
     }
   },
   "input": {

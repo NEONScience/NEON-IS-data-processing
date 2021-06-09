@@ -16,6 +16,7 @@ def convert_asset_location(location: AssetLocation) -> Feature:
     if location.remove_date is not None:
         remove_date = date_formatter.to_string(location.remove_date)
     feature_properties = dict(name=location.name,
+                              domain=location.domain,
                               site=location.site,
                               install_date=install_date,
                               remove_date=remove_date,
@@ -32,6 +33,7 @@ def convert_named_location(location: NamedLocation) -> FeatureCollection:
     properties = dict(name=location.name,
                       type=location.type,
                       description=location.description,
+                      domain=location.domain,
                       site=location.site,
                       context=location.context,
                       active_periods=active_periods)

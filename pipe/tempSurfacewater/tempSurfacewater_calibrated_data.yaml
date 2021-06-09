@@ -19,7 +19,7 @@ input:
   pfs:
     name: IN_PATH
     repo: tempSurfacewater_context_filter
-    glob: "/*/*/*"
+    glob: "/prt/*/*/*"
     empty_files: true
 enable_stats: false
 standby: true

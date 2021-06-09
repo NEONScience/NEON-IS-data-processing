@@ -1,0 +1,44 @@
+---
+pipeline:
+  name: tempSpecificDepthLakes_qaqc_plausibility
+transform:
+  cmd:
+  - Rscript
+  - "/flow.qaqc.plau.R"
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - FileSchmQf=$SCHEMA_FLAGS
+  - VarAddFileQf=timeWndwBgn|timeWndwEnd
+  - TermTest1=depth0WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest2=depth1WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest3=depth2WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest4=depth3WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest5=depth4WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest6=depth5WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest7=depth6WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest8=depth7WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest9=depth8WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest10=depth9WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  - TermTest11=depth10WaterTemp:null|gap|range(rmv)|step(rmv)|spike
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.16
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: tempSpecificDepthLakes_padded_timeseries_analyzer
+      glob: "/tchain/*/*/*"
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: avro_schemas
+      glob: "/dp0p/flags_plausibility_tempSpecificDepthLakes.avsc"
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '1'
+resource_requests:
+  memory: 200Mi
+  cpu: 0

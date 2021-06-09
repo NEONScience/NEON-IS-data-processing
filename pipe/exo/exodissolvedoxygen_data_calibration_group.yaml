@@ -1,0 +1,51 @@
+---
+pipeline:
+  name: exodissolvedoxygen_data_calibration_group
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/filter_joiner:9
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m filter_joiner.filter_joiner_main"
+  env:
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH/exodissolvedoxygen/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/CALIBRATION_PATH/exodissolvedoxygen/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+input:
+  join:
+  - pfs:
+      name: DATA_PATH
+      repo: data_source_exodissolvedoxygen_linkmerge
+      glob: /exodissolvedoxygen/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      outer_join: true
+      empty_files: true
+  - pfs:
+      name: CALIBRATION_PATH
+      repo: exodissolvedoxygen_calibration_assignment
+      glob: /exodissolvedoxygen/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
+parallelism_spec:
+  constant: "1"
+enable_stats: false
+standby: true

@@ -33,7 +33,7 @@
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 #' 
-#' @return A directory structure in the format DirOutBase/SOURCE_TYPE/YEAR/MONTH/DAY/ID, 
+#' @return A directory structure in the format DirOutBase/SOURCE_TYPE/YEAR/MONTH/DAY/ID/location, 
 #' where DirOutBase replaces the input directory structure up to #/pfs/BASE_REPO (see inputs above) and the 
 #' terminal path (ID) is populated with the filtered location files applicable to the year, month, and 
 #' day indicated in the path. 

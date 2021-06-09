@@ -17,7 +17,7 @@
     "pfs": {
       "name": "DATA_PATH",
       "repo": "data_source_exophorp_linkmerge",
-      "glob": "/exophorp/2019/01/05/*",
+      "glob": "/exophorp/2020/01/0[5,6,7]",
       "empty_files": true
     }
   },

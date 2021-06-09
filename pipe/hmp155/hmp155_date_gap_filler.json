@@ -17,8 +17,6 @@
     "env": {
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out",
-      "START_DATE": "2018-12-31",
-      "END_DATE": "2019-01-07",
       "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags",
       "DATA_SOURCE_TYPE_INDEX": "3",
       "DATA_YEAR_INDEX": "4",
@@ -48,7 +46,7 @@
         }
       },
       {
-        "join": [
+        "union": [
           {
             "pfs": {
               "name": "DATA_PATH",
@@ -59,13 +57,26 @@
             }
           },
           {
-            "pfs": {
-              "name": "LOCATION_PATH",
-              "repo": "hmp155_location_active_dates_assignment",
-              "glob": "/hmp155/(*)/(*)/(*)",
-              "joinOn": "$1/$2/$3",
-              "empty_files": true
-            }
+            "join": [
+              {
+                "pfs": {
+                  "name": "LOCATION_PATH",
+                  "repo": "hmp155_location_active_dates_assignment",
+                  "glob": "/hmp155/(*)/(*)/(*)",
+                  "joinOn": "$1/$2/$3",
+                  "empty_files": true
+                }
+              },
+              {
+                "pfs": {
+                  "name": "DATE_LIMITER_PATH",
+                  "repo": "hmp155_date_gap_filler_limiter",
+                  "glob": "/(*)/(*)/(*)",
+                  "joinOn": "$1/$2/$3",
+                  "empty_files": true
+                }
+              }
+            ]
           }
         ]
       }

@@ -8,11 +8,12 @@
       "/flow.cal.conv.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "FileSchmData=$FILE_SCHEMA_DATA",
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
-      "TermFuncUcrt=surfaceWaterTemperature:def.ucrt.wq.temp.conc|specificConductance:def.ucrt.meas.mult",
-      "TermQf=specificConductance"
+      "TermFuncUcrt=temperature:def.ucrt.wq.temp.conc|specific_conductance:def.ucrt.meas.mult",
+      "TermQf=specific_conductance"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.45",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.47",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
@@ -25,8 +26,15 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "exoconductivity_calibration_filter",
-          "glob": "/exoconductivity/*/*"
+          "repo": "exoconductivity_data_calibration_group",
+          "glob": "/exoconductivity/*/*/*"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_DATA",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/exoconductivity_calibrated.avsc"
         }
       },
       {
@@ -39,9 +47,9 @@
     ]
   },
   "enable_stats": false,
-  "standby": true,
+  "standby": false,
   "parallelism_spec": {
-    "constant": "2"
+    "constant": "1"
   },
   "resource_requests": {
     "memory": "200Mi",

@@ -1,0 +1,30 @@
+---
+pipeline:
+  name: pqs1_date_gap_filler_limiter
+transform:
+  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
+  cmd: ["/bin/bash"]
+  env:
+    # START_DATE and END_DATE indicate the date range (inclusive) to create the /Y/M/D folder structure
+    # START_DATE must be set, format "YYYY-MM-DD"
+    # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
+    OUT_PATH: /pfs/out
+    START_DATE: "2020-01-01"
+    END_DATE: "2020-01-05"
+  stdin:
+  - "#!/bin/bash"
+  - "# If END_DATE unset, set to yesterday"
+  - "[  -z $END_DATE ] && END_DATE=$(date -u -d '1 day ago' +%Y/%m/%d)"
+  - "# Create daily folder structure from start date to end date"
+  - "for d in $(seq $(date -u +%s -d $START_DATE) +86400 $(date -u +%s -d $END_DATE)) ; do"
+  - "date_path=$(date -u +%Y/%m/%d -d @$d)"
+  - "echo $OUT_PATH/$date_path"
+  - "mkdir -p $OUT_PATH/$date_path"
+  - "done"
+input:
+  cron:
+    name: tick
+    spec: "@daily"
+    overwrite: true
+enable_stats: false
+standby: true
