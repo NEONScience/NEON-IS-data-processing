@@ -34,6 +34,8 @@
 #     original creation
 #   Cove Sturtevant (2020-12-08)
 #     added path to calibration directory in output
+#   Cove Sturtevant (2021-04-15)
+#     added stream ID to the output
 ##############################################################################################
 def.cal.meta <- function(fileCal, log = NULL) {
   # Intialize logging if needed
@@ -77,15 +79,13 @@ def.cal.meta <- function(fileCal, log = NULL) {
     stop()
     }
     
-    # Look for whether this calibration is marked as suspect
-    
-    
     # output metadata
     metaCal[[idxFileCal]] <- base::data.frame(path=pathFileCal[idxFileCal],
                                               file=nameFileCal[idxFileCal],
                                               timeValiBgn=infoCal$timeVali$StartTime,
                                               timeValiEnd=infoCal$timeVali$EndTime,
                                               id=base::as.numeric(infoCal$file$StreamCalVal$CertificateNumber),
+                                              strm=base::as.numeric(infoCal$file$StreamCalVal$StreamID),
                                               stringsAsFactors=FALSE)
     
   }

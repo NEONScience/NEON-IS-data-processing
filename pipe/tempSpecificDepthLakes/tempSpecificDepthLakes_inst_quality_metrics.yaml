@@ -1,0 +1,52 @@
+---
+pipeline:
+  name: tempSpecificDepthLakes_inst_quality_metrics
+transform:
+  cmd:
+  - Rscript
+  - "/flow.qaqc.qm.dp0p.R"
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - Tmi=001
+  - VarTimeBgn=timeWndwBgn
+  - VarTimeEnd=timeWndwEnd
+
+  - QfForc1=depth0WaterTempNullQF:1:depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempValidCalQF|depth0WaterTempSpikeQF:-1
+
+  - QfForc2=depth1WaterTempNullQF:1:depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempValidCalQF|depth1WaterTempSpikeQF:-1
+  
+  - QfForc3=depth2WaterTempNullQF:1:depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempValidCalQF|depth2WaterTempSpikeQF:-1
+  
+  - QfForc4=depth3WaterTempNullQF:1:depth3WaterTempRangeQF|depth3WaterTempStepQF|depth3WaterTempValidCalQF|depth3WaterTempSpikeQF:-1
+  
+  - QfForc5=depth4WaterTempNullQF:1:depth4WaterTempRangeQF|depth4WaterTempStepQF|depth4WaterTempValidCalQF|depth4WaterTempSpikeQF:-1
+  
+  - QfForc6=depth5WaterTempNullQF:1:depth5WaterTempRangeQF|depth5WaterTempStepQF|depth5WaterTempValidCalQF|depth5WaterTempSpikeQF:-1
+  
+  - QfForc7=depth6WaterTempNullQF:1:depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempValidCalQF|depth6WaterTempSpikeQF:-1
+  
+  - QfForc8=depth7WaterTempNullQF:1:depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempValidCalQF|depth7WaterTempSpikeQF:-1
+  
+  - QfForc9=depth8WaterTempNullQF:1:depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempValidCalQF|depth8WaterTempSpikeQF:-1
+  
+  - QfForc10=depth9WaterTempNullQF:1:depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempValidCalQF|depth9WaterTempSpikeQF:-1
+  
+  - QfForc11=depth10WaterTempNullQF:1:depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempValidCalQF|depth10WaterTempSpikeQF:-1
+  
+  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.5
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  pfs:
+    name: DIR_IN
+    repo: tempSpecificDepthLakes_qaqc_flags_group
+    glob: "/tchain/*/*/*"
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '1'
+resource_requests:
+  memory: 200Mi
+  cpu: 0

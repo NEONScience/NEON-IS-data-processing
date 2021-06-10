@@ -19,6 +19,6 @@ test_that("when avro schm is pass, return all the elements in the schema",
             expect_true (length(rpt$var) == 3)
             expect_true (rpt$var[1]$name[1] == 'source_id')
             expect_true (rpt$var[2]$type[3] == "long|timestamp-millis")
-            expect_true (typeof(rpt$var[3]$doc[3]) == "logical")
+            expect_true (typeof(rpt$var[3]$doc[3]) == "character")
           })
 

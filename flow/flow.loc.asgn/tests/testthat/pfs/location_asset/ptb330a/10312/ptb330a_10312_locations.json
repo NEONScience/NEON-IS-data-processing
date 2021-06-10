@@ -1,0 +1,82 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC100323",
+                "site":"DSNY",
+                "install_date":"2019-01-02T00:00:00Z",
+                "remove_date":"2019-01-07T00:00:00Z",
+                "context":[
+
+                ],
+                "locations":{
+                    "type":"FeatureCollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "geometry":null,
+                            "properties":{
+                                "start_date":"2019-01-02T00:00:00Z",
+                                "end_date":"2019-01-03T00:00:00Z",
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "gamma":                                0,
+                                "x_offset":                                -0.03,
+                                "y_offset":                                1.71,
+                                "z_offset":                                5.15,
+                                "reference_location":{
+                                    "type":"Feature",
+                                    "geometry":null,
+                                    "properties":{
+                                        "name":"TOWER100302",
+                                        "locations":{
+                                            "type":"FeatureCollection",
+                                            "features":[
+                                                {
+                                                    "type":"Feature",
+                                                    "geometry":{
+                                                        "type":"Point",
+                                                        "coordinates":[
+                                                                                                                        -81.436193,
+                                                                                                                        28.125053,
+                                                                                                                        20.33438
+                                                        ]
+                                                    },
+                                                    "properties":{
+                                                        "start_date":"2019-01-02T00:00:00Z",
+                                                        "end_date":"2019-01-03T00:00:00Z",
+                                                        "alpha":                                                        0,
+                                                        "beta":                                                        0,
+                                                        "gamma":                                                        0,
+                                                        "x_offset":                                                        0,
+                                                        "y_offset":                                                        0,
+                                                        "z_offset":                                                        0,
+                                                        "reference_location":{
+                                                            "type":"Feature",
+                                                            "geometry":null,
+                                                            "properties":{
+                                                                "name":"TOWER100302",
+                                                                "locations":null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "Required Asset Management Location ID":            1218,
+            "Required Asset Management Location Code":"CFGLOC100323"
+        }
+    ],
+    "source_id":    10312,
+    "source_type":"ptb330a"
+}

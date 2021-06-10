@@ -21,7 +21,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "ptb330a_location_filter",
+      "repo": "ptb330a_calibrated_location_group",
       "glob": "/ptb330a/*/*/*"
     }
   },

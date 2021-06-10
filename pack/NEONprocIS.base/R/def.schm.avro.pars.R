@@ -80,7 +80,7 @@ def.schm.avro.pars <- function(FileSchm=NULL,
     if(base::is.null(idx$type)){
       idx$type <- NA
     }
-    if(base::is.null(idx$dox)){
+    if(base::is.null(idx$doc)){
       idx$doc <- NA
     }
     

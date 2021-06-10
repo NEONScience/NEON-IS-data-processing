@@ -15,7 +15,7 @@
       "python3 -m date_gap_filler_linker.app"
     ],
     "env": {
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
       "RELATIVE_PATH_INDEX": "3",
       "LOCATION_INDEX": "7",

@@ -15,7 +15,7 @@
       "python3 -m date_gap_filler.date_gap_filler_main"
     ],
     "env": {
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
       "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags",
       "DATA_SOURCE_TYPE_INDEX": "3",

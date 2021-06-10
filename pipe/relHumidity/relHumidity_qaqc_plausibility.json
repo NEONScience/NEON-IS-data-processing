@@ -3,11 +3,17 @@
     "name": "relHumidity_qaqc_plausibility"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.plau.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS",
-    "TermTest1=relativeHumidity:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
-    "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
-    "TermTest3=dewPoint:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)"],
-    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.15",
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.plau.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQf=$SCHEMA_FLAGS",
+      "TermTest1=relativeHumidity:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
+      "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
+      "TermTest3=dewPoint:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
+      "VarAddFileQf=errorState"],
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.17",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
@@ -32,7 +38,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": false,
+  "standby": true,
   "parallelism_spec": {
     "constant": "1"
   },

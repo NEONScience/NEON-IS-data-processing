@@ -25,7 +25,7 @@ No output from this function other than performing the intended action.
 Definition function. Copy a source directory to a destination directory with a symbolic link
 }
 \examples{
-def.dir.copy.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01/01')
+def.dir.copy.symb(DirSrc='/scratch/pfs/proc_group/prt/27134/2019/01/01',DirDest='pfs/out/prt/27134/2019/01')
 }
 \references{
 Currently none
