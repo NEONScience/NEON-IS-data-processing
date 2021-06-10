@@ -65,7 +65,7 @@
   "input": {
     "pfs": {
       "name": "import_trigger",
-      "repo": "import_trigger_li7200",
+      "repo": "import_trigger_csat3",
       "glob": "/*/*/*"
     }
   },

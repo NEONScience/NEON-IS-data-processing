@@ -27,8 +27,8 @@ def data_conversion(filename: str) -> pd.DataFrame:
     df = pd.read_parquet(filename)
     outputdf = df.copy()
     log.debug(f'{outputdf.columns}')
-    outputdf['tempSoni'] = outputdf['speed_of_sound'].apply(lambda x: -1 if math.isnan(x) else get_temp_soni(x))
-    outputdf['index'] = outputdf['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else get_range_bits(x, 0, 5))
+    outputdf['tempSoni'] = outputdf['speed_of_sound'].apply(lambda x: math.nan if math.isnan(x) else get_temp_soni(x))
+    outputdf['index'] = outputdf['diagnostic_word'].apply(lambda x: math.nan if math.isnan(x) else get_range_bits(x, 0, 5))
     outputdf['qfSoniUnrs'] = outputdf['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == -99999 else 0)
     outputdf['qfSoniData'] = outputdf['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61503 else 0)
     outputdf['qfSoniTrig'] = outputdf['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61440 else 0)
@@ -94,6 +94,8 @@ def l0tol0p(in_path: Path, out_path: Path, file_dirs: list, relative_path_index:
                         outputdf = data_conversion(path)
                     else:
                         outputdf = pd.merge(data_conversion(path), outputdf, how='inner', left_on=['readout_time'], right_on=['readout_time'])
+    if not outputdf.empty and outfile != '':
+        outputdf.to_parquet(outfile)
 
 
 def main() -> None:

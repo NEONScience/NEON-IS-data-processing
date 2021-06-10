@@ -128,6 +128,8 @@
 library(foreach)
 library(doParallel)
 
+source("/Users/lzhang/Downloads/def.plau.R")
+
 # Start logging
 log <- NEONprocIS.base::def.log.init()
 
@@ -444,7 +446,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       
       # Run the tests
       log$debug('Running plausibility tests (may include null, gap, range, step, persistence)')
-      qf[[idxTerm]] <- base::do.call(eddy4R.qaqc::def.plau, argsPlau)[[idxTerm]]
+      #qf[[idxTerm]] <- base::do.call(eddy4R.qaqc::def.plau, argsPlau)[[idxTerm]]
+      qf[[idxTerm]] <- base::do.call(def.plau, argsPlau)[[idxTerm]]
       
     }
     

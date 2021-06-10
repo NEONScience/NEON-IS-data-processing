@@ -18,12 +18,13 @@ transform:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: DEBUG
+    PARALLELIZATION_INTERNAL: 4
 input:
   cross:
   - pfs:
       name: DIR_IN
       repo: csat3_padded_timeseries_analyzer
-      glob: /csat3/*/*/*
+      glob: /csat3/*/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
       repo: avro_schemas
@@ -31,8 +32,8 @@ input:
 enable_stats: false
 standby: true 
 parallelism_spec:
-  constant: '1'
+  constant: '8'
 resource_requests:
-  memory: 200Mi
-  cpu: 0.1
+  memory: 2Gi
+  cpu: 1
 
