@@ -15,13 +15,15 @@
       "RmvFlow=TRUE",
       "RmvHeat=TRUE",
       "FileSchmQf=$SCHEMA_FLAGS"
-      ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:v0.0.9",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:v0.0.10",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO",
       "PARALLELIZATION_INTERNAL": "4"
-    }  
+    }
   },
   "input": {
     "cross": [
@@ -34,9 +36,9 @@
       },
       {
         "pfs": {
-            "name": "SCHEMA_FLAGS",
-            "repo": "avro_schemas",
-            "glob": "/dp0p/flags_tempAir_specific.avsc"
+          "name": "SCHEMA_FLAGS",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/flags_tempAir_specific.avsc"
         }
       }
     ]

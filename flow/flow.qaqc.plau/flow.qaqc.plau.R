@@ -443,7 +443,10 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       argsPlau$Vrbs=TRUE # Outputs quality flag values instead of vector positions
       
       # Run the tests
-      log$debug('Running plausibility tests (may include null, gap, range, step, persistence)')
+      log$debug(base::paste0('Running plausibility tests: [',
+                             base::paste0(ParaTest[[idxTerm]]$test,collapse=', '),
+                             '] for term: ',
+                             idxTerm))
       qf[[idxTerm]] <- base::do.call(eddy4R.qaqc::def.plau, argsPlau)[[idxTerm]]
       
     }
@@ -452,7 +455,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
     if('spike' %in% ParaTest[[idxTerm]]$test){
       
       # Run the spike test
-      log$debug('Running spike test')
+      log$debug(base::paste0('Running spike test for term: ',idxTerm))
       qfSpk <- NEONprocIS.qaqc::def.spk.mad(data=data[[idxTerm]],Meth=SpkMeth,ThshMad=SpkMad,Wndw=SpkWndw,WndwStep=SpkWndwStep,WndwFracSpkMin=0.1,NumGrp=SpkNumPtsGrp,NaFracMax=SpkNaFracMax,log=log)
       names(qfSpk) <- 'qfSpk'
 

@@ -12,12 +12,14 @@
       "WndwAgr=001|030",
       "WghtAlphBeta=2|1",
       "Thsh=0.2"
-      ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.10",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.11",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "cross": [

@@ -37,6 +37,8 @@ COPY ./ /pack/NEONprocIS.base/
 ENV LIBARROW_BINARY=true
 ENV ARROW_USE_PKG_CONFIG=false
 ENV LIBARROW_MINIMAL=false
+ENV NOT_CRAN=true
+ENV ARROW_WITH_GZIP=ON
 
 RUN apt-get update \
 && apt-get dist-upgrade -y \
@@ -99,7 +101,6 @@ RUN apt-get update \
 && R -e 'utils::install.packages(c("devtools"))' && \
    R -e 'remotes::install_github("rstudio/renv@0.9.3")' && \
    R -e 'renv::consent(provided=TRUE); renv::restore("/pack/NEONprocIS.base/")' && \
-#   R -e 'remotes::install_github("apache/arrow/r@apache-arrow-0.17.1")' && \
    R -e 'renv::install("/pack/NEONprocIS.base")' && \
    rm -rf /pack
 
