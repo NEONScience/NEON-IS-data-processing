@@ -23,11 +23,11 @@
     }
   },
   "input": {
-    "pfs": {
-      "name": "DIR_IN",
-      "repo": "pressureAir_calibrated_data",
-      "glob": "/*/*/*"
-    }
+      "pfs": {
+        "name": "DIR_IN",
+        "repo": "pressureAir_calibrated_data",
+        "glob": "/ptb330a/*/*/*"
+      }
   },
   "enable_stats": false,
   "standby": true,

@@ -27,7 +27,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "ptb330a_calibration_filter",
+          "repo": "ptb330a_data_calibration_group",
           "glob": "/ptb330a/*/*/*/"
         }
       },
