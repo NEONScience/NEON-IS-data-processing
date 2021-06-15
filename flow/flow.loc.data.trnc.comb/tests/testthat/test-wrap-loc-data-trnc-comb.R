@@ -171,7 +171,9 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   testOutputDirnamedLoc <- base::paste0(testOutputDirPath,"/",loc$name,"/",dirLoc)
   testthat::expect_true (all(file.exists(testOutputDirnamedLoc)))
   
-  # Test scenario 6:: source_id is in the sub dir instead of location name
+  # Test scenario 6:: source_id is in the sub dir instead of location name, 
+  # No matching location information for location',nameLoc,' and source id
+  # so numLoc == 0
   #
   # Remove the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
