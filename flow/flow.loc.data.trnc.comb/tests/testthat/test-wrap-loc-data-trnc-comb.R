@@ -196,9 +196,9 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
     DirSubCombUcrt = 'uncertainty_coef',
     DirSubCopy = 'location'
   )
-  
+
   dirLoc <- c('data', 'flags', 'location', 'uncertainty_coef')
   testOutputDirnamedLoc <- base::paste0(testOutputDirPath,"/",loc$source_id,"/",dirLoc)
   testthat::expect_true (all(file.exists(testOutputDirnamedLoc)))
-  
+
 })
