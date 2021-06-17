@@ -13,12 +13,14 @@
       "TermCtxt2=temperature",
       "TermCtxt3=dewPoint",
       "DirSubCopy=location"
-      ],
-    "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.14",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.15",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "cross": [

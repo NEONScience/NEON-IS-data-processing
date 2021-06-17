@@ -15,19 +15,21 @@
       "IdxWndw=IdxWndwMin",
       "RptTimeWndw=FALSE",
       "DropNotNumc=FALSE"
-      ],
-    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.27",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+    ],
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.28",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
-      "pfs": {
-        "name": "DIR_IN",
-        "repo": "relHumidity_uncertainty_data",
-        "glob": "/hmp155/*/*/*"
-      }
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "relHumidity_uncertainty_data",
+      "glob": "/hmp155/*/*/*"
+    }
   },
   "enable_stats": false,
   "standby": true,
@@ -35,7 +37,7 @@
     "constant": "1"
   },
   "resource_requests": {
-      "memory": "20M",
-      "cpu": 0.25
+    "memory": "20M",
+    "cpu": 0.25
   }
 }

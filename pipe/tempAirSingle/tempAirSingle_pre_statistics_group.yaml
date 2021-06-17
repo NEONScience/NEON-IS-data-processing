@@ -15,9 +15,9 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: STATISTICS_PATH
+            name: DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/prt/*/data/**
+            glob_pattern: /pfs/DATA_PATH/*/*/*/*/prt/*/data/**
             # Join on context group (already joined below by day)
             join_indices: [6]
         - path:
@@ -38,8 +38,8 @@ transform:
 input:
   join:
   - pfs:
-      name: STATISTICS_PATH
-      repo: tempAirSingle_qaqc_data_group
+      name: DATA_PATH
+      repo: tempAirSingle_merge_qaqc_data
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true

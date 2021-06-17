@@ -12,12 +12,15 @@
       "TermTest1=relativeHumidity:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
       "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
       "TermTest3=dewPoint:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
-      "VarAddFileQf=errorState"],
-    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.17",
-    "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
+      "VarAddFileQf=errorState"
+    ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.18",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
     "env": {
       "LOG_LEVEL": "INFO"
-    }  
+    }
   },
   "input": {
     "cross": [
@@ -30,9 +33,9 @@
       },
       {
         "pfs": {
-            "name": "SCHEMA_FLAGS",
-            "repo": "avro_schemas",
-            "glob": "/dp0p/flags_plausibility_relHumidity.avsc"
+          "name": "SCHEMA_FLAGS",
+          "repo": "avro_schemas",
+          "glob": "/dp0p/flags_plausibility_relHumidity.avsc"
         }
       }
     ]
