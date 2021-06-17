@@ -9,7 +9,7 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmStat=$SCHEMA_STAT",
-      "DirSubCopy=data|uncertainty_data",
+      "DirSubCopy=data|uncertainty_data|sci_stats",
       "WndwAgr=005|030",
       "TermStat1=surfacewaterTemp:mean|minimum|maximum|variance|numPts|stdEr",
       "TermStat2=surfacewaterSpecCond:mean|minimum|maximum|variance|numPts|stdEr"
