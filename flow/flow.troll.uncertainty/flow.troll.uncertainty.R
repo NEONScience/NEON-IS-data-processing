@@ -77,9 +77,9 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_qaqc_data_group')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/swPhysical_aquatroll200_qaqc_data_group')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=surfacewater","WndwInst=FALSE","WndwAgr=005")
 #' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
@@ -162,8 +162,13 @@ if(base::is.null(Para$WndwAgr) || Para$WndwAgr == 'NA'){
 }
 
 # Retrieve optional sensor subdirectories to copy over
-nameDirSubCopy <- c('uncertainty_coef')
-DirUncertCoefCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[1]))
+if(base::is.null(Para$DirSubCopy) || Para$DirSubCopy == 'NA'){
+  nameDirSubCopy <- NULL
+}else{
+  nameDirSubCopy <- Para$DirSubCopy
+  DirUncertCoefCopy <- base::unique(base::setdiff(Para$DirIn,nameDirSubCopy[1]))
+}
+
 
 #what are the expected subdirectories of each input path
 nameDirSub <- c('data','flags','location','uncertainty_coef','uncertainty_data')
@@ -196,7 +201,7 @@ if(length(WndwAgr)>0){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  #idxDirIn<-DirIn[4] #for testing
+  #idxDirIn<-DirIn[2] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -204,18 +209,14 @@ for (idxDirIn in DirIn){
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- timeBgn + base::as.difftime(1,units='days')
   idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
-  idxDirOutData <- base::paste0(idxDirOut,'/data')
-  base::dir.create(idxDirOutData,recursive=TRUE)
+  if(Context=="GW"){
+    idxDirOutData <- base::paste0(idxDirOut,'/data')
+    base::dir.create(idxDirOutData,recursive=TRUE)
+  }
   idxDirOutSciStats <- base::paste0(idxDirOut,'/sci_stats')
   base::dir.create(idxDirOutSciStats,recursive=TRUE)
   idxDirOutUcrt <- base::paste0(idxDirOut,'/uncertainty_data')
   base::dir.create(idxDirOutUcrt,recursive=TRUE)
-  
-  # Copy with a symbolic link the desired sensor subfolders 
-  if(base::length(DirUncertCoefCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/uncertainty_coef'),idxDirOut,log=log)
-  } 
-  
   
   ##### Read in troll data #####
   trollData <- NULL
@@ -307,16 +308,19 @@ for (idxDirIn in DirIn){
     dataCol <- c("readout_time","pressure","temperature","elevation") 
   }
   dataOut <- dataOut[,dataCol]
-  #Write out data
-  rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
-                                                   NameFile = base::paste0(idxDirOutData,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet"), 
-                                                   Schm = SchmDataOut),silent=FALSE)
-  if(any(grepl('try-error',class(rptDataOut)))){
-    log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
-    stop()
-  } else {
-    log$info("Data written out.")
+  #Write out instantaneous data for groundwater only
+  if(Context == "GW"){
+    rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
+                                                     NameFile = base::paste0(idxDirOutData,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_005.parquet"), 
+                                                     Schm = SchmDataOut),silent=FALSE)
+    if(any(grepl('try-error',class(rptDataOut)))){
+      log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
+      stop()
+    } else {
+      log$info("Data written out.")
+    }
   }
+  
   
   
 
@@ -374,37 +378,46 @@ for (idxDirIn in DirIn){
         flagDataWndwTime <- base::subset(flagData,subset=setTime==idxWndwTime)  
         flagDataWndwTime<-flagDataWndwTime[!is.na(flagDataWndwTime$pressure)&flagDataWndwTime$pressureSpikeQF==0,]
         # Compute stats excluding flagged data
-        groundwaterPressureMean<-mean(flagDataWndwTime$pressure)
-        groundwaterPressureMin<-min(flagDataWndwTime$pressure)
-        groundwaterPressureMax<-max(flagDataWndwTime$pressure)
-        groundwaterPressureVariance<-var(flagDataWndwTime$pressure)
-        groundwaterPressureStdEr<-sd(flagDataWndwTime$pressure)/base::sqrt(nrow(flagDataWndwTime))
-        groundwaterPressureNumPts<-base::as.integer(nrow(flagDataWndwTime))
-        groundwaterElevMean<-mean(flagDataWndwTime$elevation)
-        groundwaterElevMin<-min(flagDataWndwTime$elevation)
-        groundwaterElevMax<-max(flagDataWndwTime$elevation)
-        groundwaterElevVariance<-var(flagDataWndwTime$elevation)
-        groundwaterElevStdEr<-sd(flagDataWndwTime$elevation)/base::sqrt(nrow(flagDataWndwTime))
-        groundwaterElevNumPts<-base::as.integer(nrow(flagDataWndwTime))
-        
-        #copy info to output dataframe
-        rptSciStats$groundwaterPressureMean[idxWndwTime] <- groundwaterPressureMean
-        rptSciStats$groundwaterPressureMin[idxWndwTime] <- groundwaterPressureMin
-        rptSciStats$groundwaterPressureMax[idxWndwTime] <- groundwaterPressureMax
-        rptSciStats$groundwaterPressureVariance[idxWndwTime] <- groundwaterPressureVariance
-        rptSciStats$groundwaterPressureNumPts[idxWndwTime] <- groundwaterPressureNumPts
-        rptSciStats$groundwaterPressureStdEr[idxWndwTime] <- groundwaterPressureStdEr
-        rptSciStats$groundwaterElevMean[idxWndwTime] <- groundwaterElevMean
-        rptSciStats$groundwaterElevMin[idxWndwTime] <- groundwaterElevMin
-        rptSciStats$groundwaterElevMax[idxWndwTime] <- groundwaterElevMax
-        rptSciStats$groundwaterElevVariance[idxWndwTime] <- groundwaterElevVariance
-        rptSciStats$groundwaterElevNumPts[idxWndwTime] <- groundwaterElevNumPts
-        rptSciStats$groundwaterElevStdEr[idxWndwTime] <- groundwaterElevStdEr
+        if(length(flagDataWndwTime$pressure)>0){
+          groundwaterPressureMean<-mean(flagDataWndwTime$pressure)
+          groundwaterPressureMin<-min(flagDataWndwTime$pressure)
+          groundwaterPressureMax<-max(flagDataWndwTime$pressure)
+          groundwaterPressureVariance<-var(flagDataWndwTime$pressure)
+          groundwaterPressureStdEr<-sd(flagDataWndwTime$pressure)/base::sqrt(nrow(flagDataWndwTime))
+          groundwaterPressureNumPts<-base::as.integer(nrow(flagDataWndwTime))
+          groundwaterElevMean<-mean(flagDataWndwTime$elevation)
+          groundwaterElevMin<-min(flagDataWndwTime$elevation)
+          groundwaterElevMax<-max(flagDataWndwTime$elevation)
+          groundwaterElevVariance<-var(flagDataWndwTime$elevation)
+          groundwaterElevStdEr<-sd(flagDataWndwTime$elevation)/base::sqrt(nrow(flagDataWndwTime))
+          groundwaterElevNumPts<-base::as.integer(nrow(flagDataWndwTime))
+          
+          #copy info to output dataframe
+          rptSciStats$groundwaterPressureMean[idxWndwTime] <- groundwaterPressureMean
+          rptSciStats$groundwaterPressureMin[idxWndwTime] <- groundwaterPressureMin
+          rptSciStats$groundwaterPressureMax[idxWndwTime] <- groundwaterPressureMax
+          rptSciStats$groundwaterPressureVariance[idxWndwTime] <- groundwaterPressureVariance
+          rptSciStats$groundwaterPressureNumPts[idxWndwTime] <- groundwaterPressureNumPts
+          rptSciStats$groundwaterPressureStdEr[idxWndwTime] <- groundwaterPressureStdEr
+          rptSciStats$groundwaterElevMean[idxWndwTime] <- groundwaterElevMean
+          rptSciStats$groundwaterElevMin[idxWndwTime] <- groundwaterElevMin
+          rptSciStats$groundwaterElevMax[idxWndwTime] <- groundwaterElevMax
+          rptSciStats$groundwaterElevVariance[idxWndwTime] <- groundwaterElevVariance
+          rptSciStats$groundwaterElevNumPts[idxWndwTime] <- groundwaterElevNumPts
+          rptSciStats$groundwaterElevStdEr[idxWndwTime] <- groundwaterElevStdEr
+        }
       } # End loop through time windows
       
       #Write out aggregate uncertainty data
+      if(WndwAgr[idxWndwAgr]==5){
+        window<-"005"
+      }else if(WndwAgr[idxWndwAgr]==30){
+        window<-"030"
+      }else{
+        window<-NA
+      }
       rptSciStatsOut <- try(NEONprocIS.base::def.wrte.parq(data = rptSciStats, 
-                                                           NameFile = base::paste0(idxDirOutSciStats,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_sciStats_",WndwAgr[idxWndwAgr],".parquet"), 
+                                                           NameFile = base::paste0(idxDirOutSciStats,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_sciStats_",window,".parquet"), 
                                                            Schm = SchmSciStatsOut),silent=FALSE)
       
       if(any(grepl('try-error',class(rptSciStatsOut)))){
@@ -505,7 +518,7 @@ for (idxDirIn in DirIn){
     
     #write out instantaneous uncertainty data
     rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
-                                                          NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_inst_ucrt.parquet"), 
+                                                          NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"), 
                                                           Schm = SchmUcrtOut),silent=FALSE)
     
     if(any(grepl('try-error',class(ucrtOut_inst)))){
@@ -644,8 +657,16 @@ for (idxDirIn in DirIn){
       }
       
       #Write out aggregate uncertainty data
+      #Write out aggregate uncertainty data
+      if(WndwAgr[idxWndwAgr]==5){
+        window<-"005"
+      }else if(WndwAgr[idxWndwAgr]==30){
+        window<-"030"
+      }else{
+        window<-NA
+      }
       rptUcrtOut_Agr <- try(NEONprocIS.base::def.wrte.parq(data = rptUcrt, 
-                                                           NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_",WndwAgr[idxWndwAgr],"min_ucrt.parquet"), 
+                                                           NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_","ucrt_",window,".parquet"), 
                                                            Schm = SchmUcrtOut),silent=FALSE)
       
       if(any(grepl('try-error',class(rptUcrtOut_Agr)))){

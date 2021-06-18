@@ -15,6 +15,11 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
+            name: SCI_PATH_LEVELTROLL
+            glob_pattern: /pfs/SCI_PATH_AQUATROLL/**
+            # Join on context group (already joined by day below)
+            join_indices: [6]
+        - path:
             name: STATISTICS_PATH_LEVELTROLL
             glob_pattern: /pfs/STATISTICS_PATH_LEVELTROLL/**
             # Join on context group (already joined by day below)
@@ -29,6 +34,12 @@ transform:
     RELATIVE_PATH_INDEX: "3"
 input:
   join:
+  - pfs:
+      name: SCI_PATH_LEVELTROLL
+      repo: swPhysical_ucrt_leveltroll500_specific
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
   - pfs:
       name: STATISTICS_PATH_LEVELTROLL
       repo: surfacewaterPhysical_leveltroll500_statistics

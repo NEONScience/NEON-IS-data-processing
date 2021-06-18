@@ -9,7 +9,7 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmStat=$SCHEMA_STAT",
-      "DirSubCopy=data|uncertainty_data|sci_stats",
+      "DirSubCopy=data",
       "WndwAgr=030",
       "TermStat1=groundwaterTemp:mean|minimum|maximum|variance|numPts|stdEr",
       "TermStat2=groundwaterSpecCond:mean|minimum|maximum|variance|numPts|stdEr"
@@ -25,7 +25,7 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "groundwaterPhysical_ucrt_troll_specific",
+          "repo": "groundwaterPhysical_qaqc_data_group",
           "glob": "/aquatroll200/*/*/*"
         }
       },

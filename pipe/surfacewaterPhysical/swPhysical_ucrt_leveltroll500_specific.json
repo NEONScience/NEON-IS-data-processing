@@ -3,8 +3,8 @@
     "name": "swPhysical_ucrt_leveltroll500_specific"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.troll.uncertainty.R","DirIn=$DIR_IN","DirOut=/pfs/out","Context=surfacewater","WndwInst=FALSE","WndwAgr=005|030","DirSubCopy=location|uncertainty_coef","FileSchmData=$SCHEMA_DATA","FileSchmUcrt=$SCHEMA_UCRT", "FileSchmSciStats=$SCHEMA_SCI"],
-    "image": "quay.io/battelleecology/neon-is-troll-uncertainty-r:v0.0.11",
+    "cmd": ["Rscript","/flow.troll.uncertainty.R","DirIn=$DIR_IN","DirOut=/pfs/out","Context=surfacewater","WndwInst=FALSE","WndwAgr=005|030","FileSchmUcrt=$SCHEMA_UCRT", "FileSchmSciStats=$SCHEMA_SCI"],
+    "image": "quay.io/battelleecology/neon-is-troll-uncertainty-r:v0.0.12",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
@@ -17,13 +17,6 @@
           "name": "DIR_IN",
           "repo": "swPhysical_leveltroll500_qaqc_data_group",
           "glob": "/leveltroll500/*/*/*"
-        }
-      },
-      {
-        "pfs": {
-          "name": "SCHEMA_DATA",
-           "repo": "avro_schemas",
-           "glob": "/dp01/surfacewaterPhysical_dp01_leveltroll500_specific_data.avsc"
         }
       },
       {
