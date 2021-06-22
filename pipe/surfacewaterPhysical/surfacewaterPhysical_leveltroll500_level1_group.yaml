@@ -16,7 +16,7 @@ transform:
       input_paths:
         - path:
             name: SCI_PATH_LEVELTROLL
-            glob_pattern: /pfs/SCI_PATH_AQUATROLL/**
+            glob_pattern: /pfs/SCI_PATH_LEVELTROLL/**
             # Join on context group (already joined by day below)
             join_indices: [6]
         - path:
