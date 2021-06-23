@@ -9,7 +9,6 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmStat=$SCHEMA_STAT",
-      "DirSubCopy=data",
       "WndwAgr=030",
       "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr",
       "TermStat2=conductivity:mean|minimum|maximum|variance|numPts|stdEr"
