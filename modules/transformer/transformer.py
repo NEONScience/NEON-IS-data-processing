@@ -9,19 +9,22 @@ log = get_logger()
 
 
 def transform(*, related_paths: list, data_path: Path, location_path: Path, out_path: Path, 
-                 relative_path_index: int, year_index: int, month_index: int, loc_index: int) -> None:
+                 relative_path_index: int, year_index: int, loc_index: int) -> None:
     """
-    :param related_paths: Input paths
-    :param data_path: Input data path that defines the output prefix (e.g. month)
-    :param out_path: The output path for writing results.
-    :param relative_path_index: Trim path components before this index.
+    :param related_paths: input paths
+    :param data_path: input data path
+    :param location_path: input location path
+    :param out_path: output path
+    :param relative_path_index: trim path components before this index
+    :param year_index: index of year in data path
+    :param loc_index: index of location in data path
     """
-    # Store path prefix and output basenames
+    # Enable input path lookup by file basename
     input_paths_by_basename = {}
-    # Store sites for locations
+    # Enable site lookup by file basename
     site_by_loc = {}
     loc_by_basename = {}
-    prefix = None
+    yyyymmdd = None
     for related_path in related_paths:
         # if related_path is a file, pass its parent to the related_path iterator
         if related_path.is_file():
@@ -30,12 +33,12 @@ def transform(*, related_paths: list, data_path: Path, location_path: Path, out_
             if path.is_file():
                 basename = os.path.basename(path)
                 input_paths_by_basename[basename] = path
-                # If this path defines the output prefix, store prefix 
+                # If this is a data file, store yyyymmdd
                 if (str(related_path) == str(data_path)):              
                     parts = path.parts
                     loc = parts[loc_index]
-                    if prefix is None:
-                        prefix = parts[year_index:month_index+1]
+                    if yyyymmdd is None:
+                        yyyymmdd = parts[year_index:year_index+3]
                 # If this is a location file, store its site
                 if (str(related_path) == str(location_path)):
                     parts = path.parts
@@ -49,7 +52,7 @@ def transform(*, related_paths: list, data_path: Path, location_path: Path, out_
 
     # Link each input file into its output path
     for basename in input_paths_by_basename.keys():
-        dest_path = Path(out_path, *prefix, site_by_loc[loc_by_basename[basename]], basename)
+        dest_path = Path(out_path, site_by_loc[loc_by_basename[basename]], *yyyymmdd, basename)
         dest_path.parent.mkdir(parents=True, exist_ok=True)
         if not dest_path.exists():
             dest_path.symlink_to(input_paths_by_basename.get(basename))

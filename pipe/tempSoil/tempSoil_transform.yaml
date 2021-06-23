@@ -13,7 +13,6 @@ transform:
     OUT_PATH: "/pfs/out"
     RELATIVE_PATH_INDEX: '3'
     YEAR_INDEX: '4'
-    MONTH_INDEX: '5'
     LOC_INDEX: '7'
 input: {
   "cross": [

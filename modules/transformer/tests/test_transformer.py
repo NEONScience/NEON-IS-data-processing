@@ -28,7 +28,6 @@ class TransformerTest(TestCase):
         self.in_location_path = Path(self.input_path, "prt", self.location, self.location_file)
         self.relative_path_index = 9
         self.year_index = 10
-        self.month_index = 11
         self.loc_index = 13
         self.related_paths = "DATA_PATH" + "," + "LOCATION_PATH"
         os.environ["DATA_PATH"] = str(Path(self.input_path, self.data_path))
@@ -46,7 +45,6 @@ class TransformerTest(TestCase):
                        out_path=self.output_path,
                        relative_path_index=self.relative_path_index,
                        year_index=self.year_index,
-                       month_index=self.month_index,
                        loc_index=self.loc_index)
         self.check_output()
 
@@ -58,13 +56,12 @@ class TransformerTest(TestCase):
         os.environ["LOG_LEVEL"] = "DEBUG"
         os.environ["RELATIVE_PATH_INDEX"] = str(self.relative_path_index)
         os.environ["YEAR_INDEX"] = str(self.year_index)
-        os.environ["MONTH_INDEX"] = str(self.month_index)
         os.environ["LOC_INDEX"] = str(self.loc_index)
         transformer_main.main()
         self.check_output()
 
     def check_output(self):
-        root_path = Path(self.output_path, *self.metadata_path.parts[0:2], self.site)
+        root_path = Path(self.output_path, self.site, *self.metadata_path.parts[0:3])
         out_data_path = Path(root_path, self.data_file)
         out_location_path = Path(root_path, self.location_file)
         self.assertTrue(out_data_path.exists())

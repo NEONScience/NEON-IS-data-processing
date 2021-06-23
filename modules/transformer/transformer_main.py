@@ -22,7 +22,6 @@ def main() -> None:
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     year_index: int = env.int('YEAR_INDEX')
-    month_index: int = env.int('MONTH_INDEX')
     loc_index: int = env.int('LOC_INDEX')
     log_config.configure(log_level)
     log.debug(f'related_paths: {related_paths} out_path: {out_path}')
@@ -31,8 +30,7 @@ def main() -> None:
         path = os.environ[p]
         paths.append(Path(path))
     transform(related_paths=paths, data_path=data_path, location_path=location_path, out_path=out_path, 
-              relative_path_index=relative_path_index, 
-              year_index=year_index, month_index=month_index, loc_index=loc_index)
+              relative_path_index=relative_path_index, year_index=year_index, loc_index=loc_index)
 
 if __name__ == '__main__':
     main()
