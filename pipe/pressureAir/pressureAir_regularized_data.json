@@ -25,7 +25,7 @@
           "pfs": {
           "name": "DIR_IN",
           "repo": "pressureAir_calibrated_data",
-          "glob": "/*/*/*"
+          "glob": "/ptb330a/*/*/*"
         }
     
   },

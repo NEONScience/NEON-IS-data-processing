@@ -22,7 +22,7 @@
     "pfs": {
       "name": "DIR_IN",
       "repo": "pressureAir_calibrated_flags",
-      "glob": "/*/*/*"
+      "glob": "/ptb330a/*/*/*"
     }
   },
   "enable_stats": false,
