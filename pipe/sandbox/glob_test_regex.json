@@ -1,0 +1,27 @@
+{
+  "pipeline": {
+    "name": "glob_test_regex"
+  },
+  "transform": {
+    "image":"registry.access.redhat.com/ubi8/ubi-minimal:8.3",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "echo '---------------------NEW DATUM------------------------'",
+      "echo $glob_test",
+      "ls /pfs/glob_test/*/*/*/*"
+    ]
+  },
+  "input": {
+    "pfs": {
+      "name": "glob_test",
+      "repo": "prt_location_active_dates_assignment",
+      "glob": "/prt/2020/01/01/CFGLOC1083(46|48)",
+      "empty_files": true
+    }
+  },
+  "enable_stats": false,
+  "standby": false
+}

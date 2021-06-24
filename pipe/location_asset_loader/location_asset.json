@@ -26,6 +26,6 @@
             "overwrite": true
         }
     },
-    "enable_stats": true,
+    "enable_stats": false,
     "standby": true
 }

@@ -62,7 +62,7 @@
                 "pfs": {
                   "name": "LOCATION_PATH",
                   "repo": "prt_location_active_dates_assignment",
-                  "glob": "/prt/(*)/(*)/(*)",
+                  "glob": "/prt/(*)/(*)/(*)/(CFGLOC108346|CFGLOC108348|CFGLOC108350)",
                   "joinOn": "$1/$2/$3",
                   "empty_files": true
                 }
