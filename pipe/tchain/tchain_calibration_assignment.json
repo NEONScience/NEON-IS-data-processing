@@ -11,7 +11,7 @@
       "FileYear=$FILE_YEAR",
       "Arry=TRUE"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-asgn-r:v0.0.4",
+    "image": "quay.io/battelleecology/neon-is-cal-asgn-r:v0.0.5",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
@@ -20,7 +20,7 @@
     }
   },
   "input": {
-    "cross":[
+    "cross": [
       {
         "pfs": {
           "name": "DIR_IN",

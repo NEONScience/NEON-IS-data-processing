@@ -20,7 +20,7 @@ transform:
   - TermCtxt10=depth9WaterTemp
   - TermCtxt11=depth10WaterTemp
   - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.13
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.15
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
