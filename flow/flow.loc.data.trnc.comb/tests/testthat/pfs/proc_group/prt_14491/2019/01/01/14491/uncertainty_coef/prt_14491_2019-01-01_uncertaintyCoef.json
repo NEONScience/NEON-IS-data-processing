@@ -1,0 +1,202 @@
+[
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD3",
+      "Value":"8",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD2",
+      "Value":"20",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD1",
+      "Value":"12",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA3",
+      "Value":"0.0048",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA2",
+      "Value":"0.00259",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA1",
+      "Value":"0.0055",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALF3",
+      "Value":"139",
+      ".attrs":"unitless"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALF2",
+      "Value":"240",
+      ".attrs":"unitless"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALF1",
+      "Value":"139",
+      ".attrs":"unitless"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALR4",
+      "Value":"0.0067",
+      ".attrs":"ohm"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALR3",
+      "Value":"0.000195",
+      ".attrs":"ohm"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALR2",
+      "Value":"0.0000229",
+      ".attrs":"ohm"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALR1",
+      "Value":"0.000196",
+      ".attrs":"ohm"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALG3",
+      "Value":"596",
+      ".attrs":"unitless"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALG2",
+      "Value":"240",
+      ".attrs":"unitless"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALG1",
+      "Value":"675",
+      ".attrs":"unitless"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALV4",
+      "Value":"0.0000020",
+      ".attrs":"V"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALV3",
+      "Value":"0.000374",
+      ".attrs":"V"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALV2",
+      "Value":"0.0000996",
+      ".attrs":"V"
+   },
+   {
+      "calibration_id":      156338,
+      "term":"temp",
+      "start_date":"2019-01-01T00:00:00.000Z",
+      "end_date":"2019-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALV1",
+      "Value":"0.000387",
+      ".attrs":"V"
+   }
+]
