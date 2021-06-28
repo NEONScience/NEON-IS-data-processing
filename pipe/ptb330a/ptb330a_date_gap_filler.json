@@ -62,7 +62,7 @@
                 "pfs": {
                   "name": "LOCATION_PATH",
                   "repo": "ptb330a_location_active_dates_assignment",
-                  "glob": "/ptb330a/(*)/(*)/(*)",
+                  "glob": "/ptb330a/(*)/(*)/(*)/(CFGLOC101256 CFGLOC110723 CFGLOC110695 CFGLOC103556 CFGLOC111118)",
                   "joinOn": "$1/$2/$3",
                   "empty_files": true
                 }
