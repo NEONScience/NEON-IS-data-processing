@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "pressureAir_qaqc_plausibility"
+    "name": "relHumidityBuoy_qaqc_plausibility"
   },
   "transform": {
     "cmd": [
@@ -9,7 +9,10 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmQf=$SCHEMA_FLAGS",
-      "TermTest1=barometricPressure:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)"
+      "TermTest1=relativeHumidity:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
+      "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
+      "TermTest3=dewPoint:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
+      "VarAddFileQf=timeWndwBgn|timeWndwEnd"
     ],
     "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.19",
     "image_pull_secrets": [
@@ -24,15 +27,15 @@
       {
         "pfs": {
           "name": "DIR_IN",
-          "repo": "pressureAir_padded_timeseries_analyzer",
-          "glob": "/ptb330a/*/*/*/"
+          "repo": "relHumidityBuoy_padded_timeseries_analyzer",
+          "glob": "/hmp155/*/*/*"
         }
       },
       {
         "pfs": {
           "name": "SCHEMA_FLAGS",
           "repo": "avro_schemas",
-          "glob": "/dp0p/flags_plausibility.avsc"
+          "glob": "/dp0p/flags_plausibility_relHumidityBuoy.avsc"
         }
       }
     ]

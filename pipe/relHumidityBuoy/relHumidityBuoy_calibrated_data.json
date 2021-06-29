@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "relHumidity_calibrated_data"
+    "name": "relHumidityBuoy_calibrated_data"
   },
   "transform": {
     "image_pull_secrets": [
@@ -24,7 +24,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "relHumidity_context_filter",
+      "repo": "relHumidityBuoy_context_filter",
       "glob": "/hmp155/*/*/*",
       "empty_files": true
     }

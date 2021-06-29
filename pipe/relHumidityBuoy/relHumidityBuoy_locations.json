@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "relHumidity_calibrated_data"
+    "name": "relHumidityBuoy_locations"
   },
   "transform": {
     "image_pull_secrets": [
@@ -16,7 +16,7 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "FILTER_DIR": "data,location",
+      "FILTER_DIR": "location",
       "LOG_LEVEL": "INFO",
       "RELATIVE_PATH_INDEX": "3"
     }
@@ -24,7 +24,7 @@
   "input": {
     "pfs": {
       "name": "IN_PATH",
-      "repo": "relHumidity_context_filter",
+      "repo": "relHumidityBuoy_context_filter",
       "glob": "/hmp155/*/*/*",
       "empty_files": true
     }
@@ -32,7 +32,7 @@
   "enable_stats": false,
   "standby": true,
   "resource_requests": {
-    "memory": "15M",
-    "cpu": 0.03
+    "memory": "32M",
+    "cpu": 0.01
   }
 }

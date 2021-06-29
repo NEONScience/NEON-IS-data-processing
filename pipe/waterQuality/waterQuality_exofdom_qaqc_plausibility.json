@@ -11,7 +11,7 @@
       "FileSchmQf=$SCHEMA_FLAGS",
       "TermTest1=fDOM:null|gap|range|step|spike|persistence"
     ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.18",
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.19",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

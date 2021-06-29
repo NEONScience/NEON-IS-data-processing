@@ -1,9 +1,9 @@
 ---
 pipeline:
-  name: relHumidity_pre_statistics_group
+  name: relHumidityBuoy_level1_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:6
+  image: quay.io/battelleecology/filter_joiner:9
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -15,43 +15,55 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: QAQC_PATH
+            name: QUALITY_METRICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PATH/hmp155/*/*/*/*/data/**
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/hmp155/*/*/*/*/quality_metrics/**
             # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
-            name: UNCERTAINTY_COEF_PATH
+            name: QUALITY_METRICS_INST_PATH
             # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/hmp155/*/*/*/*/uncertainty_coef/**
+            glob_pattern: /pfs/QUALITY_METRICS_INST_PATH/hmp155/*/*/*/*/quality_metrics/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+        - path:
+            name: STATISTICS_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/STATISTICS_PATH/hmp155/*/*/*/*/stats/**
             # Join on named location (already joined below by day
             join_indices: [7]
         - path:
-            name: UNCERTAINTY_DATA_PATH
+            name: STATISTICS_INST_PATH
             # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_DATA_PATH/hmp155/*/*/*/*/uncertainty_data/**
+            glob_pattern: /pfs/STATISTICS_INST_PATH/hmp155/*/*/*/*/stats/**
             # Join on named location (already joined below by day
             join_indices: [7]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
 input:
   join:
   - pfs:
-      name: QAQC_PATH
-      repo: relHumidity_qaqc_plausibility
+      name: QUALITY_METRICS_PATH
+      repo: relHumidityBuoy_quality_metrics
       glob: /hmp155/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
-      name: UNCERTAINTY_COEF_PATH
-      repo: relHumidity_context_filter
+      name: QUALITY_METRICS_INST_PATH
+      repo: relHumidityBuoy_qm_instantaneous
       glob: /hmp155/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
   - pfs:
-      name: UNCERTAINTY_DATA_PATH
-      repo: relHumidity_regularized_uncertainty_data
+      name: STATISTICS_PATH
+      repo: relHumidityBuoy_statistics
+      glob: /hmp155/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
+  - pfs:
+      name: STATISTICS_INST_PATH
+      repo: relHumidityBuoy_stats_instantaneous
       glob: /hmp155/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
