@@ -1,0 +1,44 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC101670",
+                "site":"ARIK",
+                "install_date":"2019-01-01T00:00:00Z",
+                "remove_date":"2019-01-02T00:00:00Z",
+                "context":[
+                    "surfacewater",
+                    "water-quality",
+                    "water-quality-307"
+                ],
+                "locations":{
+                    "type":"FeatureCollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "geometry":{
+                                "type":"Point",
+                                "coordinates":[
+                                                                        -102.450053,
+                                                                        39.758563,
+                                                                        1177.247
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "HOR":"101",
+            "VER":"100",
+            "TMI":"000",
+            "Data Rate":"1",
+            "Required Asset Management Location ID":            2995,
+            "Required Asset Management Location Code":"CFGLOC101670"
+        }
+    ],
+    "source_id":    14491,
+    "source_type":"prt"
+}
