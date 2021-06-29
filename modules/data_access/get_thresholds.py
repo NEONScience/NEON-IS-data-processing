@@ -74,6 +74,6 @@ def get_thresholds(connection: extensions.connection) -> Iterator[Threshold]:
                                   is_date_constrained=is_date_constrained,
                                   start_day_of_year=start_day_of_year,
                                   end_day_of_year=end_day_of_year,
-                                  number_value=number_value,
+                                  number_value=float(number_value),
                                   string_value=string_value)
             yield threshold
