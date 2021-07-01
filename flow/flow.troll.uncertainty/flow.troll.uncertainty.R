@@ -305,9 +305,9 @@ for (idxDirIn in DirIn){
   #Create dataframe for output data
   dataOut <- trollData
   if(sensor=="aquatroll200"){
-    dataCol <- c("readout_time","pressure","temperature","conductivity","elevation")
+    dataCol <- c("startDateTime","endDateTime","pressure","temperature","conductivity","elevation")
   }else{
-    dataCol <- c("readout_time","pressure","temperature","elevation") 
+    dataCol <- c("startDateTime","endDateTime","pressure","temperature","elevation") 
   }
   dataOut <- dataOut[,dataCol]
   

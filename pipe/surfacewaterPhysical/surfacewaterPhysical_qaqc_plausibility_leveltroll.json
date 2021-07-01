@@ -3,7 +3,7 @@
     "name": "surfacewaterPhysical_qaqc_plausibility_leveltroll"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.plau.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS","TermTest1=pressure:null|gap|range|step|spike|persistence","TermTest2=temperature:null|gap|range|step|spike|persistence"],
+    "cmd": ["Rscript","/flow.qaqc.plau.R","DirIn=$DIR_IN","DirOut=/pfs/out","FileSchmQf=$SCHEMA_FLAGS","TermTest1=pressure:null|gap|range|step|spike|persistence","TermTest2=temperature:null|gap|range|step|spike"],
     "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.15",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
