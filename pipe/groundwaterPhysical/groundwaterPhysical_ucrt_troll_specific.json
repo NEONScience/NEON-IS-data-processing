@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.troll.uncertainty.R","DirIn=$DIR_IN","DirOut=/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030","FileSchmData=$SCHEMA_DATA","FileSchmUcrt=$SCHEMA_UCRT", "FileSchmSciStats=$SCHEMA_SCI"],
-    "image": "quay.io/battelleecology/neon-is-troll-uncertainty-r:v0.0.12",
+    "image": "quay.io/battelleecology/neon-is-troll-uncertainty-r:v0.0.13",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

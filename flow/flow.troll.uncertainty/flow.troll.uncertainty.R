@@ -77,9 +77,9 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/swPhysical_aquatroll200_qaqc_data_group')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_qaqc_data_group')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=surfacewater","WndwInst=FALSE","WndwAgr=005")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030")
 #' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
@@ -201,7 +201,7 @@ if(length(WndwAgr)>0){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  #idxDirIn<-DirIn[2] #for testing
+  #idxDirIn<-DirIn[1] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -282,9 +282,11 @@ for (idxDirIn in DirIn){
         troll_all<-rbind(troll_all,troll_sub)
       }
     }
+    troll_all$startDateTime<-as.POSIXct(troll_all$readout_time)
+    troll_all$endDateTime<-as.POSIXct(troll_all$readout_time)
     trollData<-troll_all
   }
-  
+
   #calculate water table elevation
   trollData$elevation<-NA
   if(length(LocationHist)>0){
@@ -308,7 +310,9 @@ for (idxDirIn in DirIn){
     dataCol <- c("readout_time","pressure","temperature","elevation") 
   }
   dataOut <- dataOut[,dataCol]
+  
   #Write out instantaneous data for groundwater only
+  #dataOut[,-1] <-round(dataOut[,-1],2)
   if(Context == "GW"){
     rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
                                                      NameFile = base::paste0(idxDirOutData,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_005.parquet"), 
@@ -366,8 +370,8 @@ for (idxDirIn in DirIn){
       # Intialize the output
       rptSciStats <- base::data.frame(startDateTime=timeAgrBgn,endDateTime=timeAgrEnd)
       nameSciStatsTerm <- c("groundwaterPressureMean","groundwaterPressureMin","groundwaterPressureMax","groundwaterPressureVariance",
-                            "groundwaterPressureNumPts","groundwaterPressureStdEr","groundwaterElevMean","groundwaterElevMin",
-                            "groundwaterElevMax","groundwaterElevVariance","groundwaterElevNumPts","groundwaterElevStdEr")
+                            "groundwaterPressureNumPts","groundwaterPressureStdErMean","groundwaterElevMean","groundwaterElevMin",
+                            "groundwaterElevMax","groundwaterElevVariance","groundwaterElevNumPts","groundwaterElevStdErMean")
       rptSciStats[,3:(base::length(nameSciStatsTerm)+2)] <- base::as.numeric(NA)
       base::names(rptSciStats)[3:(base::length(nameSciStatsTerm)+2)] <- nameSciStatsTerm
       
@@ -376,6 +380,7 @@ for (idxDirIn in DirIn){
         #idxWndwTime<-1 #for testing
         # Rows to pull
         flagDataWndwTime <- base::subset(flagData,subset=setTime==idxWndwTime)  
+        #only use data that does not fail spike test
         flagDataWndwTime<-flagDataWndwTime[!is.na(flagDataWndwTime$pressure)&flagDataWndwTime$pressureSpikeQF==0,]
         # Compute stats excluding flagged data
         if(length(flagDataWndwTime$pressure)>0){
@@ -383,13 +388,13 @@ for (idxDirIn in DirIn){
           groundwaterPressureMin<-min(flagDataWndwTime$pressure)
           groundwaterPressureMax<-max(flagDataWndwTime$pressure)
           groundwaterPressureVariance<-var(flagDataWndwTime$pressure)
-          groundwaterPressureStdEr<-sd(flagDataWndwTime$pressure)/base::sqrt(nrow(flagDataWndwTime))
+          groundwaterPressureStdErMean<-sd(flagDataWndwTime$pressure)/base::sqrt(nrow(flagDataWndwTime))
           groundwaterPressureNumPts<-base::as.integer(nrow(flagDataWndwTime))
           groundwaterElevMean<-mean(flagDataWndwTime$elevation)
           groundwaterElevMin<-min(flagDataWndwTime$elevation)
           groundwaterElevMax<-max(flagDataWndwTime$elevation)
           groundwaterElevVariance<-var(flagDataWndwTime$elevation)
-          groundwaterElevStdEr<-sd(flagDataWndwTime$elevation)/base::sqrt(nrow(flagDataWndwTime))
+          groundwaterElevStdErMean<-sd(flagDataWndwTime$elevation)/base::sqrt(nrow(flagDataWndwTime))
           groundwaterElevNumPts<-base::as.integer(nrow(flagDataWndwTime))
           
           #copy info to output dataframe
@@ -398,17 +403,18 @@ for (idxDirIn in DirIn){
           rptSciStats$groundwaterPressureMax[idxWndwTime] <- groundwaterPressureMax
           rptSciStats$groundwaterPressureVariance[idxWndwTime] <- groundwaterPressureVariance
           rptSciStats$groundwaterPressureNumPts[idxWndwTime] <- groundwaterPressureNumPts
-          rptSciStats$groundwaterPressureStdEr[idxWndwTime] <- groundwaterPressureStdEr
+          rptSciStats$groundwaterPressureStdErMean[idxWndwTime] <- groundwaterPressureStdErMean
           rptSciStats$groundwaterElevMean[idxWndwTime] <- groundwaterElevMean
           rptSciStats$groundwaterElevMin[idxWndwTime] <- groundwaterElevMin
           rptSciStats$groundwaterElevMax[idxWndwTime] <- groundwaterElevMax
           rptSciStats$groundwaterElevVariance[idxWndwTime] <- groundwaterElevVariance
           rptSciStats$groundwaterElevNumPts[idxWndwTime] <- groundwaterElevNumPts
-          rptSciStats$groundwaterElevStdEr[idxWndwTime] <- groundwaterElevStdEr
+          rptSciStats$groundwaterElevStdErMean[idxWndwTime] <- groundwaterElevStdErMean
         }
       } # End loop through time windows
       
       #Write out aggregate uncertainty data
+      #rptSciStats[,-c(1:2)] <-round(rptSciStats[,-c(1:2)],2)
       if(WndwAgr[idxWndwAgr]==5){
         window<-"005"
       }else if(WndwAgr[idxWndwAgr]==30){
@@ -517,6 +523,9 @@ for (idxDirIn in DirIn){
     names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
     
     #write out instantaneous uncertainty data
+    #ucrtOut_inst[,-c(1:2)] <-round(ucrtOut_inst[,-c(1:2)],2)
+    ucrtOut_inst$startDateTime<-as.POSIXct(ucrtOut_inst$startDateTime)
+    ucrtOut_inst$endDateTime<-as.POSIXct(ucrtOut_inst$endDateTime)
     rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
                                                           NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"), 
                                                           Schm = SchmUcrtOut),silent=FALSE)
@@ -657,7 +666,7 @@ for (idxDirIn in DirIn){
       }
       
       #Write out aggregate uncertainty data
-      #Write out aggregate uncertainty data
+      #rptUcrt[,-c(1:2)] <-round(rptUcrt[,-c(1:2)],2)
       if(WndwAgr[idxWndwAgr]==5){
         window<-"005"
       }else if(WndwAgr[idxWndwAgr]==30){
