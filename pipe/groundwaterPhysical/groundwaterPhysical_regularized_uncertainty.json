@@ -4,7 +4,7 @@
   },
   "transform": {
     "cmd": ["Rscript","/flow.rglr.R","DirIn=$DIR_IN","DirOut=/pfs/out","DirRglr=uncertainty_data","DirSubCopy=uncertainty_coef","FileSchmRglr=NA","MethRglr=CybiEc","WndwRglr=Trlg","IdxWndw=IdxWndwMin"],
-    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.26",
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.28",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
