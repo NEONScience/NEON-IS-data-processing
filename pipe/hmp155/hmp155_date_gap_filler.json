@@ -62,7 +62,7 @@
                 "pfs": {
                   "name": "LOCATION_PATH",
                   "repo": "hmp155_location_active_dates_assignment",
-                  "glob": "/hmp155/(*)/(*)/(*)",
+                  "glob": "/hmp155/(*)/(*)/(*)/(CFGLOC101252|CFGLOC110719|CFGLOC110694)",
                   "joinOn": "$1/$2/$3",
                   "empty_files": true
                 }

@@ -9,8 +9,8 @@ transform:
     # START_DATE must be set, format "YYYY-MM-DD"
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2019-01-08"
-    END_DATE: "2019-01-13"
+    START_DATE: "2020-01-01"
+    END_DATE: "2020-01-05"
   stdin:
   - "#!/bin/bash"
   - "# If END_DATE unset, set to yesterday"
@@ -22,9 +22,11 @@ transform:
   - "mkdir -p $OUT_PATH/$date_path"
   - "done"
 input:
-  cron:
-    name: tick
-    spec: "@daily"
-    overwrite: true
+  # Currently the input is set to an annual cron so that it executes infrequently for development.
+  # In production this should be linked to the daily ingest trigger
+  pfs: 
+    repo: cron_yearly_tick
+    glob: /
+    empty_files: true
 enable_stats: false
 standby: true

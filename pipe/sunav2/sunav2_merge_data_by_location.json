@@ -11,7 +11,7 @@
       "DirSubCombData=data",
       "DirSubCopy=location|calibration"
     ],
-    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.24",
+    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.25",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

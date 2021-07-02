@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/date_gap_filler:5",
+    "image": "quay.io/battelleecology/date_gap_filler:9",
     "cmd": [
       "/bin/bash"
     ],
@@ -17,8 +17,6 @@
     "env": {
       "LOG_LEVEL": "DEBUG",
       "OUT_PATH": "/pfs/out",
-      "START_DATE": "2018-12-31",
-      "END_DATE": "2019-01-07",
       "OUTPUT_DIRECTORIES": "data,location,uncertainty_data,uncertainty_coef,flags",
       "DATA_SOURCE_TYPE_INDEX": "3",
       "DATA_YEAR_INDEX": "4",
@@ -29,7 +27,8 @@
       "LOCATION_SOURCE_TYPE_INDEX": "3",
       "LOCATION_YEAR_INDEX": "4",
       "LOCATION_MONTH_INDEX": "5",
-      "LOCATION_INDEX": "6",
+      "LOCATION_DAY_INDEX": "6",
+      "LOCATION_INDEX": "7",
       "EMPTY_FILE_TYPE_INDEX": "4"
     }
   },
@@ -47,24 +46,37 @@
         }
       },
       {
-        "join": [
+        "union": [
           {
             "pfs": {
               "name": "DATA_PATH",
               "repo": "ptb330a_merge_data_by_location",
-              "glob": "/ptb330a/(*)/(*)",
-              "joinOn": "$1/$2",
+              "glob": "/ptb330a/(*)/(*)/(*)",
+              "joinOn": "$1/$2/$3",
               "empty_files": true
             }
           },
           {
-            "pfs": {
-              "name": "LOCATION_PATH",
-              "repo": "location_active_dates",
-              "glob": "/ptb330a/(*)/(*)",
-              "joinOn": "$1/$2",
-              "empty_files": true
-            }
+            "join": [
+              {
+                "pfs": {
+                  "name": "LOCATION_PATH",
+                  "repo": "ptb330a_location_active_dates_assignment",
+                  "glob": "/ptb330a/(*)/(*)/(*)/(CFGLOC101256 CFGLOC110723 CFGLOC110695 CFGLOC103556 CFGLOC111118)",
+                  "joinOn": "$1/$2/$3",
+                  "empty_files": true
+                }
+              },
+              {
+                "pfs": {
+                  "name": "DATE_LIMITER_PATH",
+                  "repo": "ptb330a_date_gap_filler_limiter",
+                  "glob": "/(*)/(*)/(*)",
+                  "joinOn": "$1/$2/$3",
+                  "empty_files": true
+                }
+              }
+            ]
           }
         ]
       }

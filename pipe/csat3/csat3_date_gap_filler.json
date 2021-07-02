@@ -62,7 +62,7 @@
                 "pfs": {
                   "name": "LOCATION_PATH",
                   "repo": "csat3_location_active_dates_assignment",
-                  "glob": "/csat3/(*)/(*)/(*)",
+                  "glob": "/csat3/(*)/(*)/(*)/(CFGLOC108321|CFGLOC103629|CFGLOC104712|CFGLOC105210|CFGLOC106585|CFGLOC110681|CFGLOC110994)",
                   "joinOn": "$1/$2/$3",
                   "empty_files": true
                 }

@@ -15,7 +15,7 @@
       "python3 -m related_location_group.related_location_group_main"
     ],
     "env": {
-      "LOG_LEVEL": "DEBUG",
+      "LOG_LEVEL": "INFO",
       "OUT_PATH": "/pfs/out",
       "SOURCE_TYPE_INDEX": "3",
       "YEAR_INDEX": "4",
@@ -27,12 +27,32 @@
     }
   },
   "input": {
+    "union": [
+      {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "pressureAir_ptb330a_group_path",
+          "repo": "surfacewaterPhysical_leveltroll500_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "relHumidity_level1_group",
+          "glob": "/hmp155/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "pressureAir_level1_group",
           "glob": "/ptb330a/*/*/*",
           "empty_files": true
         }
+      }
+    ]
   },
   "enable_stats": false,
   "standby": true

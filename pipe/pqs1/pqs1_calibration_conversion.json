@@ -15,7 +15,7 @@
       "TermFuncUcrt=voltage:def.ucrt.meas.mult,def.ucrt.fdas.volt.poly",
       "FileUcrtFdas=$FILE_UNCERTAINTY_FDAS"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.47",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.49",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

@@ -13,7 +13,7 @@ transform:
   - TermTest3=veloZaxs:range|step|persistence
   - TermTest4=veloSoni:range|step|persistence
   - TermTest5=tempSoni:range|step|persistence
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.17
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.18
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

@@ -124,6 +124,8 @@
 #     Add option to copy one or more variables found in the input file to the output flags file
 #   Cove Sturtevant (2021-01-20)
 #     Applied internal parallelization
+#   Cove Sturtevant (2021-07-02)
+#     Fix bug resulting in error when terms have different number of tests
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -445,9 +447,11 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       argsPlau$Vrbs=TRUE # Outputs quality flag values instead of vector positions
       
       # Run the tests
-      log$debug('Running plausibility tests (may include null, gap, range, step, persistence)')
-      #qf[[idxTerm]] <- base::do.call(eddy4R.qaqc::def.plau, argsPlau)[[idxTerm]]
-      qf[[idxTerm]] <- base::do.call(def.plau, argsPlau)[[idxTerm]]
+      log$debug(base::paste0('Running plausibility tests: [',
+                             base::paste0(ParaTest[[idxTerm]]$test,collapse=', '),
+                             '] for term: ',
+                             idxTerm))
+      qf[[idxTerm]] <- base::do.call(eddy4R.qaqc::def.plau, argsPlau)[[idxTerm]]
       
     }
     
@@ -455,7 +459,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
     if('spike' %in% ParaTest[[idxTerm]]$test){
       
       # Run the spike test
-      log$debug('Running spike test')
+      log$debug(base::paste0('Running spike test for term: ',idxTerm))
       qfSpk <- NEONprocIS.qaqc::def.spk.mad(data=data[[idxTerm]],Meth=SpkMeth,ThshMad=SpkMad,Wndw=SpkWndw,WndwStep=SpkWndwStep,WndwFracSpkMin=0.1,NumGrp=SpkNumPtsGrp,NaFracMax=SpkNaFracMax,log=log)
       names(qfSpk) <- 'qfSpk'
 
@@ -480,7 +484,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   }
   
   # Combine the output for all terms into a single data frame - this will insert the name of the term in the column name
-  qf <- base::do.call(base::rbind.data.frame, base::list(qf,make.row.names = FALSE,stringsAsFactors=FALSE))
+  qf <- base::do.call(base::cbind.data.frame, base::list(qf,stringsAsFactors=FALSE))
   base::names(qf) <- base::sub(pattern='.',replacement='',x=base::names(qf),fixed=TRUE) # Get rid of the '.' between the term name and the flag name
   
   # Use as.integer in order to write out as integer with the avro schema
