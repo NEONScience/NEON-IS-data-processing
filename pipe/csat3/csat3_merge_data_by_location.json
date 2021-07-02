@@ -8,8 +8,8 @@
       "/flow.loc.data.trnc.comb.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
-      "DirSubCombData=data",
-      "DirSubCopy=location|flags"
+      "DirSubCombData=data|flags",
+      "DirSubCopy=location"
     ],
     "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.25",
     "image_pull_secrets": [

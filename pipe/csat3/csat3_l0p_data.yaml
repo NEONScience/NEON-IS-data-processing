@@ -20,5 +20,5 @@ input:
     glob: /csat3/(*)/(*)/(*)
 parallelism_spec:
   constant: "1"
-enable_stats: true
-standby: true
+enable_stats: false
+standby: true 

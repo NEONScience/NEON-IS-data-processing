@@ -18,8 +18,8 @@ input:
   pfs:
     repo: threshold
     glob: /
-enable_stats: true
-standby: false
+enable_stats: false
+standby: true
 resource_requests:
   memory: 13M
   cpu: 0.01
