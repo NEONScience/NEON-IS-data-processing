@@ -11,10 +11,11 @@
       "FileSchmQf=$SCHEMA_FLAGS",
       "TermTest1=barometricPressure:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)"
       ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.17",
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.19",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PARALLELIZATION_INTERNAL": "4"
     }  
   },
   "input": {
@@ -23,6 +24,7 @@
         "pfs": {
           "name": "DIR_IN",
           "repo": "pressureAir_padded_timeseries_analyzer",
+          "branch": "master",
           "glob": "/ptb330a/*/*/*/"
         }
       },
@@ -30,7 +32,8 @@
         "pfs": {
             "name": "SCHEMA_FLAGS",
             "repo": "avro_schemas",
-            "glob": "/dp0p/flags_plausibility.avsc"
+            "branch": "master",
+            "glob": "/dp0p/flags_plausibility_pressureAir.avsc"
         }
       }
     ]

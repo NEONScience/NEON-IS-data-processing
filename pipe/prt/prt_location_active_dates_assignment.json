@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "prt_location_active_dates_assignment_FULL"
+    "name": "prt_location_active_dates_assignment"
   },
   "transform": {
     "cmd": [
