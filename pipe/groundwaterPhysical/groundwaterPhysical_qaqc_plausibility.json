@@ -29,7 +29,7 @@
     ]
   },
   "enable_stats": false,
-  "standby": true,
+  "standby": false,
   "parallelism_spec": {
     "constant": "1"
   },
