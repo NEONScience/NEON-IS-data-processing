@@ -130,8 +130,6 @@
 library(foreach)
 library(doParallel)
 
-source("/Users/lzhang/Downloads/def.plau.R")
-
 # Start logging
 log <- NEONprocIS.base::def.log.init()
 
