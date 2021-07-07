@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: csat3_data_location_group
+  name: csat3_threshold_regularized_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:9
@@ -15,33 +15,31 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: DATA_PATH
+            name: REGULARIZED_PATH
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH/csat3/*/*/*/*/**
+            glob_pattern: /pfs/REGULARIZED_PATH/csat3/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
-            outer_join: true
         - path:
-            name: LOCATION_PATH
+            name: THRESHOLD_PATH
             # Filter for data directory
-            glob_pattern: /pfs/LOCATION_PATH/csat3/*/*/*/*/**
-            # Join on named location (already joined below by day)
+            glob_pattern: /pfs/THRESHOLD_PATH/csat3/*/*/*/*/**
+            # Join on named location (already joined below by day
             join_indices: [7]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
 input:
   join:
   - pfs:
-      name: DATA_PATH
-      repo: data_source_csat3_linkmerge
+      name: REGULARIZED_PATH
+      repo: csat3_l0p_data
       glob: /csat3/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      outer_join: true
       empty_files: true
   - pfs:
-      name: LOCATION_PATH
-      repo: csat3_location_asset_assignment
+      name: THRESHOLD_PATH
+      repo: csat3_threshold_select
       glob: /csat3/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
