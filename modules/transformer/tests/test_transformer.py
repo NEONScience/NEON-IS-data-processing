@@ -102,7 +102,7 @@ class TransformerTest(TestCase):
 
     def check_output(self):
         out_files = os.listdir(self.output_path)
-        basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.505.001.table001.2019-05-24.basic.*.csv'
+        basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.505.001.table001.2019-05-24.basic.csv'
         self.assertTrue(len(out_files) == 1)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern))
 
