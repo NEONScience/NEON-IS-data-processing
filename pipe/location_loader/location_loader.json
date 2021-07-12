@@ -20,13 +20,13 @@
             }
         ]
     },
-    "input": {
-        "cron": {
-            "name": "tick",
-            "spec": "@daily",
-            "overwrite": true
-        }
-    },
+  "input": {
+    "pfs": {
+      "repo": "cron_daily_tick",
+      "glob": "/",
+      "empty_files": true
+    }
+  },
     "enable_stats": false,
     "standby": true
 }

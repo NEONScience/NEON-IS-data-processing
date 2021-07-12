@@ -1,0 +1,13 @@
+---
+pipeline:
+  name: cron_daily
+transform:
+  cmd: ["/bin/bash"]
+input:
+  cron:
+    name: tick
+    spec: "@daily"
+    start: "2021-06-30T00:00:00.000Z"
+    overwrite: true
+enable_stats: false
+standby: true

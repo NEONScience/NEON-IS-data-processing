@@ -1,0 +1,60 @@
+{
+  "pipeline": {
+    "name": "relHumidityBuoy_qm_instantaneous"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.qaqc.qm.dp0p.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "FileSchmQm=$FILE_SCHEMA_QM",
+      "VarTimeBgn=timeWndwBgn",
+      "VarTimeEnd=timeWndwEnd",
+      "GrpQfAlph1=relativeHumidity:relativeHumidityValidCalQF|relativeHumiditySuspectCalQF|relativeHumidityNullQF|relativeHumidityGapQF|relativeHumidityRangeQF|relativeHumidityStepQF|relativeHumiditySpikeQF|relativeHumidityPersistenceQF",
+      "GrpQfBeta1=relativeHumidity:relativeHumidityValidCalQF|relativeHumiditySuspectCalQF|relativeHumidityNullQF|relativeHumidityGapQF|relativeHumidityRangeQF|relativeHumidityStepQF|relativeHumiditySpikeQF|relativeHumidityPersistenceQF",
+      "QfForc1=relativeHumidityNullQF:1:relativeHumidityValidCalQF|relativeHumiditySuspectCalQF:-1",
+      "GrpQfAlph2=temperature:temperatureValidCalQF|temperatureSuspectCalQF|temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF",
+      "GrpQfBeta2=temperature:temperatureValidCalQF|temperatureSuspectCalQF|temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF",
+      "QfForc2=temperatureNullQF:1:temperatureValidCalQF|temperatureSuspectCalQF:-1",
+      "GrpQfAlph3=dewPoint:dewPointValidCalQF|dewPointSuspectCalQF|dewPointNullQF|dewPointGapQF|dewPointRangeQF|dewPointStepQF|dewPointSpikeQF|dewPointPersistenceQF",
+      "GrpQfBeta3=dewPoint:dewPointValidCalQF|dewPointSuspectCalQF|dewPointNullQF|dewPointGapQF|dewPointRangeQF|dewPointStepQF|dewPointSpikeQF|dewPointPersistenceQF",
+      "QfForc3=dewPointNullQF:1:dewPointValidCalQF|dewPointSuspectCalQF:-1",
+      "Tmi=001"
+    ],
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.7",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "env": {
+      "LOG_LEVEL": "DEBUG"
+    }
+  },
+  "input": {
+    "cross": [
+      {
+        "pfs": {
+          "name": "DIR_IN",
+          "repo": "relHumidityBuoy_qaqc_flags_group",
+          "glob": "/hmp155/*/*/*"
+        }
+      },
+      {
+        "pfs": {
+          "name": "FILE_SCHEMA_QM",
+          "repo": "avro_schemas",
+          "glob": "/dp01/relHumidityBuoy_dp01_qm_instantaneous.avsc"
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true,
+  "parallelism_spec": {
+    "constant": "1"
+  },
+  "resource_requests": {
+    "memory": "200Mi",
+    "cpu": 0
+  }
+}

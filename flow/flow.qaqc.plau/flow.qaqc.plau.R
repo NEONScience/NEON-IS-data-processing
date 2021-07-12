@@ -124,6 +124,8 @@
 #     Add option to copy one or more variables found in the input file to the output flags file
 #   Cove Sturtevant (2021-01-20)
 #     Applied internal parallelization
+#   Cove Sturtevant (2021-07-02)
+#     Fix bug resulting in error when terms have different number of tests
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -480,7 +482,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   }
   
   # Combine the output for all terms into a single data frame - this will insert the name of the term in the column name
-  qf <- base::do.call(base::rbind.data.frame, base::list(qf,make.row.names = FALSE,stringsAsFactors=FALSE))
+  qf <- base::do.call(base::cbind.data.frame, base::list(qf,stringsAsFactors=FALSE))
   base::names(qf) <- base::sub(pattern='.',replacement='',x=base::names(qf),fixed=TRUE) # Get rid of the '.' between the term name and the flag name
   
   # Use as.integer in order to write out as integer with the avro schema
