@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "pressureAir_related_location_group"
+    "name": "pressureAirBuoy_related_location_group"
   },
   "transform": {
     "image_pull_secrets": [
@@ -31,15 +31,23 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "groundwaterPhysical_level1_group",
-          "glob": "/aquatroll200/*/*/*",
+          "repo": "surfacewaterPhysical_aquatroll200_level1_group",
+          "glob": "/*/*/*",
           "empty_files": true
         }
       },
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "relHumidity_level1_group",
+          "repo": "surfacewaterPhysical_leveltroll500_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "relHumidityBuoy_level1_group",
           "glob": "/hmp155/*/*/*",
           "empty_files": true
         }

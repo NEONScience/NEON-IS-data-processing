@@ -14,8 +14,6 @@ log = get_logger()
 
 def transform(*, year_index: int) -> None:
     """
-    :param data_path: input data path
-    :param out_path: output path
     :param year_index: index of year in data path
     """
 
@@ -34,9 +32,6 @@ def transform(*, year_index: int) -> None:
     # get datum date
     data_path_parts = os.environ['DATA_PATH'].split(os.path.sep)
     formatted_date = '-'.join(data_path_parts[year_index:year_index+3])
-
-    # processing timestamp
-    timestamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
 
     locations = os.listdir(locations_path)
     for location in locations:
@@ -66,8 +61,8 @@ def transform(*, year_index: int) -> None:
             dp_parts.extend([loc_data["features"][0]["HOR"], loc_data["features"][0]["VER"], tmi, table_by_tmi[tmi]])
             basic_filename_parts = dp_parts
             expanded_filename_parts = dp_parts.copy()
-            basic_filename_parts.extend([formatted_date, 'basic', timestamp, 'csv'])
-            expanded_filename_parts.extend([formatted_date, 'expanded', timestamp, 'csv'])
+            basic_filename_parts.extend([formatted_date, 'basic', 'csv'])
+            expanded_filename_parts.extend([formatted_date, 'expanded', 'csv'])
             basic_filename = '.'.join(basic_filename_parts)
             expanded_filename = '.'.join(expanded_filename_parts)
             basic_filepath = output_path + os.path.sep + basic_filename
