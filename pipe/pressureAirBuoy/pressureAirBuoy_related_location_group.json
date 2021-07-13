@@ -1,0 +1,67 @@
+{
+  "pipeline": {
+    "name": "pressureAirBuoy_related_location_group"
+  },
+  "transform": {
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/related_location_group:11",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "python3 -m related_location_group.related_location_group_main"
+    ],
+    "env": {
+      "LOG_LEVEL": "INFO",
+      "OUT_PATH": "/pfs/out",
+      "SOURCE_TYPE_INDEX": "3",
+      "YEAR_INDEX": "4",
+      "MONTH_INDEX": "5",
+      "DAY_INDEX": "6",
+      "GROUP_INDEX": "7",
+      "LOCATION_INDEX": "8",
+      "DATA_TYPE_INDEX": "9"
+    }
+  },
+  "input": {
+    "union": [
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "surfacewaterPhysical_aquatroll200_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "surfacewaterPhysical_leveltroll500_level1_group",
+          "glob": "/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "relHumidityBuoy_level1_group",
+          "glob": "/hmp155/*/*/*",
+          "empty_files": true
+        }
+      },
+      {
+        "pfs": {
+          "name": "DATA_PATH",
+          "repo": "pressureAir_level1_group",
+          "glob": "/ptb330a/*/*/*",
+          "empty_files": true
+        }
+      }
+    ]
+  },
+  "enable_stats": false,
+  "standby": true
+}
