@@ -9,7 +9,7 @@
     "stdin": [ "#!/bin/bash", "python3 -m context_filter.context_filter_main" ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "CONTEXT": "barometric-pressure",
+      "CONTEXT": "terrestrial",
       "LOG_LEVEL": "INFO",
       "TRIM_INDEX": "3",
       "SOURCE_ID_INDEX": "7",
