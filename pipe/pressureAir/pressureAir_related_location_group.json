@@ -47,7 +47,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "relHumidityBuoy_level1_group",
+          "repo": "relHumidity_level1_group",
           "glob": "/hmp155/*/*/*",
           "empty_files": true
         }
