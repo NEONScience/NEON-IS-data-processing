@@ -40,7 +40,7 @@
         "pfs": {
           "name": "DATA_PATH",
           "repo": "relHumidity_level1_group",
-          "glob": "//*/*/*",
+          "glob": "/*/*/*",
           "empty_files": true
         }
       },
