@@ -4,9 +4,9 @@
 
 ##  High-level organization
 
-- /flow: contains workflow templates/executables for generic processing modules (e.g. calibration). Dockerfiles included.
+- /flow: contains workflow templates/executables for processing modules (e.g. calibration). Dockerfiles included.
 - /pack: contains packages/libraries (for reusable function calls, like reading/writing data files). Dockerfiles included. 
-- /pipe: contains Pachyderm pipeline specifications. Includes associated code/dockerfiles if applicable only to that pipeline. 
+- /pipe: contains Pachyderm pipeline specifications. 
 
 
 ## Credits & Acknowledgements
