@@ -19,7 +19,7 @@
   "input": {
       "pfs": {
         "name": "IN_PATH",
-        "repo": "pressureAirBuoy_related_location_group",
+        "repo": "pressureAir_related_location_group",
         "glob": "/*/*/*"
       }
   },

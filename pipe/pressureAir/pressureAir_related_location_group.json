@@ -31,15 +31,7 @@
       {
         "pfs": {
           "name": "DATA_PATH",
-          "repo": "surfacewaterPhysical_aquatroll200_level1_group",
-          "glob": "/*/*/*",
-          "empty_files": true
-        }
-      },
-      {
-        "pfs": {
-          "name": "DATA_PATH",
-          "repo": "surfacewaterPhysical_leveltroll500_level1_group",
+          "repo": "groundwaterPhysical_level1_group",
           "glob": "/*/*/*",
           "empty_files": true
         }
@@ -48,7 +40,7 @@
         "pfs": {
           "name": "DATA_PATH",
           "repo": "relHumidity_level1_group",
-          "glob": "/hmp155/*/*/*",
+          "glob": "//*/*/*",
           "empty_files": true
         }
       },
@@ -56,7 +48,7 @@
         "pfs": {
           "name": "DATA_PATH",
           "repo": "pressureAir_level1_group",
-          "glob": "/ptb330a/*/*/*",
+          "glob": "/*/*/*",
           "empty_files": true
         }
       }
