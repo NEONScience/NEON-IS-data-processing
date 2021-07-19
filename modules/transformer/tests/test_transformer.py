@@ -27,7 +27,7 @@ class TransformerTest(TestCase):
         self.data_file = Path(self.data_path, 'data', self.location, 'data_001.parquet')
         os.makedirs(Path(self.data_path, 'locations', self.location))
         os.makedirs(Path(self.data_path, 'data', self.location))
-        self.year_index = 10
+        self.year_index = self.data_path.parts.index("2019")
 
         # create workbook dataframe
         workbook = pd.DataFrame()
