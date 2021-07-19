@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os
+import os, glob
 from pathlib import Path
 from unittest import TestCase
 from transformer.transformer import transform, format_column, format_sig
@@ -101,7 +101,8 @@ class TransformerTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        out_files = os.listdir(self.output_path)
+        os.chdir(self.output_path)
+        out_files = glob.glob("*.csv")
         basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.505.001.table001.2019-05-24.basic.csv'
         self.assertTrue(len(out_files) == 1)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern))
