@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-import os, glob
+import os, glob, sys
 from pathlib import Path
 from unittest import TestCase
 from packager.packager import package
 import packager.packager_main as packager_main
 from testfixtures import TempDirectory
 import fnmatch
+import logging
 
 class Packager(TestCase):
 
     def setUp(self):
+
+        self.log = logging.getLogger("testlog")
+        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
         # create temporary dir
         self.temp_dir = TempDirectory()
@@ -48,6 +52,7 @@ class Packager(TestCase):
     def check_output(self):
         os.chdir(self.output_path)
         out_files = glob.glob("*.csv")
+        self.log.debug("NUMBER OF OUTPUT FILES = " + str(len(out_files)))
         basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.501.001.ST_1_minute.2019-05.basic.*.csv'
         self.assertTrue(len(out_files) == 1)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern))
