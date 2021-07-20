@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-import os
+import os, glob, sys
 from pathlib import Path
 from unittest import TestCase
 from packager.packager import package
 import packager.packager_main as packager_main
 from testfixtures import TempDirectory
 import fnmatch
+import logging
 
 class Packager(TestCase):
 
     def setUp(self):
+
+        self.log = logging.getLogger("testlog")
+        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
         # create temporary dir
         self.temp_dir = TempDirectory()
@@ -26,9 +30,9 @@ class Packager(TestCase):
             f.write("file 1 content")
         with open(self.data_file_2, 'w') as f:
             f.write("file 2 content")
-        self.prefix_index = 9
+        self.prefix_index = self.data_path.parts.index("CPER")
         self.prefix_length = 3
-        self.sort_index = 10
+        self.sort_index = self.data_path.parts.index("2019")
 
     def test_package(self):
         os.environ["DATA_PATH"] = str(self.data_path)
@@ -46,7 +50,9 @@ class Packager(TestCase):
         self.check_output()
 
     def check_output(self):
-        out_files = os.listdir(self.output_path)
+        os.chdir(self.output_path)
+        out_files = glob.glob("*.csv")
+        self.log.debug("NUMBER OF OUTPUT FILES = " + str(len(out_files)))
         basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.501.001.ST_1_minute.2019-05.basic.*.csv'
         self.assertTrue(len(out_files) == 1)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern))

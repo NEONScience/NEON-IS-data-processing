@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os
+import os, glob, sys
 from pathlib import Path
 from unittest import TestCase
 from transformer.transformer import transform, format_column, format_sig
@@ -9,10 +9,14 @@ import json
 import pandas as pd
 import datetime
 import fnmatch
+import logging
 
 class TransformerTest(TestCase):
 
     def setUp(self):
+
+        self.log = logging.getLogger("testlog")
+        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
         # create temporary dir
         self.temp_dir = TempDirectory()
@@ -27,7 +31,7 @@ class TransformerTest(TestCase):
         self.data_file = Path(self.data_path, 'data', self.location, 'data_001.parquet')
         os.makedirs(Path(self.data_path, 'locations', self.location))
         os.makedirs(Path(self.data_path, 'data', self.location))
-        self.year_index = 10
+        self.year_index = self.data_path.parts.index("2019")
 
         # create workbook dataframe
         workbook = pd.DataFrame()
@@ -101,7 +105,9 @@ class TransformerTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        out_files = os.listdir(self.output_path)
+        os.chdir(self.output_path)
+        out_files = glob.glob("*.csv")
+        self.log.debug("NUMBER OF OUTPUT FILES = " + str(len(out_files)))
         basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.505.001.table001.2019-05-24.basic.csv'
         self.assertTrue(len(out_files) == 1)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern))

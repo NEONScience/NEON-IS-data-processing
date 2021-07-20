@@ -26,9 +26,9 @@ class LocationGrouperTest(TestCase):
         self.base_path = Path(self.input_path, "prt", self.metadata_path)
         self.in_data_path = Path(self.data_path, self.data_file)
         self.in_location_path = Path(self.input_path, "prt", self.location, self.location_file)
-        self.relative_path_index = 9
-        self.year_index = 10
-        self.loc_index = 13
+        self.relative_path_index = self.data_path.parts.index("prt")
+        self.year_index = self.relative_path_index + 1
+        self.loc_index = self.relative_path_index + 4
         self.grouploc_key = 'site'
         self.related_paths = "DATA_PATH" + "," + "LOCATION_PATH"
         os.environ["DATA_PATH"] = str(Path(self.input_path, self.data_path))
