@@ -65,6 +65,10 @@ test_that("Unit test of wrap.ucrt.dp01.rh.dew.frst.pt.R", {
                          stringsAsFactors=FALSE)
   ucrt <- NEONprocIS.stat::wrap.ucrt.dp01.rh.dew.frst.pt(data=data,VarUcrt='dewPoint',ucrtData=ucrtData)
   
-  testthat::expect_true(!is.na(ucrt))
+  testthat::expect_true(is.numeric(ucrt))
 
+  # negative test
+  ucrt <- try(NEONprocIS.stat::wrap.ucrt.dp01.rh.dew.frst.pt(data=data,VarUcrt='humidity',ucrtData=ucrtData), silent=TRUE)
+  
+#  testthat::expect_true(is.numeric(ucrt))
 })
