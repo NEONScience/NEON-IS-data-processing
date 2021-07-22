@@ -10,7 +10,7 @@
       "DirOut=/pfs/out",
       "TermQf=ux_wind_speed|uy_wind_speed|uz_wind_speed|speed_of_sound"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.49",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.51",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

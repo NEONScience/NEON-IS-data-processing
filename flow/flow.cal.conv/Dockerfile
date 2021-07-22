@@ -13,3 +13,4 @@ RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in calibration workflow
 COPY ./flow.cal.conv.R /flow.cal.conv.R
+COPY ./wrap.cal.conv.dp0p.R /wrap.cal.conv.dp0p.R
