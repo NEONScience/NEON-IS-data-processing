@@ -38,7 +38,7 @@
 #' that are applicable between 2019-01-13 00:00 and 2019-01-15 24:00. "PadDay=2" will copy in calibration file(s) 
 #' that are applicable between 2019-01-15 00:00 and 2019-01-17 24:00. To provide both negative and positive pads 
 #' (a window around a given day), separate the values with pipes (e.g. "PadDay=-2|2"). 
-#' @param Arry(optional). Logical value indicating whether the calibration files should be assigned separately for 
+#' @param Arry (optional). Logical value indicating whether the calibration files should be assigned separately for 
 #' each stream ID. (Normally there would be a single stream ID corresponding to a given TERM, so no checking for 
 #' multiple stream IDs is needed). A value of TRUE would be needed if the TERM is an array, meaning that calibrations 
 #' for multiple stream IDs are stored within the same TERM folder and should really be treated as separate terms 
