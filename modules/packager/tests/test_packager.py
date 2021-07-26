@@ -32,7 +32,7 @@ class Packager(TestCase):
             f.write("file 2 content")
         self.prefix_index = self.data_path.parts.index("CPER")
         self.prefix_length = 3
-        self.sort_index = self.data_path.parts.index("2019")
+        self.sort_index = 10
 
     def test_package(self):
         os.environ["DATA_PATH"] = str(self.data_path)
