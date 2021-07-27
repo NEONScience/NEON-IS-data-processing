@@ -32,7 +32,7 @@ class Packager(TestCase):
             f.write("file 2 content")
         self.prefix_index = self.data_path.parts.index("CPER")
         self.prefix_length = 3
-        self.sort_index = self.data_path.parts.index("2019")
+        self.sort_index = 10
 
     def test_package(self):
         os.environ["DATA_PATH"] = str(self.data_path)
@@ -44,7 +44,7 @@ class Packager(TestCase):
         os.environ["DATA_PATH"] = str(self.data_path)
         os.environ["OUT_PATH"] = str(self.out_path)
         os.environ["PREFIX_INDEX"] = str(self.prefix_index)
-        os.environ["PREFIX_LENGTH"] = str(self.prefix_length)
+        os.environ["PREFIX_LENGTH"]= str(self.prefix_length)
         os.environ["SORT_INDEX"] = str(self.sort_index)
         packager_main.main()
         self.check_output()
@@ -52,7 +52,10 @@ class Packager(TestCase):
     def check_output(self):
         os.chdir(self.output_path)
         out_files = glob.glob("*.csv")
+        self.log.debug("INPUT PATH = " + str(self.input_path))
+        self.log.debug("OUTPUT PATH = " + str(self.out_path))
         self.log.debug("NUMBER OF OUTPUT FILES = " + str(len(out_files)))
+        self.log.debug("OUTPUT FILES = " + str(out_files))
         basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.501.001.ST_1_minute.2019-05.basic.*.csv'
         self.assertTrue(len(out_files) == 1)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern))

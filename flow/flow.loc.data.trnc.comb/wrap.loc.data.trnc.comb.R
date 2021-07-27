@@ -41,7 +41,7 @@
 #' json files to be merged. These directories must be at the same level as the location directory. Within each 
 #' subfolder are uncertainty json files, one for each source-id. The source-id is the identifier for the sensor 
 #' pertaining to the uncertainty info in the file, and must be somewhere in the file name.
-#' @param DirSubCopy (optional) Character vector. The names of additional subfolders, separated by pipes, at 
+#' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
 #' output path (i.e. not combined but carried through as-is).
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log

@@ -14,7 +14,7 @@
       "TermQf=barometricPressure",
       "TermFuncUcrt=barometricPressure:def.ucrt.meas.cnst"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.49",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.51",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
