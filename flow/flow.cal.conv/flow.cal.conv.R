@@ -449,4 +449,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                      log=log
   )
   
+  return()
+  
 } # End loop around datum paths
