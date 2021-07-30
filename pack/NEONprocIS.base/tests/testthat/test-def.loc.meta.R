@@ -120,8 +120,16 @@ test_that("test the active dates",
             nameFile <- "def.loc.meta/test_input/pfs/2020/12/31/CFGLOC113261/location/CFGLOC113261.json"
             timeBgn <- base::as.POSIXct('2020-12-30',tz='GMT')
             timeEnd <- base::as.POSIXct('2021-01-31',tz='GMT')
+            locProp <- geojsonsf::geojson_sf(nameFile)
+            timeActvList <- data.frame(rjson::fromJSON(json_str=locProp$active_periods[1]))
+            
+            timeActvStarttGMT <- base::as.POSIXct(timeActvList[,1],tz='GMT')
+            timeActvEndGMT <- base::as.POSIXct(timeActvList[,2],tz='GMT')
+            
             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn, TimeEnd=timeEnd)
-            expect_true (length(locationMetaData$site) == 1)
-            expect_true (length(locationMetaData$active_periods) == 1)
+            
+            expect_true (locationMetaData$site == locProp$site)
+            expect_true (locationMetaData$active_periods[[1]][[1]] ==  timeActvStarttGMT)
+            expect_true (locationMetaData$active_periods[[1]][[2]] ==  timeActvEndGMT)
             
           })
