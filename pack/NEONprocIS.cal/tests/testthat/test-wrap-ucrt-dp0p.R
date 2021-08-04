@@ -258,4 +258,22 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
                !(is.null(wudp0pList_returned)) &&
                all(names(wudp0pList_returned$voltage) == elementsList)) &&
                is.null(wudp0pList_returned$reistance)
+   
+   # Negative test #1: ucrtCoefFdas and mappNameVar are not passed to wrap.ucrt.dp0p.R
+   wudp0pList_returned <-
+      NEONprocIS.cal::wrap.ucrt.dp0p (
+         data,
+         FuncUcrt,
+         calSlct = calSlct
+      )
+   # Negative test #2: no calibration files in the calibrations sub folder, voltage and resistance 
+   DirCal = "./calibrations_noClas"
+   wudp0pList_returned <-
+      NEONprocIS.cal::wrap.ucrt.dp0p (
+         data,
+         FuncUcrt,
+         ucrtCoefFdas = NULL,
+         calSlct = calSlct,
+         mappNameVar = NULL
+      )  
 })
