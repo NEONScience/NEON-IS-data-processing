@@ -57,7 +57,7 @@ class Packager(TestCase):
         self.log.debug("NUMBER OF OUTPUT FILES = " + str(len(out_files)))
         self.log.debug("OUTPUT FILES = " + str(out_files))
         basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.501.001.ST_1_minute.2019-05.basic.*.csv'
-        self.assertTrue(len(out_files) == 1)
+        self.assertTrue(len(out_files) == 2)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern))
 
     def tearDown(self):

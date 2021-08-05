@@ -42,6 +42,7 @@ class TransformerTest(TestCase):
         workbook['table'] = 'table001'
         workbook['dpID'] = 'NEON.DOM.SITE.DP1.00041.001'
         workbook['pubFormat'] = ["yyyy-MM-dd'T'HH:mm:ss'Z'(floor)", '*.###(round)', 'asIs']
+        workbook['dataCategory'] = 'Y'
         # write workbook to csv
         workbook.to_csv(self.workbook_path, sep ='\t', index=False)
 
@@ -109,8 +110,8 @@ class TransformerTest(TestCase):
         out_files = glob.glob("*.csv")
         self.log.debug("NUMBER OF OUTPUT FILES = " + str(len(out_files)))
         basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.505.001.table001.2019-05-24.basic.csv'
-        self.assertTrue(len(out_files) == 1)
-        self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern))
+        self.assertTrue(len(out_files) == 2)
+        self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern) | fnmatch.fnmatch(out_files[1], basic_pattern))
 
     def tearDown(self):
         self.temp_dir.cleanup()

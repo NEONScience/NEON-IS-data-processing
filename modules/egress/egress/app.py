@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import environs
-import argparse
 from structlog import get_logger
 from pathlib import Path
 
@@ -18,13 +17,7 @@ def main() -> None:
     log.debug(f'data_dir: {data_path}')
     log.debug(f'out_dir: {out_path}')
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--outputname')
-    parser.add_argument('--dateindex')
-    parser.add_argument('--locindex')
-    args = parser.parse_args()
-
-    egress = Egress(data_path, out_path, args.outputname, int(args.dateindex), int(args.locindex))
+    egress = Egress(data_path, out_path)
     egress.upload()
 
 
