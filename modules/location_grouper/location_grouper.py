@@ -41,7 +41,7 @@ def location_group(*, related_paths: list, data_path: Path, location_path: Path,
                     loc = parts[loc_index]
                     if yyyymmdd is None:
                         yyyymmdd = parts[year_index:year_index+3]
-                    prefix_by_basename[basename] = 'data' + os.path.sep + loc
+                    prefix_by_basename[basename] = os.path.join("data", loc)
                     loc_by_basename[basename] = loc
                 # If this is a location file, store its grouploc
                 if (str(related_path) == str(location_path)):
@@ -52,7 +52,7 @@ def location_group(*, related_paths: list, data_path: Path, location_path: Path,
                     grouploc = loc_data["features"][0]["properties"][grouploc_key]
                     grouploc_by_loc[loc] = grouploc
                     f.close()
-                    prefix_by_basename[basename] = 'locations' + os.path.sep + loc
+                    prefix_by_basename[basename] = os.path.join("locations", loc)
                     loc_by_basename[basename] = loc
 
     # Link each input file into its output path

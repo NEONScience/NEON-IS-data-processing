@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import os
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -26,6 +27,8 @@ class EgressTest(TestCase):
         self.fs.create_file(data_path)
 
     def test_egress(self):
+        os.environ["CUSTOM_ENDPOINT"] = "endpoint"
+        os.environ["AMAZON_BUCKET"] = "bucket"
         egress = Egress(self.input_dir, self.out_dir)
         egress.upload()
         self.check_output()

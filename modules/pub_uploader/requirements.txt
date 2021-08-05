@@ -1,4 +1,4 @@
 structlog==19.2.0
+geojson==2.4.1
 environs==6.0.0
 pandas==1.2.5
-pyarrow==4.0.1

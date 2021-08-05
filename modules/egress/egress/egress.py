@@ -5,6 +5,7 @@ from pathlib import Path
 import datetime
 import dateutil
 from dateutil.relativedelta import relativedelta
+import pandas as pd
 
 from structlog import get_logger
 
@@ -33,12 +34,20 @@ class Egress:
         self.date_delimiter = "-"
         self.date_format = '%Y%m%dT%H%M%S'
         self.date_range_delimiter = "--"
+        self.s3_prefix = "https://" + os.environ['CUSTOM_ENDPOINT'] + "/" + os.environ['AMAZON_BUCKET'] + "/"
 
     def upload(self) -> None:
-        """Link the source files into the output directory."""
+        
+        # object IDs by file
+        objectIdByFile = {}
+
         try:
             for root, dirs, files in os.walk(str(self.data_path)):
                 for filename in files:
+                    # load the manifest
+                    if 'manifest' in filename:
+                        manifest = pd.read_csv(os.path.join(root, filename))
+                        continue
                     file_path = Path(root, filename)
                     filename_parts = filename.split(self.filename_delimiter)
                     site = filename_parts[self.site_index]
@@ -57,11 +66,17 @@ class Egress:
                     date_range = start_date.strftime(self.date_format) + self.date_range_delimiter + end_date.strftime(self.date_format)
                     package = filename_parts[self.package_index]
                     # construct link filename
-                    link_path = Path(self.out_path, idq, site, date_range, package, filename)
+                    base_path = os.path.join(idq, site, date_range, package, filename)
+                    link_path = Path(self.out_path, base_path)
                     log.debug(f'source_path: {file_path} link_path: {link_path}')
                     link_path.parent.mkdir(parents=True, exist_ok=True)
+                    # construct object ID
+                    objectIdByFile[filename] = self.s3_prefix + base_path
                     if not link_path.exists():
                         link_path.symlink_to(file_path)
+            for key in objectIdByFile:
+                manifest.loc[manifest['file'] == key, 'objectId'] = objectIdByFile[key]
+            manifest.to_csv(os.path.join(self.out_path, idq, site, date_range, 'manifest.csv'), index=False)
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             log.error("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))

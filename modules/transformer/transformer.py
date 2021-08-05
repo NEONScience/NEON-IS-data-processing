@@ -6,6 +6,7 @@ from pandas import DataFrame
 import datetime
 import fnmatch
 import math
+import csv
 
 from structlog import get_logger
 
@@ -18,8 +19,8 @@ def transform(*, year_index: int) -> None:
     """
 
     workbook_file = os.environ['WORKBOOK_PATH']
-    locations_path = os.environ['DATA_PATH'] + os.path.sep + 'locations'
-    data_path = os.environ['DATA_PATH'] + os.path.sep + 'data'
+    locations_path = os.path.join(os.environ['DATA_PATH'], 'locations')
+    data_path = os.path.join(os.environ['DATA_PATH'], 'data')
     out_path = os.environ['OUT_PATH']
 
     # import workbook
@@ -33,21 +34,24 @@ def transform(*, year_index: int) -> None:
     data_path_parts = os.environ['DATA_PATH'].split(os.path.sep)
     formatted_date = '-'.join(data_path_parts[year_index:year_index+3])
 
+    # hasData by output file
+    hasDataByFile = {}
+
     locations = os.listdir(locations_path)
     for location in locations:
         # import location json
-        location_path = locations_path + os.path.sep + location
+        location_path = os.path.join(locations_path, location)
         location_file = os.listdir(location_path)[0]
-        with open(location_path + os.path.sep + location_file) as f:
+        with open(os.path.join(location_path, location_file)) as f:
             loc_data = json.load(f)
 
         # construct output path
         site = loc_data["features"][0]["properties"]["site"]
         day_path = os.path.sep.join(data_path_parts[year_index:year_index+3])
-        output_path = out_path + os.path.sep + site + os.path.sep + day_path
+        output_path = os.path.join(out_path, site, day_path)
           
         # determine time indexes from data filenames
-        location_data_path = data_path + os.path.sep + location
+        location_data_path = os.path.join(data_path, location)
         data_files = os.listdir(location_data_path)
         # data file must be of the form *_TMI.ext
         tmi_by_file = dict(zip(data_files, [os.path.splitext(data_file)[0].split('_')[-1] for data_file in data_files]))
@@ -65,10 +69,10 @@ def transform(*, year_index: int) -> None:
             expanded_filename_parts.extend([formatted_date, 'expanded', 'csv'])
             basic_filename = '.'.join(basic_filename_parts)
             expanded_filename = '.'.join(expanded_filename_parts)
-            basic_filepath = output_path + os.path.sep + basic_filename
-            expanded_filepath = output_path + os.path.sep + expanded_filename
+            basic_filepath = os.path.join(output_path, basic_filename)
+            expanded_filepath = os.path.join(output_path, expanded_filename)
 
-            tmi_files = [location_data_path + os.path.sep + k for k,v in tmi_by_file.items() if v == tmi]
+            tmi_files = [os.path.join(location_data_path, k) for k,v in tmi_by_file.items() if v == tmi]
 
             # import and concatenate data files
             data = pd.read_parquet(tmi_files[0])
@@ -86,6 +90,12 @@ def transform(*, year_index: int) -> None:
             # add empty columns for any fields specified in workbook that are not present in the data
             data[workbook['fieldName'][workbook['fieldName'].isin(data.columns) == False]] = ""
 
+            # determine data availability
+            hasDataByFile[basic_filename] = not data[workbook.loc[(workbook['dataCategory'] == 'Y') & (workbook['downloadPkg'] == 'basic')]['fieldName'].values].isnull().values.all()
+            hasDataByFile[expanded_filename] = \
+                not data[workbook.loc[(workbook['dataCategory'] == 'Y') & \
+                        ((workbook['downloadPkg'] == 'basic') | (workbook['downloadPkg'] == 'expanded'))]['fieldName'].values].isnull().values.all()
+
             # extract and write datasets
             os.makedirs(output_path, exist_ok=True)
             # basic
@@ -96,6 +106,14 @@ def transform(*, year_index: int) -> None:
                 expanded_columns = workbook.loc[((workbook['downloadPkg'] == 'basic') | (workbook['downloadPkg'] == 'expanded')) & (workbook['table'] == table_by_tmi[tmi]), ['rank','fieldName']]
                 data[expanded_columns.sort_values('rank')['fieldName']].to_csv(expanded_filepath, index=False)
 
+    # write metadata manifest
+    manifest_filepath = os.path.join(output_path, 'manifest.csv')
+    with open(manifest_filepath, 'w') as manifest_csv:
+        writer = csv.writer(manifest_csv)
+        writer.writerow(['file','hasData'])
+        for key in hasDataByFile.keys():
+            writer.writerow([key, hasDataByFile[key]])
+    
 
 # Apply pub format to a column of a dataframe
 def format_column(dataframe: DataFrame, column: str, format: str):
