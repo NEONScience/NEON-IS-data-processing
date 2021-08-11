@@ -244,7 +244,6 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
          mappNameVar = mappNameVar
       )
 
-
    elementsList = c(
       "voltage_ucrtMeas",
       "voltage_raw",
@@ -256,24 +255,16 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
 
    expect_true ((is.list(wudp0pList_returned)) &&
                !(is.null(wudp0pList_returned)) &&
-               all(names(wudp0pList_returned$voltage) == elementsList)) &&
-               is.null(wudp0pList_returned$reistance)
+               all(names(wudp0pList_returned$voltage) == elementsList) &&
+               is.na(wudp0pList_returned$voltage$voltage_ucrtMeas))
    
    # Negative test #1: ucrtCoefFdas and mappNameVar are not passed to wrap.ucrt.dp0p.R
-   wudp0pList_returned <-
-      NEONprocIS.cal::wrap.ucrt.dp0p (
-         data,
-         FuncUcrt,
-         calSlct = calSlct
-      )
-   # Negative test #2: no calibration files in the calibrations sub folder, voltage and resistance 
-   DirCal = "./calibrations_noClas"
-   wudp0pList_returned <-
-      NEONprocIS.cal::wrap.ucrt.dp0p (
-         data,
-         FuncUcrt,
-         ucrtCoefFdas = NULL,
-         calSlct = calSlct,
-         mappNameVar = NULL
-      )  
-})
+   
+   wudp0pList_returned <- NEONprocIS.cal::wrap.ucrt.dp0p (
+      data,
+      FuncUcrt,
+      calSlct = calSlct
+   )
+   expect_true ((is.list(wudp0pList_returned)) &&
+                   (is.null(wudp0pList_returned$voltage$voltage_ucrtMeas)))
+   })
