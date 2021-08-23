@@ -1,18 +1,19 @@
-######################################################################################
-#' @title Generate an error message with the info passed into.
+##############################################################################################
+#' @title Generate an error message by constructing the info passed into.
 
 #' @author
 #' Mija Choi \email{choim@battelleecology.org}
 
 #' @description
-#' Generate an error message with an error message, function that was called, 
-#' line number where the error occurred, and function calling. And return the message 
+#' Generate a message starting with an error message. These, function which is calling, function called and line number where the error occurred, are appended. 
+#' And return the message 
 
 #' @param Errmsg String. Can be NULL if no specific error. 
 #' 
 #' Requires rlang and utils to run these commands
-#' @param fun_calling String. Can get the function name that is calling by the command, rlang::call_frame(n = 2)$fn_name
-#' @param fun_called String. Can get the function name that is called by the command, rlang::call_frame(n = 1)$fn_name
+#' 
+#' @param fun_calling. Can get the function name that is calling by the command, rlang::call_frame(n = 2)$fn_name
+#' @param fun_called. Can get the function name that is called by the command, rlang::call_frame(n = 1)$fn_name
 #' @param lineNum Number. Can get the line number by the command, getSrcLocation(function() {}, "line")
 
 #' @return Message.
@@ -23,7 +24,7 @@
 #' @keywords Currently none
 
 #' @examples 
-#' Replace "Bad Input" with your own error message in the statement below and run it.
+#' Modify the statement below by replacing "Bad Input" with your own error message and run it.
 #' msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Bad input", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
 #' log$error(msg)
 #' stop(msg)
