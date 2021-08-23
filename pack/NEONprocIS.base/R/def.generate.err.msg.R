@@ -1,12 +1,12 @@
 ##################################################################################################################
-#' @title Generate the error message. It includes error message, function called, line number and function calling
+#' @title Generate an error message. It includes error message, function called, line number and function calling
 
 #' @author
 #' Mija Choi \email{choim@battelleecology.org}
 
 #' @description
-#' Generate the error message including error message, function called, line number and function calling.
-#' And return the error message 
+#' Generate an error message with error message, function that was called, line number where the error occurred, 
+#' and function calling. And return the error message 
 
 #' @param Errmsg String. Can be NULL if no specific error. 
 #' 
@@ -14,7 +14,7 @@
 #' @param fun_called String. 
 #' @param lineNum Number. 
 
-#' @return Message with error message, function called, line number and function calling
+#' @return Message.
 
 #' @references 
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
