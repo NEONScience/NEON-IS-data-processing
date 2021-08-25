@@ -58,6 +58,9 @@
 #'
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn.
 #'
+#' 2. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
 #' 3. "FileSchmData=value" (optional), where value is the full path to schema for calibrated data 
 #' output by this workflow. If not input, the same schema as the input data will be used for output. 
 #' Note that the column order of the output data will be identical to the column order of the input. Terms/variables
@@ -237,6 +240,8 @@
 #     Applied internal parallelization
 #   Cove Sturtevant (2021-07-21)
 #     Move main functionality to wrapper function
+#   Cove Sturtevant (2021-08-10)
+#     Add datum error routing
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -266,7 +271,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut"),
+    NameParaReqd = c("DirIn", "DirOut", "DirErr"),
     NameParaOptn = c(
       "FileSchmData",
       "FileSchmQf",
@@ -436,18 +441,40 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
     
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
-  wrap.cal.conv.dp0p(DirIn=idxDirIn,
-                     DirOutBase=Para$DirOut,
-                     FuncConv=FuncConv,
-                     FuncUcrt=FuncUcrt,
-                     ucrtCoefFdas=ucrtCoefFdas,
-                     TermQf=Para$TermQf,
-                     NumDayExpiMax=NumDayExpiMax,
-                     SchmDataOutList=SchmDataOutList,
-                     SchmQf=SchmQf,
-                     DirSubCopy=DirSubCopy,
-                     log=log
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.cal.conv.dp0p(DirIn=idxDirIn,
+                         DirOutBase=Para$DirOut,
+                         FuncConv=FuncConv,
+                         FuncUcrt=FuncUcrt,
+                         ucrtCoefFdas=ucrtCoefFdas,
+                         TermQf=Para$TermQf,
+                         NumDayExpiMax=NumDayExpiMax,
+                         SchmDataOutList=SchmDataOutList,
+                         SchmQf=SchmQf,
+                         DirSubCopy=DirSubCopy,
+                         log=log
+      ),
+      error = function(err) {
+        call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(paste('An error has occurred. Here is the call stack:\n',paste(limitedLabels(call.stack),collapse='\n')))
+      }
+    ),
+    error=function(err) {
+      #NEONprocIS.base::
+        def.err.datm(
+        err=err,
+        DirDatm=idxDirIn,
+        DirErrBase=Para$DirErr,
+        RmvDatmOut=TRUE,
+        DirOutBase=Para$DirOut,
+        log=log
+      )
+    }
+    
   )
+  
   
   return()
   
