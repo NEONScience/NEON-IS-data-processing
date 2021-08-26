@@ -319,7 +319,12 @@ wrap.cal.conv.dp0p <- function(DirIn,
               silent = FALSE)
   if (base::any(base::class(data) == 'try-error')) {
     # Generate error and stop execution
-    log$error(base::paste0('File ', dirData, '/', fileData, ' is unreadable.'))
+    txt <- base::paste0('File ', dirData, '/', fileData, ' is unreadable.')
+    msg <- NEONprocIS.base::def.generate.err.msg(errmsg=txt, 
+                                                 fun_calling=rlang::call_frame(n = 2)$fn_name, 
+                                                 fun_called=rlang::call_frame(n = 1)$fn_name, 
+                                                 lineNum=getSrcLocation(function() {}, "line"))
+    log$error(msg)
     base::stop()
   }
   

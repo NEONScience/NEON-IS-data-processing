@@ -54,11 +54,17 @@ def.read.cal.xml <- function(NameFile,Vrbs=TRUE,log=NULL){
         silent = TRUE)
   
   if (xmlchk != TRUE) {
-    log$error(base::paste0(
+    txt <- base::paste0(
       " ====== def.read.cal.xml will not run due to the error in xml,  ",
       NameFile
-    ))
-    
+    )
+
+    msg <- NEONprocIS.base::def.generate.err.msg(errmsg=txt, 
+                                                 fun_calling=rlang::call_frame(n = 2)$fn_name, 
+                                                 fun_called=rlang::call_frame(n = 1)$fn_name, 
+                                                 lineNum=getSrcLocation(function() {}, "line")
+                                                 )
+    log$error(msg)
     base::stop()
   }
   
