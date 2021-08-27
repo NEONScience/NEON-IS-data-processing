@@ -64,14 +64,20 @@ def.err.datm <- function(err,
     log <- NEONprocIS.base::def.log.init()
   }
   
+  # Make sure the output directory exists
+  if(base::length(DirErrBase) != 1 || !base::dir.exists(DirErrBase)){
+    log$error(base::paste0('DirErrBase (',DirErrBase,') must be an existing directory.'))
+    stop()
+  }
+  
   # Tell the user about the error routing 
-  log$error(
+  log$info(
     base::paste0(
       'Datum path ',
       DirDatm,
       ' errored with message: ',
       err,
-      '... Removing partial output and re-routing datum path to ',
+      '... Re-routing datum path to ',
       DirErrBase
       )
     )
