@@ -9,7 +9,6 @@
 #' The input path to the erroring datum will be created in the error directory.
 #' Optionally, remove any partial output from the errored datum.
 
-#' @param err The caught error, as returned by tryCatch
 #' @param DirDatm Character value. The input path to the datum, structured as follows: 
 #' #/pfs/BASE_REPO/#, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs'. Note that the path should terminate at 
@@ -41,7 +40,7 @@
 #' DirErrBase <- '/scratch/pfs/proc_group_output/errored_datums'
 #' RmvDatmOut <- TRUE
 #' DirOutBase <- '/scratch/pfs/proc_group_output'
-#' tryCatch(stop('error!'),error=function(err) def.err.datm(err=err,DirDatm=DirDatm,DirErrBase=DirErrBase,RmvDatmOut=RmvDatmOut,DirOutBase=DirOutBase))
+#' tryCatch(stop('error!'),error=function(err) def.err.datm(DirDatm=DirDatm,DirErrBase=DirErrBase,RmvDatmOut=RmvDatmOut,DirOutBase=DirOutBase))
 
 
 #' @seealso tryCatch
@@ -52,7 +51,7 @@
 #   Cove Sturtevant (2021-08-10)
 #     original creation
 ##############################################################################################
-def.err.datm <- function(err, 
+def.err.datm <- function(
                          DirDatm,
                          DirErrBase,
                          RmvDatmOut=FALSE,
@@ -64,20 +63,18 @@ def.err.datm <- function(err,
     log <- NEONprocIS.base::def.log.init()
   }
   
-  # Make sure the output directory exists
-  if(base::length(DirErrBase) != 1 || !base::dir.exists(DirErrBase)){
-    log$error(base::paste0('DirErrBase (',DirErrBase,') must be an existing directory.'))
+  # Make sure the output directory is a character
+  if(base::length(DirErrBase) != 1 && !base::is.character(DirErrBase)){
+    log$error(base::paste0('DirErrBase (',DirErrBase,') must be a character string.'))
     stop()
   }
   
   # Tell the user about the error routing 
   log$info(
     base::paste0(
-      'Datum path ',
+      'Re-routing failed datum path ',
       DirDatm,
-      ' errored with message: ',
-      err,
-      '... Re-routing datum path to ',
+      ' to ',
       DirErrBase
       )
     )

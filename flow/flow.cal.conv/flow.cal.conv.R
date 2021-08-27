@@ -458,18 +458,18 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       ),
       error = function(err) {
         call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
-        log$error(paste('An error has occurred. Here is the call stack:\n',paste(limitedLabels(call.stack),collapse='\n')))
+        log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+        print(utils::limitedLabels(call.stack))
       }
     ),
     error=function(err) {
-      #NEONprocIS.base::
+      NEONprocIS.base::
         def.err.datm(
-        err=err,
-        DirDatm=idxDirIn,
-        DirErrBase=Para$DirErr,
-        RmvDatmOut=TRUE,
-        DirOutBase=Para$DirOut,
-        log=log
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
       )
     }
     
