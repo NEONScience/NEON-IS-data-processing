@@ -40,9 +40,9 @@
 ##############################################################################################
 
 def.generate.err.msg <- function (errmsg = NULL,
-                              fun_calling,
-                              fun_called,
-                              lineNum){
+                              fun_calling=NULL,
+                              fun_called=NULL,
+                              lineNum=NULL){
 
   errmsg <- base::paste0("\"",errmsg, "\" in " , fun_called," near line ",lineNum,", called by ", fun_calling)
   

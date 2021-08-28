@@ -52,34 +52,48 @@ def.validate.dataframe <-
       log <- NEONprocIS.base::def.log.init()
     }
     msg <- NULL
-    
     b <- TRUE
-    
     if (!is.data.frame(dfIn)) {
       b <- FALSE
-      log$error('Input is not a data frame.')
+      msg_in <- 'Input is not a data frame.'
+      msg <- NEONprocIS.base::def.generate.err.msg(errmsg=msg_in, fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+      log$error(msg)
+      
+#      log$error('Input is not a data frame.')
     }
     
     else if (TestEmpty == TRUE && nrow(dfIn) == 0) {
       b <- FALSE
-      log$error('Data frame is empty (zero rows).')
-      
+#      log$error('Data frame is empty (zero rows).')
+      msg_in <- 'Data frame is empty (zero rows).'
+      msg <- NEONprocIS.base::def.generate.err.msg(errmsg=msg_in, fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+      log$error(msg)
     }
     
     else  if (TestNa == TRUE && any(is.na(dfIn))) {
       b <- FALSE
-      log$error('No NA values are allowed in the data frame.')
+#      log$error('No NA values are allowed in the data frame.')
+      msg_in <- 'No NA values are allowed in the data frame.'
+      msg <- NEONprocIS.base::def.generate.err.msg(errmsg=msg_in, fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+      log$error(msg)
+      
     }
     
     else if (TestNumc == TRUE &&
              any(!unlist(lapply(dfIn, is.numeric)))) {
       b <- FALSE
-      log$error('Data frame is required to be numeric.')
+      msg_in <- 'Data frame is required to be numeric.'
+      msg <- NEONprocIS.base::def.generate.err.msg(errmsg=msg_in, fun_calling=fun_calling, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line",first = TRUE))
+      log$error(msg)
+#      log$error('Data frame is required to be numeric.')
     } 
     
     else if (!base::all(TestNameCol %in% base::names(dfIn))){
       b <- FALSE
-      log$error(base::paste0('Columns ', base::paste0(TestNameCol[!(TestNameCol %in% base::names(dfIn))],collapse=','),' are missing from the data frame.'))
+      msg_in <- base::paste0('Columns ', base::paste0(TestNameCol[!(TestNameCol %in% base::names(dfIn))],collapse=','),' are missing from the data frame.')
+      msg <- NEONprocIS.base::def.generate.err.msg(errmsg=msg_in, fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+      log$error(msg)
+ #     log$error(base::paste0('Columns ', base::paste0(TestNameCol[!(TestNameCol %in% base::names(dfIn))],collapse=','),' are missing from the data frame.'))
     }
     
     return (b)

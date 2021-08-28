@@ -68,13 +68,17 @@ def.ucrt.dp01.cal.rh.dew.frst.pt <- function(data,
                                                  TestEmpty=FALSE, 
                                                  log = log)
   if (!chk) {
+    msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Data frame validation failed", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+    log$error(msg)
     stop()
   }
     
   # Make sure ucrtData has the same number of rows
   numData <- base::length(data)
   if(base::nrow(ucrtData) != numData){
-    log$error('Uncertainty data must be the same length (rows) as data.')
+#    log$error('Uncertainty data must be the same length (rows) as data.')
+    msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Uncertainty data must be the same length (rows) as data.", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+    log$error(msg)
     stop()
   }
   

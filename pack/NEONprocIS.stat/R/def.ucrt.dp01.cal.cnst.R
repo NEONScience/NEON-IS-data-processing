@@ -68,8 +68,11 @@ def.ucrt.dp01.cal.cnst <- function(ucrtCoef,
   if(base::sum(mtch) == 0){
     # If there are zero, the coef will be NA
     ucrtCal <- base::as.numeric(NA)
-    log$debug(base::paste0('No uncertainty coefficient was found that matched coefficient name: ', NameCoef,
-              ', term name: ',VarUcrt, ', and aggregation interval: ',TimeAgrBgn,' to ',TimeAgrEnd))
+    # log$debug(base::paste0('No uncertainty coefficient was found that matched coefficient name: ', NameCoef,
+    #           ', term name: ',VarUcrt, ', and aggregation interval: ',TimeAgrBgn,' to ',TimeAgrEnd))
+    msg_in <-   base::paste0('No uncertainty coefficient was found that matched coefficient name: ', NameCoef,', term name: ',VarUcrt, ', and aggregation interval: ',TimeAgrBgn,' to ',TimeAgrEnd)
+    msg <- NEONprocIS.base::def.generate.err.msg(errmsg=msg_in, fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+    log$error(msg)
   } else {
     # If there are more than 1, indicating that the averaging period spans two uncertainty application ranges, the coef will be the larger of the two
     ucrtCal <- base::max(base::as.numeric(base::unlist(base::lapply(ucrtCoef[mtch],FUN=function(idxUcrt){idxUcrt$Value}))))

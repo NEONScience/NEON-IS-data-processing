@@ -79,7 +79,9 @@ def.ucrt.dp01.fdas <- function(data,
 
   # Check TypeFdas
   if(!(TypeFdas %in% c('R','V'))){
-    log$fatal('Input TypeFdas must either be "R" or "V"')
+    # log$fatal('Input TypeFdas must either be "R" or "V"')
+   msg <- NEONprocIS.base::def.generate.err.msg(errmsg='Input TypeFdas must either be "R" or "V"', fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+   log$fatal(msg)
     stop()
   }
   
@@ -150,7 +152,10 @@ def.ucrt.dp01.fdas <- function(data,
   # Do some error checking
   if (base::is.na(coefUcrtFdas) || base::is.na(coefUcrtFdasOfst)){
     # At least one of the terms is not present (but should be). Set uncertainty to NA
-    log$error(base::paste0('At least one of the expected FDAS uncertainty coefficients is not present for the term and aggregation interval. Setting uncertainty to NA for term: ',VarUcrt))
+ #   log$error(base::paste0('At least one of the expected FDAS uncertainty coefficients is not present for the term and aggregation interval. Setting uncertainty to NA for term: ',VarUcrt))
+    msg_in <- paste0('At least one of the expected FDAS uncertainty coefficients is not present for the term and aggregation interval. Setting uncertainty to NA for term: ',VarUcrt)
+    msg <- NEONprocIS.base::def.generate.err.msg(errmsg=msg_in, fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+    log$fatal(msg)
     return(base::as.numeric(NA))
   }
     
