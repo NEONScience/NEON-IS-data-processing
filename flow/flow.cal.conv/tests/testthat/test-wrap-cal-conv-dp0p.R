@@ -217,8 +217,8 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   ucrtCoefFdas  <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'fdas_calibration_uncertainty_general.json')
   SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'prt_calibrated.avsc')
   SchmQf <- base::paste0(base::readLines('flags_calibration.avsc'), collapse = '')
-  
-  wrap.cal.conv.dp0p(DirIn="~/pfs/hmp155_data_calibration_group",
+  DirIn <- "pfs/prt/14491/2019/01/01"
+  wrap.cal.conv.dp0p(DirIn=DirIn,
                      DirOutBase="~/pfs/out",
                      FuncConv=FuncConv,
                      FuncUcrt=FuncUcrt,
@@ -232,98 +232,6 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-  returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
-    DirOutBase = testOutputDir,
-    TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
-    TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
-    PadDay=base::as.difftime(c(0,0),units='days'),
-    Arry=FALSE
-  )
-  fileCalExpected <- fileCal[2]
-  fileCalInfo <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::paste0(testInputDir, fileCalExpected),log = log)
-  fileCalexpectedPath <- base::paste0(fileCalInfo$file$DATA$MetaData$MaximoID,"/","calibration/resistance/",fileCalExpected)
-  testthat::expect_true (any(file.exists(testOutputDir,fileCalexpectedPath, recursive = TRUE)))
-  #
-  # Happy path 2: 30000000009997_WO7799_122595_dup.xml and 30000000009997_WO7799_60924_dup.xml
-  #               have timeValid. 30000000009997_WO7799_122595_dup.xml higher ID. 
-  #               This will be written to the output directory
-  #               Arry=TRUE
-  # clean out the test output dirs and file recursively
-  #
-  if (dir.exists(testOutputDir)) {
-    unlink(testOutputDir, recursive = TRUE)
-  }
-  returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
-    DirOutBase = testOutputDir,
-    TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
-    TimeEnd = as.POSIXct('2019-01-06', tz = 'GMT'),
-    PadDay=base::as.difftime(c(0,0),units='days'),
-    Arry=TRUE
-  )
-  fileCalExpected <- fileCal[2]
-  fileCalInfo <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::paste0(testInputDir, fileCalExpected),log = log)
-  fileCalexpectedPath <- base::paste0(fileCalInfo$file$DATA$MetaData$MaximoID,"/","calibration/resistance/",fileCalExpected)
-  testthat::expect_true (any(file.exists(testOutputDir,fileCalexpectedPath, recursive = TRUE)))
-  #
-  # Happy path 3: adding pad= 13 days
-  #               30000000009997_WO7799_122595.xml and 30000000009997_WO7799_60924.xml
-  #               have timeValid, 30000000009997_WO7799_122595.xml higher ID. 
-  #               This will be written to the output directory
-  #
-  # clean out the test output dirs and file recursively
-  #
-  if (dir.exists(testOutputDir)) {
-    unlink(testOutputDir, recursive = TRUE)
-  }
-  returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
-    DirOutBase = testOutputDir,
-    TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
-    TimeEnd = as.POSIXct('2019-01-30', tz = 'GMT'),
-    PadDay=base::as.difftime(c(13,0),units='days')
-  )
-  
-  fileCalExpected <- fileCal[1]
-  fileCalInfo <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::paste0(testInputDir, fileCalExpected),log = log)
-  fileCalexpectedPath <- base::paste0(fileCalInfo$file$DATA$MetaData$MaximoID,"/","calibration/resistance/",fileCalExpected)
-  testthat::expect_true (any(file.exists(testOutputDir,fileCalexpectedPath, recursive = TRUE)))
-  #
-  # Happy path 4: no calibrations apply during the time interval
-  #
-  # clean out the test output dirs and file recursively
-  #
-  if (dir.exists(testOutputDir)) {
-    unlink(testOutputDir, recursive = TRUE)
-  }
-  
-  returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
-    DirOutBase = testOutputDir,
-    TimeBgn = as.POSIXct('2016-01-01', tz = 'GMT'),
-    TimeEnd = as.POSIXct('2016-01-30', tz = 'GMT'),
-    PadDay=base::as.difftime(c(0,0),units='days')
-  )
-  
-  testthat::expect_true (!dir.exists(testOutputDir))
-  #
-  # Sad path 1:  no calibration files
-  #
-  # clean out the test output dirs and file recursively
-  #
-  if (dir.exists(testOutputDir)) {
-    unlink(testOutputDir, recursive = TRUE)
-  }
-  testInputDir <- base::paste0(wk_dir, '/', 'pfs/calibration_noCals/prt/17596/resistance/')
-  returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
-    DirOutBase = testOutputDir,
-    TimeBgn = as.POSIXct('2016-01-01', tz = 'GMT'),
-    TimeEnd = as.POSIXct('2016-01-30', tz = 'GMT'),
-    PadDay=base::as.difftime(c(0,0),units='days')
-  )
-  
-  testthat::expect_true (!dir.exists(testOutputDir))
+
   
 })
