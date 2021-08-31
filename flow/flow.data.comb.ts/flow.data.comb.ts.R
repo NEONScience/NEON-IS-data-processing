@@ -44,29 +44,32 @@
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
 #' of DirIn.
 #'
-#' 3. "DirComb=value", where value is the name(s) of the terminal directories, separated by pipes,
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 4. "DirComb=value", where value is the name(s) of the terminal directories, separated by pipes,
 #' where the data to be combined resides. This will be one or more child levels away from "DirIn".
 #' All files in the terminal directories will be combined into a single file. The value may also be
 #' a vector of terminal directories, separated by pipes (|). All terminal directories must be present
 #' and at the same directory level. For example, "DirComb=data|flags" indicates to combine all the
 #' files within the data and flags directories into a single file.
 #'
-#' 4. "NameDirCombOut=value", where value is the name of the output directory that will be created to
+#' 5. "NameDirCombOut=value", where value is the name of the output directory that will be created to
 #' hold the combined file. It may be the same as one of DirComb, but note that in that case the same 
 #' directory may not be named in argument DirSubCopy.
 #'
-#' 5. "NameFileSufx=value" (optional), where value is a character suffix to add to the output
+#' 6. "NameFileSufx=value" (optional), where value is a character suffix to add to the output
 #' file name (before any extension). For example, if the shortest file name found in the input files is 
 #' "prt_CFGLOC12345_2019-01-01.avro", and the input argument is "NameFileSufx=_stats_100", then the 
 #' output file will be "prt_CFGLOC12345_2019-01-01_stats_100.avro". Default is no suffix.
 #'  
-#' 6. "NameVarTime=value", where value is the name of the time variable common across all
+#' 7. "NameVarTime=value", where value is the name of the time variable common across all
 #' files. Note that any missing timestamps among the files will be filled with NA values.
 #'
-#' 7. "FileSchmComb=value" (optional), where value is the full path to schema for combined data output by
+#' 8. "FileSchmComb=value" (optional), where value is the full path to schema for combined data output by
 #' this workflow. If not input, the schema will be constructed from the output data frame.
 #'
-#' 8. "ColKeep=value" (optional), value contains the names, in desired order, of the input columns
+#' 9. "ColKeep=value" (optional), value contains the names, in desired order, of the input columns
 #' that should be copied over to the combined output file. The column names indicated here must be a
 #' full or partial set of the union of the column names found in the input files. Use the output
 #' schema in argument FileSchmComb to rename them as desired. Note that column names may be listed
@@ -75,7 +78,7 @@
 #' If this argument is omitted, all columns found in the input files for each directory will be included
 #' in the output file in the order they are encountered in the input files.
 #'
-#' 9. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 10. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the flags folder in the input path that are to be copied with a
 #' symbolic link to the output path. May not overlap with the output directory named in 
 #' argument \code{NameDirCombOut}.
@@ -105,6 +108,8 @@
 #     Applied internal parallelization
 #   Cove Sturtevant (2021-07-27)
 #     Move main functionality to wrapper function
+#   Cove Sturtevant (2021-08-31)
+#     Add datum error routing
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -135,6 +140,7 @@ Para <-
     arg = arg,
     NameParaReqd = c("DirIn", 
                      "DirOut", 
+                     "DirErr",
                      "DirComb", 
                      "NameDirCombOut", 
                      "NameVarTime"
@@ -151,6 +157,7 @@ Para <-
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(
   base::paste0(
     'All files found in the following directories will be combined: ',
@@ -222,18 +229,38 @@ doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
-  wrap.data.comb.ts(
-    DirIn=idxDirIn,
-    DirOutBase=Para$DirOut,
-    DirComb=Para$DirComb,
-    NameVarTime=Para$NameVarTime,
-    ColKeep=Para$ColKeep,
-    NameDirCombOut=Para$NameDirCombOut,
-    NameFileSufx=Para$NameFileSufx,
-    SchmCombList=SchmCombList,
-    DirSubCopy=DirSubCopy,
-    log=log
-  )
-  
-  return()
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.data.comb.ts(
+        DirIn=idxDirIn,
+        DirOutBase=Para$DirOut,
+        DirComb=Para$DirComb,
+        NameVarTime=Para$NameVarTime,
+        ColKeep=Para$ColKeep,
+        NameDirCombOut=Para$NameDirCombOut,
+        NameFileSufx=Para$NameFileSufx,
+        SchmCombList=SchmCombList,
+        DirSubCopy=DirSubCopy,
+        log=log
+        ),
+        error = function(err) {
+          call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+          log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+          print(utils::limitedLabels(call.stack))
+        }
+      ),
+      error=function(err) {
+        NEONprocIS.base::def.err.datm(
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
+        )
+      }
+    )
+    
+    return()
+    
 } # End loop around datum paths

@@ -32,7 +32,10 @@
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
-#' 3. "DirSubCombData=value" (optional), where the value is the name of subfolders holding timeseries files 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 4. "DirSubCombData=value" (optional), where the value is the name of subfolders holding timeseries files 
 #' (e.g. data, flags) to be truncated and/or merged, separated by pipes (|). These additional subdirectories must 
 #' be at the same level as the location directory. Within each subfolder are timeseries files from one or more 
 #' source-ids. The source-id is the identifier for the sensor that collected the data in the file, and must be included
@@ -44,13 +47,13 @@
 #' prt_678_sensorFlags.parquet, and prt_12345_calFlags.parquet will be merged with prt_678_calFlags.parquet, since 
 #' the file names in each of these two groups are identical with the exception of the source ID.
 #' 
-#' 4. "DirSubCombUcrt=value" (optional), where the value is the name of subfolders holding uncertainty coefficient 
+#' 5. "DirSubCombUcrt=value" (optional), where the value is the name of subfolders holding uncertainty coefficient 
 #' json files to be merged, separated by pipes (|). These additional subdirectories must be at the same level as 
 #' the location directory. Within each subfolder are uncertainty json files, one for each source-id. The 
 #' source-id is the identifier for the sensor pertaining to the uncertainty info in the file, and must be somewhere
 #' in the file name. 
 #' 
-#' 5. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at 
+#' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
 #' output path (i.e. not combined but carried through as-is).
 #' 
@@ -107,6 +110,8 @@
 #     Applied internal parallelization
 #   Cove Sturtevant (2021-05-10)
 #     moved main functionality into wrapper function
+#   Cove Sturtevant (2021-08-31)
+#     Add datum error routing
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -134,7 +139,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg=arg,
-                                      NameParaReqd=c("DirIn","DirOut"),
+                                      NameParaReqd=c("DirIn","DirOut","DirErr"),
                                       NameParaOptn=c("DirSubCombData","DirSubCombUcrt","DirSubCopy"),
                                       log=log)
 
@@ -142,9 +147,10 @@ Para <- NEONprocIS.base::def.arg.pars(arg=arg,
 DirBgn <- Para$DirIn # Input directory. 
 log$debug(base::paste0('Input directory: ',DirBgn))
 
-# Retrieve base output path
+# Retrieve base output paths
 DirOut <- Para$DirOut
 log$debug(base::paste0('Output directory: ',DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Retrieve optional data directories to merge timeseries files in
 DirSubCombData <- Para$DirSubCombData
@@ -171,12 +177,34 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
-  wrap.loc.data.trnc.comb(DirIn=idxDirIn,
-                          DirOutBase=DirOut,
-                          DirSubCombData=DirSubCombData,
-                          DirSubCombUcrt=DirSubCombUcrt,
-                          DirSubCopy=DirSubCopy,
-                          log=log)
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.loc.data.trnc.comb(DirIn=idxDirIn,
+                              DirOutBase=DirOut,
+                              DirSubCombData=DirSubCombData,
+                              DirSubCombUcrt=DirSubCombUcrt,
+                              DirSubCopy=DirSubCopy,
+                              log=log
+      ),
+      error = function(err) {
+        call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+        print(utils::limitedLabels(call.stack))
+      }
+    ),
+    error=function(err) {
+      NEONprocIS.base::def.err.datm(
+        DirDatm=idxDirIn,
+        DirErrBase=Para$DirErr,
+        RmvDatmOut=TRUE,
+        DirOutBase=Para$DirOut,
+        log=log
+      )
+    }
+  )
   
+  return()
   
-} # End loop around datums
+} # End loop around datum paths
+

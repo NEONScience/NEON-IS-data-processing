@@ -30,7 +30,10 @@ DirIn when writing successful output for the datum.}
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 created and used within the function.}
 
-\item{RmvDataOut}{Logical. TRUE to remove any partial output for the datum from the output repo}
+\item{RmvDataOut}{Logical. TRUE to remove any partial output for the datum from the output repo. NOTE:
+Removing partial output only works if the output datum path matches the typical structure where 
+DirOutBase replaces the #/pfs/BASE_REPO portion of DirDatm, but otherwise is the same as DirDatm.
+If this is not the case, set RmvDataOut to FALSE (which is the default).}
 }
 \value{
 The action of creating the path structure to the datum within DirErrBase, having replaced 

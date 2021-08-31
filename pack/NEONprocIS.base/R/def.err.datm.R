@@ -17,7 +17,10 @@
 #' For example:
 #' DirDatm = /scratch/pfs/proc_group/prt/2019/01/01/27134
 #' @param DirErrBase Character value. The path that will replace the #/pfs/BASE_REPO portion of DirDatm
-#' @param RmvDataOut Logical. TRUE to remove any partial output for the datum from the output repo
+#' @param RmvDataOut Logical. TRUE to remove any partial output for the datum from the output repo. NOTE:
+#' Removing partial output only works if the output datum path matches the typical structure where 
+#' DirOutBase replaces the #/pfs/BASE_REPO portion of DirDatm, but otherwise is the same as DirDatm.
+#' If this is not the case, set RmvDataOut to FALSE (which is the default).
 #' @param DirOutBase Character value. The path that will replace the #/pfs/BASE_REPO portion of 
 #' DirIn when writing successful output for the datum. 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
