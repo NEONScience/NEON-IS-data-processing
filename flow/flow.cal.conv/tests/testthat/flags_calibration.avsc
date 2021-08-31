@@ -1,0 +1,36 @@
+{
+  "type": "record",
+  "name": "flags_validCal",
+  "namespace": "org.neonscience.schema.dp0p",
+  "doc": "Valid calibration flag for sensor with a single stream",
+  "fields": [
+    {
+      "name": "readout_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp of readout expressed in milliseconds since epoch"
+    },
+    {
+      "name": "validCalQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Quality flag for the valid calibration check detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    },
+    {
+      "name": "suspectCalQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Quality flag for the suspect calibration check detailed in NEON.DOC.011081 (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    }
+    ]
+}

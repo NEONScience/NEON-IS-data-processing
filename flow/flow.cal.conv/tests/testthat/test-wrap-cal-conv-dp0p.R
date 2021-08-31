@@ -205,7 +205,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   wk_dir <- getwd()
   testOutputDir = "pfs/out"
   #
-  testInputDir <- base::paste0(wk_dir, '/', 'pfs/prt/14491/2019/01/01/')
+  testInputDir <- base::paste0(wk_dir, '/', 'pfs/prt/14491/2019/01/01/calibration/')
   
   FuncConv <- data.frame(var='resistance',
                          FuncConv='def.cal.conv.poly',
@@ -217,9 +217,25 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   ucrtCoefFdas  <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'fdas_calibration_uncertainty_general.json')
   SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'prt_calibrated.avsc')
   SchmQf <- base::paste0(base::readLines('flags_calibration.avsc'), collapse = '')
-  DirIn <- "pfs/prt/14491/2019/01/01"
-  wrap.cal.conv.dp0p(DirIn=DirIn,
-                     DirOutBase="~/pfs/out",
+  testInputDir <- "pfs/prt/14491/2019/01/01"
+  
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  
+  returnedOutputDir <- wrap.cal.conv.dp0p(DirIn=testInputDir,DirOutBase=testOutputDir)
+  
+  # fileCalExpected <- fileCal[1]
+  # fileCalInfo <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::paste0(testInputDir, fileCalExpected),log = log)
+  # fileCalexpectedPath <- base::paste0(fileCalInfo$file$DATA$MetaData$MaximoID,"/","calibration/resistance/",fileCalExpected)
+  # testthat::expect_true (any(file.exists(testOutputDir,fileCalexpectedPath, recursive = TRUE)))
+  
+  
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  returnedOutputDir <- wrap.cal.conv.dp0p(DirIn=testInputDir,
+                     DirOutBase=testOutputDir,
                      FuncConv=FuncConv,
                      FuncUcrt=FuncUcrt,
                      ucrtCoefFdas=ucrtCoefFdas,
@@ -228,10 +244,5 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
                      SchmDataOutList=SchmDataOutList,
                      SchmQf=SchmQf
   )
-  
-  if (dir.exists(testOutputDir)) {
-    unlink(testOutputDir, recursive = TRUE)
-  }
 
-  
 })
