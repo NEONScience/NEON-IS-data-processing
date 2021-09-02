@@ -464,8 +464,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       }
     ),
     error=function(err) {
-      NEONprocIS.base::
-        def.err.datm(
+      NEONprocIS.base::def.err.datm(
           DirDatm=idxDirIn,
           DirErrBase=Para$DirErr,
           RmvDatmOut=TRUE,
