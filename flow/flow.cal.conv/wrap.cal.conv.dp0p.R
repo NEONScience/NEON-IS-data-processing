@@ -336,9 +336,10 @@ wrap.cal.conv.dp0p <- function(DirIn,
                                             )),
                                             log = log)
   if (!valiData) {
+    msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Data frame validation failed", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+    log$error(msg)
     base::stop()
   }
-  
   # Create a mapping between terms in the input data and terms in the output data (if we have an output schema)
   nameVarIn <- base::names(data)
   nameVarAdd <- setdiff(FuncConv$var,nameVarIn)
@@ -356,7 +357,10 @@ wrap.cal.conv.dp0p <- function(DirIn,
     )
   
   # ------- Select which calibrations apply to this day --------
-  log$debug('Selecting calibrations applicable to this day')
+  #log$debug('Selecting calibrations applicable to this day')
+  msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Selecting calibrations applicable to this day", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+  log$debug(msg)
+  
   calSlct <- NULL
   calSlct <- NEONprocIS.cal::wrap.cal.slct(
     DirCal = dirCal,
@@ -370,7 +374,10 @@ wrap.cal.conv.dp0p <- function(DirIn,
   )
   
   # ------- Apply the calibration function to the selected terms ---------
-  log$debug('Applying any calibration conversions.')
+  #log$debug('Applying any calibration conversions.')
+  msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Applying any calibration conversions.", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+  log$debug(msg)
+  
   dataConv <- NULL
   dataConv <-
     NEONprocIS.cal::wrap.cal.conv(
@@ -382,7 +389,9 @@ wrap.cal.conv.dp0p <- function(DirIn,
   
   
   # ------- Populate valid calibration and suspect calibration flags for selected variables with cal info ---------
-  log$debug('Populating any calibration flags.')
+  #log$debug('Populating any calibration flags.')
+  msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Populating any calibration flags.", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+  log$debug(msg)
   qfCal <- NULL
   qfCal <-
     NEONprocIS.cal::wrap.qf.cal(
@@ -405,7 +414,9 @@ wrap.cal.conv.dp0p <- function(DirIn,
   
   
   # ------- Compile uncertainty coefficients for all variables with cal info ---------
-  log$debug('Compiling uncertainty coefficients.')
+  #log$debug('Compiling uncertainty coefficients.')
+  msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Compiling uncertainty coefficients.", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+  log$debug(msg)
   ucrtCoef <- NULL
   ucrtCoef <-
     NEONprocIS.cal::wrap.ucrt.coef(
@@ -447,7 +458,10 @@ wrap.cal.conv.dp0p <- function(DirIn,
   
   
   # ------- Apply the uncertainty function to the selected terms ---------
-  log$debug('Computing any uncertainty data.')
+  #log$debug('Computing any uncertainty data.')
+  msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Computing any uncertainty data.", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+  log$debug(msg)
+  
   ucrtData <- NULL
   ucrtData <-
     NEONprocIS.cal::wrap.ucrt.dp0p(

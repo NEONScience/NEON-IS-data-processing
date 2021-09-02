@@ -77,6 +77,8 @@ wrap.ucrt.dp01.cal.cnst.fdas.rstc <- function(data,
   # Validate the data. Need columns readout_time and VarUcrt
   chk <- NEONprocIS.base::def.validate.dataframe(dfIn=data,TestNameCol=c('readout_time',VarUcrt),TestEmpty=FALSE, log = log)
   if (!chk) {
+   msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Data frame validation failed due to no readout_time", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+   log$error(msg) 
     stop()
   }
   
@@ -85,6 +87,9 @@ wrap.ucrt.dp01.cal.cnst.fdas.rstc <- function(data,
   
   # Check data input is numeric
   if (!NEONprocIS.base::def.validate.vector(dataComp,TestEmpty = FALSE, TestNumc = TRUE, log=log)) {
+    msg <- NEONprocIS.base::def.generate.err.msg(errmsg="Vector validation failed ...", fun_calling=rlang::call_frame(n = 2)$fn_name, fun_called=rlang::call_frame(n = 1)$fn_name, lineNum=getSrcLocation(function() {}, "line"))
+    log$error(msg) 
+    
     stop()
   }
   
