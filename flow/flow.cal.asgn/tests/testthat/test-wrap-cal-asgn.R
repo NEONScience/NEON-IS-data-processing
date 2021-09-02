@@ -1,6 +1,6 @@
 
 ##############################################################################################
-#' @title Unit test of def.wrap.cal.asgn.R, assign the calibration file(s) for a sensor ID to each data day for which each should be used
+#' @title Unit test of wrap.cal.asgn.R, assign the calibration file(s) for a sensor ID to each data day for which each should be used
 
 #' @author 
 #' Mija Choi\email{choim@battelleecology.org} \cr
