@@ -92,6 +92,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   # First try to validate the asset-based file schema
   if (validateJson == TRUE)  {
     locJsonSchema <- system.file("extdata", "locations-sensor-schema.json", package="NEONprocIS.base")
+    log$debug('Checking location file against asset-based file schema.')    
     validateJsonSchema <-
       NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema)
   }
@@ -99,6 +100,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   # Next try to validate the location-based file schema
   if (validateJson == TRUE && validateJsonSchema == FALSE)  {
     locJsonSchema <- system.file("extdata", "locations-namedLocation-schema.json", package="NEONprocIS.base")
+    log$debug('Checking location file against location-based file schema.')    
     validateJsonSchema <-
       NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema)
   }
