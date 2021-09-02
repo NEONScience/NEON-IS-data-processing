@@ -151,8 +151,8 @@ wrap.data.comb.ts <- function(DirIn,
       log$error(
         base::paste0(
           'Columns: ',
-          base::paste0(nameCol[!chkCol], collapse = ','),
-          'were not found in the input data. Check ColKeep input argument.'
+          base::paste0(ColKeep[!chkCol], collapse = ','),
+          ' were not found in the input data. Check ColKeep input argument and input data files.'
         )
       )
       stop()

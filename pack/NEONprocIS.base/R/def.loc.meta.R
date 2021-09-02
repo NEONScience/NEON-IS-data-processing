@@ -49,6 +49,8 @@
 #     output source_type and source_id from location file
 #   Cove Sturtevant (2021-03-16)
 #     Add parsing of active periods
+#   Cove Sturtevant (2021-08-31)
+#     Add error checking of location file schema
 ##############################################################################################
 def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NULL){
 
@@ -75,10 +77,44 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                           dataRate=dmmyNumc,
                           stringsAsFactors = FALSE)
   
-  # Validate the json
-  if(NEONprocIS.base::def.validate.json(jsonIn=NameFile,log=log) != TRUE){
-    stop()
+ # There are two types of location files, asset-based and location-based. The schema must match one of these to be valid.
+  # First, validate the syntax of input json to see if it is valid. This checks either type.
+  #
+  validateJson <-
+    NEONprocIS.base::def.validate.json (NameFile)
+  #
+  # Second, validate the json against the schema only if the syntax is valid.
+  # Otherwise, validateJsonSchema errors out due to the syntax error
+  #
+  
+  validateJsonSchema <- FALSE
+  
+  # First try to validate the asset-based file schema
+  if (validateJson == TRUE)  {
+    locJsonSchema <- system.file("extdata", "locations-sensor-schema.json", package="NEONprocIS.base")
+    validateJsonSchema <-
+      NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema)
   }
+  
+  # Next try to validate the location-based file schema
+  if (validateJson == TRUE && validateJsonSchema == FALSE)  {
+    locJsonSchema <- system.file("extdata", "locations-namedLocation-schema.json", package="NEONprocIS.base")
+    validateJsonSchema <-
+      NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema)
+  }
+  
+  #if the validation fails, stop
+  if ((validateJson == FALSE) || (validateJsonSchema == FALSE))
+  {
+    log$error(
+      base::paste0(
+        'In def.loc.meta::: Erred out due to the json validation failure of this file, ',
+        NameFile
+      )
+    )
+    stop("In def.loc.meta::::: Erred out due to the validation failure of the input JSON")
+  }
+  
   
   # Load the full json into list
   locFull <- rjson::fromJSON(file=NameFile,simplify=TRUE)
