@@ -40,14 +40,17 @@
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
 #' of DirIn.
 #'
-#' 3. "DirRglr=value", where value is the name of the terminal directory where the data to be
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 4. "DirRglr=value", where value is the name of the terminal directory where the data to be
 #' regularized resides. This will be one or more child levels away from "DirIn". All files in the
 #' terminal directory will be regularized. The value may also be a vector of terminal directories,
 #' separated by pipes (|). All terminal directories must be present and at the same directory level.
 #' For example, "DirRglr=data|flags" indicates to regularize the data files within each the data
 #' and flags directories.
 #'
-#' 4. "FileSchmRglr=value" (optional), where value is the full path to schema for regularized data output by
+#' 5. "FileSchmRglr=value" (optional), where value is the full path to schema for regularized data output by
 #' this workflow. The value may be NA, in which case the output schema will be the same as the input
 #' data. The value may be a single file, in which case it will apply to all regularized output, or
 #' multiple values in which case the argument is formatted as dir:value|dir:value...
@@ -60,7 +63,7 @@
 #' the output. Ensure that the output schema reflects the behavior chosen in these parameters. Default
 #' value is NA.
 #'
-#' 5. "FreqRglr=value" (optional), where value is the regularization frequency in Hz. The value may be a single
+#' 6. "FreqRglr=value" (optional), where value is the regularization frequency in Hz. The value may be a single
 #' number, in which case it will apply to all terminal directories specified in the DirRglr argument,
 #' or multiple values in which case the argument is formatted as dir:value|dir:value...
 #' where dir is one of the directories specified in DirRglr and value is the regularization frequency
@@ -73,7 +76,7 @@
 #' FreqRglr is NA, the directory structure must be location-focused, where the parent directory of the
 #' terminal directories is named for the named location. Default value is NA.
 #'
-#' 6. "MethRglr=value" (optional), where value is the regularization method (per the choices in
+#' 7. "MethRglr=value" (optional), where value is the regularization method (per the choices in
 #' eddy4R.base::def.rglr for input parameter MethRglr). The value may be a single string, in which
 #' case it will apply to all terminal directories specified in the DirRglr argument, or multiple values
 #' in which case the argument is formatted as dir:value|dir:value...
@@ -84,7 +87,7 @@
 #' the "CybiDflt" method. Default value is CybiEc, which should be used in most cases. Note that the
 #' 'instantaneous' regularization method is 'CybiEcTimeMeas'.
 #'
-#' 7. "WndwRglr=value" (optional), where value is the windowing method (per the choices in
+#' 8. "WndwRglr=value" (optional), where value is the windowing method (per the choices in
 #' eddy4R.base::def.rglr for input parameter WndwRglr). The value may be a single string, in which
 #' case it will apply to all terminal directories specified in the DirRglr argument, or multiple values
 #' in which case the argument is formatted as dir:value|dir:value...
@@ -94,7 +97,7 @@
 #' regularized with the Trlg windowing method, and files in the flags directory will be regularized with
 #' the "Lead" windowing method. Default value is Trlg, and should be used in most cases.
 #'
-#' 8. "IdxWndw=value" (optional), where value is the index allocation method (per the choices in
+#' 9. "IdxWndw=value" (optional), where value is the index allocation method (per the choices in
 #' eddy4R.base::def.rglr for input parameter IdxWndw).  The value may be a single string, in which
 #' case it will apply to all terminal directories specified in the DirRglr argument, or multiple values
 #' in which case the argument is formatted as dir:value|dir:value...
@@ -105,7 +108,7 @@
 #' regularized with the "Cntr" index allocation method. Default value is IdxWndwMin, and should be used
 #' in most cases.
 #' 
-#' 9. "RptTimeWndw=value" (optional), where value is logical TRUE or FALSE (default), and pertains to the 
+#' 10. "RptTimeWndw=value" (optional), where value is logical TRUE or FALSE (default), and pertains to the 
 #' choices in eddy4R.base::def.rglr for input parameter RptTimeWndw. TRUE will output
 #' two additional columns at the end of the output data file for the start and end times of the time windows
 #' used in the regularization. Note that the output variable readout_time will be included in the output
@@ -123,7 +126,7 @@
 #' (exclusive) times of the regularization bin for each output record. These may be renamed using the 
 #' schema provided in argument FileSchmRglr.
 #' 
-#' 10. "DropNotNumc=value" (optional), where value is logical TRUE (default) or FALSE, and pertains to the 
+#' 11. "DropNotNumc=value" (optional), where value is logical TRUE (default) or FALSE, and pertains to the 
 #' choices in eddy4R.base::def.rglr for input parameter DropNotNumc. TRUE will drop
 #' all non-numeric columns prior to the regularization (except for readout_time). Dropped columns will 
 #' not be included in the output. The value may be a single string, in which
@@ -136,7 +139,7 @@
 #' flags directory. Ensure that any schemas provided for the output files account for the choice(s) made
 #' here (i.e. there may be fewer columns if DropNotNumc=TRUE)
 #'
-#' 11. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 12. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the regularization folder in the input path that are to be copied with a
 #' symbolic link to the output path.
 #'
@@ -201,9 +204,17 @@
 #        all in the same order in the input arguments
 #   Cove Sturtevant (2021-03-03)
 #     Applied internal parallelization
+#   Cove Sturtevant (2021-09-01)
+#     Move main functionality to wrapper function and add error routing
 ##############################################################################################
 library(foreach)
 library(doParallel)
+
+# Source the wrapper function. Assume it is in the working directory
+source("./wrap.rglr.R")
+
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -219,14 +230,16 @@ if(numCoreUse > numCoreAvail){
 }
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
-# Pull in command line arguments (parameters)
-arg <- base::commandArgs(trailingOnly = TRUE)
-
 # Parse the input arguments into parameters
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut", "DirRglr"),
+    NameParaReqd = c(
+      "DirIn", 
+      "DirOut", 
+      "DirErr", 
+      "DirRglr"
+    ),
     NameParaOptn = c(
       "FileSchmRglr",
       "FreqRglr",
@@ -255,6 +268,7 @@ Para <-
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0(
   'Terminal Directories to regularize: ',
   base::paste0(Para$DirRglr, collapse = ',')
@@ -420,206 +434,35 @@ DirIn <-
 # Process each datum
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
+  
   log$info(base::paste0('Processing datum path: ', idxDirIn))
   
-  # Gather info about the input directory (including date) and create the output directory.
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
-  timeBgn <-
-    InfoDirIn$time # Earliest possible start date for the data
-  timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
-  idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
-  idxDirLoc <- base::paste0(idxDirIn, '/location')
-  fileLoc <- base::dir(idxDirLoc)
-  numFileLoc <- base::length(fileLoc)
-  
-  # Error check - quit if we need locations and they aren't there
-  if (expcLoc && numFileLoc == 0) {
-    log$error(base::paste0('No location data found in ', DirLoc))
-    stop()
-  } else if (numFileLoc > 1) {
-    fileLoc <- fileLoc[1]
-    log$warn(base::paste0(
-      'There is more than location file in ',
-      idxDirLoc,
-      '. Using ',
-      fileLoc
-    ))
-  } 
-  
-  # Read regularization frequency from location file if expected
-  if (expcLoc){
-    # Grab the named location from the directory structure
-    nameLoc <-
-      utils::tail(InfoDirIn$dirSplt, 1) # Location identifier from directory path
-    
-    # Find the location we're looking for in the locations file
-    nameFileLoc <- base::paste0(idxDirLoc, '/', fileLoc)
-    locMeta <-
-      NEONprocIS.base::def.loc.meta(
-        NameFile = nameFileLoc,
-        NameLoc = nameLoc,
-        TimeBgn = timeBgn,
-        TimeEnd = timeEnd,
-        log = log
-      )
-    FreqRglrIdxLoc <- base::as.numeric(locMeta$dataRate[1])
-    
-    # Error check
-    if (base::is.na(FreqRglrIdxLoc)) {
-      log$error(
-        base::paste0(
-          'Cannot determine regularization frequency from location file for datum path ',
-          idxDirIn
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.rglr(DirIn=idxDirIn,
+                DirOutBase=Para$DirOut,
+                ParaRglr=ParaRglr,
+                DirSubCopy=DirSubCopy,
+                log=log
+      ),
+      error = function(err) {
+        call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+        print(utils::limitedLabels(call.stack))
+      }
+    ),
+    error=function(err) {
+      NEONprocIS.base::def.err.datm(
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
         )
-      )
-      stop()
     }
-    
-    log$debug(base::paste0('Regularization frequency: ',FreqRglrIdxLoc, ' Hz read from location file'))
-  }
-  
-  
-  # Copy with a symbolic link the desired subfolders
-  if (base::length(DirSubCopy) > 0) {
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn, '/', DirSubCopy), idxDirOut, log =
-                                         log)
-  }
-  
-  # Run through each directory to regularize
-  for (idxDirRglr in Para$DirRglr) {
-    # Row index to parameter set
-    idxRowParaRglr <- base::which(ParaRglr$DirRglr == idxDirRglr)
-    
-    # Use regularization frequency from the location file if not in input args
-    FreqRglrIdx <- ParaRglr$FreqRglr[idxRowParaRglr]
-    if (base::is.na(FreqRglrIdx)) {
-      # Use the frequency in the locations file instead
-      FreqRglrIdx <- FreqRglrIdxLoc
-    }
-    log$debug(base::paste0('Regularization frequency to be used for ',idxDirRglr,' directory: ',FreqRglrIdx, ' Hz'))
-    
-    
-    # Get directory listing of input directory
-    idxDirInRglr <-  base::paste0(idxDirIn, '/', idxDirRglr)
-    fileData <- base::dir(idxDirInRglr)
-    if (base::length(fileData) > 1) {
-      log$warn(
-        base::paste0(
-          'There is more than one data file in path: ',
-          idxDirIn,
-          '... Regularizing them all!'
-        )
-      )
-    }
-    
-    # Create output directory
-    idxDirOutRglr <- base::paste0(idxDirOut, '/', idxDirRglr)
-    base::dir.create(idxDirOutRglr, recursive = TRUE)
-    
-    # Regularize each file
-    for (idxFileData in fileData) {
-      # Load data
-      fileIn <- base::paste0(idxDirInRglr, '/', idxFileData)
-      data  <-
-        base::try(NEONprocIS.base::def.read.parq(NameFile = fileIn,
-                                                 log = log),
-                  silent = FALSE)
-      if (base::any(base::class(data) == 'try-error')) {
-        log$error(base::paste0('File ', fileIn, ' is unreadable.'))
-        stop()
-      }
-      nameVarIn <- base::names(data)
-      
-      # Pull out the time variable
-      if (!('readout_time' %in% nameVarIn)) {
-        log$error(
-          base::paste0(
-            'Variable "readout_time" is required, but cannot be found in file: ',
-            fileIn
-          )
-        )
-        stop()
-      }
-      
-      # Regularize the data
-      BgnRglr <- base::as.POSIXlt(timeBgn)
-      EndRglr <- base::as.POSIXlt(timeEnd)
-      idxTime <- base::which(nameVarIn == 'readout_time')
-      dataRglr <-
-        eddy4R.base::def.rglr(
-          timeMeas = base::as.POSIXlt(data$readout_time),
-          dataMeas = base::subset(data, select = -idxTime),
-          BgnRglr = BgnRglr,
-          EndRglr = EndRglr,
-          FreqRglr = FreqRglrIdx,
-          MethRglr = ParaRglr$MethRglr[idxRowParaRglr],
-          WndwRglr = ParaRglr$WndwRglr[idxRowParaRglr],
-          IdxWndw = ParaRglr$IdxWndw[idxRowParaRglr],
-          DropNotNumc = ParaRglr$DropNotNumc[idxRowParaRglr],
-          RptTimeWndw = ParaRglr$RptTimeWndw[idxRowParaRglr]
-        )
-      
-      # Make sure we return the regularized data as the same class it came in with
-      for (idxVarRglr in base::names(dataRglr$dataRglr)) {
-        base::class(dataRglr$dataRglr[[idxVarRglr]]) <-
-          base::class(data[[idxVarRglr]])
-      }
-      
-      # Add the readout time back in, and potentially the bin start and end times
-      rpt <-
-        base::data.frame(readout_time = dataRglr$timeRglr,
-                         stringsAsFactors = FALSE)
-      rpt <- base::cbind(rpt, dataRglr$dataRglr)
-      
-      # Match the original column order (minus any variables we dropped)
-      setColOrd <- base::match(nameVarIn,base::names(rpt))
-      rpt <- rpt[,setColOrd[!is.na(setColOrd)]]
-      
-      # Tack on the time window start and end times to the end of the data frame
-      if(ParaRglr$RptTimeWndw[idxRowParaRglr] == TRUE){
-        rpt <- base::cbind(rpt, dataRglr$timeWndw)
-      }
-      
-      # Remove any data points outside this day
-      rpt <-
-        rpt[rpt$readout_time >= BgnRglr & rpt$readout_time < EndRglr, ]
-      
-      # select output schema
-      if (base::is.na(ParaRglr$SchmRglr[idxRowParaRglr])) {
-        # use the output data to generate a schema
-        idxSchmRglr <- base::attr(rpt, 'schema')
-      } else {
-        idxSchmRglr <- ParaRglr$SchmRglr[idxRowParaRglr]
-      }
-      
-      # Write the output
-      fileOut <- base::paste0(idxDirOutRglr, '/', idxFileData)
-      rptWrte <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-          data = rpt,
-          NameFile = fileOut,
-          NameFileSchm = NULL,
-          Schm = idxSchmRglr
-        ),
-        silent = TRUE)
-      if (base::class(rptWrte) == 'try-error') {
-        log$error(base::paste0(
-          'Cannot write regularized data in file ',
-          fileOut,
-          '. ',
-          attr(rptWrte, "condition")
-        ))
-        stop()
-      } else {
-        log$info(base::paste0(
-          'Regularized data written successfully in file: ',
-          fileOut
-        ))
-      }
-      
-      
-    } # End loop around files to regularize
-  } # End loop around directories to regularize
+  )
   
   return()
+  
 } # End loop around datum paths
