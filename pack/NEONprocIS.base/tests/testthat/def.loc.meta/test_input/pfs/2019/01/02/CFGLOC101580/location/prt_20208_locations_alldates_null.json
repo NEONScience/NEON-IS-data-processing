@@ -7,6 +7,8 @@
             "properties":{
                 "name":"CFGLOC101580",
                 "site":"SERC",
+                "install_date":null,
+                "remove_date":null,
                 "context":[
                     "aspirated-single-121",
                     "aspirated-single"
