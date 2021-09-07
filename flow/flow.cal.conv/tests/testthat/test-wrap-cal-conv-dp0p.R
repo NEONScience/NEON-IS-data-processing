@@ -228,6 +228,8 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
+  
+  # Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance' passed in
   returnedOutputDir <- wrap.cal.conv.dp0p(DirIn=testInputDir,
                      DirOutBase=testOutputDir,
                      FuncConv=FuncConv,
