@@ -214,9 +214,9 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
                          FuncUcrtMeas='def.ucrt.meas.cnst',
                          FuncUcrtFdas='def.ucrt.fdas.rstc.poly',
                          stringsAsFactors=FALSE)
-  ucrtCoefFdas  <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'fdas_calibration_uncertainty_general.json')
-  SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'prt_calibrated.avsc')
-  SchmQf <- base::paste0(base::readLines('flags_calibration.avsc'), collapse = '')
+  ucrtCoefFdas  <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'testdata/fdas_calibration_uncertainty_general.json')
+  SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
+  SchmQf <- base::paste0(base::readLines('testdata/flags_calibration.avsc'), collapse = '')
   testInputDir <- "pfs/prt/14491/2019/01/01"
   
   if (dir.exists(testOutputDir)) {
@@ -224,13 +224,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   }
   
   returnedOutputDir <- wrap.cal.conv.dp0p(DirIn=testInputDir,DirOutBase=testOutputDir)
-  
-  # fileCalExpected <- fileCal[1]
-  # fileCalInfo <- NEONprocIS.cal::def.read.cal.xml(NameFile = base::paste0(testInputDir, fileCalExpected),log = log)
-  # fileCalexpectedPath <- base::paste0(fileCalInfo$file$DATA$MetaData$MaximoID,"/","calibration/resistance/",fileCalExpected)
-  # testthat::expect_true (any(file.exists(testOutputDir,fileCalexpectedPath, recursive = TRUE)))
-  
-  
+
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
