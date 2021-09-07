@@ -238,7 +238,7 @@ test_that("   Testing Filter named location information by date-time range", {
   
   cat("\n       |------ Negative test 1::A blank json is passed on to def.loc.filt                          |\n")
   cat("\n       |------                  A blank Json is not strictly valid.                                |\n\n")
-  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  locReturned <- try(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd),silent=FALSE)
   
   cat("\n       |----------- Return error, log the message and exit                                         |\n")
   cat("\n       |===========================================================================================|\n")

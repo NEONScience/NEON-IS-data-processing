@@ -43,14 +43,17 @@
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn.
 #' 
-#' 3. "FileYear=value", where value is the path to a single file that contains only a list of numeric years. The 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 4. "FileYear=value", where value is the path to a single file that contains only a list of numeric years. The 
 #' minumum and maximum of the years found in the file will determine the maximum date range to populate the 
 #' output repository with calibration files. No header. Each and every row should be a numeric year. Example file:
 #' 2019
 #' 2020
 #' 2021
 #'
-#' 4. "TypeFile=value", where value is the type of location file. 
+#' 5. "TypeFile=value", where value is the type of location file. 
 #' Options are 'asset' and 'namedLocation'. Only one may be specified. 'asset' corresponds to a 
 #' location file for a particular asset, which includes information about where and for how long
 #' the asset was installed, including its geolocation history. 'namedLocation' corresponds to a 
@@ -79,6 +82,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-03-15)
 #     original creation, refactored from flow.loc.filt
+#   Cove Sturtevant (2021-08-31)
+#     Add datum error routing
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -110,13 +115,14 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut","FileYear","TypeFile"),
+    NameParaReqd = c("DirIn", "DirOut","DirErr","FileYear","TypeFile"),
     log = log
   )
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Parse the file containing the years to populate
 log$debug(base::paste0('File containing data years to populate: ', Para$FileYear))
@@ -146,14 +152,34 @@ doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
-  wrap.loc.asgn(DirIn=idxDirIn,
-                DirOutBase=Para$DirOut,
-                TimeBgn=timeBgn,
-                TimeEnd=timeEnd,
-                TypeFile=Para$TypeFile,
-                log=log
-                )
-
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.loc.asgn(DirIn=idxDirIn,
+                    DirOutBase=Para$DirOut,
+                    TimeBgn=timeBgn,
+                    TimeEnd=timeEnd,
+                    TypeFile=Para$TypeFile,
+                    log=log
+      ),
+      error = function(err) {
+        call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+        print(utils::limitedLabels(call.stack))
+      }
+    ),
+    error=function(err) {
+      NEONprocIS.base::def.err.datm(
+        DirDatm=idxDirIn,
+        DirErrBase=Para$DirErr,
+        RmvDatmOut=FALSE,
+        DirOutBase=Para$DirOut,
+        log=log
+      )
+    }
+  )
+  
   return()
   
 } # End loop around datum paths
+

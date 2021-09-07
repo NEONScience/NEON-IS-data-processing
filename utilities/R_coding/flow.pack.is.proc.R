@@ -11,14 +11,13 @@
 DirWrk00 <-
   
   # Cove
-  #"/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
+  "/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
   # Guy
   # "/home/NEON/glitt/R/NEON-IS-data-processing-glitt"
   # Ed
-  "/home/NEON/ayres/R/NEON-IS-data-processing"
+  #"/home/NEON/ayres/R/NEON-IS-data-processing"
 
   # Feel free to add your repo path! Just comment the ones not being used.
-  
 
 if(!base::dir.exists(DirWrk00)){
   stop(paste0(DirWrk00, " doesn't exist. Try again."))
@@ -29,9 +28,11 @@ namePack <- c("NEONprocIS.base",
               "NEONprocIS.cal",
               "NEONprocIS.qaqc",
               "NEONprocIS.stat",
-              "NEONprocIS.wq")[4]
+              "NEONprocIS.wq")[1]
 
 
+# Do you want to run the unit tests for the package?
+RunTest <- TRUE
 
 ###
 # start loop around packages
@@ -113,6 +114,11 @@ for(idxNamePack in namePack) {
   library(paste0(idxNamePack), character.only = TRUE)
 
 
+  # Run the unit tests
+  if(RunTest==TRUE){
+    setwd(paste0(DirWrk, "/", idxNamePack))
+    devtools::test(pkg="./")
+  }
 
 ###
 }

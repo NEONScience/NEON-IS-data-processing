@@ -91,17 +91,12 @@ test_that("location that have removal date before time Begin",
           })
 
 
-test_that("location that have install, removal, transaction dates null",
+test_that("location that have install date null",
           {
             nameFile <- "def.loc.meta/test_input/pfs/2019/01/02/CFGLOC101580/location/prt_20208_locations_alldates_null.json"
             timeBgn <- base::as.POSIXct('2019-09-05',tz='GMT')
-            locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn)
-            expect_true (length(locationMetaData$site) == 1)
-            testthat::equals(locationMetaData$install_date, "NA")
-            testthat::equals(locationMetaData$remove_date, "NA")
-            testthat::equals(locationMetaData$transaction_date, "NA")
-            expect_true (length(locationMetaData$active_periods) == 1)
-
+            locationMetaData <- try(NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn),silent=FALSE)
+            expect_true (class(locationMetaData) == 'try-error')
           })
 
 test_that("location that have install, removal, and remove data after timeBgn",

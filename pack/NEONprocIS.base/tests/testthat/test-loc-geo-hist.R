@@ -53,6 +53,13 @@ test_that("   Read sensor locations json file and return the geolocation history
 
   testDir = "testdataJson/"
 
+  # Sad path #1: a location json with null StartDate
+  cat("\n       |== a location json with null StartDate             ==|\n")
+  testFile = 'locations-nullStartDate.json'
+  NameFileIn <- paste0(testDir, testFile)
+  locGeoHist <- try(NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn),silent=FALSE)
+  testthat::expect_true (class(locGeoHist) == 'try-error')
+  
   # Happy path #1:a valid location json with location_properties 
 
   cat("\n       |=====================================   Test Summary   ====================================|\n")
@@ -69,15 +76,6 @@ test_that("   Read sensor locations json file and return the geolocation history
  
   cat("\n       |== a location json with StartDate and with EndDate ==|\n")
   testFile = 'locations-wStartDate-wEndDate.json'
-  NameFileIn <- paste0(testDir, testFile)
-  locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
-  locGeoHist <- NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn)
-  testthat::expect_true (is.list(locGeoHist))
-  testthat::expect_match(names(locGeoHist), locMeta$name) 
-  
-  # Happy path #3: a location json with null StartDate
-  cat("\n       |== a location json with null StartDate             ==|\n")
-  testFile = 'locations-nullStartDate.json'
   NameFileIn <- paste0(testDir, testFile)
   locMeta <- NEONprocIS.base::def.loc.meta(NameFile=NameFileIn)
   locGeoHist <- NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn)
