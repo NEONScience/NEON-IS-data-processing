@@ -205,9 +205,6 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   wk_dir <- getwd()
   testOutputDir = "pfs/out"
   #
-  testInputDir <-
-    base::paste0(wk_dir, '/', 'pfs/prt/14491/2019/01/01/calibration/')
-  
   FuncConv <- data.frame(var = 'resistance',
                          FuncConv = 'def.cal.conv.poly',
                          stringsAsFactors = FALSE)
@@ -217,23 +214,37 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     FuncUcrtFdas = 'def.ucrt.fdas.rstc.poly',
     stringsAsFactors = FALSE
   )
-  ucrtCoefFdas  <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'testdata/fdas_calibration_uncertainty_general.json')
-  SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
-  SchmQf <- base::paste0(base::readLines('testdata/flags_calibration.avsc'),collapse = '')
+  
+  ucrtCoefFdas  <-
+    NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'testdata/fdas_calibration_uncertainty_general.json')
+  SchmDataOutList <-
+    NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
+  SchmQf <-
+    base::paste0(base::readLines('testdata/flags_calibration.avsc'),
+                 collapse = '')
   testInputDir <- "pfs/prt/14491/2019/01/01"
   
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-  # Only the input and output directry are passed in
+  # Test 1. Only the input and output directry are passed in
   returnedOutputDir <-
     wrap.cal.conv.dp0p(DirIn = testInputDir, DirOutBase = testOutputDir)
+  
+  # Test 2. testInputDir does not have sub directories under calibration/
+  testInputDir <- "pfs/prt_noDir_inCalibration/14491/2019/01/01"
   
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
   
+  returnedOutputDir <-
+    try(wrap.cal.conv.dp0p(DirIn = testInputDir, DirOutBase = testOutputDir),
+        silent = TRUE)
+  
   # Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
+  
+  testInputDir <- "pfs/prt/14491/2019/01/01"
   returnedOutputDir <- wrap.cal.conv.dp0p(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
@@ -252,6 +263,10 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   
   # Avro schema has 'resistance', dataIn has 'resistance' and param, 'voltage', passed in
   # err out due to 'voltage' missing from the data frame
+  
+  SchmDataOutList <-
+    NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
+  
   returnedOutputDir <- try(wrap.cal.conv.dp0p(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
@@ -265,4 +280,28 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   ),
   silent = TRUE)
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  
+  # Avro schema does NOT have 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
+  # err out due to 'voltage' missing from the data frame
+  
+  SchmDataOutList <-
+    NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
+  
+  returnedOutputDir <- try(wrap.cal.conv.dp0p(
+    DirIn = testInputDir,
+    DirOutBase = testOutputDir,
+    FuncConv = FuncConv,
+    FuncUcrt = FuncUcrt,
+    ucrtCoefFdas = ucrtCoefFdas,
+    TermQf = 'temp',
+    NumDayExpiMax = NA,
+    SchmDataOutList = SchmDataOutList,
+    SchmQf = SchmQf
+  ),
+  silent = TRUE)
+  # testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
+  
 })
