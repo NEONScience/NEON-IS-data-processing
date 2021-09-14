@@ -193,6 +193,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-07-21)
 #     Convert flow script to wrapper function
+#   Mija Choi (2021-09-14)
+#     Fix a misplaced parenthesis in if cond,
 ##############################################################################################
 wrap.cal.conv.dp0p <- function(DirIn,
                                DirOutBase,
@@ -244,7 +246,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
     
     # Fill in the default NA for any missing terms
     termMiss <- varNumDayExpiMax[!(varNumDayExpiMax %in% NumDayExpiMax$var)]
-    if(base::length(termMiss > 0)){
+    if(base::length(termMiss) > 0){
       dfAdd <- base::data.frame(var=termMiss,
                                 NumDayExpiMax=base::as.numeric(NA),
                                 stringsAsFactors = FALSE)
