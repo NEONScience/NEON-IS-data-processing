@@ -206,14 +206,6 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   testOutputDir = "pfs/out"
   testInputDir <- "pfs/prt/14491/2019/01/01"
   #
-  FuncConv <- data.frame(var = 'resistance', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
-  FuncUcrt <- data.frame(var = 'resistance', FuncUcrtMeas = 'def.ucrt.meas.cnst', FuncUcrtFdas = 'def.ucrt.fdas.rstc.poly'
-                         , stringsAsFactors = FALSE)
-  
-  ucrtCoefFdas  <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'testdata/fdas_calibration_uncertainty_general.json')
-  SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
-  SchmQf <- base::paste0(base::readLines('testdata/flags_calibration.avsc'), collapse = '')
-
   # Test 1. Only the input and output directry are passed in
  
   if (dir.exists(testOutputDir)) {
@@ -231,7 +223,14 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-
+  FuncConv <- data.frame(var = 'resistance', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
+  FuncUcrt <- data.frame(var = 'resistance', FuncUcrtMeas = 'def.ucrt.meas.cnst', FuncUcrtFdas = 'def.ucrt.fdas.rstc.poly'
+                         , stringsAsFactors = FALSE)
+  
+  ucrtCoefFdas  <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'testdata/fdas_calibration_uncertainty_general.json')
+  SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
+  SchmQf <- base::paste0(base::readLines('testdata/flags_calibration.avsc'), collapse = '')
+  
   DirCal = base::paste0(testInputDir, '/calibration')
   NameVarExpc = character(0)
   varCal <- base::unique(c(NameVarExpc, base::dir(DirCal)))
