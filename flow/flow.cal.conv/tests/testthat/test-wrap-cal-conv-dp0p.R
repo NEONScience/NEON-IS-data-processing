@@ -250,7 +250,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   varCal <- base::unique(c(NameVarExpc, base::dir(DirCal)))
   values <- c(2, 3)
   NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
-  DirSubCopy <- c("a", "b","c","d")
+  DirSubCopy <- c("abc")
   
   returnedOutputDir <- wrap.cal.conv.dp0p(
     DirIn = testInputDir,
