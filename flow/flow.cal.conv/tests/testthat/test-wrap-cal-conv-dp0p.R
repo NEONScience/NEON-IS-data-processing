@@ -250,6 +250,29 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   varCal <- base::unique(c(NameVarExpc, base::dir(DirCal)))
   values <- c(2, 3)
   NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
+  DirSubCopy <- c("a", "b","c","d")
+  
+  returnedOutputDir <- wrap.cal.conv.dp0p(
+    DirIn = testInputDir,
+    DirOutBase = testOutputDir,
+    FuncConv = FuncConv,
+    FuncUcrt = FuncUcrt,
+    ucrtCoefFdas = ucrtCoefFdas,
+    TermQf = 'resistance',
+    NumDayExpiMax = NumDayExpiMax,
+    SchmDataOutList = SchmDataOutList,
+    SchmQf = SchmQf, 
+    DirSubCopy=DirSubCopy
+  )
+  
+  # Test 4. Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
+  # but the calibration has wrong folders, no_resistance and no_voltage
+  #
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  
+  testInputDir <- "pfs/prt_wrong_dir_inCalibration/14491/2019/01/01"
   
   returnedOutputDir <- wrap.cal.conv.dp0p(
     DirIn = testInputDir,
@@ -262,8 +285,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
   )
- 
-  # Test 4. Avro schema has 'resistance', dataIn has 'resistance' and param, 'voltage', passed in
+  # Test 5. Avro schema has 'resistance', dataIn has 'resistance' and param, 'voltage', passed in
   # err out due to 'voltage' missing from the data frame
   
   if (dir.exists(testOutputDir)) {
@@ -283,7 +305,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   ), silent = TRUE)
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
 
-  # test 5. Avro schema does NOT have 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
+  # test 6. Avro schema does NOT have 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
   # err out due to 'voltage' missing from the data frame
   
   if (dir.exists(testOutputDir)) {
@@ -303,7 +325,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
   )
-  # test 6. the test dir  has a wrong data, avro, not parquet
+  # test 7. the test dir  has a wrong data, avro, not parquet
   
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
