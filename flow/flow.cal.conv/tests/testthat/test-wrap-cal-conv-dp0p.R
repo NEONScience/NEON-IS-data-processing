@@ -265,28 +265,6 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     DirSubCopy=DirSubCopy
   )
   
-  # Test 3.a data has "source_id"    "readout_time" "site_id"      "resistance"
-  # But, FunConv$var has voltage, not resistance
-  
-  # FuncConv <- data.frame(var = 'voltage', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
-  # FuncUcrt <- data.frame(var = 'voltage', FuncUcrtMeas = 'def.ucrt.meas.cnst', FuncUcrtFdas = 'def.ucrt.fdas.rstc.poly'
-  #                        , stringsAsFactors = FALSE)
-  # 
-  # if (dir.exists(testOutputDir)) {
-  #   unlink(testOutputDir, recursive = TRUE)
-  # }
-  # returnedOutputDir <- try(wrap.cal.conv.dp0p(
-  #   DirIn = testInputDir,
-  #   DirOutBase = testOutputDir,
-  #   FuncConv = FuncConv,
-  #   FuncUcrt = FuncUcrt,
-  #   ucrtCoefFdas = ucrtCoefFdas,
-  #   TermQf = 'resistance',
-  #   NumDayExpiMax = NumDayExpiMax,
-  #   SchmDataOutList = SchmDataOutList,
-  #   SchmQf = SchmQf
-  # ),silent = TRUE)
-  
   # Test 4. Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
   # but the calibration has wrong folders, no_resistance and no_voltage
   #
