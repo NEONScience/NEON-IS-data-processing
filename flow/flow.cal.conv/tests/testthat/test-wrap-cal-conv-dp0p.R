@@ -265,13 +265,34 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     DirSubCopy=DirSubCopy
   )
   
-  # Test 4. Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
+  # Test 4. SchmDataOutList = NULL the rest are same as in test 3.
+  
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  
+  FuncConv <- data.frame(var = 'voltage', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
+  SchmDataOutList <- NULL
+  
+  returnedOutputDir <- try(wrap.cal.conv.dp0p(
+    DirIn = testInputDir,
+    DirOutBase = testOutputDir,
+    FuncConv = FuncConv,
+    FuncUcrt = FuncUcrt,
+    ucrtCoefFdas = ucrtCoefFdas,
+    TermQf = 'resistance',
+    NumDayExpiMax = NumDayExpiMax,
+    SchmDataOutList = SchmDataOutList,
+    SchmQf = SchmQf, 
+    DirSubCopy=DirSubCopy
+  ), silent = TRUE)
+  # Test 5. Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
   # but the calibration has wrong folders, no_resistance and no_voltage
   #
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-  
+  FuncConv <- data.frame(var = 'resistance', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
   testInputDir <- "pfs/prt_wrong_dir_inCalibration/14491/2019/01/01"
   
   returnedOutputDir <- wrap.cal.conv.dp0p(
@@ -285,7 +306,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
   )
-  # Test 5. Avro schema has 'resistance', dataIn has 'resistance' and param, 'voltage', passed in
+  # Test 6. Avro schema has 'resistance', dataIn has 'resistance' and param, 'voltage', passed in
   # err out due to 'voltage' missing from the data frame
   
   if (dir.exists(testOutputDir)) {
@@ -305,7 +326,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   ), silent = TRUE)
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
 
-  # test 6. Avro schema does NOT have 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
+  # test 7. Avro schema does NOT have 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
   # err out due to 'voltage' missing from the data frame
   
   if (dir.exists(testOutputDir)) {
@@ -325,7 +346,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
   )
-  # test 7. the test dir  has a wrong data, avro, not parquet
+  # test 8. the test dir  has a wrong data, avro, not parquet
   
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
