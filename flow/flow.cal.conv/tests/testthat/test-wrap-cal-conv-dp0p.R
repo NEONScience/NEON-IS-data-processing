@@ -250,8 +250,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   varCal <- base::unique(c(NameVarExpc, base::dir(DirCal)))
   values <- c(2, 3)
   NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
-  DirSubCopy <- c("abc")
-  
+ 
   returnedOutputDir <- wrap.cal.conv.dp0p(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
@@ -261,16 +260,38 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     TermQf = 'resistance',
     NumDayExpiMax = NumDayExpiMax,
     SchmDataOutList = SchmDataOutList,
-    SchmQf = SchmQf, 
-    DirSubCopy=DirSubCopy
+    SchmQf = SchmQf
   )
+
+  # Test 3.a test an additional sub folder by passing DirSubCopy <- c("abc")
+  #
   
+  testInputDir <- "pfs/prt_DirSubCopy/14491/2019/01/01"
+  
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  
+   returnedOutputDir <- wrap.cal.conv.dp0p(
+    DirIn = testInputDir,
+    DirOutBase = testOutputDir,
+    FuncConv = FuncConv,
+    FuncUcrt = FuncUcrt,
+    ucrtCoefFdas = ucrtCoefFdas,
+    TermQf = 'resistance',
+    NumDayExpiMax = NumDayExpiMax,
+    SchmDataOutList = SchmDataOutList,
+    SchmQf = SchmQf,
+    DirSubCopy <- c("abc")
+  )
+  # 
   # Test 4. SchmDataOutList = NULL the rest are same as in test 3.
   
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
   
+  testInputDir <- "pfs/prt/14491/2019/01/01"
   FuncConv <- data.frame(var = 'voltage', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
   SchmDataOutList <- NULL
   
@@ -283,8 +304,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     TermQf = 'resistance',
     NumDayExpiMax = NumDayExpiMax,
     SchmDataOutList = SchmDataOutList,
-    SchmQf = SchmQf, 
-    DirSubCopy=DirSubCopy
+    SchmQf = SchmQf
   ), silent = TRUE)
   # Test 5. Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
   # but the calibration has wrong folders, no_resistance and no_voltage
