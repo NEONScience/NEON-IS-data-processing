@@ -303,14 +303,14 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   # Test 3.a test an additional sub folder by passing DirSubCopy <- c("abc")
   #
   
-  testInputDir <- "pfs/prt_DirSubCopy/14491/2019/01/01"
+  testInputDirSubCopy <- "pfs/prt_DirSubCopy/14491/2019/01/01"
   
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
   }
   
   returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
+    DirIn = testInputDirSubCopy,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
     FuncUcrt = FuncUcrt,
@@ -321,6 +321,11 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmQf = SchmQf,
     DirSubCopy <- c("abc")
   )
+  
+  testOutputAbcDir <- base::paste0(gsub("prt_DirSubCopy", "out", testInputDirSubCopy), '/', 'abc')
+  fileAbc <- base::dir(testOutputAbcDir)
+  
+  testthat::expect_true (any(file.exists(testOutputAbcDir,fileAbc, recursive = TRUE)))
   #
   # Test 4. SchmDataOutList = NULL the rest are same as in test 3.
   
@@ -328,7 +333,6 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     unlink(testOutputBase, recursive = TRUE)
   }
   
-  testInputDir <- "pfs/prt/14491/2019/01/01"
   FuncConv <- data.frame(var = 'voltage', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
   SchmDataOutList <- NULL
   
@@ -352,10 +356,10 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   }
   FuncConv <- data.frame(var = 'resistance', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
   
-  testInputDir <- "pfs/prt_wrong_dir_inCalibration/14491/2019/01/01"
+  testInputWrongDir <- "pfs/prt_wrong_dir_inCalibration/14491/2019/01/01"
   
   returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
+    DirIn = testInputWrongDir,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
     FuncUcrt = FuncUcrt,
@@ -386,37 +390,17 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   ),  silent = TRUE)
   
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
-  
-  # test 7. Avro schema does NOT have 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
-  # err out due to 'voltage' missing from the data frame
-  
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
-  }
-  
-  SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated_temp.avsc')
-  
-  returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
-    DirOutBase = testOutputBase,
-    FuncConv = FuncConv,
-    FuncUcrt = FuncUcrt,
-    ucrtCoefFdas = ucrtCoefFdas,
-    TermQf = 'resistance',
-    NumDayExpiMax = NA,
-    SchmDataOutList = SchmDataOutList,
-    SchmQf = SchmQf
-  )
-  # test 8. the test dir  has a wrong data, avro, not parquet
+ 
+  # test 7. the test dir  has a wrong data, avro, not parquet
   
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
   }
   
-  testInputDir <- "pfs/prt_wrong_data/14491/2019/01/01"
+  testInputWrongDataDir <- "pfs/prt_wrong_data/14491/2019/01/01"
   
   returnedOutputDir <- try(wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
+    DirIn = testInputWrongDataDir,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
     FuncUcrt = FuncUcrt,
