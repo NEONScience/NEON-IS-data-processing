@@ -185,9 +185,12 @@
 #'                    TermQf='resistance',
 #'                    NumDayExpiMax=NA,
 #'                    SchmDataOutList=SchmDataOutList,
-#'                    SchmQf=SchmQf
+#'                    SchmQf=SchmQf,
+#'                    DirSubCopy=c("abc")
 #' )
-
+# Note. To use non NULL DirSubCopy param, the input path should have the sub folder.
+# To see an example, refer to the test input path, pfs/prt_DirSubCopy/...
+#
 #' @seealso None currently
 
 # changelog and author contributions / copyrights
@@ -206,14 +209,16 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   testOutputDir = "pfs/out"
   #
   # Test 1. Only the input of empty directories in calibration/ and output directry are passed in
- 
+  
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
   
   testInputDir <- "pfs/prt_noDir_inCalibration/14491/2019/01/01"
   
-  returnedOutputDir <- try(wrap.cal.conv.dp0p(DirIn = testInputDir, DirOutBase = testOutputDir), silent=TRUE)
+  returnedOutputDir <- 
+    try(wrap.cal.conv.dp0p(DirIn = testInputDir, DirOutBase = testOutputDir),
+        silent = TRUE)
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
   
   #
@@ -226,7 +231,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   testInputDir <- "pfs/prt/14491/2019/01/01"
   
   returnedOutputDir <- wrap.cal.conv.dp0p(DirIn = testInputDir, DirOutBase = testOutputDir)
-
+  
   # Test 3. Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
   # NumDayExpiMax has     var       |     NumDayExpiMax
   # --------------------------------------------------
@@ -237,9 +242,18 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-  FuncConv <- data.frame(var = 'resistance', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
-  FuncUcrt <- data.frame(var = 'resistance', FuncUcrtMeas = 'def.ucrt.meas.cnst', FuncUcrtFdas = 'def.ucrt.fdas.rstc.poly'
-                         , stringsAsFactors = FALSE)
+  FuncConv <-
+    data.frame(var = 'resistance',
+               FuncConv = 'def.cal.conv.poly',
+               stringsAsFactors = FALSE)
+  FuncUcrt <-
+    data.frame(
+      var = 'resistance',
+      FuncUcrtMeas = 'def.ucrt.meas.cnst',
+      FuncUcrtFdas = 'def.ucrt.fdas.rstc.poly'
+      ,
+      stringsAsFactors = FALSE
+    )
   
   ucrtCoefFdas  <- NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'testdata/fdas_calibration_uncertainty_general.json')
   SchmDataOutList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
@@ -250,7 +264,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   varCal <- base::unique(c(NameVarExpc, base::dir(DirCal)))
   values <- c(2, 3)
   NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
- 
+  
   returnedOutputDir <- wrap.cal.conv.dp0p(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
@@ -262,7 +276,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
   )
-
+  
   # Test 3.a test an additional sub folder by passing DirSubCopy <- c("abc")
   #
   
@@ -272,7 +286,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     unlink(testOutputDir, recursive = TRUE)
   }
   
-   returnedOutputDir <- wrap.cal.conv.dp0p(
+  returnedOutputDir <- wrap.cal.conv.dp0p(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
     FuncConv = FuncConv,
@@ -284,7 +298,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmQf = SchmQf,
     DirSubCopy <- c("abc")
   )
-  # 
+  #
   # Test 4. SchmDataOutList = NULL the rest are same as in test 3.
   
   if (dir.exists(testOutputDir)) {
@@ -305,7 +319,8 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     NumDayExpiMax = NumDayExpiMax,
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
-  ), silent = TRUE)
+  ),  silent = TRUE)
+  #
   # Test 5. Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
   # but the calibration has wrong folders, no_resistance and no_voltage
   #
@@ -313,6 +328,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     unlink(testOutputDir, recursive = TRUE)
   }
   FuncConv <- data.frame(var = 'resistance', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
+  
   testInputDir <- "pfs/prt_wrong_dir_inCalibration/14491/2019/01/01"
   
   returnedOutputDir <- wrap.cal.conv.dp0p(
@@ -326,13 +342,14 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
   )
+  #
   # Test 6. Avro schema has 'resistance', dataIn has 'resistance' and param, 'voltage', passed in
   # err out due to 'voltage' missing from the data frame
   
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-
+  
   returnedOutputDir <- try(wrap.cal.conv.dp0p(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
@@ -343,9 +360,10 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     NumDayExpiMax = unlist(NumDayExpiMax),
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
-  ), silent = TRUE)
+  ),  silent = TRUE)
+  
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
-
+  
   # test 7. Avro schema does NOT have 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
   # err out due to 'voltage' missing from the data frame
   
@@ -385,6 +403,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
   ), silent = TRUE)
+  
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
-
-  })
+  
+})
