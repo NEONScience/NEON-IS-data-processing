@@ -93,8 +93,8 @@ test_that("Unit test of wrap.data.comb.ts.R", {
   #
   wk_dir <- getwd()
   #
-  # Test 1. Only the input of empty directories in calibration/ and output directry are passed in
-  
+  # Test 1. Only required params are passed.
+  #
   testInputDir <- 'pfs/prt/14491/2019/01/01'
   testOutputBase = "pfs/out"
   DirComb = c("data", "flags")
@@ -115,7 +115,8 @@ test_that("Unit test of wrap.data.comb.ts.R", {
   
   testInputDataDir <- base::paste0(testInputDir, '/', 'data/')
   testInputFlagsDir <- base::paste0(testInputDir, '/', 'flags/')
-  testOutputMergedDir <- base::paste0(gsub("prt", "out", testInputDir), '/', NameDirCombOut)
+  testOutputMergedDir <-
+    base::paste0(gsub("prt", "out", testInputDir), '/', NameDirCombOut)
   
   fileData <- base::dir(testInputDataDir)
   fileFlags <- base::dir(testInputFlagsDir)
@@ -127,6 +128,90 @@ test_that("Unit test of wrap.data.comb.ts.R", {
   
   myFlags <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testInputDataDir, fileData))
   
-  testthat::expect_true (colnames(myData) %in% colnames(myMerged) && colnames(myFlags) %in% colnames(myMerged))
+  testthat::expect_true (
+    colnames(myData) %in% colnames(myMerged) &&
+      colnames(myFlags) %in% colnames(myMerged)
+  )
+  #
+  # Test 2. The same test as Test 1 except DirSubCopy=NameDirCombOut, "data_flags_merged", is passed.
+  #
+  if (dir.exists(testOutputBase)) {
+    unlink(testOutputBase, recursive = TRUE)
+  }
+  
+  returnedOutputDir <- wrap.data.comb.ts(
+    DirIn = testInputDir,
+    DirOutBase = testOutputBase,
+    DirComb = DirComb,
+    NameDirCombOut = NameDirCombOut,
+    NameVarTime = NameVarTime,
+    DirSubCopy = "data_flags_merged"
+  )
+  #
+  # Test 3. The same test as Test 2 except DirComb = c("data", "flags") is passed.
+  #
+  if (dir.exists(testOutputBase)) {
+    unlink(testOutputBase, recursive = TRUE)
+  }
+  
+  returnedOutputDir <- wrap.data.comb.ts(
+    DirIn = testInputDir,
+    DirOutBase = testOutputBase,
+    DirComb = DirComb,
+    NameDirCombOut = NameDirCombOut,
+    NameVarTime = NameVarTime,
+    DirSubCopy = "testDirSubCopy"
+  )
+  #
+  # Test 4. The same test as Test 3 except  ColKeep="site_id" is passed.
+  #
+  if (dir.exists(testOutputBase)) {
+    unlink(testOutputBase, recursive = TRUE)
+  }
+  
+  returnedOutputDir <- wrap.data.comb.ts(
+    DirIn = testInputDir,
+    DirOutBase = testOutputBase,
+    DirComb = DirComb,
+    NameDirCombOut = NameDirCombOut,
+    NameVarTime = NameVarTime,
+    ColKeep = "site_id",
+    DirSubCopy = "testDirSubCopy"
+  )
+  #
+  # Test 5. The same test as Test 4 except  ColKeep="non_site_id", which is not correct is passed.
+  #
+  if (dir.exists(testOutputBase)) {
+    unlink(testOutputBase, recursive = TRUE)
+  }
+  
+  returnedOutputDir <- try(wrap.data.comb.ts(
+    DirIn = testInputDir,
+    DirOutBase = testOutputBase,
+    DirComb = DirComb,
+    NameDirCombOut = NameDirCombOut,
+    NameVarTime = NameVarTime,
+    ColKeep = "non_site_id",
+    DirSubCopy = "testDirSubCopy"
+  ), silent = TRUE)
+  
+  # Test 6. The same test as Test 5 except  SchmCombList is NOT NULL.
+  #
+  if (dir.exists(testOutputBase)) {
+    unlink(testOutputBase, recursive = TRUE)
+  }
+  
+  SchmCombList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
+  
+  returnedOutputDir <- try(wrap.data.comb.ts(
+    DirIn = testInputDir,
+    DirOutBase = testOutputBase,
+    DirComb = DirComb,
+    NameDirCombOut = NameDirCombOut,
+    NameVarTime = NameVarTime,
+    ColKeep = "site_id",
+    SchmCombList = SchmCombList,
+    DirSubCopy = "testDirSubCopy"
+  ), silent = TRUE)
   
 })
