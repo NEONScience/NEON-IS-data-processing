@@ -148,7 +148,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     DirSubCopy = "data_flags_merged"
   )
   #
-  # Test 3. The same test as Test 2 except DirComb = c("data", "flags") is passed.
+  # Test 3. The same test as Test 2 except DirSubCopy = "testDirSubCopy" is passed.
   #
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
