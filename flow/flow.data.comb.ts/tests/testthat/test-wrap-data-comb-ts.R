@@ -129,7 +129,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
   
   testthat::expect_true (colnames(myData) %in% colnames(myMerged) && colnames(myFlags) %in% colnames(myMerged))
   #
-  # Test 2. The same test as Test 1 except DirSubCopy=NameDirCombOut, "data_flags", is passed.
+  # Test 2. The same test as Test 1 except DirSubCopy=NameDirCombOut, "data_flags_merged", is passed.
   #
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
@@ -141,7 +141,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     DirComb = DirComb,
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
-    DirSubCopy = "data_flags"
+    DirSubCopy = "data_flags_merged"
   )
   #
   # Test 3. The same test as Test 2 except DirSubCopy = "testSubDirCopy" is passed.
