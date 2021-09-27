@@ -172,7 +172,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
     ColKeep = "site_id",
-    DirSubCopy = "testDirSubCopy"
+    DirSubCopy = "testSubDirCopy"
   )
   #
   # Test 5. The same test as Test 4 except  ColKeep="non_site_id", which is not correct is passed.
@@ -188,7 +188,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
     ColKeep = "non_site_id",
-    DirSubCopy = "testDirSubCopy"
+    DirSubCopy = "testSubDirCopy"
   ), silent = TRUE)
   
   # Test 6. The same test as Test 5 except  SchmCombList is NOT NULL.
@@ -207,7 +207,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     NameVarTime = NameVarTime,
     ColKeep = "site_id",
     SchmCombList = SchmCombList,
-    DirSubCopy = "testDirSubCopy"
+    DirSubCopy = "testSubDirCopy"
   ), silent = TRUE)
   
 })
