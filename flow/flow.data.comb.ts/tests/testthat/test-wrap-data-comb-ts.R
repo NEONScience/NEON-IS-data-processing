@@ -115,8 +115,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
   
   testInputDataDir <- base::paste0(testInputDir, '/', 'data/')
   testInputFlagsDir <- base::paste0(testInputDir, '/', 'flags/')
-  testOutputMergedDir <-
-    base::paste0(gsub("prt", "out", testInputDir), '/', NameDirCombOut)
+  testOutputMergedDir <- base::paste0(gsub("prt", "out", testInputDir), '/', NameDirCombOut, '/')
   
   fileData <- base::dir(testInputDataDir)
   fileFlags <- base::dir(testInputFlagsDir)
@@ -124,16 +123,13 @@ test_that("Unit test of wrap.data.comb.ts.R", {
   
   myData <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testInputFlagsDir, fileFlags))
   
-  myMerged <- NEONprocIS.base::def.read.parq(NameFile = 'pfs/out/14491/2019/01/01/data_flags_merged/L0_data_resistance.parquet')
+  myMerged <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testOutputMergedDir, fileMerged))
   
   myFlags <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testInputDataDir, fileData))
   
-  testthat::expect_true (
-    colnames(myData) %in% colnames(myMerged) &&
-      colnames(myFlags) %in% colnames(myMerged)
-  )
+  testthat::expect_true (colnames(myData) %in% colnames(myMerged) && colnames(myFlags) %in% colnames(myMerged))
   #
-  # Test 2. The same test as Test 1 except DirSubCopy=NameDirCombOut, "data_flags_merged", is passed.
+  # Test 2. The same test as Test 1 except DirSubCopy=NameDirCombOut, "data_flags", is passed.
   #
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
@@ -145,10 +141,10 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     DirComb = DirComb,
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
-    DirSubCopy = "data_flags_merged"
+    DirSubCopy = "data_flags"
   )
   #
-  # Test 3. The same test as Test 2 except DirSubCopy = "testDirSubCopy" is passed.
+  # Test 3. The same test as Test 2 except DirSubCopy = "testSubDirCopy" is passed.
   #
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
@@ -160,7 +156,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     DirComb = DirComb,
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
-    DirSubCopy = "testDirSubCopy"
+    DirSubCopy = "testSubDirCopy"
   )
   #
   # Test 4. The same test as Test 3 except  ColKeep="site_id" is passed.
