@@ -98,7 +98,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
   testInputDir <- 'pfs/prt/14491/2019/01/01'
   testOutputBase = "pfs/out"
   DirComb = c("data", "flags")
-  NameDirCombOut = "data_flags_merged"
+  NameDirCombOut = "data_flags"
   NameVarTime = "readout_time"
   
   if (dir.exists(testOutputBase)) {
@@ -113,23 +113,27 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     NameVarTime = NameVarTime
   )
   
-  testInputDataDir <- base::paste0(testInputDir, '/', 'data/')
-  testInputFlagsDir <- base::paste0(testInputDir, '/', 'flags/')
-  testOutputMergedDir <- base::paste0(gsub("prt", "out", testInputDir), '/', NameDirCombOut, '/')
+  testInputDataDir <- base::paste0(testInputDir, '/', 'data')
+  testInputFlagsDir <- base::paste0(testInputDir, '/', 'flags')
+  testOutputMergedDir <- base::paste0(gsub("prt", "out", testInputDir), '/', NameDirCombOut)
   
   fileData <- base::dir(testInputDataDir)
   fileFlags <- base::dir(testInputFlagsDir)
   fileMerged <- base::dir(testOutputMergedDir)
   
-  myData <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testInputFlagsDir, fileFlags))
+  myData <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testInputFlagsDir, '/', fileFlags))
   
-  myMerged <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testOutputMergedDir, fileMerged))
+  myMerged <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testOutputMergedDir, '/', fileMerged))
   
-  myFlags <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testInputDataDir, fileData))
+  myFlags <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testInputDataDir, '/', fileData))
   
-  testthat::expect_true (colnames(myData) %in% colnames(myMerged) && colnames(myFlags) %in% colnames(myMerged))
+  testthat::expect_true (
+    colnames(myData) %in% colnames(myMerged) &&
+      colnames(myFlags) %in% colnames(myMerged)
+  )
   #
-  # Test 2. The same test as Test 1 except DirSubCopy=NameDirCombOut, "data_flags_merged", is passed.
+  # Test 2. The same test as Test 1 except DirSubCopy=NameDirCombOut, "data_flags", is passed.
+  # Its original contents will not be copied through to the output
   #
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
@@ -141,8 +145,15 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     DirComb = DirComb,
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
-    DirSubCopy = "data_flags_merged"
+    DirSubCopy = "data_flags"
   )
+  
+  # failing now
+  # testthat::expect_true (!dir.exists(testOutputMergedDir))
+  #
+  # testthat::expect_true (dir.exists(base::paste0(gsub("prt", "out", testInputDir), '/', 'data/')))
+  # testthat::expect_true (dir.exists(base::paste0(gsub("prt", "out", testInputDir), '/', 'flags/')))
+  
   #
   # Test 3. The same test as Test 2 except DirSubCopy = "testSubDirCopy" is passed.
   #
@@ -150,20 +161,30 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     unlink(testOutputBase, recursive = TRUE)
   }
   
+  DirSubCopy = "testSubDirCopy"
+  
   returnedOutputDir <- wrap.data.comb.ts(
     DirIn = testInputDir,
     DirOutBase = testOutputBase,
     DirComb = DirComb,
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
-    DirSubCopy = "testSubDirCopy"
+    DirSubCopy = DirSubCopy
   )
+  
+  testOutputDirSub <- base::paste0(gsub("prt", "out", testInputDir), '/', DirSubCopy)
+  fileDirSub <- base::dir(testOutputDirSub)
+  
+  testthat::expect_true (any(file.exists(testOutputDirSub, fileDirSub, recursive = TRUE)))
   #
   # Test 4. The same test as Test 3 except  ColKeep="site_id" is passed.
+  # the output file keeps only that column, "site_id", in this test
   #
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
   }
+  
+  ColKeep = "site_id"
   
   returnedOutputDir <- wrap.data.comb.ts(
     DirIn = testInputDir,
@@ -171,15 +192,22 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     DirComb = DirComb,
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
-    ColKeep = "site_id",
-    DirSubCopy = "testSubDirCopy"
+    ColKeep = ColKeep
   )
+  
+  myMerged <- NEONprocIS.base::def.read.parq(NameFile = base::paste0(testOutputMergedDir,'/', fileMerged))
+  
+  testthat::expect_true (all(colnames(myMerged) == ColKeep))
+  
   #
-  # Test 5. The same test as Test 4 except  ColKeep="non_site_id", which is not correct is passed.
+  # Test 5. The same test as Test 4 except  ColKeep="does-not-exist", which is not correct is passed.
+  # No file will be written to the output directory due to the error of non-existing column
   #
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
   }
+  
+  ColKeep = "does-not-exist"
   
   returnedOutputDir <- try(wrap.data.comb.ts(
     DirIn = testInputDir,
@@ -187,17 +215,19 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     DirComb = DirComb,
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
-    ColKeep = "non_site_id",
-    DirSubCopy = "testSubDirCopy"
+    ColKeep = ColKeep
   ), silent = TRUE)
   
+  testthat::expect_true (!(file.exists(base::paste0(testOutputMergedDir, '/'), recursive = TRUE)))
+
   # Test 6. The same test as Test 5 except  SchmCombList is NOT NULL.
+  # SchmCombList has the schema for the data only, not the combind, data + flags
   #
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
   }
   
-  SchmCombList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
+  SchmDataList <- NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
   
   returnedOutputDir <- try(wrap.data.comb.ts(
     DirIn = testInputDir,
@@ -205,9 +235,32 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     DirComb = DirComb,
     NameDirCombOut = NameDirCombOut,
     NameVarTime = NameVarTime,
-    ColKeep = "site_id",
-    SchmCombList = SchmCombList,
-    DirSubCopy = "testSubDirCopy"
+    SchmCombList = SchmDataList
   ), silent = TRUE)
+  
+  testthat::expect_true (!(file.exists(base::paste0(testOutputMergedDir, '/'), recursive = TRUE)))
+  
+  # Test 7. The same test as Test 6 except  SchmCombList has the schema of the combined file.
+  # SchmCombList has the correct schema for the combind which is data + flags
+  #
+  if (dir.exists(testOutputBase)) {
+    unlink(testOutputBase, recursive = TRUE)
+  }
+  
+  testDataFlagsDir = base::paste0(testInputDir, '/', 'data_flags')
+  fileDataFlags <- base::dir(testDataFlagsDir)
+  NameFile <- base::paste0(testDataFlagsDir, '/', fileDataFlags)
+  SchmCombList <- arrow::read_parquet(file = NameFile, as_data_frame = FALSE)
+
+  returnedOutputDir <- wrap.data.comb.ts(
+    DirIn = testInputDir,
+    DirOutBase = testOutputBase,
+    DirComb = DirComb,
+    NameDirCombOut = NameDirCombOut,
+    NameVarTime = NameVarTime,
+    SchmCombList = SchmCombList
+  )
+  
+  testthat::expect_true (any(file.exists(testOutputBase, fileDataFlags, recursive = TRUE)))
   
 })
