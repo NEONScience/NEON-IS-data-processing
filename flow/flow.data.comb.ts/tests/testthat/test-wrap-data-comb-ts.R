@@ -148,11 +148,7 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     DirSubCopy = "data_flags"
   )
   
-  # failing now
-  # testthat::expect_true (!dir.exists(testOutputMergedDir))
-  #
-  # testthat::expect_true (dir.exists(base::paste0(gsub("prt", "out", testInputDir), '/', 'data/')))
-  # testthat::expect_true (dir.exists(base::paste0(gsub("prt", "out", testInputDir), '/', 'flags/')))
+  testthat::expect_true (any(file.exists(testOutputMergedDir, fileMerged, recursive = TRUE)))
   
   #
   # Test 3. The same test as Test 2 except DirSubCopy = "testSubDirCopy" is passed.
@@ -247,10 +243,8 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     unlink(testOutputBase, recursive = TRUE)
   }
   
-  testDataFlagsDir = base::paste0(testInputDir, '/', 'data_flags')
-  fileDataFlags <- base::dir(testDataFlagsDir)
-  NameFile <- base::paste0(testDataFlagsDir, '/', fileDataFlags)
-  SchmCombList <- arrow::read_parquet(file = NameFile, as_data_frame = FALSE)
+ 
+  SchmCombList <- arrow::read_parquet(file = 'testdata/L0_data_flags.parquet', as_data_frame = FALSE)
 
   returnedOutputDir <- wrap.data.comb.ts(
     DirIn = testInputDir,
@@ -261,6 +255,6 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     SchmCombList = SchmCombList
   )
   
-  testthat::expect_true (any(file.exists(testOutputBase, fileDataFlags, recursive = TRUE)))
+  testthat::expect_true (any(file.exists(testOutputBase, fileMerged, recursive = TRUE)))
   
 })
