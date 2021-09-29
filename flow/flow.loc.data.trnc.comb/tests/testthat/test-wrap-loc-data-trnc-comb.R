@@ -80,6 +80,7 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   testOutputDir = "pfs/out"
   
   # Load in the location json and get the location name to verify the test
+  # this conforms to locations-sensor-schema.json
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(dirInLoc[3], '/', fileLoc[4]))
   
   installdate <- str_replace_all(loc$install_date, "-", "/")
@@ -174,6 +175,7 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   # Test scenario 6:: source_id is in the sub dir instead of location name, 
   # No matching location information for location',nameLoc,' and source id
   # so numLoc == 0
+  # this conforms to locations-namedLocations-schema.json
   #
   # Remove the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
@@ -184,7 +186,7 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   dirInLoc <- base::paste0(testInputDir, '/', base::dir(testInputDir))
   fileLoc <- base::dir(dirInLoc)
   
-  # Load in the location json and get the location name to verify the test
+  # Load the location json and get the location name to verify the test
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(dirInLoc[3],'/',fileLoc[4]))
   
   installdate <- str_replace_all(loc$install_date, "-", "/")
