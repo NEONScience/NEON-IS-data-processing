@@ -79,7 +79,7 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   fileLoc <- base::dir(dirInLoc)
   testOutputDir = "pfs/out"
   
-  # Load in the location json and get the location name to verify the test
+  # Load the location json and get the location name to verify the test
   # this conforms to locations-sensor-schema.json
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(dirInLoc[3], '/', fileLoc[4]))
   
