@@ -203,7 +203,7 @@ context("\n                       Unit test of wrap.cal.conv.dp0p.R\n")
 # Unit test of wrap.cal.conv.dp0p.R
 test_that("Unit test of wrap.cal.conv.dp0p.R", {
   
-  source('../../wrap.cal.conv.dp0p.R')
+  source('../../flow.cal.conv/wrap.cal.conv.dp0p.R')
   library(stringr)
   #
   wk_dir <- getwd()
