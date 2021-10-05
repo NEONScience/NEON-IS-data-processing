@@ -88,7 +88,7 @@ context("\n                       Unit test of wrap.data.comb.ts.R\n")
 
 # Unit test of wrap.data.comb.ts.R
 test_that("Unit test of wrap.data.comb.ts.R", {
-  source('../../wrap.data.comb.ts.R')
+  source('../../flow.data.comb.ts/wrap.data.comb.ts.R')
   library(stringr)
   #
   wk_dir <- getwd()

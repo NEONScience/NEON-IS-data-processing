@@ -206,7 +206,6 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   source('../../flow.cal.conv/wrap.cal.conv.dp0p.R')
   library(stringr)
   #
-  wk_dir <- getwd()
   testOutputBase = "pfs/out"
   #
   # Test 1. Only the input of empty directories in calibration/ and output directry are passed in
