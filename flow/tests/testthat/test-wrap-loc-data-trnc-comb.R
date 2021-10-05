@@ -71,7 +71,7 @@ context("\n                       Unit test of wrap.loc.data.trnc.comb.R\n")
 
 # Unit test of wrap.loc.data.trnc.comb.R
 test_that("Unit test of wrap.loc.data.trnc.comb.R", {
-  source('../../wrap.loc.data.trnc.comb.R')
+  source('../../flow.loc.data.trnc.comb/wrap.loc.data.trnc.comb.R')
   library(stringr)
   
   testInputDir <- 'pfs/proc_group/prt/2019/01/01/CFGLOC101670'

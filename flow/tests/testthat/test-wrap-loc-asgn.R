@@ -63,7 +63,7 @@ context("\n                       Unit test of wrap.loc.asgn.R\n")
 
 # Unit test of wrap.loc.asgn.R
 test_that("Unit test of wrap.loc.asgn.R", {
-  source('../../wrap.loc.asgn.R')
+  source('../../flow.loc.asgn/wrap.loc.asgn.R')
   library(stringr)
   
   wk_dir <- getwd()
