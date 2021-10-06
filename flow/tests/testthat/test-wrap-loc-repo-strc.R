@@ -49,7 +49,7 @@ context("\n                       Unit test of wrap.loc.repo.strc.R\n")
 
 # Unit test of wrap.loc.repo.strc.R
 test_that("Unit test of wrap.loc.repo.strc.R", {
-  source('../../wrap.loc.repo.strc.R')
+  source('../../flow.loc.repo.strc/wrap.loc.repo.strc.R')
   library(stringr)
   
   wk_dir <- getwd()
@@ -131,7 +131,7 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
 
   # Load in the location json and get the location name to verify the test
   loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(dirInLoc, '/', fileLoc[1]))
-  testOutputDir = "pfs/out"
+
   #
   if (dir.exists(testOutputDir))  {
     unlink(testOutputDir, recursive = TRUE)
