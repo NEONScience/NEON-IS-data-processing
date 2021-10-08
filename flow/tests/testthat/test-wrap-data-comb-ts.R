@@ -214,7 +214,8 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     ColKeep = ColKeep
   ), silent = TRUE)
   
-  testthat::expect_true (!(file.exists(base::paste0(testOutputMergedDir, '/'), recursive = TRUE)))
+  # The output directory should not have any files
+  testthat::expect_true (length(list.files(base::paste0(testOutputMergedDir, '/')))==0)
 
   # Test 6. The same test as Test 5 except  SchmCombList is NOT NULL.
   # SchmCombList has the schema for the data only, not the combind, data + flags
@@ -234,7 +235,8 @@ test_that("Unit test of wrap.data.comb.ts.R", {
     SchmCombList = SchmDataList
   ), silent = TRUE)
   
-  testthat::expect_true (!(file.exists(base::paste0(testOutputMergedDir, '/'), recursive = TRUE)))
+  # The output directory should not have any files
+  testthat::expect_true (length(list.files(base::paste0(testOutputMergedDir, '/')))==0)
   
   # Test 7. The same test as Test 6 except  SchmCombList has the schema of the combined file.
   # SchmCombList has the correct schema for the combind which is data + flags
