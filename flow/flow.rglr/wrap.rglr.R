@@ -1,21 +1,17 @@
 ##############################################################################################
-#' @title Calibration conversion module for NEON IS data processing
+#' @title Regularization module for NEON IS data processing.
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
-#' @description Wrapper function. Apply calibration and uncertainty functions to L0 data and save applicable
-#' uncertainty coefficients. Optionally compute FDAS (datalogger) uncertainty. Valid date
-#' ranges and certificate numbers in calibration files are used to determine the most relevant
-#' calibration to apply. The most relevant cal follows this choice order (1 chosen first):
-#'    1. higher ID & date of interest within valid date range
-#'    2. lower ID & date of interest within valid date range
-#'    3. expired cal with nearest valid end date to beginning date of interest
-#'    4. lower ID if multiple cals wtih same expiration dates in #3
-#' Note that calibrations with a valid date range beginning after the date range of interest and
-#' calibrations that are expired more than their max allowable days since expiration are treated
-#' as if they don't exist. Data points are turned to NA if no valid or expired valibration is found.
-#' Quality flags are output indicating whether an expired calibration was used.
+#' @description Wrapper function. Bin data to generate a regular time sequence of observations.
+#' General code workflow:
+#'      Error-check input parameters
+#'      Read regularization frequency from location file if expected
+#'      Create output directories and copy (by symbolic link) unmodified components
+#'      Loop through all data files
+#'        Regularize data in each file
+#'        Write out the regularized data
 #'
 #'
 #' @param DirIn Character value. The input path to the data from a single sensor or location, structured as follows: 
