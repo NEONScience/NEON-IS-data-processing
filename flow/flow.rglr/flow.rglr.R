@@ -156,12 +156,12 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.rglr.R "DirIn=/pfs/prt_calibration/prt/2019/01/01" "DirOut=/pfs/out" "DirRglr=data" "FileSchmRglr=/pfs/avro_schemas/data_regularized.avsc" "FreqRglr=0.1" "MethRglr=CybiEc" "WndwRglr=Trlg" "IdxWndw=IdxWndwMin"
+#' Rscript flow.rglr.R "DirIn=/pfs/prt_calibration/prt/2019/01/01" "DirOut=/pfs/out" "DirErr=/pfs/out/errored" "DirRglr=data" "FileSchmRglr=/pfs/avro_schemas/data_regularized.avsc" "FreqRglr=0.1" "MethRglr=CybiEc" "WndwRglr=Trlg" "IdxWndw=IdxWndwMin"
 #'
 #' Using environment variables for input directory and output file schema
 #' Sys.setenv(DIR_IN='/pfs/prt_calibration/prt/2019/01/01')
 #' Sys.setenv(FILE_SCHEMA_RGLR='/pfs/avro_schemas/data_regularized.avsc')
-#' Rscript flow.rglr.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "DirRglr=data" "FileSchmRglr=$FILE_SCHEMA_RGLR" "FreqRglr=0.1" "MethRglr=CybiEc" "WndwRglr=Trlg" "IdxWndw=IdxWndwMin"
+#' Rscript flow.rglr.R "DirIn=$DIR_IN" "DirOut=/pfs/out" "DirErr=/pfs/out/errored" "DirRglr=data" "FileSchmRglr=$FILE_SCHEMA_RGLR" "FreqRglr=0.1" "MethRglr=CybiEc" "WndwRglr=Trlg" "IdxWndw=IdxWndwMin"
 
 
 #' @seealso \code{\link[eddy4R.base]{def.rglr}}
