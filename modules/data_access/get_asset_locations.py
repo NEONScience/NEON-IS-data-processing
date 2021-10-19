@@ -7,6 +7,7 @@ from psycopg2 import extensions
 
 from data_access.get_named_location_locations import get_named_location_locations
 from data_access.get_named_location_context import get_named_location_context
+from data_access.get_named_location_group import get_named_location_group
 from data_access.get_named_location_parents import get_named_location_parents
 from data_access.get_named_location_properties import get_named_location_properties
 from data_access.types.asset import Asset
@@ -54,6 +55,7 @@ def get_asset_locations(connection: extensions.connection, asset: Asset) -> Feat
             domain: str = parents['domain'] if parents else None
             site: str = parents['site'] if parents else None
             context: List[str] = get_named_location_context(connection, key)
+            group: List[int] = get_named_location_group(connection, key)
             asset_location = AssetLocation(name=name, domain=domain, site=site, install_date=install_date,
                                            remove_date=remove_date, context=context, properties=properties,
                                            locations=locations)

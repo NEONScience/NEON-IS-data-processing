@@ -10,6 +10,7 @@ from data_access.types.property import Property
 from data_access.get_named_location_active_periods import get_active_periods
 from data_access.get_named_location_properties import get_named_location_properties
 from data_access.get_named_location_context import get_named_location_context
+from data_access.get_named_location_group import get_named_location_group
 from data_access.get_named_location_parents import get_named_location_parents
 from data_access.get_named_location_schema_name import get_named_location_schema_name
 
@@ -44,12 +45,13 @@ def get_named_locations(connection: extensions.connection, location_type: str) -
             description = row[2]
             active_periods: List[ActivePeriod] = get_active_periods(connection, key)
             context: List[str] = get_named_location_context(connection, key)
+            group: List[int] = get_named_location_group(connection, key)
             properties: List[Property] = get_named_location_properties(connection, key)
             schema_names: Set[str] = get_named_location_schema_name(connection, key)
             parents: Dict[str,str] = get_named_location_parents(connection, key)
             domain: str = parents['domain'] if parents else None
             site: str = parents['site'] if parents else None
             named_location = NamedLocation(name=name, type=location_type, description=description,
-                                           domain=domain, site=site, schema_names=schema_names, context=context,
+                                           domain=domain, site=site, schema_names=schema_names, context=context, group=group,
                                            active_periods=active_periods, properties=properties)
             yield named_location
