@@ -64,6 +64,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2021-05-25)
 #     Original Creation
+#   Mija Choi (2021-10-19)
+#     Added OS info to run certain tests only on Linux
 ##############################################################################################
 # Define test context
 
