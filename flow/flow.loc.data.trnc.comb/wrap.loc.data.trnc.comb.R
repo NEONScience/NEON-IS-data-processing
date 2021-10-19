@@ -172,7 +172,7 @@ wrap.loc.data.trnc.comb <- function(DirIn,
         # Find the location id in the locations file
         numLoc <- base::nrow(loc)
         if(numLoc == 0){
-          log$warn(base::paste0('No matching location information for location',nameLoc,' and source id ',
+          log$warn(base::paste0('No matching location information for location ',nameLoc,' and source id ',
                                 idSrcIdx, ' was found in the location files ', 
                                 ' as part of processing data file: ',nameFileData,
                                 ' . This should not happen. You should investigate...'))
