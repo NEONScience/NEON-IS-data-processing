@@ -178,6 +178,7 @@ Para <-
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Retrieve output schema for data
 FileSchmDataOut <- Para$FileSchmData
