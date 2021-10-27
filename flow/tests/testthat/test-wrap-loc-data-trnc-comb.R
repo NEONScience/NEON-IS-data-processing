@@ -109,19 +109,16 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-
-  dirLoc <- c('location')
   wrap.loc.data.trnc.comb(DirIn = testInputDir,
                           DirOutBase = testOutputDir,
-                          DirSubCopy = dirLoc,
-                          DirSubCombData = c('data', 'flags'))
+                          DirSubCopy = 'location')
   
+  dirLoc <- c('location')
   testOutputDirnamedLoc <- base::paste0(testOutputDirPath, "/", loc$name, "/", dirLoc)
   # Execute the test when the OS is Linux-based, skip otherwise
   if (os_type == "Linux"){
     testthat::expect_true (file.exists(testOutputDirnamedLoc))
   }
-  
   
   # Test scenario 3:: only DirSubCombData passed in
   # The output dir will have data and flags folder only
@@ -180,8 +177,10 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   dirLoc <- c('data', 'flags', 'location', 'uncertainty_coef')
   testOutputDirnamedLoc <- base::paste0(testOutputDirPath,"/",loc$name,"/",dirLoc)
   if (os_type == "Linux"){
-  testthat::expect_true (all(file.exists(testOutputDirnamedLoc)))
+    testthat::expect_true (all(file.exists(testOutputDirnamedLoc))) 
   }
+  
+  
   # Test scenario 6:: source_id is in the sub dir instead of location name, 
   # No matching location information for location',nameLoc,' and source id
   # so numLoc == 0
@@ -214,6 +213,4 @@ test_that("Unit test of wrap.loc.data.trnc.comb.R", {
   if (os_type == "Linux"){
     testthat::expect_true (all(file.exists(testOutputDirnamedLoc)))
   }
-  
-  
 })
