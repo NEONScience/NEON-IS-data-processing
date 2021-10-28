@@ -1,0 +1,27 @@
+---
+pipeline:
+  name: li7200_threshold_filter
+transform:
+  cmd:
+  - Rscript
+  - /flow.thsh.filt.R
+  - DirIn=$threshold
+  - DirOut=/pfs/out
+  - Term=tempCellIn|tempCellOut|tempMean|tempBloc|presAtmBox|presGageCell|presSum|pwrH2OSamp|pwrH2ORef|asrpH2o|rhoMoleH2O|fdMoleH2O|pwrCO2Samp|pwrCO2Ref|asrpCo2|rhoMoleCO2|fdMoleCO2|poteCool|ssiCo2|ssiH2o
+  - Term=tempIn|tempOut|tempMean|tempRefe|presAtm|presDiff|presSum|powrH2oSamp|powrH2oRefe|asrpH2o|densMoleH2o|rtioMoleDryH2o|powrCo2Samp|pwrCO2Ref|asrpCo2|densMoleCo2|rtioMoleDryCo2|potCool|ssiCo2|ssiH2o
+  - Ctxt=li7200
+  image: quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.8
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  pfs:
+    repo: threshold
+    glob: /
+enable_stats: false
+standby: true
+resource_requests:
+  memory: 13M
+  cpu: 0.01
+
