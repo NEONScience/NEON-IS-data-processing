@@ -95,7 +95,7 @@
 # Define test context
 context("\n       | Unit test of Regularization module for NEON IS data processing \n")
 
-test_that("Unit test of wrap.loc.repo.strc.R", {
+test_that("Unit test of wrap.rglr.R", {
   source('../../flow.rglr/wrap.rglr.R')
   library(stringr)
   ParaRglr <- data.frame(DirRglr=c('data','flags'),
@@ -118,5 +118,16 @@ test_that("Unit test of wrap.loc.repo.strc.R", {
             DirOutBase=DirOutBase,
             ParaRglr=ParaRglr
   )
+  
+  dirInData <- base::paste0(DirIn, '/data')
+  dirInFlags <- base::paste0(DirIn, '/flags')
+  fileData <- base::dir(dirInData)
+  fileFlags <- base::dir(dirInFlags)
+  dirOutData <- gsub("proc_group", "out",dirInData)
+  dirOutFlags <- gsub("proc_group", "out",dirInFlags)
+ 
+  expect_true ((file.exists(dirOutData,fileData, recursive = TRUE)) && 
+                 (file.exists(dirOutFlags,fileFlags, recursive = TRUE)))
+  
 }
 )
