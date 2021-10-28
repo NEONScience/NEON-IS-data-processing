@@ -5,7 +5,7 @@ from typing import List
 from psycopg2 import extensions
 
 
-def get_named_location_group(connection: extensions.connection, named_location_id: int) -> List[int]:
+def get_named_location_group(connection: extensions.connection, named_location_id: int) -> List[str]:
     """
     Get context entries for a named location.
 
@@ -14,18 +14,18 @@ def get_named_location_group(connection: extensions.connection, named_location_i
     :return: The context entries.
     """
     sql = '''
-        select 
-            group_id
-        from 
-            named_location_group
-        where 
-            named_location_id = %s
+        select
+        g.group_name
+        from named_location_group nlg, "group" g
+        where
+            nlg.group_id = g.group_id and nlg.named_location_id = %s
     '''
-    groups: List[int] = []
+
+    groups: List[str] = []
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [named_location_id])
         rows = cursor.fetchall()
         for row in rows:
-            group_id = row[0]
-            groups.append(group_id)
+            group_name = row[0]
+            groups.append(group_name)
     return groups
