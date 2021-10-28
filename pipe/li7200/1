@@ -1,0 +1,2238 @@
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:17.616] 2 datums found for processing.
+INFO  [2021-10-28 15:25:17.676] Processing path to datum: /pfs/DIR_IN/li7200/41162/co2_raw
+ERROR [2021-10-28 15:25:18.213] /pfs/DIR_IN/li7200/41162/co2_raw/30000000016598_WO32499_166690.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:18.214]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41162/co2_raw/30000000016598_WO32499_166690.xml
+INFO  [2021-10-28 15:25:18.215] Processing path to datum: /pfs/DIR_IN/li7200/41162/h2o_raw
+ERROR [2021-10-28 15:25:18.294] /pfs/DIR_IN/li7200/41162/h2o_raw/30000000016598_WO32499_166635.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:18.295]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41162/h2o_raw/30000000016598_WO32499_166635.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:19.434] 2 datums found for processing.
+INFO  [2021-10-28 15:25:19.494] Processing path to datum: /pfs/DIR_IN/li7200/41162/co2_raw
+ERROR [2021-10-28 15:25:20.020] /pfs/DIR_IN/li7200/41162/co2_raw/30000000016598_WO32499_166690.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:20.021]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41162/co2_raw/30000000016598_WO32499_166690.xml
+INFO  [2021-10-28 15:25:20.022] Processing path to datum: /pfs/DIR_IN/li7200/41162/h2o_raw
+ERROR [2021-10-28 15:25:20.103] /pfs/DIR_IN/li7200/41162/h2o_raw/30000000016598_WO32499_166635.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:20.104]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41162/h2o_raw/30000000016598_WO32499_166635.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:21.105] 2 datums found for processing.
+INFO  [2021-10-28 15:25:21.169] Processing path to datum: /pfs/DIR_IN/li7200/41162/co2_raw
+ERROR [2021-10-28 15:25:21.721] /pfs/DIR_IN/li7200/41162/co2_raw/30000000016598_WO32499_166690.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:21.723]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41162/co2_raw/30000000016598_WO32499_166690.xml
+INFO  [2021-10-28 15:25:21.723] Processing path to datum: /pfs/DIR_IN/li7200/41162/h2o_raw
+ERROR [2021-10-28 15:25:21.805] /pfs/DIR_IN/li7200/41162/h2o_raw/30000000016598_WO32499_166635.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:21.806]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41162/h2o_raw/30000000016598_WO32499_166635.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:23.125] 2 datums found for processing.
+INFO  [2021-10-28 15:25:23.188] Processing path to datum: /pfs/DIR_IN/li7200/31354/co2_raw
+ERROR [2021-10-28 15:25:23.755] /pfs/DIR_IN/li7200/31354/co2_raw/30000000005300_WO25701_139492.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:23.756]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31354/co2_raw/30000000005300_WO25701_139492.xml
+INFO  [2021-10-28 15:25:23.756] Processing path to datum: /pfs/DIR_IN/li7200/31354/h2o_raw
+ERROR [2021-10-28 15:25:23.919] /pfs/DIR_IN/li7200/31354/h2o_raw/30000000005300_WO25701_139476.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:23.920]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31354/h2o_raw/30000000005300_WO25701_139476.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:24.988] 2 datums found for processing.
+INFO  [2021-10-28 15:25:25.051] Processing path to datum: /pfs/DIR_IN/li7200/31354/co2_raw
+ERROR [2021-10-28 15:25:25.624] /pfs/DIR_IN/li7200/31354/co2_raw/30000000005300_WO25701_139492.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:25.625]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31354/co2_raw/30000000005300_WO25701_139492.xml
+INFO  [2021-10-28 15:25:25.625] Processing path to datum: /pfs/DIR_IN/li7200/31354/h2o_raw
+ERROR [2021-10-28 15:25:25.793] /pfs/DIR_IN/li7200/31354/h2o_raw/30000000005300_WO25701_139476.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:25.793]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31354/h2o_raw/30000000005300_WO25701_139476.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:26.888] 2 datums found for processing.
+INFO  [2021-10-28 15:25:26.950] Processing path to datum: /pfs/DIR_IN/li7200/31354/co2_raw
+ERROR [2021-10-28 15:25:27.515] /pfs/DIR_IN/li7200/31354/co2_raw/30000000005300_WO25701_139492.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:27.516]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31354/co2_raw/30000000005300_WO25701_139492.xml
+INFO  [2021-10-28 15:25:27.517] Processing path to datum: /pfs/DIR_IN/li7200/31354/h2o_raw
+ERROR [2021-10-28 15:25:27.682] /pfs/DIR_IN/li7200/31354/h2o_raw/30000000005300_WO25701_139476.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:27.683]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31354/h2o_raw/30000000005300_WO25701_139476.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:28.899] 1 datums found for processing.
+INFO  [2021-10-28 15:25:28.963] Processing path to datum: /pfs/DIR_IN/li7200/39491/co2_raw
+ERROR [2021-10-28 15:25:29.313] /pfs/DIR_IN/li7200/39491/co2_raw/30000000023789_WO31668_163342.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:29.314]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/39491/co2_raw/30000000023789_WO31668_163342.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:30.319] 1 datums found for processing.
+INFO  [2021-10-28 15:25:30.380] Processing path to datum: /pfs/DIR_IN/li7200/39491/co2_raw
+ERROR [2021-10-28 15:25:30.734] /pfs/DIR_IN/li7200/39491/co2_raw/30000000023789_WO31668_163342.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:30.735]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/39491/co2_raw/30000000023789_WO31668_163342.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:31.694] 1 datums found for processing.
+INFO  [2021-10-28 15:25:31.755] Processing path to datum: /pfs/DIR_IN/li7200/39491/co2_raw
+ERROR [2021-10-28 15:25:32.108] /pfs/DIR_IN/li7200/39491/co2_raw/30000000023789_WO31668_163342.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:32.109]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/39491/co2_raw/30000000023789_WO31668_163342.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:33.229] 2 datums found for processing.
+INFO  [2021-10-28 15:25:33.290] Processing path to datum: /pfs/DIR_IN/li7200/40771/co2_raw
+ERROR [2021-10-28 15:25:33.948] /pfs/DIR_IN/li7200/40771/co2_raw/30000000016588_WO27582_146266.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:33.949]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40771/co2_raw/30000000016588_WO27582_146266.xml
+INFO  [2021-10-28 15:25:33.949] Processing path to datum: /pfs/DIR_IN/li7200/40771/h2o_raw
+ERROR [2021-10-28 15:25:34.303] /pfs/DIR_IN/li7200/40771/h2o_raw/30000000016588_WO49992_257339.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:34.304]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40771/h2o_raw/30000000016588_WO49992_257339.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:35.321] 2 datums found for processing.
+INFO  [2021-10-28 15:25:35.383] Processing path to datum: /pfs/DIR_IN/li7200/40771/co2_raw
+ERROR [2021-10-28 15:25:36.022] /pfs/DIR_IN/li7200/40771/co2_raw/30000000016588_WO27582_146266.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:36.023]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40771/co2_raw/30000000016588_WO27582_146266.xml
+INFO  [2021-10-28 15:25:36.024] Processing path to datum: /pfs/DIR_IN/li7200/40771/h2o_raw
+ERROR [2021-10-28 15:25:36.368] /pfs/DIR_IN/li7200/40771/h2o_raw/30000000016588_WO49992_257339.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:36.369]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40771/h2o_raw/30000000016588_WO49992_257339.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:37.339] 2 datums found for processing.
+INFO  [2021-10-28 15:25:37.400] Processing path to datum: /pfs/DIR_IN/li7200/40771/co2_raw
+ERROR [2021-10-28 15:25:38.043] /pfs/DIR_IN/li7200/40771/co2_raw/30000000016588_WO27582_146266.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:38.044]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40771/co2_raw/30000000016588_WO27582_146266.xml
+INFO  [2021-10-28 15:25:38.044] Processing path to datum: /pfs/DIR_IN/li7200/40771/h2o_raw
+ERROR [2021-10-28 15:25:38.383] /pfs/DIR_IN/li7200/40771/h2o_raw/30000000016588_WO49992_257339.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:38.384]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40771/h2o_raw/30000000016588_WO49992_257339.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:39.565] 2 datums found for processing.
+INFO  [2021-10-28 15:25:39.623] Processing path to datum: /pfs/DIR_IN/li7200/40772/co2_raw
+ERROR [2021-10-28 15:25:40.295] /pfs/DIR_IN/li7200/40772/co2_raw/30000000016589_WO26941_143229.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:40.295]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40772/co2_raw/30000000016589_WO26941_143229.xml
+INFO  [2021-10-28 15:25:40.296] Processing path to datum: /pfs/DIR_IN/li7200/40772/h2o_raw
+ERROR [2021-10-28 15:25:40.508] /pfs/DIR_IN/li7200/40772/h2o_raw/30000000016589_WO26941_143120.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:40.509]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40772/h2o_raw/30000000016589_WO26941_143120.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:41.501] 2 datums found for processing.
+INFO  [2021-10-28 15:25:41.561] Processing path to datum: /pfs/DIR_IN/li7200/40772/co2_raw
+ERROR [2021-10-28 15:25:42.281] /pfs/DIR_IN/li7200/40772/co2_raw/30000000016589_WO26941_143229.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:42.282]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40772/co2_raw/30000000016589_WO26941_143229.xml
+INFO  [2021-10-28 15:25:42.283] Processing path to datum: /pfs/DIR_IN/li7200/40772/h2o_raw
+ERROR [2021-10-28 15:25:42.497] /pfs/DIR_IN/li7200/40772/h2o_raw/30000000016589_WO26941_143120.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:42.498]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40772/h2o_raw/30000000016589_WO26941_143120.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:43.582] 2 datums found for processing.
+INFO  [2021-10-28 15:25:43.645] Processing path to datum: /pfs/DIR_IN/li7200/40772/co2_raw
+ERROR [2021-10-28 15:25:44.342] /pfs/DIR_IN/li7200/40772/co2_raw/30000000016589_WO26941_143229.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:44.343]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40772/co2_raw/30000000016589_WO26941_143229.xml
+INFO  [2021-10-28 15:25:44.344] Processing path to datum: /pfs/DIR_IN/li7200/40772/h2o_raw
+ERROR [2021-10-28 15:25:44.560] /pfs/DIR_IN/li7200/40772/h2o_raw/30000000016589_WO26941_143120.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:44.561]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40772/h2o_raw/30000000016589_WO26941_143120.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:45.760] 2 datums found for processing.
+INFO  [2021-10-28 15:25:45.839] Processing path to datum: /pfs/DIR_IN/li7200/30198/co2_raw
+ERROR [2021-10-28 15:25:46.334] /pfs/DIR_IN/li7200/30198/co2_raw/30000000005297_WO26107_141397.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:46.335]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30198/co2_raw/30000000005297_WO26107_141397.xml
+INFO  [2021-10-28 15:25:46.336] Processing path to datum: /pfs/DIR_IN/li7200/30198/h2o_raw
+ERROR [2021-10-28 15:25:46.485] /pfs/DIR_IN/li7200/30198/h2o_raw/30000000005297_WO26107_141374.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:46.486]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30198/h2o_raw/30000000005297_WO26107_141374.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:47.568] 2 datums found for processing.
+INFO  [2021-10-28 15:25:47.630] Processing path to datum: /pfs/DIR_IN/li7200/30198/co2_raw
+ERROR [2021-10-28 15:25:48.139] /pfs/DIR_IN/li7200/30198/co2_raw/30000000005297_WO26107_141397.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:48.140]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30198/co2_raw/30000000005297_WO26107_141397.xml
+INFO  [2021-10-28 15:25:48.141] Processing path to datum: /pfs/DIR_IN/li7200/30198/h2o_raw
+ERROR [2021-10-28 15:25:48.293] /pfs/DIR_IN/li7200/30198/h2o_raw/30000000005297_WO26107_141374.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:48.294]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30198/h2o_raw/30000000005297_WO26107_141374.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:49.328] 2 datums found for processing.
+INFO  [2021-10-28 15:25:49.393] Processing path to datum: /pfs/DIR_IN/li7200/30198/co2_raw
+ERROR [2021-10-28 15:25:49.910] /pfs/DIR_IN/li7200/30198/co2_raw/30000000005297_WO26107_141397.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:49.911]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30198/co2_raw/30000000005297_WO26107_141397.xml
+INFO  [2021-10-28 15:25:49.912] Processing path to datum: /pfs/DIR_IN/li7200/30198/h2o_raw
+ERROR [2021-10-28 15:25:50.069] /pfs/DIR_IN/li7200/30198/h2o_raw/30000000005297_WO26107_141374.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:50.070]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30198/h2o_raw/30000000005297_WO26107_141374.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:51.545] 2 datums found for processing.
+INFO  [2021-10-28 15:25:51.605] Processing path to datum: /pfs/DIR_IN/li7200/31121/co2_raw
+ERROR [2021-10-28 15:25:51.942] /pfs/DIR_IN/li7200/31121/co2_raw/30000000023277_WO25226_134132.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:51.943]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31121/co2_raw/30000000023277_WO25226_134132.xml
+INFO  [2021-10-28 15:25:51.944] Processing path to datum: /pfs/DIR_IN/li7200/31121/h2o_raw
+ERROR [2021-10-28 15:25:52.013] /pfs/DIR_IN/li7200/31121/h2o_raw/30000000023277_WO25226_133807.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:52.014]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31121/h2o_raw/30000000023277_WO25226_133807.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:52.991] 2 datums found for processing.
+INFO  [2021-10-28 15:25:53.055] Processing path to datum: /pfs/DIR_IN/li7200/31121/co2_raw
+ERROR [2021-10-28 15:25:53.404] /pfs/DIR_IN/li7200/31121/co2_raw/30000000023277_WO25226_134132.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:53.405]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31121/co2_raw/30000000023277_WO25226_134132.xml
+INFO  [2021-10-28 15:25:53.405] Processing path to datum: /pfs/DIR_IN/li7200/31121/h2o_raw
+Error in { : task 1 failed - ""
+ERROR [2021-10-28 15:25:53.452] /pfs/DIR_IN/li7200/31121/h2o_raw/30000000023277_WO25226_133807.xml does not conform to the schema  
+Calls: %dopar% -> <Anonymous>
+ERROR [2021-10-28 15:25:53.453]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31121/h2o_raw/30000000023277_WO25226_133807.xml
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:54.599] 2 datums found for processing.
+INFO  [2021-10-28 15:25:54.665] Processing path to datum: /pfs/DIR_IN/li7200/31121/co2_raw
+ERROR [2021-10-28 15:25:55.007] /pfs/DIR_IN/li7200/31121/co2_raw/30000000023277_WO25226_134132.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:55.008]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31121/co2_raw/30000000023277_WO25226_134132.xml
+INFO  [2021-10-28 15:25:55.009] Processing path to datum: /pfs/DIR_IN/li7200/31121/h2o_raw
+ERROR [2021-10-28 15:25:55.060] /pfs/DIR_IN/li7200/31121/h2o_raw/30000000023277_WO25226_133807.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:55.061]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31121/h2o_raw/30000000023277_WO25226_133807.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:56.267] 2 datums found for processing.
+INFO  [2021-10-28 15:25:56.331] Processing path to datum: /pfs/DIR_IN/li7200/31355/co2_raw
+ERROR [2021-10-28 15:25:57.092] /pfs/DIR_IN/li7200/31355/co2_raw/30000000016505_WO25274_139490.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:57.093]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31355/co2_raw/30000000016505_WO25274_139490.xml
+INFO  [2021-10-28 15:25:57.094] Processing path to datum: /pfs/DIR_IN/li7200/31355/h2o_raw
+ERROR [2021-10-28 15:25:57.359] /pfs/DIR_IN/li7200/31355/h2o_raw/30000000016505_WO53124_271920.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:57.360]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31355/h2o_raw/30000000016505_WO53124_271920.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:58.354] 2 datums found for processing.
+INFO  [2021-10-28 15:25:58.416] Processing path to datum: /pfs/DIR_IN/li7200/31355/co2_raw
+ERROR [2021-10-28 15:25:59.201] /pfs/DIR_IN/li7200/31355/co2_raw/30000000016505_WO25274_139490.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:59.202]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31355/co2_raw/30000000016505_WO25274_139490.xml
+INFO  [2021-10-28 15:25:59.202] Processing path to datum: /pfs/DIR_IN/li7200/31355/h2o_raw
+ERROR [2021-10-28 15:25:59.472] /pfs/DIR_IN/li7200/31355/h2o_raw/30000000016505_WO53124_271920.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:59.473]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31355/h2o_raw/30000000016505_WO53124_271920.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:00.484] 2 datums found for processing.
+INFO  [2021-10-28 15:26:00.545] Processing path to datum: /pfs/DIR_IN/li7200/31355/co2_raw
+ERROR [2021-10-28 15:26:01.303] /pfs/DIR_IN/li7200/31355/co2_raw/30000000016505_WO25274_139490.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:01.304]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31355/co2_raw/30000000016505_WO25274_139490.xml
+INFO  [2021-10-28 15:26:01.304] Processing path to datum: /pfs/DIR_IN/li7200/31355/h2o_raw
+ERROR [2021-10-28 15:26:01.572] /pfs/DIR_IN/li7200/31355/h2o_raw/30000000016505_WO53124_271920.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:01.573]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31355/h2o_raw/30000000016505_WO53124_271920.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:02.718] 2 datums found for processing.
+INFO  [2021-10-28 15:26:02.780] Processing path to datum: /pfs/DIR_IN/li7200/27638/co2_raw
+ERROR [2021-10-28 15:26:03.133] /pfs/DIR_IN/li7200/27638/co2_raw/30000000005307_WO13460_87125.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:03.134]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27638/co2_raw/30000000005307_WO13460_87125.xml
+INFO  [2021-10-28 15:26:03.135] Processing path to datum: /pfs/DIR_IN/li7200/27638/h2o_raw
+ERROR [2021-10-28 15:26:03.335] /pfs/DIR_IN/li7200/27638/h2o_raw/30000000005307_WO33217_170131.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:03.336]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27638/h2o_raw/30000000005307_WO33217_170131.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:04.389] 2 datums found for processing.
+INFO  [2021-10-28 15:26:04.452] Processing path to datum: /pfs/DIR_IN/li7200/27638/co2_raw
+ERROR [2021-10-28 15:26:04.829] /pfs/DIR_IN/li7200/27638/co2_raw/30000000005307_WO13460_87125.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:04.830]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27638/co2_raw/30000000005307_WO13460_87125.xml
+INFO  [2021-10-28 15:26:04.830] Processing path to datum: /pfs/DIR_IN/li7200/27638/h2o_raw
+ERROR [2021-10-28 15:26:05.026] /pfs/DIR_IN/li7200/27638/h2o_raw/30000000005307_WO33217_170131.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:05.027]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27638/h2o_raw/30000000005307_WO33217_170131.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:06.068] 2 datums found for processing.
+INFO  [2021-10-28 15:26:06.128] Processing path to datum: /pfs/DIR_IN/li7200/27638/co2_raw
+ERROR [2021-10-28 15:26:06.472] /pfs/DIR_IN/li7200/27638/co2_raw/30000000005307_WO13460_87125.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:06.473]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27638/co2_raw/30000000005307_WO13460_87125.xml
+INFO  [2021-10-28 15:26:06.474] Processing path to datum: /pfs/DIR_IN/li7200/27638/h2o_raw
+ERROR [2021-10-28 15:26:06.671] /pfs/DIR_IN/li7200/27638/h2o_raw/30000000005307_WO33217_170131.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:06.672]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27638/h2o_raw/30000000005307_WO33217_170131.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:08.064] 2 datums found for processing.
+INFO  [2021-10-28 15:26:08.127] Processing path to datum: /pfs/DIR_IN/li7200/41160/co2_raw
+ERROR [2021-10-28 15:26:08.645] /pfs/DIR_IN/li7200/41160/co2_raw/30000000016599_WO23930_224117.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:08.646]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41160/co2_raw/30000000016599_WO23930_224117.xml
+INFO  [2021-10-28 15:26:08.646] Processing path to datum: /pfs/DIR_IN/li7200/41160/h2o_raw
+ERROR [2021-10-28 15:26:08.830] /pfs/DIR_IN/li7200/41160/h2o_raw/30000000016599_WO52263_268147.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:08.831]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41160/h2o_raw/30000000016599_WO52263_268147.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:09.956] 2 datums found for processing.
+INFO  [2021-10-28 15:26:10.040] Processing path to datum: /pfs/DIR_IN/li7200/41160/co2_raw
+ERROR [2021-10-28 15:26:10.550] /pfs/DIR_IN/li7200/41160/co2_raw/30000000016599_WO23930_224117.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:10.551]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41160/co2_raw/30000000016599_WO23930_224117.xml
+INFO  [2021-10-28 15:26:10.552] Processing path to datum: /pfs/DIR_IN/li7200/41160/h2o_raw
+ERROR [2021-10-28 15:26:10.735] /pfs/DIR_IN/li7200/41160/h2o_raw/30000000016599_WO52263_268147.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:10.736]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41160/h2o_raw/30000000016599_WO52263_268147.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:11.861] 2 datums found for processing.
+INFO  [2021-10-28 15:26:11.933] Processing path to datum: /pfs/DIR_IN/li7200/41160/co2_raw
+ERROR [2021-10-28 15:26:12.451] /pfs/DIR_IN/li7200/41160/co2_raw/30000000016599_WO23930_224117.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:12.452]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41160/co2_raw/30000000016599_WO23930_224117.xml
+INFO  [2021-10-28 15:26:12.453] Processing path to datum: /pfs/DIR_IN/li7200/41160/h2o_raw
+ERROR [2021-10-28 15:26:12.637] /pfs/DIR_IN/li7200/41160/h2o_raw/30000000016599_WO52263_268147.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:12.638]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41160/h2o_raw/30000000016599_WO52263_268147.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:13.813] 2 datums found for processing.
+INFO  [2021-10-28 15:26:13.873] Processing path to datum: /pfs/DIR_IN/li7200/31353/co2_raw
+ERROR [2021-10-28 15:26:14.437] /pfs/DIR_IN/li7200/31353/co2_raw/30000000024242_WO33170_233090.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:14.438]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31353/co2_raw/30000000024242_WO33170_233090.xml
+INFO  [2021-10-28 15:26:14.438] Processing path to datum: /pfs/DIR_IN/li7200/31353/h2o_raw
+ERROR [2021-10-28 15:26:14.624] /pfs/DIR_IN/li7200/31353/h2o_raw/30000000024242_WO33170_232838.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:14.625]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31353/h2o_raw/30000000024242_WO33170_232838.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:15.667] 2 datums found for processing.
+INFO  [2021-10-28 15:26:15.733] Processing path to datum: /pfs/DIR_IN/li7200/31353/co2_raw
+ERROR [2021-10-28 15:26:16.397] /pfs/DIR_IN/li7200/31353/co2_raw/30000000024242_WO33170_233090.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:16.398]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31353/co2_raw/30000000024242_WO33170_233090.xml
+INFO  [2021-10-28 15:26:16.399] Processing path to datum: /pfs/DIR_IN/li7200/31353/h2o_raw
+ERROR [2021-10-28 15:26:16.590] /pfs/DIR_IN/li7200/31353/h2o_raw/30000000024242_WO33170_232838.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:16.591]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31353/h2o_raw/30000000024242_WO33170_232838.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:17.628] 2 datums found for processing.
+INFO  [2021-10-28 15:26:17.688] Processing path to datum: /pfs/DIR_IN/li7200/31353/co2_raw
+ERROR [2021-10-28 15:26:18.269] /pfs/DIR_IN/li7200/31353/co2_raw/30000000024242_WO33170_233090.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:18.270]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31353/co2_raw/30000000024242_WO33170_233090.xml
+INFO  [2021-10-28 15:26:18.271] Processing path to datum: /pfs/DIR_IN/li7200/31353/h2o_raw
+ERROR [2021-10-28 15:26:18.460] /pfs/DIR_IN/li7200/31353/h2o_raw/30000000024242_WO33170_232838.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:18.461]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31353/h2o_raw/30000000024242_WO33170_232838.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:19.806] 2 datums found for processing.
+INFO  [2021-10-28 15:26:19.867] Processing path to datum: /pfs/DIR_IN/li7200/28883/co2_raw
+ERROR [2021-10-28 15:26:20.381] /pfs/DIR_IN/li7200/28883/co2_raw/30000000005318_WO28223_148039.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:20.382]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28883/co2_raw/30000000005318_WO28223_148039.xml
+INFO  [2021-10-28 15:26:20.383] Processing path to datum: /pfs/DIR_IN/li7200/28883/h2o_raw
+ERROR [2021-10-28 15:26:20.461] /pfs/DIR_IN/li7200/28883/h2o_raw/30000000005318_WO28223_147797.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:20.462]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28883/h2o_raw/30000000005318_WO28223_147797.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:21.428] 2 datums found for processing.
+INFO  [2021-10-28 15:26:21.487] Processing path to datum: /pfs/DIR_IN/li7200/28883/co2_raw
+ERROR [2021-10-28 15:26:21.999] /pfs/DIR_IN/li7200/28883/co2_raw/30000000005318_WO28223_148039.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:22.000]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28883/co2_raw/30000000005318_WO28223_148039.xml
+INFO  [2021-10-28 15:26:22.001] Processing path to datum: /pfs/DIR_IN/li7200/28883/h2o_raw
+ERROR [2021-10-28 15:26:22.081] /pfs/DIR_IN/li7200/28883/h2o_raw/30000000005318_WO28223_147797.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:22.082]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28883/h2o_raw/30000000005318_WO28223_147797.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:23.116] 2 datums found for processing.
+INFO  [2021-10-28 15:26:23.180] Processing path to datum: /pfs/DIR_IN/li7200/28883/co2_raw
+ERROR [2021-10-28 15:26:23.703] /pfs/DIR_IN/li7200/28883/co2_raw/30000000005318_WO28223_148039.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:23.704]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28883/co2_raw/30000000005318_WO28223_148039.xml
+INFO  [2021-10-28 15:26:23.705] Processing path to datum: /pfs/DIR_IN/li7200/28883/h2o_raw
+ERROR [2021-10-28 15:26:23.785] /pfs/DIR_IN/li7200/28883/h2o_raw/30000000005318_WO28223_147797.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:23.786]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28883/h2o_raw/30000000005318_WO28223_147797.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:25.574] 2 datums found for processing.
+INFO  [2021-10-28 15:26:25.634] Processing path to datum: /pfs/DIR_IN/li7200/33441/co2_raw
+ERROR [2021-10-28 15:26:26.005] /pfs/DIR_IN/li7200/33441/co2_raw/30000000023210_WO33681_174120.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:26.006]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33441/co2_raw/30000000023210_WO33681_174120.xml
+INFO  [2021-10-28 15:26:26.007] Processing path to datum: /pfs/DIR_IN/li7200/33441/h2o_raw
+ERROR [2021-10-28 15:26:26.146] /pfs/DIR_IN/li7200/33441/h2o_raw/30000000023210_WO33681_173772.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:26.147]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33441/h2o_raw/30000000023210_WO33681_173772.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:27.066] 2 datums found for processing.
+INFO  [2021-10-28 15:26:27.125] Processing path to datum: /pfs/DIR_IN/li7200/33441/co2_raw
+ERROR [2021-10-28 15:26:27.502] /pfs/DIR_IN/li7200/33441/co2_raw/30000000023210_WO33681_174120.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:27.503]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33441/co2_raw/30000000023210_WO33681_174120.xml
+INFO  [2021-10-28 15:26:27.504] Processing path to datum: /pfs/DIR_IN/li7200/33441/h2o_raw
+ERROR [2021-10-28 15:26:27.645] /pfs/DIR_IN/li7200/33441/h2o_raw/30000000023210_WO33681_173772.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:27.646]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33441/h2o_raw/30000000023210_WO33681_173772.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:28.789] 2 datums found for processing.
+INFO  [2021-10-28 15:26:28.856] Processing path to datum: /pfs/DIR_IN/li7200/33441/co2_raw
+ERROR [2021-10-28 15:26:29.241] /pfs/DIR_IN/li7200/33441/co2_raw/30000000023210_WO33681_174120.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:29.242]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33441/co2_raw/30000000023210_WO33681_174120.xml
+INFO  [2021-10-28 15:26:29.243] Processing path to datum: /pfs/DIR_IN/li7200/33441/h2o_raw
+ERROR [2021-10-28 15:26:29.386] /pfs/DIR_IN/li7200/33441/h2o_raw/30000000023210_WO33681_173772.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:29.387]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33441/h2o_raw/30000000023210_WO33681_173772.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:30.516] 2 datums found for processing.
+INFO  [2021-10-28 15:26:30.580] Processing path to datum: /pfs/DIR_IN/li7200/41129/co2_raw
+ERROR [2021-10-28 15:26:30.957] /pfs/DIR_IN/li7200/41129/co2_raw/30000000016595_WO17739_144426.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:30.958]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41129/co2_raw/30000000016595_WO17739_144426.xml
+INFO  [2021-10-28 15:26:30.958] Processing path to datum: /pfs/DIR_IN/li7200/41129/h2o_raw
+ERROR [2021-10-28 15:26:30.990] /pfs/DIR_IN/li7200/41129/h2o_raw/30000000016595_WO17739_144206.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:30.991]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41129/h2o_raw/30000000016595_WO17739_144206.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:31.935] 2 datums found for processing.
+INFO  [2021-10-28 15:26:31.997] Processing path to datum: /pfs/DIR_IN/li7200/41129/co2_raw
+ERROR [2021-10-28 15:26:32.373] /pfs/DIR_IN/li7200/41129/co2_raw/30000000016595_WO17739_144426.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:32.374]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41129/co2_raw/30000000016595_WO17739_144426.xml
+INFO  [2021-10-28 15:26:32.375] Processing path to datum: /pfs/DIR_IN/li7200/41129/h2o_raw
+ERROR [2021-10-28 15:26:32.405] /pfs/DIR_IN/li7200/41129/h2o_raw/30000000016595_WO17739_144206.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:32.406]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41129/h2o_raw/30000000016595_WO17739_144206.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:33.400] 2 datums found for processing.
+INFO  [2021-10-28 15:26:33.465] Processing path to datum: /pfs/DIR_IN/li7200/41129/co2_raw
+ERROR [2021-10-28 15:26:33.866] /pfs/DIR_IN/li7200/41129/co2_raw/30000000016595_WO17739_144426.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:33.867]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41129/co2_raw/30000000016595_WO17739_144426.xml
+INFO  [2021-10-28 15:26:33.868] Processing path to datum: /pfs/DIR_IN/li7200/41129/h2o_raw
+ERROR [2021-10-28 15:26:33.899] /pfs/DIR_IN/li7200/41129/h2o_raw/30000000016595_WO17739_144206.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:33.900]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41129/h2o_raw/30000000016595_WO17739_144206.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:35.097] 2 datums found for processing.
+INFO  [2021-10-28 15:26:35.162] Processing path to datum: /pfs/DIR_IN/li7200/33470/co2_raw
+ERROR [2021-10-28 15:26:35.862] /pfs/DIR_IN/li7200/33470/co2_raw/30000000005305_WO28219_148630.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:35.863]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33470/co2_raw/30000000005305_WO28219_148630.xml
+INFO  [2021-10-28 15:26:35.864] Processing path to datum: /pfs/DIR_IN/li7200/33470/h2o_raw
+ERROR [2021-10-28 15:26:36.040] /pfs/DIR_IN/li7200/33470/h2o_raw/30000000005305_WO28219_148349.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:36.041]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33470/h2o_raw/30000000005305_WO28219_148349.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:37.134] 2 datums found for processing.
+INFO  [2021-10-28 15:26:37.198] Processing path to datum: /pfs/DIR_IN/li7200/33470/co2_raw
+ERROR [2021-10-28 15:26:37.865] /pfs/DIR_IN/li7200/33470/co2_raw/30000000005305_WO28219_148630.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:37.866]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33470/co2_raw/30000000005305_WO28219_148630.xml
+INFO  [2021-10-28 15:26:37.867] Processing path to datum: /pfs/DIR_IN/li7200/33470/h2o_raw
+ERROR [2021-10-28 15:26:38.054] /pfs/DIR_IN/li7200/33470/h2o_raw/30000000005305_WO28219_148349.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:38.054]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33470/h2o_raw/30000000005305_WO28219_148349.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:39.095] 2 datums found for processing.
+INFO  [2021-10-28 15:26:39.156] Processing path to datum: /pfs/DIR_IN/li7200/33470/co2_raw
+ERROR [2021-10-28 15:26:39.811] /pfs/DIR_IN/li7200/33470/co2_raw/30000000005305_WO28219_148630.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:39.812]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33470/co2_raw/30000000005305_WO28219_148630.xml
+INFO  [2021-10-28 15:26:39.812] Processing path to datum: /pfs/DIR_IN/li7200/33470/h2o_raw
+ERROR [2021-10-28 15:26:39.978] /pfs/DIR_IN/li7200/33470/h2o_raw/30000000005305_WO28219_148349.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:39.979]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33470/h2o_raw/30000000005305_WO28219_148349.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:41.168] 2 datums found for processing.
+INFO  [2021-10-28 15:26:41.234] Processing path to datum: /pfs/DIR_IN/li7200/36214/co2_raw
+ERROR [2021-10-28 15:26:41.730] /pfs/DIR_IN/li7200/36214/co2_raw/30000000023207_WO23617_132391.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:41.731]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36214/co2_raw/30000000023207_WO23617_132391.xml
+INFO  [2021-10-28 15:26:41.732] Processing path to datum: /pfs/DIR_IN/li7200/36214/h2o_raw
+ERROR [2021-10-28 15:26:41.941] /pfs/DIR_IN/li7200/36214/h2o_raw/30000000023207_WO31908_181882.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:41.942]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36214/h2o_raw/30000000023207_WO31908_181882.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:42.995] 2 datums found for processing.
+INFO  [2021-10-28 15:26:43.060] Processing path to datum: /pfs/DIR_IN/li7200/36214/co2_raw
+ERROR [2021-10-28 15:26:43.556] /pfs/DIR_IN/li7200/36214/co2_raw/30000000023207_WO23617_132391.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:43.557]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36214/co2_raw/30000000023207_WO23617_132391.xml
+INFO  [2021-10-28 15:26:43.558] Processing path to datum: /pfs/DIR_IN/li7200/36214/h2o_raw
+ERROR [2021-10-28 15:26:43.768] /pfs/DIR_IN/li7200/36214/h2o_raw/30000000023207_WO31908_181882.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:43.769]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36214/h2o_raw/30000000023207_WO31908_181882.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:44.867] 2 datums found for processing.
+INFO  [2021-10-28 15:26:44.958] Processing path to datum: /pfs/DIR_IN/li7200/36214/co2_raw
+ERROR [2021-10-28 15:26:45.434] /pfs/DIR_IN/li7200/36214/co2_raw/30000000023207_WO23617_132391.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:45.435]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36214/co2_raw/30000000023207_WO23617_132391.xml
+INFO  [2021-10-28 15:26:45.435] Processing path to datum: /pfs/DIR_IN/li7200/36214/h2o_raw
+ERROR [2021-10-28 15:26:45.639] /pfs/DIR_IN/li7200/36214/h2o_raw/30000000023207_WO31908_181882.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:45.640]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36214/h2o_raw/30000000023207_WO31908_181882.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:18.114] 2 datums found for processing.
+INFO  [2021-10-28 15:25:18.191] Processing path to datum: /pfs/DIR_IN/li7200/34433/co2_raw
+ERROR [2021-10-28 15:25:19.149] /pfs/DIR_IN/li7200/34433/co2_raw/30000000015526_WO24990_182951.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:19.151]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34433/co2_raw/30000000015526_WO24990_182951.xml
+INFO  [2021-10-28 15:25:19.152] Processing path to datum: /pfs/DIR_IN/li7200/34433/h2o_raw
+ERROR [2021-10-28 15:25:19.460] /pfs/DIR_IN/li7200/34433/h2o_raw/30000000015526_WO24990_182655.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:19.461]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34433/h2o_raw/30000000015526_WO24990_182655.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:20.872] 2 datums found for processing.
+INFO  [2021-10-28 15:25:20.961] Processing path to datum: /pfs/DIR_IN/li7200/34433/co2_raw
+ERROR [2021-10-28 15:25:22.082] /pfs/DIR_IN/li7200/34433/co2_raw/30000000015526_WO24990_182951.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:22.084]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34433/co2_raw/30000000015526_WO24990_182951.xml
+INFO  [2021-10-28 15:25:22.085] Processing path to datum: /pfs/DIR_IN/li7200/34433/h2o_raw
+ERROR [2021-10-28 15:25:22.337] /pfs/DIR_IN/li7200/34433/h2o_raw/30000000015526_WO24990_182655.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:22.338]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34433/h2o_raw/30000000015526_WO24990_182655.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:23.499] 2 datums found for processing.
+INFO  [2021-10-28 15:25:23.564] Processing path to datum: /pfs/DIR_IN/li7200/34433/co2_raw
+ERROR [2021-10-28 15:25:24.301] /pfs/DIR_IN/li7200/34433/co2_raw/30000000015526_WO24990_182951.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:24.302]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34433/co2_raw/30000000015526_WO24990_182951.xml
+INFO  [2021-10-28 15:25:24.303] Processing path to datum: /pfs/DIR_IN/li7200/34433/h2o_raw
+ERROR [2021-10-28 15:25:24.486] /pfs/DIR_IN/li7200/34433/h2o_raw/30000000015526_WO24990_182655.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:24.487]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34433/h2o_raw/30000000015526_WO24990_182655.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:25.691] 2 datums found for processing.
+INFO  [2021-10-28 15:25:25.761] Processing path to datum: /pfs/DIR_IN/li7200/34714/co2_raw
+ERROR [2021-10-28 15:25:26.174] /pfs/DIR_IN/li7200/34714/co2_raw/30000000015529_WO24149_170132.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:26.175]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34714/co2_raw/30000000015529_WO24149_170132.xml
+INFO  [2021-10-28 15:25:26.176] Processing path to datum: /pfs/DIR_IN/li7200/34714/h2o_raw
+ERROR [2021-10-28 15:25:26.267] /pfs/DIR_IN/li7200/34714/h2o_raw/30000000015529_WO42081_213026.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:26.268]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34714/h2o_raw/30000000015529_WO42081_213026.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:27.328] 2 datums found for processing.
+INFO  [2021-10-28 15:25:27.438] Processing path to datum: /pfs/DIR_IN/li7200/34714/co2_raw
+ERROR [2021-10-28 15:25:27.908] /pfs/DIR_IN/li7200/34714/co2_raw/30000000015529_WO24149_170132.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:27.909]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34714/co2_raw/30000000015529_WO24149_170132.xml
+INFO  [2021-10-28 15:25:27.910] Processing path to datum: /pfs/DIR_IN/li7200/34714/h2o_raw
+ERROR [2021-10-28 15:25:28.000] /pfs/DIR_IN/li7200/34714/h2o_raw/30000000015529_WO42081_213026.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:28.001]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34714/h2o_raw/30000000015529_WO42081_213026.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:29.014] 2 datums found for processing.
+INFO  [2021-10-28 15:25:29.081] Processing path to datum: /pfs/DIR_IN/li7200/34714/co2_raw
+ERROR [2021-10-28 15:25:29.491] /pfs/DIR_IN/li7200/34714/co2_raw/30000000015529_WO24149_170132.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:29.493]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34714/co2_raw/30000000015529_WO24149_170132.xml
+INFO  [2021-10-28 15:25:29.493] Processing path to datum: /pfs/DIR_IN/li7200/34714/h2o_raw
+ERROR [2021-10-28 15:25:29.586] /pfs/DIR_IN/li7200/34714/h2o_raw/30000000015529_WO42081_213026.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:29.587]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34714/h2o_raw/30000000015529_WO42081_213026.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:30.877] 2 datums found for processing.
+INFO  [2021-10-28 15:25:30.948] Processing path to datum: /pfs/DIR_IN/li7200/31758/co2_raw
+ERROR [2021-10-28 15:25:31.493] /pfs/DIR_IN/li7200/31758/co2_raw/21000000001004_WO28309_148628.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:31.494]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31758/co2_raw/21000000001004_WO28309_148628.xml
+INFO  [2021-10-28 15:25:31.495] Processing path to datum: /pfs/DIR_IN/li7200/31758/h2o_raw
+ERROR [2021-10-28 15:25:31.822] /pfs/DIR_IN/li7200/31758/h2o_raw/21000000001004_WO39918_204035.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:31.823]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31758/h2o_raw/21000000001004_WO39918_204035.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:32.988] 2 datums found for processing.
+INFO  [2021-10-28 15:25:33.054] Processing path to datum: /pfs/DIR_IN/li7200/31758/co2_raw
+ERROR [2021-10-28 15:25:33.634] /pfs/DIR_IN/li7200/31758/co2_raw/21000000001004_WO28309_148628.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:33.635]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31758/co2_raw/21000000001004_WO28309_148628.xml
+INFO  [2021-10-28 15:25:33.637] Processing path to datum: /pfs/DIR_IN/li7200/31758/h2o_raw
+ERROR [2021-10-28 15:25:33.968] /pfs/DIR_IN/li7200/31758/h2o_raw/21000000001004_WO39918_204035.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:33.969]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31758/h2o_raw/21000000001004_WO39918_204035.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:35.068] 2 datums found for processing.
+INFO  [2021-10-28 15:25:35.137] Processing path to datum: /pfs/DIR_IN/li7200/31758/co2_raw
+ERROR [2021-10-28 15:25:35.674] /pfs/DIR_IN/li7200/31758/co2_raw/21000000001004_WO28309_148628.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:35.675]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31758/co2_raw/21000000001004_WO28309_148628.xml
+INFO  [2021-10-28 15:25:35.676] Processing path to datum: /pfs/DIR_IN/li7200/31758/h2o_raw
+ERROR [2021-10-28 15:25:35.998] /pfs/DIR_IN/li7200/31758/h2o_raw/21000000001004_WO39918_204035.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:35.999]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31758/h2o_raw/21000000001004_WO39918_204035.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:37.304] 2 datums found for processing.
+INFO  [2021-10-28 15:25:37.387] Processing path to datum: /pfs/DIR_IN/li7200/34339/co2_raw
+ERROR [2021-10-28 15:25:38.094] /pfs/DIR_IN/li7200/34339/co2_raw/30000000012442_WO29887_156124.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:38.095]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34339/co2_raw/30000000012442_WO29887_156124.xml
+INFO  [2021-10-28 15:25:38.096] Processing path to datum: /pfs/DIR_IN/li7200/34339/h2o_raw
+ERROR [2021-10-28 15:25:38.264] /pfs/DIR_IN/li7200/34339/h2o_raw/30000000012442_WO29887_155971.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:38.264]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34339/h2o_raw/30000000012442_WO29887_155971.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:39.367] 2 datums found for processing.
+INFO  [2021-10-28 15:25:39.430] Processing path to datum: /pfs/DIR_IN/li7200/34339/co2_raw
+ERROR [2021-10-28 15:25:40.078] /pfs/DIR_IN/li7200/34339/co2_raw/30000000012442_WO29887_156124.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:40.079]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34339/co2_raw/30000000012442_WO29887_156124.xml
+INFO  [2021-10-28 15:25:40.079] Processing path to datum: /pfs/DIR_IN/li7200/34339/h2o_raw
+ERROR [2021-10-28 15:25:40.255] /pfs/DIR_IN/li7200/34339/h2o_raw/30000000012442_WO29887_155971.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:40.256]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34339/h2o_raw/30000000012442_WO29887_155971.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:41.369] 2 datums found for processing.
+INFO  [2021-10-28 15:25:41.434] Processing path to datum: /pfs/DIR_IN/li7200/34339/co2_raw
+ERROR [2021-10-28 15:25:42.066] /pfs/DIR_IN/li7200/34339/co2_raw/30000000012442_WO29887_156124.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:42.067]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34339/co2_raw/30000000012442_WO29887_156124.xml
+INFO  [2021-10-28 15:25:42.068] Processing path to datum: /pfs/DIR_IN/li7200/34339/h2o_raw
+ERROR [2021-10-28 15:25:42.246] /pfs/DIR_IN/li7200/34339/h2o_raw/30000000012442_WO29887_155971.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:42.247]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34339/h2o_raw/30000000012442_WO29887_155971.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:43.449] 2 datums found for processing.
+INFO  [2021-10-28 15:25:43.517] Processing path to datum: /pfs/DIR_IN/li7200/41127/co2_raw
+ERROR [2021-10-28 15:25:44.074] /pfs/DIR_IN/li7200/41127/co2_raw/30000000016593_WO25702_139123.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:44.075]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41127/co2_raw/30000000016593_WO25702_139123.xml
+INFO  [2021-10-28 15:25:44.076] Processing path to datum: /pfs/DIR_IN/li7200/41127/h2o_raw
+ERROR [2021-10-28 15:25:44.226] /pfs/DIR_IN/li7200/41127/h2o_raw/30000000016593_WO25702_139036.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:44.227]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41127/h2o_raw/30000000016593_WO25702_139036.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:45.400] 2 datums found for processing.
+INFO  [2021-10-28 15:25:45.467] Processing path to datum: /pfs/DIR_IN/li7200/41127/co2_raw
+ERROR [2021-10-28 15:25:46.026] /pfs/DIR_IN/li7200/41127/co2_raw/30000000016593_WO25702_139123.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:46.027]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41127/co2_raw/30000000016593_WO25702_139123.xml
+INFO  [2021-10-28 15:25:46.027] Processing path to datum: /pfs/DIR_IN/li7200/41127/h2o_raw
+ERROR [2021-10-28 15:25:46.199] /pfs/DIR_IN/li7200/41127/h2o_raw/30000000016593_WO25702_139036.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:46.200]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41127/h2o_raw/30000000016593_WO25702_139036.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:47.214] 2 datums found for processing.
+INFO  [2021-10-28 15:25:47.281] Processing path to datum: /pfs/DIR_IN/li7200/41127/co2_raw
+ERROR [2021-10-28 15:25:47.833] /pfs/DIR_IN/li7200/41127/co2_raw/30000000016593_WO25702_139123.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:47.834]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41127/co2_raw/30000000016593_WO25702_139123.xml
+INFO  [2021-10-28 15:25:47.835] Processing path to datum: /pfs/DIR_IN/li7200/41127/h2o_raw
+ERROR [2021-10-28 15:25:47.985] /pfs/DIR_IN/li7200/41127/h2o_raw/30000000016593_WO25702_139036.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:47.986]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41127/h2o_raw/30000000016593_WO25702_139036.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:49.348] 2 datums found for processing.
+INFO  [2021-10-28 15:25:49.424] Processing path to datum: /pfs/DIR_IN/li7200/41130/co2_raw
+ERROR [2021-10-28 15:25:50.053] /pfs/DIR_IN/li7200/41130/co2_raw/30000000016596_WO17740_149302.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:50.055]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41130/co2_raw/30000000016596_WO17740_149302.xml
+INFO  [2021-10-28 15:25:50.057] Processing path to datum: /pfs/DIR_IN/li7200/41130/h2o_raw
+ERROR [2021-10-28 15:25:50.079] /pfs/DIR_IN/li7200/41130/h2o_raw/30000000016596_WO17740_149171.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:50.081]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41130/h2o_raw/30000000016596_WO17740_149171.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:51.669] 2 datums found for processing.
+INFO  [2021-10-28 15:25:51.799] Processing path to datum: /pfs/DIR_IN/li7200/41130/co2_raw
+ERROR [2021-10-28 15:25:52.317] /pfs/DIR_IN/li7200/41130/co2_raw/30000000016596_WO17740_149302.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:52.318]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41130/co2_raw/30000000016596_WO17740_149302.xml
+INFO  [2021-10-28 15:25:52.319] Processing path to datum: /pfs/DIR_IN/li7200/41130/h2o_raw
+ERROR [2021-10-28 15:25:52.337] /pfs/DIR_IN/li7200/41130/h2o_raw/30000000016596_WO17740_149171.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:52.338]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41130/h2o_raw/30000000016596_WO17740_149171.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:53.443] 2 datums found for processing.
+INFO  [2021-10-28 15:25:53.511] Processing path to datum: /pfs/DIR_IN/li7200/41130/co2_raw
+ERROR [2021-10-28 15:25:53.924] /pfs/DIR_IN/li7200/41130/co2_raw/30000000016596_WO17740_149302.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:53.925]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41130/co2_raw/30000000016596_WO17740_149302.xml
+INFO  [2021-10-28 15:25:53.926] Processing path to datum: /pfs/DIR_IN/li7200/41130/h2o_raw
+ERROR [2021-10-28 15:25:53.939] /pfs/DIR_IN/li7200/41130/h2o_raw/30000000016596_WO17740_149171.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:53.940]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41130/h2o_raw/30000000016596_WO17740_149171.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:55.520] 2 datums found for processing.
+INFO  [2021-10-28 15:25:55.587] Processing path to datum: /pfs/DIR_IN/li7200/28539/co2_raw
+ERROR [2021-10-28 15:25:56.157] /pfs/DIR_IN/li7200/28539/co2_raw/30000000012477_WO28224_148038.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:56.158]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28539/co2_raw/30000000012477_WO28224_148038.xml
+INFO  [2021-10-28 15:25:56.159] Processing path to datum: /pfs/DIR_IN/li7200/28539/h2o_raw
+ERROR [2021-10-28 15:25:56.306] /pfs/DIR_IN/li7200/28539/h2o_raw/30000000012477_WO35265_185276.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:56.307]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28539/h2o_raw/30000000012477_WO35265_185276.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:57.449] 2 datums found for processing.
+INFO  [2021-10-28 15:25:57.516] Processing path to datum: /pfs/DIR_IN/li7200/28539/co2_raw
+ERROR [2021-10-28 15:25:58.058] /pfs/DIR_IN/li7200/28539/co2_raw/30000000012477_WO28224_148038.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:58.059]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28539/co2_raw/30000000012477_WO28224_148038.xml
+INFO  [2021-10-28 15:25:58.059] Processing path to datum: /pfs/DIR_IN/li7200/28539/h2o_raw
+ERROR [2021-10-28 15:25:58.199] /pfs/DIR_IN/li7200/28539/h2o_raw/30000000012477_WO35265_185276.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:58.200]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28539/h2o_raw/30000000012477_WO35265_185276.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:59.236] 2 datums found for processing.
+INFO  [2021-10-28 15:25:59.304] Processing path to datum: /pfs/DIR_IN/li7200/28539/co2_raw
+ERROR [2021-10-28 15:25:59.836] /pfs/DIR_IN/li7200/28539/co2_raw/30000000012477_WO28224_148038.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:59.837]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28539/co2_raw/30000000012477_WO28224_148038.xml
+INFO  [2021-10-28 15:25:59.838] Processing path to datum: /pfs/DIR_IN/li7200/28539/h2o_raw
+ERROR [2021-10-28 15:25:59.989] /pfs/DIR_IN/li7200/28539/h2o_raw/30000000012477_WO35265_185276.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:59.990]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28539/h2o_raw/30000000012477_WO35265_185276.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:01.186] 2 datums found for processing.
+INFO  [2021-10-28 15:26:01.244] Processing path to datum: /pfs/DIR_IN/li7200/34432/co2_raw
+ERROR [2021-10-28 15:26:01.733] /pfs/DIR_IN/li7200/34432/co2_raw/30000000015528_WO23988_134130.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:01.734]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34432/co2_raw/30000000015528_WO23988_134130.xml
+INFO  [2021-10-28 15:26:01.735] Processing path to datum: /pfs/DIR_IN/li7200/34432/h2o_raw
+ERROR [2021-10-28 15:26:01.917] /pfs/DIR_IN/li7200/34432/h2o_raw/30000000015528_WO34434_179058.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:01.918]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34432/h2o_raw/30000000015528_WO34434_179058.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:02.969] 2 datums found for processing.
+INFO  [2021-10-28 15:26:03.027] Processing path to datum: /pfs/DIR_IN/li7200/34432/co2_raw
+ERROR [2021-10-28 15:26:03.510] /pfs/DIR_IN/li7200/34432/co2_raw/30000000015528_WO23988_134130.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:03.512]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34432/co2_raw/30000000015528_WO23988_134130.xml
+INFO  [2021-10-28 15:26:03.512] Processing path to datum: /pfs/DIR_IN/li7200/34432/h2o_raw
+ERROR [2021-10-28 15:26:03.696] /pfs/DIR_IN/li7200/34432/h2o_raw/30000000015528_WO34434_179058.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:03.697]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34432/h2o_raw/30000000015528_WO34434_179058.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:04.635] 2 datums found for processing.
+INFO  [2021-10-28 15:26:04.693] Processing path to datum: /pfs/DIR_IN/li7200/34432/co2_raw
+ERROR [2021-10-28 15:26:05.179] /pfs/DIR_IN/li7200/34432/co2_raw/30000000015528_WO23988_134130.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:05.180]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34432/co2_raw/30000000015528_WO23988_134130.xml
+INFO  [2021-10-28 15:26:05.181] Processing path to datum: /pfs/DIR_IN/li7200/34432/h2o_raw
+ERROR [2021-10-28 15:26:05.380] /pfs/DIR_IN/li7200/34432/h2o_raw/30000000015528_WO34434_179058.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:05.381]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34432/h2o_raw/30000000015528_WO34434_179058.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:06.607] 2 datums found for processing.
+INFO  [2021-10-28 15:26:06.676] Processing path to datum: /pfs/DIR_IN/li7200/29100/co2_raw
+ERROR [2021-10-28 15:26:07.195] /pfs/DIR_IN/li7200/29100/co2_raw/30000000023348_WO27349_144424.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:07.196]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29100/co2_raw/30000000023348_WO27349_144424.xml
+INFO  [2021-10-28 15:26:07.197] Processing path to datum: /pfs/DIR_IN/li7200/29100/h2o_raw
+INFO  [2021-10-28 15:26:08.497] 30000000023348_WO27349_144204.xml copied to all daily folders between /pfs/out/li7200/2021/01/01/29100/calibration/h2o_raw and /pfs/out/li7200/2021/12/31/29100/calibration/h2o_raw
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:09.489] 2 datums found for processing.
+INFO  [2021-10-28 15:26:09.551] Processing path to datum: /pfs/DIR_IN/li7200/29100/co2_raw
+ERROR [2021-10-28 15:26:09.990] /pfs/DIR_IN/li7200/29100/co2_raw/30000000023348_WO27349_144424.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:09.991]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29100/co2_raw/30000000023348_WO27349_144424.xml
+INFO  [2021-10-28 15:26:09.991] Processing path to datum: /pfs/DIR_IN/li7200/29100/h2o_raw
+INFO  [2021-10-28 15:26:11.308] 30000000023348_WO27349_144204.xml copied to all daily folders between /pfs/out/li7200/2021/01/01/29100/calibration/h2o_raw and /pfs/out/li7200/2021/12/31/29100/calibration/h2o_raw
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:12.348] 2 datums found for processing.
+INFO  [2021-10-28 15:26:12.418] Processing path to datum: /pfs/DIR_IN/li7200/29100/co2_raw
+ERROR [2021-10-28 15:26:12.926] /pfs/DIR_IN/li7200/29100/co2_raw/30000000023348_WO27349_144424.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:12.927]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29100/co2_raw/30000000023348_WO27349_144424.xml
+INFO  [2021-10-28 15:26:12.928] Processing path to datum: /pfs/DIR_IN/li7200/29100/h2o_raw
+INFO  [2021-10-28 15:26:14.197] 30000000023348_WO27349_144204.xml copied to all daily folders between /pfs/out/li7200/2021/01/01/29100/calibration/h2o_raw and /pfs/out/li7200/2021/12/31/29100/calibration/h2o_raw
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:15.430] 2 datums found for processing.
+INFO  [2021-10-28 15:26:15.495] Processing path to datum: /pfs/DIR_IN/li7200/31761/co2_raw
+ERROR [2021-10-28 15:26:16.150] /pfs/DIR_IN/li7200/31761/co2_raw/30000000005298_WO27554_146653.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:16.151]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31761/co2_raw/30000000005298_WO27554_146653.xml
+INFO  [2021-10-28 15:26:16.151] Processing path to datum: /pfs/DIR_IN/li7200/31761/h2o_raw
+ERROR [2021-10-28 15:26:16.328] /pfs/DIR_IN/li7200/31761/h2o_raw/30000000005298_WO27554_146604.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:16.329]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31761/h2o_raw/30000000005298_WO27554_146604.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:17.270] 2 datums found for processing.
+INFO  [2021-10-28 15:26:17.329] Processing path to datum: /pfs/DIR_IN/li7200/31761/co2_raw
+ERROR [2021-10-28 15:26:17.911] /pfs/DIR_IN/li7200/31761/co2_raw/30000000005298_WO27554_146653.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:17.912]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31761/co2_raw/30000000005298_WO27554_146653.xml
+INFO  [2021-10-28 15:26:17.912] Processing path to datum: /pfs/DIR_IN/li7200/31761/h2o_raw
+ERROR [2021-10-28 15:26:18.077] /pfs/DIR_IN/li7200/31761/h2o_raw/30000000005298_WO27554_146604.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:18.078]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31761/h2o_raw/30000000005298_WO27554_146604.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:19.103] 2 datums found for processing.
+INFO  [2021-10-28 15:26:19.175] Processing path to datum: /pfs/DIR_IN/li7200/31761/co2_raw
+ERROR [2021-10-28 15:26:19.816] /pfs/DIR_IN/li7200/31761/co2_raw/30000000005298_WO27554_146653.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:19.817]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31761/co2_raw/30000000005298_WO27554_146653.xml
+INFO  [2021-10-28 15:26:19.818] Processing path to datum: /pfs/DIR_IN/li7200/31761/h2o_raw
+ERROR [2021-10-28 15:26:20.002] /pfs/DIR_IN/li7200/31761/h2o_raw/30000000005298_WO27554_146604.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:20.003]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31761/h2o_raw/30000000005298_WO27554_146604.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:21.123] 2 datums found for processing.
+INFO  [2021-10-28 15:26:21.182] Processing path to datum: /pfs/DIR_IN/li7200/34335/co2_raw
+ERROR [2021-10-28 15:26:21.702] /pfs/DIR_IN/li7200/34335/co2_raw/30000000023788_WO31504_161382.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:21.703]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34335/co2_raw/30000000023788_WO31504_161382.xml
+INFO  [2021-10-28 15:26:21.703] Processing path to datum: /pfs/DIR_IN/li7200/34335/h2o_raw
+ERROR [2021-10-28 15:26:21.898] /pfs/DIR_IN/li7200/34335/h2o_raw/30000000023788_WO43722_230169.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:21.899]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34335/h2o_raw/30000000023788_WO43722_230169.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:22.829] 2 datums found for processing.
+INFO  [2021-10-28 15:26:22.895] Processing path to datum: /pfs/DIR_IN/li7200/34335/co2_raw
+ERROR [2021-10-28 15:26:23.455] /pfs/DIR_IN/li7200/34335/co2_raw/30000000023788_WO31504_161382.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:23.456]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34335/co2_raw/30000000023788_WO31504_161382.xml
+INFO  [2021-10-28 15:26:23.457] Processing path to datum: /pfs/DIR_IN/li7200/34335/h2o_raw
+ERROR [2021-10-28 15:26:23.673] /pfs/DIR_IN/li7200/34335/h2o_raw/30000000023788_WO43722_230169.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:23.674]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34335/h2o_raw/30000000023788_WO43722_230169.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:24.729] 2 datums found for processing.
+INFO  [2021-10-28 15:26:24.793] Processing path to datum: /pfs/DIR_IN/li7200/34335/co2_raw
+ERROR [2021-10-28 15:26:25.314] /pfs/DIR_IN/li7200/34335/co2_raw/30000000023788_WO31504_161382.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:25.315]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34335/co2_raw/30000000023788_WO31504_161382.xml
+INFO  [2021-10-28 15:26:25.316] Processing path to datum: /pfs/DIR_IN/li7200/34335/h2o_raw
+ERROR [2021-10-28 15:26:25.516] /pfs/DIR_IN/li7200/34335/h2o_raw/30000000023788_WO43722_230169.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:25.517]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34335/h2o_raw/30000000023788_WO43722_230169.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:26.637] 2 datums found for processing.
+INFO  [2021-10-28 15:26:26.695] Processing path to datum: /pfs/DIR_IN/li7200/30311/co2_raw
+ERROR [2021-10-28 15:26:27.280] /pfs/DIR_IN/li7200/30311/co2_raw/30000000005299_WO29612_155495.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:27.281]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30311/co2_raw/30000000005299_WO29612_155495.xml
+INFO  [2021-10-28 15:26:27.282] Processing path to datum: /pfs/DIR_IN/li7200/30311/h2o_raw
+ERROR [2021-10-28 15:26:27.374] /pfs/DIR_IN/li7200/30311/h2o_raw/30000000005299_WO29612_155412.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:27.374]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30311/h2o_raw/30000000005299_WO29612_155412.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:28.324] 2 datums found for processing.
+INFO  [2021-10-28 15:26:28.389] Processing path to datum: /pfs/DIR_IN/li7200/30311/co2_raw
+ERROR [2021-10-28 15:26:28.880] /pfs/DIR_IN/li7200/30311/co2_raw/30000000005299_WO29612_155495.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:28.881]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30311/co2_raw/30000000005299_WO29612_155495.xml
+INFO  [2021-10-28 15:26:28.882] Processing path to datum: /pfs/DIR_IN/li7200/30311/h2o_raw
+ERROR [2021-10-28 15:26:28.965] /pfs/DIR_IN/li7200/30311/h2o_raw/30000000005299_WO29612_155412.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:28.966]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30311/h2o_raw/30000000005299_WO29612_155412.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:29.855] 2 datums found for processing.
+INFO  [2021-10-28 15:26:29.917] Processing path to datum: /pfs/DIR_IN/li7200/30311/co2_raw
+ERROR [2021-10-28 15:26:30.404] /pfs/DIR_IN/li7200/30311/co2_raw/30000000005299_WO29612_155495.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:30.405]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30311/co2_raw/30000000005299_WO29612_155495.xml
+INFO  [2021-10-28 15:26:30.405] Processing path to datum: /pfs/DIR_IN/li7200/30311/h2o_raw
+ERROR [2021-10-28 15:26:30.490] /pfs/DIR_IN/li7200/30311/h2o_raw/30000000005299_WO29612_155412.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:30.490]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/30311/h2o_raw/30000000005299_WO29612_155412.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:31.928] 2 datums found for processing.
+INFO  [2021-10-28 15:26:31.998] Processing path to datum: /pfs/DIR_IN/li7200/27639/co2_raw
+ERROR [2021-10-28 15:26:32.602] /pfs/DIR_IN/li7200/27639/co2_raw/30000000006268_WO29187_171011.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:32.603]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27639/co2_raw/30000000006268_WO29187_171011.xml
+INFO  [2021-10-28 15:26:32.604] Processing path to datum: /pfs/DIR_IN/li7200/27639/h2o_raw
+ERROR [2021-10-28 15:26:32.842] /pfs/DIR_IN/li7200/27639/h2o_raw/30000000006268_WO29187_170861.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:32.843]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27639/h2o_raw/30000000006268_WO29187_170861.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:33.967] 2 datums found for processing.
+INFO  [2021-10-28 15:26:34.025] Processing path to datum: /pfs/DIR_IN/li7200/27639/co2_raw
+ERROR [2021-10-28 15:26:34.606] /pfs/DIR_IN/li7200/27639/co2_raw/30000000006268_WO29187_171011.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:34.607]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27639/co2_raw/30000000006268_WO29187_171011.xml
+INFO  [2021-10-28 15:26:34.607] Processing path to datum: /pfs/DIR_IN/li7200/27639/h2o_raw
+ERROR [2021-10-28 15:26:34.849] /pfs/DIR_IN/li7200/27639/h2o_raw/30000000006268_WO29187_170861.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:34.850]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27639/h2o_raw/30000000006268_WO29187_170861.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:35.821] 2 datums found for processing.
+INFO  [2021-10-28 15:26:35.884] Processing path to datum: /pfs/DIR_IN/li7200/27639/co2_raw
+ERROR [2021-10-28 15:26:36.447] /pfs/DIR_IN/li7200/27639/co2_raw/30000000006268_WO29187_171011.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:36.448]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27639/co2_raw/30000000006268_WO29187_171011.xml
+INFO  [2021-10-28 15:26:36.448] Processing path to datum: /pfs/DIR_IN/li7200/27639/h2o_raw
+ERROR [2021-10-28 15:26:36.665] /pfs/DIR_IN/li7200/27639/h2o_raw/30000000006268_WO29187_170861.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:36.666]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27639/h2o_raw/30000000006268_WO29187_170861.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:37.766] 2 datums found for processing.
+INFO  [2021-10-28 15:26:37.824] Processing path to datum: /pfs/DIR_IN/li7200/47375/co2_raw
+ERROR [2021-10-28 15:26:38.145] /pfs/DIR_IN/li7200/47375/co2_raw/30000000023811_WO32348_165862.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:38.146]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47375/co2_raw/30000000023811_WO32348_165862.xml
+INFO  [2021-10-28 15:26:38.147] Processing path to datum: /pfs/DIR_IN/li7200/47375/h2o_raw
+ERROR [2021-10-28 15:26:38.236] /pfs/DIR_IN/li7200/47375/h2o_raw/30000000023811_WO36662_188740.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:38.237]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47375/h2o_raw/30000000023811_WO36662_188740.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:39.161] 2 datums found for processing.
+INFO  [2021-10-28 15:26:39.219] Processing path to datum: /pfs/DIR_IN/li7200/47375/co2_raw
+ERROR [2021-10-28 15:26:39.533] /pfs/DIR_IN/li7200/47375/co2_raw/30000000023811_WO32348_165862.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:39.534]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47375/co2_raw/30000000023811_WO32348_165862.xml
+INFO  [2021-10-28 15:26:39.535] Processing path to datum: /pfs/DIR_IN/li7200/47375/h2o_raw
+ERROR [2021-10-28 15:26:39.626] /pfs/DIR_IN/li7200/47375/h2o_raw/30000000023811_WO36662_188740.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:39.626]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47375/h2o_raw/30000000023811_WO36662_188740.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:40.546] 2 datums found for processing.
+INFO  [2021-10-28 15:26:40.605] Processing path to datum: /pfs/DIR_IN/li7200/47375/co2_raw
+ERROR [2021-10-28 15:26:40.914] /pfs/DIR_IN/li7200/47375/co2_raw/30000000023811_WO32348_165862.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:40.915]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47375/co2_raw/30000000023811_WO32348_165862.xml
+INFO  [2021-10-28 15:26:40.915] Processing path to datum: /pfs/DIR_IN/li7200/47375/h2o_raw
+ERROR [2021-10-28 15:26:41.005] /pfs/DIR_IN/li7200/47375/h2o_raw/30000000023811_WO36662_188740.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:41.006]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47375/h2o_raw/30000000023811_WO36662_188740.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:42.097] 2 datums found for processing.
+INFO  [2021-10-28 15:26:42.155] Processing path to datum: /pfs/DIR_IN/li7200/47387/co2_raw
+ERROR [2021-10-28 15:26:42.515] /pfs/DIR_IN/li7200/47387/co2_raw/30000000023816_WO32327_166688.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:42.516]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47387/co2_raw/30000000023816_WO32327_166688.xml
+INFO  [2021-10-28 15:26:42.516] Processing path to datum: /pfs/DIR_IN/li7200/47387/h2o_raw
+ERROR [2021-10-28 15:26:42.588] /pfs/DIR_IN/li7200/47387/h2o_raw/30000000023816_WO37585_192602.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:42.589]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47387/h2o_raw/30000000023816_WO37585_192602.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:43.510] 2 datums found for processing.
+INFO  [2021-10-28 15:26:43.568] Processing path to datum: /pfs/DIR_IN/li7200/47387/co2_raw
+ERROR [2021-10-28 15:26:43.929] /pfs/DIR_IN/li7200/47387/co2_raw/30000000023816_WO32327_166688.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:43.930]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47387/co2_raw/30000000023816_WO32327_166688.xml
+INFO  [2021-10-28 15:26:43.931] Processing path to datum: /pfs/DIR_IN/li7200/47387/h2o_raw
+ERROR [2021-10-28 15:26:44.003] /pfs/DIR_IN/li7200/47387/h2o_raw/30000000023816_WO37585_192602.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:44.004]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47387/h2o_raw/30000000023816_WO37585_192602.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:44.933] 2 datums found for processing.
+INFO  [2021-10-28 15:26:44.992] Processing path to datum: /pfs/DIR_IN/li7200/47387/co2_raw
+ERROR [2021-10-28 15:26:45.345] /pfs/DIR_IN/li7200/47387/co2_raw/30000000023816_WO32327_166688.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:45.345]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47387/co2_raw/30000000023816_WO32327_166688.xml
+INFO  [2021-10-28 15:26:45.346] Processing path to datum: /pfs/DIR_IN/li7200/47387/h2o_raw
+ERROR [2021-10-28 15:26:45.426] /pfs/DIR_IN/li7200/47387/h2o_raw/30000000023816_WO37585_192602.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:45.427]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47387/h2o_raw/30000000023816_WO37585_192602.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:17.942] 2 datums found for processing.
+INFO  [2021-10-28 15:25:18.001] Processing path to datum: /pfs/DIR_IN/li7200/31752/co2_raw
+ERROR [2021-10-28 15:25:18.442] /pfs/DIR_IN/li7200/31752/co2_raw/30000000005319_WO22688_146654.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:18.443]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31752/co2_raw/30000000005319_WO22688_146654.xml
+INFO  [2021-10-28 15:25:18.443] Processing path to datum: /pfs/DIR_IN/li7200/31752/h2o_raw
+ERROR [2021-10-28 15:25:18.545] /pfs/DIR_IN/li7200/31752/h2o_raw/30000000005319_WO22688_146605.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:18.546]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31752/h2o_raw/30000000005319_WO22688_146605.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:19.558] 2 datums found for processing.
+INFO  [2021-10-28 15:25:19.624] Processing path to datum: /pfs/DIR_IN/li7200/31752/co2_raw
+ERROR [2021-10-28 15:25:20.083] /pfs/DIR_IN/li7200/31752/co2_raw/30000000005319_WO22688_146654.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:20.084]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31752/co2_raw/30000000005319_WO22688_146654.xml
+INFO  [2021-10-28 15:25:20.085] Processing path to datum: /pfs/DIR_IN/li7200/31752/h2o_raw
+ERROR [2021-10-28 15:25:20.234] /pfs/DIR_IN/li7200/31752/h2o_raw/30000000005319_WO22688_146605.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:20.235]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31752/h2o_raw/30000000005319_WO22688_146605.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:21.358] 2 datums found for processing.
+INFO  [2021-10-28 15:25:21.419] Processing path to datum: /pfs/DIR_IN/li7200/31752/co2_raw
+ERROR [2021-10-28 15:25:21.852] /pfs/DIR_IN/li7200/31752/co2_raw/30000000005319_WO22688_146654.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:21.853]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31752/co2_raw/30000000005319_WO22688_146654.xml
+INFO  [2021-10-28 15:25:21.854] Processing path to datum: /pfs/DIR_IN/li7200/31752/h2o_raw
+ERROR [2021-10-28 15:25:21.954] /pfs/DIR_IN/li7200/31752/h2o_raw/30000000005319_WO22688_146605.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:21.955]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31752/h2o_raw/30000000005319_WO22688_146605.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:23.283] 2 datums found for processing.
+INFO  [2021-10-28 15:25:23.348] Processing path to datum: /pfs/DIR_IN/li7200/37779/co2_raw
+ERROR [2021-10-28 15:25:23.847] /pfs/DIR_IN/li7200/37779/co2_raw/30000000016810_WO29794_155494.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:23.848]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/37779/co2_raw/30000000016810_WO29794_155494.xml
+INFO  [2021-10-28 15:25:23.849] Processing path to datum: /pfs/DIR_IN/li7200/37779/h2o_raw
+ERROR [2021-10-28 15:25:24.052] /pfs/DIR_IN/li7200/37779/h2o_raw/30000000016810_WO36669_188899.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:24.053]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/37779/h2o_raw/30000000016810_WO36669_188899.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:25.229] 2 datums found for processing.
+INFO  [2021-10-28 15:25:25.291] Processing path to datum: /pfs/DIR_IN/li7200/37779/co2_raw
+ERROR [2021-10-28 15:25:25.810] /pfs/DIR_IN/li7200/37779/co2_raw/30000000016810_WO29794_155494.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:25.811]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/37779/co2_raw/30000000016810_WO29794_155494.xml
+INFO  [2021-10-28 15:25:25.812] Processing path to datum: /pfs/DIR_IN/li7200/37779/h2o_raw
+ERROR [2021-10-28 15:25:26.022] /pfs/DIR_IN/li7200/37779/h2o_raw/30000000016810_WO36669_188899.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:26.022]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/37779/h2o_raw/30000000016810_WO36669_188899.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:27.095] 2 datums found for processing.
+INFO  [2021-10-28 15:25:27.166] Processing path to datum: /pfs/DIR_IN/li7200/37779/co2_raw
+ERROR [2021-10-28 15:25:27.662] /pfs/DIR_IN/li7200/37779/co2_raw/30000000016810_WO29794_155494.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:27.663]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/37779/co2_raw/30000000016810_WO29794_155494.xml
+INFO  [2021-10-28 15:25:27.664] Processing path to datum: /pfs/DIR_IN/li7200/37779/h2o_raw
+ERROR [2021-10-28 15:25:27.864] /pfs/DIR_IN/li7200/37779/h2o_raw/30000000016810_WO36669_188899.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:27.865]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/37779/h2o_raw/30000000016810_WO36669_188899.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:29.431] 2 datums found for processing.
+INFO  [2021-10-28 15:25:29.499] Processing path to datum: /pfs/DIR_IN/li7200/31345/co2_raw
+ERROR [2021-10-28 15:25:30.344] /pfs/DIR_IN/li7200/31345/co2_raw/30000000023731_WO30841_160497.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:30.345]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31345/co2_raw/30000000023731_WO30841_160497.xml
+INFO  [2021-10-28 15:25:30.346] Processing path to datum: /pfs/DIR_IN/li7200/31345/h2o_raw
+ERROR [2021-10-28 15:25:30.615] /pfs/DIR_IN/li7200/31345/h2o_raw/30000000023731_WO30841_160428.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:30.615]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31345/h2o_raw/30000000023731_WO30841_160428.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:31.843] 2 datums found for processing.
+INFO  [2021-10-28 15:25:31.934] Processing path to datum: /pfs/DIR_IN/li7200/31345/co2_raw
+ERROR [2021-10-28 15:25:32.728] /pfs/DIR_IN/li7200/31345/co2_raw/30000000023731_WO30841_160497.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:32.729]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31345/co2_raw/30000000023731_WO30841_160497.xml
+INFO  [2021-10-28 15:25:32.730] Processing path to datum: /pfs/DIR_IN/li7200/31345/h2o_raw
+ERROR [2021-10-28 15:25:32.989] /pfs/DIR_IN/li7200/31345/h2o_raw/30000000023731_WO30841_160428.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:32.990]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31345/h2o_raw/30000000023731_WO30841_160428.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:34.140] 2 datums found for processing.
+INFO  [2021-10-28 15:25:34.215] Processing path to datum: /pfs/DIR_IN/li7200/31345/co2_raw
+ERROR [2021-10-28 15:25:34.953] /pfs/DIR_IN/li7200/31345/co2_raw/30000000023731_WO30841_160497.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:34.954]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31345/co2_raw/30000000023731_WO30841_160497.xml
+INFO  [2021-10-28 15:25:34.954] Processing path to datum: /pfs/DIR_IN/li7200/31345/h2o_raw
+ERROR [2021-10-28 15:25:35.210] /pfs/DIR_IN/li7200/31345/h2o_raw/30000000023731_WO30841_160428.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:35.211]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31345/h2o_raw/30000000023731_WO30841_160428.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:36.418] 2 datums found for processing.
+INFO  [2021-10-28 15:25:36.483] Processing path to datum: /pfs/DIR_IN/li7200/31755/co2_raw
+ERROR [2021-10-28 15:25:36.987] /pfs/DIR_IN/li7200/31755/co2_raw/30000000016022_WO34278_177640.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:36.988]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31755/co2_raw/30000000016022_WO34278_177640.xml
+INFO  [2021-10-28 15:25:36.989] Processing path to datum: /pfs/DIR_IN/li7200/31755/h2o_raw
+ERROR [2021-10-28 15:25:37.178] /pfs/DIR_IN/li7200/31755/h2o_raw/30000000016022_WO34278_177588.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:37.179]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31755/h2o_raw/30000000016022_WO34278_177588.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:38.229] 2 datums found for processing.
+INFO  [2021-10-28 15:25:38.295] Processing path to datum: /pfs/DIR_IN/li7200/31755/co2_raw
+ERROR [2021-10-28 15:25:38.823] /pfs/DIR_IN/li7200/31755/co2_raw/30000000016022_WO34278_177640.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:38.824]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31755/co2_raw/30000000016022_WO34278_177640.xml
+INFO  [2021-10-28 15:25:38.825] Processing path to datum: /pfs/DIR_IN/li7200/31755/h2o_raw
+ERROR [2021-10-28 15:25:39.020] /pfs/DIR_IN/li7200/31755/h2o_raw/30000000016022_WO34278_177588.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:39.021]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31755/h2o_raw/30000000016022_WO34278_177588.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:40.043] 2 datums found for processing.
+INFO  [2021-10-28 15:25:40.108] Processing path to datum: /pfs/DIR_IN/li7200/31755/co2_raw
+ERROR [2021-10-28 15:25:40.613] /pfs/DIR_IN/li7200/31755/co2_raw/30000000016022_WO34278_177640.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:40.614]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31755/co2_raw/30000000016022_WO34278_177640.xml
+INFO  [2021-10-28 15:25:40.615] Processing path to datum: /pfs/DIR_IN/li7200/31755/h2o_raw
+ERROR [2021-10-28 15:25:40.799] /pfs/DIR_IN/li7200/31755/h2o_raw/30000000016022_WO34278_177588.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:40.800]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31755/h2o_raw/30000000016022_WO34278_177588.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:42.044] 2 datums found for processing.
+INFO  [2021-10-28 15:25:42.106] Processing path to datum: /pfs/DIR_IN/li7200/47383/co2_raw
+ERROR [2021-10-28 15:25:42.493] /pfs/DIR_IN/li7200/47383/co2_raw/30000000023814_WO32347_165178.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:42.494]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47383/co2_raw/30000000023814_WO32347_165178.xml
+INFO  [2021-10-28 15:25:42.495] Processing path to datum: /pfs/DIR_IN/li7200/47383/h2o_raw
+ERROR [2021-10-28 15:25:42.539] /pfs/DIR_IN/li7200/47383/h2o_raw/30000000023814_WO32347_165068.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:42.540]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47383/h2o_raw/30000000023814_WO32347_165068.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:43.525] 2 datums found for processing.
+INFO  [2021-10-28 15:25:43.607] Processing path to datum: /pfs/DIR_IN/li7200/47383/co2_raw
+ERROR [2021-10-28 15:25:44.008] /pfs/DIR_IN/li7200/47383/co2_raw/30000000023814_WO32347_165178.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:44.009]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47383/co2_raw/30000000023814_WO32347_165178.xml
+INFO  [2021-10-28 15:25:44.010] Processing path to datum: /pfs/DIR_IN/li7200/47383/h2o_raw
+ERROR [2021-10-28 15:25:44.056] /pfs/DIR_IN/li7200/47383/h2o_raw/30000000023814_WO32347_165068.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:44.057]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47383/h2o_raw/30000000023814_WO32347_165068.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:45.151] 2 datums found for processing.
+INFO  [2021-10-28 15:25:45.227] Processing path to datum: /pfs/DIR_IN/li7200/47383/co2_raw
+ERROR [2021-10-28 15:25:45.779] /pfs/DIR_IN/li7200/47383/co2_raw/30000000023814_WO32347_165178.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:45.781]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47383/co2_raw/30000000023814_WO32347_165178.xml
+INFO  [2021-10-28 15:25:45.782] Processing path to datum: /pfs/DIR_IN/li7200/47383/h2o_raw
+ERROR [2021-10-28 15:25:45.837] /pfs/DIR_IN/li7200/47383/h2o_raw/30000000023814_WO32347_165068.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:45.838]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47383/h2o_raw/30000000023814_WO32347_165068.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:47.121] 2 datums found for processing.
+INFO  [2021-10-28 15:25:47.186] Processing path to datum: /pfs/DIR_IN/li7200/34436/co2_raw
+ERROR [2021-10-28 15:25:47.916] /pfs/DIR_IN/li7200/34436/co2_raw/30000000015527_WO29145_170106.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:47.917]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34436/co2_raw/30000000015527_WO29145_170106.xml
+INFO  [2021-10-28 15:25:47.918] Processing path to datum: /pfs/DIR_IN/li7200/34436/h2o_raw
+ERROR [2021-10-28 15:25:48.035] /pfs/DIR_IN/li7200/34436/h2o_raw/30000000015527_WO29145_169895.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:48.036]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34436/h2o_raw/30000000015527_WO29145_169895.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:49.321] 2 datums found for processing.
+INFO  [2021-10-28 15:25:49.402] Processing path to datum: /pfs/DIR_IN/li7200/34436/co2_raw
+ERROR [2021-10-28 15:25:50.037] /pfs/DIR_IN/li7200/34436/co2_raw/30000000015527_WO29145_170106.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:50.038]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34436/co2_raw/30000000015527_WO29145_170106.xml
+INFO  [2021-10-28 15:25:50.039] Processing path to datum: /pfs/DIR_IN/li7200/34436/h2o_raw
+ERROR [2021-10-28 15:25:50.158] /pfs/DIR_IN/li7200/34436/h2o_raw/30000000015527_WO29145_169895.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:50.160]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34436/h2o_raw/30000000015527_WO29145_169895.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:51.420] 2 datums found for processing.
+INFO  [2021-10-28 15:25:51.491] Processing path to datum: /pfs/DIR_IN/li7200/34436/co2_raw
+ERROR [2021-10-28 15:25:52.147] /pfs/DIR_IN/li7200/34436/co2_raw/30000000015527_WO29145_170106.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:52.148]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34436/co2_raw/30000000015527_WO29145_170106.xml
+INFO  [2021-10-28 15:25:52.149] Processing path to datum: /pfs/DIR_IN/li7200/34436/h2o_raw
+ERROR [2021-10-28 15:25:52.272] /pfs/DIR_IN/li7200/34436/h2o_raw/30000000015527_WO29145_169895.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:52.274]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34436/h2o_raw/30000000015527_WO29145_169895.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:54.024] 2 datums found for processing.
+INFO  [2021-10-28 15:25:54.093] Processing path to datum: /pfs/DIR_IN/li7200/33471/co2_raw
+ERROR [2021-10-28 15:25:54.676] /pfs/DIR_IN/li7200/33471/co2_raw/30000000005316_WO31473_161182.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:54.677]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33471/co2_raw/30000000005316_WO31473_161182.xml
+INFO  [2021-10-28 15:25:54.678] Processing path to datum: /pfs/DIR_IN/li7200/33471/h2o_raw
+ERROR [2021-10-28 15:25:54.971] /pfs/DIR_IN/li7200/33471/h2o_raw/30000000005316_WO31473_161107.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:54.972]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33471/h2o_raw/30000000005316_WO31473_161107.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:56.210] 2 datums found for processing.
+INFO  [2021-10-28 15:25:56.276] Processing path to datum: /pfs/DIR_IN/li7200/33471/co2_raw
+ERROR [2021-10-28 15:25:56.936] /pfs/DIR_IN/li7200/33471/co2_raw/30000000005316_WO31473_161182.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:56.936]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33471/co2_raw/30000000005316_WO31473_161182.xml
+INFO  [2021-10-28 15:25:56.937] Processing path to datum: /pfs/DIR_IN/li7200/33471/h2o_raw
+ERROR [2021-10-28 15:25:57.343] /pfs/DIR_IN/li7200/33471/h2o_raw/30000000005316_WO31473_161107.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:57.344]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33471/h2o_raw/30000000005316_WO31473_161107.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:58.542] 2 datums found for processing.
+INFO  [2021-10-28 15:25:58.607] Processing path to datum: /pfs/DIR_IN/li7200/33471/co2_raw
+ERROR [2021-10-28 15:25:59.174] /pfs/DIR_IN/li7200/33471/co2_raw/30000000005316_WO31473_161182.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:59.174]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33471/co2_raw/30000000005316_WO31473_161182.xml
+INFO  [2021-10-28 15:25:59.175] Processing path to datum: /pfs/DIR_IN/li7200/33471/h2o_raw
+ERROR [2021-10-28 15:25:59.425] /pfs/DIR_IN/li7200/33471/h2o_raw/30000000005316_WO31473_161107.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:59.426]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33471/h2o_raw/30000000005316_WO31473_161107.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:00.793] 2 datums found for processing.
+INFO  [2021-10-28 15:26:00.859] Processing path to datum: /pfs/DIR_IN/li7200/29214/co2_raw
+ERROR [2021-10-28 15:26:01.273] /pfs/DIR_IN/li7200/29214/co2_raw/30000000005542_WO24339_129275.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:01.274]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29214/co2_raw/30000000005542_WO24339_129275.xml
+INFO  [2021-10-28 15:26:01.275] Processing path to datum: /pfs/DIR_IN/li7200/29214/h2o_raw
+ERROR [2021-10-28 15:26:01.312] /pfs/DIR_IN/li7200/29214/h2o_raw/30000000005542_WO24339_129270.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:01.313]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29214/h2o_raw/30000000005542_WO24339_129270.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:02.411] 2 datums found for processing.
+INFO  [2021-10-28 15:26:02.472] Processing path to datum: /pfs/DIR_IN/li7200/29214/co2_raw
+ERROR [2021-10-28 15:26:02.820] /pfs/DIR_IN/li7200/29214/co2_raw/30000000005542_WO24339_129275.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:02.821]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29214/co2_raw/30000000005542_WO24339_129275.xml
+INFO  [2021-10-28 15:26:02.821] Processing path to datum: /pfs/DIR_IN/li7200/29214/h2o_raw
+ERROR [2021-10-28 15:26:02.859] /pfs/DIR_IN/li7200/29214/h2o_raw/30000000005542_WO24339_129270.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:02.860]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29214/h2o_raw/30000000005542_WO24339_129270.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:03.826] 2 datums found for processing.
+INFO  [2021-10-28 15:26:03.888] Processing path to datum: /pfs/DIR_IN/li7200/29214/co2_raw
+ERROR [2021-10-28 15:26:04.238] /pfs/DIR_IN/li7200/29214/co2_raw/30000000005542_WO24339_129275.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:04.239]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29214/co2_raw/30000000005542_WO24339_129275.xml
+INFO  [2021-10-28 15:26:04.240] Processing path to datum: /pfs/DIR_IN/li7200/29214/h2o_raw
+ERROR [2021-10-28 15:26:04.276] /pfs/DIR_IN/li7200/29214/h2o_raw/30000000005542_WO24339_129270.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:04.277]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29214/h2o_raw/30000000005542_WO24339_129270.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:05.603] 2 datums found for processing.
+INFO  [2021-10-28 15:26:05.670] Processing path to datum: /pfs/DIR_IN/li7200/44578/co2_raw
+ERROR [2021-10-28 15:26:06.232] /pfs/DIR_IN/li7200/44578/co2_raw/30000000005306_WO31067_160498.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:06.233]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44578/co2_raw/30000000005306_WO31067_160498.xml
+INFO  [2021-10-28 15:26:06.234] Processing path to datum: /pfs/DIR_IN/li7200/44578/h2o_raw
+ERROR [2021-10-28 15:26:06.365] /pfs/DIR_IN/li7200/44578/h2o_raw/30000000005306_WO31067_160429.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:06.366]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44578/h2o_raw/30000000005306_WO31067_160429.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:07.401] 2 datums found for processing.
+INFO  [2021-10-28 15:26:07.498] Processing path to datum: /pfs/DIR_IN/li7200/44578/co2_raw
+ERROR [2021-10-28 15:26:08.182] /pfs/DIR_IN/li7200/44578/co2_raw/30000000005306_WO31067_160498.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:08.183]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44578/co2_raw/30000000005306_WO31067_160498.xml
+INFO  [2021-10-28 15:26:08.185] Processing path to datum: /pfs/DIR_IN/li7200/44578/h2o_raw
+ERROR [2021-10-28 15:26:08.315] /pfs/DIR_IN/li7200/44578/h2o_raw/30000000005306_WO31067_160429.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:08.316]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44578/h2o_raw/30000000005306_WO31067_160429.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:09.442] 2 datums found for processing.
+INFO  [2021-10-28 15:26:09.524] Processing path to datum: /pfs/DIR_IN/li7200/44578/co2_raw
+ERROR [2021-10-28 15:26:10.075] /pfs/DIR_IN/li7200/44578/co2_raw/30000000005306_WO31067_160498.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:10.076]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44578/co2_raw/30000000005306_WO31067_160498.xml
+INFO  [2021-10-28 15:26:10.077] Processing path to datum: /pfs/DIR_IN/li7200/44578/h2o_raw
+ERROR [2021-10-28 15:26:10.206] /pfs/DIR_IN/li7200/44578/h2o_raw/30000000005306_WO31067_160429.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:10.207]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44578/h2o_raw/30000000005306_WO31067_160429.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:11.595] 2 datums found for processing.
+INFO  [2021-10-28 15:26:11.657] Processing path to datum: /pfs/DIR_IN/li7200/41345/co2_raw
+ERROR [2021-10-28 15:26:12.085] /pfs/DIR_IN/li7200/41345/co2_raw/30000000016617_WO18156_128889.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:12.086]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41345/co2_raw/30000000016617_WO18156_128889.xml
+INFO  [2021-10-28 15:26:12.087] Processing path to datum: /pfs/DIR_IN/li7200/41345/h2o_raw
+ERROR [2021-10-28 15:26:12.372] /pfs/DIR_IN/li7200/41345/h2o_raw/30000000016617_WO36815_189935.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:12.373]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41345/h2o_raw/30000000016617_WO36815_189935.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:13.465] 2 datums found for processing.
+INFO  [2021-10-28 15:26:13.529] Processing path to datum: /pfs/DIR_IN/li7200/41345/co2_raw
+ERROR [2021-10-28 15:26:13.911] /pfs/DIR_IN/li7200/41345/co2_raw/30000000016617_WO18156_128889.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:13.912]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41345/co2_raw/30000000016617_WO18156_128889.xml
+INFO  [2021-10-28 15:26:13.913] Processing path to datum: /pfs/DIR_IN/li7200/41345/h2o_raw
+ERROR [2021-10-28 15:26:14.161] /pfs/DIR_IN/li7200/41345/h2o_raw/30000000016617_WO36815_189935.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:14.162]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41345/h2o_raw/30000000016617_WO36815_189935.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:15.209] 2 datums found for processing.
+INFO  [2021-10-28 15:26:15.271] Processing path to datum: /pfs/DIR_IN/li7200/41345/co2_raw
+ERROR [2021-10-28 15:26:15.650] /pfs/DIR_IN/li7200/41345/co2_raw/30000000016617_WO18156_128889.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:15.651]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41345/co2_raw/30000000016617_WO18156_128889.xml
+INFO  [2021-10-28 15:26:15.652] Processing path to datum: /pfs/DIR_IN/li7200/41345/h2o_raw
+ERROR [2021-10-28 15:26:15.858] /pfs/DIR_IN/li7200/41345/h2o_raw/30000000016617_WO36815_189935.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:15.859]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41345/h2o_raw/30000000016617_WO36815_189935.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:17.264] 2 datums found for processing.
+INFO  [2021-10-28 15:26:17.327] Processing path to datum: /pfs/DIR_IN/li7200/31753/co2_raw
+ERROR [2021-10-28 15:26:17.999] /pfs/DIR_IN/li7200/31753/co2_raw/30000000016024_WO23702_228740.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:18.000]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31753/co2_raw/30000000016024_WO23702_228740.xml
+INFO  [2021-10-28 15:26:18.001] Processing path to datum: /pfs/DIR_IN/li7200/31753/h2o_raw
+ERROR [2021-10-28 15:26:18.320] /pfs/DIR_IN/li7200/31753/h2o_raw/30000000016024_WO51347_263670.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:18.321]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31753/h2o_raw/30000000016024_WO51347_263670.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:19.380] 2 datums found for processing.
+INFO  [2021-10-28 15:26:19.445] Processing path to datum: /pfs/DIR_IN/li7200/31753/co2_raw
+ERROR [2021-10-28 15:26:20.192] /pfs/DIR_IN/li7200/31753/co2_raw/30000000016024_WO23702_228740.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:20.193]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31753/co2_raw/30000000016024_WO23702_228740.xml
+INFO  [2021-10-28 15:26:20.194] Processing path to datum: /pfs/DIR_IN/li7200/31753/h2o_raw
+ERROR [2021-10-28 15:26:20.518] /pfs/DIR_IN/li7200/31753/h2o_raw/30000000016024_WO51347_263670.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:20.519]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31753/h2o_raw/30000000016024_WO51347_263670.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:21.562] 2 datums found for processing.
+INFO  [2021-10-28 15:26:21.625] Processing path to datum: /pfs/DIR_IN/li7200/31753/co2_raw
+ERROR [2021-10-28 15:26:22.292] /pfs/DIR_IN/li7200/31753/co2_raw/30000000016024_WO23702_228740.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:22.293]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31753/co2_raw/30000000016024_WO23702_228740.xml
+INFO  [2021-10-28 15:26:22.293] Processing path to datum: /pfs/DIR_IN/li7200/31753/h2o_raw
+ERROR [2021-10-28 15:26:22.607] /pfs/DIR_IN/li7200/31753/h2o_raw/30000000016024_WO51347_263670.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:22.608]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31753/h2o_raw/30000000016024_WO51347_263670.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:23.885] 2 datums found for processing.
+INFO  [2021-10-28 15:26:23.947] Processing path to datum: /pfs/DIR_IN/li7200/41157/co2_raw
+ERROR [2021-10-28 15:26:24.484] /pfs/DIR_IN/li7200/41157/co2_raw/30000000016592_WO26063_139860.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:24.485]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41157/co2_raw/30000000016592_WO26063_139860.xml
+INFO  [2021-10-28 15:26:24.486] Processing path to datum: /pfs/DIR_IN/li7200/41157/h2o_raw
+ERROR [2021-10-28 15:26:24.776] /pfs/DIR_IN/li7200/41157/h2o_raw/30000000016592_WO48040_248643.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:24.777]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41157/h2o_raw/30000000016592_WO48040_248643.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:25.867] 2 datums found for processing.
+INFO  [2021-10-28 15:26:25.928] Processing path to datum: /pfs/DIR_IN/li7200/41157/co2_raw
+ERROR [2021-10-28 15:26:26.403] /pfs/DIR_IN/li7200/41157/co2_raw/30000000016592_WO26063_139860.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:26.405]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41157/co2_raw/30000000016592_WO26063_139860.xml
+INFO  [2021-10-28 15:26:26.405] Processing path to datum: /pfs/DIR_IN/li7200/41157/h2o_raw
+ERROR [2021-10-28 15:26:26.677] /pfs/DIR_IN/li7200/41157/h2o_raw/30000000016592_WO48040_248643.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:26.678]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41157/h2o_raw/30000000016592_WO48040_248643.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:27.696] 2 datums found for processing.
+INFO  [2021-10-28 15:26:27.762] Processing path to datum: /pfs/DIR_IN/li7200/41157/co2_raw
+ERROR [2021-10-28 15:26:28.243] /pfs/DIR_IN/li7200/41157/co2_raw/30000000016592_WO26063_139860.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:28.244]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41157/co2_raw/30000000016592_WO26063_139860.xml
+INFO  [2021-10-28 15:26:28.245] Processing path to datum: /pfs/DIR_IN/li7200/41157/h2o_raw
+ERROR [2021-10-28 15:26:28.506] /pfs/DIR_IN/li7200/41157/h2o_raw/30000000016592_WO48040_248643.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:28.507]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41157/h2o_raw/30000000016592_WO48040_248643.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:29.971] 2 datums found for processing.
+INFO  [2021-10-28 15:26:30.034] Processing path to datum: /pfs/DIR_IN/li7200/41161/co2_raw
+ERROR [2021-10-28 15:26:30.397] /pfs/DIR_IN/li7200/41161/co2_raw/30000000016600_WO17742_139122.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:30.398]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41161/co2_raw/30000000016600_WO17742_139122.xml
+INFO  [2021-10-28 15:26:30.399] Processing path to datum: /pfs/DIR_IN/li7200/41161/h2o_raw
+ERROR [2021-10-28 15:26:30.446] /pfs/DIR_IN/li7200/41161/h2o_raw/30000000016600_WO17742_138379.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:30.447]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41161/h2o_raw/30000000016600_WO17742_138379.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:31.545] 2 datums found for processing.
+INFO  [2021-10-28 15:26:31.611] Processing path to datum: /pfs/DIR_IN/li7200/41161/co2_raw
+ERROR [2021-10-28 15:26:31.957] /pfs/DIR_IN/li7200/41161/co2_raw/30000000016600_WO17742_139122.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:31.958]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41161/co2_raw/30000000016600_WO17742_139122.xml
+INFO  [2021-10-28 15:26:31.959] Processing path to datum: /pfs/DIR_IN/li7200/41161/h2o_raw
+ERROR [2021-10-28 15:26:32.004] /pfs/DIR_IN/li7200/41161/h2o_raw/30000000016600_WO17742_138379.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:32.005]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41161/h2o_raw/30000000016600_WO17742_138379.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:33.083] 2 datums found for processing.
+INFO  [2021-10-28 15:26:33.145] Processing path to datum: /pfs/DIR_IN/li7200/41161/co2_raw
+ERROR [2021-10-28 15:26:33.489] /pfs/DIR_IN/li7200/41161/co2_raw/30000000016600_WO17742_139122.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:33.490]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41161/co2_raw/30000000016600_WO17742_139122.xml
+INFO  [2021-10-28 15:26:33.491] Processing path to datum: /pfs/DIR_IN/li7200/41161/h2o_raw
+ERROR [2021-10-28 15:26:33.536] /pfs/DIR_IN/li7200/41161/h2o_raw/30000000016600_WO17742_138379.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:33.537]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41161/h2o_raw/30000000016600_WO17742_138379.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:34.716] 2 datums found for processing.
+INFO  [2021-10-28 15:26:34.777] Processing path to datum: /pfs/DIR_IN/li7200/36172/co2_raw
+ERROR [2021-10-28 15:26:35.312] /pfs/DIR_IN/li7200/36172/co2_raw/30000000005290_WO24924_132392.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:35.312]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36172/co2_raw/30000000005290_WO24924_132392.xml
+INFO  [2021-10-28 15:26:35.313] Processing path to datum: /pfs/DIR_IN/li7200/36172/h2o_raw
+ERROR [2021-10-28 15:26:35.436] /pfs/DIR_IN/li7200/36172/h2o_raw/30000000005290_WO24924_132261.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:35.437]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36172/h2o_raw/30000000005290_WO24924_132261.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:36.472] 2 datums found for processing.
+INFO  [2021-10-28 15:26:36.533] Processing path to datum: /pfs/DIR_IN/li7200/36172/co2_raw
+ERROR [2021-10-28 15:26:37.079] /pfs/DIR_IN/li7200/36172/co2_raw/30000000005290_WO24924_132392.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:37.080]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36172/co2_raw/30000000005290_WO24924_132392.xml
+INFO  [2021-10-28 15:26:37.081] Processing path to datum: /pfs/DIR_IN/li7200/36172/h2o_raw
+ERROR [2021-10-28 15:26:37.201] /pfs/DIR_IN/li7200/36172/h2o_raw/30000000005290_WO24924_132261.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:37.202]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36172/h2o_raw/30000000005290_WO24924_132261.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:38.344] 2 datums found for processing.
+INFO  [2021-10-28 15:26:38.406] Processing path to datum: /pfs/DIR_IN/li7200/36172/co2_raw
+ERROR [2021-10-28 15:26:39.022] /pfs/DIR_IN/li7200/36172/co2_raw/30000000005290_WO24924_132392.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:39.023]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36172/co2_raw/30000000005290_WO24924_132392.xml
+INFO  [2021-10-28 15:26:39.024] Processing path to datum: /pfs/DIR_IN/li7200/36172/h2o_raw
+ERROR [2021-10-28 15:26:39.144] /pfs/DIR_IN/li7200/36172/h2o_raw/30000000005290_WO24924_132261.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:39.145]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36172/h2o_raw/30000000005290_WO24924_132261.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:40.359] 2 datums found for processing.
+INFO  [2021-10-28 15:26:40.422] Processing path to datum: /pfs/DIR_IN/li7200/36173/co2_raw
+ERROR [2021-10-28 15:26:41.050] /pfs/DIR_IN/li7200/36173/co2_raw/30000000024244_WO33314_170585.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:41.051]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36173/co2_raw/30000000024244_WO33314_170585.xml
+INFO  [2021-10-28 15:26:41.052] Processing path to datum: /pfs/DIR_IN/li7200/36173/h2o_raw
+ERROR [2021-10-28 15:26:41.331] /pfs/DIR_IN/li7200/36173/h2o_raw/30000000024244_WO37584_193052.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:41.332]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36173/h2o_raw/30000000024244_WO37584_193052.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:42.359] 2 datums found for processing.
+INFO  [2021-10-28 15:26:42.420] Processing path to datum: /pfs/DIR_IN/li7200/36173/co2_raw
+ERROR [2021-10-28 15:26:43.029] /pfs/DIR_IN/li7200/36173/co2_raw/30000000024244_WO33314_170585.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:43.030]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36173/co2_raw/30000000024244_WO33314_170585.xml
+INFO  [2021-10-28 15:26:43.031] Processing path to datum: /pfs/DIR_IN/li7200/36173/h2o_raw
+ERROR [2021-10-28 15:26:43.287] /pfs/DIR_IN/li7200/36173/h2o_raw/30000000024244_WO37584_193052.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:43.288]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36173/h2o_raw/30000000024244_WO37584_193052.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:44.538] 2 datums found for processing.
+INFO  [2021-10-28 15:26:44.599] Processing path to datum: /pfs/DIR_IN/li7200/36173/co2_raw
+ERROR [2021-10-28 15:26:45.214] /pfs/DIR_IN/li7200/36173/co2_raw/30000000024244_WO33314_170585.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:45.215]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36173/co2_raw/30000000024244_WO33314_170585.xml
+INFO  [2021-10-28 15:26:45.215] Processing path to datum: /pfs/DIR_IN/li7200/36173/h2o_raw
+ERROR [2021-10-28 15:26:45.509] /pfs/DIR_IN/li7200/36173/h2o_raw/30000000024244_WO37584_193052.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:45.510]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/36173/h2o_raw/30000000024244_WO37584_193052.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:17.699] 2 datums found for processing.
+INFO  [2021-10-28 15:25:17.757] Processing path to datum: /pfs/DIR_IN/li7200/31351/co2_raw
+ERROR [2021-10-28 15:25:18.288] /pfs/DIR_IN/li7200/31351/co2_raw/30000000005296_WO24469_139491.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:18.289]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31351/co2_raw/30000000005296_WO24469_139491.xml
+INFO  [2021-10-28 15:25:18.290] Processing path to datum: /pfs/DIR_IN/li7200/31351/h2o_raw
+ERROR [2021-10-28 15:25:18.450] /pfs/DIR_IN/li7200/31351/h2o_raw/30000000005296_WO24469_139475.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:18.451]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31351/h2o_raw/30000000005296_WO24469_139475.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:19.468] 2 datums found for processing.
+INFO  [2021-10-28 15:25:19.528] Processing path to datum: /pfs/DIR_IN/li7200/31351/co2_raw
+ERROR [2021-10-28 15:25:20.077] /pfs/DIR_IN/li7200/31351/co2_raw/30000000005296_WO24469_139491.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:20.078]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31351/co2_raw/30000000005296_WO24469_139491.xml
+INFO  [2021-10-28 15:25:20.078] Processing path to datum: /pfs/DIR_IN/li7200/31351/h2o_raw
+ERROR [2021-10-28 15:25:20.235] /pfs/DIR_IN/li7200/31351/h2o_raw/30000000005296_WO24469_139475.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:20.236]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31351/h2o_raw/30000000005296_WO24469_139475.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:21.221] 2 datums found for processing.
+INFO  [2021-10-28 15:25:21.298] Processing path to datum: /pfs/DIR_IN/li7200/31351/co2_raw
+ERROR [2021-10-28 15:25:21.883] /pfs/DIR_IN/li7200/31351/co2_raw/30000000005296_WO24469_139491.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:21.884]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31351/co2_raw/30000000005296_WO24469_139491.xml
+INFO  [2021-10-28 15:25:21.885] Processing path to datum: /pfs/DIR_IN/li7200/31351/h2o_raw
+ERROR [2021-10-28 15:25:22.095] /pfs/DIR_IN/li7200/31351/h2o_raw/30000000005296_WO24469_139475.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:22.096]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31351/h2o_raw/30000000005296_WO24469_139475.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:23.478] 2 datums found for processing.
+INFO  [2021-10-28 15:25:23.543] Processing path to datum: /pfs/DIR_IN/li7200/27641/co2_raw
+ERROR [2021-10-28 15:25:24.058] /pfs/DIR_IN/li7200/27641/co2_raw/30000000005309_WO27918_148040.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:24.059]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27641/co2_raw/30000000005309_WO27918_148040.xml
+INFO  [2021-10-28 15:25:24.059] Processing path to datum: /pfs/DIR_IN/li7200/27641/h2o_raw
+ERROR [2021-10-28 15:25:24.191] /pfs/DIR_IN/li7200/27641/h2o_raw/30000000005309_WO27918_147798.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:24.192]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27641/h2o_raw/30000000005309_WO27918_147798.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:25.168] 2 datums found for processing.
+INFO  [2021-10-28 15:25:25.268] Processing path to datum: /pfs/DIR_IN/li7200/27641/co2_raw
+ERROR [2021-10-28 15:25:25.779] /pfs/DIR_IN/li7200/27641/co2_raw/30000000005309_WO27918_148040.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:25.780]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27641/co2_raw/30000000005309_WO27918_148040.xml
+INFO  [2021-10-28 15:25:25.781] Processing path to datum: /pfs/DIR_IN/li7200/27641/h2o_raw
+ERROR [2021-10-28 15:25:25.905] /pfs/DIR_IN/li7200/27641/h2o_raw/30000000005309_WO27918_147798.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:25.906]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27641/h2o_raw/30000000005309_WO27918_147798.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:26.917] 2 datums found for processing.
+INFO  [2021-10-28 15:25:26.979] Processing path to datum: /pfs/DIR_IN/li7200/27641/co2_raw
+ERROR [2021-10-28 15:25:27.479] /pfs/DIR_IN/li7200/27641/co2_raw/30000000005309_WO27918_148040.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:27.480]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27641/co2_raw/30000000005309_WO27918_148040.xml
+INFO  [2021-10-28 15:25:27.480] Processing path to datum: /pfs/DIR_IN/li7200/27641/h2o_raw
+ERROR [2021-10-28 15:25:27.608] /pfs/DIR_IN/li7200/27641/h2o_raw/30000000005309_WO27918_147798.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:27.609]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/27641/h2o_raw/30000000005309_WO27918_147798.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:28.821] 2 datums found for processing.
+INFO  [2021-10-28 15:25:28.883] Processing path to datum: /pfs/DIR_IN/li7200/41128/co2_raw
+ERROR [2021-10-28 15:25:29.428] /pfs/DIR_IN/li7200/41128/co2_raw/30000000016594_WO34208_177639.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:29.429]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41128/co2_raw/30000000016594_WO34208_177639.xml
+INFO  [2021-10-28 15:25:29.429] Processing path to datum: /pfs/DIR_IN/li7200/41128/h2o_raw
+ERROR [2021-10-28 15:25:29.594] /pfs/DIR_IN/li7200/41128/h2o_raw/30000000016594_WO34208_177587.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:29.595]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41128/h2o_raw/30000000016594_WO34208_177587.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:30.611] 2 datums found for processing.
+INFO  [2021-10-28 15:25:30.682] Processing path to datum: /pfs/DIR_IN/li7200/41128/co2_raw
+ERROR [2021-10-28 15:25:31.208] /pfs/DIR_IN/li7200/41128/co2_raw/30000000016594_WO34208_177639.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:31.209]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41128/co2_raw/30000000016594_WO34208_177639.xml
+INFO  [2021-10-28 15:25:31.209] Processing path to datum: /pfs/DIR_IN/li7200/41128/h2o_raw
+ERROR [2021-10-28 15:25:31.340] /pfs/DIR_IN/li7200/41128/h2o_raw/30000000016594_WO34208_177587.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:31.341]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41128/h2o_raw/30000000016594_WO34208_177587.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:32.361] 2 datums found for processing.
+INFO  [2021-10-28 15:25:32.449] Processing path to datum: /pfs/DIR_IN/li7200/41128/co2_raw
+ERROR [2021-10-28 15:25:32.951] /pfs/DIR_IN/li7200/41128/co2_raw/30000000016594_WO34208_177639.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:32.952]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41128/co2_raw/30000000016594_WO34208_177639.xml
+INFO  [2021-10-28 15:25:32.953] Processing path to datum: /pfs/DIR_IN/li7200/41128/h2o_raw
+ERROR [2021-10-28 15:25:33.079] /pfs/DIR_IN/li7200/41128/h2o_raw/30000000016594_WO34208_177587.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:33.080]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/41128/h2o_raw/30000000016594_WO34208_177587.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:34.196] 2 datums found for processing.
+INFO  [2021-10-28 15:25:34.256] Processing path to datum: /pfs/DIR_IN/li7200/31341/co2_raw
+ERROR [2021-10-28 15:25:34.785] /pfs/DIR_IN/li7200/31341/co2_raw/30000000005302_WO33095_168880.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:34.786]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31341/co2_raw/30000000005302_WO33095_168880.xml
+INFO  [2021-10-28 15:25:34.786] Processing path to datum: /pfs/DIR_IN/li7200/31341/h2o_raw
+ERROR [2021-10-28 15:25:35.050] /pfs/DIR_IN/li7200/31341/h2o_raw/30000000005302_WO39762_204672.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:35.053]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31341/h2o_raw/30000000005302_WO39762_204672.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:36.005] 2 datums found for processing.
+INFO  [2021-10-28 15:25:36.065] Processing path to datum: /pfs/DIR_IN/li7200/31341/co2_raw
+ERROR [2021-10-28 15:25:36.566] /pfs/DIR_IN/li7200/31341/co2_raw/30000000005302_WO33095_168880.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:36.567]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31341/co2_raw/30000000005302_WO33095_168880.xml
+INFO  [2021-10-28 15:25:36.568] Processing path to datum: /pfs/DIR_IN/li7200/31341/h2o_raw
+ERROR [2021-10-28 15:25:36.836] /pfs/DIR_IN/li7200/31341/h2o_raw/30000000005302_WO39762_204672.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:36.837]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31341/h2o_raw/30000000005302_WO39762_204672.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:37.772] 2 datums found for processing.
+INFO  [2021-10-28 15:25:37.832] Processing path to datum: /pfs/DIR_IN/li7200/31341/co2_raw
+ERROR [2021-10-28 15:25:38.393] /pfs/DIR_IN/li7200/31341/co2_raw/30000000005302_WO33095_168880.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:38.394]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31341/co2_raw/30000000005302_WO33095_168880.xml
+INFO  [2021-10-28 15:25:38.394] Processing path to datum: /pfs/DIR_IN/li7200/31341/h2o_raw
+ERROR [2021-10-28 15:25:38.663] /pfs/DIR_IN/li7200/31341/h2o_raw/30000000005302_WO39762_204672.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:38.663]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/31341/h2o_raw/30000000005302_WO39762_204672.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:39.900] 2 datums found for processing.
+INFO  [2021-10-28 15:25:39.959] Processing path to datum: /pfs/DIR_IN/li7200/33442/co2_raw
+ERROR [2021-10-28 15:25:40.437] /pfs/DIR_IN/li7200/33442/co2_raw/30000000005313_WO26586_143211.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:40.438]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33442/co2_raw/30000000005313_WO26586_143211.xml
+INFO  [2021-10-28 15:25:40.439] Processing path to datum: /pfs/DIR_IN/li7200/33442/h2o_raw
+ERROR [2021-10-28 15:25:40.651] /pfs/DIR_IN/li7200/33442/h2o_raw/30000000005313_WO34415_178649.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:40.652]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33442/h2o_raw/30000000005313_WO34415_178649.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:41.604] 2 datums found for processing.
+INFO  [2021-10-28 15:25:41.667] Processing path to datum: /pfs/DIR_IN/li7200/33442/co2_raw
+ERROR [2021-10-28 15:25:42.150] /pfs/DIR_IN/li7200/33442/co2_raw/30000000005313_WO26586_143211.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:42.151]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33442/co2_raw/30000000005313_WO26586_143211.xml
+INFO  [2021-10-28 15:25:42.152] Processing path to datum: /pfs/DIR_IN/li7200/33442/h2o_raw
+ERROR [2021-10-28 15:25:42.365] /pfs/DIR_IN/li7200/33442/h2o_raw/30000000005313_WO34415_178649.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:42.366]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33442/h2o_raw/30000000005313_WO34415_178649.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:43.336] 2 datums found for processing.
+INFO  [2021-10-28 15:25:43.395] Processing path to datum: /pfs/DIR_IN/li7200/33442/co2_raw
+ERROR [2021-10-28 15:25:43.928] /pfs/DIR_IN/li7200/33442/co2_raw/30000000005313_WO26586_143211.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:43.929]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33442/co2_raw/30000000005313_WO26586_143211.xml
+INFO  [2021-10-28 15:25:43.930] Processing path to datum: /pfs/DIR_IN/li7200/33442/h2o_raw
+ERROR [2021-10-28 15:25:44.152] /pfs/DIR_IN/li7200/33442/h2o_raw/30000000005313_WO34415_178649.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:44.153]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33442/h2o_raw/30000000005313_WO34415_178649.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:45.284] 2 datums found for processing.
+INFO  [2021-10-28 15:25:45.363] Processing path to datum: /pfs/DIR_IN/li7200/47389/co2_raw
+ERROR [2021-10-28 15:25:45.716] /pfs/DIR_IN/li7200/47389/co2_raw/30000000023817_WO32328_164561.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:45.717]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47389/co2_raw/30000000023817_WO32328_164561.xml
+INFO  [2021-10-28 15:25:45.718] Processing path to datum: /pfs/DIR_IN/li7200/47389/h2o_raw
+ERROR [2021-10-28 15:25:45.746] /pfs/DIR_IN/li7200/47389/h2o_raw/30000000023817_WO32328_164537.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:45.747]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47389/h2o_raw/30000000023817_WO32328_164537.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:46.763] 2 datums found for processing.
+INFO  [2021-10-28 15:25:46.827] Processing path to datum: /pfs/DIR_IN/li7200/47389/co2_raw
+ERROR [2021-10-28 15:25:47.197] /pfs/DIR_IN/li7200/47389/co2_raw/30000000023817_WO32328_164561.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:47.198]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47389/co2_raw/30000000023817_WO32328_164561.xml
+INFO  [2021-10-28 15:25:47.200] Processing path to datum: /pfs/DIR_IN/li7200/47389/h2o_raw
+ERROR [2021-10-28 15:25:47.231] /pfs/DIR_IN/li7200/47389/h2o_raw/30000000023817_WO32328_164537.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:47.233]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47389/h2o_raw/30000000023817_WO32328_164537.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:48.479] 2 datums found for processing.
+INFO  [2021-10-28 15:25:48.541] Processing path to datum: /pfs/DIR_IN/li7200/47389/co2_raw
+ERROR [2021-10-28 15:25:48.881] /pfs/DIR_IN/li7200/47389/co2_raw/30000000023817_WO32328_164561.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:48.881]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47389/co2_raw/30000000023817_WO32328_164561.xml
+INFO  [2021-10-28 15:25:48.882] Processing path to datum: /pfs/DIR_IN/li7200/47389/h2o_raw
+ERROR [2021-10-28 15:25:48.908] /pfs/DIR_IN/li7200/47389/h2o_raw/30000000023817_WO32328_164537.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:48.909]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/47389/h2o_raw/30000000023817_WO32328_164537.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:50.293] 2 datums found for processing.
+INFO  [2021-10-28 15:25:50.354] Processing path to datum: /pfs/DIR_IN/li7200/51204/co2_raw
+ERROR [2021-10-28 15:25:50.754] /pfs/DIR_IN/li7200/51204/co2_raw/30000000024529_WO50843_261746.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:50.755]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/51204/co2_raw/30000000024529_WO50843_261746.xml
+INFO  [2021-10-28 15:25:50.756] Processing path to datum: /pfs/DIR_IN/li7200/51204/h2o_raw
+ERROR [2021-10-28 15:25:50.800] /pfs/DIR_IN/li7200/51204/h2o_raw/30000000024529_WO50843_261555.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:50.801]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/51204/h2o_raw/30000000024529_WO50843_261555.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:51.845] 2 datums found for processing.
+INFO  [2021-10-28 15:25:51.904] Processing path to datum: /pfs/DIR_IN/li7200/51204/co2_raw
+ERROR [2021-10-28 15:25:52.315] /pfs/DIR_IN/li7200/51204/co2_raw/30000000024529_WO50843_261746.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:52.316]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/51204/co2_raw/30000000024529_WO50843_261746.xml
+INFO  [2021-10-28 15:25:52.317] Processing path to datum: /pfs/DIR_IN/li7200/51204/h2o_raw
+ERROR [2021-10-28 15:25:52.365] /pfs/DIR_IN/li7200/51204/h2o_raw/30000000024529_WO50843_261555.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:52.366]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/51204/h2o_raw/30000000024529_WO50843_261555.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:53.308] 2 datums found for processing.
+INFO  [2021-10-28 15:25:53.370] Processing path to datum: /pfs/DIR_IN/li7200/51204/co2_raw
+ERROR [2021-10-28 15:25:53.745] /pfs/DIR_IN/li7200/51204/co2_raw/30000000024529_WO50843_261746.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:53.746]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/51204/co2_raw/30000000024529_WO50843_261746.xml
+INFO  [2021-10-28 15:25:53.747] Processing path to datum: /pfs/DIR_IN/li7200/51204/h2o_raw
+ERROR [2021-10-28 15:25:53.789] /pfs/DIR_IN/li7200/51204/h2o_raw/30000000024529_WO50843_261555.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:53.790]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/51204/h2o_raw/30000000024529_WO50843_261555.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:54.884] 2 datums found for processing.
+INFO  [2021-10-28 15:25:54.946] Processing path to datum: /pfs/DIR_IN/li7200/44577/co2_raw
+ERROR [2021-10-28 15:25:55.432] /pfs/DIR_IN/li7200/44577/co2_raw/21000000001573_WO34705_180989.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:55.433]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44577/co2_raw/21000000001573_WO34705_180989.xml
+INFO  [2021-10-28 15:25:55.433] Processing path to datum: /pfs/DIR_IN/li7200/44577/h2o_raw
+ERROR [2021-10-28 15:25:55.518] /pfs/DIR_IN/li7200/44577/h2o_raw/21000000001573_WO34705_180804.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:55.519]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44577/h2o_raw/21000000001573_WO34705_180804.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:56.498] 2 datums found for processing.
+INFO  [2021-10-28 15:25:56.561] Processing path to datum: /pfs/DIR_IN/li7200/44577/co2_raw
+ERROR [2021-10-28 15:25:57.027] /pfs/DIR_IN/li7200/44577/co2_raw/21000000001573_WO34705_180989.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:57.028]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44577/co2_raw/21000000001573_WO34705_180989.xml
+INFO  [2021-10-28 15:25:57.028] Processing path to datum: /pfs/DIR_IN/li7200/44577/h2o_raw
+ERROR [2021-10-28 15:25:57.113] /pfs/DIR_IN/li7200/44577/h2o_raw/21000000001573_WO34705_180804.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:57.114]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44577/h2o_raw/21000000001573_WO34705_180804.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:58.045] 2 datums found for processing.
+INFO  [2021-10-28 15:25:58.110] Processing path to datum: /pfs/DIR_IN/li7200/44577/co2_raw
+ERROR [2021-10-28 15:25:58.581] /pfs/DIR_IN/li7200/44577/co2_raw/21000000001573_WO34705_180989.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:58.582]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44577/co2_raw/21000000001573_WO34705_180989.xml
+INFO  [2021-10-28 15:25:58.582] Processing path to datum: /pfs/DIR_IN/li7200/44577/h2o_raw
+ERROR [2021-10-28 15:25:58.665] /pfs/DIR_IN/li7200/44577/h2o_raw/21000000001573_WO34705_180804.xml does not conform to the schema  
+ERROR [2021-10-28 15:25:58.666]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/44577/h2o_raw/21000000001573_WO34705_180804.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:25:59.794] 2 datums found for processing.
+INFO  [2021-10-28 15:25:59.860] Processing path to datum: /pfs/DIR_IN/li7200/33472/co2_raw
+ERROR [2021-10-28 15:26:00.198] /pfs/DIR_IN/li7200/33472/co2_raw/30000000005301_WO25438_139121.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:00.199]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33472/co2_raw/30000000005301_WO25438_139121.xml
+INFO  [2021-10-28 15:26:00.200] Processing path to datum: /pfs/DIR_IN/li7200/33472/h2o_raw
+ERROR [2021-10-28 15:26:00.221] /pfs/DIR_IN/li7200/33472/h2o_raw/30000000005301_WO25438_138033.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:00.222]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33472/h2o_raw/30000000005301_WO25438_138033.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:01.152] 2 datums found for processing.
+INFO  [2021-10-28 15:26:01.211] Processing path to datum: /pfs/DIR_IN/li7200/33472/co2_raw
+ERROR [2021-10-28 15:26:01.516] /pfs/DIR_IN/li7200/33472/co2_raw/30000000005301_WO25438_139121.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:01.517]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33472/co2_raw/30000000005301_WO25438_139121.xml
+INFO  [2021-10-28 15:26:01.517] Processing path to datum: /pfs/DIR_IN/li7200/33472/h2o_raw
+ERROR [2021-10-28 15:26:01.539] /pfs/DIR_IN/li7200/33472/h2o_raw/30000000005301_WO25438_138033.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:01.539]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33472/h2o_raw/30000000005301_WO25438_138033.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:02.451] 2 datums found for processing.
+INFO  [2021-10-28 15:26:02.511] Processing path to datum: /pfs/DIR_IN/li7200/33472/co2_raw
+ERROR [2021-10-28 15:26:02.812] /pfs/DIR_IN/li7200/33472/co2_raw/30000000005301_WO25438_139121.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:02.813]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33472/co2_raw/30000000005301_WO25438_139121.xml
+INFO  [2021-10-28 15:26:02.813] Processing path to datum: /pfs/DIR_IN/li7200/33472/h2o_raw
+ERROR [2021-10-28 15:26:02.835] /pfs/DIR_IN/li7200/33472/h2o_raw/30000000005301_WO25438_138033.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:02.836]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33472/h2o_raw/30000000005301_WO25438_138033.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:03.944] 2 datums found for processing.
+INFO  [2021-10-28 15:26:04.007] Processing path to datum: /pfs/DIR_IN/li7200/34334/co2_raw
+ERROR [2021-10-28 15:26:04.398] /pfs/DIR_IN/li7200/34334/co2_raw/30000000005303_WO24005_133333.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:04.399]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34334/co2_raw/30000000005303_WO24005_133333.xml
+INFO  [2021-10-28 15:26:04.400] Processing path to datum: /pfs/DIR_IN/li7200/34334/h2o_raw
+ERROR [2021-10-28 15:26:04.543] /pfs/DIR_IN/li7200/34334/h2o_raw/30000000005303_WO33442_173773.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:04.544]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34334/h2o_raw/30000000005303_WO33442_173773.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:05.454] 2 datums found for processing.
+INFO  [2021-10-28 15:26:05.516] Processing path to datum: /pfs/DIR_IN/li7200/34334/co2_raw
+ERROR [2021-10-28 15:26:05.874] /pfs/DIR_IN/li7200/34334/co2_raw/30000000005303_WO24005_133333.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:05.875]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34334/co2_raw/30000000005303_WO24005_133333.xml
+INFO  [2021-10-28 15:26:05.876] Processing path to datum: /pfs/DIR_IN/li7200/34334/h2o_raw
+ERROR [2021-10-28 15:26:06.018] /pfs/DIR_IN/li7200/34334/h2o_raw/30000000005303_WO33442_173773.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:06.019]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34334/h2o_raw/30000000005303_WO33442_173773.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:06.947] 2 datums found for processing.
+INFO  [2021-10-28 15:26:07.010] Processing path to datum: /pfs/DIR_IN/li7200/34334/co2_raw
+ERROR [2021-10-28 15:26:07.377] /pfs/DIR_IN/li7200/34334/co2_raw/30000000005303_WO24005_133333.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:07.378]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34334/co2_raw/30000000005303_WO24005_133333.xml
+INFO  [2021-10-28 15:26:07.379] Processing path to datum: /pfs/DIR_IN/li7200/34334/h2o_raw
+ERROR [2021-10-28 15:26:07.523] /pfs/DIR_IN/li7200/34334/h2o_raw/30000000005303_WO33442_173773.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:07.524]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34334/h2o_raw/30000000005303_WO33442_173773.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:08.604] 2 datums found for processing.
+INFO  [2021-10-28 15:26:08.663] Processing path to datum: /pfs/DIR_IN/li7200/33443/co2_raw
+ERROR [2021-10-28 15:26:09.163] /pfs/DIR_IN/li7200/33443/co2_raw/30000000005311_WO23073_170105.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:09.165]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33443/co2_raw/30000000005311_WO23073_170105.xml
+INFO  [2021-10-28 15:26:09.165] Processing path to datum: /pfs/DIR_IN/li7200/33443/h2o_raw
+ERROR [2021-10-28 15:26:09.382] /pfs/DIR_IN/li7200/33443/h2o_raw/30000000005311_WO23073_169894.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:09.383]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33443/h2o_raw/30000000005311_WO23073_169894.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:10.291] 2 datums found for processing.
+INFO  [2021-10-28 15:26:10.350] Processing path to datum: /pfs/DIR_IN/li7200/33443/co2_raw
+ERROR [2021-10-28 15:26:10.846] /pfs/DIR_IN/li7200/33443/co2_raw/30000000005311_WO23073_170105.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:10.847]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33443/co2_raw/30000000005311_WO23073_170105.xml
+INFO  [2021-10-28 15:26:10.847] Processing path to datum: /pfs/DIR_IN/li7200/33443/h2o_raw
+ERROR [2021-10-28 15:26:11.066] /pfs/DIR_IN/li7200/33443/h2o_raw/30000000005311_WO23073_169894.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:11.067]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33443/h2o_raw/30000000005311_WO23073_169894.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:11.974] 2 datums found for processing.
+INFO  [2021-10-28 15:26:12.035] Processing path to datum: /pfs/DIR_IN/li7200/33443/co2_raw
+ERROR [2021-10-28 15:26:12.538] /pfs/DIR_IN/li7200/33443/co2_raw/30000000005311_WO23073_170105.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:12.540]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33443/co2_raw/30000000005311_WO23073_170105.xml
+INFO  [2021-10-28 15:26:12.540] Processing path to datum: /pfs/DIR_IN/li7200/33443/h2o_raw
+ERROR [2021-10-28 15:26:12.755] /pfs/DIR_IN/li7200/33443/h2o_raw/30000000005311_WO23073_169894.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:12.756]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/33443/h2o_raw/30000000005311_WO23073_169894.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:13.894] 2 datums found for processing.
+INFO  [2021-10-28 15:26:13.953] Processing path to datum: /pfs/DIR_IN/li7200/34338/co2_raw
+ERROR [2021-10-28 15:26:14.545] /pfs/DIR_IN/li7200/34338/co2_raw/30000000023329_WO34961_182220.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:14.546]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34338/co2_raw/30000000023329_WO34961_182220.xml
+INFO  [2021-10-28 15:26:14.546] Processing path to datum: /pfs/DIR_IN/li7200/34338/h2o_raw
+ERROR [2021-10-28 15:26:14.723] /pfs/DIR_IN/li7200/34338/h2o_raw/30000000023329_WO34961_181883.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:14.724]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34338/h2o_raw/30000000023329_WO34961_181883.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:15.701] 2 datums found for processing.
+INFO  [2021-10-28 15:26:15.759] Processing path to datum: /pfs/DIR_IN/li7200/34338/co2_raw
+ERROR [2021-10-28 15:26:16.326] /pfs/DIR_IN/li7200/34338/co2_raw/30000000023329_WO34961_182220.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:16.328]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34338/co2_raw/30000000023329_WO34961_182220.xml
+INFO  [2021-10-28 15:26:16.328] Processing path to datum: /pfs/DIR_IN/li7200/34338/h2o_raw
+ERROR [2021-10-28 15:26:16.504] /pfs/DIR_IN/li7200/34338/h2o_raw/30000000023329_WO34961_181883.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:16.505]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34338/h2o_raw/30000000023329_WO34961_181883.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:17.438] 2 datums found for processing.
+INFO  [2021-10-28 15:26:17.499] Processing path to datum: /pfs/DIR_IN/li7200/34338/co2_raw
+ERROR [2021-10-28 15:26:18.071] /pfs/DIR_IN/li7200/34338/co2_raw/30000000023329_WO34961_182220.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:18.072]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34338/co2_raw/30000000023329_WO34961_182220.xml
+INFO  [2021-10-28 15:26:18.072] Processing path to datum: /pfs/DIR_IN/li7200/34338/h2o_raw
+ERROR [2021-10-28 15:26:18.250] /pfs/DIR_IN/li7200/34338/h2o_raw/30000000023329_WO34961_181883.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:18.251]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34338/h2o_raw/30000000023329_WO34961_181883.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:19.670] 2 datums found for processing.
+INFO  [2021-10-28 15:26:19.728] Processing path to datum: /pfs/DIR_IN/li7200/29217/co2_raw
+ERROR [2021-10-28 15:26:20.238] /pfs/DIR_IN/li7200/29217/co2_raw/30000000023517_WO28381_170587.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:20.239]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29217/co2_raw/30000000023517_WO28381_170587.xml
+INFO  [2021-10-28 15:26:20.240] Processing path to datum: /pfs/DIR_IN/li7200/29217/h2o_raw
+ERROR [2021-10-28 15:26:20.325] /pfs/DIR_IN/li7200/29217/h2o_raw/30000000023517_WO28381_170232.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:20.326]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29217/h2o_raw/30000000023517_WO28381_170232.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:21.260] 2 datums found for processing.
+INFO  [2021-10-28 15:26:21.322] Processing path to datum: /pfs/DIR_IN/li7200/29217/co2_raw
+ERROR [2021-10-28 15:26:21.823] /pfs/DIR_IN/li7200/29217/co2_raw/30000000023517_WO28381_170587.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:21.824]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29217/co2_raw/30000000023517_WO28381_170587.xml
+INFO  [2021-10-28 15:26:21.825] Processing path to datum: /pfs/DIR_IN/li7200/29217/h2o_raw
+ERROR [2021-10-28 15:26:21.910] /pfs/DIR_IN/li7200/29217/h2o_raw/30000000023517_WO28381_170232.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:21.911]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29217/h2o_raw/30000000023517_WO28381_170232.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:22.842] 2 datums found for processing.
+INFO  [2021-10-28 15:26:22.902] Processing path to datum: /pfs/DIR_IN/li7200/29217/co2_raw
+ERROR [2021-10-28 15:26:23.437] /pfs/DIR_IN/li7200/29217/co2_raw/30000000023517_WO28381_170587.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:23.439]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29217/co2_raw/30000000023517_WO28381_170587.xml
+INFO  [2021-10-28 15:26:23.439] Processing path to datum: /pfs/DIR_IN/li7200/29217/h2o_raw
+ERROR [2021-10-28 15:26:23.525] /pfs/DIR_IN/li7200/29217/h2o_raw/30000000023517_WO28381_170232.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:23.526]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/29217/h2o_raw/30000000023517_WO28381_170232.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:24.660] 2 datums found for processing.
+INFO  [2021-10-28 15:26:24.721] Processing path to datum: /pfs/DIR_IN/li7200/34431/co2_raw
+ERROR [2021-10-28 15:26:25.242] /pfs/DIR_IN/li7200/34431/co2_raw/30000000023328_WO27091_143228.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:25.243]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34431/co2_raw/30000000023328_WO27091_143228.xml
+INFO  [2021-10-28 15:26:25.244] Processing path to datum: /pfs/DIR_IN/li7200/34431/h2o_raw
+ERROR [2021-10-28 15:26:25.392] /pfs/DIR_IN/li7200/34431/h2o_raw/30000000023328_WO27091_143119.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:25.393]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34431/h2o_raw/30000000023328_WO27091_143119.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:26.511] 2 datums found for processing.
+INFO  [2021-10-28 15:26:26.572] Processing path to datum: /pfs/DIR_IN/li7200/34431/co2_raw
+ERROR [2021-10-28 15:26:27.089] /pfs/DIR_IN/li7200/34431/co2_raw/30000000023328_WO27091_143228.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:27.090]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34431/co2_raw/30000000023328_WO27091_143228.xml
+INFO  [2021-10-28 15:26:27.091] Processing path to datum: /pfs/DIR_IN/li7200/34431/h2o_raw
+ERROR [2021-10-28 15:26:27.242] /pfs/DIR_IN/li7200/34431/h2o_raw/30000000023328_WO27091_143119.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:27.243]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34431/h2o_raw/30000000023328_WO27091_143119.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:28.255] 2 datums found for processing.
+INFO  [2021-10-28 15:26:28.316] Processing path to datum: /pfs/DIR_IN/li7200/34431/co2_raw
+ERROR [2021-10-28 15:26:28.838] /pfs/DIR_IN/li7200/34431/co2_raw/30000000023328_WO27091_143228.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:28.839]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34431/co2_raw/30000000023328_WO27091_143228.xml
+INFO  [2021-10-28 15:26:28.840] Processing path to datum: /pfs/DIR_IN/li7200/34431/h2o_raw
+ERROR [2021-10-28 15:26:29.001] /pfs/DIR_IN/li7200/34431/h2o_raw/30000000023328_WO27091_143119.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:29.002]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34431/h2o_raw/30000000023328_WO27091_143119.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:30.259] 2 datums found for processing.
+INFO  [2021-10-28 15:26:30.322] Processing path to datum: /pfs/DIR_IN/li7200/40774/co2_raw
+ERROR [2021-10-28 15:26:30.928] /pfs/DIR_IN/li7200/40774/co2_raw/30000000016591_WO28323_148629.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:30.929]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40774/co2_raw/30000000016591_WO28323_148629.xml
+INFO  [2021-10-28 15:26:30.929] Processing path to datum: /pfs/DIR_IN/li7200/40774/h2o_raw
+ERROR [2021-10-28 15:26:31.105] /pfs/DIR_IN/li7200/40774/h2o_raw/30000000016591_WO28323_148348.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:31.106]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40774/h2o_raw/30000000016591_WO28323_148348.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:32.097] 2 datums found for processing.
+INFO  [2021-10-28 15:26:32.159] Processing path to datum: /pfs/DIR_IN/li7200/40774/co2_raw
+ERROR [2021-10-28 15:26:32.765] /pfs/DIR_IN/li7200/40774/co2_raw/30000000016591_WO28323_148629.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:32.766]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40774/co2_raw/30000000016591_WO28323_148629.xml
+INFO  [2021-10-28 15:26:32.767] Processing path to datum: /pfs/DIR_IN/li7200/40774/h2o_raw
+ERROR [2021-10-28 15:26:32.922] /pfs/DIR_IN/li7200/40774/h2o_raw/30000000016591_WO28323_148348.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:32.923]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40774/h2o_raw/30000000016591_WO28323_148348.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:33.954] 2 datums found for processing.
+INFO  [2021-10-28 15:26:34.016] Processing path to datum: /pfs/DIR_IN/li7200/40774/co2_raw
+ERROR [2021-10-28 15:26:34.643] /pfs/DIR_IN/li7200/40774/co2_raw/30000000016591_WO28323_148629.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:34.644]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40774/co2_raw/30000000016591_WO28323_148629.xml
+INFO  [2021-10-28 15:26:34.645] Processing path to datum: /pfs/DIR_IN/li7200/40774/h2o_raw
+ERROR [2021-10-28 15:26:34.802] /pfs/DIR_IN/li7200/40774/h2o_raw/30000000016591_WO28323_148348.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:34.803]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/40774/h2o_raw/30000000016591_WO28323_148348.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:36.014] 2 datums found for processing.
+INFO  [2021-10-28 15:26:36.095] Processing path to datum: /pfs/DIR_IN/li7200/34337/co2_raw
+ERROR [2021-10-28 15:26:36.586] /pfs/DIR_IN/li7200/34337/co2_raw/30000000023501_WO27452_186740.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:36.587]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34337/co2_raw/30000000023501_WO27452_186740.xml
+INFO  [2021-10-28 15:26:36.588] Processing path to datum: /pfs/DIR_IN/li7200/34337/h2o_raw
+ERROR [2021-10-28 15:26:36.734] /pfs/DIR_IN/li7200/34337/h2o_raw/30000000023501_WO42590_223157.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:36.735]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34337/h2o_raw/30000000023501_WO42590_223157.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:37.801] 2 datums found for processing.
+INFO  [2021-10-28 15:26:37.901] Processing path to datum: /pfs/DIR_IN/li7200/34337/co2_raw
+ERROR [2021-10-28 15:26:38.543] /pfs/DIR_IN/li7200/34337/co2_raw/30000000023501_WO27452_186740.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:38.544]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34337/co2_raw/30000000023501_WO27452_186740.xml
+INFO  [2021-10-28 15:26:38.545] Processing path to datum: /pfs/DIR_IN/li7200/34337/h2o_raw
+ERROR [2021-10-28 15:26:38.692] /pfs/DIR_IN/li7200/34337/h2o_raw/30000000023501_WO42590_223157.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:38.693]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34337/h2o_raw/30000000023501_WO42590_223157.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:39.651] 2 datums found for processing.
+INFO  [2021-10-28 15:26:39.710] Processing path to datum: /pfs/DIR_IN/li7200/34337/co2_raw
+ERROR [2021-10-28 15:26:40.271] /pfs/DIR_IN/li7200/34337/co2_raw/30000000023501_WO27452_186740.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:40.272]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34337/co2_raw/30000000023501_WO27452_186740.xml
+INFO  [2021-10-28 15:26:40.273] Processing path to datum: /pfs/DIR_IN/li7200/34337/h2o_raw
+ERROR [2021-10-28 15:26:40.418] /pfs/DIR_IN/li7200/34337/h2o_raw/30000000023501_WO42590_223157.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:40.419]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/34337/h2o_raw/30000000023501_WO42590_223157.xml
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:41.554] 2 datums found for processing.
+INFO  [2021-10-28 15:26:41.618] Processing path to datum: /pfs/DIR_IN/li7200/28884/co2_raw
+ERROR [2021-10-28 15:26:42.235] /pfs/DIR_IN/li7200/28884/co2_raw/30000000016578_WO33861_174531.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:42.236]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28884/co2_raw/30000000016578_WO33861_174531.xml
+INFO  [2021-10-28 15:26:42.236] Processing path to datum: /pfs/DIR_IN/li7200/28884/h2o_raw
+INFO  [2021-10-28 15:26:43.781] 30000000016578_WO40096_204226.xml copied to all daily folders between /pfs/out/li7200/2021/01/01/28884/calibration/h2o_raw and /pfs/out/li7200/2021/12/31/28884/calibration/h2o_raw
+Error in { : task 1 failed - ""
+Calls: %dopar% -> <Anonymous>
+Execution halted
+Loading required package: iterators
+Loading required package: parallel
+INFO  [2021-10-28 15:26:44.950] 2 datums found for processing.
+INFO  [2021-10-28 15:26:45.014] Processing path to datum: /pfs/DIR_IN/li7200/28884/co2_raw
+ERROR [2021-10-28 15:26:45.688] /pfs/DIR_IN/li7200/28884/co2_raw/30000000016578_WO33861_174531.xml does not conform to the schema  
+ERROR [2021-10-28 15:26:45.689]  ====== def.read.cal.xml will not run due to the error in xml,  /pfs/DIR_IN/li7200/28884/co2_raw/30000000016578_WO33861_174531.xml
+INFO  [2021-10-28 15:26:45.690] Processing path to datum: /pfs/DIR_IN/li7200/28884/h2o_raw
