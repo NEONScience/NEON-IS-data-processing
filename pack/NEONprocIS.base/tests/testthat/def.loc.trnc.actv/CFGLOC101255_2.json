@@ -10,8 +10,10 @@
                 "description": "Arikaree River Single Aspirated Air Temperature",
                 "site": "ARIK",
                 "context": [
-                    "aspirated-single-114",
                     "aspirated-single"
+                ],
+                "group": [
+                    "aspirated-single-114"
                 ],
                 "active_periods": [
                     {
