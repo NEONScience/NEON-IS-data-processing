@@ -88,10 +88,10 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "2.3.0",
+      "Version": "3.0.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "26fb4f0871c8e5b84d77f6dc22f2ee0a"
+      "Hash": "e3ae5d68dea0c55a12ea12a9fda02e61"
     },
     "codetools": {
       "Package": "codetools",
@@ -102,17 +102,17 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.3.1",
+      "Version": "0.4.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "e02edab2bc389c5e4b12949b13df44f2"
+      "Hash": "40ba3fd26c8f61d8d14d334bc7761df9"
     },
     "crayon": {
       "Package": "crayon",
-      "Version": "1.4.0",
+      "Version": "1.4.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "fcff9126a4928a96c94e3df85b024899"
+      "Hash": "e75525c55c70e5f4f78c9960a4b402e9"
     },
     "curl": {
       "Package": "curl",
@@ -123,10 +123,10 @@
     },
     "desc": {
       "Package": "desc",
-      "Version": "1.3.0",
+      "Version": "1.4.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b6963166f7f10b970af1006c462ce6cd"
+      "Hash": "28763d08fadd0b733e3cee9dab4e12fe"
     },
     "diffobj": {
       "Package": "diffobj",
@@ -137,10 +137,10 @@
     },
     "digest": {
       "Package": "digest",
-      "Version": "0.6.27",
+      "Version": "0.6.28",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a0cbe758a531d054b537d16dff4d58a1"
+      "Hash": "49b5c6e230bfec487b8917d5a0c77cca"
     },
     "doParallel": {
       "Package": "doParallel",
@@ -242,10 +242,10 @@
     },
     "lifecycle": {
       "Package": "lifecycle",
-      "Version": "1.0.0",
+      "Version": "1.0.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3471fb65971f1a7b2d4ae7848cf2db8d"
+      "Hash": "a6b6d352e3ed897373ab19d8395c98d0"
     },
     "lubridate": {
       "Package": "lubridate",
@@ -270,10 +270,17 @@
     },
     "pillar": {
       "Package": "pillar",
-      "Version": "1.6.2",
+      "Version": "1.6.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "43f228eb4b49093d1c8a5c93cae9efe9"
+      "Hash": "60200b6aa32314ac457d3efbb5ccbd98"
+    },
+    "pkgbuild": {
+      "Package": "pkgbuild",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "725fcc30222d4d11ec68efb8ff11a9af"
     },
     "pkgconfig": {
       "Package": "pkgconfig",
@@ -284,10 +291,10 @@
     },
     "pkgload": {
       "Package": "pkgload",
-      "Version": "1.2.1",
+      "Version": "1.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "463642747f81879e6752485aefb831cf"
+      "Hash": "b6b150cd4709e0c0c9b5d51ac4376282"
     },
     "plyr": {
       "Package": "plyr",
@@ -309,6 +316,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "a555924add98c99d2f411e37e7d25e9f"
+    },
+    "prettyunits": {
+      "Package": "prettyunits",
+      "Version": "1.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "95ef9167b75dde9d2ccc3c7528393e7e"
     },
     "processx": {
       "Package": "processx",
@@ -410,10 +424,10 @@
     },
     "tibble": {
       "Package": "tibble",
-      "Version": "3.1.3",
+      "Version": "3.1.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "038455513fde65e79c25e724e0c84ca2"
+      "Hash": "36eb05ad4cfdfeaa56f5a9b2a1311efd"
     },
     "tidyselect": {
       "Package": "tidyselect",

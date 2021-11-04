@@ -8,6 +8,7 @@
       "/flow.data.comb.ts.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
       "FileSchmComb=$SCHEMA_COMB",
       "DirComb=data|uncertainty_data",
       "NameDirCombOut=stats",
@@ -15,7 +16,7 @@
       "ColKeep=readout_time|readout_time|sensorDepth|sensorDepth_ucrtExpn",
       "NameFileSufx=_basicStats_100"
     ],
-    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v0.0.8",
+    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v0.0.9",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
