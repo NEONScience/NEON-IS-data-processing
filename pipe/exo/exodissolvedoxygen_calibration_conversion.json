@@ -8,12 +8,13 @@
       "/flow.cal.conv.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
       "FileSchmData=$FILE_SCHEMA_DATA",
       "FileSchmQf=$FILE_SCHEMA_FLAGS",
       "TermQf=dissolved_oxygen_saturation",
       "TermFuncUcrt=dissolved_oxygen:def.ucrt.wq.do.conc|dissolved_oxygen_saturation:def.ucrt.meas.mult"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.51",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.53",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

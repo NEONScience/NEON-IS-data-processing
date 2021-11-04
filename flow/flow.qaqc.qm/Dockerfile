@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Quality metrics and final quality flag module
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v0.0.24
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v0.0.25
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -12,3 +12,4 @@ RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in calibration filter workflow
 COPY ./flow.qaqc.qm.R /flow.qaqc.qm.R
+COPY ./wrap.qaqc.qm.R /wrap.qaqc.qm.R

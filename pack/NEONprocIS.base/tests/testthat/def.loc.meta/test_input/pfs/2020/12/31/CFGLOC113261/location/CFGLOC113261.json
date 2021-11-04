@@ -12,7 +12,9 @@
                 "site":"SJER",
                 "context":[
                     "barometric-pressure",
-                    "terrestrial",
+                    "terrestrial"
+                ],
+                "group": [
                     "barometric-pressure-805"
                 ],
                 "active_periods":[

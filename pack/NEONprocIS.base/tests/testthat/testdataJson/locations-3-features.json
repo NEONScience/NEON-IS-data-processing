@@ -9,11 +9,12 @@
                 "site": "PRIN",
                 "install_date": "2018-08-21T20:07:30Z",
                 "remove_date": "2019-08-21T15:40:27Z",
-                "transaction_date": "2019-08-21T15:40:46Z",
                 "context": [
                     "surfacewater",
-                    "water-quality-281",
                     "water-quality"
+                ],
+                "group": [
+                    "water-quality-281"
                 ],
                 "locations": {
                     "type": "FeatureCollection",
@@ -411,8 +412,10 @@
                 "transaction_date": "2019-11-25T18:13:17Z",
                 "context": [
                     "surfacewater",
-                    "water-quality-286",
                     "water-quality"
+                ],
+                "group": [
+                    "water-quality-286"
                 ],
                 "locations": {
                     "type": "FeatureCollection",
@@ -468,8 +471,10 @@
                 "transaction_date": "2017-07-06T14:37:52Z",
                 "context": [
                     "surfacewater",
-                    "water-quality-248",
                     "water-quality"
+                ],
+                "group": [
+                    "water-quality-248"
                 ],
                 "locations": {
                     "type": "FeatureCollection",

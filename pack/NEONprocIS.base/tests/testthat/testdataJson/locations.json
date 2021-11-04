@@ -12,6 +12,8 @@
         "context": [
           "soil"
         ],
+        "group": [
+        ],
         "locations": {
           "type": "FeatureCollection",
           "features": [

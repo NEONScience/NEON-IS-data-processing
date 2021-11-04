@@ -51,6 +51,9 @@
 #     Add parsing of active periods
 #   Cove Sturtevant (2021-08-31)
 #     Add error checking of location file schema
+#   Cove Sturtevant (2021-11-01)
+#     Remove transaction date from output
+#     Add named location group to output
 ##############################################################################################
 def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NULL){
 
@@ -67,9 +70,9 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                           site=dmmyChar,
                           install_date=dmmyPosx,
                           remove_date=dmmyPosx,
-                          transaction_date=dmmyPosx,
                           active_periods=dmmyChar,
                           context=dmmyChar,
+                          group=dmmyChar,
                           location_id=dmmyChar,
                           location_code=dmmyChar,
                           HOR=dmmyChar,
@@ -151,11 +154,6 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   } else {
     locProp$remove_date <- NA
   }
-  if(!base::is.null(locProp$transaction_date)){
-    locProp$transaction_date <- base::as.POSIXct(locProp$transaction_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
-  } else {
-    locProp$transaction_date <- NA
-  }
   if(!base::is.null(locProp$active_periods)){
     locProp$active_periods <- locProp$active_periods
   } else {
@@ -209,6 +207,17 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
       ctxt <- NA
     }
     
+    # format multiple values for named location group
+    grp <- locProp$group[idxLoc]
+    grp <- base::gsub(pattern='[\\[\\"]',replacement="",x=grp)
+    grp <- base::gsub(pattern='\\]',replacement="",x=grp)
+    grp <- base::strsplit(grp,',')[[1]]
+    grp <- base::paste0(base::unique(grp),collapse='|')
+    
+    if(base::length(grp) == 0) {
+      grp <- NA
+    }
+    
     # Parse any active dates
     if(!base::is.na(locProp$active_periods[idxLoc])){
 
@@ -241,8 +250,8 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                                     source_id=srcId,
                                     install_date=locProp$install_date[idxLoc],
                                     remove_date=locProp$remove_date[idxLoc],
-                                    transaction_date=locProp$transaction_date[idxLoc],
                                     context=ctxt,
+                                    group=grp,
                                     active_periods=NA,
                                     location_id=propFill[['Required Asset Management Location ID']],
                                     location_code=propFill[['Required Asset Management Location Code']],
