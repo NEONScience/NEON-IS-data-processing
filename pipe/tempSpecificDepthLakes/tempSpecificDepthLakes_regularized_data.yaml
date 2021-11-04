@@ -8,6 +8,7 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirRglr=data
+  - DirErr=/pfs/out/errored_datums
   - FileSchmRglr=NA
   - FreqRglr=0.0166666666667
   - MethRglr=CybiEc
@@ -15,7 +16,7 @@ transform:
   - IdxWndw=IdxWndwMin
   - RptTimeWndw=TRUE
   - DropNotNumc=FALSE
-  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.28
+  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.30
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
