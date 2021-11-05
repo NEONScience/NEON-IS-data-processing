@@ -34,7 +34,7 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: data_source_li7200_linkmerge
+      repo: data_source_li7200_pathrefactor
       glob: /li7200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true
