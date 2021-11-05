@@ -115,13 +115,22 @@ test_that("Unit test of wrap.rglr.R", {
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
+  
   #1 Test 1
-  wrap.rglr(
+  
+   wrap.rglr(
     DirIn = DirIn,
     DirOutBase = DirOutBase,
     DirSubCopy = "data_flags",
     ParaRglr = ParaRglr
   )
+  
+  # remove symbolic link
+  DirSrc = 'CFGLOC101670'
+  cmdLs <- base::paste0('ls ',base::paste0(DirSrc))
+  cmdSymbLink <- base::paste0('rm ',base::paste0(DirSrc))
+  
+  rmSymbLink <- base::lapply(cmdSymbLink,base::system) 
   
   dirInData <- base::paste0(DirIn, '/data')
   dirInFlags <- base::paste0(DirIn, '/flags')
@@ -185,4 +194,5 @@ test_that("Unit test of wrap.rglr.R", {
   returnedOutput <- try(wrap.rglr(DirIn = DirIn,
                                   DirOutBase = DirOutBase,
                                   ParaRglr = ParaRglr_NA),silent = TRUE)
-})
+  
+  })
