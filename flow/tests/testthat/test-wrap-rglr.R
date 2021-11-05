@@ -197,5 +197,26 @@ test_that("Unit test of wrap.rglr.R", {
   returnedOutput <- try(wrap.rglr(DirIn = DirIn,
                                   DirOutBase = DirOutBase,
                                   ParaRglr = ParaRglr_NA),silent = TRUE)
+  #
+  # Test 6, readout_time is missing
   
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  DirIn = "pfs/proc_group/prt_14491_noreadoutTime/2019/01/01/14491"
+  returnedOutput <- try(wrap.rglr(DirIn = DirIn,
+                                  DirOutBase = DirOutBase,
+                                  ParaRglr = ParaRglr),silent = TRUE)
+  #
+  # Test 7, wrong data, fail to read parquet file
+
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  DirIn = "pfs/proc_group/prt_14491_wrong_data/2019/01/01/14491"
+  returnedOutput <- try(wrap.rglr(DirIn = DirIn,
+                                  DirOutBase = DirOutBase,
+                                  ParaRglr = ParaRglr),silent = TRUE)
+
 })
