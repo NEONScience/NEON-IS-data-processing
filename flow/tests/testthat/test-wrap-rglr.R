@@ -1,4 +1,5 @@
-tle Regularization module for NEON IS data processing.
+##############################################################################################
+#' @title Regularization module for NEON IS data processing.
 
 #' @author
 #' Mija Choi \email{choim@batelleEcology.org}
