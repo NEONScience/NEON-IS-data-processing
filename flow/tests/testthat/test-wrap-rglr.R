@@ -116,7 +116,7 @@ test_that("Unit test of wrap.rglr.R", {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  # Test 1 RptTimeWndw = c(FALSE, FALSE)
+  #1 Test 1
   
   wrap.rglr(
     DirIn = DirIn,
@@ -145,67 +145,77 @@ test_that("Unit test of wrap.rglr.R", {
   expect_true ((file.exists(dirOutData, fileData, recursive = TRUE)) &&
                  (file.exists(dirOutFlags, fileFlags, recursive = TRUE)))
   
-  # Test 2 RptTimeWndw = c(TRUE, TRUE)
-  
-  ParaRglr_RptTimeWndwTRUE <- ParaRglr
-  ParaRglr_RptTimeWndwTRUE$RptTimeWndw = c(TRUE, TRUE)
- 
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
-  wrap.rglr(DirIn = DirIn,
-            DirOutBase = DirOutBase,
-            ParaRglr = ParaRglr_RptTimeWndwTRUE)
-  #
-  # Test 3 for no location files
+  
+  #2 Test for no location files
   
   ParaRglr_NA <- ParaRglr
   ParaRglr_NA$FreqRglr = c(NA, NA)
-  DirIn_noFiles = "pfs/proc_group/prt_noFiles/2019/01/01/3119"
-  dirInData <- base::paste0(DirIn_noFiles, '/data')
-  dirInFlags <- base::paste0(DirIn_noFiles, '/flags')
+  DirIn = "pfs/proc_group/prt_noFiles/2019/01/01/3119"
+  dirInData <- base::paste0(DirIn, '/data')
+  dirInFlags <- base::paste0(DirIn, '/flags')
   fileData <- base::dir(dirInData)
   fileFlags <- base::dir(dirInFlags)
   
   dirOutData <- gsub("proc_group", "out", dirInData)
   dirOutFlags <- gsub("proc_group", "out", dirInFlags)
   
-  returnedOutput <- try(wrap.rglr(DirIn = DirIn_noFiles,
+  returnedOutput <- try(wrap.rglr(DirIn = DirIn,
                                   DirOutBase = DirOutBase,
                                   ParaRglr = ParaRglr_NA),silent = TRUE)
   
-  testthat::expect_true((class(returnedOutput)[1] == "try-error"))
+  #  testthat::expect_true((class(returnedOutput)[1] == "try-error"))
   
-
-  # Test 4, location file of "Data Rate":"NA"
+  #3 Test for more than 1 location file
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
-  DirIn_dataRateNA = "pfs/proc_group/prt/2019/01/01/3119"
-  returnedOutput <- try(wrap.rglr(DirIn = DirIn_dataRateNA,
+  DirIn = "pfs/proc_group/prt_moreThanOneFile/2019/01/01/16247"
+  returnedOutput <- wrap.rglr(DirIn = DirIn,
+                              DirOutBase = DirOutBase,
+                              ParaRglr = ParaRglr)
+  
+  # Test 4, need location files
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  DirIn = "pfs/proc_group/prt/2019/01/01/CFGLOC101670"
+  returnedOutput <- wrap.rglr(DirIn = DirIn,
+                              DirOutBase = DirOutBase,
+                              ParaRglr = ParaRglr_NA)
+  
+  # Test 5, location file of "Data Rate":"NA"
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  DirIn = "pfs/proc_group/prt/2019/01/01/3119"
+  returnedOutput <- try(wrap.rglr(DirIn = DirIn,
                                   DirOutBase = DirOutBase,
                                   ParaRglr = ParaRglr_NA),silent = TRUE)
-  testthat::expect_true((class(returnedOutput)[1] == "try-error"))
   #
-  # Test 5, readout_time is missing
+  # Test 6, readout_time is missing
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
-  DirIn_noReadoutTime = "pfs/proc_group/prt_14491_noreadoutTime/2019/01/01/14491"
-  returnedOutput <- try(wrap.rglr(DirIn = DirIn_noReadoutTime,
+  DirIn = "pfs/proc_group/prt_14491_noreadoutTime/2019/01/01/14491"
+  returnedOutput <- try(wrap.rglr(DirIn = DirIn,
                                   DirOutBase = DirOutBase,
                                   ParaRglr = ParaRglr),silent = TRUE)
   #
-  # Test 6, wrong data, fail to read parquet file
+  # Test 7, wrong data, fail to read parquet file
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  DirIn_wrongData = "pfs/proc_group/prt_14491_wrong_data/2019/01/01/14491"
-  returnedOutput <- try(wrap.rglr(DirIn = DirIn_wrongData,
+  DirIn = "pfs/proc_group/prt_14491_wrong_data/2019/01/01/14491"
+  returnedOutput <- try(wrap.rglr(DirIn = DirIn,
                                   DirOutBase = DirOutBase,
                                   ParaRglr = ParaRglr),silent = TRUE)
   
