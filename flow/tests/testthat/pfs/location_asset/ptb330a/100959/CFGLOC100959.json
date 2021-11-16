@@ -16,6 +16,8 @@
                     "barometric-pressure",
                     "terrestrial"
                 ],
+                "group": ["barometric-pressure"
+                ],
                 "active_periods": [
                     {
                         "start_date": "2014-10-09T00:00:00Z"
