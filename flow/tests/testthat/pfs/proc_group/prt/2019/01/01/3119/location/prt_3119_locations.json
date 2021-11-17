@@ -13,6 +13,8 @@
                     "aspirated-single",
                     "aspirated-single-70"
                 ],
+                "group":[
+                ],
                 "locations":{
                     "type":"FeatureCollection",
                     "features":[
