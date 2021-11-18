@@ -12,6 +12,8 @@
                 "context":[
 
                 ],
+                "group": [
+                ],
                 "locations":{
                     "type":"FeatureCollection",
                     "features":[
