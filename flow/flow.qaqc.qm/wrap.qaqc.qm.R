@@ -46,14 +46,14 @@
 #' raised. Default is c(2,1).
 #' 
 #' @param ParaGrp (optional) A list of lists, each sublist representing the specifications for computing a group of 
-#' alpha QM, beta QM, and final QF. Each sublist has 3 named elements:\cr
+#' alpha QM, beta QM, and final QF. Each sublist has 2 named elements:\cr
 #' \code{name}: Character value. The name of the group, to be used as a prefix to the output alpha and beta QMs and 
 #' final quality flag. If no group name/prefix is desired, enter a zero-character string (i.e. "") \cr
 #' \code{qf}: Character vector. The exact names of the quality flags that should be used in the computation of the alpha 
 #' and beta QMs and final QF for the group. Note that a flag may be specified in multiple groups (i.e. will feed into 
 #' multiple final quality flags).\cr
 #' Note that quality metrics for all quality flags found in the input files will be output. The ParaGrp argument 
-#' simply dictate what QMs feed into each set of alpha & beta quality metrics and the final quality flag. If this argument is NULL
+#' simply dictate what QFs feed into each set of alpha & beta quality metrics and the final quality flag. If this argument is NULL
 #' (default), all quality flags in the file(s) will be used to compute a single set of alpha and beta quality metrics and 
 #' final quality flag.
 #' 

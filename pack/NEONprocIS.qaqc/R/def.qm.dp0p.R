@@ -129,6 +129,20 @@ def.qm.dp0p <- function(qf, Para = NULL, log = NULL) {
     
   }
   
+  # Error check - ensure that the contributing flags are included in the data
+  exstQf <- Para$qfBetaIgnr %in% nameQfIn
+  
+  if (!base::all(exstQf)) {
+    log$warn(
+      base::paste0(
+        'The flag(s): ',
+        base::paste0(Para$qfBetaIgnr[!exstQf], collapse = ','),
+        ' indicated in qfBetaIgnr (intended to set the beta QF to 0 if their value is 1) were not found in the quality flags, and will not contribute to flag computation. Check input argument(s).'
+      )
+    )
+    Para$qfBetaIgnr <- Para$qfBetaIgnr[exstQf]
+    
+  }
   # Set the beta flag to 1 when contributing flags = -1
   setNa <-
     base::rowSums(qf[nameQf] == -1, na.rm = TRUE) > 0 # At least one contributing flag = -1
