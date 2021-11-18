@@ -23,7 +23,7 @@
       "QfForc3=dewPointNullQF:1:dewPointValidCalQF|dewPointSuspectCalQF:-1",
       "Tmi=001"
     ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.9",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.11",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

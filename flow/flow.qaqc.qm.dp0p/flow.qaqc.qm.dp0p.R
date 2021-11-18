@@ -180,7 +180,7 @@ library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.qaqc.qm.R")
+source("./wrap.qaqc.qm.dp0p.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly=TRUE)

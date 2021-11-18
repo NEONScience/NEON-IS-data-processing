@@ -34,7 +34,7 @@ transform:
 
   - QfForc11=depth10WaterTempNullQF:1:depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempValidCalQF|depth10WaterTempSpikeQF:-1
 
-  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.9
+  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.11
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
