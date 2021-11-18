@@ -8,6 +8,7 @@
       "/flow.qaqc.qm.dp0p.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
       "FileSchmQm=$FILE_SCHEMA_QM",
       "VarTimeBgn=timeWndwBgn",
       "VarTimeEnd=timeWndwEnd",
@@ -22,7 +23,7 @@
       "QfForc3=dewPointNullQF:1:dewPointValidCalQF|dewPointSuspectCalQF:-1",
       "Tmi=001"
     ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.7",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.9",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
