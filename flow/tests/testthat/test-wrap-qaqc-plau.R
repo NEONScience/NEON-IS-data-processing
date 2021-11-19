@@ -154,24 +154,40 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                  ParaTest=ParaTest,
                  VarAddFileQf=VarAddFileQf
   )
+  dirInData <- base::paste0(DirIn, '/data')
+  dirInFlags <- base::paste0(DirIn, '/flags')
+  fileData <- base::dir(dirInData)
+  fileFlags <- base::dir(dirInFlags)
+  dirOutData <- gsub("padded_timeseries_analyzer", "out", dirInData)
+  dirOutFlags <- gsub("padded_timeseries_analyzer", "out", dirInFlags)
   
-  # Test 2 -  DirSubCopy="xyz"
+  expect_true ((file.exists(dirOutData, fileData, recursive = TRUE)) &&
+                 (file.exists(dirOutFlags, fileFlags, recursive = TRUE)))
+  # Test 2 -  DirSubCopy="threshold" and the directory, threshold, exists in the out dir.
   
-  if (exstDirSrc) {
+   if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+   }
+  
+   if (base::unlist(base::lapply(DirSrc, base::dir.exists))) {
     cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
   }
   
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
   returned_wrap_qaqc_plau <- wrap.qaqc.plau(DirIn=DirIn,
                                             DirOutBase=DirOutBase,
                                             ParaTest=ParaTest,
-                                            DirSubCopy="xyz",
+                                            DirSubCopy="threshold",
                                             VarAddFileQf=VarAddFileQf
   )
-  if (exstDirSrc) {
+  
+  dirOutSub <- gsub("padded_timeseries_analyzer", "out", base::paste0(DirIn, '/',DirSubCopy))
+  expect_true ((file.exists(dirOutData, fileData, recursive = TRUE)) &&
+                 (file.exists(dirOutFlags, fileFlags, recursive = TRUE)) &&
+                 (dir.exists(dirOutSub))
+               )
+  
+  if (base::unlist(base::lapply(DirSrc, base::dir.exists))) {
     cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
   }
