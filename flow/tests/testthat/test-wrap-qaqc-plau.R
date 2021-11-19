@@ -132,11 +132,8 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                 rmv=c(FALSE,FALSE,TRUE,TRUE,FALSE,TRUE)
   )
   )
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
-  
-  # Test 1 
+
+  # Test 1 - Happy path with DirSubCopy=NULL
   
   # remove the test output symbolic link
   DirSrc = 'CFGLOC101252'
@@ -147,12 +144,36 @@ test_that("Unit test of wrap.qaqc.plau.R", {
     cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
   }
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
   returned_wrap_qaqc_plau <- wrap.qaqc.plau(DirIn=DirIn,
                  DirOutBase=DirOutBase,
                  ParaTest=ParaTest,
                  VarAddFileQf=VarAddFileQf
   )
   
+  # Test 2 -  DirSubCopy="xyz"
   
+  if (exstDirSrc) {
+    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
+    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  }
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  returned_wrap_qaqc_plau <- wrap.qaqc.plau(DirIn=DirIn,
+                                            DirOutBase=DirOutBase,
+                                            ParaTest=ParaTest,
+                                            DirSubCopy="xyz",
+                                            VarAddFileQf=VarAddFileQf
+  )
+  if (exstDirSrc) {
+    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
+    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  }
 })
 
