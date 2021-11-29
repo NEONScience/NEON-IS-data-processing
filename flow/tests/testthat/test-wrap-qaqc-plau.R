@@ -174,14 +174,16 @@ test_that("Unit test of wrap.qaqc.plau.R", {
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
   }
   
+  thresholdDir="threshold"
+  
   returned_wrap_qaqc_plau <- wrap.qaqc.plau(DirIn=DirIn,
                                             DirOutBase=DirOutBase,
                                             ParaTest=ParaTest,
-                                            DirSubCopy="threshold",
+                                            DirSubCopy=thresholdDir,
                                             VarAddFileQf=VarAddFileQf
   )
   
-  dirOutSub <- gsub("padded_timeseries_analyzer", "out", base::paste0(DirIn, '/',DirSubCopy))
+  dirOutSub <- gsub("padded_timeseries_analyzer", "out", base::paste0(DirIn, '/',thresholdDir))
   expect_true ((file.exists(dirOutData, fileData, recursive = TRUE)) &&
                  (file.exists(dirOutFlags, fileFlags, recursive = TRUE)) &&
                  (dir.exists(dirOutSub))
