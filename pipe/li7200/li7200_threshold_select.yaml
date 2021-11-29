@@ -1,0 +1,54 @@
+---
+pipeline:
+  name: li7200_threshold_select
+transform:
+  cmd:
+  - Rscript
+  - /flow.thsh.slct.R
+  - DirIn=$REPO_LOCATIONS
+  - DirOut=/pfs/out
+  - FileThsh=$FILE_THRESHOLDS
+  - TermCtxt1=tempIn
+  - TermCtxt2=tempOut
+  - TermCtxt3=tempMean
+  - TermCtxt4=tempRefe
+  - TermCtxt5=presAtm
+  - TermCtxt6=presDiff
+  - TermCtxt7=presSum
+  - TermCtxt8=powrH2oSamp
+  - TermCtxt9=powrH2oRefe
+  - TermCtxt10=asrpH2o
+  - TermCtxt11=densMoleH2o
+  - TermCtxt12=rtioMoleDryH2o
+  - TermCtxt13=powrCo2Samp
+  - TermCtxt14=powrCo2Refe
+  - TermCtxt15=asrpCo2
+  - TermCtxt16=densMoleCo2
+  - TermCtxt17=rtioMoleDryCo2
+  - TermCtxt18=potCool
+  - TermCtxt19=ssiCo2
+  - TermCtxt20=ssiH2o
+  - DirSubCopy=location
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.15
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: REPO_LOCATIONS
+      repo: li7200_date_gap_filler_linker
+      glob: /li7200/*/*/*/
+  - pfs:
+      name: FILE_THRESHOLDS
+      repo: li7200_threshold_filter
+      glob: /thresholds.json
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '1'
+resource_requests:
+  memory: 200Mi
+  cpu: 0.1
+

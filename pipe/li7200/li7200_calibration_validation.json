@@ -11,7 +11,7 @@
       "DirErr=/pfs/out/errored_datums",
       "TermQf=h2o_raw|co2_raw"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.52",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.53",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
