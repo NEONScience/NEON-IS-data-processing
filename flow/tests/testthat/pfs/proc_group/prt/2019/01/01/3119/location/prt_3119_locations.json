@@ -13,6 +13,8 @@
                     "aspirated-single",
                     "aspirated-single-70"
                 ],
+                "group":[
+                ],
                 "locations":{
                     "type":"FeatureCollection",
                     "features":[
@@ -123,7 +125,7 @@
             "HOR":"000",
             "VER":"020",
             "TMI":"000",
-            "Data Rate":"1"
+            "Data Rate":"NA"
         }
     ],
     "source_id":    3119,

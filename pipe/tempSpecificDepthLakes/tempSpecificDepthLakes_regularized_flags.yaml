@@ -7,6 +7,7 @@ transform:
   - "/flow.rglr.R"
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
   - DirRglr=flags
   - FileSchmRglr=NA
   - FreqRglr=0.0166666666667
@@ -15,7 +16,7 @@ transform:
   - IdxWndw=IdxWndwMin
   - RptTimeWndw=TRUE
   - DropNotNumc=FALSE
-  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.28
+  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.30
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

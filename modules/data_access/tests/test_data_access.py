@@ -11,6 +11,7 @@ from data_access.get_asset_locations import get_asset_locations
 from data_access.get_assets import get_assets
 from data_access.get_named_location_active_periods import get_active_periods
 from data_access.get_named_location_context import get_named_location_context
+from data_access.get_named_location_group import get_named_location_group
 from data_access.get_named_location_locations import get_named_location_locations
 from data_access.get_named_location_properties import get_named_location_properties
 from data_access.get_named_location_schema_name import get_named_location_schema_name
@@ -62,6 +63,12 @@ class DataAccessTest(unittest.TestCase):
         # Context data is not in the database yet.
         expected_context = ['par-met', 'upward-facing', 'par-met-351', 'ir-biological-temperature']
         self.assertTrue(context == expected_context)
+    
+    def test_get_named_location_group(self):
+        group: List[int] = get_named_location_group(self.connection, self.named_location_id)
+        # Context data is not in the database yet.
+        expected_group = [376]
+        self.assertTrue(group == expected_group)
 
     def test_get_named_location_locations(self):
         # Point geometry

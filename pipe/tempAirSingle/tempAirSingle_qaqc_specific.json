@@ -16,7 +16,7 @@
       "RmvHeat=TRUE",
       "FileSchmQf=$SCHEMA_FLAGS"
     ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:v0.0.10",
+    "image": "quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:v0.0.11",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

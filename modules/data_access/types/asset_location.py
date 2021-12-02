@@ -13,5 +13,6 @@ class AssetLocation(NamedTuple):
     install_date: datetime
     remove_date: datetime
     context: List[str]
+    group: List[int]
     properties: List[Property]
     locations: FeatureCollection

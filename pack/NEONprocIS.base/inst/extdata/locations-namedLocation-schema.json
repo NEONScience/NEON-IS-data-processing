@@ -41,6 +41,7 @@
                 "type",
                 "site",
                 "context",
+                "group",
                 "active_periods"
               ],
               "properties": {
@@ -69,6 +70,16 @@
                     "type": "string",
                     "examples": [
                       "soil"
+                    ]
+                  }
+                },
+                "group": {
+                  "type": "array",
+                  "items": {
+                    "minLength": 1,
+                    "type": "string",
+                    "examples": [
+                      "par-met_ONAQ000020"
                     ]
                   }
                 },

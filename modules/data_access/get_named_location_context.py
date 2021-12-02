@@ -15,11 +15,11 @@ def get_named_location_context(connection: extensions.connection, named_location
     """
     sql = '''
         select 
-            context_code, context_group_id
+            context_code
         from 
-            nam_locn_context 
+            named_location_context 
         where 
-            nam_locn_id = %s
+            named_location_id = %s
     '''
     contexts: List[str] = []
     with closing(connection.cursor()) as cursor:
@@ -27,10 +27,5 @@ def get_named_location_context(connection: extensions.connection, named_location
         rows = cursor.fetchall()
         for row in rows:
             context_code = row[0]
-            group = row[1]
-            if group is None:
-                contexts.append(context_code)
-            else:
-                group_name = f'{context_code}-{str(group)}'
-                contexts.append(group_name)
+            contexts.append(context_code)
     return contexts
