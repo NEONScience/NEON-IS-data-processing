@@ -1,0 +1,1724 @@
+{
+   "thresholds":[
+      {
+         "threshold_name":"Range Threshold Hard Max",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         102,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum (%) missing points per window",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         10,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window step - points.",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (time - seconds)",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         3600,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Min",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         -1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window size - points",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1800,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum consecutive points (n)",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking MAD",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (change)",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Gap Test value - # missing points",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Step Test value",
+         "term_name":"relativeHumidity",
+         "location_name":"REALM",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.5,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window step - points.",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window size - points",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1800,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking MAD",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking Method",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":null,
+         "string_value":"A"
+      },
+      {
+         "threshold_name":"Range Threshold Hard Min",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         -80,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (change)",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.01,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum consecutive points (n)",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Gap Test value - # missing points",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (time - seconds)",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         3600,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Max",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         56.7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Step Test value",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.5,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum (%) missing points per window",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         10,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Max",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         70,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking MAD",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Step Test value",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.5,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking Method",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":null,
+         "string_value":"A"
+      },
+      {
+         "threshold_name":"Persistence (time - seconds)",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         3600,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Gap Test value - # missing points",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum (%) missing points per window",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         10,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window size - points",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1800,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window step - points.",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Min",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         -115,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum consecutive points (n)",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (change)",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.01,
+         "string_value":null
+      }
+   ]
+}
+{
+   "thresholds":[
+      {
+         "threshold_name":"Range Threshold Hard Max",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         102,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum (%) missing points per window",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         10,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window step - points.",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (time - seconds)",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         3600,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Min",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         -1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking Method",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":null,
+         "string_value":"A"
+      },
+      {
+         "threshold_name":"Despiking window size - points",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1800,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum consecutive points (n)",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking MAD",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (change)",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Gap Test value - # missing points",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Step Test value",
+         "term_name":"relativeHumidity",
+         "location_name":"REALM",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.5,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window step - points.",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window size - points",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1800,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking MAD",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking Method",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":null,
+         "string_value":"A"
+      },
+      {
+         "threshold_name":"Range Threshold Hard Min",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         -80,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (change)",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.01,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum consecutive points (n)",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Gap Test value - # missing points",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (time - seconds)",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         3600,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Max",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         56.7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Step Test value",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.5,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum (%) missing points per window",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         10,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Max",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         70,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking MAD",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Step Test value",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.5,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking Method",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":null,
+         "string_value":"A"
+      },
+      {
+         "threshold_name":"Persistence (time - seconds)",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         3600,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Gap Test value - # missing points",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum (%) missing points per window",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         10,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window size - points",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1800,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window step - points.",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Min",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         -115,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum consecutive points (n)",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (change)",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.01,
+         "string_value":null
+      }
+   ]
+}
+{
+   "thresholds":[
+      {
+         "threshold_name":"Range Threshold Hard Max",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         102,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum (%) missing points per window",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         10,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window step - points.",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (time - seconds)",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         3600,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Min",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         -1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking Method",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":null,
+         "string_value":"A"
+      },
+      {
+         "threshold_name":"Despiking window size - points",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1800,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum consecutive points (n)",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking MAD",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (change)",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Gap Test value - # missing points",
+         "term_name":"relativeHumidity",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Step Test value",
+         "term_name":"relativeHumidity",
+         "location_name":"REALM",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.5,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window step - points.",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window size - points",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1800,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking MAD",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking Method",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":null,
+         "string_value":"A"
+      },
+      {
+         "threshold_name":"Range Threshold Hard Min",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         -80,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (change)",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.01,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum consecutive points (n)",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Gap Test value - # missing points",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (time - seconds)",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         3600,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Max",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         56.7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Step Test value",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.5,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum (%) missing points per window",
+         "term_name":"temperature",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         10,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Max",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         70,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking MAD",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         7,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Step Test value",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.5,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking Method",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":null,
+         "string_value":"A"
+      },
+      {
+         "threshold_name":"Persistence (time - seconds)",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         3600,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Gap Test value - # missing points",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum (%) missing points per window",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         10,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window size - points",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1800,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking window step - points.",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         1,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Range Threshold Hard Min",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         -115,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Despiking maximum consecutive points (n)",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         4,
+         "string_value":null
+      },
+      {
+         "threshold_name":"Persistence (change)",
+         "term_name":"dewPoint",
+         "location_name":"ARIK",
+         "context":[
+"relative-humidity",
+"terrestrial"
+         ],
+         "start_date":"2000-01-01T00:00:00Z",
+         "end_date":null,
+         "is_date_constrained":"N",
+         "start_day_of_year":null,
+         "end_day_of_year":null,
+         "number_value":         0.01,
+         "string_value":null
+      }
+   ]
+}
