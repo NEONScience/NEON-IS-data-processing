@@ -175,6 +175,9 @@ test_that("Unit test of wrap.qaqc.plau.R", {
   }
   
   thresholdDir="threshold"
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
   
   returned_wrap_qaqc_plau <- wrap.qaqc.plau(DirIn=DirIn,
                                             DirOutBase=DirOutBase,
@@ -193,5 +196,102 @@ test_that("Unit test of wrap.qaqc.plau.R", {
     cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
   }
+ 
+  # Test 3 - parquet file expected, but avro file sent
+  
+  badDatagDirIn = "pfs/padded_timeseries_analyzer/hmp155_wrongData/2020/01/02/CFGLOC101252"
+ 
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDatagDirIn,
+                                            DirOutBase=DirOutBase,
+                                            ParaTest=ParaTest,
+                                            DirSubCopy=thresholdDir,
+                                            VarAddFileQf=VarAddFileQf
+  ), silent=TRUE)
+  
+  # Test 4 - a column, readoutTime, missing in the data
+  
+  badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingReadoutTime/2020/01/02/CFGLOC101252"
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+   returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDataDirIn,
+                                                DirOutBase=DirOutBase,
+                                                ParaTest=ParaTest,
+                                                DirSubCopy=thresholdDir,
+                                                VarAddFileQf=VarAddFileQf
+  ), silent=TRUE)
+  
+  # Test 5 - more than one threshold
+  
+  badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_morethanOneThreshold/2020/01/02/CFGLOC101252"
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+    returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDataDirIn,
+                                                DirOutBase=DirOutBase,
+                                                ParaTest=ParaTest,
+                                                DirSubCopy=thresholdDir,
+                                                VarAddFileQf=VarAddFileQf
+  ), silent=TRUE)
+  
+  # Test 6 - DespiknignMethod is missing in threshold.json
+  
+  badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingDspMthd/2020/01/02/CFGLOC101252"
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDataDirIn,
+                                                DirOutBase=DirOutBase,
+                                                ParaTest=ParaTest,
+                                                DirSubCopy=thresholdDir,
+                                                VarAddFileQf=VarAddFileQf
+  ), silent=TRUE)
+  #
+  # Test 7 - Despiknign MAD is missing in threshold.json
+  
+  badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingDspMAD/2020/01/02/CFGLOC101252"
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDataDirIn,
+                                                DirOutBase=DirOutBase,
+                                                ParaTest=ParaTest,
+                                                DirSubCopy=thresholdDir,
+                                                VarAddFileQf=VarAddFileQf
+  ), silent=TRUE)
+  #
+  # Test 8 - term_name is missing in threshold.json
+  
+  badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingTermName/2020/01/02/CFGLOC101252"
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDataDirIn,
+                                                DirOutBase=DirOutBase,
+                                                ParaTest=ParaTest,
+                                                VarAddFileQf=VarAddFileQf
+  ), silent=TRUE)
+  #
+  # Test 9 - 'Gap Test value - # missing points' missing in threshold.json 
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+
+  badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingGapThreshold/2020/01/02/CFGLOC101252"
+  
+  returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDataDirIn,
+                                                DirOutBase=DirOutBase,
+                                                ParaTest= ParaTest,
+                                                VarAddFileQf=VarAddFileQf
+  ), silent=TRUE)
+  
 })
 
