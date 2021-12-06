@@ -157,7 +157,7 @@
 #'                                         "dewPointSpikeQF",
 #'                                         "dewPointPersistenceQF",
 #'                                         "errorStateQF"),
-#'                                 qfAlph=c("dewPointNullQF",
+#'                                 qfBeta=c("dewPointNullQF",
 #'                                         "dewPointGapQF",
 #'                                         "dewPointRangeQF",
 #'                                         "dewPointStepQF",
