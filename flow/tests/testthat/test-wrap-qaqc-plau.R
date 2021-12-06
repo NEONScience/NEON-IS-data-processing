@@ -376,5 +376,5 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                  ParaTest=ParaTest,
                                                  DirSubCopy=thresholdDir,
                                                  VarAddFileQf=VarAddFileQf), silent=TRUE)
-   
-   })
+
+})
