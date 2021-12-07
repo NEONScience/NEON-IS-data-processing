@@ -176,7 +176,31 @@ test_that("Unit test of wrap.qaqc.qm.dp0p.R", {
     unlink(DirOutBase, recursive = TRUE)
   }
   
+  DirSubCopy = "dirSub"
+  
+  # Test 1 Happy path
   returned_qm_dp0p <- wrap.qaqc.qm.dp0p(DirIn = DirIn,
+                                        DirOutBase = DirOutBase,
+                                        DirSubCopy=DirSubCopy,
+                                        ParaGrp = ParaGrp)
+  
+  DirSrc = 'CFGLOC101252'
+  cmdLs <- base::paste0('ls ', base::paste0(DirSrc))
+  exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
+  
+  if (exstDirSrc) {
+    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
+    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  }
+  
+  # Test 2 with non zero values
+  naDirIn = "pfs/relHumidity_flags/hmp155_NA/2020/01/01/CFGLOC101252"
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  returned_qm_dp0p <- wrap.qaqc.qm.dp0p(DirIn = naDirIn,
                                         DirOutBase = DirOutBase,
                                         ParaGrp = ParaGrp)
   
