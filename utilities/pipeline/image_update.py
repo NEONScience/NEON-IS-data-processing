@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import ruamel.yaml
 from ruamel.yaml.util import load_yaml_guess_indent
+from ruamel.yaml.scalarstring import SingleQuotedScalarString, DoubleQuotedScalarString
 
 
 def update(source_path: Path, old_image: str, new_image: str):
@@ -30,8 +31,8 @@ def update(source_path: Path, old_image: str, new_image: str):
                         json.dump(json_data, open(str(path), 'w'), indent=2)
             elif path.suffix == '.yaml':
                 with open(str(path), 'r') as open_file:
-                    data, indent, block_seq_indent = load_yaml_guess_indent(
-                        open_file, preserve_quotes=True)
+                    data, indent, block_seq_indent = load_yaml_guess_indent(open_file)
+                    open_file.preserve_quotes = True
                     try:
                         image = data['transform']['image']
                     except KeyError:

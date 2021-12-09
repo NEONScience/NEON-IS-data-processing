@@ -27,6 +27,6 @@
       "empty_files": true
     }
   },
-    "enable_stats": true,
-    "standby": false
+    "enable_stats": false,
+    "standby": true
 }
