@@ -204,4 +204,26 @@ test_that("Unit test of wrap.qaqc.qm.dp0p.R", {
                                         DirOutBase = DirOutBase,
                                         ParaGrp = ParaGrp)
   
+  # Test 3
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  returned_qm_dp0p <- wrap.qaqc.qm.dp0p(DirIn = DirIn,
+                                        DirOutBase = DirOutBase,
+                                        ParaGrp = ParaGrp)
+  
+  # Test 4
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  ParaForc <- list(list(qfDrve="sensorNAQF",valuDrve=1,qfForc=c("tempRangeQF","tempPersistenceQF"),valuForc=-1))
+  
+  returned_qm_dp0p <- wrap.qaqc.qm.dp0p(DirIn = DirIn,
+                                        DirOutBase = DirOutBase,
+                                        ParaForc=ParaForc,
+                                        ParaGrp = ParaGrp)
 })
