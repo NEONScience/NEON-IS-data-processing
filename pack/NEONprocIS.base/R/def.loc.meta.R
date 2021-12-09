@@ -49,6 +49,11 @@
 #     output source_type and source_id from location file
 #   Cove Sturtevant (2021-03-16)
 #     Add parsing of active periods
+#   Cove Sturtevant (2021-08-31)
+#     Add error checking of location file schema
+#   Cove Sturtevant (2021-11-01)
+#     Remove transaction date from output
+#     Add named location group to output
 ##############################################################################################
 def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NULL){
 
@@ -65,9 +70,9 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                           site=dmmyChar,
                           install_date=dmmyPosx,
                           remove_date=dmmyPosx,
-                          transaction_date=dmmyPosx,
                           active_periods=dmmyChar,
                           context=dmmyChar,
+                          group=dmmyChar,
                           location_id=dmmyChar,
                           location_code=dmmyChar,
                           HOR=dmmyChar,
@@ -75,10 +80,46 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                           dataRate=dmmyNumc,
                           stringsAsFactors = FALSE)
   
-  # Validate the json
-  if(NEONprocIS.base::def.validate.json(jsonIn=NameFile,log=log) != TRUE){
-    stop()
+ # There are two types of location files, asset-based and location-based. The schema must match one of these to be valid.
+  # First, validate the syntax of input json to see if it is valid. This checks either type.
+  #
+  validateJson <-
+    NEONprocIS.base::def.validate.json (NameFile)
+  #
+  # Second, validate the json against the schema only if the syntax is valid.
+  # Otherwise, validateJsonSchema errors out due to the syntax error
+  #
+  
+  validateJsonSchema <- FALSE
+  
+  # First try to validate the asset-based file schema
+  if (validateJson == TRUE)  {
+    locJsonSchema <- system.file("extdata", "locations-sensor-schema.json", package="NEONprocIS.base")
+    log$debug('Checking location file against asset-based file schema.')    
+    validateJsonSchema <-
+      NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema)
   }
+  
+  # Next try to validate the location-based file schema
+  if (validateJson == TRUE && validateJsonSchema == FALSE)  {
+    locJsonSchema <- system.file("extdata", "locations-namedLocation-schema.json", package="NEONprocIS.base")
+    log$debug('Checking location file against location-based file schema.')    
+    validateJsonSchema <-
+      NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema)
+  }
+  
+  #if the validation fails, stop
+  if ((validateJson == FALSE) || (validateJsonSchema == FALSE))
+  {
+    log$error(
+      base::paste0(
+        'In def.loc.meta::: Erred out due to the json validation failure of this file, ',
+        NameFile
+      )
+    )
+    stop("In def.loc.meta::::: Erred out due to the validation failure of the input JSON")
+  }
+  
   
   # Load the full json into list
   locFull <- rjson::fromJSON(file=NameFile,simplify=TRUE)
@@ -112,11 +153,6 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
     locProp$remove_date <- base::as.POSIXct(locProp$remove_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
   } else {
     locProp$remove_date <- NA
-  }
-  if(!base::is.null(locProp$transaction_date)){
-    locProp$transaction_date <- base::as.POSIXct(locProp$transaction_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
-  } else {
-    locProp$transaction_date <- NA
   }
   if(!base::is.null(locProp$active_periods)){
     locProp$active_periods <- locProp$active_periods
@@ -171,6 +207,17 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
       ctxt <- NA
     }
     
+    # format multiple values for named location group
+    grp <- locProp$group[idxLoc]
+    grp <- base::gsub(pattern='[\\[\\"]',replacement="",x=grp)
+    grp <- base::gsub(pattern='\\]',replacement="",x=grp)
+    grp <- base::strsplit(grp,',')[[1]]
+    grp <- base::paste0(base::unique(grp),collapse='|')
+    
+    if(base::length(grp) == 0) {
+      grp <- NA
+    }
+    
     # Parse any active dates
     if(!base::is.na(locProp$active_periods[idxLoc])){
 
@@ -203,8 +250,8 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                                     source_id=srcId,
                                     install_date=locProp$install_date[idxLoc],
                                     remove_date=locProp$remove_date[idxLoc],
-                                    transaction_date=locProp$transaction_date[idxLoc],
                                     context=ctxt,
+                                    group=grp,
                                     active_periods=NA,
                                     location_id=propFill[['Required Asset Management Location ID']],
                                     location_code=propFill[['Required Asset Management Location Code']],

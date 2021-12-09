@@ -9,11 +9,12 @@
                 "site": "CARI",
                 "install_date": "2018-05-18T04:30:18Z",
                 "remove_date": "2019-05-04T01:07:18Z",
-                "transaction_date": "2018-05-18T04:30:44Z",
                 "context": [
                     "surfacewater",
-                    "water-quality-274",
                     "water-quality"
+                ],
+                "group": [
+                    "water-quality-274"
                 ],
                 "locations": {
                     "type": "FeatureCollection",
@@ -100,11 +101,12 @@
                 "site": "POSE",
                 "install_date": "2019-09-04T15:10:48Z",
                 "remove_date": null,
-                "transaction_date": "2019-09-04T15:10:53Z",
                 "context": [
                     "surfacewater",
-                    "water-quality-237",
                     "water-quality"
+                ],
+                "group": [
+                    "water-quality-237"
                 ],
                 "locations": {
                     "type": "FeatureCollection",
@@ -191,11 +193,12 @@
                 "site": "MAYF",
                 "install_date": "2016-08-17T19:07:30Z",
                 "remove_date": "2017-02-10T16:38:23Z",
-                "transaction_date": "2016-08-17T19:07:54Z",
                 "context": [
                     "surfacewater",
-                    "water-quality-247",
                     "water-quality"
+                ],
+                "group": [
+                    "water-quality-247"
                 ],
                 "locations": {
                     "type": "FeatureCollection",

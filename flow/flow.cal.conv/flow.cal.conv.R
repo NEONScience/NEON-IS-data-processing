@@ -58,7 +58,10 @@
 #'
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn.
 #'
-#' 3. "FileSchmData=value" (optional), where value is the full path to schema for calibrated data 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 4. "FileSchmData=value" (optional), where value is the full path to schema for calibrated data 
 #' output by this workflow. If not input, the same schema as the input data will be used for output. 
 #' Note that the column order of the output data will be identical to the column order of the input. Terms/variables
 #' not calibrated will still be included in the output, just passed through. Note that any term names that are
@@ -66,7 +69,7 @@
 #' to uncertainty data, coefficients, and calibration flags. For example, if the term 'resistance' is changed to
 #' 'temperature' in the output data schema, the uncertainty information will be output using the term 'temperature'.
 #'
-#' 4. "FileSchmQf=value" (optional), where value is the full path to schema for calibration quality flags
+#' 5. "FileSchmQf=value" (optional), where value is the full path to schema for calibration quality flags
 #' output by this workflow. If not input, the schema will be created automatically.
 #' The output  is ordered as follows:
 #' readout_time, all terms output for the valid cal flag, all terms output for the suspect cal flag. Note that the
@@ -76,7 +79,7 @@
 #' For example, for terms 'resistance' and 'voltage' each having calibration information. The default column naming
 #' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
 #'
-#' 5. "TermFuncConv=value" (optional), where value contains the combination of the L0 term and the associated calibration conversion 
+#' 6. "TermFuncConv=value" (optional), where value contains the combination of the L0 term and the associated calibration conversion 
 #' function to use within the NEONprocIS.cal package. The argument is formatted as term:function|term:function...
 #' where term is the L0 term and function is the function to use. Multiple term:function pairs are separated by pipes (|). 
 #' For example, "TermFuncConv=resistance:def.cal.conv.poly|voltage:cal.func" indicates that the function def.cal.conv.poly will 
@@ -95,7 +98,7 @@
 #' If this argument is not included, no calibration conversion will be performed for any L0 data, and the output L0' data will be
 #' identical to the L0 data, aside from any relabeling of the columns as specified in FileSchmData. 
 #'
-#' 6. "NumDayExpiMax=value" (optional), where value contains the max days since expiration that calibration information is
+#' 7. "NumDayExpiMax=value" (optional), where value contains the max days since expiration that calibration information is
 #' still considered usable. Calibrations beyond this allowance period are treated as if they do not exist. Thus,
 #' if no other applicable calibration file exists, calibrated values will be NA and uncertainty coefficients will
 #' not be recorded for these periods. Value may be a single number, in which case it will apply to all terms with
@@ -110,13 +113,13 @@
 #' "NumDayExpiMax=NA". Note that use of expired calibration information and the lack of any usable calibration
 #' information will always cause the expired/valid calibration flag to be raised.
 #'
-#' 7. "TermQf=value" (optional), where value contains any number of L0 terms/variables for which to provide calibration
+#' 8. "TermQf=value" (optional), where value contains any number of L0 terms/variables for which to provide calibration
 #' flags, separated by pipes (|). For example, if calibration information is expected for the terms "resistance" and
 #' "voltage", then enter the argument as "TermQf=resistance|voltage".Terms listed here should match the names of the
 #' expected subfolders in the calibration directory. If no subfolder exists matching the term names here, the valid
 #' calibration flag will be 1, and the suspect calibration flag will be -1.
 #'
-#' 8. "TermFuncUcrt=value" (optional), where value contains the combination of the L0 term and the associated uncertainty 
+#' 9. "TermFuncUcrt=value" (optional), where value contains the combination of the L0 term and the associated uncertainty 
 #' function to use within the NEONprocIS.cal package to compute individual measurement uncertainty. The argument is formatted 
 #' as term:functionMeas,functionFdas|term:functionMeas,functionFdas... where term is the L0 term, functionMeas is the function 
 #' to use for computing in the individual measurement (calibration) uncertainty, and functionFdas is the function to use for 
@@ -151,11 +154,11 @@
 #' in the ucrt_coef folder for all terms with calibration information supplied in the calibration folder, regardless of whether they are 
 #' specified here for output of individual measurement uncertainty data (output in the ucrt_data folder).
 #'
-#' 9. "FileUcrtFdas=value" (optional), where value is the full path to the uncertainty coefficients for the FDAS.
+#' 10. "FileUcrtFdas=value" (optional), where value is the full path to the uncertainty coefficients for the FDAS.
 #' Must be provided if FDAS uncertainty applies. These coefficients will be added to the uncertainty coefficients found in any calibration
 #' files and output to the ucrt_coef folder, as well as input into any uncertainty functions indicated in TermFuncUcrt.
 #'
-#' 10. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at
+#' 11. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at
 #' the same level as the calibration folder in the input path that are to be copied with a symbolic link to the
 #' output path.
 #'
@@ -237,6 +240,8 @@
 #     Applied internal parallelization
 #   Cove Sturtevant (2021-07-21)
 #     Move main functionality to wrapper function
+#   Cove Sturtevant (2021-08-10)
+#     Add datum error routing
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -266,7 +271,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut"),
+    NameParaReqd = c("DirIn", "DirOut", "DirErr"),
     NameParaOptn = c(
       "FileSchmData",
       "FileSchmQf",
@@ -292,6 +297,7 @@ Para <-
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
 log$debug(base::paste0(
@@ -436,17 +442,36 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
     
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
-  wrap.cal.conv.dp0p(DirIn=idxDirIn,
-                     DirOutBase=Para$DirOut,
-                     FuncConv=FuncConv,
-                     FuncUcrt=FuncUcrt,
-                     ucrtCoefFdas=ucrtCoefFdas,
-                     TermQf=Para$TermQf,
-                     NumDayExpiMax=NumDayExpiMax,
-                     SchmDataOutList=SchmDataOutList,
-                     SchmQf=SchmQf,
-                     DirSubCopy=DirSubCopy,
-                     log=log
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.cal.conv.dp0p(DirIn=idxDirIn,
+                         DirOutBase=Para$DirOut,
+                         FuncConv=FuncConv,
+                         FuncUcrt=FuncUcrt,
+                         ucrtCoefFdas=ucrtCoefFdas,
+                         TermQf=Para$TermQf,
+                         NumDayExpiMax=NumDayExpiMax,
+                         SchmDataOutList=SchmDataOutList,
+                         SchmQf=SchmQf,
+                         DirSubCopy=DirSubCopy,
+                         log=log
+      ),
+      error = function(err) {
+        call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+        print(utils::limitedLabels(call.stack))
+      }
+    ),
+    error=function(err) {
+      NEONprocIS.base::def.err.datm(
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
+      )
+    }
   )
   
   return()

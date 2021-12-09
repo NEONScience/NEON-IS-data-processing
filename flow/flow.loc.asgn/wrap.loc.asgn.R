@@ -123,10 +123,12 @@ wrap.loc.asgn <- function(DirIn,
     # ------- Compile the dates over which this location file applies. -------
     # Install/remove dates for asset install
     if(TypeFile == 'asset'){
+      
       timeAsgn <- base::data.frame(timeBgn=base::as.POSIXct(locMeta$install_date,tz='GMT'),
                                    timeEnd=base::as.POSIXct(locMeta$remove_date,tz='GMT'),
                                    stringsAsFactors = FALSE) # Asset location file
     } else if (TypeFile == 'namedLocation'){
+      
       # Active dates for named location
       timeAsgn <- lapply(locMeta$active_periods,
                          FUN=function(idxLoc){
@@ -208,17 +210,17 @@ wrap.loc.asgn <- function(DirIn,
       nameFileOut <- base::paste0(dirOut[idxDay],'/',idxFileLoc)
       
       if(TypeFile=='asset'){
-        NEONprocIS.base::def.loc.filt(NameFileIn=nameFile,
-                                      NameFileOut=nameFileOut,
-                                      TimeBgn=ts[idxDay],
-                                      TimeEnd=ts[idxDay]+timeDiffDay,
-                                      log=log
+        loc <- NEONprocIS.base::def.loc.filt(NameFileIn=nameFile,
+                                              NameFileOut=nameFileOut,
+                                              TimeBgn=ts[idxDay],
+                                              TimeEnd=ts[idxDay]+timeDiffDay,
+                                              log=log
         )
       } else if (TypeFile == 'namedLocation'){
-        NEONprocIS.base::def.loc.trnc.actv(NameFileIn=nameFile,
-                                           NameFileOut=nameFileOut,
-                                           TimeBgn=ts[idxDay],
-                                           TimeEnd=ts[idxDay]+timeDiffDay
+        loc <- NEONprocIS.base::def.loc.trnc.actv(NameFileIn=nameFile,
+                                                   NameFileOut=nameFileOut,
+                                                   TimeBgn=ts[idxDay],
+                                                   TimeEnd=ts[idxDay]+timeDiffDay
         )
       }
     } # End loop around data days for this location file

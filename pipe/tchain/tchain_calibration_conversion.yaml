@@ -7,12 +7,13 @@ transform:
   - /flow.cal.conv.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
   - FileSchmData=$FILE_SCHEMA_DATA
   - FileSchmQf=$FILE_SCHEMA_FLAGS
   - TermFuncConv=depth0WaterTemp:def.cal.conv.poly|depth1WaterTemp:def.cal.conv.poly|depth2WaterTemp:def.cal.conv.poly|depth3WaterTemp:def.cal.conv.poly|depth4WaterTemp:def.cal.conv.poly|depth5WaterTemp:def.cal.conv.poly|depth6WaterTemp:def.cal.conv.poly|depth7WaterTemp:def.cal.conv.poly|depth8WaterTemp:def.cal.conv.poly|depth9WaterTemp:def.cal.conv.poly|depth10WaterTemp:def.cal.conv.poly
   - TermQf=depth0WaterTemp|depth1WaterTemp|depth2WaterTemp|depth3WaterTemp|depth4WaterTemp|depth5WaterTemp|depth6WaterTemp|depth7WaterTemp|depth8WaterTemp|depth9WaterTemp|depth10WaterTemp
   - TermFuncUcrt=depth0WaterTemp:def.ucrt.meas.cnst|depth1WaterTemp:def.ucrt.meas.cnst|depth2WaterTemp:def.ucrt.meas.cnst|depth3WaterTemp:def.ucrt.meas.cnst|depth4WaterTemp:def.ucrt.meas.cnst|depth5WaterTemp:def.ucrt.meas.cnst|depth6WaterTemp:def.ucrt.meas.cnst|depth7WaterTemp:def.ucrt.meas.cnst|depth8WaterTemp:def.ucrt.meas.cnst|depth9WaterTemp:def.ucrt.meas.cnst|depth10WaterTemp:def.ucrt.meas.cnst
-  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.51
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.53
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

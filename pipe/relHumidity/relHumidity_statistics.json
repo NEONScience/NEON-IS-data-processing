@@ -14,7 +14,7 @@
       "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)",
       "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
       ],
-    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.19",
+    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.20",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
