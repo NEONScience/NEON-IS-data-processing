@@ -167,9 +167,8 @@
 #'                                )
 #'                  )
 #' wrap.qaqc.qm(DirIn="~/pfs/relHumidity_qaqc_flags_group/hmp155/2020/01/01/CFGLOC101252",
-#'                DirOutBase="~/pfs/out",
-#'                WndwAgr=as.difftime(c(1,30),units='mins'),
-#'                ParaGrp=ParaGrp                
+#'              DirOutBase="~/pfs/out",
+#'              ParaGrp=ParaGrp                
 #' )
 
 #' @seealso None currently
@@ -260,6 +259,11 @@ wrap.qaqc.qm.dp0p <- function(DirIn,
       ), collapse = ',')
     )
   )
+  if(base::is.null(nameGrp)){
+    numGrp <- 1
+  } else {
+    numGrp <- base::length(nameGrp)
+  }
   
   # Are the variables indicated in VarTimeBgn and VarTimeEnd present?
   VarTimeBgnIdx <- VarTimeBgn
@@ -296,8 +300,7 @@ wrap.qaqc.qm.dp0p <- function(DirIn,
   }
   
   # Go through each group, creating the alpha, beta, and final quality flags
-  # Note, this sequence starts at 1 so that if there is no ParaGrp, all flags feed into one set of alpha, beta, final QFs
-  for (idxGrp in 1:base::length(nameGrp)) {
+  for (idxGrp in 1:numGrp) {
     qmIdx <- NULL
     nameQmIdx <- c(base::paste0(nameGrp[idxGrp],c('AlphaQF','BetaQF','FinalQF')))
     
