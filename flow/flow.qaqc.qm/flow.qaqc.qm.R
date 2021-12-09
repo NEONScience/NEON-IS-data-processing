@@ -6,8 +6,35 @@
 
 #' @description Workflow. Quality metrics module for NEON IS data processing. Aggregates quality flags
 #' at specified time intervals and computes pass, fail, and na quality metrics in addition to alpha 
-#' and beta summary metrics and the final quality flag.
+#' and beta summary metrics and the final quality flag. There are several options to tailor the 
+#' computation of the summary metrics and triggering of the final quality flag, including
+#'    1) ignoring particular flags entirely when computing quality metrics, 
+#'    2) specifying which flags feed into each the alpha and beta quality metrics, noting that multiple 
+#'    sets of alpha, beta, and final quality flag may be created, 
+#'    3) forcing flags to specific values  based on the value of another flag prior to computation 
+#'    of quality metrics, 
+#'    4) forcing individual records of the beta flag to 0 prior to computation of the beta quality metric 
+#'    if particular flags are raised (i.e. NULL or Gap flags), and 
+#'    5) signifying the threshold for the alpha and beta quality metrics above which the final 
+#'    quality flag is raised. 
 #' 
+#' General code workflow:
+#'    Parse input parameters
+#'    Read in output schemas if indicated in parameters
+#'    Determine datums to process (set of files/folders to process as a single unit)
+#'    For each datum:
+#'      Create output directories and copy (by symbolic link) unmodified components
+#'      Read in and combine all the flags files in the flags directory of each input datum
+#'      Get rid of any flags to ignore (as specified in the input arguments)
+#'      Change any NA flag values to -1
+#'      Force any flags to particular values based on values of other flags (as specified in input arguments)
+#'      Create summary alpha and beta flags for each individual record for each group as specified in the input arguments
+#'      For each aggregation interval:
+#'         For each time bin of each aggregation interval:
+#'            Compute the quality metrics for each flag, including % Pass, % Fail, % NA (could not evaluate)
+#'            Compute summary metrics (alpha and beta QMs) and the final quality flag for each group
+#'         Write out the entire set of quality metrics, and the summary metrics and final QF for each group
+#'      
 #' This script is run at the command line with the following arguments. Each argument must be a string  
 #' in the format "Para=value", where "Para" is the intended parameter name and "value" is the value of 
 #' the parameter. Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the 
@@ -15,7 +42,7 @@
 #'
 #' The arguments are: 
 #' 
-#' 1. "DirIn=value", where value is the  path to input data directory (see below)
+#' 1. "DirIn=value", where value is the  path to input datum (see below)
 #' The input path is structured as follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number of 
 #' parent and child directories of any name, so long as they are not 'pfs', the same name as subdirectories 
 #' expected at the terminal directory (see below)), or recognizable as the 'yyyy/mm/dd' structure 
@@ -32,12 +59,15 @@
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
 #' of DirIn. 
 #' 
-#' 3. "FileSchmQm=value" (optional), where value is the full path to the avro schema for the output quality 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 4. "FileSchmQm=value" (optional), where value is the full path to the avro schema for the output quality 
 #' metrics file. If this input is not provided, the output schema for the stats will be auto-generated from  
 #' the output data frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE STATS MATCHES THE ORDER OF THE FLAGS 
 #' IN THE SORTED FILE LIST. See output information below for details. 
 #' 
-#' 4. "WndwAgr=value", where value is the aggregation interval for which to compute statistics. It is formatted 
+#' 5. "WndwAgr=value", where value is the aggregation interval for which to compute statistics. It is formatted 
 #' as a 3 character sequence, typically representing the number of minutes over which to compute statistics. 
 #' For example, "WndwAgr=001" refers to a 1-minute aggregation interval, while "WndwAgr=030" refers to a 
 #' 30-minute aggregation interval. Multiple aggregation intervals may be specified by delimiting with a pipe 
@@ -45,36 +75,71 @@
 #' It is assumed that the length of the file is one day. The aggregation interval must be an equal divisor of 
 #' one day.
 #' 
-#' 5. "Thsh=value" (optional), where value is the threshold fraction for the sum of the alpha and beta quality 
+#' 6. "Thsh=value" (optional), where value is the threshold fraction for the sum of the alpha and beta quality 
 #' metrics multiplied by the respective weights given in argument WghtAlphaBeta (below) at and above 
 #' which triggers the final quality flag (value of 1). Default value = 0.2.
 #' 
-#' 6. "WghtAlphBeta=value" (optional), where value is a 2-element vector of weights, separated by pipes (|) for 
+#' 7. "WghtAlphBeta=value" (optional), where value is a 2-element vector of weights, separated by pipes (|) for 
 #' the alpha and beta quality metrics, respectively. The alpha and beta quality metrics (in fraction form) are 
 #' multiplied by these respective weights and summed. If the resultant value is greater than the threshold value 
 #' set in the Thsh argument, the final quality flag is raised. Default is "WghtAlphaBeta=2|1".
 #' 
-#' 7-N. "GrpQfX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of  
-#' the quality flags that should be used in the computation of alpha & beta quality metrics and the final quality 
-#' flag. Begin each argument with the group name (e.g. temp) to be used as a prefix to the output alpha and beta
-#' QMs and final quality flag, followed by a colon (:), and then the exact names of the quality flags, delimited
-#' by pipes (|). For example, if tempRangeQF and tempPersistenceQF are feed into the final quality flag, and you 
-#' want "temp" to be a prefix for resultant alpha/beta QMs and finalQF, the argument is 
-#' "GrpQf1=temp:tempRangeQF|tempPersistenceQF". If no prefix to the outputs is desired, include the colon as the
-#' first character of value (e.g. "GrpQf1=:tempRangeQF|tempPersistenceQF"). If this argument is not included, all 
-#' quality flags in the file(s) will be used to compute a single set of alpha and beta quality metrics and the 
-#' final quality flag. 
-#' Note that quality metrics for all quality flags found in the input files will be output, the GrpQfX arguments 
-#' simply dictate what QMs feed into a set of alpha&beta quality metrics and the final quality flag. There may be 
-#' multiple assignments of GrpQfX, specified by incrementing the number X by 1 with each additional argument. 
-#' There is a limit of X=100 for GrpQfX arguments. Note that the group names must be unique among GrpQfX arguments.
+#' 8. "GrpQfAlphX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
+#' the quality flags that should be used in the computation of the alpha quality metric. Begin each argument with
+#' the group name (e.g. temp) to be used as a prefix to the output alpha QM, followed by a colon (:), and then
+#' the exact names of the quality flags, delimited by pipes (|). For example, if tempRangeQF and tempPersistenceQF
+#' feed into the alpha QM (a value of 1 for either of these flags causes the alpha QF for the record to be 1), and you
+#' want "temp" to be a prefix for resultant alpha QM, the argument is "GrpQfAlph1=temp:tempRangeQF|tempPersistenceQF".
+#' If no prefix to the output name is desired, include the colon as the first character of value
+#' (e.g. "GrpQfAlph1=:tempRangeQF|tempPersistenceQF"). If this argument is not included, all
+#' quality flags in the file(s) will be used to compute a single alpha QM. There may be
+#' multiple assignments of GrpQfAlphX, specified by incrementing the number X by 1 with each additional argument.
+#' There is a limit of X=100 for GrpQfAlphX arguments. Note that the group names must be unique among GrpQfAlphX
+#' arguments, and must match those found in GrpQfBetaX arguments. The group name will also be applied to the
+#' resultant final QF.
+#'
+#' 9. "GrpQfBetaX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
+#' the quality flags that should be used in the computation of the beta quality quality metric. Begin each argument with
+#' the group name (e.g. temp) to be used as a prefix to the output beta QM, followed by a colon (:), and then
+#' the exact names of the quality flags, delimited by pipes (|). For example, if tempRangeQF and tempPersistenceQF
+#' feed into the beta QM (a value of -1 for either of these flags causes the beta QF for the record to be 1), and you
+#' want "temp" to be a prefix for resultant beta QM, the argument is "GrpQfBeta1=temp:tempRangeQF|tempPersistenceQF".
+#' If no prefix to the output name is desired (i.e. to output "betaQF"), include the colon as the first character of
+#' value (e.g. "GrpQfBeta1=:tempRangeQF|tempPersistenceQF"). If this argument is not included, all
+#' quality flags in the file(s) will be used to compute a single beta QM. There may be
+#' multiple assignments of GrpQfBetaX, specified by incrementing the number X by 1 with each additional argument.
+#' There is a limit of X=100 for GrpQfBetaX arguments. Note that the group names must be unique among GrpQfBetaX
+#' arguments, and must match those found in GrpQfAlphaX arguments. The group name will also be applied to the
+#' resultant final QF.
+#'
+#' 10. "GrpQfBetaIgnrX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names
+#' of the quality flags that, if any of their values equals 1 for a given record, the beta QF for that record for the indicated group is
+#' set to 0. Begin each argument with the group name (e.g. temp) that corresponds to a group indicated in the
+#' GrpQfBetaX argument(s), followed by a colon (:), and then the exact names of the quality flags, delimited by
+#' pipes (|), that cause the beta QF for that record and group to be set to 0 if any of their values equals 1. For example,
+#' if the tempNullQF should cause the tempBetaQF to be set to 0 when tempNullQF = 1, the argument is
+#' "GrpQfBeta1=temp:tempNullQF". To apply this logic to a group without a prefix (i.e. to betaQF), include the
+#' colon as the first character of value (e.g. "GrpQfBetaIgnr1=:nullQF"). Note that the group names must be unique
+#' among GrpQfBetaIgnrX arguments, and must be a subset of those found in GrpQfAlphaX arguments.
+#'
+#' 11. "QfForcX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
+#' the quality flags that should be forced to a particular value if the value of a "driver" flag equals a
+#' particular value. Begin each argument with the name of the driver flag (e.g. tempNullQF), followed by a colon (:),
+#' then the numeric "driver value" of the driver flag which activates the force, followed by a colon (:),
+#' then the exact names of the "forced" flags, delimited by pipes (|), followed by a colon (:),
+#' and finally the "forced" value. For example, if tempRangeQF and tempPersistenceQF should be set to -1 when
+#' sensorNAQF is 1, then the argument is "QfForc1=sensorNAQf:1:tempRangeQF|tempPersistenceQF:-1". There may
+#' be multiple assignments of QfForcX, specified by incrementing the number X by 1 with each additional argument.
+#' There is a limit of X=100 for QfForcX arguments.
+#' Note that the logic described here occurs before the alpha QMs, beta QMs, and final quality flags are calculated, and
+#' forcing actions will occur following increasing value of X in QfForcX.
 #'  
-#' N+1. "VarIgnr=value" (optional), where value contains the names of the variables that should be ignored if 
+#' 12. "VarIgnr=value" (optional), where value contains the names of the variables that should be ignored if 
 #' found in the input files, separated by pipes (|) (e.g. "VarIgnr=timeWndwBgn|timeWndwEnd"). Do not include 
 #' readout_time here. No quality metrics will be computed for these variables and they will not be included 
 #' in the output. Defaults to empty. 
 #' 
-#' N+2. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
+#' 13. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
 #' pipes, at the same level as the flags folder in the input path that are to be copied with a 
 #' symbolic link to the output path. 
 #' 
@@ -88,21 +153,26 @@
 #' copied over unmodified with a symbolic link.
 #' 
 #' If no output schema is provided for the quality metrics, the variable names for quality metrics will be a combination 
-#' of the quality flag and PassQM, FailQM, or NAQM. The variable names for the alpha & beta quality metrics and final 
+#' of the quality flag and PassQM, FailQM, or NAQM. 
+#' Note that quality metrics for all quality flags found in the input files will be output, the GrpQf arguments above 
+#' simply dictate what QFs feed into a set of alpha&beta quality metrics and the final quality flag. 
+#' The variable names for the alpha & beta quality metrics and final 
 #' quality flag will be a combination of the group name (including none) and alphaQM, betaQM, or FinalQF. The order of 
-#' the outputs will be all quality metrics in the same order they were found in the sorted (increasing order) input
+#' the outputs will be all quality metrics in the same order as the individual flags were found in the sorted (increasing order) input
 #' files, with nested Pass, Fail, and NA QMs for each flag. These will be followed by the alpha and beta QMs and final 
-#' quality flag groups in the same order as the GrpQfX inputs. Additionally, the first two columns of the output file 
+#' quality flag groups in the same order as the GrpQfAlphX inputs. Additionally, the first two columns of the output file 
 #' will contain the start and end times for the aggregation interval, labeled "startDateTime" and "endDateTime", 
 #' respectively. The quality metrics are calculated for readout times in the interval [startDateTime endDateTime), with 
 #' an open brack on the right (i.e. inclusive of the startDateTime but exclusive of the endDateTime). An example column
 #' ordering: Say there are two input files named outflagsA.parquet and outflagsB.parquet, where outflagsA.parquet contains flag 
-#' tempValidCalQF and outflagsB.parquet contains flags tempRangeQF, and the grouping input argument is 
-#' "GrpQf1=temp:tempRangeQf|tempValidCalQF". The ordering of the output columns will be startDateTime, endDateTime, 
+#' tempValidCalQF and outflagsB.parquet contains flags tempRangeQF, and the GrpQfAlphX grouping input argument is 
+#' "GrpAlphQf1=temp:tempRangeQf|tempValidCalQF". The ordering of the output columns will be startDateTime, endDateTime, 
 #' tempValidCalQFPassQM, tempValidCalQFFailQM, tempValidCalQFNAQM, tempRangeQFPassQM, tempRangeQFFailQM, tempRangeQFNAQM,  
 #' tempAlphaQM, tempBetaQM, and tempFinalQF, in that order. The names of the output columns may be replaced by providing an 
 #' output schema in argument FileSchmQm. However, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THIS COLUMN ORDERING. 
-#' Otherwise, column names will not pertain to the metrics in the column.
+#' Otherwise, column names will not pertain to the metrics in the column. Best practice 
+#' is to first run the code without the schema argument so that the default column naming is output. Then craft the schema
+#' based on the known column ordering. 
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -127,9 +197,22 @@
 #     added option to ignore particular variables in the input files
 #   Cove Sturtevant (2021-03-03)
 #     Applied internal parallelization
+#   Cove Sturtevant (2021-10-25)
+#     Move main functionality to wrapper function
+#   Cove Sturtevant (2021-12-07)
+#     Implement options for:
+#       forcing flag values based on other flag values prior to QM computations
+#       specifying separately the flags that feed into each alpha QM and beta QM
+#       forcing the betaQF of a record to 0 based on flag values
 ##############################################################################################
 library(foreach)
 library(doParallel)
+
+# Source the wrapper function. Assume it is in the working directory
+source("./wrap.qaqc.qm.R")
+
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly=TRUE)
 
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -145,19 +228,20 @@ if(numCoreUse > numCoreAvail){
 }
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
-# Pull in command line arguments (parameters)
-arg <- base::commandArgs(trailingOnly=TRUE)
-
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg=arg,
                                       NameParaReqd=c(
                                         "DirIn",
                                         "DirOut",
+                                        "DirErr", 
                                         "WndwAgr"
                                         ),
                                       NameParaOptn=c(
                                         "FileSchmQm",
-                                        base::paste0("GrpQf",1:100),
+                                        base::paste0("GrpQfAlph", 1:100),
+                                        base::paste0("GrpQfBeta", 1:100),
+                                        base::paste0("QfForc", 1:100),
+                                        base::paste0("GrpQfBetaIgnr", 1:100),
                                         "DirSubCopy",
                                         "Thsh",
                                         "WghtAlphBeta",
@@ -173,13 +257,10 @@ Para <- NEONprocIS.base::def.arg.pars(arg=arg,
                                         ),
                                       log=log)
 
-# Retrieve datum path. 
-DirBgn <- Para$DirIn # Input directory. 
-log$debug(base::paste0('Input directory: ',DirBgn))
-
-# Retrieve base output path
-DirOut <- Para$DirOut
-log$debug(base::paste0('Output directory: ',DirOut))
+# Echo arguments
+log$debug(base::paste0('Input directory: ',Para$DirIn))
+log$debug(base::paste0('Output directory: ',Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Retrieve output schema for quality metrics
 FileSchmQm <- Para$FileSchmQm
@@ -197,41 +278,208 @@ WndwAgr <- base::as.difftime(base::as.numeric(Para$WndwAgr),units="mins")
 log$debug(base::paste0('Aggregation interval(s), in minutes: ',base::paste0(WndwAgr,collapse=',')))
 
 # Retrieve alpha and beta QM thresholds
-Thsh <- Para$Thsh
-WghtAlphBeta <- Para$WghtAlphBeta
-log$debug(base::paste0('Threshold fraction for triggering final quality flag: ',Thsh))
+log$debug(base::paste0('Threshold fraction for triggering final quality flag: ',Para$Thsh))
 log$debug(base::paste0('Respective weights applied to alpha and beta quality metrics in threshold evaluation: ',
-                       base::paste0(WghtAlphBeta,collapse=',')))
+                       base::paste0(Para$WghtAlphBeta,collapse=',')))
 
-# Parse the groups of flags feeding into alpha and beta quality metrics and the final quality flag 
-nameParaGrpQf <- base::names(Para)[names(Para) %in% base::paste0("GrpQf",1:100)]
-if(base::length(nameParaGrpQf) > 0){
-  spltGrp <- Para[nameParaGrpQf]
-  ParaGrp <- base::lapply(spltGrp,FUN=function(argSplt){
-    base::list(name=argSplt[1],
-               qf=utils::tail(x=argSplt,n=-1),
-               nameQmGrp=base::paste0(argSplt[1],c("AlphaQM","BetaQM","FinalQF"))) # Note that a match for FinalQF columns are used below. Don't change.
-  })
-  for(idxGrp in base::names(ParaGrp)){
-    log$debug(base::paste0('Alpha/beta QMs and finalQF will be computed for group name: ',ParaGrp[[idxGrp]]$name, 
-                           ' with flags: ',base::paste0(ParaGrp[[idxGrp]]$qf,collapse=',')))
+# Parse the groups of flags feeding into alpha quality metrics 
+nameParaGrpQfAlph <-
+  base::names(Para)[names(Para) %in% base::paste0("GrpQfAlph", 1:100)]
+if (base::length(nameParaGrpQfAlph) > 0) {
+  
+  spltGrp <- Para[nameParaGrpQfAlph]
+  ParaGrpAlph <- base::lapply(
+    spltGrp,
+    FUN = function(argSplt) {
+      base::list(
+        name = argSplt[1],
+        qfAlph = utils::tail(x = argSplt, n = -1)
+      )
+    }
+  )
+  for (idxGrp in 1:base::length(ParaGrpAlph)) {
+    log$debug(
+      base::paste0(
+        ParaGrpAlph[[idxGrp]]$name,
+        'AlphaQM will be computed from the following flags: ',
+        base::paste0(ParaGrpAlph[[idxGrp]]$qfAlph, collapse = ',')
+      )
+    )
   }
   
-  # Construct the names of the alpha, beta, and final QF columns
-  nameQmGrp <- base::unlist(base::lapply(ParaGrp,FUN=function(idx){idx$nameQmGrp}))
-  base::names(nameQmGrp)<- NULL
-  
-  # Check that the names are unique
-  if(base::length(base::unique(nameQmGrp)) < base::length(nameQmGrp)){
-    log$fatal('Group names for input parameters GrpQfX are not unique. This is not allowed. Check inputs.')
-    stop()
-  }
 } else {
-  ParaGrp <- NULL
-  log$debug('Alpha/beta QMs and finalQF will be computed with all flags found in the input file(s).')
+  # All flags contribute to alphaQM
+  ParaGrpAlph <- base::list(
+    base::list(
+      name = "",
+      qfAlph = NULL
+    )
+  )
+  log$debug('AlphaQM will be computed with all flags found in the input file(s).')
   
-  # Construct the names of the alpha, beta, and final QF columns
-  nameQmGrp <- c("AlphaQM","BetaQM","FinalQF") # Note that a match for FinalQF columns are used below. Don't change.
+}
+names(ParaGrpAlph) <- NULL
+
+nameGrpAlph <-
+  base::unlist(base::lapply(
+    ParaGrpAlph,
+    FUN = function(idx) {
+      idx$name
+    }
+  )) 
+base::names(ParaGrpAlph) <- nameGrpAlph
+
+# Check that the group names are unique
+if (base::length(base::unique(nameGrpAlph)) < base::length(nameGrpAlph)) {
+  log$fatal(
+    'Group names for GrpQfAlphX arguments are not unique. This is not allowed. Check inputs.'
+  )
+  stop()
+}
+
+# Parse the groups of flags feeding into beta quality metrics
+nameParaGrpQfBeta <-
+  base::names(Para)[names(Para) %in% base::paste0("GrpQfBeta", 1:100)]
+if (base::length(nameParaGrpQfBeta) > 0) {
+  
+  spltGrp <- Para[nameParaGrpQfBeta]
+  ParaGrpBeta <- base::lapply(
+    spltGrp,
+    FUN = function(argSplt) {
+      base::list(
+        name = argSplt[1],
+        qfBeta = utils::tail(x = argSplt, n = -1)
+      )
+    }
+  )
+  for (idxGrp in 1:base::length(ParaGrpBeta)) {
+    log$debug(
+      base::paste0(
+        ParaGrpBeta[[idxGrp]]$name,
+        'BetaQM will be computed from the following flags: ',
+        base::paste0(ParaGrpBeta[[idxGrp]]$qfBeta, collapse = ',')
+      )
+    )
+  }
+  
+} else {
+  # All flags contribute to betaQF
+  ParaGrpBeta <- base::list(
+    base::list(
+      name = "",
+      qfBeta = NULL
+    )
+  )
+  log$debug('BetaQM will be computed with all flags found in the input file(s).')
+  
+}
+names(ParaGrpBeta) <- NULL
+
+nameGrpBeta <-
+  base::unlist(base::lapply(
+    ParaGrpBeta,
+    FUN = function(idx) {
+      idx$name
+    }
+  )) 
+base::names(ParaGrpBeta) <- nameGrpBeta
+
+# Check that the group names are unique
+if (base::length(base::unique(nameGrpBeta)) < base::length(nameGrpBeta)) {
+  log$fatal(
+    'Group names for GrpQfBetaX arguments are not unique. This is not allowed. Check inputs.'
+  )
+  stop()
+}
+
+# Check that group names are the same among Alpha and Beta groups
+if (!base::all(nameGrpAlph %in% nameGrpBeta) || !base::all(nameGrpBeta %in% nameGrpAlph)){
+  log$fatal(
+    'Group names are not consistent across input arguments GrpQfAlphX and GrpQfBetaX. Check inputs.'
+  )
+}
+nameGrp <- nameGrpAlph
+
+# Combine the groupings 
+ParaGrpAlph <- lapply(ParaGrpAlph,FUN=function(idxGrp){idxGrp <- idxGrp["qfAlph"]})
+ParaGrpBeta <- lapply(ParaGrpBeta,FUN=function(idxGrp){idxGrp <- idxGrp["qfBeta"]})
+ParaGrp <- base::Map(base::c,ParaGrpAlph, ParaGrpBeta)
+
+
+# Parse the groups of flags that force betaQF to 0
+nameParaGrpQfBetaIgnr <-
+  base::names(Para)[names(Para) %in% base::paste0("GrpQfBetaIgnr", 1:100)]
+if (base::length(nameParaGrpQfBetaIgnr) > 0) {
+  spltGrp <- Para[nameParaGrpQfBetaIgnr]
+  
+  for (idxSpltGrp in 1:base::length(spltGrp)) {
+    # Pull the group name and flags feeding into this betaQF
+    nameIdx <- spltGrp[[idxSpltGrp]][1]
+    qfIdx <- utils::tail(x = spltGrp[[idxSpltGrp]], n = -1)
+    
+    if (!(nameIdx %in% nameGrp)) {
+      log$fatal(
+        'Group names for input argument GrpQfBetaIgnr are not consistent with those of GrpQfAlphX and GrpQfBetaX. Check inputs.'
+      )
+      stop()
+    }
+    idxGrp <- base::which(names(ParaGrp) == nameIdx)
+    ParaGrp[[idxGrp]]$qfBetaIgnr <- qfIdx
+    
+    log$debug(
+      base::paste0(
+        nameIdx,
+        'BetaQF will be forced to 0 if any of the following flags have a value of 1: ',
+        base::paste0(ParaGrp[[idxGrp]]$qfBetaIgnr, collapse =
+                       ',')
+      )
+    )
+  }
+}
+
+# Parse the groups of flags that force other flags to specific values
+nameParaQfForc <-
+  base::sort(base::names(Para)[names(Para) %in% base::paste0("QfForc", 1:100)])
+if (base::length(nameParaQfForc) > 0) {
+  spltGrp <- Para[nameParaQfForc]
+  ParaForc <- base::lapply(
+    spltGrp,
+    FUN = function(argSplt) {
+      numArgSplt <- base::length(argSplt)
+      if (numArgSplt < 4) {
+        log$fatal(base::paste0('Malformed ', nameParaQfForc, ' argument. Check inputs.'))
+        stop()
+      }
+      
+      rpt <- base::list(
+        qfDrve = argSplt[1],
+        valuDrve = base::as.numeric(argSplt[2]),
+        qfForc = argSplt[3:(numArgSplt - 1)],
+        valuForc = base::as.numeric(argSplt[numArgSplt])
+      )
+      
+      if (base::is.na(rpt$valuDrve) || base::is.na(rpt$valuForc)) {
+        log$fatal(base::paste0('Malformed ', nameParaQfForc, ' argument. Check inputs.'))
+        stop()
+      } else {
+        log$debug(
+          base::paste0(
+            'A ',
+            rpt$qfDrve,
+            ' value of ',
+            rpt$valuDrve,
+            ' will force the flags ',
+            base::paste0(rpt$qfForc, collapse = ','),
+            ' to a value of ',
+            rpt$valuForc
+          )
+        )
+      }
+      return(rpt)
+    }
+  )
+} else {
+  ParaForc <- NULL
 }
 
 # Retrieve variables to ignore in the flags files
@@ -247,29 +495,7 @@ nameDirSub <- base::as.list(base::unique(c(DirSubCopy,'flags')))
 log$debug(base::paste0('Minimum expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
 
 # Find all the input paths (datums). We will process each one.
-DirIn <- NEONprocIS.base::def.dir.in(DirBgn=DirBgn,nameDirSub=nameDirSub,log=log)
-
-# Create the binning for each aggregation interval
-timeDmmyBgn <- base::as.POSIXlt('1970-01-01',tz='GMT')
-timeDmmyEnd <- timeDmmyBgn + base::as.difftime(1,units='days') 
-timeBgnDiff <- list()
-timeEndDiff <- list()
-for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
-  
-  # Time series of aggregation windows 
-  timeBgnSeq <- base::as.POSIXlt(base::seq.POSIXt(from=timeDmmyBgn,to=timeDmmyEnd,by=base::format(WndwAgr[idxWndwAgr])))
-  timeBgnSeq <- utils::head(timeBgnSeq,n=-1) # Lop off the last one at timeEnd 
-  timeEndSeq <- timeBgnSeq + WndwAgr[idxWndwAgr] 
-  if(utils::tail(timeEndSeq,n=1) != timeDmmyEnd){
-    log$fatal(base::paste0('The aggregation interval must be an even divisor of one day. An aggregation interval of ',
-                           WndwAgr[idxWndwAgr],' does not fit this requirement. Check inputs.'))
-    stop()
-  }
-  
-  timeBgnDiff[[idxWndwAgr]] <- timeBgnSeq - timeDmmyBgn # Add to timeBgn of each day to represent the starting time sequence
-  timeEndDiff[[idxWndwAgr]] <- timeEndSeq - timeDmmyBgn # Add to timeBgn of each day to represent the end time sequence
-} # End loop around aggregation intervals
-
+DirIn <- NEONprocIS.base::def.dir.in(DirBgn=Para$DirIn,nameDirSub=nameDirSub,log=log)
 
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
@@ -277,126 +503,38 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
-  # Get directory listing of input directory. Expect subdirectories for flags
-  idxDirQf <- base::paste0(idxDirIn,'/flags')
-  fileQf <- base::sort(base::dir(idxDirQf))
-  log$info(base::paste0('Flags from ', base::length(fileQf),' files will be combined for computation of quality metrics.'))
-
-  # Gather info about the input directory (including date) and create the output directory. 
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
-  timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
-  timeEnd <- timeBgn + base::as.difftime(1,units='days')
-  idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
-  idxDirOutQm <- base::paste0(idxDirOut,'/quality_metrics')
-  base::dir.create(idxDirOutQm,recursive=TRUE)
-
-  # Copy with a symbolic link the desired subfolders 
-  if(base::length(DirSubCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
-  }  
-  
-  # Combine flags files
-  qf <- NULL
-  qf <-
-    NEONprocIS.base::def.file.comb.ts(
-      file = base::paste0(idxDirQf, '/', fileQf),
-      nameVarTime = 'readout_time',
-      log = log
-    )
-  
-  # Remove any columns for variables we should ignore
-  qf <- qf[,!(base::names(qf) %in% VarIgnr)]
-  
-  # Take stock of our quality flags
-  numQf <- base::ncol(qf)-1 # Minus the readout_time column
-  numNa <- base::apply(X=base::is.na(qf),MARGIN=2,FUN=base::sum)
-  if(base::sum(numNa) > 0){
-    log$warn(base::paste0(numNa[numNa > 0]," NA values found for variable ",base::names(numNa[numNa > 0]),". These will be replaced with -1."))
-    qf[base::is.na(qf)]<- -1
-  }
-  
-    
-  # Pull the time variable
-  timeMeas <- base::as.POSIXlt(qf$readout_time)
-  
-  # Figure out the names of the output columns
-  nameQf <- base::setdiff(base::names(qf),"readout_time")
-  nameQm <- c(base::unlist(base::lapply(nameQf,base::paste0,y=c("PassQM","FailQM","NAQM"))),nameQmGrp)
-  log$debug(base::paste0('The default output column names are as follow (ensure any output schema that changes these names matches this order):',
-                         base::paste0(c('startDateTime','endDateTime',nameQm),collapse=',')))
-    
-  # Initialize QM column indexing vector
-  setQm <- (0:(numQf-1))*3
-  
-  # Run through each aggregation interval, creating the daily time series of windows
-  for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
-    
-    log$debug(base::paste0('Computing quality metrics for aggregation interval: ',WndwAgr[idxWndwAgr], ' minute(s)'))
-    
-    # Create start and end time sequences
-    timeAgrBgn <- timeBgn + timeBgnDiff[[idxWndwAgr]]
-    timeAgrEnd <- timeBgn + timeEndDiff[[idxWndwAgr]]
-    timeBrk <- c(base::as.numeric(timeAgrBgn),base::as.numeric(utils::tail(timeAgrEnd,n=1))) # break points for .bincode
-    
-    # Intialize the output
-    rpt <- base::data.frame(startDateTime=timeAgrBgn,endDateTime=timeAgrEnd)
-    rpt[,3:(base::length(nameQm)+2)] <- base::as.numeric(NA)
-    base::names(rpt)[3:(base::length(nameQm)+2)] <- nameQm
-    setQfFinl <- base::which(base::grepl(pattern='FinalQF',x=base::names(rpt),ignore.case = FALSE)) # note the final quality flags. We will turn these to integer.
-    for(idxQfFinl in setQfFinl){
-      class(rpt[[idxQfFinl]]) <- "integer" # Make the final quality flags integer class
-    }
-    
-    # Allocate qf points to aggregation windows
-    setTime <- base::.bincode(base::as.numeric(timeMeas),timeBrk,right=FALSE,include.lowest=FALSE) # Which time bin does each measured value fall within?
-    
-    # Run through the time bins
-    for(idxWndwTime in base::unique(setTime)){
-
-      # Rows to pull
-      qfWndwTime <- base::subset(qf,subset=setTime==idxWndwTime)   
-      
-      # Compute quality metrics (percent)
-      numRow <- base::nrow(qfWndwTime)
-      rpt[idxWndwTime,setQm+3] <- base::colSums(x=base::subset(qfWndwTime,select=-readout_time)==0,na.rm=TRUE)/numRow*100 # Pass
-      rpt[idxWndwTime,setQm+4] <- base::colSums(x=base::subset(qfWndwTime,select=-readout_time)==1,na.rm=TRUE)/numRow*100 # Fail
-      rpt[idxWndwTime,setQm+5] <- base::colSums(x=base::subset(qfWndwTime,select=-readout_time)==-1,na.rm=TRUE)/numRow*100 # Na
-        
-      # Compute alpha & beta QMs and the final quality flag
-      if(base::is.null(ParaGrp)){
-        # Use all flags in computation
-        qmFinl<-eddy4R.qaqc::def.qf.finl(qf=base::subset(qfWndwTime,select=-readout_time),
-                                   WghtAlphBeta=WghtAlphBeta,Thsh=Thsh)$qfqm[c("qmAlph","qmBeta","qfFinl")]*c(100,100,1)
-        base::class(qmFinl$qfFinl) <- "integer"
-        rpt[idxWndwTime,nameQmGrp]<-qmFinl
-      } else {
-        for(idxGrp in base::names(ParaGrp)){
-          qmFinl<-eddy4R.qaqc::def.qf.finl(qf=base::subset(qfWndwTime,select=ParaGrp[[idxGrp]]$qf),WghtAlphBeta=WghtAlphBeta,
-                                           Thsh=Thsh)$qfqm[c("qmAlph","qmBeta","qfFinl")]*c(100,100,1)
-          base::class(qmFinl$qfFinl) <- "integer"
-          rpt[idxWndwTime,ParaGrp[[idxGrp]]$nameQmGrp]<-qmFinl
-        }
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.qaqc.qm(DirIn=idxDirIn,
+                   DirOutBase=Para$DirOut,
+                   WndwAgr=WndwAgr,
+                   Thsh=Para$Thsh,
+                   WghtAlphBeta=Para$WghtAlphBeta,
+                   ParaGrp=ParaGrp,
+                   ParaForc=ParaForc,
+                   VarIgnr=VarIgnr,
+                   SchmQm=SchmQm,
+                   DirSubCopy=DirSubCopy,
+                   log=log
+      ),
+      error = function(err) {
+        call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+        print(utils::limitedLabels(call.stack))
       }
-      
-    } # End loop through time windows
-    
-    # Write out the file for this aggregation interval. Replace the final underscore-delimited component of one of the input 
-    # filenames, assuming this final component denotes the type of flags that are in the file
-    fileQmOutSplt <- base::strsplit(utils::tail(fileQf,1),'[_]')[[1]] # Separate underscore-delimited components of the file name
-    fileQmOutSplt[base::length(fileQmOutSplt)] <- base::paste(base::paste('qualityMetrics',Para$WndwAgr[idxWndwAgr],sep='_'),utils::tail(x=base::strsplit(utils::tail(x=fileQmOutSplt,n=1),'[.]')[[1]],n=-1),sep='.') # Replace last component, but try to keep the extension
-    fileQmOut <- base::paste(fileQmOutSplt,collapse='_')
-    NameFileOutQm <- base::paste0(idxDirOutQm,'/',fileQmOut)
-
-    rptWrte <- base::try(NEONprocIS.base::def.wrte.parq(data=rpt,NameFile=NameFileOutQm,NameFileSchm=NULL,Schm=SchmQm),silent=TRUE)
-    if(base::class(rptWrte) == 'try-error'){
-      log$error(base::paste0('Cannot write quality metrics file ', NameFileOutQm,'. ',attr(rptWrte,"condition"))) 
-      stop()
-    } else {
-      log$info(base::paste0('Quality metrics written successfully in file: ',NameFileOutQm))
+    ),
+    error=function(err) {
+      NEONprocIS.base::def.err.datm(
+        DirDatm=idxDirIn,
+        DirErrBase=Para$DirErr,
+        RmvDatmOut=TRUE,
+        DirOutBase=Para$DirOut,
+        log=log
+      )
     }
-    
-  } # End loop around aggregation intervals
-
+  )
+  
   return()
 } # End loop around datum paths 
   

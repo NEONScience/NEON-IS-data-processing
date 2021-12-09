@@ -9,10 +9,11 @@
                 "site":"SERC",
                 "install_date":"2018-06-01T17:51:16Z",
                 "remove_date":"2019-06-01T17:51:24Z",
-                "transaction_date":"2018-06-01T17:51:24Z",
                 "context":[
-                    "aspirated-single-121",
                     "aspirated-single"
+                ],
+                "group": [
+                    "aspirated-single-121"
                 ],
                 "locations":{
                     "type":"FeatureCollection",

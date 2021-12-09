@@ -60,9 +60,7 @@ def.file.comb.ts <- function(file,nameVarTime,log = NULL) {
     if(base::any(base::class(idxData) == 'try-error')){
       log$error(base::paste0('File ', idxFile,' is unreadable.')) 
       stop()
-    } else {
-      log$debug(base::paste0('Successfully read in file: ',idxFile))
-    }
+    } 
     
     # Pull out the time variable
     if(!NEONprocIS.base::def.validate.dataframe(dfIn=idxData,TestNameCol=nameVarTime,log=log)){
@@ -74,9 +72,13 @@ def.file.comb.ts <- function(file,nameVarTime,log = NULL) {
       data <- idxData
     } else {
       # Make sure there are no duplicate columns
-      dupCol <-base::names(idxData) %in% base::setdiff(base::names(data),nameVarTime)
+      dupCol <- base::names(idxData) %in% base::setdiff(base::names(data),nameVarTime)
       if(base::sum(dupCol) > 0){
-        log$warn(base::paste0('The non-time column names contained in the files ', base::paste0(file,collapse=','), ' overlap. Taking the first instance of duplicate column names.'))
+        log$warn(base::paste0('The non-time column names: ',
+                              base::paste0(base::names(idxData)[dupCol],collapse=','),
+                              ' contained in the files ', base::paste0(file,collapse=','),
+                              ' overlap. Taking the first instance of duplicate column names.')
+                 )
         idxData <- idxData[!dupCol]
       }
       

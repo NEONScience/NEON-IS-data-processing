@@ -1,0 +1,26 @@
+---
+pipeline:
+  name: tempSoil_level1_pub 
+transform:
+  image: docker.io/dlenz/pub_uploader:1
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m pub_uploader.pub_uploader_main"
+  env:
+    LOG_LEVEL: INFO
+    OUT_PATH: "/pfs/out"
+    VERSION: 'pipeline_test'
+  secrets:
+    [
+      {
+       "name": "pdr-int-secret",
+       "key": "uri",
+       "env_var": "DATABASE_URL"
+       }
+    ]
+input: 
+  pfs: 
+    name: DATA_PATH
+    repo: tempSoil_level1_egress 
+    glob: /*/*/*/

@@ -77,11 +77,11 @@
 #   Mija Choi (2020-08-05)
 #     Original Creation
 #   Mija Choi (2020-09-24)
-#     adjusted calls to uncertainty funcs to conform to new generic format 
-#     This includes inputting the entire data frame, the 
+#     adjusted calls to uncertainty funcs to conform to new generic format
+#     This includes inputting the entire data frame, the
 #     variable to be generate uncertainty info for, and the (unused) argument calSlct
-#     Changed input to also specify the FDAS uncertainty function to use, instead of 
-#     determining it within the code 
+#     Changed input to also specify the FDAS uncertainty function to use, instead of
+#     determining it within the code
 #     Changed input argument ParaUcrt to FuncUcrt, and changed input column names to support above changes
 ##############################################################################################
 # Define test context
@@ -96,7 +96,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    testJsonPath <- paste0(testDir, testJson)
    
    ucrtCoefFdas <- NEONprocIS.cal::def.read.ucrt.coef.fdas (NameFile=testJsonPath,log=NULL)
-
+   
    testFileCal = "calibration.xml"
    testFileCalPath <- paste0(testDir, testFileCal)
    
@@ -111,7 +111,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    
    values <- c(10, 13)
    
-   NumDayExpiMax <- data.frame(var = varCal, NumDayExpiMax = values, stringsAsFactors = FALSE)
+   NumDayExpiMax <- data.frame(var = varCal,NumDayExpiMax = values,stringsAsFactors = FALSE)
    #
    calSlct <- NEONprocIS.cal::wrap.cal.slct (
       DirCal = DirCal,
@@ -121,7 +121,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
       NumDayExpiMax = NumDayExpiMax,
       log = NULL
    )
-  
+   
    # Happy path 1 - test calibration in resistance
    #
    testData = "L0_data_resistance.csv"
@@ -136,7 +136,13 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    FuncUcrtFdas = "def.ucrt.fdas.rstc.poly"
    var = c("resistance")
    
-   FuncUcrt <-data.frame(var=var,FuncUcrtMeas=FuncUcrtMeas,FuncUcrtFdas=FuncUcrtFdas,stringsAsFactors=FALSE)
+   FuncUcrt <-
+      data.frame(
+         var = var,
+         FuncUcrtMeas = FuncUcrtMeas,
+         FuncUcrtFdas = FuncUcrtFdas,
+         stringsAsFactors = FALSE
+      )
    
    nameVarIn = c('resistance')
    nameVarOut = c('resistance')
@@ -149,8 +155,16 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
          stringsAsFactors = FALSE
       )
    newVar <- nameVarDfltSame[!(nameVarDfltSame %in% nameVarIn)]
-   mappNameVar <- base::rbind(mappNameVar,base::data.frame( nameVarI =newVar, nameVarOut=newVar,stringsAsFactors = FALSE))
-  
+   mappNameVar <-
+      base::rbind(
+         mappNameVar,
+         base::data.frame(
+            nameVarI = newVar,
+            nameVarOut = newVar,
+            stringsAsFactors = FALSE
+         )
+      )
+   
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
          data,
@@ -170,9 +184,9 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    )
    
    expect_true ((is.list(wudp0pList_returned)) &&
-                   !(is.null(wudp0pList_returned)) &&
-                   all(names(wudp0pList_returned$resistance) == elementsList))
-
+               !(is.null(wudp0pList_returned)) &&
+               all(names(wudp0pList_returned$resistance) == elementsList))
+   
    # Happy path 2 - test calibration in voltage
    #
    testData = "L0_data_voltage.csv"
@@ -181,21 +195,40 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    data <- read.csv(testDataPath, sep = ",", header = TRUE)
    
    data$readout_time <- as.POSIXct(data$readout_time, tz = 'GMT')
-   data=data.frame(data)
+   data = data.frame(data)
    
    FuncUcrtMeas = "def.ucrt.meas.cnst"
    FuncUcrtFdas = "def.ucrt.fdas.volt.poly"
    var = c("voltage")
    
-   FuncUcrt <-data.frame(var=var,FuncUcrtMeas=FuncUcrtMeas,FuncUcrtFdas=FuncUcrtFdas,stringsAsFactors=FALSE)
+   FuncUcrt <-
+      data.frame(
+         var = var,
+         FuncUcrtMeas = FuncUcrtMeas,
+         FuncUcrtFdas = FuncUcrtFdas,
+         stringsAsFactors = FALSE
+      )
    
    nameVarIn = c('voltage')
    nameVarOut = c('voltage')
    nameVarDfltSame = c('voltage')
    
-   mappNameVar <- base::data.frame(nameVarIn = nameVarIn, nameVarOut = nameVarOut, stringsAsFactors = FALSE)
+   mappNameVar <-
+      base::data.frame(
+         nameVarIn = nameVarIn,
+         nameVarOut = nameVarOut,
+         stringsAsFactors = FALSE
+      )
    newVar <- nameVarDfltSame[!(nameVarDfltSame %in% nameVarIn)]
-   mappNameVar <-base::rbind(mappNameVar, base::data.frame(nameVarIn = newVar,nameVarOut = newVar,stringsAsFactors = FALSE))
+   mappNameVar <-
+      base::rbind(
+         mappNameVar,
+         base::data.frame(
+            nameVarIn = newVar,
+            nameVarOut = newVar,
+            stringsAsFactors = FALSE
+         )
+      )
    
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
@@ -216,15 +249,15 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
    )
    
    expect_true ((is.list(wudp0pList_returned)) &&
-                   !(is.null(wudp0pList_returned)) &&
-                   all(names(wudp0pList_returned$voltage) == elementsList))  
+               !(is.null(wudp0pList_returned)) &&
+               all(names(wudp0pList_returned$voltage) == elementsList))
    
    #  Happy path 3 - calibration xml selected has the time expired
    #  All the rest of test data remain the same as in happy path 2, test in voltage
-   # 
+   #
    TimeBgn = base::as.POSIXct('2020-06-12 00:10:20', tz = 'GMT')
    TimeEnd = base::as.POSIXct('2020-07-07 00:18:28', tz = 'GMT')
-
+   
    #
    calSlct <- NEONprocIS.cal::wrap.cal.slct (
       DirCal = DirCal,
@@ -234,7 +267,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
       NumDayExpiMax = NumDayExpiMax,
       log = NULL
    )
-
+   
    wudp0pList_returned <-
       NEONprocIS.cal::wrap.ucrt.dp0p (
          data,
@@ -243,8 +276,7 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
          calSlct = calSlct,
          mappNameVar = mappNameVar
       )
-
-
+   
    elementsList = c(
       "voltage_ucrtMeas",
       "voltage_raw",
@@ -253,9 +285,18 @@ test_that("Unit test of wrap.ucrt.dp0p.R", {
       "voltage_ucrtComb",
       "voltage_ucrtExpn"
    )
-
+   
    expect_true ((is.list(wudp0pList_returned)) &&
                !(is.null(wudp0pList_returned)) &&
-               all(names(wudp0pList_returned$voltage) == elementsList)) &&
-               is.null(wudp0pList_returned$reistance)
+               all(names(wudp0pList_returned$voltage) == elementsList) &&
+               is.na(wudp0pList_returned$voltage$voltage_ucrtMeas)
+   )
+   
+   # Negative test #1: ucrtCoefFdas and mappNameVar are not passed to wrap.ucrt.dp0p.R
+   
+   wudp0pList_returned <- NEONprocIS.cal::wrap.ucrt.dp0p (data,
+                                                          FuncUcrt,
+                                                          calSlct = calSlct)
+   expect_true ((is.list(wudp0pList_returned)) &&
+               (is.null(wudp0pList_returned$voltage$voltage_ucrtMeas)))
 })

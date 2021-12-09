@@ -140,7 +140,7 @@ wrap.loc.repo.strc <- function(DirIn,
       }
       
       log$info(base::paste0('Restructured path to datum ',DirIn,' to ',dirOut, 
-                            '. Merged directory contents with any other source-ids at that named location.'))
+                            '. Merged directories of any other source-ids at that named location.'))
     
     } else {
       NEONprocIS.base::def.dir.copy.symb(DirIn,dirOut,log=log)

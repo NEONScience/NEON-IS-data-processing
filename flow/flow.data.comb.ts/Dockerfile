@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Combine Timeseries Data
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.65
+FROM quay.io/battelleecology/neon-is-base-r:v0.0.67
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -12,4 +12,5 @@ COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in calibration filter workflow
+COPY ./wrap.data.comb.ts.R /wrap.data.comb.ts.R
 COPY ./flow.data.comb.ts.R /flow.data.comb.ts.R

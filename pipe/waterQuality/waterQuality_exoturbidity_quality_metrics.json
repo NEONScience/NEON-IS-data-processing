@@ -8,6 +8,7 @@
       "/flow.qaqc.qm.dp0p.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
       "FileSchmQm=$FILE_SCHEMA_QM",
       "GrpQfAlph1=turbidity:sensorNAQF|turbidityValidCalQF|turbiditySuspectCalQF|turbidityNullQF|turbidityGapQF|turbidityRangeQF|turbidityStepQF|turbiditySpikeQF|turbidityPersistenceQF",
       "GrpQfBeta1=turbidity:turbidityRangeQF",
@@ -15,7 +16,7 @@
       "GrpQfBetaIgnr1=turbidity:turbidityNullQF|sensorNAQF",
       "Tmi=100"
     ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.7",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.12",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

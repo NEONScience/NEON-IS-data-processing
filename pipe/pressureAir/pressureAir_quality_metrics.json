@@ -8,12 +8,16 @@
       "/flow.qaqc.qm.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
       "FileSchmQm=$FILE_SCHEMA_QM",
       "WndwAgr=001|030",
       "WghtAlphBeta=2|1",
-      "Thsh=0.2"
+      "Thsh=0.2",
+      "GrpQfAlph1=staPres:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF",
+      "GrpQfBeta1=staPres:nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF",
+      "GrpQfBetaIgnr1=staPres:nullQF|gapQF"
       ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.11",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.15",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"

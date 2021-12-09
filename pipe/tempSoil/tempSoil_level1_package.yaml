@@ -1,0 +1,22 @@
+---
+pipeline:
+  name: tempSoil_level1_package
+transform:
+  image: docker.io/dlenz/packager:1
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m packager.packager_main"
+  env:
+    LOG_LEVEL: INFO
+    OUT_PATH: "/pfs/out"
+    PREFIX_INDEX: '3'
+    PREFIX_LENGTH: '3'
+    SORT_INDEX: '10'
+input: 
+  pfs: 
+    name: DATA_PATH
+    repo: tempSoil_level1_transform
+    glob: /*/*/*/
+
+

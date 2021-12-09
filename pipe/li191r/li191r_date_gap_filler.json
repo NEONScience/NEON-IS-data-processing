@@ -62,7 +62,7 @@
                 "pfs": {
                   "name": "LOCATION_PATH",
                   "repo": "li191r_location_active_dates_assignment",
-                  "glob": "/li191r/(*)/(*)/(*)",
+                  "glob": "/li191r/(*)/(*)/(*)/(CFGLOC100445|CFGLOC100446|CFGLOC100449)",
                   "joinOn": "$1/$2/$3",
                   "empty_files": true
                 }

@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - FileSchmQf=$SCHEMA_FLAGS
   - TermTest1=linePAR:null|gap|range(rmv)|step(rmv)|persistence
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.19
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.20
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -25,7 +25,7 @@ input:
       repo: avro_schemas
       glob: /dp0p/flags_plausibility_li191r.avsc
 enable_stats: false
-standby: true
+standby: false
 parallelism_spec:
   constant: '1'
 resource_requests:

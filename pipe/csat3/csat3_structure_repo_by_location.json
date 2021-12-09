@@ -8,9 +8,10 @@
       "/flow.loc.repo.strc.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
       "Comb=TRUE"
     ],
-    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.14",
+    "image": "quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.15",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
@@ -21,7 +22,7 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "csat3_data_location_group",
+      "repo": "csat3_calibrated_location_group",
       "glob": "/csat3/*/*/*"
     }
   },

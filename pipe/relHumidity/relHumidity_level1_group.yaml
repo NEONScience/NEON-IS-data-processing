@@ -26,6 +26,12 @@ transform:
             glob_pattern: /pfs/STATISTICS_PATH/hmp155/*/*/*/*/stats/**
             # Join on named location (already joined below by day
             join_indices: [7]
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/hmp155/*/*/*/*/location/**
+            # Join on named location (already joined below by day
+            join_indices: [7]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
@@ -40,6 +46,12 @@ input:
   - pfs:
       name: STATISTICS_PATH
       repo: relHumidity_statistics
+      glob: /hmp155/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: true
+  - pfs:
+      name: LOCATION_PATH
+      repo: relHumidity_locations
       glob: /hmp155/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true

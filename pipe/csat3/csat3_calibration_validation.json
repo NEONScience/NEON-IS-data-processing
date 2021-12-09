@@ -1,0 +1,35 @@
+{
+  "pipeline": {
+    "name": "csat3_calibration_validation"
+  },
+  "transform": {
+    "cmd": [
+      "Rscript",
+      "/flow.cal.conv.R",
+      "DirIn=$DIR_IN",
+      "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
+      "TermQf=ux_wind_speed|uy_wind_speed|uz_wind_speed|speed_of_sound"
+    ],
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.53",
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }
+  },
+  "input": {
+    "pfs": {
+      "name": "DIR_IN",
+      "repo": "csat3_data_calibration_group",
+      "glob": "/csat3/*/*/*/"
+    }
+  },
+  "enable_stats": false,
+  "standby": true,
+  "resource_requests": {
+    "memory": "250M",
+    "cpu": 0.25
+  }
+}

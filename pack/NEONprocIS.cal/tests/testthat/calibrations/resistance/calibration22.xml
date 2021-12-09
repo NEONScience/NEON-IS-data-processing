@@ -61,7 +61,7 @@
 		<Name>U_CVALR1</Name>
 		<Value>104</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
-		<Name>U_CVALF3</Name>
+		<Name>U_CVALR4</Name>
 		<Value>0.00585</Value>
 	</Uncertainty><Uncertainty units="uS/cm"> 
 		<Name>U_CVALF1</Name>

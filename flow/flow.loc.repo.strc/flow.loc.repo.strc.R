@@ -47,7 +47,10 @@
 #'    
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
-#' 3. "Comb=value" (optional), where value is either TRUE or FALSE whether to merge the contents of the nested 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 4. "Comb=value" (optional), where value is either TRUE or FALSE whether to merge the contents of the nested 
 #' sensor-based directories that reside at the same location ID. Defaults to FALSE. If TRUE, the location name 
 #' will replace the source id in the repo structure, and the contents of subfolders will be combined across 
 #' source-ids. If FALSE, the location name will be inserted in the directory path above the level of source-id.
@@ -100,6 +103,8 @@
 #     removed context filtering (not needed at this stage)
 #   Cove Sturtevant (2021-03-03)
 #     Applied internal parallelization
+#   Cove Sturtevant (2021-08-31)
+#     Add datum error routing
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -126,7 +131,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg=arg,
-                                      NameParaReqd=c("DirIn","DirOut"),
+                                      NameParaReqd=c("DirIn","DirOut","DirErr"),
                                       NameParaOptn=c("Comb"),
                                       TypePara=base::list(Comb="logical"),
                                       log=log)
@@ -135,9 +140,10 @@ Para <- NEONprocIS.base::def.arg.pars(arg=arg,
 DirBgn <- Para$DirIn # Input directory. 
 log$debug(base::paste0('Input directory: ',DirBgn))
 
-# Retrieve base output path
+# Retrieve base output paths
 DirOut <- Para$DirOut
 log$debug(base::paste0('Output directory: ',DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Merge contents (TRUE/FALSE)
 Comb <- Para$Comb
@@ -162,11 +168,31 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
-  wrap.loc.repo.strc(DirIn=idxDirIn,
-                     DirOutBase=DirOut,
-                     Comb=Comb,
-                     log=log)
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.loc.repo.strc(DirIn=idxDirIn,
+                         DirOutBase=DirOut,
+                         Comb=Comb,
+                         log=log
+      ),
+      error = function(err) {
+        call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+        print(utils::limitedLabels(call.stack))
+      }
+    ),
+    error=function(err) {
+      NEONprocIS.base::def.err.datm(
+        DirDatm=idxDirIn,
+        DirErrBase=Para$DirErr,
+        RmvDatmOut=TRUE,
+        DirOutBase=Para$DirOut,
+        log=log
+      )
+    }
+  )
   
   return()
+  
 } # End loop around datum paths
-

@@ -44,29 +44,32 @@
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
 #' of DirIn.
 #'
-#' 3. "DirComb=value", where value is the name(s) of the terminal directories, separated by pipes,
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 4. "DirComb=value", where value is the name(s) of the terminal directories, separated by pipes,
 #' where the data to be combined resides. This will be one or more child levels away from "DirIn".
 #' All files in the terminal directories will be combined into a single file. The value may also be
 #' a vector of terminal directories, separated by pipes (|). All terminal directories must be present
 #' and at the same directory level. For example, "DirComb=data|flags" indicates to combine all the
 #' files within the data and flags directories into a single file.
 #'
-#' 4. "NameDirCombOut=value", where value is the name of the output directory that will be created to
-#' hold the combined file. It may be the same as one of DirComb, but note that the original directory
-#' may be be copied through to the output in argument DirSubCopy.
+#' 5. "NameDirCombOut=value", where value is the name of the output directory that will be created to
+#' hold the combined file. It may be the same as one of DirComb, but note that in that case the same 
+#' directory may not be named in argument DirSubCopy.
 #'
-#' 5. "NameFileSufx=value" (optional), where value is a character suffix to add to the output
+#' 6. "NameFileSufx=value" (optional), where value is a character suffix to add to the output
 #' file name (before any extension). For example, if the shortest file name found in the input files is 
 #' "prt_CFGLOC12345_2019-01-01.avro", and the input argument is "NameFileSufx=_stats_100", then the 
 #' output file will be "prt_CFGLOC12345_2019-01-01_stats_100.avro". Default is no suffix.
 #'  
-#' 6. "NameVarTime=value", where value is the name of the time variable common across all
+#' 7. "NameVarTime=value", where value is the name of the time variable common across all
 #' files. Note that any missing timestamps among the files will be filled with NA values.
 #'
-#' 7. "FileSchmComb=value" (optional), where value is the full path to schema for combined data output by
+#' 8. "FileSchmComb=value" (optional), where value is the full path to schema for combined data output by
 #' this workflow. If not input, the schema will be constructed from the output data frame.
 #'
-#' 8. "ColKeep=value" (optional), value contains the names, in desired order, of the input columns
+#' 9. "ColKeep=value" (optional), value contains the names, in desired order, of the input columns
 #' that should be copied over to the combined output file. The column names indicated here must be a
 #' full or partial set of the union of the column names found in the input files. Use the output
 #' schema in argument FileSchmComb to rename them as desired. Note that column names may be listed
@@ -75,17 +78,19 @@
 #' If this argument is omitted, all columns found in the input files for each directory will be included
 #' in the output file in the order they are encountered in the input files.
 #'
-#' 9. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 10. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the flags folder in the input path that are to be copied with a
-#' symbolic link to the output path.
+#' symbolic link to the output path. May not overlap with the output directory named in 
+#' argument \code{NameDirCombOut}.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #'
 #' @return A single file containined the merged data in DirOut, where DirOut replaces BASE_REPO but
 #' otherwise retains the child directory structure of the input path. The file name will be the same
-#' as the shortest file name found in the input files, with '_combined' added as suffix prior to the
-#' file extension.
+#' as the shortest file name found in the input files, with any suffix indicated in argument \code{NameFileSufx} 
+#' inserted in the file name prior to the file extension (if present). The ordering of the columns will follow that in 
+#' the description of argument ColKeep.
 #'
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -101,9 +106,19 @@
 #     original creation
 #   Cove Sturtevant (2021-03-03)
 #     Applied internal parallelization
+#   Cove Sturtevant (2021-07-27)
+#     Move main functionality to wrapper function
+#   Cove Sturtevant (2021-08-31)
+#     Add datum error routing
 ##############################################################################################
 library(foreach)
 library(doParallel)
+
+# Source the wrapper function. Assume it is in the working directory
+source("./wrap.data.comb.ts.R")
+
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -119,18 +134,22 @@ if(numCoreUse > numCoreAvail){
 }
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
-# Pull in command line arguments (parameters)
-arg <- base::commandArgs(trailingOnly = TRUE)
-
 # Parse the input arguments into parameters
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut", "DirComb", "NameDirCombOut", "NameVarTime"),
+    NameParaReqd = c("DirIn", 
+                     "DirOut", 
+                     "DirErr",
+                     "DirComb", 
+                     "NameDirCombOut", 
+                     "NameVarTime"
+                     ),
     NameParaOptn = c("FileSchmComb",
                      "ColKeep",
                      "DirSubCopy",
-                     "NameFileSufx"),
+                     "NameFileSufx"
+                     ),
     log = log
   )
 
@@ -138,6 +157,7 @@ Para <-
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(
   base::paste0(
     'All files found in the following directories will be combined: ',
@@ -158,13 +178,11 @@ log$debug(base::paste0(
   base::paste0(Para$FileSchmComb, collapse = ',')
 ))
 if (base::is.null(Para$FileSchmComb) || Para$FileSchmComb == 'NA') {
-  SchmComb <- NULL
+  SchmCombList <- NULL
 } else {
-  SchmComb <-
-    base::paste0(base::readLines(Para$FileSchmComb), collapse = '')
-  
-  # Parse the avro schema for output variable names
-  nameVarSchmComb <- NEONprocIS.base::def.schm.avro.pars(Schm=SchmComb,log=log)$var$name
+  SchmCombList <-
+    NEONprocIS.base::def.schm.avro.pars(FileSchm = Para$FileSchmComb, 
+                                        log = log)
 }
 
 # Echo more arguments
@@ -177,6 +195,15 @@ log$debug(
 
 
 # Retrieve optional subdirectories to copy over
+# Error check that there is no overlap between DirSubCopy and NameDirCombOut
+if(base::any(Para$DirSubCopy %in% Para$NameDirCombOut)){
+  log$warn(base::paste0('The directory: ',
+                        paste0(Para$DirSubCopy[Para$DirSubCopy %in% Para$NameDirCombOut],collapse=','),
+                        ' indicated in argument DirSubCopy is the same as that named in argument ',
+                        'NameDirCombOut, which is not allowed. Its original contents will not be ',
+                        'copied through to the output.')
+  )
+}
 DirSubCopy <-
   base::unique(base::setdiff(Para$DirSubCopy, Para$NameDirCombOut))
 log$debug(base::paste0(
@@ -202,109 +229,38 @@ doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
-  # Get directory listing of input director(ies). We will combine these files.
-  file <-
-    base::list.files(base::paste0(idxDirIn, '/', Para$DirComb))
-  filePath <-
-    base::list.files(base::paste0(idxDirIn, '/', Para$DirComb), full.names =
-                       TRUE)
-  
-  # Gather info about the input directory (including date) and create the output directory.
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
-  idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
-  idxDirOutComb <- base::paste0(idxDirOut, '/', Para$NameDirCombOut)
-  NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
-                                DirSub = Para$NameDirCombOut,
-                                log = log)
-  
-  # Copy with a symbolic link the desired subfolders
-  if (base::length(DirSubCopy) > 0) {
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn, '/', DirSubCopy),
-                                       idxDirOut, log = log)
-  }
-  
-  # Combine data files
-  data <- NULL
-  data <-
-    NEONprocIS.base::def.file.comb.ts(file = filePath,
-                                           nameVarTime = Para$NameVarTime,
-                                           log = log)
-  
-  # Take stock of the combined data
-  nameCol <- base::names(data)
-  log$debug(base::paste0(
-    'Columns found in the combined data files: ',
-    base::paste0(nameCol, collapse = ',')
-  ))
-  
-  # Filter and re-order the output columns
-  if (!base::is.null(Para$ColKeep)) {
-    # Check whether the desired columns to keep are found in the combined data
-    chkCol <- Para$ColKeep %in% nameCol
-    if (base::any(!chkCol)) {
-      log$error(
-        base::paste0(
-          'Columns: ',
-          base::paste0(nameCol[!chkCol], collapse = ','),
-          'were not found in the input data. Check ColKeep input argument.'
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.data.comb.ts(
+        DirIn=idxDirIn,
+        DirOutBase=Para$DirOut,
+        DirComb=Para$DirComb,
+        NameVarTime=Para$NameVarTime,
+        ColKeep=Para$ColKeep,
+        NameDirCombOut=Para$NameDirCombOut,
+        NameFileSufx=Para$NameFileSufx,
+        SchmCombList=SchmCombList,
+        DirSubCopy=DirSubCopy,
+        log=log
+        ),
+        error = function(err) {
+          call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+          log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+          print(utils::limitedLabels(call.stack))
+        }
+      ),
+      error=function(err) {
+        NEONprocIS.base::def.err.datm(
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
         )
-      )
-      stop()
-    }
+      }
+    )
     
-    # Reorder and filter the output columns
-    data <- data[Para$ColKeep]
+    return()
     
-    # Turn any periods in the column names to underscores
-    base::names(data) <- base::sub(pattern='[.]',replacement='_',x=base::names(data))
-
-    
-    if(base::is.null(SchmComb)){
-      log$debug(base::paste0(
-        'Filtered and re-ordered output columns : ',
-        base::paste0(base::names(data), collapse = ',')
-      ))
-    } else {
-      log$debug(base::paste0(
-        'Filtered and re-ordered input columns: ',
-        base::paste0(Para$ColKeep, collapse = ','),
-        ' will be respectively output with column names: ',
-        base::paste0(nameVarSchmComb, collapse = ',')
-      ))      
-    }
-    
-  }
-  
-  # Write out the file. Take the shortest file name and tag on the suffix.
-  fileBase <-
-    file[base::nchar(file) == base::min(base::nchar(file))][1]
-  fileOut <-
-    NEONprocIS.base::def.file.name.out(nameFileIn = fileBase,
-                                       sufx = Para$NameFileSufx,
-                                       log = log)
-  nameFileOut <- base::paste0(idxDirOutComb, '/', fileOut)
-  
-  rptWrte <-
-    base::try(NEONprocIS.base::def.wrte.parq(
-      data = data,
-      NameFile = nameFileOut,
-      NameFileSchm = NULL,
-      Schm = SchmComb,
-      log=log
-    ),
-    silent = TRUE)
-  if (base::class(rptWrte) == 'try-error') {
-    log$error(base::paste0(
-      'Cannot write combined file ',
-      nameFileOut,
-      '. ',
-      attr(rptWrte, "condition")
-    ))
-    stop()
-  } else {
-    log$info(base::paste0('Combined data written successfully in file: ',
-                          nameFileOut))
-  }
-  
-  return()
 } # End loop around datum paths

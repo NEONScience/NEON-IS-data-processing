@@ -1,0 +1,19 @@
+---
+pipeline:
+  name: tempSoil_level1_egress
+transform:
+  image: docker.io/dlenz/egress:1
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m egress.egress.app --outputname tempSoil --dateindex 2 --locindex 1"
+  env:
+    LOG_LEVEL: INFO
+    OUT_PATH: "/pfs/out"
+input: 
+  pfs: 
+    name: DATA_PATH
+    repo: tempSoil_level1_package
+    glob: /*/*/*
+egress:
+  URL: s3://int-omnipipe

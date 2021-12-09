@@ -7,13 +7,14 @@ transform:
   - /flow.cal.conv.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
   - FileSchmData=$FILE_SCHEMA_DATA
   - FileSchmQf=$FILE_SCHEMA_FLAGS
   - TermFuncConv=voltage:def.cal.conv.poly
   - TermQf=voltage
   - TermFuncUcrt=voltage:def.ucrt.meas.mult,def.ucrt.fdas.volt.poly
   - FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
-  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.49
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.53
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

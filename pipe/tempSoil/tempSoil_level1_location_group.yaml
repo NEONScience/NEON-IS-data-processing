@@ -1,0 +1,30 @@
+---
+pipeline:
+  name: tempSoil_level1_location_group
+transform:
+  image: docker.io/dlenz/location_grouper:1
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m location_grouper.location_grouper_main"
+  env:
+    RELATED_PATHS: DATA_PATH,LOCATION_PATH
+    LOG_LEVEL: INFO
+    OUT_PATH: "/pfs/out"
+    RELATIVE_PATH_INDEX: '3'
+    YEAR_INDEX: '4'
+    LOC_INDEX: '7'
+    GROUPLOC_KEY: 'site'
+input: 
+  join:
+  - pfs: 
+      name: DATA_PATH
+      repo: tempSoil_level1_group
+      glob: /prt/*/*/*/(*)
+      joinOn: $1
+  - pfs: 
+      name: LOCATION_PATH
+      repo: location_loader
+      glob: /prt/(*)
+      joinOn: $1
+

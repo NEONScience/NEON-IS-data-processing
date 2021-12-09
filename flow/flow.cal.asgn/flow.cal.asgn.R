@@ -49,14 +49,17 @@
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn.
 #' 
-#' 3. "FileYear=value", where value is the path to a single file that contains only a list of numeric years. The 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of DirIn.
+#' 
+#' 4. "FileYear=value", where value is the path to a single file that contains only a list of numeric years. The 
 #' minumum and maximum of the years found in the file will determine the maximum date range to populate the 
 #' output repository with calibration files. No header. Each and every row should be a numeric year. Example file:
 #' 2019
 #' 2020
 #' 2021
 #' 
-#' 4. "PadDay=value" (optional), where value contains the integer days to include applicable 
+#' 5. "PadDay=value" (optional), where value contains the integer days to include applicable 
 #' calibration files before/after a given data day. A negative value will copy in the calibration file(s) 
 #' that are applicable to the given data day AND # number of days before the data day. A positive value 
 #' will copy in the calibration file(s) applicable to the given data day AND # number of days after the data day. 
@@ -65,7 +68,7 @@
 #' that are applicable between 2019-01-15 00:00 and 2019-01-17 24:00. To provide both negative and positive pads 
 #' (a window around a given day), separate the values with pipes (e.g. "PadDay=-2|2"). 
 #'
-#' 5. "Arry=value" (optional), where value is either TRUE or FALSE (default) indicating whether the calibration files 
+#' 6. "Arry=value" (optional), where value is either TRUE or FALSE (default) indicating whether the calibration files 
 #' found within each TERM folder should be assigned separately for each stream ID. (Normally there would be a single 
 #' stream ID that corresponds to each TERM, so no checking for streamID is needed). A value of TRUE would be needed 
 #' if the TERM is an array, meaning that calibrations for multiple stream IDs are stored within the same TERM folder 
@@ -97,12 +100,17 @@
 #     original creation, refactored from flow.cal.filt
 #   Cove Sturtevant (2021-04-15)
 #     add support for array variables/calibrations that utilize multiple stream IDs for the same term
+#   Cove Sturtevant (2021-08-26)
+#     Add datum error routing
 ##############################################################################################
 library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.cal.asgn.R")
+
+# Pull in command line arguments (parameters)
+arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -121,14 +129,11 @@ if(numCoreUse > numCoreAvail){
 }
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
-# Pull in command line arguments (parameters)
-arg <- base::commandArgs(trailingOnly = TRUE)
-
 # Parse the input arguments into parameters
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut","FileYear"),
+    NameParaReqd = c("DirIn", "DirOut","DirErr","FileYear"),
     NameParaOptn = c("PadDay","Arry"),
     ValuParaOptn = base::list(PadDay=0,
                               Arry=FALSE),
@@ -140,6 +145,7 @@ Para <-
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
+log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Parse the file containing the years to populate
 log$debug(base::paste0('File containing data years to populate: ', Para$FileYear))
@@ -191,15 +197,34 @@ doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
   
-  wrap.cal.asgn(DirIn=idxDirIn,
-                DirOutBase=Para$DirOut,
-                TimeBgn=timeBgn,
-                TimeEnd=timeEnd,
-                PadDay=c(timePadBgn,timePadEnd),
-                Arry=Para$Arry,
-                log=log
-                )
-
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      wrap.cal.asgn(DirIn=idxDirIn,
+                    DirOutBase=Para$DirOut,
+                    TimeBgn=timeBgn,
+                    TimeEnd=timeEnd,
+                    PadDay=c(timePadBgn,timePadEnd),
+                    Arry=Para$Arry,
+                    log=log
+      ),
+      error = function(err) {
+        call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
+        print(utils::limitedLabels(call.stack))
+      }
+    ),
+    error=function(err) {
+      NEONprocIS.base::def.err.datm(
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=FALSE,
+          DirOutBase=Para$DirOut,
+          log=log
+        )
+    }
+  )
+  
   return()
   
 } # End loop around datum paths
