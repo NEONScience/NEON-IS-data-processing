@@ -11,11 +11,17 @@
       "WndwAgr=001|030",
       "WghtAlphBeta=2|1",
       "Thsh=0.2",
-      "GrpQf1=relativeHumidity:relativeHumidityNullQF|relativeHumidityGapQF|relativeHumidityRangeQF|relativeHumidityStepQF|relativeHumiditySpikeQF|relativeHumidityPersistenceQF|errorStateQF",
-      "GrpQf2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|errorStateQF",
-      "GrpQf3=dewPoint:dewPointNullQF|dewPointGapQF|dewPointRangeQF|dewPointStepQF|dewPointSpikeQF|dewPointPersistenceQF|errorStateQF"
+      "GrpQfAlph1=relativeHumidity:relativeHumiditySuspectCalQF|relativeHumidityNullQF|relativeHumidityGapQF|relativeHumidityRangeQF|relativeHumidityStepQF|relativeHumiditySpikeQF|relativeHumidityPersistenceQF|errorStateQF",
+      "GrpQfBeta1=relativeHumidity:relativeHumidityNullQF|relativeHumidityGapQF|relativeHumidityRangeQF|relativeHumidityStepQF|relativeHumiditySpikeQF|relativeHumidityPersistenceQF|errorStateQF",
+      "GrpQfBetaIgnr1=relativeHumidity:relativeHumidityNullQF|relativeHumidityGapQF",
+      "GrpQfAlph2=temperature:temperatureSuspectCalQF|temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|errorStateQF",
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|temperaturePersistenceQF|errorStateQF",
+      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF",
+      "GrpQfAlph3=dewPoint:dewPointSuspectCalQF|dewPointNullQF|dewPointGapQF|dewPointRangeQF|dewPointStepQF|dewPointSpikeQF|dewPointPersistenceQF|errorStateQF",
+      "GrpQfBeta3=dewPoint:dewPointNullQF|dewPointGapQF|dewPointRangeQF|dewPointStepQF|dewPointSpikeQF|dewPointPersistenceQF|errorStateQF",
+      "GrpQfBetaIgnr3=dewPoint:dewPointNullQF|dewPointGapQF"
       ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.14",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.15",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

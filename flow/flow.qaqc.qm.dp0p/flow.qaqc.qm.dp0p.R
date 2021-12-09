@@ -8,8 +8,13 @@
 #' for each L0' (instantaneous) record. The alpha flag is 1 when any of a set of selected
 #' flags have a value of 1 (fail). The beta flag is 1 when any of a set of selected
 #' flags cannot be evaluated (have a value of -1). If either the alpha flag or beta flag are raised,
-#' the final quality is raised (value of 1). Multiple sets of alpha, beta, and final quality flag
-#' may be created, as indicated in the input arguments.
+#' the final quality is raised (value of 1). There are several options to tailor the 
+#' computation of the summary flags, including:
+#'    1) specifying which flags feed into each the alpha and beta quality flags, noting that multiple 
+#'    sets of alpha, beta, and final quality flag may be created, 
+#'    2) forcing flags to specific values  based on the value of another flag prior to computation 
+#'    of summary flags (and also provided in the output), and 
+#'    3) forcing the beta flag to 0 if particular flags are raised (i.e. NULL or Gap flags)
 #'
 #' General code workflow:
 #'    Parse input parameters
@@ -18,6 +23,7 @@
 #'    For each datum:
 #'      Create output directories and copy (by symbolic link) unmodified components
 #'      Read in and combine all the flags files in the flags directory of each input datum
+#'      Change any NA flag values to -1
 #'      Force any flags to particular values based on values of other flags (as specified in input arguments)
 #'      Create alpha, beta, and final quality flags for each group as specified in the input arguments
 #'      Write out the entire flag set, including all input flags and the alpha, beta, and final QFs
@@ -93,7 +99,17 @@
 #' arguments, and must match those found in GrpQfAlphaX arguments. The group name will also be applied to the
 #' resultant final QF.
 #'
-#' 9. "QfForcX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
+#' 9. "GrpQfBetaIgnrX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names
+#' of the quality flags that, if any of their values equals 1, the beta QF flag for the indicated group is
+#' set to 0. Begin each argument with the group name (e.g. temp) that corresponds to a group indicated in the
+#' GrpQfBetaX argument(s), followed by a colon (:), and then the exact names of the quality flags, delimited by
+#' pipes (|), that cause the beta QF for that group to be set to 0 if any of their values equals 1. For example,
+#' if the tempNullQF should cause the tempBetaQF to be set to 0 when tempNullQF = 1, the argument is
+#' "GrpQfBeta1=temp:tempNullQF". To apply this logic to a group without a prefix (i.e. to betaQF), include the
+#' colon as the first character of value (e.g. "GrpQfBetaIgnr1=:nullQF"). Note that the group names must be unique
+#' among GrpQfBetaIgnrX arguments, and must be a subset of those found in GrpQfAlphaX arguments.
+#'
+#' 10. "QfForcX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names of
 #' the quality flags that should be forced to a particular value if the value of a "driver" flag equals a
 #' particular value. Begin each argument with the name of the driver flag (e.g. tempNullQF), followed by a colon (:),
 #' then the numeric "driver value" of the driver flag which activates the force, followed by a colon (:),
@@ -104,16 +120,6 @@
 #' There is a limit of X=100 for QfForcX arguments.
 #' Note that the logic described here occurs before the alpha, beta, and final quality flags are calculated, and
 #' forcing actions will occur following increasing value of X in QfForcX.
-#'
-#' 10. "GrpQfBetaIgnrX=value" (optional), where X is a number beginning at 1 and value contains the (exact) names
-#' of the quality flags that, if any of their values equals 1, the beta QF flag for the indicated group is
-#' set to 0. Begin each argument with the group name (e.g. temp) that corresponds to a group indicated in the
-#' GrpQfBetaX argument(s), followed by a colon (:), and then the exact names of the quality flags, delimited by
-#' pipes (|), that cause the beta QF for that group to be set to 0 if any of their values equals 1. For example,
-#' if the tempNullQF should cause the tempBetaQF to be set to 0 when tempNullQF = 1, the argument is
-#' "GrpQfBeta1=temp:tempNullQF". To apply this logic to a group without a prefix (i.e. to betaQF), include the
-#' colon as the first character of value (e.g. "GrpQfBetaIgnr1=:nullQF"). Note that the group names must be unique
-#' among GrpQfBetaIgnrX arguments, and must be a subset of those found in GrpQfAlphaX arguments.
 #'
 #' 11. "Tmi=value" (optional), where value is a 3-character index specifying the NEON timing index to include
 #' in the output file name. If not input, "000" is used.

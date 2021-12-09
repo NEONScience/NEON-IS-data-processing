@@ -10,6 +10,17 @@
 #' General code workflow:
 #'      Error-check input parameters
 #'      Read in and combine flags files 
+#'      Remove flags to ignore
+#'      Set any NA values in the flags to -1
+#'      Compute alpha and beta QFs for each L0' record and group, according to specifications in the input
+#'         arguments. This includes:
+#'            Force any flags to particular values based on values of other flags 
+#'            Create summary alpha and beta flags for each individual record for each group 
+#'      For each aggregation interval:
+#'         For each time bin of each aggregation interval:
+#'            Compute the quality metrics for each flag, including % Pass, % Fail, % NA (could not evaluate)
+#'            Compute summary metrics (alpha and beta QMs) and the final quality flag for each group
+#'        Write out the entire set of quality metrics, and the summary metrics and final QF for each group
 #'      For each aggregation interval...
 #'         Bin the flag data
 #'         Compute the quality metrics
@@ -45,18 +56,34 @@
 #' If the resultant value is greater than the threshold value set in the Thsh argument, the final quality flag is 
 #' raised. Default is c(2,1).
 #' 
-#' @param ParaGrp (optional) A list of lists, each sublist representing the specifications for computing a group of 
-#' alpha QM, beta QM, and final QF. Each sublist has 2 named elements:\cr
-#' \code{name}: Character value. The name of the group, to be used as a prefix to the output alpha and beta QMs and 
-#' final quality flag. If no group name/prefix is desired, enter a zero-character string (i.e. "") \cr
-#' \code{qf}: Character vector. The exact names of the quality flags that should be used in the computation of the alpha 
-#' and beta QMs and final QF for the group. Note that a flag may be specified in multiple groups (i.e. will feed into 
-#' multiple final quality flags).\cr
-#' Note that quality metrics for all quality flags found in the input files will be output. The ParaGrp argument 
+#' @param ParaGrp (optional) A named list of lists, each sublist representing the specifications for computing a group of 
+#' alpha QM, beta QM, and final QF. List names at the top level are used as a prefix to the output alpha QMs, betaQMs, and final QFs.
+#' If no group name/prefix is desired, use a zero-character string (i.e. ""). Each sublist has 3 named elements:\cr
+#' \code{qfAlph}: Character vector. The exact names of the quality flags that should be used in the computation of the alpha 
+#' QM for the group. \cr
+#' \code{qfBeta}: Character vector. The exact names of the quality flags that should be used in the computation of the beta 
+#' QM for the group. \cr
+#' \code{qfBetaIgnr}: Optional (may be omitted). Character vector. The exact names of the quality flags that, if any of their values equals 1, 
+#' the beta QF for each record (which is then aggregated into the beta QM for each aggregation interval) for the indicated group is set to 0. \cr
+#' Note that a flag may be specified in multiple groups (i.e. will feed into multiple final quality flags). Also note that quality 
+#' metrics for all quality flags found in the input files will be output. The ParaGrp argument 
 #' simply dictate what QFs feed into each set of alpha & beta quality metrics and the final quality flag. If this argument is NULL
 #' (default), all quality flags in the file(s) will be used to compute a single set of alpha and beta quality metrics and 
-#' final quality flag.
+#' final quality flag. 
 #' 
+#' @param ParaForc (optional) A list of lists, each sublist representing the specifications for forcing one or more quality flags  
+#' (excluding alpha, beta, and final QFs) to a value if the value of a "driver" flag equals a particular value. 
+#' Each sublist has 3 named elements:\cr
+#' \code{qfDrve} Character value. The name of the driver flag \cr
+#' \code{valuDrve} Numeric value. The "driver value" of the driver flag which activates the force \cr
+#' \code{qfForc} Character value. The name(s) of the "forced" flag(s) \cr
+#' \code{valuForc} Numeric value. The "forced" value \cr
+#' For example, if tempRangeQF and tempPersistenceQF should be set to -1 when sensorNAQF is 1, then the argument is 
+#' ParaForc <- list(list(qfDrve="sensorNAQF",valuDrve=1,qfForc=c("tempRangeQF","tempPersistenceQF"),valuForc=-1)).\cr
+#' Note that the logic described here occurs before the alpha, beta, and final quality flags are calculated, and
+#' forcing actions will occur in the order found in this argument. Also note that before this argument is fulfilled, any 
+#' NA values in quality flags will be set to -1.
+#'  
 #' @param VarIgnr (optional) character vector. The names of the variables that should be ignored if 
 #' found in the input files. No quality metrics will be computed for these variables and they will not be included 
 #' in the output. Do not include readout_time here.  Defaults to NULL.
@@ -108,32 +135,56 @@
 
 #' @examples
 #' # Not run
-#' ParaGrp <- list(relativeHumidity=list(name='relativeHumidity',
-#'                                       qf=c("relativeHumidityNullQF",
-#'                                            "relativeHumidityGapQF",
-#'                                            "relativeHumidityRangeQF",
-#'                                            "relativeHumidityStepQF",
-#'                                            "relativeHumiditySpikeQF",
-#'                                            "relativeHumidityPersistenceQF",
-#'                                            "errorStateQF")
+#' ParaGrp <- list(relativeHumidity=list(qfAlph=c("relativeHumidityNullQF",
+#'                                                "relativeHumidityGapQF",
+#'                                                "relativeHumidityRangeQF",
+#'                                                "relativeHumidityStepQF",
+#'                                                "relativeHumiditySpikeQF",
+#'                                                "relativeHumidityPersistenceQF",
+#'                                                "errorStateQF"),
+#'                                      qfBeta=c("relativeHumidityNullQF",
+#'                                                "relativeHumidityGapQF",
+#'                                                "relativeHumidityRangeQF",
+#'                                                "relativeHumidityStepQF",
+#'                                                "relativeHumiditySpikeQF",
+#'                                                "relativeHumidityPersistenceQF",
+#'                                                "errorStateQF"),
+#'                                      qfBetaIgnr=c("relativeHumidityNullQF",
+#'                                                   "relativeHumidityGapQF")
+#'                                      ),
+#'                 temperature=list(qfAlph=c("temperatureNullQF",
+#'                                           "temperatureGapQF",
+#'                                           "temperatureRangeQF",
+#'                                           "temperatureStepQF",
+#'                                           "temperatureSpikeQF",
+#'                                           "temperaturePersistenceQF",
+#'                                           "errorStateQF"),
+#'                                  qfBeta=c("temperatureNullQF",
+#'                                           "temperatureGapQF",
+#'                                           "temperatureRangeQF",
+#'                                           "temperatureStepQF",
+#'                                           "temperatureSpikeQF",
+#'                                           "temperaturePersistenceQF",
+#'                                           "errorStateQF"),
+#'                                  qfBetaIgnr=c("temperatureNullQF",
+#'                                               "temperatureGapQF")
 #'                                        ),
-#'                 temperature=list(name='temperature',
-#'                                  qf=c("temperatureNullQF",
-#'                                      "temperatureGapQF",
-#'                                      "temperatureRangeQF",
-#'                                      "temperatureStepQF",
-#'                                      "temperatureSpikeQF",
-#'                                      "temperaturePersistenceQF",
-#'                                      "errorStateQF")
-#'                                   ),
-#'                  dewPoint=list(name='dewPoint',
-#'                                qf=c("dewPointNullQF",
-#'                                     "dewPointGapQF",
-#'                                     "dewPointRangeQF",
-#'                                     "dewPointStepQF",
-#'                                     "dewPointSpikeQF",
-#'                                     "dewPointPersistenceQF",
-#'                                     "errorStateQF")
+#'                  dewPoint=list(qfAlph=c("dewPointNullQF",
+#'                                         "dewPointGapQF",
+#'                                         "dewPointRangeQF",
+#'                                         "dewPointStepQF",
+#'                                         "dewPointSpikeQF",
+#'                                         "dewPointPersistenceQF",
+#'                                         "errorStateQF"),
+#'                                qfBeta=c("dewPointNullQF",
+#'                                         "dewPointGapQF",
+#'                                         "dewPointRangeQF",
+#'                                         "dewPointStepQF",
+#'                                         "dewPointSpikeQF",
+#'                                         "dewPointPersistenceQF",
+#'                                         "errorStateQF"),
+#'                                qfBetaIgnr=c("dewPointNullQF",
+#'                                            "dewPointGapQF")
 #'                                )
 #'                  )
 #' wrap.qaqc.qm(DirIn="~/pfs/relHumidity_qaqc_flags_group/hmp155/2020/01/01/CFGLOC101252",
@@ -147,6 +198,11 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-10-25)
 #     Convert flow script to wrapper function
+#   Cove Sturtevant (2021-12-07)
+#     Implement new input arguments for:
+#       forcing flag values based on other flag values prior to QM computations
+#       specifying separately the flags that feed into each alpha QM and beta QM
+#       forcing the betaQF of a record to 0 based on flag values
 ##############################################################################################
 wrap.qaqc.qm <- function(DirIn,
                          DirOutBase,
@@ -154,6 +210,7 @@ wrap.qaqc.qm <- function(DirIn,
                          Thsh=0.2,
                          WghtAlphBeta=c(2,1),
                          ParaGrp=NULL,
+                         ParaForc=NULL,
                          VarIgnr=NULL,
                          SchmQm=NULL,
                          DirSubCopy=NULL,
@@ -165,31 +222,18 @@ wrap.qaqc.qm <- function(DirIn,
     log <- NEONprocIS.base::def.log.init()
   } 
   
-  # Dole out the group names to the alpha QM, beta QM, and final QF
-  if(!base::is.null(ParaGrp)){
-    ParaGrp <- base::lapply(ParaGrp,FUN=function(grpIdx){
-      base::list(name=grpIdx$name,
-                 qf=grpIdx$qf,
-                 nameQmGrp=base::paste0(grpIdx$name,c("AlphaQM","BetaQM","FinalQF"))) # Note that a match for FinalQF columns are used below. Don't change.
-    })
-    
-    # Get the full list of alphaQM, betaQM, finalQF sets
-    nameQmGrp <- base::unlist(base::lapply(ParaGrp,FUN=function(idx){idx$nameQmGrp}))
-    base::names(nameQmGrp)<- NULL
-    
-    # Check that the names are unique
-    if(base::length(base::unique(nameQmGrp)) < base::length(nameQmGrp)){
-      log$fatal('Group names are not unique. This is not allowed. Check ParaQM argument.')
-      stop()
-    }
-    
+  # Pull group names and error check
+  nameGrp <- base::names(ParaGrp)
+  nameQmGrp <- base::paste0(base::rep(nameGrp,each=3),c('AlphaQM','BetaQM','FinalQF'))
+  # Check that the names are unique
+  if(base::length(base::unique(nameQmGrp)) < base::length(nameQmGrp)){
+    log$fatal('Group names are not unique. This is not allowed. Check ParaGrp argument.')
+    stop()
+  }
+  if(base::is.null(nameGrp)){
+    numGrp <- 1
   } else {
-    
-    # Alpha/beta QMs and finalQF will be computed with all flags found in the input file(s)
-    
-    # Construct the names of the alpha, beta, and final QF columns
-    nameQmGrp <- c("AlphaQM","BetaQM","FinalQF") # Note that a match for FinalQF columns are used below. Don't change.
-    
+    numGrp <- base::length(nameGrp)
   }
   
   # Create the binning for each aggregation interval
@@ -223,33 +267,86 @@ wrap.qaqc.qm <- function(DirIn,
   
   # Combine flags files
   qf <- NULL
-  qf <-
-    NEONprocIS.base::def.file.comb.ts(
-      file = base::paste0(dirQf, '/', fileQf),
-      nameVarTime = 'readout_time',
-      log = log
-    )
+  qf <- NEONprocIS.base::def.file.comb.ts(
+          file = base::paste0(dirQf, '/', fileQf),
+          nameVarTime = 'readout_time',
+          log = log
+        )
   
-  # Remove any columns for variables we should ignore
-  qf <- qf[,!(base::names(qf) %in% VarIgnr)]
+  # Pull the time variable
+  timeMeas <- base::as.POSIXlt(qf$readout_time)
+  
+  # Remove any columns for variables we should ignore (and readout time)
+  qf <- qf[,!(base::names(qf) %in% c(VarIgnr,'readout_time'))]
   
   # Take stock of our quality flags
-  numQf <- base::ncol(qf)-1 # Minus the readout_time column
+  numQf <- base::ncol(qf)
   numNa <- base::apply(X=base::is.na(qf),MARGIN=2,FUN=base::sum)
   if(base::sum(numNa) > 0){
     log$warn(base::paste0(numNa[numNa > 0]," NA values found for variable ",base::names(numNa[numNa > 0]),". These will be replaced with -1."))
     qf[base::is.na(qf)] <- -1
   }
+    
+  # Force any flags that were indicated in the input arguments
+  if (!base::is.null(ParaForc)) {
+    for (idxForc in 1:length(ParaForc)) {
+      qf <-
+        NEONprocIS.qaqc::def.qf.forc(
+          qf = qf,
+          nameQfDrve = ParaForc[[idxForc]]$qfDrve,
+          valuDrve = ParaForc[[idxForc]]$valuDrve,
+          nameQfForc = ParaForc[[idxForc]]$qfForc,
+          valuForc = ParaForc[[idxForc]]$valuForc,
+          log = log
+        )
+    }
+  }  
   
-  
-  # Pull the time variable
-  timeMeas <- base::as.POSIXlt(qf$readout_time)
-  
+
   # Figure out the names of the output columns
-  nameQf <- base::setdiff(base::names(qf),"readout_time")
-  nameQm <- c(base::unlist(base::lapply(nameQf,base::paste0,y=c("PassQM","FailQM","NAQM"))),nameQmGrp)
-  log$debug(base::paste0('The default output column names are as follow (ensure any output schema that changes these names matches this order):',
-                         base::paste0(c('startDateTime','endDateTime',nameQm),collapse=',')))
+  nameQf <- base::names(qf)
+  nameQm <- c(
+    base::paste0(
+      base::rep(nameQf,each=3),
+      c("PassQM","FailQM","NAQM")
+      ),
+    nameQmGrp
+    )
+  log$debug(
+    base::paste0(
+      'The default output column names are as follow (ensure any output schema that changes these names matches this order):',
+      base::paste0(c('startDateTime',
+                     'endDateTime',
+                     nameQm),
+                   collapse=',')
+      )
+    )
+
+  # Calculate the L0' summary flags (alpha QF and beta QF) for each group
+  qfSmmy <- base::vector(mode="list",length=numGrp)
+  base::names(qfSmmy) <- nameGrp
+  for (idxGrp in 1:numGrp) {
+    qfSmmyIdx <- NULL
+    nameQfIdx <- c(base::paste0(nameGrp[idxGrp],c('AlphaQF','BetaQF','FinalQF')))
+    
+    log$debug(
+      base::paste0(
+        "Computing L0' summary flags for group ",
+        nameGrp[idxGrp],
+        '...'
+      )
+    )
+    
+    # Compute the flags
+    qfSmmyIdx <-
+      NEONprocIS.qaqc::def.qm.dp0p(qf = qf,
+                                   Para = ParaGrp[[idxGrp]],
+                                   log = log)
+    
+    # Put in the output
+    qfSmmy[[idxGrp]] <-  qfSmmyIdx[c('AlphaQF', 'BetaQF', 'FinalQF')]
+    
+  } # End loops around alpha/beta/final QF groups
   
   # Initialize QM column indexing vector
   setQm <- (0:(numQf-1))*3
@@ -269,9 +366,7 @@ wrap.qaqc.qm <- function(DirIn,
     rpt[,3:(base::length(nameQm)+2)] <- base::as.numeric(NA)
     base::names(rpt)[3:(base::length(nameQm)+2)] <- nameQm
     setQfFinl <- base::which(base::grepl(pattern='FinalQF',x=base::names(rpt),ignore.case = FALSE)) # note the final quality flags. We will turn these to integer.
-    for(idxQfFinl in setQfFinl){
-      class(rpt[[idxQfFinl]]) <- "integer" # Make the final quality flags integer class
-    }
+
     
     # Allocate qf points to aggregation windows
     setTime <- base::.bincode(base::as.numeric(timeMeas),timeBrk,right=FALSE,include.lowest=FALSE) # Which time bin does each measured value fall within?
@@ -280,34 +375,31 @@ wrap.qaqc.qm <- function(DirIn,
     for(idxWndwTime in base::unique(setTime)){
       
       # Rows to pull
-      qfWndwTime <- base::subset(qf,subset=setTime==idxWndwTime)   
+      setWndwTime <- setTime==idxWndwTime
+      qfWndwTime <- qf[setWndwTime,] 
+      qfSmmyWndwTime <- base::lapply(qfSmmy,FUN=function(qfSmmyIdx){
+        return(qfSmmyIdx[setWndwTime,])
+      })
       
-      # Compute quality metrics (percent)
+      # Compute quality metrics (percent) for all quality flags
       numRow <- base::nrow(qfWndwTime)
-      rpt[idxWndwTime,setQm+3] <- base::colSums(x=base::subset(qfWndwTime,select=-readout_time)==0,na.rm=TRUE)/numRow*100 # Pass
-      rpt[idxWndwTime,setQm+4] <- base::colSums(x=base::subset(qfWndwTime,select=-readout_time)==1,na.rm=TRUE)/numRow*100 # Fail
-      rpt[idxWndwTime,setQm+5] <- base::colSums(x=base::subset(qfWndwTime,select=-readout_time)==-1,na.rm=TRUE)/numRow*100 # Na
+      rpt[idxWndwTime,setQm+3] <- base::colSums(x=qfWndwTime==0,na.rm=TRUE)/numRow*100 # Pass
+      rpt[idxWndwTime,setQm+4] <- base::colSums(x=qfWndwTime==1,na.rm=TRUE)/numRow*100 # Fail
+      rpt[idxWndwTime,setQm+5] <- base::colSums(x=qfWndwTime==-1,na.rm=TRUE)/numRow*100 # Na
       
-      # Compute alpha & beta QMs and the final quality flag
-      if(base::is.null(ParaGrp)){
-        # Use all flags in computation
-        qmFinl<-eddy4R.qaqc::def.qf.finl(qf=base::subset(qfWndwTime,select=-readout_time),
-                                         WghtAlphBeta=WghtAlphBeta,Thsh=Thsh)$qfqm[c("qmAlph","qmBeta","qfFinl")]*c(100,100,1)
-        base::class(qmFinl$qfFinl) <- "integer"
-        rpt[idxWndwTime,nameQmGrp]<-qmFinl
-      } else {
-        for(idxGrp in base::names(ParaGrp)){
-          qmFinl<-eddy4R.qaqc::def.qf.finl(qf=base::subset(qfWndwTime,select=ParaGrp[[idxGrp]]$qf),WghtAlphBeta=WghtAlphBeta,
-                                           Thsh=Thsh)$qfqm[c("qmAlph","qmBeta","qfFinl")]*c(100,100,1)
-          base::class(qmFinl$qfFinl) <- "integer"
-          rpt[idxWndwTime,ParaGrp[[idxGrp]]$nameQmGrp]<-qmFinl
-        }
-      }
+      # Compute alpha & beta QMs and the final quality flag for indicated groups
+      qmFinlIdx <- base::lapply(qfSmmyWndwTime,NEONprocIS.qaqc::def.qm.smmy,Thsh=Thsh,WghtAlphBeta=WghtAlphBeta,log=log)
+
+      rpt[idxWndwTime,nameQmGrp]<-base::unlist(qmFinlIdx)
+      
       
     } # End loop through time windows
     
     # Write out the file for this aggregation interval. Replace the final underscore-delimited component of one of the input 
     # filenames, assuming this final component denotes the type of flags that are in the file
+    for(idxQfFinl in setQfFinl){
+      base::class(rpt[[idxQfFinl]]) <- "integer" # Make the final quality flags integer class
+    }
     fileQmOutSplt <- base::strsplit(utils::tail(fileQf,1),'[_]')[[1]] # Separate underscore-delimited components of the file name
     fileQmOutSplt[base::length(fileQmOutSplt)] <- base::paste(base::paste('qualityMetrics',Para$WndwAgr[idxWndwAgr],sep='_'),utils::tail(x=base::strsplit(utils::tail(x=fileQmOutSplt,n=1),'[.]')[[1]],n=-1),sep='.') # Replace last component, but try to keep the extension
     fileQmOut <- base::paste(fileQmOutSplt,collapse='_')
