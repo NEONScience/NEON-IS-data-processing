@@ -35,6 +35,21 @@ def get_context(path: Path) -> List[str]:
             context: List[str] = props['context']
     return context
 
+def get_group(path: Path) -> List[str]:
+    """
+    Parse the group from a location file.
+
+    :param path: The file path.
+    :return: The file group.
+    """
+    with open(str(path), 'r') as file:
+        geojson_data = geojson.load(file)
+        features = geojson_data['features']
+        for feature in features:
+            props = feature['properties']
+            group: List[str] = props['group']
+    return group
+
 
 def get_context_matches(context: List[str], match: str) -> List[str]:
     """

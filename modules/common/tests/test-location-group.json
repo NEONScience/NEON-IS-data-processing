@@ -1,0 +1,33 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC113711",
+                "type": "CONFIG",
+                "description": "Puu Makaala Single Aspirated Air Temperature L1",
+                "domain": "D20",
+                "site": "PUUM",
+                "context": [
+                    "aspirated-single"
+                ],
+                "group": [
+                    "aspirated-single_PUUM000010"
+                ],
+                "active_periods": [
+                    {
+                        "start_date": "2019-05-01T00:00:00Z"
+                    }
+                ]
+            },
+            "HOR": "000",
+            "Required Asset Management Location Code": "CFGLOC113711",
+            "VER": "010",
+            "TMI": "000",
+            "Data Rate": "1",
+            "Required Asset Management Location ID": 15489
+        }
+    ]
+}
