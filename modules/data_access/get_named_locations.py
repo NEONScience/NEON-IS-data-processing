@@ -45,7 +45,7 @@ def get_named_locations(connection: extensions.connection, location_type: str) -
             description = row[2]
             active_periods: List[ActivePeriod] = get_active_periods(connection, key)
             context: List[str] = get_named_location_context(connection, key)
-            group: List[int] = get_named_location_group(connection, key)
+            group: List[str] = get_named_location_group(connection, key)
             properties: List[Property] = get_named_location_properties(connection, key)
             schema_names: Set[str] = get_named_location_schema_name(connection, key)
             parents: Dict[str,str] = get_named_location_parents(connection, key)

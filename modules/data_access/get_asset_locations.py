@@ -55,9 +55,9 @@ def get_asset_locations(connection: extensions.connection, asset: Asset) -> Feat
             domain: str = parents['domain'] if parents else None
             site: str = parents['site'] if parents else None
             context: List[str] = get_named_location_context(connection, key)
-            group: List[int] = get_named_location_group(connection, key)
+            group: List[str] = get_named_location_group(connection, key)
             asset_location = AssetLocation(name=name, domain=domain, site=site, install_date=install_date,
-                                           remove_date=remove_date, context=context, properties=properties,
+                                           remove_date=remove_date, context=context, group=group, properties=properties,
                                            locations=locations)
             features.append(geojson_converter.convert_asset_location(asset_location))
     feature_collection = FeatureCollection(features)
