@@ -74,10 +74,10 @@ class VariablePad:
                             link_path.parent.mkdir(parents=True, exist_ok=True)
                             if not link_path.exists():
                                 link_path.symlink_to(path)
-                            # link thresholds
-                            file_writer.link_thresholds(config_location_path, link_path)
                             # write manifest
                             if date == data_date:
+                                # link thresholds
+                                file_writer.link_thresholds(config_location_path, link_path)
                                 manifest_path = Path(link_path.parent, Config.manifest_filename)
                                 file_writer.write_manifest(padded_dates, manifest_path)
         except Exception:
