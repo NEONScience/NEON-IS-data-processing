@@ -54,8 +54,8 @@ class ConstantPad:
                         link_path.parent.mkdir(parents=True, exist_ok=True)
                         if not link_path.exists():
                             link_path.symlink_to(path)
-                        file_writer.link_thresholds(location_path, link_path)
                         if date == data_date:
+                            file_writer.link_thresholds(location_path, link_path)
                             manifest_path = Path(link_path.parent, Config.manifest_filename)
                             log.debug(f'writing manifest: {manifest_path}')
                             file_writer.write_manifest(padded_dates, manifest_path)
