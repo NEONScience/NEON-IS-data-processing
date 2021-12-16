@@ -220,7 +220,8 @@ test_that("Unit test of wrap.qaqc.qm.R", {
         qfBetaIgnr = c("dewPointNullQF",    "dewPointGapQF")
       )
     ) 
-  
+  # Test 1
+
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
@@ -230,5 +231,19 @@ test_that("Unit test of wrap.qaqc.qm.R", {
                                    WndwAgr=as.difftime(c(1,30),units='mins'),
                                    ParaGrp=ParaGrp                
   )
+  
+  # Test 2
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  ParaForc <- list(list(qfDrve="sensorNAQF",valuDrve=1,qfForc=c("tempRangeQF","tempPersistenceQF"),valuForc=-1))
+  
+  returned_qaqc_qm <- wrap.qaqc.qm(DirIn = DirIn,
+                                   DirOutBase = DirOutBase,
+                                   WndwAgr=as.difftime(c(1,30),units='mins'),
+                                   ParaForc=ParaForc,
+                                   ParaGrp = ParaGrp)
 
 })
