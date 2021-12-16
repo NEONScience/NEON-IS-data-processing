@@ -146,13 +146,13 @@
 #     original creation
 ##############################################################################################
 # Define test context
-context("\n       | Unit test of Basic QA/QC (plausibility) module for NEON IS data processing \n")
+context("\n       | Unit test of Quality metrics module for NEON IS data processing \n")
 
-test_that("Unit test of wrap.qaqc.qm.dp0p.R", {
-  source('../../flow.qaqc.qm.dp0p/wrap.qaqc.qm.R')
+test_that("Unit test of wrap.qaqc.qm.R", {
+  source('../../flow.qaqc.qm/wrap.qaqc.qm.R')
   library(stringr)
   
-  DirIn = "pfs/relHumidity_flags/hmp155/2020/01/01/CFGLOC101252"
+  DirIn = "pfs/relHumidity_qaqc_flags_group/hmp155/2020/01/02/CFGLOC101252"
   DirOutBase = "pfs/out"
   ParaGrp <-
     list(
@@ -219,75 +219,16 @@ test_that("Unit test of wrap.qaqc.qm.dp0p.R", {
         ),
         qfBetaIgnr = c("dewPointNullQF",    "dewPointGapQF")
       )
-    ) wrap.qaqc.qm(
-      DirIn = "~/pfs/relHumidity_qaqc_flags_group/hmp155/2020/01/01/CFGLOC101252",
-      DirOutBase = "~/pfs/out",
-      WndwAgr = as.difftime(c(1, 30), units = 'mins'),
-      ParaGrp = ParaGrp
-    )
+    ) 
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  DirSubCopy = "dirSub"
-  
-  # Test 1 Happy path
-  returned_qm_dp0p <- wrap.qaqc.qm(
-    DirIn = DirIn,
-    DirOutBase = DirOutBase,
-    DirSubCopy = DirSubCopy,
-    ParaGrp = ParaGrp
+  returned_qaqc_qm <- wrap.qaqc.qm(DirIn=DirIn,
+                                   DirOutBase=DirOutBase,
+                                   WndwAgr=as.difftime(c(1,30),units='mins'),
+                                   ParaGrp=ParaGrp                
   )
-  
-  DirSrc = 'CFGLOC101252'
-  cmdLs <- base::paste0('ls ', base::paste0(DirSrc))
-  exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
-  
-  if (exstDirSrc) {
-    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
-    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
-  }
-  
-  # Test 2 with non zero values
-  naDirIn = "pfs/relHumidity_flags/hmp155_NA/2020/01/01/CFGLOC101252"
-  
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
-  
-  returned_qm_dp0p <- wrap.qaqc.qm(DirIn = naDirIn,
-                                   DirOutBase = DirOutBase,
-                                   ParaGrp = ParaGrp)
-  
-  # Test 3
-  
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
-  
-  returned_qaqc_qm <- wrap.qaqc.qm(DirIn = DirIn,
-                                   DirOutBase = DirOutBase,
-                                   ParaGrp = ParaGrp)
-  
-  # Test 4
-  
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
-  
-  ParaForc <-
-    list(list(
-      qfDrve = "sensorNAQF",
-      valuDrve = 1,
-      qfForc = c("tempRangeQF", "tempPersistenceQF"),
-      valuForc = -1
-    ))
-  
-  returned_qaqc_qm <- wrap.qaqc.qm(
-    DirIn = DirIn,
-    DirOutBase = DirOutBase,
-    ParaForc = ParaForc,
-    ParaGrp = ParaGrp
-  )
+
 })
