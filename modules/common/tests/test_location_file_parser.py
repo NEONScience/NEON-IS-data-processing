@@ -12,6 +12,7 @@ class LocationFileParserTest(TestCase):
     def setUp(self):
         self.setUpPyfakefs()
         self.location_file_path = Path('/test-location.json')
+        self.location_group_file_path = Path('/test-location-group.json')
         actual_location_file_path = Path(os.path.dirname(__file__), 'test-location.json')
         self.fs.add_real_file(actual_location_file_path, target_path=self.location_file_path)
 
@@ -22,3 +23,9 @@ class LocationFileParserTest(TestCase):
         self.assertTrue(active_period['start_date'] == '2018-09-01T00:00:00Z')
         self.assertTrue(active_period['end_date'] == '2020-06-17T00:00:00Z')
         self.assertTrue(context[0] == 'water-quality-296')
+        
+    def test_parse_location_group(self):
+        (name, context, group) = location_file_parser.parse_location_file(self.location_group_file_path)
+        self.assertTrue(name == 'CFGLOC113711')
+        self.assertTrue(context[0] == 'aspirated-single')
+        self.assertTrue(group[0] == 'aspirated-single_PUUM000010')

@@ -43,7 +43,7 @@ class LocationGroupPath:
                 # get the location context groups from the location file
                 if data_type == self.location_type:
                     context = file_parser.get_context(path)
-                    groups = file_parser.get_context_matches(context, self.group)
+                    groups = file_parser.get_group(path)
                     associated_paths: List[Path] = []
                     # get all the files and other directory in the parent directory containing this location file
                     location_path = path.parent.parent
