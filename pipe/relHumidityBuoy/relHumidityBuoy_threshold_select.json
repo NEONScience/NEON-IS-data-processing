@@ -8,13 +8,14 @@
       "/flow.thsh.slct.R",
       "DirIn=$REPO_LOCATIONS",
       "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
       "FileThsh=$FILE_THRESHOLDS",
       "TermCtxt1=relativeHumidity",
       "TermCtxt2=temperature",
       "TermCtxt3=dewPoint",
       "DirSubCopy=location"
     ],
-    "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.15",
+    "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.17",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
