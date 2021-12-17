@@ -1,0 +1,54 @@
+---
+pipeline:
+  name: li7200_qaqc_plausibility
+transform:
+  cmd:
+  - Rscript
+  - /flow.qaqc.plau.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - FileSchmQf=$SCHEMA_FLAGS
+  - TermTest1=tempIn:range|step|persistence
+  - TermTest2=tempOut:range|step|persistence
+  - TermTest3=tempMean:range|step|persistence
+  - TermTest4=tempRefe:range|step|persistence
+  - TermTest5=presAtm:range|step|persistence
+  - TermTest6=presDiff:range|step|persistence
+  - TermTest7=presSum:range|step|persistence
+  - TermTest8=powrH2oSamp:range|step|persistence
+  - TermTest9=powrH2oRefe:range|step|persistence
+  - TermTest10=asrpH2o:range|step|persistence
+  - TermTest11=densMoleH2o:range|step|persistence
+  - TermTest12=rtioMoleDryH2o:range|step|persistence
+  - TermTest13=powrCo2Samp:range|step|persistence
+  - TermTest14=powrCo2Refe:range|step|persistence
+  - TermTest15=asrpCo2:range|step|persistence
+  - TermTest16=densMoleCo2:range|step|persistence
+  - TermTest17=rtioMoleDryCo2:range|step|persistence
+  - TermTest18=potCool:range|step|persistence
+  - TermTest19=ssiCo2:range|step|persistence
+  - TermTest20=ssiH2o:range|step|persistence
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.20
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: DEBUG
+    PARALLELIZATION_INTERNAL: '4'
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: li7200_padded_timeseries_analyzer
+      glob: /li7200/*/*/*/*
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: avro_schemas
+      glob: /dp0p/flags_plausibility_li7200.avsc
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '8'
+resource_requests:
+  memory: 2Gi
+  cpu: 1
+

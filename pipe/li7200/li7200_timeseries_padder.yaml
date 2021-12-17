@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: csat3_timeseries_padder
+  name: li7200_timeseries_padder
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -28,9 +28,9 @@ resource_requests:
 input:
   pfs:
     name: DATA_PATH
-    repo: csat3_threshold_regularized_group
+    repo: li7200_threshold_regularized_group
     branch: master
-    glob: /csat3/*/*/*
+    glob: /li7200/*/*/*
 enable_stats: false
 standby: true
 cache_size: 64M
