@@ -9,13 +9,6 @@
     ]
   },
   "Packages": {
-    "Rcpp": {
-      "Package": "Rcpp",
-      "Version": "1.0.7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "dab19adae4440ae55aa8a9d238b246bb"
-    },
     "codetools": {
       "Package": "codetools",
       "Version": "0.2-16",
@@ -37,40 +30,12 @@
       "Repository": "CRAN",
       "Hash": "e32cfc0973caba11b65b1fa691b4d8c9"
     },
-    "geojsonsf": {
-      "Package": "geojsonsf",
-      "Version": "2.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "8bf70c1328f68761115943b68e565dc6"
-    },
-    "geometries": {
-      "Package": "geometries",
-      "Version": "0.2.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "be29054e97e756ade56d13a89c6d5243"
-    },
     "iterators": {
       "Package": "iterators",
       "Version": "1.0.13",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "64778782a89480e9a644f69aad9a2877"
-    },
-    "jsonify": {
-      "Package": "jsonify",
-      "Version": "1.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f435875f0eb7de52ade944ed82ee9089"
-    },
-    "rapidjsonr": {
-      "Package": "rapidjsonr",
-      "Version": "1.2.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "88b9f48c93d17cdb811b54079a6a414f"
     },
     "renv": {
       "Package": "renv",
@@ -85,13 +50,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "7d597f982ee6263716b6a2f28efd29fa"
-    },
-    "sfheaders": {
-      "Package": "sfheaders",
-      "Version": "0.4.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "c1bd5fbd6bed3c16a20df15d9bc20c55"
     }
   }
 }

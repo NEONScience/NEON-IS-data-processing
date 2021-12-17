@@ -12,5 +12,6 @@ RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in workflow
 COPY ./flow.thsh.slct.R /flow.thsh.slct.R
+COPY ./wrap.thsh.slct.R /wrap.thsh.slct.R
 
 
