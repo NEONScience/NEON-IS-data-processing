@@ -6,6 +6,7 @@ from pathlib import Path
 class Config(NamedTuple):
     data_path: Path
     out_path: Path
+    pad_dirs: list
     window_size: int
     year_index: int
     month_index: int

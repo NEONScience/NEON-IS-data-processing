@@ -401,7 +401,7 @@ wrap.qaqc.qm <- function(DirIn,
       base::class(rpt[[idxQfFinl]]) <- "integer" # Make the final quality flags integer class
     }
     fileQmOutSplt <- base::strsplit(utils::tail(fileQf,1),'[_]')[[1]] # Separate underscore-delimited components of the file name
-    fileQmOutSplt[base::length(fileQmOutSplt)] <- base::paste(base::paste('qualityMetrics',Para$WndwAgr[idxWndwAgr],sep='_'),utils::tail(x=base::strsplit(utils::tail(x=fileQmOutSplt,n=1),'[.]')[[1]],n=-1),sep='.') # Replace last component, but try to keep the extension
+    fileQmOutSplt[base::length(fileQmOutSplt)] <- base::paste(base::paste('qualityMetrics',WndwAgr[idxWndwAgr],sep='_'),utils::tail(x=base::strsplit(utils::tail(x=fileQmOutSplt,n=1),'[.]')[[1]],n=-1),sep='.') # Replace last component, but try to keep the extension
     fileQmOut <- base::paste(fileQmOutSplt,collapse='_')
     NameFileOutQm <- base::paste0(dirOutQm,'/',fileQmOut)
     
