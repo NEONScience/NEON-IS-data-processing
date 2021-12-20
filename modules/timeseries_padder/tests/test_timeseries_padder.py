@@ -15,6 +15,7 @@ class TimeSeriesPadTest(TestCase):
         """Set required files in mock filesystem."""
         self.setUpPyfakefs()
         self.out_path = Path('/tmp/out')
+        self.pad_dirs = ['tmp']
         location = 'CFGLOC112154'
         input_root = Path('/tmp/in')
         month_path = Path('prt/2018/01')
@@ -51,6 +52,7 @@ class TimeSeriesPadTest(TestCase):
     def test_constant_pad(self):
         config = Config(data_path=self.input_path,
                         out_path=self.out_path,
+                        pad_dirs=self.pad_dirs,
                         relative_path_index=self.relative_path_index,
                         year_index=self.year_index,
                         month_index=self.month_index,
@@ -65,6 +67,7 @@ class TimeSeriesPadTest(TestCase):
     def test_variable_pad(self):
         config = Config(data_path=self.input_path,
                         out_path=self.out_path,
+                        pad_dirs=self.pad_dirs,
                         relative_path_index=0,
                         year_index=self.year_index,
                         month_index=self.month_index,

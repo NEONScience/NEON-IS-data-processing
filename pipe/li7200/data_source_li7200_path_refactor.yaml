@@ -1,0 +1,24 @@
+---
+pipeline:
+  name: data_source_li7200_path_refactor
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/path_refactor:2
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m path_refactor.refactor_main"
+  env:
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO 
+    RELATIVE_PATH_INDEX: "3"
+    SOURCE_ID_INDEX: "7"
+input:
+  pfs:
+    name: DATA_PATH
+    repo: data_source_li7200_linkmerge
+    glob: /li7200/(*)/(*)/(*)
+parallelism_spec:
+  constant: "1"
+enable_stats: false
+standby: true

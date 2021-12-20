@@ -7,6 +7,7 @@ transform:
   - "/flow.thsh.slct.R"
   - DirIn=$REPO_LOCATIONS
   - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
   - FileThsh=$FILE_THRESHOLDS
   - TermCtxt1=depth0WaterTemp
   - TermCtxt2=depth1WaterTemp
@@ -20,7 +21,7 @@ transform:
   - TermCtxt10=depth9WaterTemp
   - TermCtxt11=depth10WaterTemp
   - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.15
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.17
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

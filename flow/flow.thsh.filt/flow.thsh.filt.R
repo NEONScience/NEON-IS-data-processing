@@ -64,7 +64,12 @@ log <- NEONprocIS.base::def.log.init()
 arg <- base::commandArgs(trailingOnly=TRUE)
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg=arg,NameParaReqd=c("DirIn","DirOut"),NameParaOptn=c("Term","Ctxt"),log=log)
+Para <- NEONprocIS.base::def.arg.pars(arg=arg,
+                                      NameParaReqd=c("DirIn",
+                                                     "DirOut"),
+                                      NameParaOptn=c("Term",
+                                                     "Ctxt"),
+                                      log=log)
 
 # Retrieve datum path. 
 DirIn <- Para$DirIn # Input directory. 
@@ -103,7 +108,10 @@ for(idxFile in file){
   fileOut <- base::paste0(DirOut,'/',idxFile)  
   
   # Filter the thresholds
-  NEONprocIS.qaqc::def.thsh.json.filt(NameFile=fileIn,NameFileOut=fileOut,Term=Term,Ctxt=Ctxt)
+  NEONprocIS.qaqc::def.thsh.json.filt(NameFile=fileIn,
+                                      NameFileOut=fileOut,
+                                      Term=Term,
+                                      Ctxt=Ctxt)
   log$info(base::paste0('Filtered thresholds written in: ',fileOut))
   
 }
