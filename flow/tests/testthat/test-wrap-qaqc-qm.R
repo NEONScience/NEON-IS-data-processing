@@ -154,8 +154,7 @@ test_that("Unit test of wrap.qaqc.qm.R", {
   
   DirIn = "pfs/relHumidity_qaqc_flags_group/hmp155/2020/01/02/CFGLOC101252"
   DirOutBase = "pfs/out"
-  ParaGrp <-
-    list(
+  ParaGrp <- list(
       relativeHumidity = list(
         qfAlph = c(
           "relativeHumidityNullQF",
@@ -217,19 +216,20 @@ test_that("Unit test of wrap.qaqc.qm.R", {
           "dewPointPersistenceQF",
           "errorStateQF"
         ),
-        qfBetaIgnr = c("dewPointNullQF",    "dewPointGapQF")
+        qfBetaIgnr = c("dewPointNullQF", "dewPointGapQF")
       )
-    ) 
+    )
   # Test 1
-
+  
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  returned_qaqc_qm <- wrap.qaqc.qm(DirIn=DirIn,
-                                   DirOutBase=DirOutBase,
-                                   WndwAgr=as.difftime(c(1,30),units='mins'),
-                                   ParaGrp=ParaGrp                
+  returned_qaqc_qm <- wrap.qaqc.qm(
+    DirIn = DirIn,
+    DirOutBase = DirOutBase,
+    WndwAgr = as.difftime(c(1, 30), units = 'mins'),
+    ParaGrp = ParaGrp
   )
   
   # Test 2
@@ -238,26 +238,35 @@ test_that("Unit test of wrap.qaqc.qm.R", {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  ParaForc <- list(list(qfDrve="sensorNAQF",valuDrve=1,qfForc=c("tempRangeQF","tempPersistenceQF"),valuForc=-1))
+  ParaForc <- list(list(
+      qfDrve = "sensorNAQF",
+      valuDrve = 1,
+      qfForc = c("tempRangeQF", "tempPersistenceQF"),
+      valuForc = -1
+    ))
   
-  returned_qaqc_qm <- wrap.qaqc.qm(DirIn = DirIn,
-                                   DirOutBase = DirOutBase,
-                                   WndwAgr=as.difftime(c(1,30),units='mins'),
-                                   ParaForc=ParaForc,
-                                   ParaGrp = ParaGrp)
+  returned_qaqc_qm <- wrap.qaqc.qm(
+    DirIn = DirIn,
+    DirOutBase = DirOutBase,
+    WndwAgr = as.difftime(c(1, 30), units = 'mins'),
+    ParaForc = ParaForc,
+    ParaGrp = ParaGrp
+  )
   # Test 3
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
- 
+  
   DirSubCopy = "dirSub"
   
-  returned_qaqc_qm <- wrap.qaqc.qm(DirIn = DirIn,
-                                   DirOutBase = DirOutBase,
-                                   WndwAgr=as.difftime(c(1,30),units='mins'),
-                                   DirSubCopy=DirSubCopy,
-                                   ParaGrp = ParaGrp)
+  returned_qaqc_qm <- wrap.qaqc.qm(
+    DirIn = DirIn,
+    DirOutBase = DirOutBase,
+    WndwAgr = as.difftime(c(1, 30), units = 'mins'),
+    DirSubCopy = DirSubCopy,
+    ParaGrp = ParaGrp
+  )
   
   DirSrc = 'CFGLOC101252'
   cmdLs <- base::paste0('ls ', base::paste0(DirSrc))
@@ -268,31 +277,16 @@ test_that("Unit test of wrap.qaqc.qm.R", {
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
   }
   
-   # Test 4 ParaGrp = NULL
+  # Test 4 ParaGrp = NULL
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  returned_qaqc_qm <- wrap.qaqc.qm(DirIn=DirIn,
-                                   DirOutBase=DirOutBase,
-                                   WndwAgr=as.difftime(c(1,30),units='mins')
+  returned_qaqc_qm <- wrap.qaqc.qm(
+    DirIn = DirIn,
+    DirOutBase = DirOutBase,
+    WndwAgr = as.difftime(c(1, 30), units = 'mins')
   )
   
-  # Test 5 ParaGrp has wrong column names
-  
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
-  
-  ParaGrp_wrongNames <- ParaGrp
-  colnames <- c("relativeHumidity","temperature","dewPoint") 
-  wrong_colnames <- c("wrongRelativeHumidity","wrongTemperature","wrongDewPoint") 
-
-  returned_qaqc_qm <- wrap.qaqc.qm(DirIn=DirIn,
-                                   DirOutBase=DirOutBase,
-                                   WndwAgr=as.difftime(c(1,30),units='mins'),
-                                   ParaGrp = ParaGrp
-  )
-  
-})
+ })
