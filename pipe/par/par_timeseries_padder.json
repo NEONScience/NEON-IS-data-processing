@@ -16,7 +16,8 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "LOG_LEVEL": "INFO"
+      "LOG_LEVEL": "INFO",
+      "PAD_DIR": "data"
     }
   },
   "parallelism_spec": {

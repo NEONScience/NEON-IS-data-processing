@@ -13,6 +13,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    PAD_DIR: "data"
 parallelism_spec:
   constant: '1'
 output_branch: master
