@@ -245,5 +245,54 @@ test_that("Unit test of wrap.qaqc.qm.R", {
                                    WndwAgr=as.difftime(c(1,30),units='mins'),
                                    ParaForc=ParaForc,
                                    ParaGrp = ParaGrp)
+  # Test 3
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+ 
+  DirSubCopy = "dirSub"
+  
+  returned_qaqc_qm <- wrap.qaqc.qm(DirIn = DirIn,
+                                   DirOutBase = DirOutBase,
+                                   WndwAgr=as.difftime(c(1,30),units='mins'),
+                                   DirSubCopy=DirSubCopy,
+                                   ParaGrp = ParaGrp)
+  
+  DirSrc = 'CFGLOC101252'
+  cmdLs <- base::paste0('ls ', base::paste0(DirSrc))
+  exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
+  
+  if (exstDirSrc) {
+    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
+    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  }
+  
+   # Test 4 ParaGrp = NULL
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  returned_qaqc_qm <- wrap.qaqc.qm(DirIn=DirIn,
+                                   DirOutBase=DirOutBase,
+                                   WndwAgr=as.difftime(c(1,30),units='mins')
+  )
+  
+  # Test 5 ParaGrp has wrong column names
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  ParaGrp_wrongNames <- ParaGrp
+  colnames <- c("relativeHumidity","temperature","dewPoint") 
+  wrong_colnames <- c("wrongRelativeHumidity","wrongTemperature","wrongDewPoint") 
 
+  returned_qaqc_qm <- wrap.qaqc.qm(DirIn=DirIn,
+                                   DirOutBase=DirOutBase,
+                                   WndwAgr=as.difftime(c(1,30),units='mins'),
+                                   ParaGrp = ParaGrp
+  )
+  
 })
