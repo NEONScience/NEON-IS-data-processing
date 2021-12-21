@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "tempSoil_regularized_flags"
+    "name": "tempSoil_regularized"
   },
   "transform": {
     "cmd": [
@@ -9,14 +9,13 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "DirErr=/pfs/out/errored_datums",
-      "DirRglr=flags",
-      "FileSchmRglr=NA",
-      "FreqRglr=0.1",
+      "DirRglr=data|uncertainty_data|flags",
       "MethRglr=CybiEc",
       "WndwRglr=Trlg",
       "IdxWndw=IdxWndwMin",
       "RptTimeWndw=FALSE",
-      "DropNotNumc=FALSE"
+      "DropNotNumc=FALSE",
+      "DirSubCopy=uncertainty_coef"
     ],
     "image": "quay.io/battelleecology/neon-is-rglr-r:v0.0.30",
     "image_pull_secrets": [
@@ -30,12 +29,15 @@
   "input": {
     "pfs": {
       "name": "DIR_IN",
-      "repo": "tempSoil_calibrated_flags",
+      "repo": "tempSoil_context_filter",
       "glob": "/prt/*/*/*"
     }
   },
   "enable_stats": false,
-  "standby": true,
+  "standby": false,
+  "parallelism_spec": {
+    "constant": "1"
+  },
   "resource_requests": {
     "memory": "20M",
     "cpu": 0.25

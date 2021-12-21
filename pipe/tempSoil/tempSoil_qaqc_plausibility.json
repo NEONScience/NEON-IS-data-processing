@@ -9,7 +9,8 @@
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmQf=$SCHEMA_FLAGS",
-      "TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence"
+      "TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence",
+      "DirSubCopy=uncertainty_data|flags|uncertainty_coef"
     ],
     "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.19",
     "image_pull_secrets": [

@@ -33,7 +33,7 @@ input:
   join:
   - pfs:
       name: REGULARIZED_PATH
-      repo: tempSoil_regularized_data
+      repo: tempSoil_regularized
       glob: /prt/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: true
