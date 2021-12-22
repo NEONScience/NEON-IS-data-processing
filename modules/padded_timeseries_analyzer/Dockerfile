@@ -7,7 +7,7 @@
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="padded_timeseries_analyzer/padded_timeseries_analyzer"
+ARG APP_DIR="padded_timeseries_analyzer"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
