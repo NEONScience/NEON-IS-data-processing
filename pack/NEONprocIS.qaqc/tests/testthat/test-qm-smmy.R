@@ -63,7 +63,7 @@ test_that("Unit test of def.qm.smmy.R", {
   
   colNames_returned <- c('AlphaQM', 'BetaQM', 'FinalQF')
   
-  # Test 1
+  # Test 1: happy path
   qm_smmy_returned <- NEONprocIS.qaqc::def.qm.smmy(qfSmmy = qfSmmy,
                                                    Thsh = 0.2,
                                                    WghtAlphBeta = c(2, 1))
@@ -71,7 +71,7 @@ test_that("Unit test of def.qm.smmy.R", {
   testthat::expect_true(all(names(qm_smmy_returned) %in% colNames_returned))
   testthat::expect_true(qm_smmy_returned[1] == 60)
   
-  # Test 2: ((WghtAlphBeta[1]*qmSmmy['AlphaQF']/100) + (WghtAlphBeta[2]*qmSmmy['BetaQF']/100) < Thsh)
+  # Test 2: Thsh is bigger than ((WghtAlphBeta[1]*qmSmmy['AlphaQF']/100) + (WghtAlphBeta[2]*qmSmmy['BetaQF']/100)
   qm_smmy_returned <- NEONprocIS.qaqc::def.qm.smmy(qfSmmy = qfSmmy,
                                                    Thsh = 2.2, WghtAlphBeta = c(2, 1))
   
@@ -86,7 +86,7 @@ test_that("Unit test of def.qm.smmy.R", {
   
   testthat::expect_true((class(qm_smmy_returned)[1] == "try-error"))
   
-  # Test 4: Thsh is not nu,meric
+  # Test 4: Thsh is not numeric
   
   qm_smmy_returned <- try(NEONprocIS.qaqc::def.qm.smmy(qfSmmy = qfSmmy,
                                      Thsh = "0.2", WghtAlphBeta = c(2, 1)), silent = TRUE)
