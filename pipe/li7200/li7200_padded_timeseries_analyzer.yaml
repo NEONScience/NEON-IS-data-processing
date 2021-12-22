@@ -1,26 +1,19 @@
 ---
 pipeline:
-  name: csat3_timeseries_padder
+  name: li7200_padded_timeseries_analyzer
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/timeseries_padder:34
+  image: quay.io/battelleecology/padded_timeseries_analyzer:12
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m timeseries_padder.timeseries_padder.constant_pad_main
+  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app
   env:
     OUT_PATH: /pfs/out
-    PAD_DIR: "data"
-    WINDOW_SIZE: '1'
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
-    YEAR_INDEX: '4'
-    MONTH_INDEX: '5'
-    DAY_INDEX: '6'
-    LOCATION_INDEX: '7'
-    DATA_TYPE_INDEX: '8'
 parallelism_spec:
   constant: '1'
 output_branch: master
@@ -29,9 +22,9 @@ resource_requests:
 input:
   pfs:
     name: DATA_PATH
-    repo: csat3_threshold_regularized_group
+    repo: li7200_timeseries_padder
     branch: master
-    glob: /csat3/*/*/*
+    glob: /li7200/*/*/*
 enable_stats: false
 standby: true
 cache_size: 64M
