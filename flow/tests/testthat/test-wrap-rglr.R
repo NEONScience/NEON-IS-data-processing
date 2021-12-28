@@ -116,6 +116,14 @@ test_that("Unit test of wrap.rglr.R", {
     unlink(DirOutBase, recursive = TRUE)
   }
   
+  DirSrc = "CFGLOC101670"
+  exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
+  
+  if (exstDirSrc) {
+    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
+    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  }
+  
   #1 Test 1
   
   wrap.rglr(
@@ -126,10 +134,8 @@ test_that("Unit test of wrap.rglr.R", {
   )
   
   # remove the test output symbolic link
-  DirSrc = 'CFGLOC101670'
-  cmdLs <- base::paste0('ls ', base::paste0(DirSrc))
+
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
-  
   if (exstDirSrc) {
     cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
