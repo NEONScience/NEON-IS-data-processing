@@ -185,7 +185,6 @@ test_that("Unit test of wrap.qaqc.qm.dp0p.R", {
                                         ParaGrp = ParaGrp)
   
   DirSrc = 'CFGLOC101252'
-  cmdLs <- base::paste0('ls ', base::paste0(DirSrc))
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
   
   if (exstDirSrc) {
