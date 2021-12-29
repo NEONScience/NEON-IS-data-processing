@@ -172,7 +172,7 @@ test_that("Unit test of wrap.rglr.R", {
                                   DirOutBase = DirOutBase,
                                   ParaRglr = ParaRglr_NA),silent = TRUE)
   
-  #  testthat::expect_true((class(returnedOutput)[1] == "try-error"))
+  testthat::expect_true((class(returnedOutput)[1] == "try-error"))
   
   #3 Test for more than 1 location file
   
