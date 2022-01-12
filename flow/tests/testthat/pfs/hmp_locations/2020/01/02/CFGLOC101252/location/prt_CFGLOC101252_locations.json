@@ -5,7 +5,7 @@
             "type":"Feature",
             "geometry":null,
             "properties":{
-                "name":"CFGLOC101670",
+                "name":"CFGLOC101252",
                 "type":"CONFIG",
                 "site":"ARIK",
                 "install_date":"2019-01-01T00:00:00Z",
@@ -29,7 +29,7 @@
             "TMI":"000",
             "Data Rate":"1",
             "Required Asset Management Location ID":            2995,
-            "Required Asset Management Location Code":"CFGLOC101670"
+            "Required Asset Management Location Code":"CFGLOC101252"
         }
     ],
     "source_id":    14491,
