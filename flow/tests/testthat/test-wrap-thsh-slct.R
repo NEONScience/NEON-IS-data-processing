@@ -97,11 +97,28 @@ test_that("Unit test of wrap.thsh.slct.R", {
   FileThsh <- "pfs/thresholds.json"
   thshRaw <- rjson::fromJSON(file=FileThsh,simplify=TRUE)
   # This turns dates to POSIXct, which is required
-  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh=thshRaw) 
-  ParaThsh <- list(list(Term='temp',Ctxt='soil')) 
-  wrap.thsh.slct(DirIn="pfs/hmp_locations/2020/01/02/CFGLOC101252",
-                 DirOutBase="pfs/out",
-                 thsh=thsh,
+  thshPosx <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh=thshRaw) 
+  ParaThsh <- list(list(Term='relativeHumidity',Ctxt=c('relative-humidity','terrestrial'))) 
+  
+  DirIn="pfs/hmp_locations/2020/01/02/CFGLOC101252"
+  
+  DirOutBase="pfs/out"
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  DirSrc = "CFGLOC101252"
+  exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
+  
+  if (exstDirSrc) {
+    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
+    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  }
+  wrap.thsh.slct(DirIn=DirIn,
+                 DirOutBase=DirOutBase,
+                 thshRaw=thshRaw,
+                 thshPosx=thshPosx,
                  ParaThsh=ParaThsh,
                  DirSubCopy='location'
    )
