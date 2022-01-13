@@ -129,13 +129,32 @@ test_that("Unit test of wrap.thsh.slct.R", {
     ParaThsh = ParaThsh,
     DirSubCopy = 'location'
   )
+  
+  # Test 1.a, thshPosx = NULL
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  if (exstDirSrc) {
+    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
+    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  }
+  try(wrap.thsh.slct(
+    DirIn = DirIn,
+    DirOutBase = DirOutBase,
+    thshRaw = thshRaw,
+    thshPosx = NULL,
+    ParaThsh = ParaThsh,
+    DirSubCopy = 'location'
+  ), silent = TRUE)
+  #
   # Test 2 no location files
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  DirIn_noLoc = "pfs/locations_nofiles/prt/10312"
+  DirIn_noLoc = "pfs/hmp_locations_nofiles/prt/10312"
   try(wrap.thsh.slct(
     DirIn = DirIn_noLoc,
     DirOutBase = DirOutBase,
