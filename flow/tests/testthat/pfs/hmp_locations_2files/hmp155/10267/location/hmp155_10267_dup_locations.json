@@ -1,0 +1,73 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC101658",
+                "site": "UKFS",
+                "install_date": "2019-01-03T18:00:00Z",
+                "remove_date": "2019-01-10T19:46:36Z",
+                "context": [],
+                "Required Asset Management Location ID": 2963,
+                "Required Asset Management Location Code": "CFGLOC101658",
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": null,
+                            "properties": {
+                                "start_date": "20109-01-03T00:00:00Z",
+                                "end_date": null,
+                                "alpha": 0,
+                                "beta": 0,
+                                "gamma": 0,
+                                "x_offset": 2.6,
+                                "y_offset": 6.25,
+                                "z_offset": 0.61,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "SOILPL101654",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": null,
+                                                    "properties": {
+                                                        "start_date": "2019-01-03T00:00:00Z",
+                                                        "end_date": null,
+                                                        "alpha": 0,
+                                                        "beta": 0,
+                                                        "gamma": 0,
+                                                        "x_offset": 0,
+                                                        "y_offset": 0,
+                                                        "z_offset": 0,
+                                                        "reference_location": {
+                                                            "type": "Feature",
+                                                            "geometry": null,
+                                                            "properties": {
+                                                                "name": "SOILPL101654",
+                                                                "locations": null
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "source_id": 10267,
+    "source_type": "hmp155"
+}
