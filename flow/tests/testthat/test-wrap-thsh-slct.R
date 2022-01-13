@@ -154,7 +154,30 @@ test_that("Unit test of wrap.thsh.slct.R", {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  DirIn_noLoc = "pfs/hmp_locations_nofiles/prt/10312"
+  DirIn_nofiles = "pfs/hmp_locations_nofiles/prt/10312"
+  try(wrap.thsh.slct(
+    DirIn = DirIn_nofiles,
+    DirOutBase = DirOutBase,
+    thshRaw = thshRaw,
+    thshPosx = thshPosx,
+    ParaThsh = ParaThsh
+  ),
+  silent = TRUE)
+  
+  DirSrc = "10312"
+  exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
+  
+  if (exstDirSrc) {
+    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
+    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  }
+  # Test 2.a no location files
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  DirIn_noLoc = "pfs/hmp_locations_noLocs/2020/01/02/10312"
   try(wrap.thsh.slct(
     DirIn = DirIn_noLoc,
     DirOutBase = DirOutBase,
@@ -171,14 +194,37 @@ test_that("Unit test of wrap.thsh.slct.R", {
     cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
   }
+  #
+  # Test 2.b year missing in subDir
   
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  DirIn_wrongDir = "pfs/hmp_locations_wrongDir/noYr/01/02/CFGLOC101252"
+  try(wrap.thsh.slct(
+    DirIn = DirIn_wrongDir,
+    DirOutBase = DirOutBase,
+    thshRaw = thshRaw,
+    thshPosx = thshPosx,
+    ParaThsh = ParaThsh
+  ),
+  silent = TRUE)
+  
+  DirSrc = "CFGLOC101252"
+  exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
+  
+  if (exstDirSrc) {
+    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
+    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  }
   # Test 3, 2 location files
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  DirIn_2Locs = "pfs/hmp_locations_2files/hmp155/10267"
+  DirIn_2Locs = "pfs/hmp_locations_2files/2020/01/02/10267"
   try(wrap.thsh.slct(
     DirIn = DirIn_2Locs,
     DirOutBase = DirOutBase,
