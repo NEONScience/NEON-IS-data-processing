@@ -1,5 +1,5 @@
 environs==9.3.2
 fastparquet==0.6.0.post1
-structlog==21.1.0
+structlog==21.5.0
 pandas==1.2.4
 pyarrow==4.0.0
