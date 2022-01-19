@@ -6,7 +6,7 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/genavro:v1.0.65",
+    "image": "quay.io/battelleecology/genavro:v1.0.68",
     "cmd": [
       "bash"
     ],
@@ -38,19 +38,19 @@
     },
     "secrets": [
       {
-        "name": "genavro:v1.0.68",
-        "key": "PRESTO_HOST",
-        "env_var": "PRESTO_HOST"
+        "name": "pachd-trino-secret",
+        "key": "TRINO_HOST",
+        "env_var": "TRINO_HOST"
       },
       {
-        "name": "genavro:v1.0.68",
-        "key": "PRESTO_PASSWORD",
-        "env_var": "PRESTO_PASSWORD"
+        "name": "pachd-trino-secret",
+        "key": "TRINO_PASSWORD",
+        "env_var": "TRINO_PASSWORD"
       },
       {
-        "name": "genavro:v1.0.68",
-        "key": "PRESTO_USER",
-        "env_var": "PRESTO_USER"
+        "name": "pachd-trino-secret",
+        "key": "TRINO_USER",
+        "env_var": "TRINO_USER"
       }
     ]
   },
