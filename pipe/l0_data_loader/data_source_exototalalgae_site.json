@@ -40,17 +40,17 @@
       {
         "name": "pachd-trino-secret",
         "key": "TRINO_HOST",
-        "env_var": "TRINO_HOST"
+        "env_var": "PRESTO_HOST"
       },
       {
         "name": "pachd-trino-secret",
         "key": "TRINO_PASSWORD",
-        "env_var": "TRINO_PASSWORD"
+        "env_var": "PRESTO_PASSWORD"
       },
       {
         "name": "pachd-trino-secret",
         "key": "TRINO_USER",
-        "env_var": "TRINO_USER"
+        "env_var": "PRESTO_USER"
       }
     ]
   },
