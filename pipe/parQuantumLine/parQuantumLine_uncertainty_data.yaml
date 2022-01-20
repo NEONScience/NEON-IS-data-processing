@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/directory_filter:21
+  image: quay.io/battelleecology/directory_filter:22
   cmd:
   - /bin/bash
   stdin:
@@ -26,4 +26,3 @@ standby: true
 resource_requests:
   memory: 25M
   cpu: 0.01
-

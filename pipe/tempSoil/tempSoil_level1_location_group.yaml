@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_level1_location_group
 transform:
-  image: docker.io/dlenz/location_grouper:1
+  image: quay.io/battelleecology/location_grouper:8
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

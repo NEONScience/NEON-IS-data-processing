@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_level1_package
 transform:
-  image: docker.io/dlenz/packager:1
+  image: quay.io/battelleecology/packager:1
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

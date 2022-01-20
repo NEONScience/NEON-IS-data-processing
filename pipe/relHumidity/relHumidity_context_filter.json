@@ -3,10 +3,17 @@
     "name": "relHumidity_context_filter"
   },
   "transform": {
-    "image_pull_secrets": [ "battelleecology-quay-read-all-pull-secret" ],
-    "image": "quay.io/battelleecology/context_filter:27",
-    "cmd": [ "/bin/bash" ],
-    "stdin": [ "#!/bin/bash", "python3 -m context_filter.context_filter_main" ],
+    "image_pull_secrets": [
+      "battelleecology-quay-read-all-pull-secret"
+    ],
+    "image": "quay.io/battelleecology/context_filter:28",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "python3 -m context_filter.context_filter_main"
+    ],
     "env": {
       "OUT_PATH": "/pfs/out",
       "CONTEXT": "terrestrial",
@@ -17,11 +24,11 @@
     }
   },
   "input": {
-      "pfs": {
-        "name": "IN_PATH",
-        "repo": "hmp155_date_gap_filler_linker",
-        "glob": "/hmp155/*/*/*"
-      }
+    "pfs": {
+      "name": "IN_PATH",
+      "repo": "hmp155_date_gap_filler_linker",
+      "glob": "/hmp155/*/*/*"
+    }
   },
   "enable_stats": false,
   "standby": true,
