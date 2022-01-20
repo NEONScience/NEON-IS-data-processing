@@ -3,7 +3,7 @@ pipeline:
   name: data_source_li7200_path_refactor
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/path_refactor:2
+  image: quay.io/battelleecology/path_refactor:3
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
