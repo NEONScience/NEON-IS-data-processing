@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/timeseries_padder:31
+  image: quay.io/battelleecology/timeseries_padder:34
   cmd:
   - "/bin/bash"
   stdin:

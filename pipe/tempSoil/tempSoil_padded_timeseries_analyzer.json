@@ -6,12 +6,12 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/padded_timeseries_analyzer:12",
+    "image": "quay.io/battelleecology/padded_timeseries_analyzer:15",
     "cmd": [ "/bin/bash" ],
-    "stdin": [ "#!/bin/bash", "python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app" ],
+    "stdin": [ "#!/bin/bash", "python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main" ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "LOG_LEVEL": "INFO",
+      "LOG_LEVEL": "DEBUG",
       "RELATIVE_PATH_INDEX": "3"
     }
   },
