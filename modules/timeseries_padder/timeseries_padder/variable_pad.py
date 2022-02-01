@@ -26,6 +26,7 @@ class VariablePad:
         self.data_file_path = DataPathParser(config)
         self.data_types = [config.data_dir]
         self.out_dir_parts = list(self.out_path.parts)
+        self.relative_path_index = config.relative_path_index
 
     def pad(self) -> None:
         """Pad the data with the calculated window size."""
@@ -82,6 +83,11 @@ class VariablePad:
                                 file_writer.link_thresholds(config_location_path, link_path)
                                 manifest_path = Path(link_path.parent, Config.manifest_filename)
                                 file_writer.write_manifest(padded_dates, manifest_path)
+                    else:
+                        link_path = Path(self.out_path, *parts[self.relative_path_index:])
+                        link_path.parent.mkdir(parents=True, exist_ok=True)
+                        if not link_path.exists():
+                            link_path.symlink_to(path)
         except Exception:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             log.error("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
