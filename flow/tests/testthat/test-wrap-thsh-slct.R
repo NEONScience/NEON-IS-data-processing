@@ -97,10 +97,8 @@ test_that("Unit test of wrap.thsh.slct.R", {
   FileThsh <- "pfs/thresholds.json"
   thshRaw <- rjson::fromJSON(file = FileThsh, simplify = TRUE)
   # This turns dates to POSIXct, which is required
-  thshPosx <-
-    NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh = thshRaw)
-  ParaThsh <-
-    list(list(
+  thshPosx <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh = thshRaw)
+  ParaThsh <- list(list(
       Term = 'relativeHumidity',
       Ctxt = c('relative-humidity', 'terrestrial')
     ))
@@ -146,8 +144,7 @@ test_that("Unit test of wrap.thsh.slct.R", {
     thshPosx = NULL,
     ParaThsh = ParaThsh,
     DirSubCopy = 'location'
-  ),
-  silent = TRUE)
+  ),  silent = TRUE)
   #
   # Test 2 no location files
   
@@ -162,8 +159,7 @@ test_that("Unit test of wrap.thsh.slct.R", {
     thshRaw = thshRaw,
     thshPosx = thshPosx,
     ParaThsh = ParaThsh
-  ),
-  silent = TRUE)
+  ),  silent = TRUE)
   
   DirSrc = "10312"
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
@@ -185,8 +181,7 @@ test_that("Unit test of wrap.thsh.slct.R", {
     thshRaw = thshRaw,
     thshPosx = thshPosx,
     ParaThsh = ParaThsh
-  ),
-  silent = TRUE)
+  ),  silent = TRUE)
   
   DirSrc = "10312"
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
@@ -209,8 +204,7 @@ test_that("Unit test of wrap.thsh.slct.R", {
     thshRaw = thshRaw,
     thshPosx = thshPosx,
     ParaThsh = ParaThsh
-  ),
-  silent = TRUE)
+  ),  silent = TRUE)
   
   DirSrc = "CFGLOC101252"
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
@@ -232,8 +226,7 @@ test_that("Unit test of wrap.thsh.slct.R", {
     thshRaw = thshRaw,
     thshPosx = thshPosx,
     ParaThsh = ParaThsh
-  ),
-  silent = TRUE)
+  ),  silent = TRUE)
   DirSrc = "10267"
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
   
