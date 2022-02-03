@@ -88,6 +88,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-09-02)
 #     Convert flow script to wrapper function
+#   Mija Choi (2022-02-02)
+#     Added a NULL condition of timeBgn to Error Check
 ##############################################################################################
 wrap.thsh.slct <- function(DirIn,
                            DirOutBase,
@@ -140,7 +142,7 @@ wrap.thsh.slct <- function(DirIn,
   timeBgn <-  InfoDirIn$time
   
   # Error check
-  if(base::is.na(timeBgn)){
+  if(base::is.null(timeBgn) || base::is.na(timeBgn)){
     # Generate error and stop execution
     log$error(base::paste0('Cannot interpret date from directory structure of datum path: ',DirIn)) 
     stop()

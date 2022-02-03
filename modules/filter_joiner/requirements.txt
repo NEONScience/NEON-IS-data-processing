@@ -1,4 +1,4 @@
 pyfakefs==3.6
 environs==7.3.1
-structlog==20.1.0
+structlog==21.5.0
 PyYAML==5.4

@@ -1,4 +1,4 @@
-structlog==19.2.0
+structlog==21.5.0
 environs==6.0.0
 pandas==1.2.5
 pyarrow==4.0.1
