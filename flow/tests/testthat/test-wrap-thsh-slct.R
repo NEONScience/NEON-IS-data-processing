@@ -146,7 +146,8 @@ test_that("Unit test of wrap.thsh.slct.R", {
     thshPosx = NULL,
     ParaThsh = ParaThsh,
     DirSubCopy = 'location'
-  ), silent = TRUE)
+  ),
+  silent = TRUE)
   #
   # Test 2 no location files
   
