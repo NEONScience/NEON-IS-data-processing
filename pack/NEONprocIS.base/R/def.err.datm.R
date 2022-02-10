@@ -117,7 +117,7 @@ def.err.datm <- function(
              base::paste0(
                'Could not remove partial output for errored datum: ',
                dirOutDatm,
-               '. Likely it did not exist.'
+               '. Check that you have the appropriate permissions.'
                )
              )
     )
