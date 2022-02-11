@@ -109,6 +109,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-10-11)
 #     Convert flow script to wrapper function
+#   Cove Sturtevant (2022-02-10)
+#     Allow existing flags files to be passed through
 ##############################################################################################
 wrap.qaqc.plau <- function(DirIn,
                            DirOutBase,
@@ -142,7 +144,15 @@ wrap.qaqc.plau <- function(DirIn,
   
   # Copy with a symbolic link the desired subfolders 
   if(base::length(DirSubCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(DirIn,'/',DirSubCopy),dirOut,log=log)
+    if('flags' %in% DirSubCopy){
+      LnkSubObj <- TRUE
+    } else {
+      LnkSubObj <- FALSE
+    }
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(DirIn,'/',DirSubCopy),
+                                       DirDest=dirOut,
+                                       LnkSubObj=TRUE,
+                                       log=log)
   }  
   
   # Preliminaries

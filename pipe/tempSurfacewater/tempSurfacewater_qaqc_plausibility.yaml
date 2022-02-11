@@ -7,9 +7,10 @@ transform:
   - "/flow.qaqc.plau.R"
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
   - FileSchmQf=$SCHEMA_FLAGS
   - TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.19
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.22
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

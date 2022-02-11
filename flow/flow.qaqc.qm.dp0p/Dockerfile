@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Instantaneous quality metrics and final quality flag module
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v0.0.27
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v0.0.28
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

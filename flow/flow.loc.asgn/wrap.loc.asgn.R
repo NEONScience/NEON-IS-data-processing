@@ -192,6 +192,7 @@ wrap.loc.asgn <- function(DirIn,
       }
     )
     ts <- base::unique(base::do.call(c,ts)) # unlist
+    base::attr(ts,'tzone') <- base::attr(TimeBgn,'tzone') # Re-assign time zone, which was stripped in unlisting
     ts <- ts[ts != TimeEnd] # Get rid of final date
     tsChar <- base::unique(format(ts,format='%Y/%m/%d')) # Format as year/month/day repo structure and get rid of duplicates
     
@@ -211,10 +212,10 @@ wrap.loc.asgn <- function(DirIn,
       
       if(TypeFile=='asset'){
         loc <- NEONprocIS.base::def.loc.filt(NameFileIn=nameFile,
-                                              NameFileOut=nameFileOut,
-                                              TimeBgn=ts[idxDay],
-                                              TimeEnd=ts[idxDay]+timeDiffDay,
-                                              log=log
+                                             NameFileOut=nameFileOut,
+                                             TimeBgn=ts[idxDay],
+                                             TimeEnd=ts[idxDay]+timeDiffDay,
+                                             log=log
         )
       } else if (TypeFile == 'namedLocation'){
         loc <- NEONprocIS.base::def.loc.trnc.actv(NameFileIn=nameFile,

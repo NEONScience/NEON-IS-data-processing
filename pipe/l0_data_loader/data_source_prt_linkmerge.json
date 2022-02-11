@@ -16,7 +16,7 @@
     ],
     "env": {
       "OUT_PATH": "/pfs/out",
-      "LOG_LEVEL": "INFO",
+      "LOG_LEVEL": "DEBUG",
       "SOURCE_TYPE_INDEX": "3",
       "YEAR_INDEX": "4",
       "MONTH_INDEX": "5",
@@ -36,13 +36,10 @@
     "pfs": {
       "name": "IN_PATH",
       "repo": "data_source_prt_site",
-      "glob": "/*/*/*",
-      "lazy": true
+      "glob": "/prt/*/*/*",
+      "lazy": false
     }
   },
-  "cache_size": "64M",
-  "max_queue_size": "1",
-  "enable_stats": false,
-  "standby": true,
-  "pod_patch": "[{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/memory\",\"value\":\"64M\"},{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/cpu\",\"value\":\"0.5\"}]"
+  "pod_patch": "[{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/memory\",\"value\":\"64M\"},{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/cpu\",\"value\":\"0.5\"}]",
+  "autoscaling": true
 }

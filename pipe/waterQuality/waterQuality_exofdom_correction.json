@@ -11,7 +11,7 @@
       "FileSchmData=$SCHEMA_DATA",
       "FileSchmQf=$SCHEMA_FLAGS"
       ],
-    "image": "quay.io/battelleecology/neon-is-wq-fdom-corr-r:v0.0.16",
+    "image": "quay.io/battelleecology/neon-is-wq-fdom-corr-r:v0.0.18",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

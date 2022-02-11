@@ -2,7 +2,7 @@
 pipeline:
   name: tempSurfacewater_statistics
 transform:
-  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.20
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.21
   cmd:
   - Rscript
   - "/flow.stat.basc.R"

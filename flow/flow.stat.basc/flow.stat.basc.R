@@ -65,7 +65,9 @@
 #'  
 #' N+1. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
 #' pipes, at the same level as the data folder in the input path that are to be copied with a 
-#' symbolic link to the output path. 
+#' symbolic link to the output path. Note that it is acceptable to include the
+#' "stats" directory if stats files generated from other processing modules (differently named) are to be 
+#' passed through. 
 #' 
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}}, 
 #' which uses system environment variables if available.
@@ -124,6 +126,8 @@
 #   Cove Sturtevant (2021-01-20)
 #     Applied internal parallelization
 #     bug fix for error when no uncertainty stats are selected for output
+#   Cove Sturtevant (2022-02-10)
+#     allow existing files in stats folder to be passed through
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -243,12 +247,11 @@ nameStatTerm <- lapply(stat,FUN=function(idxStat){
 names(nameStatTerm) <- stat
 
 # Retrieve optional subdirectories to copy over
-DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'stat'))
+DirSubCopy <- base::unique(Para$DirSubCopy)
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
 
 # What are the expected subdirectories of each input path
-dirSub <- c('data')
-nameDirSub <- base::as.list(base::unique(c(DirSubCopy,dirSub)))
+nameDirSub <- base::as.list(c('data'))
 log$debug(base::paste0('Minimum expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
 
 # Find all the input paths (datums). We will process each one.
@@ -288,7 +291,15 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
 
   # Copy with a symbolic link the desired subfolders 
   if(base::length(DirSubCopy) > 0){
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(idxDirIn,'/',DirSubCopy),idxDirOut,log=log)
+    if('stats' %in% DirSubCopy){
+      LnkSubObj <- TRUE
+    } else {
+      LnkSubObj <- FALSE
+    }
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(idxDirIn,'/',DirSubCopy),
+                                       DirDest=idxDirOut,
+                                       LnkSubObj=TRUE,
+                                       log=log)
   }  
   
   # Are we computing uncertainty? If so, load the uncertainty coefficients file (there should be only 1)
@@ -342,7 +353,9 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         }
         
       }
-    } # End if statement around FDAS uncertainty
+    } else {
+      log$debug(base::paste0("No L0' uncertainty data detected in : ",idxDirIn))
+    }# End if statement around FDAS uncertainty
   } # End if statement around expUncert
     
   # Run through each data file

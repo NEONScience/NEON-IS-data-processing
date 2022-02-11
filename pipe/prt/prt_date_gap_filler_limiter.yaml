@@ -20,13 +20,17 @@ transform:
   - "date_path=$(date -u +%Y/%m/%d -d @$d)"
   - "echo $OUT_PATH/$date_path"
   - "mkdir -p $OUT_PATH/$date_path"
+  - "touch $OUT_PATH/$date_path/empty"
   - "done"
 input:
-  # Currently the input is set to an annual cron so that it executes infrequently for development.
+  # Currently the input can be set to an low-frequency cron for development.
   # In production this should be linked to the daily ingest trigger
   pfs: 
-    repo: cron_yearly_tick
+    repo: cron_daily_tick
     glob: /
     empty_files: true
-enable_stats: false
-standby: true
+resource_requests:
+  memory: 64M
+  cpu: 0.5
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"1G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+autoscaling: true
