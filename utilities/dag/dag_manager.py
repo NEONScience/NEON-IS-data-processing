@@ -34,7 +34,7 @@ class DagManager:
         os.system(f'pachctl start transaction')
         for pipeline_file in pipeline_files:
             print(f'updating pipeline (without reprocessing): {pipeline_file}')
-            print(f'If this script is cancelled or errors before completion, you MUST finish the transaction manually (pachctl finish transaction)')
+            print(f'If this script is cancelled or errors before completion, you MUST finish or delete the transaction manually (pachctl finish transaction or pachctl delete transaction)')
             os.system(f'pachctl update pipeline -f {pipeline_file}')
         os.system(f'pachctl finish transaction')
 
