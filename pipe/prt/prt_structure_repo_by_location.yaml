@@ -1,0 +1,27 @@
+---
+pipeline:
+  name: prt_structure_repo_by_location
+transform:
+  cmd:
+  - Rscript
+  - /flow.loc.repo.strc.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - Comb=TRUE
+  image: quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.16
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  pfs:
+    name: DIR_IN
+    repo: prt_calibrated_location_group
+    glob: /prt/*/*/*
+resource_requests:
+  memory: 100M
+  cpu: 0.25
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"1G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+autoscaling: true
+

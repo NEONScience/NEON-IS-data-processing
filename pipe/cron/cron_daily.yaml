@@ -7,7 +7,7 @@ input:
   cron:
     name: tick
     spec: "@daily"
-    start: "2021-06-30T00:00:00.000Z"
+    start: "2022-02-01T07:00:00.000Z"
     overwrite: true
-enable_stats: false
-standby: true
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"64M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+autoscaling: true

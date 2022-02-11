@@ -12,7 +12,7 @@
     ],
     "stdin": [
       "#!/bin/bash",
-      "python3 -m date_gap_filler_linker.app"
+      "python3 -m date_gap_filler_linker.date_gap_filler_linker_main"
     ],
     "env": {
       "LOG_LEVEL": "INFO",

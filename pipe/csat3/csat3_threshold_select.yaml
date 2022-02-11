@@ -15,7 +15,7 @@ transform:
   - TermCtxt4=veloSoni
   - TermCtxt5=tempSoni
   - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.17
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.18
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

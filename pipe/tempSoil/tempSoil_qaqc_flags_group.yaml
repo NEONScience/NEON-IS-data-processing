@@ -1,0 +1,28 @@
+---
+pipeline:
+  name: tempSoil_qaqc_flags_group
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/directory_filter:22
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m directory_filter.directory_filter_main
+  env:
+    OUT_PATH: /pfs/out
+    FILTER_DIR: flags
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: '3'
+input:
+  pfs:
+    name: IN_PATH
+    repo: tempSoil_qaqc_plausibility
+    glob: /prt/*/*/*
+    empty_files: true
+resource_requests:
+  memory: 64M
+  cpu: 0.5
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+autoscaling: true
