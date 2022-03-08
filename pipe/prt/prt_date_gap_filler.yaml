@@ -44,7 +44,7 @@ input:
       - pfs:
           name: LOCATION_PATH
           repo: prt_location_active_dates_assignment
-          glob: /prt/(*)/(*)/(*)/(CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100486.101|CFGLOC100486.102|CFGLOC100486.103|CFGLOC101255|CFGLOC101670.PRT|CFGLOC101672.PRT|CFGLOC108346|CFGLOC108348|CFGLOC108350|CFGLOC107920|CFGLOC100533.101|CFGLOC100530)
+          glob: /prt/(*)/(*)/(*)/
           joinOn: $1/$2/$3
           empty_files: true
       - pfs:
