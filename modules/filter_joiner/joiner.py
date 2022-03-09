@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from pathlib import Path
 from typing import List, Iterator, Tuple
-
 from structlog import get_logger
+import shutil
 
 import filter_joiner.path_filter as path_filter
 from filter_joiner.dictionary_list import DictionaryList
@@ -13,17 +13,19 @@ log = get_logger()
 
 class FilterJoiner:
 
-    def __init__(self, *, config: str, out_path: Path, relative_path_index: int) -> None:
+    def __init__(self, *, config: str, out_path: Path, relative_path_index: int, symlink: bool) -> None:
         """
         Constructor.
 
         :param config: Yaml configuration.
         :param out_path: The output path for writing joined files.
         :param relative_path_index: Trim input file paths to this index.
+        :param symlink: Use a symlink to place files in the output (True) or use a straight copy (False) 
         """
         self.config = config
         self.out_path = out_path
         self.relative_path_index = relative_path_index
+        self.symlink = symlink
 
     def join(self) -> None:
         """Join paths by common key."""
@@ -79,10 +81,15 @@ class FilterJoiner:
     def link(self, path: Path):
         link_path = Path(self.out_path, *path.parts[self.relative_path_index:])
         link_path.parent.mkdir(parents=True, exist_ok=True)
+        symlink = self.symlink
         if not link_path.exists():
-            log.debug(f'Linking path {link_path} to {path}.')
-            link_path.symlink_to(path)
-
+            if symlink:
+                log.debug(f'Linking path {link_path} to {path}.')
+                link_path.symlink_to(path)
+            else:
+                log.debug(f'Copying {path} to {link_path}.')
+                shutil.copy2(path,link_path)
+            
     @staticmethod
     def get_key(path: Path, join_indices: list) -> str:
         """
