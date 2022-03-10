@@ -24,7 +24,7 @@ input:
     glob: /prt/*/*/*
     empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: '5'
+  constant: 5
 resource_requests:
   memory: 300M
   cpu: 0.5

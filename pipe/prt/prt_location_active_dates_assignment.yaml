@@ -26,7 +26,7 @@ input:
       repo: data_source_prt_list_years
       glob: /data_years.txt
 parallelism_spec:
-  constant: '8'
+  constant: 8
 resource_requests:
   memory: 210M
   cpu: 1

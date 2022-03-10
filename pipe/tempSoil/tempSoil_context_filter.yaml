@@ -22,6 +22,8 @@ input:
     name: IN_PATH
     repo: prt_date_gap_filler_linker
     glob: /prt/*/*/*
+parallelism_spec:
+  constant: 5
 resource_requests:
   memory: 20M
   cpu: 0.05

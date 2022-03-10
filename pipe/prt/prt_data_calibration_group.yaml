@@ -47,7 +47,7 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure to use false if LINK_TYPE=COPY
 parallelism_spec:
-  constant: "5"
+  constant: 5
 resource_requests:
   memory: 300M
   cpu: 0.3

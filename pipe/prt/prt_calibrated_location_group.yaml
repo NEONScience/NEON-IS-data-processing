@@ -47,7 +47,7 @@ input:
       joinOn: $1/$2/$3
       empty_files: false
 parallelism_spec:
-  constant: "5"
+  constant: 5
 resource_requests:
   memory: 600M
   cpu: 0.3
