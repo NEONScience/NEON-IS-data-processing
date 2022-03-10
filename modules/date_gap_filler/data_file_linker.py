@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import structlog
+import shutil
 from pathlib import Path
 
 from date_gap_filler.dates_between import date_is_between
@@ -17,6 +18,7 @@ class DataFileLinker:
         self.start_date = config.start_date
         self.end_date = config.end_date
         self.data_path_parser = DataPathParser(config)
+        self.symlink = config.symlink
 
     def link_files(self) -> None:
         """Link all files between the start and end dates."""
@@ -29,4 +31,9 @@ class DataFileLinker:
                 link_path = Path(self.out_path, source_type, year, month, day, location, data_type, path.name)
                 link_path.parent.mkdir(parents=True, exist_ok=True)
                 if not link_path.exists():
-                    link_path.symlink_to(path)
+                    if self.symlink:
+                        log.debug(f'Linking path {link_path} to {path}.')
+                        link_path.symlink_to(path)
+                    else:
+                        log.debug(f'Copying {path} to {link_path}.')
+                        shutil.copy2(path,link_path)
