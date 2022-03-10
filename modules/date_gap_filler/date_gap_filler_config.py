@@ -30,3 +30,4 @@ class DateGapFillerConfig(NamedTuple):
     location_dir = 'location'
     uncertainty_coefficient_dir = 'uncertainty_coef'
     uncertainty_data_dir = 'uncertainty_data'
+    symlink: bool

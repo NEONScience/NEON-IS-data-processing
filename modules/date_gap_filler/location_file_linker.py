@@ -2,6 +2,7 @@
 from pathlib import Path
 from calendar import monthrange
 import structlog
+import shutil
 
 from date_gap_filler.dates_between import date_is_between
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
@@ -26,6 +27,7 @@ class LocationFileLinker:
         self.end_date = config.end_date
         self.location_dir = config.location_dir
         self.location_path_parser = LocationPathParser(config)
+        self.symlink = config.symlink
 
     def link_files(self) -> None:
         """Process the location files and fill date gaps with empty files."""
@@ -55,4 +57,9 @@ class LocationFileLinker:
         location_link = Path(root_link_path, self.location_dir, path.name)
         location_link.parent.mkdir(parents=True, exist_ok=True)
         if not location_link.exists():
-            location_link.symlink_to(path)
+            if self.symlink:
+                log.debug(f'Linking path {location_link} to {path}.')
+                location_link.symlink_to(path)
+            else:
+                log.debug(f'Copying {path} to {location_link}.')
+                shutil.copy2(path,location_link)
