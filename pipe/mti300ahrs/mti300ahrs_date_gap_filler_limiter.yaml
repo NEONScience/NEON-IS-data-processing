@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: csat3_date_gap_filler_limiter
+  name: mti300ahrs_date_gap_filler_limiter
 transform:
   image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd: ["/bin/bash"]
@@ -9,8 +9,8 @@ transform:
     # START_DATE must be set, format "YYYY-MM-DD"
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2020-01-31"
-    END_DATE: "2020-02-11"
+    START_DATE: "2020-02-01"
+    END_DATE: "2020-02-10"
   stdin:
   - "#!/bin/bash"
   - "# If END_DATE unset, set to yesterday"
