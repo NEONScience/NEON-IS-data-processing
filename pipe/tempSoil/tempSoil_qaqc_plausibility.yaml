@@ -28,10 +28,10 @@ input:
       repo: avro_schemas
       glob: /dp0p/flags_plausibility.avsc
 parallelism_spec:
-  constant: '1'
+  constant: 5
 resource_requests:
-  memory: 600M
-  cpu: 2
+  memory: 800M
+  cpu: 5
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 scheduling_spec:
   node_selector: 
