@@ -30,7 +30,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
@@ -39,15 +39,15 @@ input:
       glob: /prt/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - pfs:
       name: CALIBRATION_PATH
       repo: prt_calibration_assignment
       glob: /prt/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: "5"
+  constant: 5
 resource_requests:
   memory: 300M
   cpu: 0.3

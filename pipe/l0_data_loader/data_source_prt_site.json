@@ -66,9 +66,9 @@
   },
   "output_branch": "master",
   "resource_requests": {
-    "memory": "1G",
-    "cpu": 0.7
+    "memory": "500M",
+    "cpu": 0.3
   },
-  "pod_patch": "[{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/memory\",\"value\":\"128M\"},{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/cpu\",\"value\":\"0.5\"}]",
+  "pod_patch": "[{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/memory\",\"value\":\"500M\"},{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/cpu\",\"value\":\"0.5\"}]",
   "autoscaling": true
 }

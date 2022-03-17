@@ -26,11 +26,11 @@ input:
       repo: data_source_prt_list_years
       glob: /data_years.txt
 parallelism_spec:
-  constant: '8'
+  constant: 8
 resource_requests:
   memory: 210M
   cpu: 1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"1G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 scheduling_spec:
   node_selector: 
     cloud.google.com/machine-family: n2d

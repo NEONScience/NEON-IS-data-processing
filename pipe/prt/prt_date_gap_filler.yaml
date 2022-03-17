@@ -26,28 +26,28 @@ transform:
     LOCATION_DAY_INDEX: '6'
     LOCATION_INDEX: '7'
     EMPTY_FILE_TYPE_INDEX: '4'
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   cross:
   - pfs:
       name: EMPTY_FILE_PATH
       repo: empty_files
       glob: /prt
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - union:
     - pfs:
         name: DATA_PATH
         repo: prt_merge_data_by_location
         glob: /prt/(*)/(*)/(*)
         joinOn: $1/$2/$3
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
       - pfs:
           name: LOCATION_PATH
           repo: prt_location_active_dates_assignment
           glob: /prt/(*)/(*)/(*)
           joinOn: $1/$2/$3
-          empty_files: false # Make sure this is false for LINK_TYPE=COPY
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: DATE_LIMITER_PATH
           repo: prt_date_gap_filler_limiter
@@ -55,7 +55,7 @@ input:
           joinOn: $1/$2/$3
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
-  constant: '5'
+  constant: 5
 resource_requests:
   memory: 300M
   cpu: 0.5

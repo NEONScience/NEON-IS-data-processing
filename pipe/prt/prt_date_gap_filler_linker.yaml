@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/date_gap_filler_linker:testcp1
+  image: quay.io/battelleecology/date_gap_filler_linker:7
   cmd:
   - /bin/bash
   stdin:
@@ -16,15 +16,15 @@ transform:
     RELATIVE_PATH_INDEX: '3'
     LOCATION_INDEX: '7'
     EMPTY_FILE_SUFFIX: .empty
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   pfs:
     name: IN_PATH
     repo: prt_date_gap_filler
     glob: /prt/*/*/*
-    empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: '5'
+  constant: 5
 resource_requests:
   memory: 300M
   cpu: 0.5

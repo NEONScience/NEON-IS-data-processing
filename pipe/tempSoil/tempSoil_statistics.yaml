@@ -27,11 +27,11 @@ input:
       repo: avro_schemas
       glob: /dp01/tempSoil_dp01_stats.avsc
 parallelism_spec:
-  constant: '1'
+  constant: 5
 resource_requests:
-  memory: 600M
-  cpu: 1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+  memory: 800M
+  cpu: 5
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
 scheduling_spec:
   node_selector: 
     cloud.google.com/machine-family: n2d

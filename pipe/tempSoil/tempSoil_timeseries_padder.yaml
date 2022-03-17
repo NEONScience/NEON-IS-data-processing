@@ -20,13 +20,13 @@ output_branch: master
 input:
   pfs:
     name: DATA_PATH
-    repo: tempSoil_threshold_regularized_group
+    repo: tempSoil_threshold_select
     branch: master
     glob: /prt/*/*/*
 parallelism_spec:
-  constant: '1'
+  constant: 5
 resource_requests:
-  memory: 64M
+  memory: 1G
   cpu: 0.5
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 scheduling_spec:
