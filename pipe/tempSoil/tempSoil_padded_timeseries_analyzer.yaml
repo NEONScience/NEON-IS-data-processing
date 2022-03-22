@@ -14,7 +14,6 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: '3'
-output_branch: master
 input:
   pfs:
     name: DATA_PATH
@@ -22,10 +21,10 @@ input:
     branch: master
     glob: /prt/*/*/*
 parallelism_spec:
-  constant: 7
+  constant: 4
 resource_requests:
-  memory: 1G
-  cpu: 0.8
+  memory: 500M
+  cpu: 0.6
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 scheduling_spec:
   node_selector: 

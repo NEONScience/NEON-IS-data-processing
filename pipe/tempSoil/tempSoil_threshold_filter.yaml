@@ -5,7 +5,7 @@ transform:
   cmd:
   - Rscript
   - /flow.thsh.filt.R
-  - DirIn=$threshold
+  - DirIn=$THRESHOLD
   - DirOut=/pfs/out
   - Term=temp
   - Ctxt=soil
@@ -16,12 +16,13 @@ transform:
     LOG_LEVEL: INFO
 input:
   pfs:
+    name: THRESHOLD
     repo: threshold
     glob: /
 resource_requests:
-  memory: 13M
+  memory: 20M
   cpu: 0.1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"1G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"200M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.05"}]'
 scheduling_spec:
   node_selector: 
     cloud.google.com/machine-family: n2d

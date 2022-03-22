@@ -26,7 +26,7 @@ input:
     lazy: false
 output_branch: master
 parallelism_spec:
-  constant: '4'
+  constant: 5
 resource_requests:
   memory: 200M
   cpu: 0.3

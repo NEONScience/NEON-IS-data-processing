@@ -1,15 +1,15 @@
 ---
 pipeline:
-  name: location_asset
+  name: threshold_li191r
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_asset_loader:27
+  image: quay.io/battelleecology/threshold_loader:13
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m location_asset_loader.location_asset_loader_main
+  - python3 -m threshold_loader.threshold_loader_main
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
@@ -19,12 +19,12 @@ transform:
     env_var: DATABASE_URL
 input:
   pfs:
-    repo: cron_daily_tick
+    repo: cron_daily_li191r_tick
     glob: /
     empty_files: true
 resource_requests:
-  memory: 100M
+  memory: 120M
   cpu: 0.05
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"400M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.4"}]'
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"64M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.05"}]'
 autoscaling: true
 

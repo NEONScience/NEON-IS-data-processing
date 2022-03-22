@@ -47,9 +47,9 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 5
+  constant: 4
 resource_requests:
-  memory: 300M
+  memory: 350M
   cpu: 0.3
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1"}]'
 autoscaling: true

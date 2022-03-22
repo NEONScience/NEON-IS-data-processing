@@ -22,9 +22,9 @@ input:
     glob: /prt/*/*/*
     empty_files: false
 parallelism_spec:
-  constant: 5
+  constant: 4
 resource_requests:
-  memory: 800M
+  memory: 300M
   cpu: 0.3
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.8"}]'
 autoscaling: true
