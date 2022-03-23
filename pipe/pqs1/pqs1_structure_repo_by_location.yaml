@@ -1,0 +1,31 @@
+---
+pipeline:
+  name: pqs1_structure_repo_by_location
+transform:
+  cmd:
+  - Rscript
+  - /flow.loc.repo.strc.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - Comb=TRUE
+  image: quay.io/battelleecology/neon-is-loc-repo-strc-r:v0.0.16
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  pfs:
+    name: DIR_IN
+    repo: pqs1_calibrated_location_group
+    glob: /pqs1/*/*/*
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 300M
+  cpu: 0.5
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true

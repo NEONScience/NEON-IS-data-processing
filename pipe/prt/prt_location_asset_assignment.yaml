@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=asset
-  image: quay.io/battelleecology/neon-is-loc-asgn-r:v0.0.4
+  image: quay.io/battelleecology/neon-is-loc-asgn-r:v0.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

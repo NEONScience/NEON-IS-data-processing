@@ -45,7 +45,7 @@ input:
       - pfs:
           name: LOCATION_PATH
           repo: prt_location_active_dates_assignment
-          glob: /prt/(*)/(*)/(*)
+          glob: /prt/(*)/(*)/(*) # To limit to particular CFGLOCs, enter something like: /prt/(*)/(*)/(*)/(CFGLOC113570|CFGLOC113507.101|CFGLOC113348|CFGLOC113261|CFGLOC112909)
           joinOn: $1/$2/$3
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
@@ -55,11 +55,11 @@ input:
           joinOn: $1/$2/$3
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 4
 resource_requests:
-  memory: 300M
+  memory: 400M
   cpu: 0.5
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1"}]'
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1.5"}]'
 scheduling_spec:
   node_selector: 
     cloud.google.com/machine-family: n2d

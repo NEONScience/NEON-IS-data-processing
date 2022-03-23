@@ -4,28 +4,30 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/padded_timeseries_analyzer:12
+  image: quay.io/battelleecology/padded_timeseries_analyzer:15
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app
+  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
-parallelism_spec:
-  constant: '1'
-output_branch: master
-resource_requests:
-  memory: 64M
 input:
   pfs:
     name: DATA_PATH
     repo: parQuantumLine_timeseries_padder
     branch: master
     glob: /li191r/*/*/*
-standby: true
-cache_size: 64M
-max_queue_size: '1'
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 600M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"400M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true
 

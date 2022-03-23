@@ -29,7 +29,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
@@ -45,9 +45,9 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 4
 resource_requests:
-  memory: 1.5G
-  cpu: 0.5
+  memory: 200M
+  cpu: 0.2
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 autoscaling: true
