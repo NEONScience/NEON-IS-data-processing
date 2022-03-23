@@ -27,7 +27,7 @@ output_branch: master
 parallelism_spec:
   constant: 4
 resource_requests:
-  memory: 100M
+  memory: 200M
   cpu: 0.1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"200M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 autoscaling: true
