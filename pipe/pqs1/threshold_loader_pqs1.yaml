@@ -20,7 +20,7 @@ transform:
 input:
   pfs:
     repo: cron_daily_pqs1_tick
-    glob: /
+    glob: /*
     empty_files: true
 resource_requests:
   memory: 120M
