@@ -19,7 +19,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader
+      repo: location_loader_prt
       glob: /prt/*
   - pfs:
       name: FILE_YEAR

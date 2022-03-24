@@ -28,15 +28,15 @@ input:
       glob: /prt/*/*/*
   - pfs:
       name: FILE_SCHEMA_DATA
-      repo: avro_schemas
+      repo: avro_schemas_prt
       glob: /dp0p/prt_calibrated.avsc
   - pfs:
       name: FILE_SCHEMA_FLAGS
-      repo: avro_schemas
+      repo: avro_schemas_prt
       glob: /dp0p/flags_calibration.avsc
   - pfs:
       name: FILE_UNCERTAINTY_FDAS
-      repo: uncertainty_fdas
+      repo: uncertainty_fdas_prt
       glob: /fdas_calibration_uncertainty_general.json
 parallelism_spec:
   constant: 4

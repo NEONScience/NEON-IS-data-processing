@@ -31,7 +31,7 @@ input:
   cross:
   - pfs:
       name: EMPTY_FILE_PATH
-      repo: empty_files
+      repo: empty_files_prt
       glob: /prt
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - union:

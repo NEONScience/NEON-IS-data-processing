@@ -20,7 +20,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: calibration
+      repo: calibration_prt
       glob: /prt/*
   - pfs:
       name: FILE_YEAR

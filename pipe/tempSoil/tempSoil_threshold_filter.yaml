@@ -17,7 +17,7 @@ transform:
 input:
   pfs:
     name: THRESHOLD
-    repo: threshold
+    repo: threshold_prt
     glob: /
 resource_requests:
   memory: 20M

@@ -26,7 +26,7 @@ input:
   # Currently the input can be set to an low-frequency cron for development.
   # In production this should be linked to the daily ingest trigger
   pfs: 
-    repo: cron_daily_tick
+    repo: cron_daily_prt_tick
     glob: /*
     empty_files: true
 resource_requests:
