@@ -17,7 +17,7 @@
       "GrpQfBeta1=staPres:nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF",
       "GrpQfBetaIgnr1=staPres:nullQF|gapQF"
       ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.16",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.17",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "INFO"
