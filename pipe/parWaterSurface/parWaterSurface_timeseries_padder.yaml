@@ -16,7 +16,6 @@ transform:
     LOG_LEVEL: INFO
     PAD_DIR: data
     RELATIVE_PATH_INDEX: '3'
-output_branch: master
 input:
   pfs:
     name: DATA_PATH

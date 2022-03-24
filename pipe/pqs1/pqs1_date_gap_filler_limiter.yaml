@@ -27,7 +27,7 @@ input:
   # In production this should be linked to the daily ingest trigger
   pfs: 
     repo: cron_daily_pqs1_tick
-    glob: /
+    glob: /*
     empty_files: true
 resource_requests:
   memory: 64M

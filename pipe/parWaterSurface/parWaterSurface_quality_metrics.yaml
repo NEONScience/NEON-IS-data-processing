@@ -29,7 +29,7 @@ input:
       glob: /pqs1/*/*/*
   - pfs:
       name: FILE_SCHEMA_QM
-      repo: avro_schemas
+      repo: avro_schemas_pqs1
       glob: /dp01/parWaterSurface_dp01_quality_metrics.avsc
 parallelism_spec:
   constant: 1

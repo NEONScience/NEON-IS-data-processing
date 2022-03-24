@@ -30,4 +30,3 @@ scheduling_spec:
   node_selector: 
     cloud.google.com/machine-family: n2d
 autoscaling: true
-

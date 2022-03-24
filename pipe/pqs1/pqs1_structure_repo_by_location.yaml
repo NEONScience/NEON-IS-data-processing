@@ -14,6 +14,7 @@ transform:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   pfs:
     name: DIR_IN
