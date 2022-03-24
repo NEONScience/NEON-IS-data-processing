@@ -29,7 +29,7 @@ input:
       glob: /li191r/*/*/*
   - pfs:
       name: FILE_SCHEMA_QM
-      repo: avro_schemas
+      repo: avro_schemas_li191r
       glob: /dp01/parQuantumLine_dp01_quality_metrics.avsc
 parallelism_spec:
   constant: 1

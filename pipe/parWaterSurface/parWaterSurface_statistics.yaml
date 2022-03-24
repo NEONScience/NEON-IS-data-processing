@@ -24,7 +24,7 @@ input:
       glob: /pqs1/*/*/*
   - pfs:
       name: FILE_SCHEMA_STATS
-      repo: avro_schemas
+      repo: avro_schemas_pqs1
       glob: /dp01/parWaterSurface_dp01_stats.avsc
 parallelism_spec:
   constant: 1
