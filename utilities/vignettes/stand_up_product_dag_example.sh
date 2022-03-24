@@ -1,8 +1,8 @@
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir'
-source_type='tchain'
-product='tempSpecificDepthLakes'
+source_type='pqs1'
+product='parWaterSurface'
 
 # Define paths based on base paths and product information above 
 spec_path_l0=$git_path/pipe/l0_data_loader
