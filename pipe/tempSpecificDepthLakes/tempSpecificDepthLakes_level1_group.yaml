@@ -1,10 +1,9 @@
 ---
 pipeline:
   name: tempSpecificDepthLakes_level1_group
-
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:10
+  image: quay.io/battelleecology/filter_joiner:11
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -48,39 +47,43 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
       name: QUALITY_PATH
       repo: tempSpecificDepthLakes_quality_metrics
-      glob: "/tchain/*/(*)/(*)/(*)/quality_metrics"
+      glob: "/tchain/(*)/(*)/(*)"
       joinOn: "$1/$2/$3" # month day and CFGLOC
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: tempSpecificDepthLakes_statistics
-      glob: "/tchain/*/(*)/(*)/(*)/stats"
+      glob: "/tchain/(*)/(*)/(*)"
       joinOn: "$1/$2/$3" # month day and CFGLOC
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: INST_STATISTICS_PATH
-      repo: tempSpecificDepthLakes_inst_quality_metrics
-      glob: "/tchain/*/(*)/(*)/(*)/quality_metrics"
+      repo: tempSpecificDepthLakes_qm_instantaneous
+      glob: "/tchain/(*)/(*)/(*)"
       joinOn: "$1/$2/$3" # month day and CFGLOC
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: INST_DATA_PATH
       repo: tempSpecificDepthLakes_stats_instantaneous
-      glob: "/tchain/*/(*)/(*)/(*)/stats"
+      glob: "/tchain/(*)/(*)/(*)"
       joinOn: "$1/$2/$3" # month day and CFGLOC
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: LOCATION_PATH
-      repo: tempSpecificDepthLakes_locations
-      glob: "/tchain/*/(*)/(*)/(*)/location"
+      repo: tempSpecificDepthLakes_padded_timeseries_analyzer
+      glob: "/tchain/(*)/(*)/(*)"
       joinOn: "$1/$2/$3" # month day and CFGLOC
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: "1"
-enable_stats: false
-standby: true
+  constant: 1
+resource_requests:
+  memory: 200M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
+autoscaling: true

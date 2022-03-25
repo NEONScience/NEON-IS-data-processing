@@ -4,8 +4,8 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - "/flow.thsh.filt.R"
-  - DirIn=$threshold
+  - /flow.thsh.filt.R
+  - DirIn=$THRESHOLD
   - DirOut=/pfs/out
   - Term=depth0WaterTemp|depth1WaterTemp|depth2WaterTemp|depth3WaterTemp|depth4WaterTemp|depth5WaterTemp|depth6WaterTemp|depth7WaterTemp|depth8WaterTemp|depth9WaterTemp|depth10WaterTemp
   - Ctxt=water-profile|buoy
@@ -16,10 +16,14 @@ transform:
     LOG_LEVEL: INFO
 input:
   pfs:
-    repo: threshold
-    glob: "/"
-enable_stats: false
-standby: true
+    repo: threshold_tchain
+    name: THRESHOLD
+    glob: /
 resource_requests:
-  memory: 13M
-  cpu: 0.01
+  memory: 20M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"200M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.05"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true

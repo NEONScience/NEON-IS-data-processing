@@ -1,0 +1,12 @@
+---
+pipeline:
+  name: cron_daily_tchain
+transform:
+  cmd: ["/bin/bash"]
+input:
+  cron:
+    name: tick
+    spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+    overwrite: true
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"64M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+autoscaling: true
