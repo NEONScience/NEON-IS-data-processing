@@ -23,7 +23,6 @@ input:
     name: IN_PATH
     repo: data_source_ptb330a_site
     glob: /ptb330a/*/*/*
-    lazy: false
 output_branch: master
 parallelism_spec:
   constant: 5

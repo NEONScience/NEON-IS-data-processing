@@ -19,17 +19,19 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader
+      repo: location_loader_ptb330a
       glob: /ptb330a/*
   - pfs:
       name: FILE_YEAR
       repo: data_source_ptb330a_list_years
       glob: /data_years.txt
-enable_stats: false
-standby: true
-resource_requests:
-  memory: 200M
-  cpu: 1
 parallelism_spec:
-  constant: '8'
-
+  constant: 4
+resource_requests:
+  memory: 300M
+  cpu: 1.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"100M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true
