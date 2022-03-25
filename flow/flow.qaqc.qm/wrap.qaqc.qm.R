@@ -203,6 +203,8 @@
 #       forcing flag values based on other flag values prior to QM computations
 #       specifying separately the flags that feed into each alpha QM and beta QM
 #       forcing the betaQF of a record to 0 based on flag values
+#   Cove Sturtevant (2022-03-24)
+#     Bug fix causing the leading zeros in the aggregation interval to be dropped from the output filenames
 ##############################################################################################
 wrap.qaqc.qm <- function(DirIn,
                          DirOutBase,
@@ -401,7 +403,14 @@ wrap.qaqc.qm <- function(DirIn,
       base::class(rpt[[idxQfFinl]]) <- "integer" # Make the final quality flags integer class
     }
     fileQmOutSplt <- base::strsplit(utils::tail(fileQf,1),'[_]')[[1]] # Separate underscore-delimited components of the file name
-    fileQmOutSplt[base::length(fileQmOutSplt)] <- base::paste(base::paste('qualityMetrics',WndwAgr[idxWndwAgr],sep='_'),utils::tail(x=base::strsplit(utils::tail(x=fileQmOutSplt,n=1),'[.]')[[1]],n=-1),sep='.') # Replace last component, but try to keep the extension
+    tmi <- base::gsub(
+            pattern=' ',
+            replacement='0',
+            x=base::format(
+              base::as.character(WndwAgr[idxWndwAgr]),
+              width=3,
+              justify='right'))
+    fileQmOutSplt[base::length(fileQmOutSplt)] <- base::paste(base::paste('qualityMetrics',tmi,sep='_'),utils::tail(x=base::strsplit(utils::tail(x=fileQmOutSplt,n=1),'[.]')[[1]],n=-1),sep='.') # Replace last component, but try to keep the extension
     fileQmOut <- base::paste(fileQmOutSplt,collapse='_')
     NameFileOutQm <- base::paste0(dirOutQm,'/',fileQmOut)
     

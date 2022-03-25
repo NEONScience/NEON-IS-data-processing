@@ -1,20 +1,20 @@
 ---
 pipeline:
-  name: tempSurfacewater_quality_metrics
+  name: pressureAir_quality_metrics
 transform:
   cmd:
   - Rscript
-  - "/flow.qaqc.qm.R"
+  - /flow.qaqc.qm.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileSchmQm=$FILE_SCHEMA_QM
-  - WndwAgr=005|030
+  - WndwAgr=001|030
   - WghtAlphBeta=2|1
   - Thsh=0.2
-  - GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF
-  - GrpQfBeta1=:nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF
-  - GrpQfBetaIgnr1=:nullQF|gapQF
+  - GrpQfAlph1=staPres:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF
+  - GrpQfBeta1=staPres:nullQF|gapQF|rangeQF|stepQF|spikeQF|persistenceQF
+  - GrpQfBetaIgnr1=staPres:nullQF|gapQF
   image: quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.17
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -24,12 +24,12 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: tempSurfacewater_qaqc_flags_group
-      glob: "/prt/*/*/*"
+      repo: pressureAir_qaqc_flags_group
+      glob: /ptb330a/*/*/*/
   - pfs:
       name: FILE_SCHEMA_QM
       repo: avro_schemas
-      glob: "/dp01/tempSurfacewater_dp01_quality_metrics.avsc"
+      glob: /dp01/pressureAir_dp01_quality_metrics.avsc
 enable_stats: false
 standby: true
 parallelism_spec:
@@ -37,3 +37,4 @@ parallelism_spec:
 resource_requests:
   memory: 200Mi
   cpu: 0
+
