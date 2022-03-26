@@ -9,7 +9,7 @@ transform:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app
+  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO

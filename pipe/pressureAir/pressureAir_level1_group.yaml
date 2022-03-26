@@ -21,12 +21,6 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
-            name: LOCATIONS_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/LOCATIONS_PATH/ptb330a/*/*/*/*/location/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
-        - path:
             name: STATISTICS_PATH
             # Filter for data directory
             glob_pattern: /pfs/STATISTICS_PATH/ptb330a/*/*/*/*/stats/**
@@ -35,6 +29,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
@@ -42,19 +37,13 @@ input:
       repo: pressureAir_quality_metrics
       glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: pressureAir_statistics
       glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
-  - pfs:
-      name: LOCATIONS_PATH
-      repo: pressureAir_locations
-      glob: /ptb330a/(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 1
 resource_requests:

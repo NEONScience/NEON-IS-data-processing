@@ -10,27 +10,30 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileThsh=$FILE_THRESHOLDS
   - TermCtxt1=barometricPressure|barometric-pressure
-  - DirSubCopy=location
+  - DirSubCopy=location|data|uncertainty_data|flags
   image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.18
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: pressureAir_locations
+      repo: pressureAir_regularized
       glob: /ptb330a/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
       repo: pressureAir_threshold_filter
       glob: /thresholds.json
-enable_stats: false
-standby: true
-resource_requests:
-  memory: 12M
-  cpu: 0.05
 parallelism_spec:
   constant: 1
-
+resource_requests:
+  memory: 20M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"24M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true

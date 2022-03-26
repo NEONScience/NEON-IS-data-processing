@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/timeseries_padder:34
+  image: quay.io/battelleecology/timeseries_padder:36
   cmd:
   - /bin/bash
   stdin:
@@ -15,18 +15,20 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     PAD_DIR: data
-parallelism_spec:
-  constant: '1'
-output_branch: master
-resource_requests:
-  memory: 64M
+    RELATIVE_PATH_INDEX: '3'
 input:
   pfs:
     name: DATA_PATH
-    repo: pressureAir_threshold_regularized_group
+    repo: pressureAir_threshold_select
     branch: master
     glob: /ptb330a/*/*/*
-standby: true
-cache_size: 64M
-max_queue_size: '1'
-
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 400M
+  cpu: 0.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2.5G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.8"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true
