@@ -1,0 +1,27 @@
+---
+pipeline:
+  name: pressureAir_egress
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/egress:8
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m egress.egress.app --outputname pressureAir --dateindex 2 --locindex
+    1
+  env:
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+output_branch: master
+input:
+  pfs:
+    name: DATA_PATH
+    repo: pressureAir_level1_group
+    branch: master
+    glob: /ptb330a/*/*/*
+egress:
+  URL: s3://int-omnipipe
+standby: true
+

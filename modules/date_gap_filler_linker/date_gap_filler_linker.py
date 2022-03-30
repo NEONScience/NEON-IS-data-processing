@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import structlog
+import shutil
 from pathlib import Path
 
 log = structlog.get_logger()
@@ -15,7 +16,7 @@ class DataGapFillerLinker:
     """
 
     def __init__(self, in_path: Path,  out_path: Path, relative_path_index: int,
-                 location_index: int, empty_file_suffix: str) -> None:
+                 location_index: int, empty_file_suffix: str, symlink: bool) -> None:
         """
         Constructor.
 
@@ -24,16 +25,19 @@ class DataGapFillerLinker:
         :param relative_path_index: Trim input paths up to this index.
         :param location_index: The input path location index.
         :param empty_file_suffix: The file extension for empty files.
+        :param symlink: Use a symlink to place files in the output (True) or use a straight copy (False) 
         """
         self.in_path = in_path
         self.out_path = out_path
         self.relative_path_index = relative_path_index
         self.location_index = location_index
         self.empty_file_suffix = empty_file_suffix
+        self.symlink = symlink
 
     def link_files(self) -> None:
         """Link input files and directories into the output path."""
         empty_file_glob_pattern = f'**/*{self.empty_file_suffix}'
+        symlink = self.symlink
         for empty_file_path in self.in_path.glob(empty_file_glob_pattern):
             location_path_parts = empty_file_path.parts[:self.location_index + 1]
             output_location_path = Path(self.out_path, *location_path_parts[self.relative_path_index:])
@@ -62,13 +66,21 @@ class DataGapFillerLinker:
                                 dir_path.mkdir(parents=True, exist_ok=True)
                                 link_path = Path(dir_path, path.stem)  # trim the empty file suffix
                                 if not link_path.exists():
-                                    log.debug(f'linking empty file {path} to {link_path}')
-                                    link_path.symlink_to(path)
+                                    if symlink:
+                                        log.debug(f'linking empty file {path} to {link_path}')
+                                        link_path.symlink_to(path)
+                                    else:
+                                        log.debug(f'Copying empty file {path} to {link_path}.')
+                                        shutil.copy2(path,link_path)
                         # link the data file
                         else:
                             dir_path = Path(self.out_path, *parts[self.relative_path_index:len(parts) - 1])
                             dir_path.mkdir(parents=True, exist_ok=True)
                             link_path = Path(dir_path, path.name)
                             if not link_path.exists():
-                                log.debug(f'linking data file {path} to {link_path}')
-                                link_path.symlink_to(path)
+                                if symlink:
+                                    log.debug(f'linking data file {path} to {link_path}')
+                                    link_path.symlink_to(path)
+                                else:
+                                    log.debug(f'Copying data file {path} to {link_path}.')
+                                    shutil.copy2(path,link_path)

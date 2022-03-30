@@ -1,0 +1,77 @@
+---
+pipeline:
+  name: tempSpecificDepthLakes_qm_instantaneous
+transform:
+  cmd:
+  - Rscript
+  - /flow.qaqc.qm.dp0p.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - Tmi=001
+  - VarTimeBgn=timeWndwBgn
+  - VarTimeEnd=timeWndwEnd
+  - GrpQfAlph1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempSpikeQF
+  - GrpQfBeta1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempSpikeQF
+  - GrpQfBetaIgnr1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF
+  - GrpQfAlph2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempSpikeQF
+  - GrpQfBeta2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF|depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempSpikeQF
+  - GrpQfBetaIgnr2=depth1WaterTemp:depth1WaterTempNullQF|depth1WaterTempGapQF
+  - GrpQfAlph3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempSpikeQF
+  - GrpQfBeta3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF|depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempSpikeQF
+  - GrpQfBetaIgnr3=depth2WaterTemp:depth2WaterTempNullQF|depth2WaterTempGapQF
+  - GrpQfAlph4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF|depth3WaterTempSpikeQF
+  - GrpQfBeta4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF|depth3WaterTempRangeQF|depth3WaterTempStepQF|depth3WaterTempSpikeQF
+  - GrpQfBetaIgnr4=depth3WaterTemp:depth3WaterTempNullQF|depth3WaterTempGapQF
+  - GrpQfAlph5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF|depth4WaterTempSpikeQF
+  - GrpQfBeta5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF|depth4WaterTempRangeQF|depth4WaterTempStepQF|depth4WaterTempSpikeQF
+  - GrpQfBetaIgnr5=depth4WaterTemp:depth4WaterTempNullQF|depth4WaterTempGapQF
+  - GrpQfAlph6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF|depth5WaterTempSpikeQF
+  - GrpQfBeta6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF|depth5WaterTempRangeQF|depth5WaterTempStepQF|depth5WaterTempSpikeQF
+  - GrpQfBetaIgnr6=depth5WaterTemp:depth5WaterTempNullQF|depth5WaterTempGapQF
+  - GrpQfAlph7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempSpikeQF
+  - GrpQfBeta7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF|depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempSpikeQF
+  - GrpQfBetaIgnr7=depth6WaterTemp:depth6WaterTempNullQF|depth6WaterTempGapQF
+  - GrpQfAlph8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempSpikeQF
+  - GrpQfBeta8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF|depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempSpikeQF
+  - GrpQfBetaIgnr8=depth7WaterTemp:depth7WaterTempNullQF|depth7WaterTempGapQF
+  - GrpQfAlph9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempSpikeQF
+  - GrpQfBeta9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF|depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempSpikeQF
+  - GrpQfBetaIgnr9=depth8WaterTemp:depth8WaterTempNullQF|depth8WaterTempGapQF
+  - GrpQfAlph10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempSpikeQF
+  - GrpQfBeta10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempSpikeQF
+  - GrpQfBetaIgnr10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF
+  - GrpQfAlph11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempSpikeQF
+  - GrpQfBeta11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempSpikeQF
+  - GrpQfBetaIgnr11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF
+  - QfForc1=depth0WaterTempNullQF:1:depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempValidCalQF|depth0WaterTempSpikeQF:-1
+  - QfForc2=depth1WaterTempNullQF:1:depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempValidCalQF|depth1WaterTempSpikeQF:-1
+  - QfForc3=depth2WaterTempNullQF:1:depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempValidCalQF|depth2WaterTempSpikeQF:-1
+  - QfForc4=depth3WaterTempNullQF:1:depth3WaterTempRangeQF|depth3WaterTempStepQF|depth3WaterTempValidCalQF|depth3WaterTempSpikeQF:-1
+  - QfForc5=depth4WaterTempNullQF:1:depth4WaterTempRangeQF|depth4WaterTempStepQF|depth4WaterTempValidCalQF|depth4WaterTempSpikeQF:-1
+  - QfForc6=depth5WaterTempNullQF:1:depth5WaterTempRangeQF|depth5WaterTempStepQF|depth5WaterTempValidCalQF|depth5WaterTempSpikeQF:-1
+  - QfForc7=depth6WaterTempNullQF:1:depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempValidCalQF|depth6WaterTempSpikeQF:-1
+  - QfForc8=depth7WaterTempNullQF:1:depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempValidCalQF|depth7WaterTempSpikeQF:-1
+  - QfForc9=depth8WaterTempNullQF:1:depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempValidCalQF|depth8WaterTempSpikeQF:-1
+  - QfForc10=depth9WaterTempNullQF:1:depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempValidCalQF|depth9WaterTempSpikeQF:-1
+  - QfForc11=depth10WaterTempNullQF:1:depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempValidCalQF|depth10WaterTempSpikeQF:-1
+  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.13
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  pfs:
+    name: DIR_IN
+    repo: tempSpecificDepthLakes_qaqc_plausibility
+    glob: /tchain/*/*/*
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 300M
+  cpu: 1.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"200M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true

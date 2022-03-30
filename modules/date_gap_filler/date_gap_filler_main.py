@@ -31,6 +31,15 @@ def main() -> None:
     location_index: int = env.int('LOCATION_INDEX')
     empty_file_type_index: int = env.int('EMPTY_FILE_TYPE_INDEX')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
+    link_type: str = env.str('LINK_TYPE')
+
+    if link_type == 'SYMLINK':
+        symlink=True
+    elif link_type == 'COPY':
+        symlink=False
+    else:
+        raise ValueError('LINK_TYPE must be either "SYMLINK" or "COPY"')
+
 
     common.log_config.configure(log_level)
 
@@ -52,7 +61,8 @@ def main() -> None:
                                  location_year_index=location_year_index,
                                  location_month_index=location_month_index,
                                  location_day_index=location_day_index,
-                                 location_index=location_index)
+                                 location_index=location_index,
+                                 symlink=symlink)
     date_gap_filler = DateGapFiller(config)
     date_gap_filler.fill_gaps()
 

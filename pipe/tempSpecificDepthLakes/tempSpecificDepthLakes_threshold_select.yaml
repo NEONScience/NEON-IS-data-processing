@@ -4,7 +4,7 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - "/flow.thsh.slct.R"
+  - /flow.thsh.slct.R
   - DirIn=$REPO_LOCATIONS
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
@@ -20,24 +20,30 @@ transform:
   - TermCtxt9=depth8WaterTemp
   - TermCtxt10=depth9WaterTemp
   - TermCtxt11=depth10WaterTemp
-  - DirSubCopy=location
+  - DirSubCopy=location|data|uncertainty_data|uncertainty_coef|flags
   image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.18
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: tempSpecificDepthLakes_locations
-      glob: "/tchain/*/*/*"
+      repo: tempSpecificDepthLakes_regularized
+      glob: /tchain/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
       repo: tempSpecificDepthLakes_threshold_filter
-      glob: "/thresholds.json"
-enable_stats: false
-standby: true
+      glob: /thresholds.json
+parallelism_spec:
+  constant: 1
 resource_requests:
-  memory: 12M
-  cpu: 0.05
+  memory: 20M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"24M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true

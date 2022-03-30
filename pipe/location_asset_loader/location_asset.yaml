@@ -20,11 +20,11 @@ transform:
 input:
   pfs:
     repo: cron_daily_tick
-    glob: /
+    glob: /*
     empty_files: true
 resource_requests:
-  memory: 200M
-  cpu: 0.1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"64M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+  memory: 100M
+  cpu: 0.05
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"400M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.4"}]'
 autoscaling: true
 

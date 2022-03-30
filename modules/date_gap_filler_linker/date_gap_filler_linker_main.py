@@ -17,10 +17,18 @@ def main() -> None:
     relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     location_index: int = env.int('LOCATION_INDEX')
     empty_file_suffix: str = env.str('EMPTY_FILE_SUFFIX')
+    link_type: str = env.str('LINK_TYPE')
+    
+    if link_type == 'SYMLINK':
+        symlink=True
+    elif link_type == 'COPY':
+        symlink=False
+    else:
+        raise ValueError('LINK_TYPE must be either "SYMLINK" or "COPY"')
 
     log_config.configure(log_level)
 
-    linker = DataGapFillerLinker(in_path, out_path, relative_path_index, location_index, empty_file_suffix)
+    linker = DataGapFillerLinker(in_path, out_path, relative_path_index, location_index, empty_file_suffix, symlink=symlink)
     linker.link_files()
 
 

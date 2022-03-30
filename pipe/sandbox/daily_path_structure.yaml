@@ -12,6 +12,7 @@ transform:
   - "for d in $(seq $(date -u +%s -d $START_DATE) +86400 $(date -u +%s -d $END_DATE)) ; do"
   - "date_path=$(date -u +%Y/%m/%d -d @$d)"
   - "echo $OUT_PATH/$date_path"
+  - "touch $OUT_PATH/$date_path/empty"
   - "mkdir -p $OUT_PATH/$date_path"
   - "done"
   env:

@@ -2,7 +2,6 @@
 pipeline:
   name: parQuantumLine_statistics
 transform:
-  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.21
   cmd:
   - Rscript
   - /flow.stat.basc.R
@@ -11,15 +10,12 @@ transform:
   - FileSchmStat=$FILE_SCHEMA_STATS
   - WndwAgr=001|030
   - TermStat1=linePAR:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.fdas.volt)|skewness|kurtosis
-  env:
-    LOG_LEVEL: INFO
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.21
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-parallelism_spec:
-  constant: '1'
-output_branch: master
-resource_requests:
-  memory: 200Mi
+  env:
+    LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
@@ -29,7 +25,16 @@ input:
       glob: "/li191r/*/*/*"
   - pfs:
       name: FILE_SCHEMA_STATS
-      repo: avro_schemas
+      repo: avro_schemas_li191r
       branch: master
       glob: "/dp01/parQuantumLine_dp01_stats.avsc"
-standby: true
+parallelism_spec:
+  constant: 1
+resource_requests: 
+  memory: 400M
+  cpu: 1.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true
