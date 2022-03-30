@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: csat3_date_gap_filler_limiter
+  name: mti300ahrs_date_gap_filler_limiter
 transform:
   image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd: ["/bin/bash"]

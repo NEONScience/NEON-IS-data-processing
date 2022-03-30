@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import math
 
 
 # get bit value from a base10 number
@@ -40,3 +41,6 @@ def umol_to_mol(mole: float) -> float:
 def from_percentage(percent: float) -> float:
     return percent / 100
 
+
+def get_degree_radian(degree: float) -> float:
+    return degree * math.pi / 180
