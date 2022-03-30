@@ -19,7 +19,7 @@ transform:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
-    PARALLELIZATION_INTERNAL: '1'
+    PARALLELIZATION_INTERNAL: '2'
 input:
   cross:
   - pfs:
@@ -41,8 +41,8 @@ input:
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 500M
-  cpu: 1.2
+  memory: 1G
+  cpu: 2.2
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 scheduling_spec:
   node_selector: 

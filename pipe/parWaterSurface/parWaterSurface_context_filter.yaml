@@ -23,7 +23,7 @@ input:
     repo: pqs1_date_gap_filler_linker
     glob: /pqs1/*/*/*
 parallelism_spec:
-  constant: 4
+  constant: 2
 resource_requests:
   memory: 200M
   cpu: 0.1

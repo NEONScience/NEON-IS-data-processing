@@ -8,7 +8,7 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
-  - DirRglr=data|uncertainty_data|flags
+  - DirRglr=data|flags
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
@@ -24,7 +24,7 @@ transform:
 input:
   pfs:
     name: DIR_IN
-    repo: pressureAir_context_filter
+    repo: pqs1_date_gap_filler_linker
     glob: /ptb330a/*/*/*
 parallelism_spec:
   constant: 1

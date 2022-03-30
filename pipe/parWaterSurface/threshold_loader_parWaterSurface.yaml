@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: threshold_prt
+  name: threshold_parWaterSurface
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -19,7 +19,7 @@ transform:
     env_var: DATABASE_URL
 input:
   pfs:
-    repo: cron_daily_prt_tick
+    repo: cron_daily_pqs1_tick
     glob: /*
     empty_files: true
 resource_requests:

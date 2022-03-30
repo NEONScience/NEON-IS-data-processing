@@ -11,7 +11,7 @@
       "#!/bin/bash",
       "echo '---------------------NEW DATUM------------------------'",
       "echo Symlinking $repoIn ...",
-      "ln -s * /pfs/out"
+      "ln -s $repoIn /pfs/out"
     ]
   },
   "input": {

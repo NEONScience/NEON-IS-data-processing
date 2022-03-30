@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: threshold_pqs1
+  name: threshold_pressureAir
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -19,7 +19,7 @@ transform:
     env_var: DATABASE_URL
 input:
   pfs:
-    repo: cron_daily_pqs1_tick
+    repo: cron_daily_ptb330a_tick
     glob: /*
     empty_files: true
 resource_requests:

@@ -60,7 +60,7 @@
   "input": {
     "pfs": {
       "name": "import_trigger",
-      "repo": "import_trigger_prt",
+      "repo": "import_trigger_ptb330a",
       "glob": "/*/*/*"
     }
   },

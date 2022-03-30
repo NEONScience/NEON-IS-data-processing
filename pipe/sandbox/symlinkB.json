@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "symlinkA"
+    "name": "symlinkB"
   },
   "transform": {
     "image":"registry.access.redhat.com/ubi8/ubi-minimal:8.3",
@@ -11,13 +11,13 @@
       "#!/bin/bash",
       "echo '---------------------NEW DATUM------------------------'",
       "echo Symlinking $repoIn ...",
-      "ln -s * /pfs/out"
+      "ln -s $repoIn /pfs/out"
     ]
   },
   "input": {
     "pfs": {
       "name": "repoIn",
-      "repo": "A",
+      "repo": "B",
       "glob": "/*"
     }
   },

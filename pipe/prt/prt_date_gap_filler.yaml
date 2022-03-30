@@ -45,7 +45,7 @@ input:
       - pfs:
           name: LOCATION_PATH
           repo: prt_location_active_dates_assignment
-          glob: /prt/(*)/(*)/(*) # To limit to particular CFGLOCs, enter something like: /prt/(*)/(*)/(*)/(CFGLOC113570|CFGLOC113507.101|CFGLOC113348|CFGLOC113261|CFGLOC112909)
+          glob: /prt/(*)/(*)/(*)/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244) # To limit to particular CFGLOCs, enter something like: /prt/(*)/(*)/(*)/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244)
           joinOn: $1/$2/$3
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:

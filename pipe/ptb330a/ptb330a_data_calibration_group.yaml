@@ -39,7 +39,7 @@ input:
       glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true
-      empty_files: true
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - pfs:
       name: CALIBRATION_PATH
       repo: ptb330a_calibration_assignment
