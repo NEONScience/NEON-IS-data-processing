@@ -54,24 +54,26 @@
       }
     ]
   },
-  "parallelism_spec": {
-    "constant": "4"
-  },
-  "output_branch": "master",
-  "resource_requests": {
-    "memory": "1G",
-    "cpu": 0.7
-  },
   "input": {
     "pfs": {
       "name": "import_trigger",
-      "repo": "import_trigger",
+      "repo": "import_trigger_exo2",
       "glob": "/*/*/*"
     }
   },
-  "cache_size": "64M",
-  "max_queue_size": "1",
-  "enable_stats": false,
-  "standby": true,
-  "pod_patch": "[{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/memory\",\"value\":\"64M\"},{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/cpu\",\"value\":\"0.5\"}]"
+  "output_branch": "master",
+  "parallelism_spec": {
+    "constant": 4
+  },
+  "resource_requests": {
+    "memory": "150M",
+    "cpu": 0.4
+  },
+  "pod_patch": "[{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/memory\",\"value\":\"100M\"},{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/cpu\",\"value\":\"0.05\"}]",
+  "scheduling_spec": {
+      "node_selector": {
+        "cloud.google.com/machine-family": "n2d"
+      }
+  },
+  "autoscaling": true
 }

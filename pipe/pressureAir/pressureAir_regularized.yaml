@@ -29,9 +29,9 @@ input:
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 800M
-  cpu: 1.1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":".2"}]'
+  memory: 400M
+  cpu: 1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"600M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":".2"}]'
 scheduling_spec:
   node_selector: 
     cloud.google.com/machine-family: n2d
