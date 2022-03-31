@@ -4,8 +4,8 @@
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir'
-source_type='pqs1'
-product='parWaterSurface'
+source_type='windobserverii'
+product='pressureAir'
 
 # Define paths based on base paths and product information above 
 spec_path_l0=$git_path/pipe/l0_data_loader
@@ -84,7 +84,7 @@ pachctl create pipeline -f $spec_path_product/$pipe
 done
 
 # Before proceeding...
-# Check that everything has run properly for the few locations and days loaded. 
+# Check that everything has run properly for the few locations and days loaded. Verify the output.
 
 
 # Bump to full scale for a few days

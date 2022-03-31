@@ -17,7 +17,7 @@ class PathGroup(NamedTuple):
 
 
 class LocationGroupPath:
-    """Class adds location context groups to location file paths."""
+    """Class adds location groups to location file paths."""
 
     def __init__(self, config: Config) -> None:
         self.source_path = config.source_path
@@ -65,8 +65,8 @@ class LocationGroupPath:
             for path in path_group.associated_paths:
                 source_type, year, month, day, location, data_type, remainder = self.path_parser.parse(path)
                 for group in path_group.groups:
-                    link_path = Path(self.out_path, source_type, year, month, day,
-                                     group, location, data_type, *remainder)
+                    link_path = Path(self.out_path, year, month, day,
+                                     group, source_type, location, data_type, *remainder)
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                     if not link_path.exists():
                         log.debug(f'file: {path} link: {link_path}')

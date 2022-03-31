@@ -45,7 +45,7 @@ input:
       - pfs:
           name: LOCATION_PATH
           repo: ptb330a_location_active_dates_assignment
-          glob: /ptb330a/(*)/(*)/(*)/(CFGLOC101256|CFGLOC110723|CFGLOC110695|CFGLOC103556|CFGLOC111118) # To limit to particular CFGLOCs, enter something like: /ptb330a/(*)/(*)/(*)/(CFGLOC101256|CFGLOC110723|CFGLOC110695|CFGLOC103556|CFGLOC111118)
+          glob: /ptb330a/(*)/(*)/(*) # To limit to particular CFGLOCs, enter something like: /ptb330a/(*)/(*)/(*)/(CFGLOC101256|CFGLOC110723|CFGLOC110695|CFGLOC103556|CFGLOC111118)
           joinOn: $1/$2/$3
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
@@ -57,9 +57,9 @@ input:
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 200M
-  cpu: 0.3
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1"}]'
+  memory: 150M
+  cpu: 0.5
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"700M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 scheduling_spec:
   node_selector: 
     cloud.google.com/machine-family: n2d
