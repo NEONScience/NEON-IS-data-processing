@@ -3,7 +3,7 @@ pipeline:
   name: tempAirSingle_level1_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:10
+  image: quay.io/battelleecology/filter_joiner:11
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -13,20 +13,22 @@ transform:
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
-            name: REGULARIZED_PATH
+            name: STATISTICS_PATH
             glob_pattern: /pfs/STATISTICS_PATH/**
             # Join on context group (already joined by day below)
             join_indices: [6]
         - path:
-            name: THRESHOLD_PATH
+            name: QUALITY_METRICS_PATH
             glob_pattern: /pfs/QUALITY_METRICS_PATH/**
             # Join on context group (already joined by day below)
             join_indices: [6]
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
@@ -34,14 +36,18 @@ input:
       repo: tempAirSingle_statistics
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: QUALITY_METRICS_PATH
       repo: tempAirSingle_quality_metrics
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: "1"
-enable_stats: false
-standby: true
+  constant: 2
+resource_requests:
+  memory: 1.5G
+  cpu: 0.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1.2"}]'
+autoscaling: true
+

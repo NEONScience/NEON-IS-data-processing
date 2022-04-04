@@ -16,7 +16,7 @@ transform:
 input:
   pfs:
     name: THRESHOLD
-    repo: threshold_li191r
+    repo: threshold_parQuantumLine
     glob: /
 resource_requests:
   memory: 20M

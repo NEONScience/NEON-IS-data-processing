@@ -17,7 +17,7 @@ transform:
 input:
   pfs:
     name: THRESHOLD
-    repo: threshold_ptb330a
+    repo: threshold_pressureAir
     glob: /
 resource_requests:
   memory: 20M

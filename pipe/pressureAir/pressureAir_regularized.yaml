@@ -8,7 +8,7 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
-  - DirRglr=data|uncertainty_data|flags
+  - DirRglr=data|flags
   - MethRglr=CybiEc
   - WndwRglr=Trlg
   - IdxWndw=IdxWndwMin
@@ -24,14 +24,14 @@ transform:
 input:
   pfs:
     name: DIR_IN
-    repo: pressureAir_context_filter
+    repo: ptb330a_date_gap_filler_linker
     glob: /ptb330a/*/*/*
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 800M
-  cpu: 1.1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":".2"}]'
+  memory: 400M
+  cpu: 1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"600M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":".2"}]'
 scheduling_spec:
   node_selector: 
     cloud.google.com/machine-family: n2d

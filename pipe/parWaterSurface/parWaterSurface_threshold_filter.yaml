@@ -17,7 +17,7 @@ transform:
 input:
   pfs:
     name: THRESHOLD
-    repo: threshold_pqs1
+    repo: threshold_parWaterSurface
     glob: /
 resource_requests:
   memory: 20M

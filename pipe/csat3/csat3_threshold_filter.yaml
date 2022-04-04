@@ -8,7 +8,7 @@ transform:
   - DirIn=$threshold
   - DirOut=/pfs/out
   - Term=veloXaxs|veloYaxs|veloZaxs|veloSoni|tempSoni
-  - Ctxt=sonic
+  - Ctxt=3Dwind
   image: quay.io/battelleecology/neon-is-thsh-filt-r:v0.0.10
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret

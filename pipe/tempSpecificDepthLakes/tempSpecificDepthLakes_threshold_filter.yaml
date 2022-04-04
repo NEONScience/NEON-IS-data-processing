@@ -16,7 +16,7 @@ transform:
     LOG_LEVEL: INFO
 input:
   pfs:
-    repo: threshold_tchain
+    repo: threshold_tempSpecificDepthLakes
     name: THRESHOLD
     glob: /
 resource_requests:

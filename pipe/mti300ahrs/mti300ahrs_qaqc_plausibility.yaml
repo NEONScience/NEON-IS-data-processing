@@ -1,0 +1,47 @@
+---
+pipeline:
+  name: mti300ahrs_qaqc_plausibility
+transform:
+  cmd:
+  - Rscript
+  - /flow.qaqc.plau.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileSchmQf=$SCHEMA_FLAGS
+  - TermTest1=accXaxs:range|step|persistence
+  - TermTest2=accYaxs:range|step|persistence
+  - TermTest3=accZaxs:range|step|persistence
+  - TermTest4=accXaxsDiff:range|step|persistence
+  - TermTest5=accYaxsDiff:range|step|persistence
+  - TermTest6=accZaxsDiff:range|step|persistence
+  - TermTest7=avelXaxs:range|step|persistence
+  - TermTest8=avelYaxs:range|step|persistence
+  - TermTest9=avelZaxs:range|step|persistence
+  - TermTest10=angXaxs:range|step|persistence
+  - TermTest11=angYaxs:range|step|persistence
+  - TermTest12=angZaxs:range|step|persistence
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.22
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: DEBUG
+    PARALLELIZATION_INTERNAL: '4'
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: mti300ahrs_padded_timeseries_analyzer
+      glob: /mti300ahrs/*/*/*/*
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: avro_schemas
+      glob: /dp0p/flags_plausibility_mti300ahrs.avsc
+enable_stats: false
+standby: true
+parallelism_spec:
+  constant: '8'
+resource_requests:
+  memory: 2Gi
+  cpu: 1
+

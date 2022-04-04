@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileThsh=$FILE_THRESHOLDS
   - TermCtxt1=barometricPressure|barometric-pressure
-  - DirSubCopy=location|data|uncertainty_data|flags
+  - DirSubCopy=location|data|flags
   image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.18
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -30,9 +30,9 @@ input:
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 20M
-  cpu: 0.1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"24M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
+  memory: 300MM
+  cpu: 1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"300M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
 scheduling_spec:
   node_selector: 
     cloud.google.com/machine-family: n2d
