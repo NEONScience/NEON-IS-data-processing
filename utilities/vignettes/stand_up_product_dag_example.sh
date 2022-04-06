@@ -4,8 +4,8 @@
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir'
-source_type='windobserverii'
-product='pressureAir'
+source_type='pqs1'
+product='parWaterSurface'
 
 # Define paths based on base paths and product information above 
 spec_path_l0=$git_path/pipe/l0_data_loader
@@ -60,6 +60,7 @@ pachctl finish commit uncertainty_fdas_$source_type@master
 # Read in the pipelines (in order) for this source type and stand them up
 # The (ordered) list of pipeline files should be located in the file pipe_list_SOURCETYPE.txt in the 
 # directory of pipeline specs for the source type
+unset pipelines
 pipelines=`cat $spec_path_source_type/pipe_list_$source_type.txt`
 for pipe in $(echo ${pipelines[*]}); do
 echo pachctl create pipeline -f $spec_path_source_type/$pipe
@@ -77,6 +78,7 @@ pachctl stop pipeline cron_daily_$source_type
 # Read in the pipelines (in order) for this product and stand them up
 # The (ordered) list of pipeline files should be located in the file pipe_list_PRODUCT.txt in the 
 # directory of pipeline specs for the data product
+unset pipelines
 pipelines=`cat $spec_path_product/pipe_list_$product.txt`
 for pipe in $(echo ${pipelines[*]}); do
 echo pachctl create pipeline -f $spec_path_product/$pipe
