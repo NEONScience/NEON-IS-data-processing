@@ -59,7 +59,7 @@ def.schm.avro.pars <- function(FileSchm=NULL,
   # Read in the schema file
   if(!base::is.null(FileSchm)){
     
-    Schm <- base::try(base::paste0(base::readLines(FileSchm),collapse=''),silent=true)
+    Schm <- base::try(base::paste0(base::readtext(FileSchm),collapse=''),silent=TRUE)
     if(base::class(Schm) == 'try-error'){
       
       # Generate error and stop execution
