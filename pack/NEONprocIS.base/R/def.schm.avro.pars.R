@@ -13,9 +13,8 @@
 #' @param Schm String. Optional. Json formatted string of the AVRO file schema. One of FileSchm or Schm must 
 #' be provided. If both Schm and FileSchm are provided, Schm will be ignored.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log 
-#' output in addition to standard R error messaging. Defaults to NULL, in which no logger other than 
-#' standard R error messaging will be used.
-
+#' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be 
+#' created for use within this function. 
 
 #' @return A list of:\cr
 #' \code{schmJson}: the avro schema in json format\cr
@@ -44,13 +43,16 @@ def.schm.avro.pars <- function(FileSchm=NULL,
                                log=NULL
 ){
   
+  # Initialize log if not input
+  if(base::is.null(log)){
+    log <- NEONprocIS.base::def.log.init()
+  }
+  
   # Error check
   if(base::is.null(FileSchm) && base::is.null(Schm)){
     # Generate error and stop execution
     msg <- base::paste0('One of FileSchm or Schm must be provided')
-    if(!base::is.null(log)){
-      log$fatal(msg)
-    } 
+    log$fatal(msg)
     stop(msg)
   }
   
@@ -62,9 +64,7 @@ def.schm.avro.pars <- function(FileSchm=NULL,
       
       # Generate error and stop execution
       msg <- base::paste0('Avro schema file ', FileSchm, ' is unreadable. Error text:',attr(Schm,"condition"))
-      if(!base::is.null(log)){
-        log$fatal(msg)
-      } 
+      log$fatal(msg)
       stop(msg)
     }    
   }
