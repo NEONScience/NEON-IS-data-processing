@@ -25,7 +25,7 @@ transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '4'
 input:
   cross:
@@ -35,13 +35,15 @@ input:
       glob: /mti300ahrs/*/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas
+      repo: avro_schemas_mti300ahrs
       glob: /dp0p/flags_plausibility_mti300ahrs.avsc
-enable_stats: false
-standby: true
 parallelism_spec:
-  constant: '8'
+  constant: 8
 resource_requests:
   memory: 2Gi
-  cpu: 1
-
+  cpu: 1.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"400M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
+scheduling_spec:
+  node_selector:
+    cloud.google.com/machine-family: n2d
+autoscaling: true

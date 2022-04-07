@@ -10,8 +10,7 @@ def map_reader() -> Dict:
     temporarily use csv file, will use database query later
     """
     maps = dict()
-    # when running on local, change to ./map.csv; in pipeline, use path_refactor/map.csv
-    with open('./map.csv', mode='r') as f:
+    with open('path_refactor/map.csv', mode='r') as f:
         reader = csv.reader(f)
         header = next(reader)
         maps = {row[0]: row[1] for row in reader}
