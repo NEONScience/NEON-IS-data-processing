@@ -11,8 +11,8 @@ test_that("when fileSchm and schm are both null, throw an exceptionr",
 test_that("when avro schm is pass, return all the elements in the schema",
           {
             FileSchm <- "def.schm.avro.pars/prt_calibrated.avsc"
-            rpt <- try(NEONprocIS.base::def.schm.avro.pars(FileSchm = FileSchm), silent = TRUE)
-            testthat::expect_false((class(rpt)[1] == "try-error"))
+            rpt <- NEONprocIS.base::def.schm.avro.pars(FileSchm = FileSchm)
+#            testthat::expect_false((class(rpt)[1] == "try-error"))
             testthat::expect_true(is.list(rpt))
             expect_true (length(rpt$schmJson) == 1)
             expect_true (length(rpt$schmList) == 5)
