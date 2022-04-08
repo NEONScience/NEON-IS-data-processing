@@ -33,7 +33,7 @@ input:
 parallelism_spec:
   constant: 8
 resource_requests:
-  memory: 2Gi
+  memory: 4Gi
   cpu: 1.2
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"400M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
 scheduling_spec:

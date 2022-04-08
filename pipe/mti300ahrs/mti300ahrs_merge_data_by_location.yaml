@@ -20,11 +20,11 @@ input:
   pfs:
     name: DIR_IN
     repo: mti300ahrs_structure_repo_by_location
-    glob: /mti300ahrs/*/*/*/*
+    glob: /mti300ahrs/*/*/*
 parallelism_spec:
-  constant: 8
+  constant: 1
 resource_requests:
-  memory: 1Gi
+  memory: 5Gi
   cpu: 1.1
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"700M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
 scheduling_spec:
