@@ -29,6 +29,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
@@ -36,14 +37,17 @@ input:
       repo: mti300ahrs_l0p_data
       glob: /mti300ahrs/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: THRESHOLD_PATH
       repo: mti300ahrs_threshold_select
       glob: /mti300ahrs/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: "1"
-enable_stats: false
-standby: true
+  constant: 1
+resource_requests:
+  memory: 200M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
+autoscaling: true

@@ -75,7 +75,7 @@ class L0toL0p:
                         if outputdf.empty:
                             outputdf = get_cal_val_flags(path, self.cal_term_map)
                         else:
-                            outputdf = pd.merge(self.outputdf, get_cal_val_flags(path, self.cal_term_map), how='inner', left_on=['readout_time'], right_on=['readout_time'])
+                            outputdf = pd.merge(outputdf, get_cal_val_flags(path, self.cal_term_map), how='inner', left_on=['readout_time'], right_on=['readout_time'])
                         self.get_combined_qfcal(outputdf)
                     else:
                         outfile = Path(self.out_path, *Path(path).parts[self.relative_path_index:])

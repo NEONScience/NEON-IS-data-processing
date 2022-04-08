@@ -3,7 +3,7 @@ pipeline:
   name: data_source_li7200_path_refactor
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/path_refactor:3
+  image: quay.io/battelleecology/path_refactor:4
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -19,6 +19,9 @@ input:
     repo: data_source_li7200_linkmerge
     glob: /li7200/(*)/(*)/(*)
 parallelism_spec:
-  constant: "1"
-enable_stats: false
-standby: true
+  constant: 1
+resource_requests:
+  memory: 200M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
+autoscaling: true

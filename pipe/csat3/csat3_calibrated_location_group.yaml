@@ -3,7 +3,7 @@ pipeline:
   name: csat3_calibrated_location_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:10
+  image: quay.io/battelleecology/filter_joiner:11
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -30,6 +30,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
@@ -38,14 +39,17 @@ input:
       glob: /csat3/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true
-      empty_files: true
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - pfs:
       name: LOCATION_PATH
       repo: csat3_location_asset_assignment
       glob: /csat3/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: "1"
-enable_stats: false
-standby: true
+  constant: 1
+resource_requests:
+  memory: 200M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"200M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
+autoscaling: true

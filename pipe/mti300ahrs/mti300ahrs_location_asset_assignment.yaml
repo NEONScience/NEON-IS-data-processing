@@ -1,0 +1,37 @@
+---
+pipeline:
+  name: mti300ahrs_location_asset_assignment
+transform:
+  cmd:
+  - Rscript
+  - /flow.loc.asgn.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileYear=$FILE_YEAR
+  - TypeFile=asset
+  image: quay.io/battelleecology/neon-is-loc-asgn-r:v0.0.5
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: location_asset_mti300ahrs
+      glob: /mti300ahrs/*
+  - pfs:
+      name: FILE_YEAR
+      repo: data_source_mti300ahrs_list_years
+      glob: /data_years.txt
+parallelism_spec:
+  constant: 4
+resource_requests:
+  memory: 250M
+  cpu: .7
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"250M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true
