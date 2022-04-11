@@ -18,21 +18,16 @@ transform:
     MONTH_INDEX: '5'
     DAY_INDEX: '6'
     SOURCE_ID_INDEX: '7'
-parallelism_spec:
-  constant: '4'
-output_branch: master
-resource_requests:
-  memory: 200M
-  cpu: 0.5
 input:
   pfs:
     name: IN_PATH
     repo: data_source_csat3_site
     glob: /*/*/*/*
-    lazy: true
-cache_size: 64M
-max_queue_size: '1'
-enable_stats: false
-standby: true
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"64M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
-
+output_branch: master
+parallelism_spec:
+  constant: '4'
+resource_requests:
+  memory: 200M
+  cpu: 0.5
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+autoscaling: true

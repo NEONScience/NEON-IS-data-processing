@@ -27,35 +27,40 @@ transform:
     LOCATION_INDEX: '7'
     EMPTY_FILE_TYPE_INDEX: '4'
     LINK_TYPE: SYMLINK # options are COPY or SYMLINK
-parallelism_spec:
-  constant: '8'
 input:
   cross:
   - pfs:
       name: EMPTY_FILE_PATH
-      repo: empty_files
+      repo: empty_files_mti300ahrs
       glob: /mti300ahrs
-      empty_files: true # Make sure this is false for LINK_TYPE=COPY
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - union:
     - pfs:
         name: DATA_PATH
         repo: mti300ahrs_merge_data_by_location
         glob: /mti300ahrs/(*)/(*)/(*)
         joinOn: $1/$2/$3
-        empty_files: true # Make sure this is false for LINK_TYPE=COPY
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
       - pfs:
           name: LOCATION_PATH
           repo: mti300ahrs_location_active_dates_assignment
           glob: /mti300ahrs/(*)/(*)/(*)/(CFGLOC104242|CFGLOC103630|CFGLOC104713|CFGLOC105211|CFGLOC106586|CFGLOC110682|CFGLOC110995|CFGLOC113253|CFGLOC113734)
           joinOn: $1/$2/$3
-          empty_files: true # Make sure this is false for LINK_TYPE=COPY
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: DATE_LIMITER_PATH
           repo: mti300ahrs_date_gap_filler_limiter
           glob: /(*)/(*)/(*)
           joinOn: $1/$2/$3
           empty_files: true # This can remain true even if LINK_TYPE=COPY
-enable_stats: false
-standby: true
-
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 950M
+  cpu: 1.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"700M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true
