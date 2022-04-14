@@ -15,6 +15,8 @@ class LocationFileParserTest(TestCase):
         self.location_group_file_path = Path('/test-location-group.json')
         actual_location_file_path = Path(os.path.dirname(__file__), 'test-location.json')
         self.fs.add_real_file(actual_location_file_path, target_path=self.location_file_path)
+        actual_location_group_file_path = Path(os.path.dirname(__file__), 'test-location-group.json')
+        self.fs.add_real_file(actual_location_group_file_path, target_path=self.location_group_file_path)
 
     def test_parse_location_file(self):
         (name, active_periods, context) = location_file_parser.parse_location_file(self.location_file_path)
@@ -25,7 +27,8 @@ class LocationFileParserTest(TestCase):
         self.assertTrue(context[0] == 'water-quality-296')
         
     def test_parse_location_group(self):
-        (name, context, group) = location_file_parser.parse_location_file(self.location_group_file_path)
+        (name, active_periods, context) = location_file_parser.parse_location_file(self.location_group_file_path)
         self.assertTrue(name == 'CFGLOC113711')
         self.assertTrue(context[0] == 'aspirated-single')
+        group = location_file_parser.get_group(self.location_group_file_path)
         self.assertTrue(group[0] == 'aspirated-single_PUUM000010')

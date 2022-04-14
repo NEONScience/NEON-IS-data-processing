@@ -18,8 +18,9 @@ class LocationGroupPathTest(TestCase):
         self.group = 'aspirated-triple-'
         self.source_path = Path('/in')
         self.out_path = Path('/out')
-        self.metadata_path = Path('dualfan/2019/05/21')
-        inputs_root = Path(self.source_path, 'repo', self.metadata_path)
+        self.source_type = 'dualfan'
+        self.date_path = Path('2019/05/21')
+        inputs_root = Path(self.source_path, 'repo', self.source_type, self.date_path)
         data_path = Path(inputs_root, self.location, 'data/data.ext')
         locations_path = Path(inputs_root, self.location, 'location/locations.json')
         self.fs.create_file(data_path)
@@ -63,8 +64,8 @@ class LocationGroupPathTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        root_path_1 = Path(self.out_path, self.metadata_path, 'aspirated-triple-224', self.location)
-        root_path_2 = Path(self.out_path, self.metadata_path, 'aspirated-triple-226', self.location)
+        root_path_1 = Path(self.out_path, self.date_path, 'aspirated-triple-224', self.source_type, self.location)
+        root_path_2 = Path(self.out_path, self.date_path, 'aspirated-triple-226', self.source_type, self.location)
         data_path_1 = Path(root_path_1, 'data/data.ext')
         locations_path_1 = Path(root_path_2, 'location/locations.json')
         data_path_2 = Path(root_path_1, 'data/data.ext')
