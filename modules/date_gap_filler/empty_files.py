@@ -34,7 +34,6 @@ def link_empty_file(path: Path, out_path: Path, location: str, year: str, month:
     filename = filename.replace('year', year)
     filename = filename.replace('month', month)
     filename = filename.replace('day', day)
-    filename += '.empty'  # add extension to distinguish from real data files
     link_path = Path(out_path, filename)
     log.debug(f'source: {path}, link: {link_path}')
     link_path.parent.mkdir(parents=True, exist_ok=True)

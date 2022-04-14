@@ -24,7 +24,7 @@ transform:
 input:
   pfs:
     name: DIR_IN
-    repo: tchain_date_gap_filler_linker
+    repo: tchain_date_gap_filler
     glob: /tchain/*/*/*
 parallelism_spec:
   constant: 1

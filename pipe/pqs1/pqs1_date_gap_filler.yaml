@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/date_gap_filler:11
+  image: quay.io/battelleecology/date_gap_filler:12
   cmd:
   - /bin/bash
   stdin:
@@ -34,25 +34,30 @@ input:
       repo: empty_files_pqs1
       glob: /pqs1
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-  - union:
+  - group:
     - pfs:
         name: DATA_PATH
         repo: pqs1_merge_data_by_location
-        glob: /pqs1/(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        # For full-scale daily processing, glob should be /pqs1/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /pqs1/(*/*/*/(CFGLOC100476|CFGLOC100489|CFGLOC100490|CFGLOC100111|CFGLOC100112|CFGLOC101253|CFGLOC112811))
+        glob: /pqs1/(*/*/*/(CFGLOC100476|CFGLOC100489|CFGLOC100490|CFGLOC100111|CFGLOC100112|CFGLOC101253|CFGLOC112811|CFGLOC111132)) 
+        group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
       - pfs:
           name: LOCATION_PATH
           repo: pqs1_location_active_dates_assignment
-          glob: /pqs1/(*)/(*)/(*) # To limit to particular CFGLOCs, enter something like: /pqs1/(*)/(*)/(*)/(CFGLOC100476|CFGLOC100489|CFGLOC100490|CFGLOC100111|CFGLOC100112|CFGLOC101253)
-          joinOn: $1/$2/$3
+          # For full-scale daily processing, glob should be /pqs1/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /pqs1/((*/*/*)/(CFGLOC100476|CFGLOC100489|CFGLOC100490|CFGLOC100111|CFGLOC100112|CFGLOC101253|CFGLOC112811))
+          glob: /pqs1/((*/*/*)/(CFGLOC100476|CFGLOC100489|CFGLOC100490|CFGLOC100111|CFGLOC100112|CFGLOC101253|CFGLOC112811|CFGLOC111132)) 
+          # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
+          joinOn: $2
+          group_by: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: DATE_LIMITER_PATH
           repo: pqs1_date_gap_filler_limiter
-          glob: /(*)/(*)/(*)
-          joinOn: $1/$2/$3
+          glob: /(*/*/*)
+          joinOn: $1
+          group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
   constant: 1

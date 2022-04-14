@@ -24,7 +24,7 @@ transform:
 input:
   pfs:
     name: DIR_IN
-    repo: ptb330a_date_gap_filler_linker
+    repo: ptb330a_date_gap_filler
     glob: /ptb330a/*/*/*
 parallelism_spec:
   constant: 1

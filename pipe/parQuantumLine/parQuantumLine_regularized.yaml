@@ -24,7 +24,7 @@ transform:
 input:
   pfs:
     name: DIR_IN
-    repo: li191r_date_gap_filler_linker
+    repo: li191r_date_gap_filler
     glob: /li191r/*/*/*
 parallelism_spec:
   constant: 1
