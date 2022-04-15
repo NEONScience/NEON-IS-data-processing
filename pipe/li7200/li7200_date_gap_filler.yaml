@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/date_gap_filler:11
+  image: quay.io/battelleecology/date_gap_filler:12
   cmd:
   - /bin/bash
   stdin:
@@ -34,25 +34,30 @@ input:
       repo: empty_files_li7200
       glob: /li7200
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-  - union:
+  - group:
     - pfs:
         name: DATA_PATH
         repo: li7200_merge_data_by_location
-        glob: /li7200/(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        # For full-scale daily processing, glob should be /li7200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li7200/(*/*/*/(CFGLOC103628|CFGLOC104711|CFGLOC105209|CFGLOC106584|CFGLOC110680|CFGLOC109640|CFGLOC110993|CFGLOC113251|CFGLOC113732))
+        glob: /li7200/(*/*/*/(CFGLOC103628|CFGLOC104711|CFGLOC105209|CFGLOC106584|CFGLOC110680|CFGLOC109640|CFGLOC110993|CFGLOC113251|CFGLOC113732)) 
+        group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
       - pfs:
           name: LOCATION_PATH
           repo: li7200_location_active_dates_assignment
-          glob: /li7200/(*)/(*)/(*)/(CFGLOC103628|CFGLOC104711|CFGLOC105209|CFGLOC106584|CFGLOC110680|CFGLOC109640|CFGLOC110993|CFGLOC113251|CFGLOC113732)
-          joinOn: $1/$2/$3
+          # For full-scale daily processing, glob should be /li7200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li7200/((*/*/*)/(CFGLOC103628|CFGLOC104711|CFGLOC105209|CFGLOC106584|CFGLOC110680|CFGLOC109640|CFGLOC110993|CFGLOC113251|CFGLOC113732))
+          glob: /li7200/((*/*/*)/(CFGLOC103628|CFGLOC104711|CFGLOC105209|CFGLOC106584|CFGLOC110680|CFGLOC109640|CFGLOC110993|CFGLOC113251|CFGLOC113732)) 
+          # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
+          joinOn: $2
+          group_by: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: DATE_LIMITER_PATH
           repo: li7200_date_gap_filler_limiter
-          glob: /(*)/(*)/(*)
-          joinOn: $1/$2/$3
+          glob: /(*/*/*)
+          joinOn: $1
+          group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
   constant: 1

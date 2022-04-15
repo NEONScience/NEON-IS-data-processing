@@ -13,7 +13,6 @@ csat3_merge_data_by_location.yaml
 csat3_location_active_dates_assignment.yaml
 csat3_date_gap_filler_limiter.yaml
 csat3_date_gap_filler.yaml
-csat3_date_gap_filler_linker.yaml
 csat3_regularized_data.yaml
 csat3_l0p_data.yaml
 csat3_threshold_filter.yaml
