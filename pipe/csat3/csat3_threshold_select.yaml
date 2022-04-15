@@ -25,7 +25,7 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: csat3_date_gap_filler_linker
+      repo: csat3_date_gap_filler
       glob: /csat3/*/*/*/
   - pfs:
       name: FILE_THRESHOLDS

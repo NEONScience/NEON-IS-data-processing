@@ -32,7 +32,7 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: mti300ahrs_date_gap_filler_linker
+      repo: mti300ahrs_date_gap_filler
       glob: /mti300ahrs/*/*/*/
   - pfs:
       name: FILE_THRESHOLDS

@@ -4,6 +4,7 @@ from pathlib import Path
 from datetime import datetime
 
 import common.log_config
+import structlog
 
 from date_gap_filler.date_gap_filler_config import DateGapFillerConfig
 from date_gap_filler.date_gap_filler import DateGapFiller
@@ -33,15 +34,16 @@ def main() -> None:
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     link_type: str = env.str('LINK_TYPE')
 
+    common.log_config.configure(log_level)
+    log = structlog.get_logger()
+
     if link_type == 'SYMLINK':
         symlink=True
     elif link_type == 'COPY':
         symlink=False
     else:
+        log.fatal('LINK_TYPE must be either "SYMLINK" or "COPY"')
         raise ValueError('LINK_TYPE must be either "SYMLINK" or "COPY"')
-
-
-    common.log_config.configure(log_level)
 
     config = DateGapFillerConfig(data_path=data_path,
                                  location_path=location_path,

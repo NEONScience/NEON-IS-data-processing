@@ -40,7 +40,7 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: li7200_date_gap_filler_linker
+      repo: li7200_date_gap_filler
       glob: /li7200/*/*/*/
   - pfs:
       name: FILE_THRESHOLDS
