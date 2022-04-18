@@ -13,6 +13,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    SOURCE_TYPE: pqs1
   secrets:
   - name: pdr-int-secret
     key: uri
