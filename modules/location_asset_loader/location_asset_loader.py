@@ -26,8 +26,7 @@ def write_files(*, get_assets: Callable[[str], Iterator[Asset]],
         locations: FeatureCollection = get_asset_locations(asset)
         write_file(asset=asset, locations=locations, out_path=out_path)
 
-## check with Rob if source_type: str should be added here too
-def write_file(*, asset: Asset, locations: FeatureCollection, out_path: Path, source_type: str) -> None:
+def write_file(*, asset: Asset, locations: FeatureCollection, out_path: Path) -> None:
     """
     Write a GEOJson file of the asset and its locations.
 
