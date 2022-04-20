@@ -7,9 +7,9 @@ from psycopg2 import extensions
 from data_access.types.asset import Asset
 
 
-def get_assets(connection: extensions.connection) -> Iterator[Asset]:
+def get_assets(connection: extensions.connection, source_type: str) -> Iterator[Asset]:
     """
-    Get assets.
+    Get assets for source_type.
 
     :param connection: A database connection.
     :return: The assets.
@@ -27,10 +27,10 @@ def get_assets(connection: extensions.connection) -> Iterator[Asset]:
          and
              is_asset_definition.sensor_type_name = is_sensor_type.sensor_type_name
          and 
-             is_sensor_type.avro_schema_name is not null
+             is_sensor_type.avro_schema_name = %s
     '''
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql)
+        cursor.execute(sql, [source_type])
         rows = cursor.fetchall()
         for row in rows:
             asset_id = row[0]

@@ -10,9 +10,10 @@ from data_access.types.asset import Asset
 log = structlog.get_logger()
 
 
-def write_files(*, get_assets: Callable[[], Iterator[Asset]],
+def write_files(*, get_assets: Callable[[str], Iterator[Asset]],
                 get_asset_locations: Callable[[Asset], FeatureCollection],
-                out_path: Path) -> None:
+                out_path: Path,
+                source_type: str) -> None:
     """
     Write GEOJson files of assets and their locations.
 
@@ -20,11 +21,10 @@ def write_files(*, get_assets: Callable[[], Iterator[Asset]],
     :param get_asset_locations: Function taking an Asset and returning a FeatureCollection of asset locations.
     :param out_path: Path for writing files.
     """
-    for asset in get_assets():
+    for asset in get_assets(source_type):
         log.debug(f'Processing asset: {asset.id}')
         locations: FeatureCollection = get_asset_locations(asset)
         write_file(asset=asset, locations=locations, out_path=out_path)
-
 
 def write_file(*, asset: Asset, locations: FeatureCollection, out_path: Path) -> None:
     """
