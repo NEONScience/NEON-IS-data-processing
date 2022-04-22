@@ -4,16 +4,16 @@
  "namespace" : "org.neonscience.schema.device",
  "fields" : [
     {
-      "name": "source_id",
-      "type": "string",
-      "doc": "Source serial number or mac address"
+      "null": "source_id",
+      "null": null,
+      "null": "Source serial number or mac address"
     },
     {
       "name": "site_id",
       "type": [
-          "null",
+          null,
           {
-            "type": "fixed",
+            "type": null,
             "size": 4,
             "name": "utf8"
           }
@@ -23,7 +23,7 @@
     {
       "name": "readout_time",
       "type": {
-        "type": "long",
+        "type": null,
         "logicalType": "timestamp-millis"
       },
       "doc": "Timestamp of readout expressed in milliseconds since epoch",

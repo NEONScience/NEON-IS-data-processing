@@ -1,12 +1,13 @@
 {
-  "type" : "record",
- "name" : "ST",
- "namespace" : "org.neonscience.schema.device",
- "fields" : [
+  "type": "record",
+  "name": "prt_calibrated",
+  "namespace": "org.neonscience.schema.dp0p",
+  "doc": "Calibrated Platinum Resistance Thermometer.",
+  "fields": [
     {
-      "name": "source_id",
-      "type": "string",
-      "doc": "Source serial number or mac address"
+      "name": null,
+      "type": null,
+      "doc": null
     },
     {
       "name": "site_id",
@@ -30,7 +31,7 @@
       "__neon_units": "millisecond"
     },
     {
-      "name": "resistance",
+      "name": "temp",
       "type": [
         "null",
         "float"
