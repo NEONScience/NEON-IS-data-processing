@@ -5,7 +5,7 @@
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.qaqc.qm.dp0p.R",
+      "./flow.qaqc.qm.dp0p.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "DirErr=/pfs/out/errored_datums",
@@ -16,7 +16,7 @@
       "GrpQfBetaIgnr1=fDOM:fDOMNullQF|sensorNAQF",
       "Tmi=100"
     ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v0.0.13",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v1.0.0",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

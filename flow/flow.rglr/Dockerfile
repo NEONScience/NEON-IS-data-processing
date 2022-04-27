@@ -2,13 +2,10 @@
 
 # Start with the neon-is-base-r image. 
 # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base
-#FROM quay.io/battelleecology/neon-is-base-r:v0.0.68
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.68 as intermediate
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.2 as intermediate
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
-
-
 
 
 # Install eddy4R.base from development branch (only until merged into open source version) 
@@ -24,24 +21,27 @@ ENV GITHUB_PAT=$auth_token
 RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
 
 # Now make the final build, which will leave behind our access token
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.68
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.2
 
 # copy the eddy4R.base package from the previous image
 COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
-
-
-
-
-
 
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Install the eddy4R.base package, including dependencies (usually this is done through renv.lock file when pulling from public repo - comment this line)
-#RUN R -e 'devtools::install("/pack/eddy4R.base",dependencies=c(NA, TRUE)[2],repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))'
-RUN R -e 'devtools::install("/pack/eddy4R.base",dependencies=FALSE,repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))'
+RUN R -e 'renv::install("/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
 
-# Copy in regularization workflow
-COPY ./flow.rglr.R /flow.rglr.R
-COPY ./wrap.rglr.R /wrap.rglr.R
+# Create app user
+RUN groupadd app && \
+    useradd app -g app
+WORKDIR /home/app
+
+# Copy in application code
+COPY ./flow.rglr.R .
+COPY ./wrap.rglr.R .
+
+# Run as app user
+RUN chown app:app -R /home/app
+USER app

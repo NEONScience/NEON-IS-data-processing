@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - fDOM Temperature and Absorbance Corrections for Water Quality
 
 # Start with the neon-is-base-r image. 
-FROM quay.io/battelleecology/neon-is-pack-wq-r:v0.0.15
+FROM quay.io/battelleecology/neon-is-pack-wq-r:v1.0.0
 
 # maintainer handle
 MAINTAINER "Kaelin Cawley" kcawley@battelleecology.org
@@ -11,5 +11,14 @@ MAINTAINER "Kaelin Cawley" kcawley@battelleecology.org
 COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
-# Copy in fDOM correction workflow
-COPY ./flow.wq.fdom.corr.R /flow.wq.fdom.corr.R
+# Create app user
+RUN groupadd app && \
+    useradd app -g app
+WORKDIR /home/app
+
+# Copy in application code
+COPY ./flow.wq.fdom.corr.R .
+
+# Run as app user
+RUN chown app:app -R /home/app
+USER app

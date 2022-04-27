@@ -54,15 +54,14 @@ def.wq.abs.corr <-
     
     #Read in all SUNA data in the folder since it's padded
     sunav2DataList <-
-      try(base::lapply(
+      base::lapply(
         sunav2Filenames,
         NEONprocIS.base::def.read.parq,
         log = log
-      ),
-      silent = FALSE)
+      )
     sunav2Data <-
-      try(do.call("rbind", sunav2DataList), silent = FALSE)
-    
+      dplyr::bind_rows(sunav2DataList)
+
     #Clean up NA SUNA data
     sunav2Data <- sunav2Data[!is.na(sunav2Data$header_light_frame), ]
     

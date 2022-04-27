@@ -1,7 +1,7 @@
-# Dockerfile for NEON IS Data Processing - Location Filter
+# Dockerfile for NEON IS Data Processing - Water Quality Sensor NA test 
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v0.0.68
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.2
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -11,5 +11,15 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
-# Copy in calibration filter workflow
-COPY ./flow.qaqc.wq.sens.na.R /flow.qaqc.wq.sens.na.R
+# Create app user
+RUN groupadd app && \
+    useradd app -g app
+WORKDIR /home/app
+
+# Copy in application code
+COPY ./flow.qaqc.wq.sens.na.R .
+
+# Run as app user
+RUN chown app:app -R /home/app
+USER app
+
