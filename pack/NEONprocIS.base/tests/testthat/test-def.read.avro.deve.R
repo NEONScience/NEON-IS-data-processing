@@ -88,12 +88,12 @@ test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file"
               
               # Sad path 2: 
               cat("\n |=================================================================================|")
-              cat("\n  Test 3 - negative: ")
+              cat("\n  Test 4 - negative: ")
               cat("\n |=================================================================================|\n")
 
-              nameFile <- file.path(workingDirPath, "testdata/weather.avro")
-              rpt <- def.read.avro.deve(NameFile = nameFile, NameLib = nameLib)
-              expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+              nameFile <- file.path(workingDirPath, "testdata/weather_type_null.avro")
+              rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib), silent = TRUE)
+  #            expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
 
             }
           })
