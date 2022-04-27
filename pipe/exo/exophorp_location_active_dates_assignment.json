@@ -5,7 +5,7 @@
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.loc.asgn.R",
+      "./flow.loc.asgn.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "DirErr=/pfs/out/errored_datums",

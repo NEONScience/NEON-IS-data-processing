@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Basic statistics module
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v0.0.7
+FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.0.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -10,5 +10,15 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
-# Copy in calibration filter workflow
-COPY ./flow.stat.basc.R /flow.stat.basc.R
+# Create app user
+RUN groupadd app && \
+    useradd app -g app
+WORKDIR /home/app
+
+# Copy in application code
+COPY ./flow.stat.basc.R .
+
+# Run as app user
+RUN chown app:app -R /home/app
+USER app
+

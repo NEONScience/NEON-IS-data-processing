@@ -5,14 +5,14 @@
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.qaqc.wq.sens.na.R",
+      "./flow.qaqc.wq.sens.na.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmQf=$SCHEMA_FLAGS",
       "DirTypeSrc=exoconductivity|exodissolvedoxygen|exophorp|exototalalgae|exoturbidity",
       "DirSubAply=uncertainty_data"
     ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-wq-sens-na-r:v0.0.7",
+    "image": "quay.io/battelleecology/neon-is-qaqc-wq-sens-na-r:v1.0.0",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

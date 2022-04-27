@@ -4,13 +4,13 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - /flow.stat.basc.R
+  - ./flow.stat.basc.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - FileSchmStat=$FILE_SCHEMA_STATS
   - WndwAgr=001|005|030
   - TermStat1=par:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.fdas.volt)
-  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.21
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v1.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
