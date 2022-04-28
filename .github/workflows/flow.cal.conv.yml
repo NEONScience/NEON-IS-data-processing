@@ -25,11 +25,6 @@ env:
 jobs:
 
   build:
-
-    defaults:
-      run:
-        working-directory: ./flow/flow.cal.conv
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -41,6 +36,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        working-directory: ./flow/flow.cal.conv
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
