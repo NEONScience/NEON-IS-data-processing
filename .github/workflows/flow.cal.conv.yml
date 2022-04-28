@@ -23,11 +23,12 @@ env:
   IMAGE_NAME: "${{ github.repository }}/flow-cal-conv"
 
 jobs:
-  defaults:
-    run:
-      working-directory: ./flow/flow.cal.conv
 
   build:
+
+    defaults:
+      run:
+        working-directory: ./flow/flow.cal.conv
 
     runs-on: ubuntu-latest
     permissions:
