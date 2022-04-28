@@ -48,7 +48,7 @@ test_that("when avro schm is pass, return all the elements in the schema",
 test_that("when a file with NULL is passed in",
           {
             workingDirPath <- getwd()
-            FileSchm <- file.path(workingDirPath, "testdata/HART_data_type_null.avsc")
+            FileSchm <- file.path(workingDirPath, "testdata/HART_data.avro")
             rpt <- try(NEONprocIS.base::def.schm.avro.pars(FileSchm = FileSchm),
                   silent = TRUE)
             # testthat::expect_true(is.list(rpt))
