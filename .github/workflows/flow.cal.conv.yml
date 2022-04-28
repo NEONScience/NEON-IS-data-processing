@@ -21,6 +21,7 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: "${{ github.repository }}/flow-cal-conv"
+  WORKING-DIRECTORY: ./flow/flow.cal.conv
 
 jobs:
 
@@ -36,7 +37,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        working-directory: ./flow/flow.cal.conv
+        run: | 
+        working-directory: {{env.WORKING-DIRECTORY}}
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
