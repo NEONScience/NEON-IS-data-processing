@@ -25,11 +25,11 @@ def get_named_locations(connection: extensions.connection, location_type: str, s
     """
     sql = '''
         select
-   			is_sensor_type.avro_schema_name,
-            nam_locn.nam_locn_id,
+   			    nam_locn.nam_locn_id,
             nam_locn.nam_locn_name,
             nam_locn.nam_locn_desc,
-            type.type_name
+            type.type_name,
+            is_sensor_type.avro_schema_name
            
         from
             nam_locn, type, is_asset_location, asset, is_asset_assignment, is_asset_definition, is_sensor_type
