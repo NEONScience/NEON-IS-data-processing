@@ -23,8 +23,8 @@ def main() -> None:
     log_config.configure(log_level)
 
     with closing(connect(db_url)) as connection:
-        get_named_locations_partial = partial(get_named_locations, connection=connection, location_type=location_type, source_type=source_type)
-        load_locations(out_path=out_path, get_locations=get_named_locations_partial)
+        get_named_locations_partial = partial(get_named_locations, connection=connection, location_type=location_type)
+        load_locations(out_path=out_path, get_locations=get_named_locations_partial, source_type=source_type)
 
 
 if __name__ == "__main__":

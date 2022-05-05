@@ -51,7 +51,7 @@ def get_named_locations(connection: extensions.connection, location_type: str, s
         	is_sensor_type.avro_schema_name = %s
     '''
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, ([location_type],[source_type])
+        cursor.execute(sql, ([location_type], [source_type]))
         rows = cursor.fetchall()
         for row in rows:
             key = row[0]
