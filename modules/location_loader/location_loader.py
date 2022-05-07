@@ -17,6 +17,7 @@ def load_locations(out_path: Path, get_locations: Callable[[str], Iterator[Named
 
     :param out_path: The path for writing files.
     :param get_locations: A function yielding named locations.
+    :param source_type: sensor type.
     """
     for named_location in get_locations(source_type):
         schema_names: Set = named_location.schema_names
