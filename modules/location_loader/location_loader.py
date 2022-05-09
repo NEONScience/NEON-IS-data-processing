@@ -19,7 +19,7 @@ def load_locations(out_path: Path, get_locations: Callable[[str], Iterator[Named
     :param get_locations: A function yielding named locations.
     :param source_type: sensor type.
     """
-    for named_location in get_locations(source_type):
+    for named_location in get_locations(source_type=source_type):
         schema_names: Set = named_location.schema_names
         location_name: str = named_location.name
         for schema_name in schema_names:
