@@ -3,7 +3,7 @@
     "name": "relHumidity_quality_metrics"
   },
   "transform": {
-    "cmd": ["Rscript","/flow.qaqc.qm.R",
+    "cmd": ["Rscript","./flow.qaqc.qm.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "DirErr=/pfs/out/errored_datums",
@@ -21,7 +21,7 @@
       "GrpQfBeta3=dewPoint:dewPointNullQF|dewPointGapQF|dewPointRangeQF|dewPointStepQF|dewPointSpikeQF|dewPointPersistenceQF|errorStateQF",
       "GrpQfBetaIgnr3=dewPoint:dewPointNullQF|dewPointGapQF"
       ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v0.0.17",
+    "image": "quay.io/battelleecology/neon-is-qaqc-qm-r:v1.0.0",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

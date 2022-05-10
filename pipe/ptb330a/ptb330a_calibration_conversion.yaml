@@ -4,7 +4,7 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - /flow.cal.conv.R
+  - ./flow.cal.conv.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
@@ -13,7 +13,7 @@ transform:
   - TermFuncConv=barometricPressure:def.cal.conv.poly
   - TermQf=barometricPressure
   - TermFuncUcrt=barometricPressure:def.ucrt.meas.cnst
-  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.54
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v1.0.2
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

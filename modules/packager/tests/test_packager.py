@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import os, glob, sys
+import os
+import glob
+import sys
 from pathlib import Path
 from unittest import TestCase
 from packager.packager import package
@@ -7,6 +9,7 @@ import packager.packager_main as packager_main
 from testfixtures import TempDirectory
 import fnmatch
 import logging
+
 
 class Packager(TestCase):
 

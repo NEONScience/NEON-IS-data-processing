@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Calibration assignment
 
 # Start with the calibration package image. 
-FROM quay.io/battelleecology/neon-is-pack-cal-r:v0.0.45
+FROM quay.io/battelleecology/neon-is-pack-cal-r:v1.0.2
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -11,6 +11,15 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
-# Copy in calibration filter workflow
-COPY ./flow.cal.asgn.R /flow.cal.asgn.R
-COPY ./wrap.cal.asgn.R /wrap.cal.asgn.R
+# Create app user
+RUN groupadd app && \
+    useradd app -g app
+WORKDIR /home/app
+
+# Copy in application code
+COPY ./flow.cal.asgn.R .
+COPY ./wrap.cal.asgn.R  .
+
+# Run as app user
+RUN chown app:app -R /home/app
+USER app

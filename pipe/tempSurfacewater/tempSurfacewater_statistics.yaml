@@ -2,10 +2,10 @@
 pipeline:
   name: tempSurfacewater_statistics
 transform:
-  image: quay.io/battelleecology/neon-is-stat-basc-r:v0.0.21
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v1.0.0
   cmd:
   - Rscript
-  - "/flow.stat.basc.R"
+  - "./flow.stat.basc.R"
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - FileSchmStat=$FILE_SCHEMA_STATS

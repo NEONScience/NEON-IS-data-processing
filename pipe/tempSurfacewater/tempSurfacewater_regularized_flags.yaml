@@ -4,7 +4,7 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - "/flow.rglr.R"
+  - "./flow.rglr.R"
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
@@ -14,7 +14,7 @@ transform:
   - IdxWndw=IdxWndwMin
   - RptTimeWndw=FALSE
   - DropNotNumc=FALSE
-  image: quay.io/battelleecology/neon-is-rglr-r:v0.0.31
+  image: quay.io/battelleecology/neon-is-rglr-r:v1.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

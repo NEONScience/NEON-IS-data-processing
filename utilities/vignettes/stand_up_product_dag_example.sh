@@ -4,8 +4,8 @@
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir'
-source_type='pqs1'
-product='parWaterSurface'
+source_type='tchain'
+product='tempSpecificDepthLakes'
 
 # Define paths based on base paths and product information above 
 spec_path_l0=$git_path/pipe/l0_data_loader
@@ -29,10 +29,7 @@ pachctl finish commit import_trigger_$source_type@master
 pachctl create pipeline -f $spec_path_l0/'data_source_'$source_type'_site.json'
 pachctl create pipeline -f $spec_path_l0/'data_source_'$source_type'_linkmerge.yaml'
 
-# Transfer calibrations from pachd1 to pachd1sandbox
-pachctl config set active-context pachd1
-pachctl1x get file -r calibration@master:/$source_type -o $data_path/calibration/$source_type
-pachctl config set active-context pachd1sandbox
+# Load in calibrations (must be stored locally)
 pachctl create repo calibration_$source_type
 pachctl start commit calibration_$source_type@master
 pachctl put file -r calibration_$source_type@master:/$source_type -f $data_path/calibration/$source_type

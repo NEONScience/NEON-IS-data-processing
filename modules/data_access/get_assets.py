@@ -12,6 +12,7 @@ def get_assets(connection: extensions.connection, source_type: str) -> Iterator[
     Get assets for source_type.
 
     :param connection: A database connection.
+    :param source_type: The type of sensor.
     :return: The assets.
     """
     sql = '''

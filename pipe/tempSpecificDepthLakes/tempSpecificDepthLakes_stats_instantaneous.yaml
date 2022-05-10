@@ -4,7 +4,7 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - /flow.data.comb.ts.R
+  - ./flow.data.comb.ts.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
@@ -14,7 +14,7 @@ transform:
   - NameVarTime=readout_time
   - ColKeep=readout_time|timeWndwBgn|timeWndwEnd|depth0WaterTemp|depth0WaterTemp_ucrtExpn|depth1WaterTemp|depth1WaterTemp_ucrtExpn|depth2WaterTemp|depth2WaterTemp_ucrtExpn|depth3WaterTemp|depth3WaterTemp_ucrtExpn|depth4WaterTemp|depth4WaterTemp_ucrtExpn|depth5WaterTemp|depth5WaterTemp_ucrtExpn|depth6WaterTemp|depth6WaterTemp_ucrtExpn|depth7WaterTemp|depth7WaterTemp_ucrtExpn|depth8WaterTemp|depth8WaterTemp_ucrtExpn|depth9WaterTemp|depth9WaterTemp_ucrtExpn|depth10WaterTemp|depth10WaterTemp_ucrtExpn
   - NameFileSufx=_basicStats_001
-  image: quay.io/battelleecology/neon-is-data-comb-ts-r:v0.0.9
+  image: quay.io/battelleecology/neon-is-data-comb-ts-r:v1.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

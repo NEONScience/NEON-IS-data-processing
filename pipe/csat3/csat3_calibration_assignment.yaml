@@ -4,14 +4,14 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - /flow.cal.asgn.R
+  - ./flow.cal.asgn.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   err_cmd:
   - 'true'
-  image: quay.io/battelleecology/neon-is-cal-asgn-r:v0.0.8
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

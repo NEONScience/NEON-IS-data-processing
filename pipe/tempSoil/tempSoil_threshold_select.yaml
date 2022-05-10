@@ -4,14 +4,14 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - /flow.thsh.slct.R
+  - ./flow.thsh.slct.R
   - DirIn=$REPO_LOCATIONS
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileThsh=$FILE_THRESHOLDS
   - TermCtxt1=temp|soil
   - DirSubCopy=location|data|uncertainty_data|flags
-  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.18
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v1.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
