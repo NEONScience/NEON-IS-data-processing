@@ -1,0 +1,71 @@
+---
+pipeline:
+  name: mcseries_date_gap_filler
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/date_gap_filler:12
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m date_gap_filler.date_gap_filler_main
+  env:
+    LOG_LEVEL: DEBUG
+    OUT_PATH: /pfs/out
+    OUTPUT_DIRECTORIES: data,location
+    DATA_SOURCE_TYPE_INDEX: '3'
+    DATA_YEAR_INDEX: '4'
+    DATA_MONTH_INDEX: '5'
+    DATA_DAY_INDEX: '6'
+    DATA_LOCATION_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
+    LOCATION_SOURCE_TYPE_INDEX: '3'
+    LOCATION_YEAR_INDEX: '4'
+    LOCATION_MONTH_INDEX: '5'
+    LOCATION_DAY_INDEX: '6'
+    LOCATION_INDEX: '7'
+    EMPTY_FILE_TYPE_INDEX: '4'
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
+input:
+  cross:
+  - pfs:
+      name: EMPTY_FILE_PATH
+      repo: empty_files_mcseries
+      glob: /mcseries
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - group:
+    - pfs:
+        name: DATA_PATH
+        repo: mcseries_merge_data_by_location
+        # For full-scale daily processing, glob should be /mcseries/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /mcseries/(*/*/*/(CFGLOC108321|...|CFGLOC110994))
+        glob: /mcseries/(*/*/*/(CFGLOC103580|CFGLOC103592|CFGLOC103645|CFGLOC103646|CFGLOC104664|CFGLOC104676|CFGLOC104727|CFGLOC104728|CFGLOC105149|CFGLOC105162|CFGLOC105228|CFGLOC105229|CFGLOC106555|CFGLOC106567|CFGLOC106587|CFGLOC106588|CFGLOC110652|CFGLOC110668|CFGLOC110685|CFGLOC110686|CFGLOC110958|CFGLOC110975|CFGLOC110998|CFGLOC110999|CFGLOC113201|CFGLOC113220|CFGLOC113265|CFGLOC113266|CFGLOC113682|CFGLOC113701|CFGLOC113746|CFGLOC113747))
+        group_by: $1
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - join:
+      - pfs:
+          name: LOCATION_PATH
+          repo: mcseries_location_active_dates_assignment
+          # For full-scale daily processing, glob should be /mcseries/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /mcseries/((*/*/*)/(CFGLOC108321|...|CFGLOC110994))
+          glob: /mcseries/((*/*/*)/(CFGLOC103580|CFGLOC103592|CFGLOC103645|CFGLOC103646|CFGLOC104664|CFGLOC104676|CFGLOC104727|CFGLOC104728|CFGLOC105149|CFGLOC105162|CFGLOC105228|CFGLOC105229|CFGLOC106555|CFGLOC106567|CFGLOC106587|CFGLOC106588|CFGLOC110652|CFGLOC110668|CFGLOC110685|CFGLOC110686|CFGLOC110958|CFGLOC110975|CFGLOC110998|CFGLOC110999|CFGLOC113201|CFGLOC113220|CFGLOC113265|CFGLOC113266|CFGLOC113682|CFGLOC113701|CFGLOC113746|CFGLOC113747)) 
+          # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
+          joinOn: $2
+          group_by: $1
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK. 
+      - pfs:
+          name: DATE_LIMITER_PATH
+          repo: mcseries_date_gap_filler_limiter
+          glob: /(*/*/*)
+          joinOn: $1
+          group_by: $1
+          empty_files: true # This can remain true even if LINK_TYPE=COPY
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 150M
+  cpu: 0.5
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"700M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true
