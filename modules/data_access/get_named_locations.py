@@ -21,6 +21,7 @@ def get_named_locations(connection: extensions.connection, location_type: str, s
 
     :param connection: A database connection.
     :param location_type: The named location type.
+    :param source_type: The sensor type.
     :return: The named locations.
     """
     sql = '''
