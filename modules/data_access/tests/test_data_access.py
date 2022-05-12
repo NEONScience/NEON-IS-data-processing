@@ -47,7 +47,7 @@ class DataAccessTest(unittest.TestCase):
     def test_get_assets(self):
         i = 0
         asset = None
-        for asset in get_assets(self.connection):
+        for asset in get_assets(self.connection, source_type='prt'):
             if i > 0:
                 break
             print(f'asset id: {asset.id} type: {asset.type}')
@@ -58,15 +58,15 @@ class DataAccessTest(unittest.TestCase):
         active_periods: List[ActivePeriod] = get_active_periods(self.connection, self.named_location_id)
         self.assertTrue(active_periods is not None)
 
+    @unittest.skip('These data are frequently updated, only use this test for specific cases.')
     def test_get_named_location_context(self):
         context: List[str] = get_named_location_context(self.connection, self.named_location_id)
-        # Context data is not in the database yet.
         expected_context = ['par-met', 'upward-facing', 'par-met-351', 'ir-biological-temperature']
         self.assertTrue(context == expected_context)
-    
+
+    @unittest.skip('These data are frequently updated, only use this test for specific cases.')
     def test_get_named_location_group(self):
-        group: List[int] = get_named_location_group(self.connection, self.named_location_id)
-        # Context data is not in the database yet.
+        group: List[str] = get_named_location_group(self.connection, self.named_location_id)
         expected_group = [376]
         self.assertTrue(group == expected_group)
 
@@ -79,6 +79,7 @@ class DataAccessTest(unittest.TestCase):
         print(f'result: {json.dumps(result, indent=2)}')
         self.assertTrue(result is not None)
 
+    @unittest.skip('These data are frequently updated, only use this test for specific cases.')
     def test_get_named_location_properties(self):
         properties: List[Property] = get_named_location_properties(self.connection, self.named_location_id)
         prop = properties[4]

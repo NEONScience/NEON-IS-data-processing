@@ -8,7 +8,7 @@ from pathlib import Path
 import common.log_config as log_config
 
 from message_reader.message_reader import run
-from message_reader.kafka_reader import read_messages
+# from message_reader.kafka_reader import read_messages
 from message_reader.message_reader_config import Config
 from message_reader.named_pipe import open_pipe
 
@@ -33,8 +33,8 @@ def main() -> None:
                     auto_offset_reset=auto_offset_reset,
                     enable_auto_commit=enable_auto_commit,
                     is_test=False)
-    read_messages_partial = partial(read_messages, config)
-    run(config, open_pipe, read_messages_partial)
+    # read_messages_partial = partial(read_messages, config)
+    run(config, open_pipe, None)
 
 
 if __name__ == "__main__":

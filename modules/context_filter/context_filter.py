@@ -50,9 +50,22 @@ class ContextFilter:
                 for data_type, path in paths.items():
                     if data_type == 'location':
                         file_context = location_file_parser.get_context(path)
-                        if self.context in file_context:
+                        if ('|' in self.context and self.check_all_context(file_context)) or self.context in file_context:
                             matching_paths.append(path_list)
         return matching_paths
+
+    def check_all_context(self, file_context: List[str]) -> bool:
+        """
+        When multiple contexts passed in and separated by |, check if all of them are part of file context.
+
+        :param file_context: file context.
+        return True or False
+        """
+        multi_context = self.context.split('|')
+        for con in multi_context:
+            if con not in file_context:
+                return False
+        return True
 
     def link_matching_paths(self, matching_paths: List[List[Dict[str, Path]]]) -> None:
         """

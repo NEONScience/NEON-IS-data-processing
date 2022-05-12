@@ -58,7 +58,7 @@ class LocationAssetLoaderTest(TestCase):
                                            'context': self.context,
                                            'locations': self.location})
 
-    def get_assets(self):
+    def get_assets(self, source_type: str):
         """Mock function."""
         return [self.asset]
 
@@ -88,7 +88,7 @@ class LocationAssetLoaderTest(TestCase):
 
     def test_write_files(self):
         location_asset_loader.write_files(get_assets=self.get_assets, get_asset_locations=self.get_asset_locations,
-                                          out_path=self.out_path)
+                                          out_path=self.out_path, source_type=self.source_type)
         self.check_output()
 
     def check_output(self):

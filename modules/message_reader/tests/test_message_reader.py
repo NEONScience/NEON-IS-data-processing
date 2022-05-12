@@ -40,6 +40,7 @@ class MessageReaderTest(TestCase):
         file_path = Path(self.out_path, '1')
         self.assertTrue(file_path.exists())
 
+    @unittest.skip('Integration test skipped.')
     def test_message_reader(self):
 
         def open_pipe(out_path: Path) -> BinaryIO:

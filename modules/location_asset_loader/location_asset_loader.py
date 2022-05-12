@@ -20,11 +20,13 @@ def write_files(*, get_assets: Callable[[str], Iterator[Asset]],
     :param get_assets: Function returning a list of assets.
     :param get_asset_locations: Function taking an Asset and returning a FeatureCollection of asset locations.
     :param out_path: Path for writing files.
+    :param source_type: The data source type.
     """
     for asset in get_assets(source_type):
         log.debug(f'Processing asset: {asset.id}')
         locations: FeatureCollection = get_asset_locations(asset)
         write_file(asset=asset, locations=locations, out_path=out_path)
+
 
 def write_file(*, asset: Asset, locations: FeatureCollection, out_path: Path) -> None:
     """
