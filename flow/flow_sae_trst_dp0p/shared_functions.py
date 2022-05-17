@@ -44,3 +44,7 @@ def from_percentage(percent: float) -> float:
 
 def get_degree_radian(degree: float) -> float:
     return degree * math.pi / 180
+
+
+def get_multiply_by(data: float, multiplicand: float) -> float:
+    return data * multiplicand

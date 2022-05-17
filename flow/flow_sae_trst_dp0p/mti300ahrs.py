@@ -42,12 +42,7 @@ class Mti300Ahrs(L0toL0p):
 
 def main() -> None:
 
-    # terms with calibration
-    cal_term_map = {}
-    calibrated_qf_list = []
-    passed_qf_cal_list = []
-
-    mti300ahrs = Mti300Ahrs(cal_term_map, calibrated_qf_list, passed_qf_cal_list)
+    mti300ahrs = Mti300Ahrs()
     mti300ahrs.l0tol0p()
 
 

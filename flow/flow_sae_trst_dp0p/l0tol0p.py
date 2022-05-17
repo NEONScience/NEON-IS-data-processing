@@ -8,16 +8,23 @@ import pandas as pd
 
 from flow_sae_trst_dp0p.cal_flags import get_cal_val_flags
 from flow_sae_trst_dp0p import log_config
+from typing import List, Dict, Optional
 
 log = get_logger()
 
 
 class L0toL0p:
 
-    def __init__(self, cal_term_map: dict, calibrated_qf_list: list, passed_qf_cal_list: list):
-        self.cal_term_map = cal_term_map
-        self.calibrated_qf_list = calibrated_qf_list
-        self.passed_qf_cal_list = passed_qf_cal_list
+    def __init__(self, cal_term_map: Optional[Dict] = None, calibrated_qf_list: Optional[List] = None,
+                 target_qf_cal_list: Optional[List] = None):
+        """
+        :param cal_term_map: map for calibrated variables between field names from avro schema and term names from ATBD
+        :param calibrated_qf_list: list of quality flag names that were calibrated on site
+        :param target_qf_cal_list: list of quality flag names that will take flags from calibrated_qf_list
+       """
+        self.cal_term_map = cal_term_map or {}
+        self.calibrated_qf_list = calibrated_qf_list or []
+        self.target_qf_cal_list = target_qf_cal_list or []
         env = environs.Env()
         self.in_path: Path = env.str('IN_PATH')
         self.out_path: Path = env.path('OUT_PATH')
@@ -27,7 +34,7 @@ class L0toL0p:
         log_config.configure(log_level)
 
     def data_conversion(self, filename) -> pd.DataFrame:
-        return pd.read_parquet(filename)
+        pass
 
     def get_combined_qfcal(self, outputdf: pd) -> None:
         if len(self.calibrated_qf_list) == 0:
@@ -45,7 +52,7 @@ class L0toL0p:
             self.assign_qf_cal(qf, outputdf)
 
     def assign_qf_cal(self, qf, outputdf):
-        for qfname in self.passed_qf_cal_list:
+        for qfname in self.target_qf_cal_list:
             outputdf[qfname] = qf
 
     def l0tol0p(self) -> None:

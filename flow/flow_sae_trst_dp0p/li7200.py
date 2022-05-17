@@ -67,10 +67,8 @@ def main() -> None:
 
     # terms with calibration
     cal_term_map = {'h2o_raw': 'asrpH2o', 'co2_raw': 'asrpCo2'}
-    calibrated_qf_list = []
-    passed_qf_cal_list = []
 
-    li7200 = Li7200(cal_term_map, calibrated_qf_list, passed_qf_cal_list)
+    li7200 = Li7200(cal_term_map)
     li7200.l0tol0p()
 
 

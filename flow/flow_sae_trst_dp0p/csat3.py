@@ -53,9 +53,9 @@ def main() -> None:
                     'uz_wind_speed': 'veloZaxs', 'speed_of_sound': 'veloSoni'}
     # pass along qf cal
     calibrated_qf_list = ['qfCalVeloSoni']
-    passed_qf_cal_list = ['qfCalTempSoni']
+    target_qf_cal_list = ['qfCalTempSoni']
 
-    csat3 = Csat3(cal_term_map, calibrated_qf_list, passed_qf_cal_list)
+    csat3 = Csat3(cal_term_map, calibrated_qf_list, target_qf_cal_list)
     csat3.l0tol0p()
 
 
