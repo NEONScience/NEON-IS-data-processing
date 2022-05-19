@@ -3,7 +3,7 @@ pipeline:
   name: mti300ahrs_l0p_data
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:v0.2.1
+  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:v0.3.2
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
