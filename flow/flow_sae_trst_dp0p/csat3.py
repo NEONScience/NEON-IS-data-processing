@@ -16,7 +16,7 @@ class Csat3(L0toL0p):
     cpdry = 1004.64
     mdry = 28.9645
     r = 8314.4621
-    data_columns = ['readout_time', 'veloXaxs', 'veloYaxs', 'veloZaxs', 'veloSoni']
+    data_columns = ['source_id', 'site', 'readout_time', 'veloXaxs', 'veloYaxs', 'veloZaxs', 'veloSoni']
 
     def data_conversion(self, filename: str) -> pd.DataFrame:
         df = pd.read_parquet(filename)
@@ -24,8 +24,8 @@ class Csat3(L0toL0p):
         log.debug(f'{outputdf.columns}')
         log.info(df['site_id'][0])
         log.info(df['source_id'][0])
-        del outputdf['source_id']
-        del outputdf['site_id']
+        # del outputdf['source_id']
+        # del outputdf['site_id']
         del outputdf['diagnostic_word']
         outputdf.columns = self.data_columns
 

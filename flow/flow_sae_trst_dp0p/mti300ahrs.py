@@ -12,8 +12,8 @@ log = get_logger()
 
 class Mti300Ahrs(L0toL0p):
 
-    data_columns = ['readout_time', 'idx', 'accXaxs', 'accYaxs', 'accZaxs', 'accXaxsDiff', 'accYaxsDiff', 'accZaxsDiff',
-                    'avelXaxs', 'avelYaxs', 'avelZaxs']
+    data_columns = ['source_id', 'site', 'readout_time', 'idx', 'accXaxs', 'accYaxs', 'accZaxs', 'accXaxsDiff',
+                    'accYaxsDiff', 'accZaxsDiff', 'avelXaxs', 'avelYaxs', 'avelZaxs']
 
     def data_conversion(self, filename) -> pd.DataFrame:
         df = pd.read_parquet(filename)
@@ -21,8 +21,8 @@ class Mti300Ahrs(L0toL0p):
         log.debug(f'{df.columns}')
         log.info(df['site_id'][1])
         log.info(df['source_id'][1])
-        del outputdf['source_id']
-        del outputdf['site_id']
+        # del outputdf['source_id']
+        # del outputdf['site_id']
         del outputdf['roll']
         del outputdf['pitch']
         del outputdf['yaw']
