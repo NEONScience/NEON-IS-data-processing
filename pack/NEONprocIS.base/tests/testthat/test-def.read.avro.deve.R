@@ -6,7 +6,7 @@
 #' Mija Choi \email{choim@battelleecology.org}
 
 #' @description
-#' This test runs on Windows only due to the ravro file type, ".so" which is currently available
+#' This test runs on Linux only due to the ravro file type, ".so" which is currently available
 # .so for Linux-based systems and the Android OS.
 # .dll for Windows
 
