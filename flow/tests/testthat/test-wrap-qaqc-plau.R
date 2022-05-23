@@ -341,7 +341,9 @@ test_that("Unit test of wrap.qaqc.plau.R", {
       unlink(DirOutBase, recursive = TRUE)
      }
     
-     SchmQf = RJSONIO::fromJSON("testdata/flags_plausibility.avsc")
+     workingDirPath <- getwd()
+     nameFile <- file.path(workingDirPath, "testdata/flags_calibration.avsc")
+     SchmQf = RJSONIO::fromJSON(nameFile)
      
      returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=DirIn,
                                                    DirOutBase=DirOutBase,
