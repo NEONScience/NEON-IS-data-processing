@@ -1,0 +1,29 @@
+{
+  "pipeline": {
+    "name": "symlinkC"
+  },
+  "transform": {
+    "image":"registry.access.redhat.com/ubi8/ubi-minimal:8.3",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "echo '---------------------NEW DATUM------------------------'",
+      "echo Symlinking $repoIn ...",
+      "ln -s $repoIn /pfs/out"
+    ]
+  },
+  "input": {
+    "pfs": {
+      "name": "repoIn",
+      "repo": "symlinkB",
+      "glob": "/*"
+    }
+  },
+  "resource_requests": {
+    "memory": "64M",
+    "cpu": 0.1
+  },
+  "autoscaling": true
+}

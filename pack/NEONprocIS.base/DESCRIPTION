@@ -1,6 +1,6 @@
 Package: NEONprocIS.base
 Title: Basic functions for NEON IS data processing
-Version: 0.0.38
+Version: 0.0.39
 Authors@R: 
     person(given = "Cove",
            family = "Sturtevant",
@@ -25,4 +25,4 @@ Imports:
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

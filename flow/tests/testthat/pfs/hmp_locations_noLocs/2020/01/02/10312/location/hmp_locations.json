@@ -1,0 +1,112 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC101252",
+                "domain":"D10",
+                "site":"ARIK",
+                "install_date":"2020-01-01T00:00:00Z",
+                "remove_date":"2020-01-02T00:00:00Z",
+                "context":[
+                    "relative-humidity",
+                    "terrestrial"
+                ],
+                "group":[
+                    "barometric-pressure_ARIK200"
+                ],
+                "locations":{
+                    "type":"FeatureCollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "geometry":{
+                                "type":"Point",
+                                "coordinates":[
+                                                                        -102.450966,
+                                                                        39.756546,
+                                                                        1191.796
+                                ]
+                            },
+                            "properties":{
+                                "start_date":"2020-01-01T00:00:00Z",
+                                "end_date":"2020-01-02T00:00:00Z",
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "gamma":                                0,
+                                "x_offset":                                0.1,
+                                "y_offset":                                0.15,
+                                "z_offset":                                2.1,
+                                "reference_location":null,
+                                "location_properties":[
+                                    [
+                                        "UTM Zone",
+                                        "13N"
+                                    ],
+                                    [
+                                        "Coordinate uncertainty",
+                                                                                0.231
+                                    ],
+                                    [
+                                        "State province",
+                                        "CO"
+                                    ],
+                                    [
+                                        "Elevation uncertainty",
+                                                                                0.1
+                                    ],
+                                    [
+                                        "Coordinate source",
+                                        "AIS_SURVEY"
+                                    ],
+                                    [
+                                        "Country",
+                                        "USA"
+                                    ],
+                                    [
+                                        "County",
+                                        "Yuma"
+                                    ],
+                                    [
+                                        "Geodetic datum",
+                                        "WGS84"
+                                    ],
+                                    [
+                                        "Survey vertical uncertainty",
+                                                                                0.012
+                                    ],
+                                    [
+                                        "Survey horizontal uncertainty",
+                                                                                0.019
+                                    ],
+                                    [
+                                        "Real world elevation uncertainty",
+                                                                                0.1
+                                    ],
+                                    [
+                                        "Transformation RMSE",
+                                                                                0.131
+                                    ],
+                                    [
+                                        "Real world coordinate uncertainty",
+                                                                                0.1
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "HOR":"200",
+            "Required Asset Management Location Code":"CFGLOC101252",
+            "VER":"000",
+            "TMI":"000",
+            "Data Rate":"1",
+            "Required Asset Management Location ID":            2394
+        }
+    ],
+    "source_id":    10312,
+    "source_type":"hmp155"
+}

@@ -17,6 +17,7 @@ log = structlog.get_logger()
 
 def main() -> None:
     env = environs.Env()
+    source_type: str = env.str('SOURCE_TYPE')
     out_path: Path = env.path('OUT_PATH')
     db_url: str = env.str('DATABASE_URL')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
@@ -28,7 +29,8 @@ def main() -> None:
         get_asset_locations_partial = partial(get_asset_locations, connection)
         location_asset_loader.write_files(get_assets=get_assets_partial,
                                           get_asset_locations=get_asset_locations_partial,
-                                          out_path=out_path)
+                                          out_path=out_path,
+                                          source_type=source_type)
 
 
 if __name__ == "__main__":

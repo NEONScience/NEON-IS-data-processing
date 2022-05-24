@@ -5,14 +5,14 @@
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.stat.basc.R",
+      "./flow.stat.basc.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmStat=$FILE_SCHEMA_STATS",
       "WndwAgr=001|030",
       "TermStat1=par:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.fdas.volt)"
     ],
-    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.20",
+    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v1.0.0",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
@@ -32,8 +32,8 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_STATS",
-          "repo": "avro_schemas",
-          "glob": "/dp01/par_dp01_stats.avsc"
+          "repo": "avro_schemas_par",
+          "glob": "/par/par_dp01_stats.avsc"
         }
       }
     ]

@@ -27,6 +27,8 @@ class FilterJoinerLocationGroupTest(TestCase):
         config_file_path = Path(os.path.dirname(__file__), 'config-location-group.yaml')
         self.fs.add_real_file(config_file_path, target_path='/config.yaml')
         self.relative_path_index = 3
+        # Options
+        self.symlink=True
 
     def test_joiner(self):
         with open('/config.yaml') as f:
@@ -34,7 +36,8 @@ class FilterJoinerLocationGroupTest(TestCase):
             config = yaml.dump(data, sort_keys=True)
         filter_joiner = FilterJoiner(config=config,
                                      out_path=self.output_path,
-                                     relative_path_index=self.relative_path_index)
+                                     relative_path_index=self.relative_path_index,
+                                     symlink=self.symlink)
         filter_joiner.join()
         self.check_output()
 
@@ -46,6 +49,7 @@ class FilterJoinerLocationGroupTest(TestCase):
         os.environ['OUT_PATH'] = str(self.output_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
+        os.environ['LINK_TYPE'] = 'SYMLINK'
         filter_joiner_main.main()
         self.check_output()
 

@@ -4,7 +4,7 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - /flow.cal.conv.R
+  - ./flow.cal.conv.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
@@ -13,11 +13,12 @@ transform:
   - TermFuncConv=depth0WaterTemp:def.cal.conv.poly|depth1WaterTemp:def.cal.conv.poly|depth2WaterTemp:def.cal.conv.poly|depth3WaterTemp:def.cal.conv.poly|depth4WaterTemp:def.cal.conv.poly|depth5WaterTemp:def.cal.conv.poly|depth6WaterTemp:def.cal.conv.poly|depth7WaterTemp:def.cal.conv.poly|depth8WaterTemp:def.cal.conv.poly|depth9WaterTemp:def.cal.conv.poly|depth10WaterTemp:def.cal.conv.poly
   - TermQf=depth0WaterTemp|depth1WaterTemp|depth2WaterTemp|depth3WaterTemp|depth4WaterTemp|depth5WaterTemp|depth6WaterTemp|depth7WaterTemp|depth8WaterTemp|depth9WaterTemp|depth10WaterTemp
   - TermFuncUcrt=depth0WaterTemp:def.ucrt.meas.cnst|depth1WaterTemp:def.ucrt.meas.cnst|depth2WaterTemp:def.ucrt.meas.cnst|depth3WaterTemp:def.ucrt.meas.cnst|depth4WaterTemp:def.ucrt.meas.cnst|depth5WaterTemp:def.ucrt.meas.cnst|depth6WaterTemp:def.ucrt.meas.cnst|depth7WaterTemp:def.ucrt.meas.cnst|depth8WaterTemp:def.ucrt.meas.cnst|depth9WaterTemp:def.ucrt.meas.cnst|depth10WaterTemp:def.ucrt.meas.cnst
-  image: quay.io/battelleecology/neon-is-cal-conv-r:v0.0.53
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v1.0.2
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '1'
 input:
   cross:
   - pfs:
@@ -26,15 +27,18 @@ input:
       glob: /tchain/*/*/*/
   - pfs:
       name: FILE_SCHEMA_FLAGS
-      repo: avro_schemas
-      glob: /dp0p/flags_calibration_tchain.avsc
+      repo: avro_schemas_tchain
+      glob: /tchain/flags_calibration_tchain.avsc
   - pfs:
       name: FILE_SCHEMA_DATA
-      repo: avro_schemas
-      glob: /dp0p/tchain_parsed.avsc
-enable_stats: false
-standby: true
+      repo: avro_schemas_tchain
+      glob: /tchain/tchain_parsed.avsc
 resource_requests:
-  memory: 250M
-  cpu: 0.25
+  memory: 500M
+  cpu: 1.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"300M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true
 

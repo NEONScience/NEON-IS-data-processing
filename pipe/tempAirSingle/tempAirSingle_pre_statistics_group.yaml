@@ -3,7 +3,7 @@ pipeline:
   name: tempAirSingle_pre_statistics_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:9
+  image: quay.io/battelleecology/filter_joiner:11
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -13,49 +13,54 @@ transform:
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
-            name: DATA_PATH
+            name: QAQC_BASIC_PATH
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH/*/*/*/*/prt/*/data/**
-            # Join on context group (already joined below by day)
+            glob_pattern: /pfs/QAQC_BASIC_PATH/*/*/*/*/prt/*/*data/**
+            # Join on location group (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: QAQC_SPECIFIC_PATH
+            # Filter for uncertainty_data directory
+            glob_pattern: /pfs/QAQC_SPECIFIC_PATH/*/*/*/*/prt/*/data/**
+            # Join on location group (already joined below by day)
             join_indices: [6]
         - path:
             name: UNCERTAINTY_COEF_PATH
             # Filter for uncertainty_coef directory
             glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/*/*/*/*/prt/*/uncertainty_coef/**
-            # Join on context group (already joined below by day)
-            join_indices: [6]
-        - path:
-            name: UNCERTAINTY_DATA_PATH
-            # Filter for uncertainty_data directory
-            glob_pattern: /pfs/UNCERTAINTY_DATA_PATH/*/*/*/*/prt/*/uncertainty_data/**
-            # Join on context group (already joined below by day)
+            # Join on location group (already joined below by day)
             join_indices: [6]
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
-      name: DATA_PATH
-      repo: tempAirSingle_merge_qaqc_data
+      name: QAQC_BASIC_PATH
+      repo: tempAirSingle_qaqc_plausibility
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: QAQC_SPECIFIC_PATH
+      repo: tempAirSingle_qaqc_specific
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: UNCERTAINTY_COEF_PATH
-      repo: tempAirSingle_prt
+      repo: tempAirSingle_prt_group_path
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
-  - pfs:
-      name: UNCERTAINTY_DATA_PATH
-      repo: tempAirSingle_regularized_uncertainty_data
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: "1"
-enable_stats: false
-standby: true
+  constant: 2
+resource_requests:
+  memory: 1.5G
+  cpu: 0.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1.2"}]'
+autoscaling: true

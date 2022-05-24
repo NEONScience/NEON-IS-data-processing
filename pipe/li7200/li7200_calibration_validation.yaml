@@ -1,0 +1,31 @@
+---
+pipeline:
+  name: li7200_calibration_validation
+transform:
+  cmd:
+  - Rscript
+  - ./flow.cal.conv.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - TermQf=h2o_raw|co2_raw
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v1.0.2
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  pfs:
+    name: DIR_IN
+    repo: li7200_data_calibration_group
+    glob: /li7200/*/*/*/
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 300M
+  cpu: 1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"200M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true

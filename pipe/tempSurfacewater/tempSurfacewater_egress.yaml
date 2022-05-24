@@ -4,14 +4,15 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/egress:7
+  image: quay.io/battelleecology/egress:8
   cmd:
-  - "/bin/bash"
+  - /bin/bash
   stdin:
-  - "#!/bin/bash"
-  - python3 -m egress.egress.app --outputname tempSurfacewater --dateindex 2 --locindex 1
+  - '#!/bin/bash'
+  - python3 -m egress.egress.app --outputname tempSurfacewater --dateindex 2 --locindex
+    1
   env:
-    OUT_PATH: "/pfs/out"
+    OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
 output_branch: master
 input:
@@ -19,7 +20,7 @@ input:
     name: DATA_PATH
     repo: tempSurfacewater_level1_group
     branch: master
-    glob: "/prt/*/*/*"
+    glob: /prt/*/*/*
 egress:
   URL: s3://int-omnipipe
 standby: true

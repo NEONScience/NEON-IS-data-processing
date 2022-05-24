@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_level1_pub 
 transform:
-  image: docker.io/dlenz/pub_uploader:1
+  image: quay.io/battelleecology/pub_uploader:2
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

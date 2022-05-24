@@ -13,6 +13,14 @@
 #' as DirDest, each index corresponding to the same index of DirDest. NOTE: DirDest should be the parent of the 
 #' distination directories. For example, to create a link from source /parent/child/ to /newparent/child, 
 #' DirSrc='/parent/child/' and DirDest='/newparent/'
+#' @param LnkSubObj Logical (default FALSE). TRUE: Instead of symbolically linking the entire directory DirSrc 
+#' to DirDest, create the 'child' directory in DirDest and link each individual object.
+#' For example, if DirSrc='/parent/child/' and DirDest='/newparent/', the 'child' directory will be created in 
+#' DirDest ('/newparent/child') and each individual object in '/parent/child/' will be symbolically linked in 
+#' '/newparent/child'. Note that the output directory structure will be the same regardless of the choice here, 
+#' but TRUE is useful for situations in which you want to write additional objects in '/newparent/child/' 
+#' either prior to executing this function or afterward. TRUE will allow you to do this, whereas 
+#' FALSE will not.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -37,8 +45,14 @@
 #     added logging
 #   Cove Sturtevant (2021-06-07)
 #     add support for relative paths
+#   Cove Sturtevant (2022-02-10)
+#     add option to link individual objects with a directory rather the directory itself
 ##############################################################################################
-def.dir.copy.symb <- function(DirSrc,DirDest,log=NULL){
+def.dir.copy.symb <- function(DirSrc,
+                              DirDest,
+                              LnkSubObj=FALSE,
+                              log=NULL){
+  
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -68,17 +82,71 @@ def.dir.copy.symb <- function(DirSrc,DirDest,log=NULL){
   rltvDirSrc <- base::substr(x=DirSrc,start=1,stop=1) != '/'
   rltvDirDest <- base::substr(x=DirDest,start=1,stop=1) != '/'
   
-  # Set up the command to copy
-  cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(DirDest))
+  # Create the parent destination directories
+  rptDir <- base::suppressWarnings(base::lapply(DirDest,base::dir.create,recursive=TRUE)) 
   
-  # Modify the copy command for the relative paths
-  setRltv <- rltvDirSrc | rltvDirDest
-  cmdCopy[setRltv] <- base::paste0('ln -s -r ',base::paste0(DirSrc[setRltv]),' ',base::paste0(DirDest[setRltv]))
-  
-  # perform symbolic link
-  rptDir <- base::suppressWarnings(base::lapply(DirDest,base::dir.create,recursive=TRUE)) # Create the destination directories
-  rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
-  log$info(base::paste0('Unmodified ',base::paste0(DirSrc,collapse=','), ' copied to ',DirDest))
+  if(LnkSubObj==TRUE){
+    # Goal: link the individual objects in each DirSrc to dirDest
+    
+    # Create the terminal directories of DirSrc within DirDest
+    nameDirEnd <- base::unlist(
+                base::lapply(
+                  base::strsplit(DirSrc,split='/'),
+                  utils::tail,
+                  n=1
+                  )
+    )
+    dirDest <- base::paste0(DirDest,'/',nameDirEnd)
+    rptDir <- base::suppressWarnings(base::lapply(dirDest,base::dir.create,recursive=TRUE)) 
+    
+    # Set up the command to link the individual objects in each DirSrc to dirDest
+    cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),'/* ',base::paste0(dirDest))
 
+    # Modify the copy command for the relative paths
+    setRltv <- rltvDirSrc | rltvDirDest
+    cmdCopy[setRltv] <- base::paste0('ln -s -r ',base::paste0(DirSrc[setRltv]),'/* ',base::paste0(dirDest[setRltv]))
+    
+    # perform symbolic link
+    rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
+    
+    # Report success/failure
+    sccs <- rptCopy==0
+    if(base::any(sccs)){
+      log$info(base::paste0('Unmodified objects in ',DirSrc[sccs], ' symbolically linked to ',dirDest[sccs]))
+    }
+    if(base::any(!sccs)){
+      log$warn(base::paste0('At least some of the objects in ',DirSrc[!sccs], ' could not be symbolically linked to ',dirDest[!sccs],
+                            '. Permissions may be inadequate or objects with the same name might already exist in the destination directory.'))
+    }
+  
+  } else {
+    # Goal: Link the whole directories of DirSrc over to DirDest 
+    
+    if(base::length(DirDest) == 1){
+      dirDest <- base::rep(DirDest,times=base::length(DirSrc))
+    } else {
+      dirDest <- DirDest
+    }
+
+    # Set up the command to copy
+    cmdCopy <- base::paste0('ln -s ',base::paste0(DirSrc),' ',base::paste0(dirDest))
+    
+    # Modify the copy command for the relative paths
+    setRltv <- rltvDirSrc | rltvDirDest
+    cmdCopy[setRltv] <- base::paste0('ln -s -r ',base::paste0(DirSrc[setRltv]),' ',base::paste0(dirDest[setRltv]))
+    
+    # perform symbolic link
+    rptCopy <- base::lapply(cmdCopy,base::system) # Symbolically link the directories
+  
+    # Report success/failure
+    sccs <- rptCopy==0
+    if(base::any(sccs)){
+      log$info(base::paste0('Unmodified ',DirSrc[sccs], ' symbolically linked into ',dirDest[sccs]))
+    }
+    if(base::any(!sccs)){
+      log$warn(base::paste0(DirSrc[!sccs], ' could not be symbolically linked into ',dirDest[!sccs],
+                            '. Permissions may be inadequate or objects with the same name might already exist in the destination directory.'))
+    }
+  }
   
 }

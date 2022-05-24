@@ -1,5 +1,55 @@
-#library(testthat)
-#source("R/def.qm.dp0p.R")
+##############################################################################################
+#' @title Unit test for compute "instantaneous" alpha, beta, and final quality flags
+
+#' @author
+#' Mija Choi \email{choim@batelleEcology.org}
+
+#' @description
+#' Definition function. Aggregate quality flags to produce alpha, beta, and final quality flags
+#' for each L0' (instantaneous) record. The alpha flag is 1 when any of a set of selected
+#' flags have a value of 1 (fail). The beta flag is 1 when any of a set of selected
+#' flags cannot be evaluated (have a value of -1). If either the alpha flag or beta flag are raised,
+#' the final quality is raised (value of 1).
+
+#' @param qf Data frame of named quality flags (values of -1,0,1)
+#' @param Para (optional) A named list of:\cr
+#' \code{qfAlph} A character vector of the names of quality flags in \code{qf} that are to be used
+#' to compute AlphaQF. If any of these flags have a value of 1 for a given record, AlphaQF will be
+#' 1 for that record. May be NULL (or not in the list), in which case all flags found in \code{qf}
+#' will be used to compute AlphaQF.\cr
+#' \code{qfBeta} A character vector of the names of quality flags in \code{qf} that are to be used
+#' to compute BetaQF. If any of these flags have a value of -1 for a given record, BetaQF will be
+#' 1 for that record. May be NULL (or not in the list), in which case all flags found in \code{qf}
+#' will be used to compute BetaQF. Note that this action may be modified by the \code{qfBetaIgnr}
+#' list element below\cr
+#' \code{qfBetaIgnr} A character vector of the names of quality flags in \code{qf} that, if any of
+#' their values equals 1 for a particular record, the betaQF flag for that record is automatically
+#' set to 0 (ignores the values of all other flags). May be NULL, (or not in the list), in which
+#' case this argument will be ignored.
+#' Note that the entire Para argument defaults to NULL, which will follow the default actions
+#' described above.
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output. Defaults to NULL, in which the logger will be created and used within the function.
+
+#' @return A data frame of the alpha, beta, and final quality flags
+
+#' @references
+#' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+
+#' @keywords Currently none
+
+#' @examples
+#' qf <- data.frame(QF1=c(1,-1,1,0,-1),QF2=c(-1,1,0,0,0),stringsAsFactors=FALSE)
+#' Para <- list(qfAlph=c('QF1','QF2'),qfBeta=c('QF1','QF2'),qfBetaIgnr='QF2')
+#' def.qm.dp0p(qf=qf,Para=Para)
+
+# changelog and author contributions / copyrights
+#   Mija Choi (2022-03-29)
+#     added test of Error check - ensure that the contributing flags are included in the data
+##############################################################################################
+# Define test context
+context("\n       | Unit test of compute instantaneous alpha, beta, and final quality flags \n")
+
 test_that("calculate the time on dataHeat State is always false",
           {
             qf <- data.frame(QF1=c(1,-1,1,0,-1),QF2=c(-1,1,0,0,0),stringsAsFactors=FALSE)
@@ -78,5 +128,12 @@ test_that("when not all parameter in the qfAlph and qfBeta are not in the qf dat
             testthat::equals(qm[3]$FinalQF[5], 1)
             
           }
-          
+)
+ 
+test_that("Error check - ensure that the contributing flags are included in the data",
+          {
+          qf3 <- data.frame(QF3=c(1,-1,1,0,-1),QF4=c(-1,1,0,0,0),stringsAsFactors=FALSE)
+          Para <- list(qfAlph=c('QF1','QF2'),qfBeta=c('QF1','QF2'),qfBetaIgnr='QF2')
+          qm <- NEONprocIS.qaqc::def.qm.dp0p(qf=qf3,Para=Para)
+          }
 )

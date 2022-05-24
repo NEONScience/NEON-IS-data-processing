@@ -90,7 +90,7 @@ class PaddedTimeSeriesAnalyzer:
         """
         for file_path in root.parent.rglob('*'):
             if file_path.is_file():
-                if AnalyzerConfig.data_dir not in str(file_path) and AnalyzerConfig.threshold_dir not in str(file_path):
+                if '/'+AnalyzerConfig.data_dir+'/' not in str(file_path) and AnalyzerConfig.threshold_dir not in str(file_path):
                     link_path = Path(self.out_path, *file_path.parts[self.relative_path_index:])
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                     if not link_path.exists():

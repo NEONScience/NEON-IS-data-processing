@@ -5,16 +5,17 @@
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.qaqc.plau.R",
+      "./flow.qaqc.plau.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
       "FileSchmQf=$SCHEMA_FLAGS",
       "TermTest1=relativeHumidity:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
       "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
       "TermTest3=dewPoint:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
       "VarAddFileQf=errorState"
     ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.19",
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.22",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
@@ -34,8 +35,8 @@
       {
         "pfs": {
           "name": "SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_plausibility_relHumidity.avsc"
+          "repo": "avro_schemas_relHumidity",
+          "glob": "/relHumidity/flags_plausibility_relHumidity.avsc"
         }
       }
     ]

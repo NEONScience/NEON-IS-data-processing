@@ -31,6 +31,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-04-01)
 #     original creation
+#   Cove Sturtevant (2022-02-10)
+#     Use base::data.frame instead of base::as.data.frame to avoid tibble data frame
 ##############################################################################################
 def.read.parq <- function(NameFile,
                           log=NULL
@@ -47,7 +49,7 @@ def.read.parq <- function(NameFile,
   
   # Pull in as arrow object, retrieve schema, and convert to data frame
   objParq <- arrow::read_parquet(file=NameFile,as_data_frame=FALSE)
-  data <- base::as.data.frame(objParq)
+  data <- base::data.frame(objParq)
   base::attr(data,'schema') <- objParq$schema
 
   # Assign timezone for POSIX variables

@@ -30,15 +30,20 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-12-19)
 #     original creation
+#   Mija Choi (2022-04-12)
+#     added log initialization and modified to catch errors
 ##############################################################################################
 def.read.evnt.json <- function(NameFile,log=NULL){
+  
+  # Initialize log if not input
+  if(base::is.null(log)){
+    log <- NEONprocIS.base::def.log.init()
+  }
   
   listEvnt <- base::try(rjson::fromJSON(file=NameFile,simplify=TRUE)[[1]],silent=FALSE)
   if(base::class(listEvnt) == 'try-error'){
     msg <- base::paste0('File ', NameFile,' is unreadable.')
-    if(!base::is.null(log)){
-      log$fatal(msg)
-    } 
+    log$fatal(msg)
     stop(msg)        
   }
   

@@ -17,7 +17,7 @@ class PathGroup(NamedTuple):
 
 
 class LocationGroupPath:
-    """Class adds location context groups to location file paths."""
+    """Class adds location groups to location file paths."""
 
     def __init__(self, config: Config) -> None:
         self.source_path = config.source_path
@@ -42,8 +42,10 @@ class LocationGroupPath:
                 source_type, year, month, day, location, data_type, remainder = self.path_parser.parse(path)
                 # get the location context groups from the location file
                 if data_type == self.location_type:
-                    context = file_parser.get_context(path)
-                    groups = file_parser.get_context_matches(context, self.group)
+                    groups_all = file_parser.get_group(path)
+                    log.debug(f'groups found: {groups_all}')
+                    groups = file_parser.get_context_matches(groups_all, self.group)
+                    log.debug(f'groups matched: {groups}')
                     associated_paths: List[Path] = []
                     # get all the files and other directory in the parent directory containing this location file
                     location_path = path.parent.parent
@@ -55,16 +57,16 @@ class LocationGroupPath:
 
     def link_files(self, path_groups: List[PathGroup]) -> None:
         """
-        Link the files into the output path and add the location context groups into the path.
+        Link the files into the output path and add the location groups into the path.
 
-        :param path_groups: File paths for linking and location context groups.
+        :param path_groups: File paths for linking and location groups.
         """
         for path_group in path_groups:
             for path in path_group.associated_paths:
                 source_type, year, month, day, location, data_type, remainder = self.path_parser.parse(path)
                 for group in path_group.groups:
-                    link_path = Path(self.out_path, source_type, year, month, day,
-                                     group, location, data_type, *remainder)
+                    link_path = Path(self.out_path, year, month, day,
+                                     group, source_type, location, data_type, *remainder)
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                     if not link_path.exists():
                         log.debug(f'file: {path} link: {link_path}')

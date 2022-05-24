@@ -1,0 +1,30 @@
+{
+  "pipeline": {
+    "name": "symlink_lazy"
+  },
+  "transform": {
+    "image":"registry.access.redhat.com/ubi8/ubi-minimal:8.3",
+    "cmd": [
+      "/bin/bash"
+    ],
+    "stdin": [
+      "#!/bin/bash",
+      "echo '---------------------NEW DATUM------------------------'",
+      "echo Symlinking $repoIn ...",
+      "ln -s $repoIn /pfs/out"
+    ]
+  },
+  "input": {
+    "pfs": {
+      "name": "repoIn",
+      "repo": "data_source_prt_site",
+      "glob": "/prt/*/*/*",
+      "lazy": false
+    }
+  },
+  "resource_requests": {
+    "memory": "200M",
+    "cpu": 0.5
+  },
+  "autoscaling": true
+}

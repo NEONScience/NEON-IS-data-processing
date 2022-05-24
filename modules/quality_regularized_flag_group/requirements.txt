@@ -1,2 +1,0 @@
-structlog==19.1.0
-environs==6.0.0

@@ -5,7 +5,7 @@
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.cal.conv.R",
+      "./flow.cal.conv.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "DirErr=/pfs/out/errored_datums",
@@ -14,7 +14,7 @@
       "TermFuncUcrt=ph:def.ucrt.meas.mult",
       "TermQf=ph"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v0.0.53",
+    "image": "quay.io/battelleecology/neon-is-cal-conv-r:v1.0.2",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
@@ -34,15 +34,15 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_DATA",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/exophorp_calibrated.avsc"
+          "repo": "avro_schemas_exophorp",
+          "glob": "/exophorp/exophorp_calibrated.avsc"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_calibration_exophorp.avsc"
+          "repo": "avro_schemas_exophorp",
+          "glob": "/exophorp/flags_calibration_exophorp.avsc"
         }
       }
     ]

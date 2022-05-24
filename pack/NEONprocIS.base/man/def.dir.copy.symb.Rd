@@ -4,7 +4,7 @@
 \alias{def.dir.copy.symb}
 \title{Copy a directory with a symbolic link}
 \usage{
-def.dir.copy.symb(DirSrc, DirDest, log = NULL)
+def.dir.copy.symb(DirSrc, DirDest, LnkSubObj = FALSE, log = NULL)
 }
 \arguments{
 \item{DirSrc}{String vector. Source directories. All files in these source directories will be copied to the 
@@ -14,6 +14,15 @@ destination directories.}
 as DirDest, each index corresponding to the same index of DirDest. NOTE: DirDest should be the parent of the 
 distination directories. For example, to create a link from source /parent/child/ to /newparent/child, 
 DirSrc='/parent/child/' and DirDest='/newparent/'}
+
+\item{LnkSubObj}{Logical (default FALSE). TRUE: Instead of symbolically linking the entire directory DirSrc 
+to DirDest, create the 'child' directory in DirDest and link each individual object.
+For example, if DirSrc='/parent/child/' and DirDest='/newparent/', the 'child' directory will be created in 
+DirDest ('/newparent/child') and each individual object in '/parent/child/' will be symbolically linked in 
+'/newparent/child'. Note that the output directory structure will be the same regardless of the choice here, 
+but TRUE is useful for situations in which you want to write additional objects in '/newparent/child/' 
+either prior to executing this function or afterward. TRUE will allow you to do this, whereas 
+FALSE will not.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}

@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Sensor-specific QA/QC module for aspirated air temperature
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v0.0.27
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -10,5 +10,14 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
-# Copy in calibration workflow
-COPY ./flow.qaqc.temp.air.aspi.R /flow.qaqc.temp.air.aspi.R
+# Create app user
+RUN groupadd app && \
+    useradd app -g app
+WORKDIR /home/app
+
+# Copy in application code
+COPY ./flow.qaqc.temp.air.aspi.R .
+
+# Run as app user
+RUN chown app:app -R /home/app
+USER app

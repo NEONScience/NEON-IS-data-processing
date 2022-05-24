@@ -1,0 +1,35 @@
+---
+pipeline:
+  name: parWaterSurface_context_filter
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/context_filter:28
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m context_filter.context_filter_main
+  env:
+    OUT_PATH: /pfs/out
+    CONTEXT: par-surfacewater
+    LOG_LEVEL: INFO
+    TRIM_INDEX: '3'
+    SOURCE_ID_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
+input:
+  pfs:
+    name: IN_PATH
+    repo: pqs1_date_gap_filler
+    glob: /pqs1/*/*/*
+parallelism_spec:
+  constant: 2
+resource_requests:
+  memory: 200M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
+scheduling_spec:
+  node_selector: 
+    cloud.google.com/machine-family: n2d
+autoscaling: true
+

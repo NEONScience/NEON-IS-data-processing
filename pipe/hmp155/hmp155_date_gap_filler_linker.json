@@ -6,13 +6,13 @@
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
-    "image": "quay.io/battelleecology/date_gap_filler_linker:5",
+    "image": "quay.io/battelleecology/date_gap_filler_linker:6",
     "cmd": [
       "/bin/bash"
     ],
     "stdin": [
       "#!/bin/bash",
-      "python3 -m date_gap_filler_linker.app"
+      "python3 -m date_gap_filler_linker.date_gap_filler_linker_main"
     ],
     "env": {
       "LOG_LEVEL": "DEBUG",

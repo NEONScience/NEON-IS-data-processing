@@ -1,2 +1,2 @@
 environs==6.0.0
-structlog==19.1.0
+structlog==21.5.0 

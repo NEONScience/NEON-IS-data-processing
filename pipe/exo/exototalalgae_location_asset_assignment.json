@@ -5,14 +5,14 @@
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.loc.asgn.R",
+      "./flow.loc.asgn.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "DirErr=/pfs/out/errored_datums",
       "FileYear=$FILE_YEAR",
       "TypeFile=asset"
     ],
-    "image": "quay.io/battelleecology/neon-is-loc-asgn-r:v0.0.4",
+    "image": "quay.io/battelleecology/neon-is-loc-asgn-r:v1.0.0",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

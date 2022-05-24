@@ -67,10 +67,12 @@
 #' tacked on to the end of the output columns produced by the selections in TermTestX, and any output schema 
 #' should account for this.
 #' 
-#' N+2. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by 
-#' pipes, at the same level as the data & threshold folders in the input path that are to be copied with a 
-#' symbolic link to the output path. Be sure to specify 'DirSubCopy=threshold" if you want to retain this 
-#' and any other directories in the output directory structure.
+#' N+2. "DirSubCopy=value" (optional), where value is the names of additional subfolders (excluding 'data'), 
+#' separated by pipes, at the same level as the data & threshold folders in the input path that are to be 
+#' copied with symbolic links to the output path. Be sure to specify 'DirSubCopy=threshold" if you want to 
+#' retain it in the output directory structure. Note that it is acceptable to include the
+#' "flags" directory if flags files generated from other processing modules (differently named) are to be 
+#' passed through. 
 #' 
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}}, 
 #' which uses system environment variables if available.
@@ -225,7 +227,7 @@ DirSubCopy <- base::unique(base::setdiff(Para$DirSubCopy,'data'))
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
 
 # What are the expected subdirectories of each input path
-nameDirSub <- base::as.list(base::unique(c(DirSubCopy,'data','threshold')))
+nameDirSub <- base::as.list(c('data','threshold'))
 log$debug(base::paste0('Expected subdirectories of each datum path: ',base::paste0(nameDirSub,collapse=',')))
 
 # Find all the input paths (datums). We will process each one.

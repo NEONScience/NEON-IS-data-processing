@@ -5,7 +5,7 @@
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.stat.basc.R",
+      "./flow.stat.basc.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "FileSchmStat=$FILE_SCHEMA_STATS",
@@ -14,7 +14,7 @@
       "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)",
       "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
       ],
-    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v0.0.20",
+    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v1.0.0",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"
@@ -32,8 +32,8 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_STATS",
-          "repo": "avro_schemas",
-          "glob": "/dp01/relHumidity_dp01_stats.avsc"
+          "repo": "avro_schemas_relHumidityBuoy",
+          "glob": "/relHumidityBuoy/relHumidityBuoy_dp01_stats.avsc"
         }
       }
     ]

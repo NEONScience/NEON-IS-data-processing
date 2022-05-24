@@ -5,7 +5,7 @@
   "transform": {
     "cmd": [
       "Rscript",
-      "/flow.data.comb.ts.R",
+      "./flow.data.comb.ts.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
       "DirErr=/pfs/out/errored_datums",
@@ -16,7 +16,7 @@
       "ColKeep=readout_time|readout_time|specificConductance|specificConductance_ucrtExpn",
       "NameFileSufx=_basicStats_100"
     ],
-    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v0.0.9",
+    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v1.0.0",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],
@@ -36,8 +36,8 @@
       {
         "pfs": {
           "name": "SCHEMA_COMB",
-          "repo": "avro_schemas",
-          "glob": "/dp01/waterQuality_exoconductivity_dp01_stats.avsc"
+          "repo": "avro_schemas_waterQuality",
+          "glob": "/waterQuality/waterQuality_exoconductivity_dp01_stats.avsc"
         }
       }
     ]

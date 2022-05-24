@@ -11,7 +11,10 @@
                 "remove_date": null,
                 "transaction_date": "2018-09-21T20:29:55Z",
                 "context": [
-                    "aspirated-triple", "aspirated-triple-224", "aspirated-triple-226"
+                    "aspirated-triple"
+                ],
+                "group": [
+                    "aspirated-triple-224", "aspirated-triple-226"
                 ],
                 "locations": {
                     "type": "FeatureCollection",

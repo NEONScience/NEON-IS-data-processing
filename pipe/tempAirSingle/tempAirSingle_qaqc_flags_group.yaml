@@ -3,7 +3,7 @@ pipeline:
   name: tempAirSingle_qaqc_flags_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:9
+  image: quay.io/battelleecology/filter_joiner:11
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -13,11 +13,12 @@ transform:
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
-            name: QAQC_PLAUSIBILITY_PATH
+            name: QAQC_BASIC_PATH
             # Filter for flags directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
+            glob_pattern: /pfs/QAQC_BASIC_PATH/*/*/*/*/*/*/flags/**
             # Join on context group (already joined below by day)
             join_indices: [6]
         - path:
@@ -26,36 +27,29 @@ transform:
             glob_pattern: /pfs/QAQC_SPECIFIC_PATH/*/*/*/*/*/*/flags/**
             # Join on context group (already joined below by day)
             join_indices: [6]
-        - path:
-            name: REGULARIZED_FLAGS_PATH
-            # Filter for flags directory
-            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
-            # Join on context group (already joined below by day)
-            join_indices: [6]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
-      name: QAQC_PLAUSIBILITY_PATH
+      name: QAQC_BASIC_PATH
       repo: tempAirSingle_qaqc_plausibility
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: QAQC_SPECIFIC_PATH
       repo: tempAirSingle_qaqc_specific
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
-  - pfs:
-      name: REGULARIZED_FLAGS_PATH
-      repo: tempAirSingle_regularized_flags
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: "1"
-enable_stats: false
-standby: true
+  constant: 2
+resource_requests:
+  memory: 1.5G
+  cpu: 0.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1.2"}]'
+autoscaling: true
+

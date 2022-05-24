@@ -1,6 +1,6 @@
 Package: NEONprocIS.qaqc
 Title: QA/QC functions for NEON IS data processing
-Version: 0.0.6
+Version: 0.0.7
 Authors@R: 
     person(given = "Cove",
            family = "Sturtevant",
@@ -11,10 +11,11 @@ Depends:
     R (>= 3.5.1)
 Imports:
     rjson (>= 0.2.20),
-    lubridate (>= 1.7.4)
+    lubridate (>= 1.7.4),
+    caTools (>= 1.18.0)
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 2.1.0)

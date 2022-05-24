@@ -14,8 +14,8 @@ provided.}
 be provided. If both Schm and FileSchm are provided, Schm will be ignored.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log 
-output in addition to standard R error messaging. Defaults to NULL, in which no logger other than 
-standard R error messaging will be used.}
+output in addition to standard R error messaging. Defaults to NULL, in which the logger will be 
+created for use within this function.}
 }
 \value{
 A list of:\cr

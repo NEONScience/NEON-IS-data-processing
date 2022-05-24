@@ -13,7 +13,9 @@ def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')
+    pad_dirs: list = env.list('PAD_DIR')
     log_level: str = env.log_level('LOG_LEVEL')
+    relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'data_dir: {data_path} out_dir: {out_path}')
@@ -31,12 +33,13 @@ def main() -> None:
     data_type_index = int(args.subdirindex)
     config = Config(data_path=data_path,
                     out_path=out_path,
+                    pad_dirs=pad_dirs,
                     year_index=year_index,
                     month_index=month_index,
                     day_index=day_index,
                     location_index=location_index,
                     data_type_index=data_type_index,
-                    relative_path_index=0,
+                    relative_path_index=relative_path_index,
                     window_size=0)
     variable_pad = VariablePad(config)
     variable_pad.pad()

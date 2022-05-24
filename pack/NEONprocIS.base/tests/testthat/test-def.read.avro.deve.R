@@ -6,7 +6,7 @@
 #' Mija Choi \email{choim@battelleecology.org}
 
 #' @description
-#' This test runs on Windows only due to the ravro file type, ".so" which is currently available
+#' This test runs on Linux only due to the ravro file type, ".so" which is currently available
 # .so for Linux-based systems and the Android OS.
 # .dll for Windows
 
@@ -47,7 +47,7 @@ test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file"
               nameLib <- file.path(workingDirPath, "ravro.so")
               col_List = c('source_id', 'site_id', 'readout_time', 'resistance')
               
-              nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
+              nameFile <- file.path(workingDirPath, "testdata/HART_data.avro")
               #
               # Happy path 1: When one input data is passed in,
               #
@@ -85,6 +85,15 @@ test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file"
               
               expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
               expect_true (all (names(rpt) == col_List_noResistance))
+              
+              # Sad path 2: 
+              cat("\n |=================================================================================|")
+              cat("\n  Test 4 - negative: ")
+              cat("\n |=================================================================================|\n")
+
+              nameFile <- file.path(workingDirPath, "testdata/weather_type_null.avro")
+              rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib), silent = TRUE)
+  #            expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
 
             }
           })
