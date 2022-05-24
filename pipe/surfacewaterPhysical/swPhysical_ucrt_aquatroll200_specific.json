@@ -22,14 +22,14 @@
       {
         "pfs": {
           "name": "SCHEMA_UCRT",
-           "repo": "avro_schemas",
+           "repo": "avro_schemas_surfacewaterPhysical",
            "glob": "/dp01/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc"
         }
       },
       {
         "pfs": {
           "name": "SCHEMA_SCI",
-           "repo": "avro_schemas",
+           "repo": "avro_schemas_surfacewaterPhysical",
            "glob": "/dp01/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc"
         }
       }

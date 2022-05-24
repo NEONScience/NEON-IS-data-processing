@@ -31,7 +31,7 @@
       {
         "pfs": {
           "name": "SCHEMA_STAT",
-           "repo": "avro_schemas",
+           "repo": "avro_schemas_surfacewaterPhysical",
            "glob": "/dp01/surfacewaterPhysical_aquatroll200_dp01_stats.avsc"
         }
       }

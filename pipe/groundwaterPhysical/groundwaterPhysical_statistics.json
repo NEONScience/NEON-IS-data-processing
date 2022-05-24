@@ -31,7 +31,7 @@
       {
         "pfs": {
           "name": "SCHEMA_STAT",
-           "repo": "avro_schemas",
+           "repo": "avro_schemas_groundwaterPhysical",
            "glob": "/dp01/groundwaterPhysical_dp01_stats.avsc"
         }
       }

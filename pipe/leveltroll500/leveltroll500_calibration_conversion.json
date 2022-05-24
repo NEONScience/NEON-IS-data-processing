@@ -32,14 +32,14 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_DATA",
-          "repo": "avro_schemas",
+          "repo": "avro_schemas_leveltroll500",
           "glob": "/dp0p/leveltroll500_calibrated.avsc"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
-          "repo": "avro_schemas",
+          "repo": "avro_schemas_leveltroll500",
           "glob": "/dp0p/flags_calibration_leveltroll500.avsc"
         }
       }

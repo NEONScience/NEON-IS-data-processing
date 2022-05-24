@@ -29,14 +29,14 @@
       {      
         "pfs": {
             "name": "FILE_SCHEMA_DATA",
-            "repo": "avro_schemas",
+            "repo": "avro_schemas_aquatroll200",
             "glob": "/dp0p/aquatroll200_cond_corrected.avsc"
         }
       },
       {
         "pfs": {
             "name": "SCHEMA_FLAGS",
-            "repo": "avro_schemas",
+            "repo": "avro_schemas_aquatroll200",
             "glob": "/dp0p/flags_troll_specific_temp.avsc"
         }
       }

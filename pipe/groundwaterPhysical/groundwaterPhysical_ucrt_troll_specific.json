@@ -22,21 +22,21 @@
       {
         "pfs": {
           "name": "SCHEMA_DATA",
-           "repo": "avro_schemas",
+           "repo": "avro_schemas_groundwaterPhysical",
            "glob": "/dp01/groundwaterPhysical_dp01_troll_specific_data.avsc"
         }
       },
       {
         "pfs": {
           "name": "SCHEMA_UCRT",
-           "repo": "avro_schemas",
+           "repo": "avro_schemas_groundwaterPhysical",
            "glob": "/dp01/groundwaterPhysical_dp01_troll_specific_ucrt.avsc"
         }
       },
       {
         "pfs": {
           "name": "SCHEMA_SCI",
-           "repo": "avro_schemas",
+           "repo": "avro_schemas_groundwaterPhysical",
            "glob": "/dp01/groundwaterPhysical_dp01_troll_specific_sci_stats.avsc"
         }
       }

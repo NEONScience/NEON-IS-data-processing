@@ -30,7 +30,7 @@
       {
         "pfs": {
           "name": "SCHEMA_STAT",
-           "repo": "avro_schemas",
+           "repo": "avro_schemas_surfacewaterPhysical",
            "glob": "/dp01/surfacewaterPhysical_leveltroll500_dp01_stats.avsc"
         }
       }

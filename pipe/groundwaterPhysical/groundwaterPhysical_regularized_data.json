@@ -32,7 +32,7 @@
       {
         "pfs": {
         "name": "FILE_SCHEMA_RGLR",
-        "repo": "avro_schemas",
+        "repo": "avro_schemas_groundwaterPhysical",
         "branch": "master",
         "glob": "/dp0p/aquatroll200_calibrated_wo_source.avsc"
         }

@@ -28,7 +28,7 @@
       {
         "pfs": {
             "name": "SCHEMA_FLAGS",
-            "repo": "avro_schemas",
+            "repo": "avro_schemas_leveltroll500",
             "glob": "/dp0p/flags_troll_specific.avsc"
         }
       }
