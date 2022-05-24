@@ -1,0 +1,25 @@
+{
+   "type":"record",
+   "name":"Weather",
+   "namespace":"test",
+   "fields":[
+      {
+         "name":"station",
+         "type":{
+            "type":["null", "string"]
+         }
+      },
+      {
+         "name":"time",
+         "type":{
+            "type":["null","long"]
+         }
+      },
+      {
+         "name":"temp",
+         "type":{
+            "type":"int"
+         }
+      }
+   ]
+}
