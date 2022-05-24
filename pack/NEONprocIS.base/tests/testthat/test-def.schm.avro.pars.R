@@ -51,11 +51,4 @@ test_that("when a file with NULL is passed in",
             FileSchm <- file.path(workingDirPath, "testdata/HART_data.avro")
             rpt <- try(NEONprocIS.base::def.schm.avro.pars(FileSchm = FileSchm),
                   silent = TRUE)
-            # testthat::expect_true(is.list(rpt))
-            # expect_true (length(rpt$schmJson) == 1)
-            # expect_true (length(rpt$schmList) == 5)
-            # expect_true (length(rpt$var) == 3)
-            # expect_true (rpt$var[1]$name[1] == 'source_id')
-            # expect_true (rpt$var[2]$type[3] == "long|timestamp-millis")
-            # expect_true (typeof(rpt$var[3]$doc[3]) == "character")
           })
