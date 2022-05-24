@@ -30,7 +30,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_QM
       repo: avro_schemas_li191r
-      glob: /dp01/parQuantumLine_dp01_quality_metrics.avsc
+      glob: /parQuantumLine/parQuantumLine_dp01_quality_metrics.avsc
 parallelism_spec:
   constant: 1
 resource_requests:

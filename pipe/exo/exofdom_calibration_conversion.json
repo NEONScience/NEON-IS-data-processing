@@ -35,15 +35,15 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_DATA",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/exofdom_calibrated.avsc"
+          "repo": "avro_schemas_exofdom",
+          "glob": "/exofdom/exofdom_calibrated.avsc"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_calibration_exofdom.avsc"
+          "repo": "avro_schemas_exofdom",
+          "glob": "/exofdom/flags_calibration_exofdom.avsc"
         }
       }
     ]

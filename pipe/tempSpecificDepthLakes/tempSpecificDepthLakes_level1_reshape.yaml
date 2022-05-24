@@ -30,14 +30,14 @@ input:
       glob: "/tchain/*/*/*"
   - pfs:
       name: FILE_SCHEMA_MAP_COLS
-      repo: avro_schemas_tchain
+      repo: avro_schemas_tempSpecificDepthLakes
       branch: master
-      glob: "/dp01/tempSpecificDepthLakes_dp01_column_term_substitutions.avsc"
+      glob: "/tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_column_term_substitutions.avsc"
   - pfs:
       name: FILE_SCHEMA_MAP_DEPTH
-      repo: avro_schemas_tchain
+      repo: avro_schemas_tempSpecificDepthLakes
       branch: master
-      glob: "/dp01/tempSpecificDepthLakes_dp01_depth_term_map.avsc"
+      glob: "/tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_depth_term_map.avsc"
 parallelism_spec:
   constant: 1
 resource_requests:

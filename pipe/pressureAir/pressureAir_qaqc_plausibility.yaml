@@ -25,8 +25,8 @@ input:
       glob: /ptb330a/*/*/*/
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas_ptb330a
-      glob: /dp0p/flags_plausibility_pressureAir.avsc
+      repo: avro_schemas_pressureAir
+      glob: /pressureAir/flags_plausibility_pressureAir.avsc
 parallelism_spec:
   constant: 1
 resource_requests:

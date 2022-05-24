@@ -25,8 +25,8 @@ input:
       glob: /*/*/*
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas_prt
-      glob: /dp0p/flags_plausibility.avsc
+      repo: avro_schemas_tempAirSingle
+      glob: /tempAirSingle/flags_plausibility_tempAirSingle.avsc
 parallelism_spec:
   constant: 2
 resource_requests:

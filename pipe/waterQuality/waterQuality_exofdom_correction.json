@@ -29,15 +29,15 @@
       {
         "pfs": {
             "name": "SCHEMA_DATA",
-            "repo": "avro_schemas",
-            "glob": "/dp0p/exofdom_corrected.avsc"
+            "repo": "avro_schemas_waterQuality",
+            "glob": "/waterQuality/exofdom_corrected.avsc"
         }
       },
       {
         "pfs": {
             "name": "SCHEMA_FLAGS",
-            "repo": "avro_schemas",
-            "glob": "/dp0p/flags_correction_exofdom.avsc"
+            "repo": "avro_schemas_waterQuality",
+            "glob": "/waterQuality/flags_correction_exofdom.avsc"
         }
       }
     ]

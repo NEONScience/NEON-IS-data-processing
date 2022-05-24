@@ -28,8 +28,8 @@ input:
       glob: "/prt/*/*/*"
   - pfs:
       name: FILE_SCHEMA_QM
-      repo: avro_schemas
-      glob: "/dp01/tempSurfacewater_dp01_quality_metrics.avsc"
+      repo: avro_schemas_tempSurfacewater
+      glob: "/tempSurfacewater/tempSurfacewater_dp01_quality_metrics.avsc"
 enable_stats: false
 standby: true
 parallelism_spec:

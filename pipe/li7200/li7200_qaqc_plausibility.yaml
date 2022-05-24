@@ -44,7 +44,7 @@ input:
   - pfs:
       name: SCHEMA_FLAGS
       repo: avro_schemas_li7200
-      glob: /dp0p/flags_plausibility_li7200.avsc
+      glob: /li7200/flags_plausibility_li7200.avsc
 parallelism_spec:
   constant: 8
 resource_requests:

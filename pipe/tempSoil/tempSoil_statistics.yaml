@@ -25,7 +25,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_STATS
       repo: avro_schemas_prt
-      glob: /dp01/tempSoil_dp01_stats.avsc
+      glob: /tempSoil/tempSoil_dp01_stats.avsc
 parallelism_spec:
   constant: 4
 resource_requests:

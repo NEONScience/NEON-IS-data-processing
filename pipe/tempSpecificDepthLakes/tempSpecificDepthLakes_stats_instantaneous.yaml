@@ -28,8 +28,8 @@ input:
       glob: /tchain/*/*/*
   - pfs:
       name: SCHEMA_COMB
-      repo: avro_schemas_tchain
-      glob: /dp01/tempSpecificDepthLakes_dp01_stats_instantaneous.avsc
+      repo: avro_schemas_tempSpecificDepthLakes
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_stats_instantaneous.avsc
 resource_requests: 
   memory: 100M
   cpu: 0.1

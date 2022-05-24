@@ -34,15 +34,15 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_DATA",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/exodissolvedoxygen_calibrated.avsc"
+          "repo": "avro_schemas_exodissolvedoxygen",
+          "glob": "/exodissolvedoxygen/exodissolvedoxygen_calibrated.avsc"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_calibration_exodissolvedoxygen.avsc"
+          "repo": "avro_schemas_exodissolvedoxygen",
+          "glob": "/exodissolvedoxygen/flags_calibration_exodissolvedoxygen.avsc"
         }
       }
     ]

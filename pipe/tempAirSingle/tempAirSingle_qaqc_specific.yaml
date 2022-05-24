@@ -28,8 +28,8 @@ input:
       glob: /*/*/*
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas_prt
-      glob: /dp0p/flags_tempAir_specific.avsc
+      repo: avro_schemas_tempAirSingle
+      glob: /tempAirSingle/flags_tempAir_specific.avsc
 parallelism_spec:
   constant: 2
 resource_requests:

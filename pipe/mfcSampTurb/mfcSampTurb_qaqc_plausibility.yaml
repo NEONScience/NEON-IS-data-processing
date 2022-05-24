@@ -24,11 +24,11 @@ input:
   - pfs:
       name: DIR_IN
       repo: mfcSampTurb_padded_timeseries_analyzer
-      glob: /mcseries/*/*/*/*
+      glob: /mfcSampTurb/*/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas_mcseries
-      glob: /dp0p/flags_plausibility_mcseries.avsc
+      repo: avro_schemas_mfcSampTurb
+      glob: /mfcSampTurb/flags_plausibility_mcseries.avsc
 parallelism_spec:
   constant: 6
 resource_requests:

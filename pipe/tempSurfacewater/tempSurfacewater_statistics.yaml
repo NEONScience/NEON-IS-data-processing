@@ -29,9 +29,9 @@ input:
       glob: "/prt/*/*/*"
   - pfs:
       name: FILE_SCHEMA_STATS
-      repo: avro_schemas
+      repo: avro_schemas_tempSurfacewater
       branch: master
-      glob: "/dp01/tempSurfacewater_dp01_stats.avsc"
+      glob: "/tempSurfacewater/tempSurfacewater_dp01_stats.avsc"
 cache_size: 64M
 max_queue_size: '1'
 standby: true

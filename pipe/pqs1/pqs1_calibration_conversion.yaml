@@ -29,11 +29,11 @@ input:
   - pfs:
       name: FILE_SCHEMA_DATA
       repo: avro_schemas_pqs1
-      glob: /dp0p/pqs1_calibrated.avsc
+      glob: /pqs1/pqs1_calibrated.avsc
   - pfs:
       name: FILE_SCHEMA_FLAGS
       repo: avro_schemas_pqs1
-      glob: /dp0p/flags_calibration.avsc
+      glob: /pqs1/flags_calibration_pqs1.avsc
   - pfs:
       name: FILE_UNCERTAINTY_FDAS
       repo: uncertainty_fdas_pqs1

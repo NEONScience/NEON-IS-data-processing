@@ -34,15 +34,15 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_DATA",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/exo2_calibrated.avsc"
+          "repo": "avro_schemas_exo2",
+          "glob": "/exo2/exo2_calibrated.avsc"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_calibration_exo2.avsc"
+          "repo": "avro_schemas_exo2",
+          "glob": "/exo2/flags_calibration_exo2.avsc"
         }
       }
     ]

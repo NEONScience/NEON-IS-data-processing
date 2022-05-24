@@ -28,11 +28,11 @@ input:
   - pfs:
       name: FILE_SCHEMA_DATA
       repo: avro_schemas_ptb330a
-      glob: /dp0p/ptb330a_calibrated.avsc
+      glob: /ptb330a/ptb330a_calibrated.avsc
   - pfs:
       name: FILE_SCHEMA_FLAGS
       repo: avro_schemas_ptb330a
-      glob: /dp0p/flags_calibration.avsc
+      glob: /ptb330a/flags_calibration_ptb330a.avsc
 parallelism_spec:
   constant: 1
 resource_requests:

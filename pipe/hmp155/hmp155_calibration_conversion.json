@@ -34,15 +34,15 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_DATA",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/hmp155_calibrated.avsc"
+          "repo": "avro_schemas_hmp155",
+          "glob": "/hmp155/hmp155_calibrated.avsc"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_calibration_hmp155.avsc"
+          "repo": "avro_schemas_hmp155",
+          "glob": "/hmp155/flags_calibration_hmp155.avsc"
         }
       }
     ]

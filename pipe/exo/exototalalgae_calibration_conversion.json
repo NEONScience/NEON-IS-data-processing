@@ -34,15 +34,15 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_DATA",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/exototalalgae_calibrated.avsc"
+          "repo": "avro_schemas_exototalalgae",
+          "glob": "/exototalalgae/exototalalgae_calibrated.avsc"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_calibration_exototalalgae.avsc"
+          "repo": "avro_schemas_exototalalgae",
+          "glob": "/exototalalgae/flags_calibration_exototalalgae.avsc"
         }
       }
     ]

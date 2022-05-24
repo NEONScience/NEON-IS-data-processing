@@ -36,7 +36,7 @@ input:
   - pfs:
       name: SCHEMA_FLAGS
       repo: avro_schemas_mti300ahrs
-      glob: /dp0p/flags_plausibility_mti300ahrs.avsc
+      glob: /mti300ahrs/flags_plausibility_mti300ahrs.avsc
 parallelism_spec:
   constant: 6
 resource_requests:

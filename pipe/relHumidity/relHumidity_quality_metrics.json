@@ -39,8 +39,8 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_QM",
-          "repo": "avro_schemas",
-          "glob": "/dp01/relHumidity_dp01_quality_metrics.avsc"
+          "repo": "avro_schemas_relHumidity",
+          "glob": "/relHumidity/relHumidity_dp01_quality_metrics.avsc"
         }
       }
     ]

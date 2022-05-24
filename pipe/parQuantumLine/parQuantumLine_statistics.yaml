@@ -22,12 +22,12 @@ input:
       name: DIR_IN
       repo: parQuantumLine_pre_statistics_group
       branch: master
-      glob: "/li191r/*/*/*"
+      glob: /li191r/*/*/*
   - pfs:
       name: FILE_SCHEMA_STATS
       repo: avro_schemas_li191r
       branch: master
-      glob: "/dp01/parQuantumLine_dp01_stats.avsc"
+      glob: /parQuantumLine/parQuantumLine_dp01_stats.avsc
 parallelism_spec:
   constant: 1
 resource_requests: 
