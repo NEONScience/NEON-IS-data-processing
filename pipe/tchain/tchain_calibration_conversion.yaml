@@ -28,11 +28,11 @@ input:
   - pfs:
       name: FILE_SCHEMA_FLAGS
       repo: avro_schemas_tchain
-      glob: /dp0p/flags_calibration_tchain.avsc
+      glob: /tchain/flags_calibration_tchain.avsc
   - pfs:
       name: FILE_SCHEMA_DATA
       repo: avro_schemas_tchain
-      glob: /dp0p/tchain_parsed.avsc
+      glob: /tchain/tchain_parsed.avsc
 resource_requests:
   memory: 500M
   cpu: 1.2

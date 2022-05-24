@@ -23,8 +23,8 @@ input:
       glob: "/prt/*/*/*"
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas
-      glob: "/dp0p/flags_plausibility.avsc"
+      repo: avro_schemas_tempSurfacewater
+      glob: "/tempSurfacewater/flags_plausibility_tempSurfacewater.avsc"
 enable_stats: false
 standby: true
 parallelism_spec:

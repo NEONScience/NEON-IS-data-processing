@@ -29,7 +29,7 @@ input:
   - pfs:
       name: SCHEMA_FLAGS
       repo: avro_schemas_csat3
-      glob: /dp0p/flags_plausibility_csat3.avsc
+      glob: /csat3/flags_plausibility_csat3.avsc
 parallelism_spec:
   constant: 8
 resource_requests:

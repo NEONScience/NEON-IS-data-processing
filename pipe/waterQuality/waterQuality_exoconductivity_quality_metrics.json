@@ -36,8 +36,8 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_QM",
-          "repo": "avro_schemas",
-          "glob": "/dp01/waterQuality_exoconductivity_dp01_quality_metrics.avsc"
+          "repo": "avro_schemas_waterQuality",
+          "glob": "/waterQuality/waterQuality_exoconductivity_dp01_quality_metrics.avsc"
         }
       }
     ]

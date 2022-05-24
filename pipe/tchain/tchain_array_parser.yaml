@@ -27,7 +27,7 @@ input:
       name: SCHEMA_PATH
       repo: avro_schemas_tchain
       branch: master
-      glob: /dp0p/tchain_parsed.avsc
+      glob: /tchain/tchain_parsed.avsc
   - pfs:
       name: DATA_PATH
       repo: tchain_data_calibration_group

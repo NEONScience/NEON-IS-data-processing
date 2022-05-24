@@ -36,8 +36,8 @@ input:
       glob: /tchain/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas_tchain
-      glob: /dp0p/flags_plausibility_tempSpecificDepthLakes.avsc
+      repo: avro_schemas_tempSpecificDepthLakes
+      glob: /tempSpecificDepthLakes/flags_plausibility_tempSpecificDepthLakes.avsc
 parallelism_spec:
   constant: 1
 resource_requests:

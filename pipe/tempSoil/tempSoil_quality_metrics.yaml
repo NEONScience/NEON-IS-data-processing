@@ -30,7 +30,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_QM
       repo: avro_schemas_prt
-      glob: /dp01/tempSoil_dp01_quality_metrics.avsc
+      glob: /tempSoil/tempSoil_dp01_quality_metrics.avsc
 parallelism_spec:
   constant: 4
 resource_requests:

@@ -43,8 +43,8 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_QM",
-          "repo": "avro_schemas",
-          "glob": "/dp01/relHumidityBuoy_dp01_qm_instantaneous.avsc"
+          "repo": "avro_schemas_relHumidityBuoy",
+          "glob": "/relHumidityBuoy/relHumidityBuoy_dp01_qm_instantaneous.avsc"
         }
       }
     ]

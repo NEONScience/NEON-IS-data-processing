@@ -35,8 +35,8 @@
       {
         "pfs": {
           "name": "SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_plausibility_relHumidityBuoy.avsc"
+          "repo": "avro_schemas_relHumidityBuoy",
+          "glob": "/relHumidityBuoy/flags_plausibility_relHumidityBuoy.avsc"
         }
       }
     ]

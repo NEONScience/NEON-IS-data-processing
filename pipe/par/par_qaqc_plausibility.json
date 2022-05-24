@@ -32,8 +32,8 @@
       {
         "pfs": {
           "name": "SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_plausibility_par.avsc"
+          "repo": "avro_schemas_par",
+          "glob": "/par/flags_plausibility_par.avsc"
         }
       }
     ]

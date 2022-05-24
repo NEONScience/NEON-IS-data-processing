@@ -32,8 +32,8 @@
       {
         "pfs": {
           "name": "SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_plausibility_exototalalgae.avsc"
+          "repo": "avro_schemas_waterQuality",
+          "glob": "/waterQuality/flags_plausibility_exototalalgae.avsc"
         }
       }
     ]

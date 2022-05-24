@@ -24,8 +24,8 @@ input:
       glob: /ptb330a/*/*/*
   - pfs:
       name: FILE_SCHEMA_STATS
-      repo: avro_schemas_ptb330a
-      glob: /dp01/pressureAir_dp01_stats.avsc
+      repo: avro_schemas_pressureAir
+      glob: /pressureAir/pressureAir_dp01_stats.avsc
 parallelism_spec:
   constant: 1
 resource_requests: 

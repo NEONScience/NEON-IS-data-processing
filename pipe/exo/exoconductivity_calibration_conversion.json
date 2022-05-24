@@ -34,15 +34,15 @@
       {
         "pfs": {
           "name": "FILE_SCHEMA_DATA",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/exoconductivity_calibrated.avsc"
+          "repo": "avro_schemas_exoconductivity",
+          "glob": "/exoconductivity/exoconductivity_calibrated.avsc"
         }
       },
       {
         "pfs": {
           "name": "FILE_SCHEMA_FLAGS",
-          "repo": "avro_schemas",
-          "glob": "/dp0p/flags_calibration_exoconductivity.avsc"
+          "repo": "avro_schemas_exoconductivity",
+          "glob": "/exoconductivity/flags_calibration_exoconductivity.avsc"
         }
       }
     ]
