@@ -39,7 +39,7 @@ def get_thresholds(connection: extensions.connection, term_name: str) -> Iterato
              nam_locn.nam_locn_name
      '''
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [term_name])
+        cursor.execute(sql, term_name)
         rows = cursor.fetchall()
         for row in rows:
             threshold_name = row[0]

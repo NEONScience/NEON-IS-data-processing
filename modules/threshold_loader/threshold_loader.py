@@ -15,7 +15,7 @@ def load_thresholds(get_thresholds: Callable[[str], Iterator[Threshold]], out_pa
     """
     with open(Path(out_path, 'thresholds.json'), 'w') as file:
         thresholds = []
-        for threshold in get_thresholds(term_name):
+        for threshold in get_thresholds(term_name = term_name):
             thresholds.append(threshold._asdict())
         threshold_data = {}
         threshold_data.update({'thresholds': thresholds})
