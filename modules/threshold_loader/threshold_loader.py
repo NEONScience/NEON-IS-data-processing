@@ -12,6 +12,7 @@ def load_thresholds(get_thresholds: Callable[[str], Iterator[Threshold]], out_pa
 
     :param get_thresholds: Function yielding thresholds.
     :param out_path: The path for writing results.
+    :param prd_type: Same as term_name.
     """
     with open(Path(out_path, 'thresholds.json'), 'w') as file:
         thresholds = []
