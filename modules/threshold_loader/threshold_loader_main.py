@@ -17,7 +17,7 @@ def main() -> None:
     env = environs.Env()
     db_url: str = env.str('DATABASE_URL')
     out_path: Path = env.path('OUT_PATH')
-    prd_type: str = env.str('PRD_TYPE')
+    term: str = env.str('TERM')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
     log = get_logger()
@@ -25,7 +25,7 @@ def main() -> None:
 
     with closing(connect(db_url)) as connection:
         get_thresholds_partial = partial(get_thresholds, connection=connection)
-        load_thresholds(get_thresholds_partial, out_path, prd_type=prd_type)
+        load_thresholds(get_thresholds_partial, out_path, term=term)
 
 
 if __name__ == "__main__":
