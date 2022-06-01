@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/threshold_loader:31
+  image: quay.io/battelleecology/threshold_loader:32
   cmd:
   - /bin/bash
   stdin:
@@ -14,7 +14,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     TERM: barometricPressure
-    CTXT: barometric-pressure
+    CTXT: barometric-pressure|terrestrial
   secrets:
   - name: pdr-int-secret
     key: uri

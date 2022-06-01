@@ -25,9 +25,10 @@ def get_threshold_context(connection: extensions.connection, threshold_uuid: str
                 threshold_uuid = %s
         '''
         cursor.execute(sql, [threshold_uuid])
+        ctxt_l = ctxt.split("|")
         rows = cursor.fetchall()
         for row in rows:
             context_code = row[0]
-            if (context_code == ctxt):
+            if (context_code in ctxt_l):
                 context_codes.append(context_code)
     return context_codes
