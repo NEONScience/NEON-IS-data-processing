@@ -14,7 +14,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     TERM: barometricPressure
-    CTXT: terrestrial
+    CTXT: barometric-pressure|terrestrial
   secrets:
   - name: pdr-int-secret
     key: uri
