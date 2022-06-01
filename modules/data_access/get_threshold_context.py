@@ -29,6 +29,6 @@ def get_threshold_context(connection: extensions.connection, threshold_uuid: str
         rows = cursor.fetchall()
         for row in rows:
             context_code = row[0]
-            if (context_code in ctxt_l):
+            if ((context_code == ctxt_l) or (context_code in ctxt_l)):
                 context_codes.append(context_code)
     return context_codes
