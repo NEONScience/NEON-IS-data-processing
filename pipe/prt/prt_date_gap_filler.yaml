@@ -47,7 +47,7 @@ input:
           name: LOCATION_PATH
           repo: prt_location_active_dates_assignment
           # For full-scale daily processing, glob should be /prt/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /prt/((*/*/*)/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244))
-          glob: /prt/((*/*/*)/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244)) 
+          glob: /prt/((*/*/*)/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244|CFGLOC101775|CFGLOC101777|CFGLOC107926)) 
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           joinOn: $2
           group_by: $1
