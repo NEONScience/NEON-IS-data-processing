@@ -107,7 +107,7 @@ class DataAccessTest(unittest.TestCase):
     def test_get_named_locations(self):
         location = None
         i = 0
-        for location in get_named_locations(self.connection, 'CONFIG'):
+        for location in get_named_locations(self.connection, 'CONFIG', 'prt'):
             if i > 0:
                 break
             i += 1
