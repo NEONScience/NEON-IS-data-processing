@@ -11,27 +11,27 @@ import argparse
 import common.log_config as log_config
 
 
-# log = get_logger()
+log = get_logger()
 
 
 def load() -> None:
     env = environs.Env
-    out_path: Path = env.path('OUTPUT_PATH')
-    region: str = env.path('REGION')
-    log_level: str = env.log_level('LOG_LEVEL', 'DEBUG')
+    out_path: Path = os.environ['OUTPUT_PATH']
+    region: str = os.environ['REGION']
+    log_level: str = os.environ['LOG_LEVEL']
     log_config.configure(log_level)
     log.debug(f'out_path: {out_path}')
-    source_type: str = env.str('SOURCE_TYPE')
+    source_type: str = os.environ['SOURCE_TYPE']
     urlpath = ''
 
     if (region == "int"):
-        urlpath = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={sourcetype}"
+        urlpath = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
     elif (region == "cert"):
-        urlpath = f"http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={sourcetype}"
+        urlpath = f"http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
     elif (region == "prod"):
-        urlpath = f"http://den-prodcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={sourcetype}"
+        urlpath = f"http://den-prodcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
     else:
-        urlpath = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={sourcetype}"
+        urlpath = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
     log.debug(f"urlpath is {urlpath}")
     response = requests.get(urlpath, headers={'Accept': 'application/json'})
     if response.status_code == 200:
@@ -47,8 +47,8 @@ def load() -> None:
                     log.debug(f'Empty mac_address for assetuid {asset.get("assetUid")}')
                     continue
 
-                file_name = f'{sourcetype}_{mac_address}.txt'
-                file_path = Path(outputpath, sourcetype, mac_address, file_name)
+                file_name = f'{source_type}_{mac_address}.txt'
+                file_path = Path(out_path, source_type, mac_address, file_name)
                 # print(f"filePath to write is: {file_path}")
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(file_path, 'w') as asset_macaddress_file:
@@ -62,13 +62,4 @@ def load() -> None:
 
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('--output_path')
-    # parser.add_argument('--region')
-    # parser.add_argument('--source_type')
-    # args = parser.parse_args()
-    # outputpath = args.output_path
-    # region = args.region
-    # sourcetype = args.source_type
-
     load()
