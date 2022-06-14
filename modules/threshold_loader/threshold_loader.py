@@ -17,9 +17,12 @@ def load_thresholds(get_thresholds: Callable[[str],Iterator[Threshold]],out_path
     """
     with open(Path(out_path,'thresholds.json'),'w') as file:
         thresholds = []
+        ctxt_l = ctxt.split("|")
         for threshold in get_thresholds(term=term,ctxt=ctxt):
             if (threshold[3] != []):
-                thresholds.append(threshold._asdict())
+                for elem in ctxt_l:
+                    if (elem in threshold[3]):
+                        thresholds.append(threshold._asdict())
         threshold_data = {}
         threshold_data.update({'thresholds': thresholds})
         json_data = json.dumps(threshold_data,indent=4,sort_keys=False,default=str)
