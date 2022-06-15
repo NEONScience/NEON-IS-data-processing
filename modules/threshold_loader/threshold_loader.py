@@ -21,7 +21,7 @@ def load_thresholds(get_thresholds: Callable[[str],Iterator[Threshold]],out_path
             ctxt_l = []
         else:
             ctxt_l = ctxt.split("|")
-        for threshold in get_thresholds(term=term,ctxt=ctxt):
+        for threshold in get_thresholds(term=term):
             if (threshold[3] != []):
                 if (set(ctxt_l).issubset(set(threshold[3]))):
                     thresholds.append(threshold._asdict())

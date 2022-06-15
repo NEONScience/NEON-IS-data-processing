@@ -5,7 +5,7 @@ from typing import List
 from psycopg2 import extensions
 
 
-def get_threshold_context(connection: extensions.connection, threshold_uuid: str, ctxt: str) -> List[str]:
+def get_threshold_context(connection: extensions.connection, threshold_uuid: str) -> List[str]:
     """
     Get all context codes for a threshold.
 

@@ -9,7 +9,7 @@ from data_access.types.threshold import Threshold
 from data_access.get_threshold_context import get_threshold_context
 
 
-def get_thresholds(connection: extensions.connection, term: str, ctxt: str) -> Iterator[Threshold]:
+def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Threshold]:
     sql = '''
          select
              attr.column_name,
@@ -72,7 +72,7 @@ def get_thresholds(connection: extensions.connection, term: str, ctxt: str) -> I
                 end_date = date_formatter.to_string(end_date)
             if number_value is not None:
                 number_value = float(number_value)
-            context: List[str] = get_threshold_context(connection, threshold_uuid, ctxt=ctxt)
+            context: List[str] = get_threshold_context(connection, threshold_uuid)
             threshold = Threshold(threshold_name=threshold_name,
                                   term_name=term_name,
                                   location_name=location_name,
