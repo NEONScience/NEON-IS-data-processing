@@ -25,7 +25,7 @@ input:
       glob: /pqs1/*/*/*/
   - pfs:
       name: FILE_THRESHOLDS
-      repo: parWaterSurface_threshold_filter
+      repo: threshold_parWaterSurface
       glob: /thresholds.json
 parallelism_spec:
   constant: 1

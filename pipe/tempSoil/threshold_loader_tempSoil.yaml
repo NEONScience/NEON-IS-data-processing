@@ -13,7 +13,9 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    TERM: none
+    # Only a single term may be entered. Enter "none" to retrieve all terms
+    TERM: temp
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: soil
   secrets:
   - name: pdr-int-secret

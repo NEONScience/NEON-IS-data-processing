@@ -13,8 +13,10 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    # Only a single term may be entered. Enter "none" to retrieve all terms
     TERM: barometricPressure
-    CTXT: none
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: barometric-pressure
   secrets:
   - name: pdr-int-secret
     key: uri

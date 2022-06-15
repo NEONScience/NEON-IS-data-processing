@@ -12,7 +12,9 @@ transform:
   - python3 -m threshold_loader.threshold_loader_main
   env:
     OUT_PATH: /pfs/out
+    # Only a single term may be entered. Enter "none" to retrieve all terms
     TERM: temp
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: aspirated-single
     LOG_LEVEL: INFO
   secrets:
