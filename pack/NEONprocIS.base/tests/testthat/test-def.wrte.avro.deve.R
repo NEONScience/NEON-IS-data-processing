@@ -137,7 +137,7 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
                   NameFile = outFile,
                   NameFileSchm = schm,
                   NameLib = 'ravro.so'), silent = TRUE)
-              expect_true (writeSuccess == 0 ) 
+              expect_true (writeSuccess == 0) 
  
              }
           })
