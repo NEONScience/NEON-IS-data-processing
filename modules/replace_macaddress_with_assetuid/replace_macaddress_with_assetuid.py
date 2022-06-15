@@ -16,23 +16,13 @@ log = get_logger()
 
 def load() -> None:
     env = environs.Env
+    data_path: Path = env.path('DATA_PATH')
+    map_path: Path = env.path(MAP_PATH)
     out_path: Path = os.environ['OUTPUT_PATH']
-    region: str = os.environ['REGION']
     log_level: str = os.environ['LOG_LEVEL']
     log_config.configure(log_level)
     log.debug(f'out_path: {out_path}')
-    source_type: str = os.environ['SOURCE_TYPE']
-    urlpath = ''
-
-    if (region == "int"):
-        urlpath = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    elif (region == "cert"):
-        urlpath = f"http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    elif (region == "prod"):
-        urlpath = f"http://den-prodcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    else:
-        urlpath = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    log.debug(f"urlpath is {urlpath}")
+    
     response = requests.get(urlpath, headers={'Accept': 'application/json'})
     if response.status_code == 200:
         log.debug("sucessfully fetched the data")
