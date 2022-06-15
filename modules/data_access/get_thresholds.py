@@ -40,8 +40,12 @@ def get_thresholds(connection: extensions.connection, term: str, ctxt: str) -> I
          order by
              nam_locn.nam_locn_name
      '''
+    sql_2 = sql.replace("and \n             threshold.term_name = %s", "")
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [term])
+        if (term == 'none'):
+            cursor.execute(sql_2)
+        else:
+            cursor.execute(sql, [term])
         rows = cursor.fetchall()
         for row in rows:
             threshold_name = row[0]

@@ -17,7 +17,10 @@ def load_thresholds(get_thresholds: Callable[[str],Iterator[Threshold]],out_path
     """
     with open(Path(out_path,'thresholds.json'),'w') as file:
         thresholds = []
-        ctxt_l = ctxt.split("|")
+        if ctxt == 'none':
+            ctxt_l = []
+        else:
+            ctxt_l = ctxt.split("|")
         for threshold in get_thresholds(term=term,ctxt=ctxt):
             if (threshold[3] != []):
                 if (set(ctxt_l).issubset(set(threshold[3]))):
