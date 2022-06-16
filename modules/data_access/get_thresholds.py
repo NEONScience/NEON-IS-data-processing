@@ -36,7 +36,7 @@ def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Thr
          where
              property.condition_uuid is not null
          and 
-             threshold.term_name = ANY %s
+             threshold.term_name = ANY (%s)
          order by
              nam_locn.nam_locn_name
      '''
