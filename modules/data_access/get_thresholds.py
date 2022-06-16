@@ -36,7 +36,7 @@ def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Thr
          where
              property.condition_uuid is not null
          and 
-             threshold.term_name = %s
+             threshold.term_name = ANY %s
          order by
              nam_locn.nam_locn_name
      '''
@@ -45,7 +45,8 @@ def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Thr
         if (term == 'none'):
             cursor.execute(sql_2)
         else:
-            cursor.execute(sql, [term])
+            term_l = term.split("|")
+            cursor.execute(sql, (term_l,))
         rows = cursor.fetchall()
         for row in rows:
             threshold_name = row[0]
