@@ -39,7 +39,7 @@ class ThresholdLoaderTest(TestCase):
                             number_value=10,
                             string_value='value')
 
-        load_thresholds(get_thresholds, self.out_path, 'term_name')
+        load_thresholds(get_thresholds, self.out_path, 'term_name', 'context1|context2')
         expected_path = self.out_path.joinpath('thresholds.json')
         self.assertTrue(expected_path.exists())
         with open(expected_path, 'r') as threshold_file:
