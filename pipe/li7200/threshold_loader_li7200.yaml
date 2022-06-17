@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/threshold_loader:13
+  image: quay.io/battelleecology/threshold_loader:103
   cmd:
   - /bin/bash
   stdin:
@@ -13,6 +13,8 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    TERM: tempIn|tempOut|tempMean|tempRefe|presAtm|presDiff|presSum|powrH2oSamp|powrH2oRefe|asrpH2o|densMoleH2o|rtioMoleDryH2o|powrCo2Samp|powrCo2Refe|asrpCo2|densMoleCo2|rtioMoleDryCo2|potCool|ssiCo2|ssiH2o
+    CTXT: concentration-turbulent
   secrets:
   - name: pdr-int-secret
     key: uri

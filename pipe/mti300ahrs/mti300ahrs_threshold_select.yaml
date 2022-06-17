@@ -36,7 +36,7 @@ input:
       glob: /mti300ahrs/*/*/*/
   - pfs:
       name: FILE_THRESHOLDS
-      repo: mti300ahrs_threshold_filter
+      repo: threshold_mti300ahrs
       glob: /thresholds.json
 parallelism_spec:
   constant: 1

@@ -1,6 +1,5 @@
 parQuantumLine_regularized.yaml
 threshold_loader_parQuantumLine.yaml
-parQuantumLine_threshold_filter.yaml
 parQuantumLine_threshold_select.yaml
 parQuantumLine_timeseries_padder.yaml
 parQuantumLine_padded_timeseries_analyzer.yaml

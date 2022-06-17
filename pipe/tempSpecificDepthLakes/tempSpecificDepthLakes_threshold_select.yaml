@@ -35,7 +35,7 @@ input:
       glob: /tchain/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
-      repo: tempSpecificDepthLakes_threshold_filter
+      repo: threshold_tempSpecificDepthLakes
       glob: /thresholds.json
 parallelism_spec:
   constant: 1
