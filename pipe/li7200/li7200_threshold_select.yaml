@@ -44,7 +44,7 @@ input:
       glob: /li7200/*/*/*/
   - pfs:
       name: FILE_THRESHOLDS
-      repo: li7200_threshold_filter
+      repo: threshold_li7200
       glob: /thresholds.json
 parallelism_spec:
   constant: 1

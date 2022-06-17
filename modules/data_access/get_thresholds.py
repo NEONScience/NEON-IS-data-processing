@@ -40,7 +40,7 @@ def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Thr
          order by
              nam_locn.nam_locn_name
      '''
-    sql_2 = sql.replace("and \n             threshold.term_name = %s", "")
+    sql_2 = sql.replace("and \n             threshold.term_name = ANY (%s)", "")
     with closing(connection.cursor()) as cursor:
         if (term == 'none'):
             term_l = []

@@ -25,7 +25,7 @@ input:
       glob: /li191r/*/*/*/
   - pfs:
       name: FILE_THRESHOLDS
-      repo: parQuantumLine_threshold_filter
+      repo: threshold_parQuantumLine
       glob: /thresholds.json
 parallelism_spec:
   constant: 1
