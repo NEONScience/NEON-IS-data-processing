@@ -24,11 +24,11 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: mfcSampTurb
+      repo: mfcSampTurb_context_filter
       glob: /mcseries/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
-      repo: mfcSampTurb_threshold_filter
+      repo: threshold_mfcSampTurb
       glob: /thresholds.json
 parallelism_spec:
   constant: 4

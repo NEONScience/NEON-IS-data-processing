@@ -16,7 +16,6 @@ li7200_date_gap_filler_limiter.yaml
 li7200_date_gap_filler.yaml
 li7200_regularized_data.yaml
 li7200_l0p_data.yaml
-li7200_threshold_filter.yaml
 li7200_threshold_select.yaml
 li7200_threshold_regularized_group.yaml
 li7200_timeseries_padder.yaml

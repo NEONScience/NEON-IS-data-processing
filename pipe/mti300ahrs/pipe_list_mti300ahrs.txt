@@ -12,7 +12,6 @@ mti300ahrs_date_gap_filler_limiter.yaml
 mti300ahrs_date_gap_filler.yaml
 mti300ahrs_regularized_data.yaml
 mti300ahrs_l0p_data.yaml
-mti300ahrs_threshold_filter.yaml
 mti300ahrs_threshold_select.yaml
 mti300ahrs_threshold_regularized_group.yaml
 mti300ahrs_timeseries_padder.yaml
