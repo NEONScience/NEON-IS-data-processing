@@ -43,6 +43,7 @@ def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Thr
     sql_2 = sql.replace("and \n             threshold.term_name = ANY (%s)", "")
     with closing(connection.cursor()) as cursor:
         if (term == 'none'):
+            term_l = []
             cursor.execute(sql_2)
         else:
             term_l = term.split("|")
