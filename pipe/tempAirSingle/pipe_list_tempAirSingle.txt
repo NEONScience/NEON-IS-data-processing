@@ -3,7 +3,6 @@ tempAirSingle_dualfan_group_path.yaml
 tempAirSingle_windobserverii_group_path.yaml
 tempAirSingle_regularized.yaml
 threshold_loader_tempAirSingle.yaml
-tempAirSingle_threshold_filter.yaml
 tempAirSingle_threshold_select.yaml
 tempAirSingle_timeseries_padder.yaml
 tempAirSingle_padded_timeseries_analyzer.yaml
