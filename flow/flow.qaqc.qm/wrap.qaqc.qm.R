@@ -94,7 +94,7 @@
 #' IN THE SORTED FILE LIST. See output information below for details.
 #' 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
-#' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
+#' the same level as the flags folder in the input path that are to be copied with a symbolic link to the 
 #' output path (i.e. not combined but carried through as-is).
 
 #' @param log (optional) A logger object as produced by NEONprocIS.base::def.log.init to produce structured log

@@ -39,7 +39,7 @@ input:
         name: DATA_PATH
         repo: prt_merge_data_by_location
         # For full-scale daily processing, glob should be /prt/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /prt/(*/*/*/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244))
-        glob: /prt/(*/*/*/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244)) 
+        glob: /prt/(*/*/*/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244|CFGLOC101775|CFGLOC101777|CFGLOC107926)) 
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
