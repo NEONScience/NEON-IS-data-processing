@@ -13,8 +13,8 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    TERM: linePAR
-    CTXT: none
+    TERM: par
+    CTXT: upward-facing
   secrets:
   - name: pdr-int-secret
     key: uri

@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileSchmQf=$SCHEMA_FLAGS
-  - TermTest1=linePAR:null|gap|range(rmv)|step(rmv)|persistence
+  - TermTest1=par:null|gap|range(rmv)|step(rmv)|persistence
   - DirSubCopy=uncertainty_data|flags|uncertainty_coef
   image: quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.22
   image_pull_secrets:
@@ -33,7 +33,4 @@ resource_requests:
   memory: 500M
   cpu: 1.2
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2.2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
-scheduling_spec:
-  node_selector: 
-    cloud.google.com/machine-family: n2d
 autoscaling: true

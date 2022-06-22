@@ -3,14 +3,15 @@
 
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
-git_path='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir'
-source_type='tchain'
-product='tempSpecificDepthLakes'
+git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir'
+git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
+source_type='li191r'
+product='parQuantumLine'
 
 # Define paths based on base paths and product information above 
-spec_path_l0=$git_path/pipe/l0_data_loader
-spec_path_source_type=$git_path/pipe/$source_type
-spec_path_product=$git_path/pipe/$product
+spec_path_l0=$git_path_pipelines/pipe/l0_data_loader
+spec_path_source_type=$git_path_pipelines/pipe/$source_type
+spec_path_product=$git_path_pipelines/pipe/$product
 
 # Create sensor-specific import_trigger with a small amount of data
 pachctl create repo import_trigger_$source_type
@@ -38,14 +39,20 @@ pachctl finish commit calibration_$source_type@master
 # Create source-type-specific empty_files
 pachctl create repo empty_files_$source_type
 pachctl start commit empty_files_$source_type@master
-pachctl put file -r empty_files_$source_type@master:/$source_type -f $data_path/empty_files/$source_type
+pachctl put file -r empty_files_$source_type@master:/$source_type -f $git_path_avro/empty_files/$source_type
 pachctl finish commit empty_files_$source_type@master
 
 # Create source-type-specific avro_schemas
 pachctl create repo avro_schemas_$source_type
 pachctl start commit avro_schemas_$source_type@master
-pachctl put file -r avro_schemas_$source_type@master:/ -f $data_path/avro_schemas/
+pachctl put file -r avro_schemas_$source_type@master:/$source_type -f $git_path_avro/avro_schemas/$source_type
 pachctl finish commit avro_schemas_$source_type@master
+
+# Create product-specific avro_schemas
+pachctl create repo avro_schemas_$product
+pachctl start commit avro_schemas_$product@master
+pachctl put file -r avro_schemas_$product@master:/$product -f $git_path_avro/avro_schemas/$product
+pachctl finish commit avro_schemas_$product@master
 
 # Create source-type-specific fdas uncertainty (ONLY IF NEEDED FOR YOUR SOURCE TYPE)
 pachctl create repo uncertainty_fdas_$source_type
