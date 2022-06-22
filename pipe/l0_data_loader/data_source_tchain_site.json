@@ -70,10 +70,5 @@
     "cpu": 0.1
   },
   "pod_patch": "[{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/memory\",\"value\":\"100M\"},{\"op\":\"replace\",\"path\":\"/containers/1/resources/requests/cpu\",\"value\":\"0.05\"}]",
-  "scheduling_spec": {
-      "node_selector": {
-        "cloud.google.com/machine-family": "n2d"
-      }
-  },
   "autoscaling": true
 }
