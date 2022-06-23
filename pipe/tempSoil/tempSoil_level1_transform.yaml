@@ -11,15 +11,15 @@ transform:
     LOG_LEVEL: INFO
     OUT_PATH: "/pfs/out"
     RELATIVE_PATH_INDEX: '3'
-    YEAR_INDEX: '4'
+    YEAR_INDEX: '3'
 input: 
   cross:
   - pfs: 
       name: DATA_PATH
-      repo: tempSoil_level1_location_group
-      glob: /*/*/*/*/
+      repo: tempSoil_level1_group
+      glob: /*/*/*
   - pfs: 
       name: WORKBOOK_PATH
-      repo: pub_workbooks
-      glob: /tempSoil/*
+      repo: pub_workbooks_tempSoil
+      glob: /tempSoil/NEON.DOC.003785.txt
 

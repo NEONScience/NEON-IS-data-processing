@@ -17,15 +17,21 @@ transform:
         - path:
             name: QUALITY_METRICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QUALITY_METRICS_PATH/prt/*/*/*/*/quality_metrics/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/prt/*/quality_metrics/**
+            # Join on group ID and named location (already joined below by day)
+            join_indices: [6,8]
         - path:
             name: STATISTICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_PATH/prt/*/*/*/*/stats/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/prt/*/stats/**
+            # Join on group ID and named location (already joined below by day)
+            join_indices: [6,8]
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/*/*/*/*/prt/*/location/**
+            # Join on group ID and named location (already joined below by day)
+            join_indices: [6,8]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
@@ -35,13 +41,19 @@ input:
   - pfs:
       name: QUALITY_METRICS_PATH
       repo: tempSoil_quality_metrics
-      glob: /prt/(*)/(*)/(*)
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: tempSoil_statistics
-      glob: /prt/(*)/(*)/(*)
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: LOCATION_PATH
+      repo: tempSoil_group_path_prt
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:

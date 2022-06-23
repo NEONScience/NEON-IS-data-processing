@@ -26,7 +26,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: tempSoil_qaqc_flags_group
-      glob: /prt/*/*/*
+      glob: /*/*/*
   - pfs:
       name: FILE_SCHEMA_QM
       repo: avro_schemas_tempSoil
