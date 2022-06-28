@@ -24,8 +24,8 @@ transform:
 input:
   pfs:
     name: DIR_IN
-    repo: tempSoil_context_filter
-    glob: /prt/*/*/*
+    repo: tempSoil_group_path_prt
+    glob: /*/*/*
 parallelism_spec:
   constant: 4
 resource_requests:

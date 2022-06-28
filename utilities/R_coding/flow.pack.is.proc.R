@@ -28,7 +28,7 @@ namePack <- c("NEONprocIS.base",
               "NEONprocIS.cal",
               "NEONprocIS.qaqc",
               "NEONprocIS.stat",
-              "NEONprocIS.wq")[1]
+              "NEONprocIS.wq")[5]
 
 
 # Do you want to run the unit tests for the package?

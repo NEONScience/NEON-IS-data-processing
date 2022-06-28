@@ -22,7 +22,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: tempSoil_pre_statistics_group
-      glob: /prt/*/*/*
+      glob: /*/*/*
   - pfs:
       name: FILE_SCHEMA_STATS
       repo: avro_schemas_tempSoil
