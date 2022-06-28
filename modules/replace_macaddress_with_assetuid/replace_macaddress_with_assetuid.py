@@ -23,7 +23,7 @@ def load() -> None:
     log.debug(f'out_path: {out_path}')
     print(f'final output path is: {Path(out_path)}')
 
-    for dpath in Path(data_path).rglob('*'):
+    for dpath in Path("/pfs/DATA_PATH/").rglob('*'):
         if Path(dpath).is_file():
             print(f'you are inside file and the file name is : {dpath}')
             mac_address = Path(dpath).stem.split("_")[1]
