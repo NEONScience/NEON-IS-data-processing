@@ -14,20 +14,19 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
-  group:
-  - join:
-    - pfs:
-        name: DATA_PATH
-        repo: data_source_li7200_linkmerge
-        glob: /li7200/*/*/*/(*)
-        group_by: $1
-        join_on: $1
-    - pfs:
-        name: MAP_PATH
-        repo: li7200_assetuid_macaddress_map
-        glob: /li7200_stcdd/(*)
-        group_by: $1
-        join_on: $1
+  join:
+  - pfs:
+      name: DATA_PATH
+      repo: data_source_li7200_linkmerge
+      glob: /li7200/*/*/*/(*)
+      group_by: $1
+      join_on: $1
+  - pfs:
+      name: MAP_PATH
+      repo: li7200_assetuid_macaddress_map
+      glob: /li7200_stcdd/(*)
+      group_by: $1
+      join_on: $1
 parallelism_spec:
   constant: 1
 resource_requests:
