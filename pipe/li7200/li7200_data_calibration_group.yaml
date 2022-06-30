@@ -35,7 +35,7 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: data_source_li7200_path_refactor
+      repo: li7200_replace_macaddress_with_assetuid
       glob: /li7200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true
