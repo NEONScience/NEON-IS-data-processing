@@ -134,7 +134,7 @@ test_that("Unit test of wrap.stat.basc.R", {
       stat=c("minimum","maximum")
     )
   )
-  DirIn = "pfs/proc_group/prt/2019/01/02/CFGLOC101670"
+  DirIn = "pfs/proc_group/prt/2019/01/01/CFGLOC101670"
   DirOutBase = "pfs/out"
   
   if (dir.exists(DirOutBase)) {
@@ -152,14 +152,42 @@ test_that("Unit test of wrap.stat.basc.R", {
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
+  #2 Test 2, the stats has unexpected one
   
-  # DirSrc = "CFGLOC101670"
-  # exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
-  # 
-  # if (exstDirSrc) {
-  #   cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
-  #   rmSymbLink <- base::lapply(cmdSymbLink, base::system)
-  # }
-
+  stat_incorrect=c("mean","median","Uncert")
+  ParaStat$temp$stat = stat_incorrect
+  try(wrap.stat.basc(DirIn=DirIn,
+                 DirOutBase= DirOutBase,
+                 WndwAgr=as.difftime(c(1,30),units='mins'),
+                 ParaStat=ParaStat
+  ), silent=TRUE)
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  #3 Test 3, the subfolder is stats
+  
+  ParaStat$temp$stat = c("mean","median","expUncert")
+  DirSubCopy = 'stats'
+  try(wrap.stat.basc(DirIn=DirIn,
+                     DirOutBase= DirOutBase,
+                     WndwAgr=as.difftime(c(1,30),units='mins'),
+                     ParaStat=ParaStat,
+                     DirSubCopy = DirSubCopy), silent=TRUE)
+ 
+   #4 Test 4, the subfolder is nonStats
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  ParaStat$temp$stat = c("mean","median","expUncert")
+  DirSubCopy = 'nonSstats'
+  try(wrap.stat.basc(DirIn=DirIn,
+                     DirOutBase= DirOutBase,
+                     WndwAgr=as.difftime(c(1,30),units='mins'),
+                     ParaStat=ParaStat,
+                     DirSubCopy = DirSubCopy), silent=TRUE)
 })
 
