@@ -11,6 +11,7 @@ def get_threshold_context(connection: extensions.connection, threshold_uuid: str
 
     :param connection: A database connection.
     :param threshold_uuid: The threshold UUID.
+    :param ctxt: The string of context(s) separated by | if more than one.
     :return: The context codes.
     """
     context_codes: List[str] = []
@@ -20,7 +21,7 @@ def get_threshold_context(connection: extensions.connection, threshold_uuid: str
                 context_code 
             from 
                 threshold_context 
-            where 
+            where
                 threshold_uuid = %s
         '''
         cursor.execute(sql, [threshold_uuid])

@@ -19,7 +19,7 @@ input:
   pfs:
     name: IN_PATH
     repo: tempSoil_qaqc_plausibility
-    glob: /prt/*/*/*
+    glob: /*/*/*
     empty_files: false
 parallelism_spec:
   constant: 4

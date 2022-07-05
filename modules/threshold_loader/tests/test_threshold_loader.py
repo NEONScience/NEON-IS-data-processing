@@ -21,14 +21,14 @@ class ThresholdLoaderTest(TestCase):
 
     def test_write_file(self):
 
-        def get_thresholds() -> Iterator[Threshold]:
+        def get_thresholds(term) -> Iterator[Threshold]:
             """
             Mock function for getting thresholds.
 
             :return: A threshold.
             """
             yield Threshold(threshold_name='threshold_name',
-                            term_name='term_name',
+                            term_name=term,
                             location_name='CPER',
                             context=['context1', 'context2'],
                             start_date='start_date',
@@ -39,7 +39,7 @@ class ThresholdLoaderTest(TestCase):
                             number_value=10,
                             string_value='value')
 
-        load_thresholds(get_thresholds, self.out_path)
+        load_thresholds(get_thresholds, self.out_path, 'term_name', 'context1|context2')
         expected_path = self.out_path.joinpath('thresholds.json')
         self.assertTrue(expected_path.exists())
         with open(expected_path, 'r') as threshold_file:

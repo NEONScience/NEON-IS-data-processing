@@ -9,8 +9,7 @@ transform:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 4
-    --monthindex 5 --dayindex 6 --locindex 7 --subdirindex 8
+  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
@@ -22,16 +21,13 @@ input:
     name: DATA_PATH
     repo: tempSoil_threshold_select
     branch: master
-    glob: /prt/*/*/*
+    glob: /*/*/*
 parallelism_spec:
   constant: 4
 resource_requests:
   memory: 1G
   cpu: 0.3
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.6"}]'
-scheduling_spec:
-  node_selector: 
-    cloud.google.com/machine-family: n2d
 autoscaling: true
 
 

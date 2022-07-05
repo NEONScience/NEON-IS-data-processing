@@ -25,7 +25,7 @@ input:
       glob: /*/*/*
   - pfs:
       name: FILE_THRESHOLDS
-      repo: tempAirSingle_threshold_filter
+      repo: threshold_tempAirSingle
       glob: /thresholds.json
 parallelism_spec:
   constant: 2
@@ -33,7 +33,4 @@ resource_requests:
   memory: 20M
   cpu: 0.1
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"24M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
-scheduling_spec:
-  node_selector: 
-    cloud.google.com/machine-family: n2d
 autoscaling: true

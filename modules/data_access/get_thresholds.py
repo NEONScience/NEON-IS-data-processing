@@ -9,7 +9,7 @@ from data_access.types.threshold import Threshold
 from data_access.get_threshold_context import get_threshold_context
 
 
-def get_thresholds(connection: extensions.connection) -> Iterator[Threshold]:
+def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Threshold]:
     sql = '''
          select
              attr.column_name,
@@ -35,11 +35,19 @@ def get_thresholds(connection: extensions.connection) -> Iterator[Threshold]:
              pdr.nam_locn on pdr.nam_locn.nam_locn_id = pdr.condition.nam_locn_id
          where
              property.condition_uuid is not null
+         and 
+             threshold.term_name = ANY (%s)
          order by
              nam_locn.nam_locn_name
      '''
+    sql_2 = sql.replace("and \n             threshold.term_name = ANY (%s)", "")
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql)
+        if (term == 'none'):
+            term_l = []
+            cursor.execute(sql_2)
+        else:
+            term_l = term.split("|")
+            cursor.execute(sql, (term_l,))
         rows = cursor.fetchall()
         for row in rows:
             threshold_name = row[0]

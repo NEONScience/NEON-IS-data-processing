@@ -107,7 +107,7 @@ class DataAccessTest(unittest.TestCase):
     def test_get_named_locations(self):
         location = None
         i = 0
-        for location in get_named_locations(self.connection, 'CONFIG'):
+        for location in get_named_locations(self.connection, 'CONFIG', 'prt'):
             if i > 0:
                 break
             i += 1
@@ -116,7 +116,7 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_thresholds(self):
         i = 0
-        for threshold in get_thresholds(self.connection):
+        for threshold in get_thresholds(self.connection, 'term'):
             if i > 0:
                 break
             print(f'threshold: {threshold}')

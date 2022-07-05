@@ -39,7 +39,7 @@ input:
         name: DATA_PATH
         repo: li191r_merge_data_by_location
         # For full-scale daily processing, glob should be /li191r/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li191r/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449))
-        glob: /li191r/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449))
+        glob: /li191r/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
@@ -47,7 +47,7 @@ input:
           name: LOCATION_PATH
           repo: li191r_location_active_dates_assignment
           # For full-scale daily processing, glob should be /li191r/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li191r/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449))
-          glob: /li191r/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449))
+          glob: /li191r/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           joinOn: $2
           group_by: $1
@@ -65,8 +65,5 @@ resource_requests:
   memory: 200M
   cpu: 0.2
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
-scheduling_spec:
-  node_selector: 
-    cloud.google.com/machine-family: n2d
 autoscaling: true
 

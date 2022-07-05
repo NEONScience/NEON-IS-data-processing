@@ -8,13 +8,14 @@
       "./flow.stat.basc.R",
       "DirIn=$DIR_IN",
       "DirOut=/pfs/out",
+      "DirErr=/pfs/out/errored_datums",
       "FileSchmStat=$FILE_SCHEMA_STATS",
       "WndwAgr=030",
       "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)",
       "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)",
       "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
       ],
-    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v1.0.0",
+    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v1.0.2",
     "image_pull_secrets":["battelleecology-quay-read-all-pull-secret"],
     "env": {
       "LOG_LEVEL": "DEBUG"

@@ -19,15 +19,12 @@ input:
     name: DATA_PATH
     repo: tempSoil_timeseries_padder
     branch: master
-    glob: /prt/*/*/*
+    glob: /*/*/*
 parallelism_spec:
   constant: 4
 resource_requests:
   memory: 500M
   cpu: 0.6
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
-scheduling_spec:
-  node_selector: 
-    cloud.google.com/machine-family: n2d
 autoscaling: true
 

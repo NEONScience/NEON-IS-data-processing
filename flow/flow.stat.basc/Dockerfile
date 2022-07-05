@@ -17,6 +17,7 @@ WORKDIR /home/app
 
 # Copy in application code
 COPY ./flow.stat.basc.R .
+COPY ./wrap.stat.basc.R .
 
 # Run as app user
 RUN chown app:app -R /home/app

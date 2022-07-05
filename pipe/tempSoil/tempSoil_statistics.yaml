@@ -7,10 +7,11 @@ transform:
   - ./flow.stat.basc.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
   - FileSchmStat=$FILE_SCHEMA_STATS
   - WndwAgr=001|030
   - TermStat1=temp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)
-  image: quay.io/battelleecology/neon-is-stat-basc-r:v1.0.0
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v1.0.2
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -21,10 +22,10 @@ input:
   - pfs:
       name: DIR_IN
       repo: tempSoil_pre_statistics_group
-      glob: /prt/*/*/*
+      glob: /*/*/*
   - pfs:
       name: FILE_SCHEMA_STATS
-      repo: avro_schemas_prt
+      repo: avro_schemas_tempSoil
       glob: /tempSoil/tempSoil_dp01_stats.avsc
 parallelism_spec:
   constant: 4
@@ -32,8 +33,5 @@ resource_requests:
   memory: 800M
   cpu: 4
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"300M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
-scheduling_spec:
-  node_selector: 
-    cloud.google.com/machine-family: n2d
 autoscaling: true
 

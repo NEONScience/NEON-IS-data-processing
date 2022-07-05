@@ -13,16 +13,15 @@ transform:
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
             name: QUALITY_METRICS_PATH
-            # Filter for data directory
             glob_pattern: /pfs/QUALITY_METRICS_PATH/li191r/*/*/*/*/quality_metrics/**
             # Join on named location (already joined below by day)
             join_indices: [7]
         - path:
             name: STATISTICS_PATH
-            # Filter for data directory
             glob_pattern: /pfs/STATISTICS_PATH/li191r/*/*/*/*/stats/**
             # Join on named location (already joined below by day
             join_indices: [7]

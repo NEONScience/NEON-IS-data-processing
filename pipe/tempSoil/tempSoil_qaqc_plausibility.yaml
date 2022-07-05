@@ -22,7 +22,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: tempSoil_padded_timeseries_analyzer
-      glob: /prt/*/*/*
+      glob: /*/*/*
   - pfs:
       name: SCHEMA_FLAGS
       repo: avro_schemas_tempSoil
@@ -33,8 +33,5 @@ resource_requests:
   memory: 1G
   cpu: 4
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1"}]'
-scheduling_spec:
-  node_selector: 
-    cloud.google.com/machine-family: n2d
 autoscaling: true
 

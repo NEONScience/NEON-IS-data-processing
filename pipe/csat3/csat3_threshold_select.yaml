@@ -29,7 +29,7 @@ input:
       glob: /csat3/*/*/*/
   - pfs:
       name: FILE_THRESHOLDS
-      repo: csat3_threshold_filter
+      repo: threshold_csat3
       glob: /thresholds.json
 parallelism_spec:
   constant: 1

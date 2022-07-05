@@ -24,15 +24,12 @@ transform:
 input:
   pfs:
     name: DIR_IN
-    repo: tempSoil_context_filter
-    glob: /prt/*/*/*
+    repo: tempSoil_group_path_prt
+    glob: /*/*/*
 parallelism_spec:
   constant: 4
 resource_requests:
   memory: 1.5G
   cpu: 4
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1"}]'
-scheduling_spec:
-  node_selector: 
-    cloud.google.com/machine-family: n2d
 autoscaling: true

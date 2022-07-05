@@ -25,15 +25,12 @@ input:
       glob: /ptb330a/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
-      repo: pressureAir_threshold_filter
+      repo: threshold_pressureAir
       glob: /thresholds.json
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 300MM
+  memory: 300M
   cpu: 1
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"300M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
-scheduling_spec:
-  node_selector: 
-    cloud.google.com/machine-family: n2d
 autoscaling: true

@@ -1,7 +1,6 @@
-tempSoil_context_filter.yaml
+tempSoil_group_path_prt.yaml
 tempSoil_regularized.yaml
 threshold_loader_tempSoil.yaml
-tempSoil_threshold_filter.yaml
 tempSoil_threshold_select.yaml
 tempSoil_timeseries_padder.yaml
 tempSoil_padded_timeseries_analyzer.yaml
