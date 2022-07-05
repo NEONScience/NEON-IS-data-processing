@@ -134,6 +134,13 @@ test_that("Unit test of wrap.stat.basc.R", {
       stat=c("minimum","maximum")
     )
   )
+  ParaStat_1 = list(
+    temp=list(
+      term="temp",
+      stat=c("mean","median","expUncert"),
+      funcUcrt="wrap.ucrt.dp01.cal.cnst.fdas.rstc"
+    )
+  )
   DirIn = "pfs/proc_group/prt/2019/01/01/CFGLOC101670"
   DirOutBase = "pfs/out"
   
@@ -146,7 +153,7 @@ test_that("Unit test of wrap.stat.basc.R", {
   wrap.stat.basc(DirIn=DirIn,
                  DirOutBase= DirOutBase,
                  WndwAgr=as.difftime(c(1,30),units='mins'),
-                 ParaStat=ParaStat
+                 ParaStat=ParaStat_1
   )
   
   if (dir.exists(DirOutBase)) {
@@ -154,40 +161,40 @@ test_that("Unit test of wrap.stat.basc.R", {
   }
   #2 Test 2, the stats has unexpected one
   
-  stat_incorrect=c("mean","median","Uncert")
-  ParaStat$temp$stat = stat_incorrect
-  try(wrap.stat.basc(DirIn=DirIn,
-                 DirOutBase= DirOutBase,
-                 WndwAgr=as.difftime(c(1,30),units='mins'),
-                 ParaStat=ParaStat
-  ), silent=TRUE)
-  
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
-  
-  #3 Test 3, the subfolder is stats
-  
-  ParaStat$temp$stat = c("mean","median","expUncert")
-  DirSubCopy = 'stats'
-  try(wrap.stat.basc(DirIn=DirIn,
-                     DirOutBase= DirOutBase,
-                     WndwAgr=as.difftime(c(1,30),units='mins'),
-                     ParaStat=ParaStat,
-                     DirSubCopy = DirSubCopy), silent=TRUE)
- 
-   #4 Test 4, the subfolder is nonStats
-  
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
-  
-  ParaStat$temp$stat = c("mean","median","expUncert")
-  DirSubCopy = 'nonSstats'
-  try(wrap.stat.basc(DirIn=DirIn,
-                     DirOutBase= DirOutBase,
-                     WndwAgr=as.difftime(c(1,30),units='mins'),
-                     ParaStat=ParaStat,
-                     DirSubCopy = DirSubCopy), silent=TRUE)
+  # stat_incorrect=c("mean","median","Uncert")
+  # ParaStat$temp$stat = stat_incorrect
+  # try(wrap.stat.basc(DirIn=DirIn,
+  #                DirOutBase= DirOutBase,
+  #                WndwAgr=as.difftime(c(1,30),units='mins'),
+  #                ParaStat=ParaStat_1
+  # ), silent=TRUE)
+  # 
+  # if (dir.exists(DirOutBase)) {
+  #   unlink(DirOutBase, recursive = TRUE)
+  # }
+  # 
+  # #3 Test 3, the subfolder is stats
+  # 
+  # ParaStat$temp$stat = c("mean","median","expUncert")
+  # DirSubCopy = 'stats'
+  # try(wrap.stat.basc(DirIn=DirIn,
+  #                    DirOutBase= DirOutBase,
+  #                    WndwAgr=as.difftime(c(1,30),units='mins'),
+  #                    ParaStat=ParaStat_1,
+  #                    DirSubCopy = DirSubCopy), silent=TRUE)
+  # 
+  #  #4 Test 4, the subfolder is nonStats
+  # 
+  # if (dir.exists(DirOutBase)) {
+  #   unlink(DirOutBase, recursive = TRUE)
+  # }
+  # 
+  # ParaStat$temp$stat = c("mean","median","expUncert")
+  # DirSubCopy = 'nonSstats'
+  # try(wrap.stat.basc(DirIn=DirIn,
+  #                    DirOutBase= DirOutBase,
+  #                    WndwAgr=as.difftime(c(1,30),units='mins'),
+  #                    ParaStat=ParaStat_1,
+  #                    DirSubCopy = DirSubCopy), silent=TRUE)
 })
 
