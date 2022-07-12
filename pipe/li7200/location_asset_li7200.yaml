@@ -13,7 +13,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: li7200
+    SOURCE_TYPE: li7200_stcdd
   secrets:
   - name: pdr-int-secret
     key: uri
