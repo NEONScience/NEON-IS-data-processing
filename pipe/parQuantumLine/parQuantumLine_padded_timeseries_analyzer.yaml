@@ -18,7 +18,6 @@ input:
   pfs:
     name: DATA_PATH
     repo: parQuantumLine_timeseries_padder
-    branch: master
     glob: /li191r/*/*/*
 parallelism_spec:
   constant: 1
@@ -27,4 +26,3 @@ resource_requests:
   cpu: 0.1
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"400M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
 autoscaling: true
-

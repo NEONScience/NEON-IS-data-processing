@@ -1,0 +1,50 @@
+---
+pipeline:
+  name: groundwaterPhysical_QM
+transform:
+  cmd:
+  - Rscript
+  - ./flow.qaqc.qm.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileSchmQm=$FILE_SCHEMA_QM
+  - WndwAgr=030
+  - WghtAlphBeta=2|1
+  - Thsh=0.2
+  - GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF
+  - GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF
+  - GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF
+  - GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF
+  - GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF
+  - GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF
+  - GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF
+  - GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF
+  - GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF
+  - QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1
+  - QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1
+  image: quay.io/battelleecology/neon-is-qaqc-qm-r:v1.0.0
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: DEBUG
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: groundwaterPhysical_qaqc_flags_group
+      glob: /aquatroll200/*/*/*
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: avro_schemas_groundwaterPhysical
+      glob: /groundwaterPhysical/groundwaterPhysical_aquatroll200_dp01_quality_metrics.avsc
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 400M
+  cpu: 1.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"200M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
+autoscaling: true
+
+

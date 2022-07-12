@@ -3,7 +3,7 @@ pipeline:
   name: groundwaterPhysical_level1_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:9
+  image: quay.io/battelleecology/filter_joiner:11
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -13,57 +13,62 @@ transform:
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
             name: SCI_PATH
             glob_pattern: /pfs/SCI_PATH/**
             # Join on context group (already joined by day below)
-            join_indices: [6]
+            join_indices: [7]
         - path:
             name: STATISTICS_PATH
             glob_pattern: /pfs/STATISTICS_PATH/**
             # Join on context group (already joined by day below)
-            join_indices: [6]
+            join_indices: [7]
         - path:
             name: QUALITY_METRICS_PATH_AVERAGED
             glob_pattern: /pfs/QUALITY_METRICS_PATH_AVERAGED/**
             # Join on context group (already joined by day below)
-            join_indices: [6]
+            join_indices: [7]
         - path:
             name: QUALITY_METRICS_PATH_INST
             glob_pattern: /pfs/QUALITY_METRICS_PATH_INST/**
             # Join on context group (already joined by day below)
-            join_indices: [6]
+            join_indices: [7]
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
       name: SCI_PATH
       repo: groundwaterPhysical_ucrt_troll_specific
-      glob: /(*)/(*)/(*)
+      glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: groundwaterPhysical_statistics
-      glob: /(*)/(*)/(*)
+      glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: QUALITY_METRICS_PATH_AVERAGED
       repo: groundwaterPhysical_QM
-      glob: /(*)/(*)/(*)
+      glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: QUALITY_METRICS_PATH_INST
       repo: groundwaterPhysical_QM_inst
-      glob: /(*)/(*)/(*)
+      glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: "1"
-enable_stats: false
-standby: true
+  constant: 1
+resource_requests:
+  memory: 200M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
+autoscaling: true

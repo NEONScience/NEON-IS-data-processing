@@ -11,8 +11,8 @@
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir'
 git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
-source_type='prt'
-product='tempSoil'
+source_type='leveltroll500'
+product='surfacewaterPhysical'
 
 # Define paths based on base paths and product information above 
 spec_path_l0=$git_path_pipelines/pipe/l0_data_loader
@@ -33,7 +33,7 @@ pachctl finish commit import_trigger_$source_type@master
 
 # Load L0 data
 # *** First, create/edit/update all pipeline specs ***
-pachctl create pipeline -f $spec_path_l0/'data_source_'$source_type'_site.json'
+pachctl create pipeline -f $spec_path_l0/'data_source_'$source_type'_site.yaml'
 pachctl create pipeline -f $spec_path_l0/'data_source_'$source_type'_linkmerge.yaml'
 
 # Load in calibrations (must be stored locally)
