@@ -272,7 +272,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                      DirOutBase=Para$DirOut,
                      WndwAgr=WndwAgr,
                      ParaStat=ParaStat,
-                     SchmQm=SchmQm,
+                     SchmStat=SchmStat,
                      DirSubCopy=DirSubCopy,
                      log=log
       ),
