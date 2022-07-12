@@ -11,7 +11,7 @@ transform:
   - FileSchmStat=$SCHEMA_STAT
   - WndwAgr=005|030
   - TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr
-  image: quay.io/battelleecology/neon-is-stat-basc-r:v1.0.2
+  image: quay.io/battelleecology/neon-is-stat-basc-r:v1.0.3
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
