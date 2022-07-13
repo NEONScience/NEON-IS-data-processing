@@ -1,0 +1,31 @@
+---
+pipeline:
+  name: surfacewaterPhysical_timeseries_padder
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/timeseries_padder:36
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 4
+    --monthindex 5 --dayindex 6 --locindex 7 --subdirindex 8
+  env:
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    PAD_DIR: data
+    RELATIVE_PATH_INDEX: '3'
+input:
+  pfs:
+    name: DATA_PATH
+    repo: surfacewaterPhysical_threshold_select
+    glob: /*/*/*/*
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 400M
+  cpu: 0.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2.5G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.8"}]'
+autoscaling: true
+

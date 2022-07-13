@@ -30,4 +30,3 @@ resource_requests:
   cpu: 0.2
 pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2.5G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.8"}]'
 autoscaling: true
-

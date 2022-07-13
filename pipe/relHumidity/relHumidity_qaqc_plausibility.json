@@ -15,7 +15,7 @@
       "TermTest3=dewPoint:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)",
       "VarAddFileQf=errorState"
     ],
-    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v0.0.22",
+    "image": "quay.io/battelleecology/neon-is-qaqc-plau-r:v1.0.0",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

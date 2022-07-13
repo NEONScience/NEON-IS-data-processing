@@ -13,7 +13,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    # Only a single term may be entered. Enter "none" to retrieve all terms
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
     TERM: barometricPressure
     # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: barometric-pressure

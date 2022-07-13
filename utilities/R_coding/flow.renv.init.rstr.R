@@ -33,8 +33,9 @@
 # ------ Choose options --------
 
 # Module or local package directory
-#dirWork <- '~/R/NEON-IS-data-processing-homeDir/pack/NEONprocIS.wq'
-dirWork <- '~/R/NEON-IS-data-processing-homeDir/flow/flow.thsh.slct'
+#dirWork <- '~/NEON-IS-data-processing/pack/NEONprocIS.wq'
+#dirWork <- '~/R/NEON-IS-data-processing-homeDir/flow/flow.stat.basc'
+dirWork <- '~/R/NEON-IS-data-processing/flow/flow.troll.elevation'
 PackIgnr <- c('NEONprocIS.base','NEONprocIS.cal','NEONprocIS.qaqc','NEONprocIS.wq','NEONprocIS.stat') # These should already be in the respective docker containers
 
 # Keep and use the local project that renv creates when creating/updating the lockfile 
@@ -88,15 +89,10 @@ renv::init(dirWork,restart=KeepProj)
 
 # If there is already a lockfile, you will be asked whether to restore from the lockfile, 
 # discard the lockfile and re-initialize it, or to activate the project but do nothing else.
-# Choose the option that suites the desired use of this script. 
+# Choose the option that suites the desired use of this script. For example, if wanting to 
 # In any case, a .Rprofile file will be created, and potentially a *.Rproj file. Delete them.
 if(KeepProj == FALSE){
-  nameProj <- utils::tail(base::strsplit(dirWork,'/')[[1]],1)
-  base::suppressWarnings(base::file.remove(
-    base::paste0(dirWork,'/',
-      c(base::paste0(nameProj,'.Rproj'),
-        '.Rprofile',
-        '.Rhistory'))))
+  base::suppressWarnings(base::file.remove(base::paste0(dirWork,'/',c('*.Rproj','.Rprofile','.Rhistory'))))
 }
 
 # Remove the local library
