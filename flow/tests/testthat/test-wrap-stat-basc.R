@@ -125,57 +125,107 @@ test_that("Unit test of wrap.stat.basc.R", {
   DirIn = "pfs/tempSoil_pre_statistics_group/2020/01/02/CFGLOC101777"
   DirOutBase = "pfs/out"
   
+  #1 Test 1
+  
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
-  
-#1 Test 1
-  
   wrap.stat.basc(DirIn=DirIn,
                  DirOutBase= DirOutBase,
                  WndwAgr=as.difftime(c(1,30),units='mins'),
                  ParaStat=ParaStat
   )
   
+  #2 Test 2, There a folder for uncertainty data? zero uncertainty data files in path
+  
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
-  #2 Test 2, the stats has unexpected one
+  
+  DirIn_noUncert = "pfs/tempSoil_pre_statistics_group_noUncert/2020/01/02/CFGLOC101777"
+  try(wrap.stat.basc(DirIn=DirIn_noUncert,
+                     DirOutBase= DirOutBase,
+                     WndwAgr=as.difftime(c(1,30),units='mins'),
+                     ParaStat=ParaStat,
+                     DirSubCopy = DirSubCopy), silent=TRUE)
+  
+  #3 Test 3, There a folder for uncertainty coef? zero uncertainty coef files in path
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  DirIn_noUncertCoef = "pfs/tempSoil_pre_statistics_group_noUcrtCoef/2020/01/02/CFGLOC101777"
+  try(wrap.stat.basc(DirIn=DirIn_noUncertCoef,
+                     DirOutBase= DirOutBase,
+                     WndwAgr=as.difftime(c(1,30),units='mins'),
+                     ParaStat=ParaStat,
+                     DirSubCopy = DirSubCopy), silent=TRUE)
+  #4 Test 4, Open the uncertainty coef file, unreadable
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  DirIn_wrongData = "pfs/tempSoil_pre_statistics_group_wrongUcrtCoef/2020/01/02/CFGLOC101777"
+  try(wrap.stat.basc(DirIn=DirIn_wrongData,
+                     DirOutBase= DirOutBase,
+                     WndwAgr=as.difftime(c(1,30),units='mins'),
+                     ParaStat=ParaStat,
+                     DirSubCopy = DirSubCopy), silent=TRUE)  
+  #5 Test 5, Open the uncertainty data file, unreadable
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  DirIn_wrongData = "pfs/tempSoil_pre_statistics_group_wrongUcrtData/2020/01/02/CFGLOC101777"
+  try(wrap.stat.basc(DirIn=DirIn_wrongData,
+                     DirOutBase= DirOutBase,
+                     WndwAgr=as.difftime(c(1,30),units='mins'),
+                     ParaStat=ParaStat,
+                     DirSubCopy = DirSubCopy), silent=TRUE)  
+
+  #6 Test 6, the stats has unexpected one
   
   stat_incorrect=c("mean","median","Uncert")
-  ParaStat$temp$stat = stat_incorrect
+  ParaStat_incorrect = ParaStat
+  ParaStat_incorrect$temp$stat = stat_incorrect
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
   try(wrap.stat.basc(DirIn=DirIn,
                  DirOutBase= DirOutBase,
                  WndwAgr=as.difftime(c(1,30),units='mins'),
-                 ParaStat=ParaStat
-  ), silent=TRUE)
+                 ParaStat=ParaStat_incorrect), silent=TRUE)
+  
+  #7 Test 7, the subfolder is stats
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  #3 Test 3, the subfolder is stats
-  
-  ParaStat$temp$stat = c("mean","median","expUncert")
   DirSubCopy = 'stats'
   try(wrap.stat.basc(DirIn=DirIn,
                      DirOutBase= DirOutBase,
                      WndwAgr=as.difftime(c(1,30),units='mins'),
-                     ParaStat=ParaStat_1,
+                     ParaStat=ParaStat,
                      DirSubCopy = DirSubCopy), silent=TRUE)
   
-  #4 Test 4, the subfolder is nonStats
+  #8 Test 8, the subfolder is nonStats
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  ParaStat$temp$stat = c("mean","median","expUncert")
   DirSubCopy = 'nonSstats'
   try(wrap.stat.basc(DirIn=DirIn,
                      DirOutBase= DirOutBase,
                      WndwAgr=as.difftime(c(1,30),units='mins'),
-                     ParaStat=ParaStat_1,
+                     ParaStat=ParaStat,
                      DirSubCopy = DirSubCopy), silent=TRUE)
+
 })
 
