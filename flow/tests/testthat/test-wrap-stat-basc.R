@@ -182,8 +182,7 @@ test_that("Unit test of wrap.stat.basc.R", {
     DirIn = DirIn_noData,
     DirOutBase = DirOutBase,
     WndwAgr = as.difftime(c(1, 30), units = 'mins'),
-    ParaStat = ParaStat,
-    DirSubCopy = DirSubCopy
+    ParaStat = ParaStat
   ),silent = TRUE)
   
   #5 Test 5, There a folder for uncertainty coef? zero uncertainty coef files in path
@@ -195,8 +194,7 @@ test_that("Unit test of wrap.stat.basc.R", {
     DirIn = DirIn_noData,
     DirOutBase = DirOutBase,
     WndwAgr = as.difftime(c(1, 30), units = 'mins'),
-    ParaStat = ParaStat,
-    DirSubCopy = DirSubCopy
+    ParaStat = ParaStat
   ),silent = TRUE)
   #6 Test 6, data unreadable
   
@@ -207,8 +205,7 @@ test_that("Unit test of wrap.stat.basc.R", {
     DirIn = DirIn_badData,
     DirOutBase = DirOutBase,
     WndwAgr = as.difftime(c(1, 30), units = 'mins'),
-    ParaStat = ParaStat,
-    DirSubCopy = DirSubCopy
+    ParaStat = ParaStat
   ),silent = TRUE)
   
   #7 Test 7, no uncertainty_data directory
@@ -220,8 +217,7 @@ test_that("Unit test of wrap.stat.basc.R", {
     DirIn = DirIn_badData,
     DirOutBase = DirOutBase,
     WndwAgr = as.difftime(c(1, 30), units = 'mins'),
-    ParaStat = ParaStat,
-    DirSubCopy = DirSubCopy
+    ParaStat = ParaStat
   ),silent = TRUE)
   
   #8 Test 8, Open the uncertainty coef file, unreadable
@@ -233,8 +229,7 @@ test_that("Unit test of wrap.stat.basc.R", {
     DirIn = DirIn_badData,
     DirOutBase = DirOutBase,
     WndwAgr = as.difftime(c(1, 30), units = 'mins'),
-    ParaStat = ParaStat,
-    DirSubCopy = DirSubCopy
+    ParaStat = ParaStat
   ),silent = TRUE)
   #9 Test 9, Open the uncertainty data file, unreadable
   
@@ -245,8 +240,7 @@ test_that("Unit test of wrap.stat.basc.R", {
     DirIn = DirIn_badData,
     DirOutBase = DirOutBase,
     WndwAgr = as.difftime(c(1, 30), units = 'mins'),
-    ParaStat = ParaStat,
-    DirSubCopy = DirSubCopy
+    ParaStat = ParaStat
   ),silent = TRUE)
   
   #10 Test 10, the stats has unexpected one
