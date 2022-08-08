@@ -93,7 +93,7 @@ test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file"
 
               nameFile <- file.path(workingDirPath, "testdata/weather_type_null.avro")
               rpt <- try(def.read.avro.deve(NameFile = nameFile, NameLib = nameLib), silent = TRUE)
-  #            expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
+              expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
 
             }
           })
