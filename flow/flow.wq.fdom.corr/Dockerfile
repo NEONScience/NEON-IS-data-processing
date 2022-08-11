@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - fDOM Temperature and Absorbance Corrections for Water Quality
 
 # Start with the neon-is-base-r image. 
-FROM quay.io/battelleecology/neon-is-pack-wq-r:v1.0.0
+FROM quay.io/battelleecology/neon-is-pack-wq-r:v1.0.1
 
 # maintainer handle
 MAINTAINER "Kaelin Cawley" kcawley@battelleecology.org
