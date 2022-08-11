@@ -29,7 +29,7 @@
 #'     
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' @param TimeBgn POSIX. The minimum date for which to assign calibration files.
-#' @param TimeEnd POSIX. The maximum date for which to assign calibration files.
+#' @param TimeEnd POSIX. The maximum date for which to assign calibration files (non-inclusive).
 #' @param PadDay (optional). 2-element difftime object with units of days indicating the days to include applicable 
 #' calibration files before/after a given data day. A negative value will copy in the calibration file(s) 
 #' that are applicable to the given data day AND # number of days before the data day. A positive value 
@@ -167,17 +167,38 @@ wrap.cal.asgn <- function(DirIn,
     
     # Copy the file to the appropriate output directories
     if (base::sum(setDir) > 0) {
-      base::system(
-        base::paste0(
-          'ln -s ',
-          calSlct$path[idxPrd],
-          calSlct$file[idxPrd],
-          ' ',
-          dirOut[setDir],
-          collapse = ' && '
+      
+      # Break up setDir into groups of 100 to avoid error "system call failed: Argument list too long"
+      dirOutPrd <- dirOut[setDir]
+      setBin <- base::seq.int(from=1,to=base::length(dirOutPrd),by=100)
+      for (idx in setBin){
+        setDirIdx <- idx:base::min(base::length(dirOutPrd),idx+99)
+        rpt <- base::system(
+          base::paste0(
+            'ln -s ',
+            calSlct$path[idxPrd],
+            calSlct$file[idxPrd],
+            ' ',
+            dirOutPrd[setDirIdx],
+            collapse = ' && '
+          )
         )
-      )
-    }
+        
+        if (rpt == 127){
+          log$error(
+            base::paste0(
+              calSlct$file[idxPrd],
+              ' could NOT be copied to daily folders between ',
+              dirOut[setDir][1],
+              ' and ',
+              utils::tail(dirOut[setDir],1),
+              '. Look for warnings from system command.'
+            )
+          )
+          stop()
+        }
+      } # End loop around 100-file groups
+    } # End copy of calibration file to relevant date folders
     
     log$info(
       base::paste0(
@@ -188,8 +209,8 @@ wrap.cal.asgn <- function(DirIn,
         utils::tail(dirOut[setDir],1)
       )
     )
-    
-  }
+
+  } # End loop around calibration periods
   
   return()
 

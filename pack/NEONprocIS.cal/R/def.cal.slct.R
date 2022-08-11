@@ -59,6 +59,8 @@
 #     original creation
 #   Cove Sturtevant (2020-12-08)
 #     added path to calibration directory in output
+#   Cove Sturtevant (2022-08-12)
+#     fixed bug when two cals have the same valid start date
 ##############################################################################################
 def.cal.slct <-
   function(metaCal=NULL,
@@ -153,7 +155,7 @@ def.cal.slct <-
           base::min(metaCal$timeValiEnd[idxRow], timeMiss$timeEnd[idxTimeMiss])
         
         # Place in the output if there is a valid calibration for this period
-        if (timeBgnIdx <= timeEndIdx) {
+        if (timeBgnIdx <= timeEndIdx && timeBgnIdx < timeMiss$timeEnd) {
           rpt <-
             base::rbind(
               rpt,

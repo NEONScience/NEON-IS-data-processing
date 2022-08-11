@@ -10,7 +10,7 @@
 
 #' @param TimeBgn A POSIXct timestamp of the start date of interest (inclusive)
 #' @param TimeEnd A POSIXct timestamp of the end date of interest (exclusive)
-#' @param timeFull A data frame of non-overlapping time ranges considered covered, with columns: \cr
+#' @param timeFull A data frame of time ranges considered covered, with columns: \cr
 #' \code{timeBgn} POSIXct timestamps of the start date of the time range (inclusive)\cr
 #' \code{timeEnd} POSIXct timestamps of the end date of the time range (exclusive)\cr
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -41,6 +41,8 @@
 #     original creation
 #   Cove Sturtevant (2020-06-10)
 #     bug fix when entry in timeFull is completely outside the range of TimeBgn and TimeEnd
+#   Cove Sturtevant (2022-08-10)
+#     enabled input of overlapping time ranges in timeFull
 ##############################################################################################
 def.time.miss <- function(TimeBgn, TimeEnd, timeFull, log = NULL) {
   # Initialize log if not input
@@ -55,6 +57,17 @@ def.time.miss <- function(TimeBgn, TimeEnd, timeFull, log = NULL) {
   # Get rid of any ranges beginning and ending outside our range of interest
   setKeep <- !(timeFull$timeBgn >= TimeEnd | timeFull$timeEnd <= TimeBgn)
   timeFull <- base::subset(timeFull,subset=setKeep)
+  
+  # Truncate ranges that overlap. Note: this works only if timeFull is sorted above with increasing timeBgn (so keep it that way!)
+  for(idxRow in base::rev(base::seq_len(base::nrow(timeFull)))){
+    
+    timeFull$timeBgn[idxRow] <- base::max(timeFull$timeBgn[idxRow],timeFull$timeEnd[seq_len(idxRow-1)])
+    
+    # If we truncated the whole time range, remove it.
+    if(timeFull$timeEnd[idxRow]-timeFull$timeBgn[idxRow] <= as.difftime(0,units='secs')){
+      timeFull <- timeFull[-idxRow,]
+    }
+  }
   
   # Initialize
   dmmyTime <-
