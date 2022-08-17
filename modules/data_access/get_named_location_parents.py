@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from typing import Dict, Optional
+from typing import Dict,Optional,Tuple
 from contextlib import closing
 
 from psycopg2 import extensions
