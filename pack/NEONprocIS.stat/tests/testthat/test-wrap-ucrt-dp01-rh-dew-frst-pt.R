@@ -51,6 +51,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2021-07-16)
 #     Original Creation
+#   Mija Choi (2022-08-17)
+#     Modified
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of wrap.ucrt.dp01.rh.dew.frst.pt.R\n")
@@ -97,4 +99,13 @@ test_that("Unit test of wrap.ucrt.dp01.rh.dew.frst.pt.R", {
   
   testthat::expect_true(class(ucrt)[1] == "try-error")
 
+  # negative test 3:  ucrtData is null
+
+  ucrt <- try(NEONprocIS.stat::wrap.ucrt.dp01.rh.dew.frst.pt(data = data_relHumidity,
+                                                             VarUcrt = 'dewPoint',
+                                                             ucrtData = NULL),
+                                                             silent = TRUE)
+  
+  testthat::expect_true(class(ucrt)[1] == "try-error")
+  
   })
