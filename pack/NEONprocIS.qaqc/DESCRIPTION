@@ -1,6 +1,6 @@
 Package: NEONprocIS.qaqc
 Title: QA/QC functions for NEON IS data processing
-Version: 0.0.7
+Version: 0.0.8
 Authors@R: 
     person(given = "Cove",
            family = "Sturtevant",
@@ -8,11 +8,12 @@ Authors@R:
            email = "csturtevant@battelleecology.org")
 Description: QA/QC functions for most NEON TIS and AIS data products.
 Depends:
-    R (>= 3.5.1)
+    R (>= 4.1.3)
 Imports:
     rjson (>= 0.2.20),
     lubridate (>= 1.7.4),
-    caTools (>= 1.18.0)
+    caTools (>= 1.18.0),
+    RcppRoll (>= 0.3.0)
 License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 Encoding: UTF-8
 LazyData: true

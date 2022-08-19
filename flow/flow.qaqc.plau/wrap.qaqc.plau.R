@@ -350,7 +350,7 @@ wrap.qaqc.plau <- function(DirIn,
     qf[[idxTerm]] <- NULL
     
     # Run the plausibility tests - get quality flags values for all tests
-    if(base::sum(c('null','gap','range','step','persistence') %in% ParaTest[[idxTerm]]$test) > 0){
+    if(base::any(c('null','gap','range','step','persistence') %in% ParaTest[[idxTerm]]$test)){
       
       # Set some additional arguments
       argsPlau$Vrbs=TRUE # Outputs quality flag values instead of vector positions
@@ -369,7 +369,16 @@ wrap.qaqc.plau <- function(DirIn,
       
       # Run the spike test
       log$debug(base::paste0('Running spike test for term: ',idxTerm))
-      qfSpk <- NEONprocIS.qaqc::def.spk.mad(data=data[[idxTerm]],Meth=SpkMeth,ThshMad=SpkMad,Wndw=SpkWndw,WndwStep=SpkWndwStep,WndwFracSpkMin=0.1,NumGrp=SpkNumPtsGrp,NaFracMax=SpkNaFracMax,log=log)
+      
+      qfSpk <- NEONprocIS.qaqc::def.spk.mad(data=data[[idxTerm]],
+                                            Meth=SpkMeth,
+                                            ThshMad=SpkMad,
+                                            Wndw=SpkWndw,
+                                            WndwStep=SpkWndwStep,
+                                            WndwFracSpkMin=0.1,
+                                            NumGrp=SpkNumPtsGrp,
+                                            NaFracMax=SpkNaFracMax,
+                                            log=log)
       names(qfSpk) <- 'qfSpk'
       
       if(base::is.null(qf[[idxTerm]])){

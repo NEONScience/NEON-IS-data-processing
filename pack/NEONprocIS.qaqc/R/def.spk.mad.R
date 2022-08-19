@@ -55,6 +55,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-07-09)
 #     original creation
+#   Cove Sturtevant (2022-08-16)
+#     improve speed when dataset has a large proportion of missing values
 ##############################################################################################
 def.spk.mad <-
   function(data,
@@ -131,21 +133,43 @@ def.spk.mad <-
     mad <- dmmyVect
     qf <- rep(-1,numData)
     
-    # To use the running median and mad functions below, we must first handle NA values. 
-    # It appears that later iterations of the native R stats package may handle NAs, but the 3.6.0 version does not.
-    # Leaving the NAs in there causes some extra qf=-1 when the NA value is the first value in the window. 
-    # Let's replicate the "+Big_alternate" method of stats v3.6.2, which replaces NA values with alternating very large
-    # numbers so that the median is unaffected.
-    numBig <- .Machine$double.xmax/3
-    setNa <- which(is.na(data))
-    numBigAlt <- array(c(numBig,-numBig),length(setNa))
-    dataPrepNa <- data
-    dataPrepNa[setNa] <- numBigAlt
     
-    # Compute the running median of the data (WAY faster than running it in the for loop)
-    med <- stats::runmed(x=dataPrepNa,k=Wndw,endrule='constant')
-    mad <- caTools::runmad(x=data,k=Wndw,constant=CorStd,endrule="NA",align='center',center=med)
-    numDataWndw[((Wndw-1)/2+1):(numData-(Wndw-1)/2)] <- RcppRoll::roll_sum(x=!is.na(data),n=Wndw,by=1,align='center',na.rm=TRUE)
+    # Let's skip everything if all the data are NA
+    if(base::sum(base::is.na(data))==numData){
+      return(as.integer(qf))
+    }
+    
+    # To use the running median and mad functions below, we must first handle NA values. 
+    # Later iterations of the native R stats package handle NAs, but the 3.6.0 version does not.
+    # Uncomment the following and replace the med variable if running on 3.6.0
+    
+    # # Leaving the NAs in there causes some extra qf=-1 when the NA value is the first value in the window. 
+    # # Let's replicate the "+Big_alternate" method of stats v3.6.2, which replaces NA values with alternating very large
+    # # numbers so that the median is unaffected.
+    # numBig <- .Machine$double.xmax/3
+    # setNa <- which(is.na(data))
+    # numBigAlt <- array(c(numBig,-numBig),length(setNa))
+    # dataPrepNa <- data
+    # dataPrepNa[setNa] <- numBigAlt
+    # # Compute the running median of the data 
+    # med <- stats::runmed(x=dataPrepNa,k=Wndw,endrule='constant')
+    med <- stats::runmed(x=data,k=Wndw,endrule='constant',na.action="+Big_alternate") # window is centered
+
+    # The caTools::runmad function is ultra fast when there are no missing values, but the 
+    # performance degrades rapidly with increasing proportion of NA, especially when they are
+    # in large continuous chunks. If the proportion of NAs exceeds 15% we will use a different 
+    # function. Performance of both methods scales ~linearly with data length. More could be done 
+    # here to tailor which method is chosen according to gap distribution.
+    dataReal <- !base::is.na(data)
+    numDataReal <- base::sum(dataReal)
+    
+    if(numDataReal/numData >= 0.85){
+      mad <- caTools::runmad(x=data,k=Wndw,constant=CorStd,endrule="NA",align='center',center=med)
+    } else {
+      mad <- data.table::frollapply(x=data,n=Wndw,FUN=stats::mad,na.rm=TRUE,constant=CorStd,fill=NA,align='center')
+    }
+
+    numDataWndw[((Wndw-1)/2+1):(numData-(Wndw-1)/2)] <- RcppRoll::roll_sum(x=dataReal,n=Wndw,by=1,align='center',na.rm=TRUE)
     
     # Compute correction factor to reduce bias with low window size
     corWndw <- numDataWndw/(numDataWndw-0.8)
