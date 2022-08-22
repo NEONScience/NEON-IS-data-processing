@@ -1,8 +1,10 @@
 test_that("valid files to merge",
-          {
-            file <- c('def.file.comb.ts/validFiles/testdata.parquet', 'def.file.comb.ts/validFiles/testflagsdata.parquet')
-           
-            returnedData <- def.file.comb.ts(file = file, nameVarTime='readout_time')
+          {file <-  c(
+                'def.file.comb.ts/validFiles/testdata.parquet',
+                'def.file.comb.ts/validFiles/testflagsdata.parquet'
+              )
+            
+            returnedData <- def.file.comb.ts(file = file, nameVarTime = 'readout_time')
             
             expect_true (length(returnedData) == 6)
             testthat::expect_true(is.list(returnedData))
@@ -16,21 +18,35 @@ test_that("valid files to merge",
           })
 
 test_that("wrong file format",
-          {
-            file <- c('def.file.comb.ts/validFiles/testdata.txt', 'def.file.comb.ts/validFiles/testflagsdata.parquet')
+          {file <- c(
+                'def.file.comb.ts/validFiles/testdata.txt',
+                'def.file.comb.ts/validFiles/testflagsdata.parquet'
+              )
             
-            returnedData <- try(def.file.comb.ts(file = file, nameVarTime='readout_time'),
-                                silent = TRUE)
+            returnedData <-  try(def.file.comb.ts(file = file, nameVarTime = 'readout_time'),  silent = TRUE)
             
             testthat::expect_true((class(returnedData)[1] == "try-error"))
             
           })
 
+test_that("not parquet file",
+          {file <- c(
+            'def.file.comb.ts/invalidFiles/prt_test.avro'
+            )
+          
+          returnedData <-  try(def.file.comb.ts(file = file, nameVarTime = 'readout_time'),  silent = TRUE)
+          
+          testthat::expect_true((class(returnedData)[1] == "try-error"))
+          
+          })
+
 test_that("duplicate columns in the input files",
-          {
-            file <- c('def.file.comb.ts/invalidFiles/testdata.parquet', 'def.file.comb.ts/invalidFiles/testflagsdatadup.parquet')
+          {file <- c(
+                'def.file.comb.ts/invalidFiles/testdata.parquet',
+                'def.file.comb.ts/invalidFiles/testflagsdatadup.parquet'
+              )
             
-            returnedData <- def.file.comb.ts(file = file, nameVarTime='readout_time')
+            returnedData <- def.file.comb.ts(file = file, nameVarTime = 'readout_time')
             
             expect_true (length(returnedData) == 6)
             testthat::expect_true(is.list(returnedData))
@@ -42,6 +58,3 @@ test_that("duplicate columns in the input files",
             }
             
           })
-
-
-
