@@ -17,8 +17,7 @@ from data_access.get_named_location_schema_name import get_named_location_schema
 
 processingStartDate = "IS Processing Default Start Date"
 
-def get_named_locations(connection: extensions.connection, location_type: str, source_type: str) -> Iterator[
-    NamedLocation]:
+def get_named_locations(connection: extensions.connection, location_type: str, source_type: str) -> Iterator[NamedLocation]:
     """
     Get the named locations of the given type.
 
@@ -55,7 +54,7 @@ def get_named_locations(connection: extensions.connection, location_type: str, s
              is_sensor_type.avro_schema_name = %s
     '''
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql,(location_type,source_type))
+        cursor.execute(sql, (location_type, source_type))
         rows = cursor.fetchall()
         for row in rows:
             key = row[0]
@@ -84,7 +83,7 @@ def get_named_locations(connection: extensions.connection, location_type: str, s
             yield named_location
 
 
-def get_site_start_date(connection: extensions.connection,site_id: int) -> Optional[datetime]:
+def get_site_start_date(connection: extensions.connection, site_id: int) -> Optional[datetime]:
     properties: List[Property] = get_named_location_properties(connection, site_id)
     return get_processing_start_date(properties)
 
