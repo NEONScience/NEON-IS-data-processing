@@ -66,10 +66,10 @@ def get_named_locations(connection: extensions.connection, location_type: str, s
             properties: List[Property] = get_named_location_properties(connection, key)
             schema_names: Set[str] = get_named_location_schema_name(connection, key)
             parents: Dict[str, Tuple[int, str]] = get_named_location_parents(connection, key)
-            (parent_id, name) = parents['domain'] if parents else None
-            domain: str = name
-            (site_id, name) = parents['site'] if parents else None
-            site: str = name
+            (parent_id, name_domain) = parents['domain'] if parents else None
+            domain: str = name_domain
+            (site_id, name_site) = parents['site'] if parents else None
+            site: str = name_site
             processing_start_date = get_processing_start_date(properties)
             if processing_start_date is None:
                 processing_start_date = get_site_start_date(connection, site_id)
