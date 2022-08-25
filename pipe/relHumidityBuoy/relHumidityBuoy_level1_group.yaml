@@ -3,7 +3,7 @@ pipeline:
   name: relHumidityBuoy_level1_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:10
+  image: quay.io/battelleecology/filter_joiner:11
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -13,73 +13,78 @@ transform:
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
             name: QUALITY_METRICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QUALITY_METRICS_PATH/hmp155/*/*/*/*/quality_metrics/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/hmp155/*/quality_metrics/**
+            # Join on group ID (already joined below by day)
+            join_indices: [6]
         - path:
             name: QUALITY_METRICS_INST_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QUALITY_METRICS_INST_PATH/hmp155/*/*/*/*/quality_metrics/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
+            glob_pattern: /pfs/QUALITY_METRICS_INST_PATH/*/*/*/*/hmp155/*/quality_metrics/**
+            # Join on group ID (already joined below by day)
+            join_indices: [6]
         - path:
             name: STATISTICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_PATH/hmp155/*/*/*/*/stats/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/hmp155/*/stats/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
         - path:
             name: STATISTICS_INST_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_INST_PATH/hmp155/*/*/*/*/stats/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
+            glob_pattern: /pfs/STATISTICS_INST_PATH/*/*/*/*/hmp155/*/stats/**
+            # Join on group ID (already joined below by day
+            join_indices: [6]
         - path:
             name: LOCATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/LOCATION_PATH/hmp155/*/*/*/*/location/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
+            glob_pattern: /pfs/LOCATION_PATH/*/*/*/*/hmp155/*/location/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
       name: QUALITY_METRICS_PATH
       repo: relHumidityBuoy_quality_metrics
-      glob: /hmp155/(*)/(*)/(*)
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: QUALITY_METRICS_INST_PATH
       repo: relHumidityBuoy_qm_instantaneous
-      glob: /hmp155/(*)/(*)/(*)
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: relHumidityBuoy_statistics
-      glob: /hmp155/(*)/(*)/(*)
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_INST_PATH
       repo: relHumidityBuoy_stats_instantaneous
-      glob: /hmp155/(*)/(*)/(*)
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: LOCATION_PATH
-      repo: relHumidityBuoy_locations
-      glob: /hmp155/(*)/(*)/(*)
+      repo: relHumidityBuoy_group_path_hmp155
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
-      empty_files: true
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: "1"
-enable_stats: false
-standby: true
+  constant: 1
+resource_requests:
+  memory: 200M
+  cpu: 0.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
+autoscaling: true
