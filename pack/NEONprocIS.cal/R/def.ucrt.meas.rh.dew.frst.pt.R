@@ -69,6 +69,8 @@
 #   Edward Ayres (2021-04-29)
 #     Added partial uncertainty of individual dew/frost point temperature measurements with respect to ambient 
 #     temperature and relative humidity for Level 1 Mean uncertainty calculations
+#   Cove Sturtevant (2022-08-24)
+#     Corrected virtual temperature equation when above freezing (missing exponents)
 ##############################################################################################
 def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)),
                                          infoCal = NULL,
@@ -128,10 +130,10 @@ def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)
   if(length(waterRows)>0){
     # Calculate virtual temperature at temperatures above 0 degrees C
     data$virtual_temperature[waterRows] <- ((data$temperature[waterRows]-absZero)-
-                                              ((data$temperature[waterRows]-absZero)*c0+
-                                                 (data$temperature[waterRows]-absZero)*c1+
-                                                 (data$temperature[waterRows]-absZero)*c2+
-                                                 (data$temperature[waterRows]-absZero)*c3) )
+                                              (c0*(data$temperature[waterRows]-absZero)^0+
+                                               c1*(data$temperature[waterRows]-absZero)^1+
+                                               c2*(data$temperature[waterRows]-absZero)^2+
+                                               c3*(data$temperature[waterRows]-absZero)^3) )
     
     # Calculate saturation vapor pressure over water
     data$saturation_vapor_pressure[waterRows] <- exp((b0/data$virtual_temperature[waterRows])+
