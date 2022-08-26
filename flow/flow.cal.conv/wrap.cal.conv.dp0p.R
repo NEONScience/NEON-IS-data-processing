@@ -195,6 +195,8 @@
 #     Convert flow script to wrapper function
 #   Mija Choi (2021-09-14)
 #     Fix a misplaced parenthesis in if cond,
+#   Cove Sturtevant (2022-08-25)
+#     Write empty uncertainty_coef json file even if no uncertainty coefs. 
 ##############################################################################################
 wrap.cal.conv.dp0p <- function(DirIn,
                                DirOutBase,
@@ -543,35 +545,39 @@ wrap.cal.conv.dp0p <- function(DirIn,
       base::split(ucrtCoef, base::seq(base::nrow(ucrtCoef))) # Turn into a list for writing out in json format
     base::names(ucrtList) <- NULL
     ucrtList <- base::lapply(ucrtList, base::as.list)
-    
-    NameFileOutUcrtCoef <-
-      NEONprocIS.base::def.file.name.out(nameFileIn = fileData,
-                                         sufx = '_uncertaintyCoef',
-                                         ext = 'json')
-    NameFileOutUcrtCoef <-
-      base::paste0(dirOutUcrtCoef, '/', NameFileOutUcrtCoef)
-    rptUcrt <-
-      base::try(base::write(rjson::toJSON(ucrtList, indent = 3), file = NameFileOutUcrtCoef),
-                silent = FALSE)
-    if (base::any(base::class(rptUcrt) == 'try-error')) {
-      log$error(
-        base::paste0(
-          'Cannot write uncertainty coefficients to ',
-          NameFileOutUcrtCoef,
-          '. ',
-          attr(rptUcrt, "condition")
-        )
-      )
-      stop()
-    } else {
-      log$info(
-        base::paste0(
-          'Uncertainty coefficients written successfully in ',
-          NameFileOutUcrtCoef
-        )
-      )
-    }
+    ucrtJson <- rjson::toJSON(ucrtList, indent = 3)
+  } else {
+    ucrtJson <- '[]'
   }
+    
+  NameFileOutUcrtCoef <-
+    NEONprocIS.base::def.file.name.out(nameFileIn = fileData,
+                                       sufx = '_uncertaintyCoef',
+                                       ext = 'json')
+  NameFileOutUcrtCoef <-
+    base::paste0(dirOutUcrtCoef, '/', NameFileOutUcrtCoef)
+  rptUcrt <-
+    base::try(base::write(ucrtJson, file = NameFileOutUcrtCoef),
+              silent = FALSE)
+  if (base::any(base::class(rptUcrt) == 'try-error')) {
+    log$error(
+      base::paste0(
+        'Cannot write uncertainty coefficients to ',
+        NameFileOutUcrtCoef,
+        '. ',
+        attr(rptUcrt, "condition")
+      )
+    )
+    stop()
+  } else {
+    log$info(
+      base::paste0(
+        'Uncertainty coefficients written successfully in ',
+        NameFileOutUcrtCoef
+      )
+    )
+  }
+
   
   # Write out uncertainty data
   if (!base::is.null(FuncUcrt)) {
