@@ -22,7 +22,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: pressureAir_pre_statistics_group
-      glob: /ptb330a/*/*/*
+      glob: /*/*/*
   - pfs:
       name: FILE_SCHEMA_STATS
       repo: avro_schemas_pressureAir

@@ -22,7 +22,7 @@ input:
   - pfs:
       name: REPO_LOCATIONS
       repo: pressureAir_regularized
-      glob: /ptb330a/*/*/*
+      glob: /*/*/*
   - pfs:
       name: FILE_THRESHOLDS
       repo: threshold_pressureAir

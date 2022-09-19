@@ -10,7 +10,6 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileSchmQf=$SCHEMA_FLAGS
   - TermTest1=barometricPressure:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)
-  - DirSubCopy=flags|uncertainty_coef
   image: quay.io/battelleecology/neon-is-qaqc-plau-r:v1.0.3
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -22,7 +21,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: pressureAir_padded_timeseries_analyzer
-      glob: /ptb330a/*/*/*/
+      glob: /*/*/*/
   - pfs:
       name: SCHEMA_FLAGS
       repo: avro_schemas_pressureAir

@@ -26,7 +26,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: pressureAir_qaqc_flags_group
-      glob: /ptb330a/*/*/*/
+      glob: /*/*/*/
   - pfs:
       name: FILE_SCHEMA_QM
       repo: avro_schemas_pressureAir

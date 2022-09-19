@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pressureAir_qaqc_flags_group
+  name: pressureAir_group_path_pre_relHumidity
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:11
@@ -16,17 +16,17 @@ transform:
       # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
-            name: QAQC_PLAUSIBILITY_PATH
-            # Filter for flags directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/ptb330a/*/flags/**
+            name: L0_PRIME_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/L0_PRIME_PATH/*/*/*/*/ptb330a/*/data/**
             # Join on named location (already joined below by day)
             join_indices: [6]
         - path:
-            name: REGULARIZED_FLAGS_PATH
-            # Filter for flags directory
-            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/ptb330a/*/flags/**
+            name: GROUP_ASSIGNMENT_PATH
+            # join by group member
+            glob_pattern: /pfs/GROUP_ASSIGNMENT_PATH/pressure-air/*/*/*/*/**
             # Join on named location (already joined below by day
-            join_indices: [6]
+            join_indices: [7]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
@@ -34,14 +34,14 @@ transform:
 input:
   join:
   - pfs:
-      name: QAQC_PLAUSIBILITY_PATH
-      repo: pressureAir_qaqc_plausibility
-      glob: /(*)/(*)/(*)
+      name: L0_PRIME_PATH
+      repo: ptb330a_date_gap_filler
+      glob: /ptb330a/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
-      name: REGULARIZED_FLAGS_PATH
-      repo: pressureAir_regularized
+      name: GROUP_ASSIGNMENT_PATH
+      repo: pressureAir_group_path_ptb330a
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
@@ -50,5 +50,5 @@ parallelism_spec:
 resource_requests:
   memory: 200M
   cpu: 0.1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"200M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
 autoscaling: true

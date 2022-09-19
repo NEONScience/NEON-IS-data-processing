@@ -24,8 +24,8 @@ transform:
 input:
   pfs:
     name: DIR_IN
-    repo: ptb330a_date_gap_filler
-    glob: /ptb330a/*/*/*
+    repo: pressureAir_group_path_ptb330a
+    glob: /*/*/*
 parallelism_spec:
   constant: 1
 resource_requests:

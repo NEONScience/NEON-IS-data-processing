@@ -13,21 +13,22 @@ transform:
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
             name: QAQC_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QAQC_PATH/ptb330a/*/*/*/*/data/**
+            glob_pattern: /pfs/QAQC_PATH/*/*/*/*/ptb330a/*/data/**
             # Join on named location (already joined below by day)
-            join_indices: [7]
+            join_indices: [6]
         - path:
             name: UNCERTAINTY_COEF_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/ptb330a/*/*/*/*/uncertainty_coef/**
+            # Filter for uncertainty_coef directory
+            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/*/*/*/*/ptb330a/*/uncertainty_coef/**
             # Join on named location (already joined below by day
-            join_indices: [7]
+            join_indices: [6]
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
@@ -35,13 +36,13 @@ input:
   - pfs:
       name: QAQC_PATH
       repo: pressureAir_qaqc_plausibility
-      glob: /ptb330a/(*)/(*)/(*)
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: UNCERTAINTY_COEF_PATH
-      repo: ptb330a_date_gap_filler
-      glob: /ptb330a/(*)/(*)/(*)
+      repo: pressureAir_group_path_ptb330a
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:

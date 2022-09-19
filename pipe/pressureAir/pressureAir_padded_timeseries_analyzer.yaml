@@ -19,7 +19,7 @@ input:
     name: DATA_PATH
     repo: pressureAir_timeseries_padder
     branch: master
-    glob: /ptb330a/*/*/*
+    glob: /*/*/*
 parallelism_spec:
   constant: 1
 resource_requests:

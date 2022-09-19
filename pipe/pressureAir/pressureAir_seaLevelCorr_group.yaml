@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pressureAir_level1_group
+  name: pressureAir_seaLevelCorr_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:11
@@ -13,19 +13,26 @@ transform:
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
             name: QUALITY_METRICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QUALITY_METRICS_PATH/ptb330a/*/*/*/*/quality_metrics/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/*/*/quality_metrics/**
+            # Join on group ID (already joined below by day)
+            join_indices: [6]
         - path:
             name: STATISTICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_PATH/ptb330a/*/*/*/*/stats/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/*/*/stats/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/*/*/*/*/*/*/location/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
@@ -35,13 +42,19 @@ input:
   - pfs:
       name: QUALITY_METRICS_PATH
       repo: pressureAir_quality_metrics
-      glob: /ptb330a/(*)/(*)/(*)
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: pressureAir_statistics
-      glob: /ptb330a/(*)/(*)/(*)
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: LOCATION_PATH
+      repo: pressureAir_group_path_ptb330a
+      glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:

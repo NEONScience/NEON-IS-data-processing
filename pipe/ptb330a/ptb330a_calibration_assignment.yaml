@@ -18,7 +18,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: calibration_ptb330a
+      repo: ptb330a_calibration
       glob: /ptb330a/*
   - pfs:
       name: FILE_YEAR
