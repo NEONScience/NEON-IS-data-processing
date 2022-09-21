@@ -5,6 +5,8 @@
 \title{Route datum errors to specified location}
 \usage{
 def.err.datm(
+  err = NULL,
+  call.stack = NULL,
   DirDatm,
   DirErrBase,
   RmvDatmOut = FALSE,
@@ -13,6 +15,10 @@ def.err.datm(
 )
 }
 \arguments{
+\item{err}{The error condition returned from a function call. For printing only. Defaults to NULL.}
+
+\item{call.stack}{The call stack returned from e.g. base::sys.calls(). For printing only. Defaults to NULL.}
+
 \item{DirDatm}{Character value. The input path to the datum, structured as follows: 
 #/pfs/BASE_REPO/#, where # indicates any number of parent and child directories 
 of any name, so long as they are not 'pfs'. Note that the path should terminate at 
@@ -52,7 +58,23 @@ DirDatm <- '/scratch/pfs/proc_group/prt/2019/01/01/27134'
 DirErrBase <- '/scratch/pfs/proc_group_output/errored_datums'
 RmvDatmOut <- TRUE
 DirOutBase <- '/scratch/pfs/proc_group_output'
-tryCatch(stop('error!'),error=function(err) def.err.datm(DirDatm=DirDatm,DirErrBase=DirErrBase,RmvDatmOut=RmvDatmOut,DirOutBase=DirOutBase))
+tryCatch(
+    withCallingHandlers(
+               stop('error!'),
+               error=function(err) {
+                       call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
+                       def.err.datm(err=err,
+                                    call.stack=call.stack,
+                                    DirDatm=DirDatm,
+                                    DirErrBase=DirErrBase,
+                                    RmvDatmOut=RmvDatmOut,
+                                    DirOutBase=DirOutBase)
+                                    )
+                       }
+               ),
+    error=function(err){print('I routed an error!')}
+    )
+    
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
