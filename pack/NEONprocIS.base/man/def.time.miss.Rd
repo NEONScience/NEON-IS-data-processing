@@ -11,7 +11,7 @@ def.time.miss(TimeBgn, TimeEnd, timeFull, log = NULL)
 
 \item{TimeEnd}{A POSIXct timestamp of the end date of interest (exclusive)}
 
-\item{timeFull}{A data frame of non-overlapping time ranges considered covered, with columns: \cr
+\item{timeFull}{A data frame of time ranges considered covered, with columns: \cr
 \code{timeBgn} POSIXct timestamps of the start date of the time range (inclusive)\cr
 \code{timeEnd} POSIXct timestamps of the end date of the time range (exclusive)\cr}
 

@@ -9,6 +9,8 @@
 #' The input path to the erroring datum will be created in the error directory.
 #' Optionally, remove any partial output from the errored datum.
 
+#' @param err The error condition returned from a function call. For printing only. Defaults to NULL.
+#' @param call.stack The call stack returned from e.g. base::sys.calls(). For printing only. Defaults to NULL.
 #' @param DirDatm Character value. The input path to the datum, structured as follows: 
 #' #/pfs/BASE_REPO/#, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs'. Note that the path should terminate at 
@@ -43,7 +45,23 @@
 #' DirErrBase <- '/scratch/pfs/proc_group_output/errored_datums'
 #' RmvDatmOut <- TRUE
 #' DirOutBase <- '/scratch/pfs/proc_group_output'
-#' tryCatch(stop('error!'),error=function(err) def.err.datm(DirDatm=DirDatm,DirErrBase=DirErrBase,RmvDatmOut=RmvDatmOut,DirOutBase=DirOutBase))
+#' tryCatch(
+#'     withCallingHandlers(
+#'                stop('error!'),
+#'                error=function(err) {
+#'                        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
+#'                        def.err.datm(err=err,
+#'                                     call.stack=call.stack,
+#'                                     DirDatm=DirDatm,
+#'                                     DirErrBase=DirErrBase,
+#'                                     RmvDatmOut=RmvDatmOut,
+#'                                     DirOutBase=DirOutBase)
+#'                                     )
+#'                        }
+#'                ),
+#'     error=function(err){print('I routed an error!')}
+#'     )
+#'     
 
 
 #' @seealso tryCatch
@@ -53,8 +71,12 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-08-10)
 #     original creation
+#   Cove Sturtevant (2022-09-19)
+#     add zero-byte file to failed datum directory (required for Pachyderm 2.x)
 ##############################################################################################
 def.err.datm <- function(
+                         err=NULL,
+                         call.stack=NULL,
                          DirDatm,
                          DirErrBase,
                          RmvDatmOut=FALSE,
@@ -66,9 +88,15 @@ def.err.datm <- function(
     log <- NEONprocIS.base::def.log.init()
   }
   
+  log$error(err$message)
+  base::message('Error resulted from call to: ')
+  base::print(err$call)
+  base::message('Call stack:')
+  base::print(limitedLabels(call.stack))
+  
   # Make sure the output directory is a character
   if(base::length(DirErrBase) != 1 && !base::is.character(DirErrBase)){
-    log$error(base::paste0('DirErrBase (',DirErrBase,') must be a character string.'))
+    log$fatal(base::paste0('DirErrBase (',DirErrBase,') must be a character string.'))
     stop()
   }
   
@@ -89,6 +117,13 @@ def.err.datm <- function(
   NEONprocIS.base::def.dir.crea(DirBgn=DirErrBase, 
                                 DirSub=InfoDirIn$dirRepo,
                                 log=log)
+  
+  # Write an empty file
+  base::options(digits.secs=3)
+  nameFileErr <- base::paste0(DirErrBase,InfoDirIn$dirRepo,'/',utils::tail(InfoDirIn$dirSplt,1))
+  con <- base::file(nameFileErr, "w")
+  base::close(con)
+  
   
   # Remove any partial output for the datum
   if(RmvDatmOut==TRUE && base::is.null(DirOutBase)){
