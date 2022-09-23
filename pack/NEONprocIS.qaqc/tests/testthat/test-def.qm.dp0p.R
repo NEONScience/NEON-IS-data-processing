@@ -58,12 +58,12 @@ test_that("calculate the time on dataHeat State is always false",
 
             testthat::expect_true(is.data.frame(qm))
             expect_true(length(qm) == 3)
-            testthat::equals(qm[1]$AlphaQF[1],1)
-            testthat::equals(qm[1]$AlphaQF[5], 0)
-            testthat::equals(qm[2]$BetaQF[3], 0)
-            testthat::equals(qm[2]$BetaQF[5], 1)
-            testthat::equals(qm[3]$FinalQF[4], 0)
-            testthat::equals(qm[3]$FinalQF[5], 1)
+            testthat::expect_equal(qm[1]$AlphaQF[1],1)
+            testthat::expect_equal(qm[1]$AlphaQF[5], 0)
+            testthat::expect_equal(qm[2]$BetaQF[3], 0)
+            testthat::expect_equal(qm[2]$BetaQF[5], 1)
+            testthat::expect_equal(qm[3]$FinalQF[4], 0)
+            testthat::expect_equal(qm[3]$FinalQF[5], 1)
 
           }
 
@@ -86,12 +86,12 @@ test_that("when qfAlph is null in the Para",
 
             testthat::expect_true(is.data.frame(qm))
             expect_true(length(qm) == 3)
-            testthat::equals(qm[1]$AlphaQF[1],1)
-            testthat::equals(qm[1]$AlphaQF[5], 0)
-            testthat::equals(qm[2]$BetaQF[3], 0)
-            testthat::equals(qm[2]$BetaQF[5], 1)
-            testthat::equals(qm[3]$FinalQF[4], 0)
-            testthat::equals(qm[3]$FinalQF[5], 1)
+            testthat::expect_equal(qm[1]$AlphaQF[1],1)
+            testthat::expect_equal(qm[1]$AlphaQF[5], 0)
+            testthat::expect_equal(qm[2]$BetaQF[3], 0)
+            testthat::expect_equal(qm[2]$BetaQF[5], 1)
+            testthat::expect_equal(qm[3]$FinalQF[4], 0)
+            testthat::expect_equal(qm[3]$FinalQF[5], 1)
 
           }
 )
@@ -103,12 +103,12 @@ test_that("when qfBeta is null in the Para",
             
             testthat::expect_true(is.data.frame(qm))
             expect_true(length(qm) == 3)
-            testthat::equals(qm[1]$AlphaQF[1],1)
-            testthat::equals(qm[1]$AlphaQF[5], 0)
-            testthat::equals(qm[2]$BetaQF[3], 0)
-            testthat::equals(qm[2]$BetaQF[5], 1)
-            testthat::equals(qm[3]$FinalQF[4], 0)
-            testthat::equals(qm[3]$FinalQF[5], 1)
+            testthat::expect_equal(qm[1]$AlphaQF[1],1)
+            testthat::expect_equal(qm[1]$AlphaQF[5], 0)
+            testthat::expect_equal(qm[2]$BetaQF[3], 0)
+            testthat::expect_equal(qm[2]$BetaQF[5], 1)
+            testthat::expect_equal(qm[3]$FinalQF[4], 0)
+            testthat::expect_equal(qm[3]$FinalQF[5], 1)
             
           }
 )
@@ -119,13 +119,13 @@ test_that("when not all parameter in the qfAlph and qfBeta are not in the qf dat
             qm <- NEONprocIS.qaqc::def.qm.dp0p(qf=qf,Para=Para)
             
             testthat::expect_true(is.data.frame(qm))
-            expect_true(length(qm) == 3)
-            testthat::equals(qm[1]$AlphaQF[1],1)
-            testthat::equals(qm[1]$AlphaQF[5], 0)
-            testthat::equals(qm[2]$BetaQF[3], 0)
-            testthat::equals(qm[2]$BetaQF[5], 1)
-            testthat::equals(qm[3]$FinalQF[4], 0)
-            testthat::equals(qm[3]$FinalQF[5], 1)
+            testthat::expect_true(length(qm) == 3)
+            testthat::expect_equal(qm[1]$AlphaQF[1],1)
+            testthat::expect_equal(qm[1]$AlphaQF[5], 0)
+            testthat::expect_equal(qm[2]$BetaQF[3], 0)
+            testthat::expect_equal(qm[2]$BetaQF[5], 1)
+            testthat::expect_equal(qm[3]$FinalQF[4], 0)
+            testthat::expect_equal(qm[3]$FinalQF[5], 1)
             
           }
 )
@@ -133,7 +133,13 @@ test_that("when not all parameter in the qfAlph and qfBeta are not in the qf dat
 test_that("Error check - ensure that the contributing flags are included in the data",
           {
           qf3 <- data.frame(QF3=c(1,-1,1,0,-1),QF4=c(-1,1,0,0,0),stringsAsFactors=FALSE)
-          Para <- list(qfAlph=c('QF1','QF2'),qfBeta=c('QF1','QF2'),qfBetaIgnr='QF2')
+          Para <- list(qfAlph=c('QF3','QF4'),qfBeta=c('QF3','QF4'),qfBetaIgnr='QF3')
           qm <- NEONprocIS.qaqc::def.qm.dp0p(qf=qf3,Para=Para)
+          testthat::expect_equal(qm$AlphaQF[1],1)
+          testthat::expect_equal(qm$AlphaQF[1],1)
+          testthat::expect_equal(qm$AlphaQF[5],0)
+          testthat::expect_equal(qm$BetaQF[5],1)
+          testthat::expect_equal(sum(qm$FinalQF),4)
+          
           }
 )

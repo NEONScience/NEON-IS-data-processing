@@ -38,12 +38,9 @@ test_that("   Testing def.read.evnt.json.R, definition function. Read AVRO file"
 # Test 1, A valid event json is passed in            
             NameFile <- file.path(workingDirPath, "testdataJson/event.json")
             rpt <- NEONprocIS.base::def.read.evnt.json(NameFile = NameFile)
-            testthat::equals(length(rpt), 4)
-            testthat::equals(class(rpt$source_id), "character")
-            testthat::equals(class(rpt$source_id), "string")
-            testthat::equals(class(rpt$readout_time), "POSIXct")
-            testthat::equals(class(rpt$resistance), "numeric")
-            
+            testthat::expect_equal(length(rpt), 12)
+            testthat::expect_equal(rpt$body, "Hello from SQS!")
+
 # Test 2, the input json does not have timestamp            
             NameFile <- file.path(workingDirPath, "testdataJson/event_noTimestamp.json")
             rpt <- try(NEONprocIS.base::def.read.evnt.json(NameFile = NameFile), silent = TRUE)

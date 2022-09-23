@@ -76,7 +76,7 @@ test_that("   Testing Filter named location information by date-time range", {
   cat("\n       |------ Positive test 1:: Input JSON is valid and conforms to the schema                    |\n")
   cat("\n       |------                   timeBgn is now and timeEnd is NULL                                |\n\n")
  
-  locReturned <- NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd)
+  locReturned <- suppressWarnings(NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd))
   expect_true (length(locReturned$features) == 0)
   
   cat("\n       |------                   No features returned in this time range                           |\n")

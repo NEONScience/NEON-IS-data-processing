@@ -146,13 +146,8 @@ def.loc.meta <- function(NameFile,
   }  
   
   # Properties of each named location listed in the locations file
-  # Lists the named location, site, install_date, remove_date, active periods
+  # Lists the named location, site, install_date, remove_date, active periods, etc
   locProp <- geojsonsf::geojson_sf(NameFile) # data frame
-  if(!base::is.data.frame(locProp) || base::nrow(locProp) == 0){
-    log$error(base::paste0('There is no relevant location information in file ',NameFile,'. Returning empty output...'))
-    return(rpt)
-  }
-  
   if(!base::is.null(locProp$install_date)){
     locProp$install_date <- base::as.POSIXct(locProp$install_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
   } else {
@@ -213,7 +208,7 @@ def.loc.meta <- function(NameFile,
     ctxt <- base::strsplit(ctxt,',')[[1]]
     ctxt <- base::paste0(base::unique(ctxt),collapse='|')
     
-    if(base::length(ctxt) == 0) {
+    if(base::length(ctxt) == 0 || base::nchar(ctxt) == 0) {
       ctxt <- NA
     }
     
@@ -224,7 +219,7 @@ def.loc.meta <- function(NameFile,
     grp <- base::strsplit(grp,',')[[1]]
     grp <- base::paste0(base::unique(grp),collapse='|')
     
-    if(base::length(grp) == 0) {
+    if(base::length(grp) == 0 || base::nchar(grp) == 0) {
       grp <- NA
     }
     

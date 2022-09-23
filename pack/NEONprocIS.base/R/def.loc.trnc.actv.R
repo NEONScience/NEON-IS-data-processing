@@ -71,7 +71,7 @@ def.loc.trnc.actv <-
     # Load in the raw json info
     loc <- rjson::fromJSON(file = NameFileIn, simplify = FALSE)
     
-    # Pull the active dates, and add end dates if not present
+    # Pull the active dates, and add start/end dates if not present
     timeActv <- base::lapply(loc$features[[1]]$properties$active_periods,
                              FUN=function(idxList){
                                  if(!base::is.null(idxList$start_date)){
