@@ -105,9 +105,7 @@ wrap.loc.asgn <- function(DirIn,
   }
   
   # Decide the name of the terminal output directory based on TypeFile
-  if(TypeFile %in% c('asset','namedLocation')){
-    dirFinl <- 'location'
-  } 
+  dirFinl <- 'location'
 
   # Initialize output
   dmmyChar <- base::character(0)
@@ -126,20 +124,15 @@ wrap.loc.asgn <- function(DirIn,
     # ------- Compile the dates over which this location file applies. -------
     # Install/remove dates for asset install
     if(TypeFile == 'asset'){
-      locMeta <- NEONprocIS.base::def.loc.meta(NameFile = nameFile,
-                                               log = log)
-      
+      locMeta <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, log = log)
       
       timeAsgn <- base::data.frame(timeBgn=base::as.POSIXct(locMeta$install_date,tz='GMT'),
                                    timeEnd=base::as.POSIXct(locMeta$remove_date,tz='GMT'),
                                    stringsAsFactors = FALSE) # Asset location file
     } else if (TypeFile %in% c('namedLocation')){
       
-      if (TypeFile == 'namedLocation'){
-        locMeta <- NEONprocIS.base::def.loc.meta(NameFile = nameFile,
-                                               log = log)
-      } 
-      
+      locMeta <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, log = log)
+
       # Active periods for named location
       timeAsgn <- lapply(locMeta$active_periods,
                          FUN=function(idxLoc){
