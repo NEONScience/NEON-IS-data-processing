@@ -54,7 +54,7 @@ def.validate.json <- function(jsonIn, log = NULL) {
     }
     else
     {
-      log$warn(base::paste0(jsonIn, ' is invalid ***** '))
+      log$debug(base::paste0(jsonIn, ' is invalid ***** '))
     }
   }
   

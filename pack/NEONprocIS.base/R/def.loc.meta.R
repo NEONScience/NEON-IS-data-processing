@@ -54,8 +54,17 @@
 #   Cove Sturtevant (2021-11-01)
 #     Remove transaction date from output
 #     Add named location group to output
+#   Cove Sturtevant (2022-09-22)
+#     Incorporate IS default processing start date 
+#     Accommodate updates to location files that ensure all possible scenarios for active periods 
+#        are represented.
 ##############################################################################################
-def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NULL){
+def.loc.meta <- function(NameFile,
+                         NameLoc=NULL,
+                         TimeBgn=NULL,
+                         TimeEnd=NULL,
+                         log=NULL
+                         ){
 
   # Initialize log if not input
   if (is.null(log)) {
@@ -84,7 +93,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
   # First, validate the syntax of input json to see if it is valid. This checks either type.
   #
   validateJson <-
-    NEONprocIS.base::def.validate.json (NameFile)
+    NEONprocIS.base::def.validate.json (NameFile,log)
   #
   # Second, validate the json against the schema only if the syntax is valid.
   # Otherwise, validateJsonSchema errors out due to the syntax error
@@ -97,7 +106,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
     locJsonSchema <- system.file("extdata", "locations-sensor-schema.json", package="NEONprocIS.base")
     log$debug('Checking location file against asset-based file schema.')    
     validateJsonSchema <-
-      NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema)
+      NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema,log)
   }
   
   # Next try to validate the location-based file schema
@@ -105,7 +114,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
     locJsonSchema <- system.file("extdata", "locations-namedLocation-schema.json", package="NEONprocIS.base")
     log$debug('Checking location file against location-based file schema.')    
     validateJsonSchema <-
-      NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema)
+      NEONprocIS.base::def.validate.json.schema (NameFile, locJsonSchema,log)
   }
   
   #if the validation fails, stop
@@ -181,7 +190,8 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                 'Required Asset Management Location Code',
                 'HOR',
                 'VER',
-                'Data Rate') 
+                'Data Rate',
+                'IS Processing Default Start Date') 
   
   # Populate the output data frame
   for(idxLoc in base::seq_len(base::nrow(locProp))){
@@ -218,21 +228,23 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
       grp <- NA
     }
     
-    # Parse any active dates
+    # Parse any active dates and place in a data frame
     if(!base::is.na(locProp$active_periods[idxLoc])){
 
       timeActvList <- rjson::fromJSON(json_str=locProp$active_periods[idxLoc])
-      timeActvChar <- base::unlist(timeActvList)
-      typeTime <- base::names(timeActvChar)
-      numBgn <- base::sum(typeTime=='start_date')
-      numEnd <- base::sum(typeTime=='end_date')
-      dmmyChar <- base::rep(NA,times=base::max(numBgn,numEnd))
       
-      # Make a data frame
+      numActv <- base::length(timeActvList)
+      dmmyChar <- base::rep(NA,times=numActv)
       timeActv <- base::data.frame(start_date=dmmyChar,end_date=dmmyChar,stringsAsFactors = FALSE)
-      timeActv$start_date[base::seq_len(numBgn)] <- timeActvChar[typeTime=='start_date']
-      timeActv$end_date[base::seq_len(numEnd)] <- timeActvChar[typeTime=='end_date']
-      
+      for(idxActv in base::seq_len(base::length(timeActvList))){
+        if(!base::is.null(timeActvList[[idxActv]]$start_date)){
+          timeActv$start_date[idxActv] <- timeActvList[[idxActv]]$start_date
+        }
+        if(!base::is.null(timeActvList[[idxActv]]$end_date)){
+          timeActv$end_date[idxActv] <- timeActvList[[idxActv]]$end_date
+        }
+      }
+
       # Convert to POSIX
       timeActv$start_date <- base::as.POSIXct(timeActv$start_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
       timeActv$end_date <- base::as.POSIXct(timeActv$end_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
@@ -244,6 +256,16 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
       timeActv <- NA
     }
     
+    # Parse IS processing default start date
+    if(!base::is.na(propFill[['IS Processing Default Start Date']])){
+      
+      # Convert to POSIX
+      timeProcBgnDflt <- base::as.POSIXct(propFill[['IS Processing Default Start Date']],format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
+
+    } else {
+      timeProcBgnDflt <- NA
+    }
+    
     rptIdx <- base::data.frame(name=locProp$name[idxLoc],
                                     site=locProp$site[idxLoc],
                                     source_type=srcType,
@@ -253,6 +275,7 @@ def.loc.meta <- function(NameFile,NameLoc=NULL,TimeBgn=NULL,TimeEnd=NULL,log=NUL
                                     context=ctxt,
                                     group=grp,
                                     active_periods=NA,
+                                    IS_Processing_Default_Start_Date=timeProcBgnDflt,
                                     location_id=propFill[['Required Asset Management Location ID']],
                                     location_code=propFill[['Required Asset Management Location Code']],
                                     HOR=propFill$HOR,
