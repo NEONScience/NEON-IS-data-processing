@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - TermQf=ux_wind_speed|uy_wind_speed|uz_wind_speed|speed_of_sound
-  image: quay.io/battelleecology/neon-is-cal-conv-r:v1.0.2
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v1.0.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

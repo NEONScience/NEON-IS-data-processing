@@ -51,6 +51,8 @@
 # changelog and author contributions / copyrights
 #   Mija Choi (2021-07-16)
 #     Original Creation
+#   Mija Choi (2022-08-17)
+#     Modified
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of wrap.ucrt.dp01.rh.dew.frst.pt.R\n")
@@ -97,4 +99,18 @@ test_that("Unit test of wrap.ucrt.dp01.rh.dew.frst.pt.R", {
   
   testthat::expect_true(class(ucrt)[1] == "try-error")
 
+  # negative test 3:  ucrtData is null
+
+  ucrtData_na <- data.frame(
+    readout_time = as.POSIXct(c('2019-01-01 00:00','2019-01-01 00:01','2019-01-01 00:02'),tz = 'GMT'),
+    dewPoint_ucrt_dfpt_t_L1 = c(NA, NA, NA),
+    dewPoint_ucrt_dfpt_rh_L1 = c(0.065, 0.045, 0.054),
+    stringsAsFactors = FALSE
+  )
+  ucrt <- NEONprocIS.stat::wrap.ucrt.dp01.rh.dew.frst.pt(data = data,
+                                                         VarUcrt = 'dewPoint',
+                                                         ucrtData = ucrtData_na)
+  
+ # testthat::expect_true(class(ucrt)[1] == "try-error")
+  
   })

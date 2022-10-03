@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - QAQC package
 
 # Start with the neon-is-base-r image. # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base & eddy4R.qaqc
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.2 as intermediate
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.4 as intermediate
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -19,14 +19,17 @@ ARG auth_token
 ENV GITHUB_PAT=$auth_token
 
 # Clone the NEON-FIU-algorithm repo using our token
-RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
+#RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
+RUN git clone -b def.plau.impr.velo https://$GITHUB_PAT:x-oauth-basic@github.com/covesturtevant/NEON-FIU-algorithm-covesturtevant.git
 
 # Now make the final build, which will leave behind our access token
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.2
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.4
 
 # copy the eddy4R.base package from the previous image
-COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
-COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.qaqc/ /pack/eddy4R.qaqc/
+#COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
+#COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.qaqc/ /pack/eddy4R.qaqc/
+COPY --from=intermediate /NEON-FIU-algorithm-covesturtevant/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
+COPY --from=intermediate /NEON-FIU-algorithm-covesturtevant/ext/eddy4R/pack/eddy4R.qaqc/ /pack/eddy4R.qaqc/
 
 
 # copy the NEONprocIS.qaqc package from local

@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_loader:64
+  image: quay.io/battelleecology/location_loader:88
   cmd:
   - /bin/bash
   stdin:
@@ -25,8 +25,8 @@ input:
     glob: /*
     empty_files: true
 resource_requests:
-  memory: 80M
-  cpu: 0.05
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"400M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
+  memory: 300M
+  cpu: 1.5
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"800M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 autoscaling: true
 

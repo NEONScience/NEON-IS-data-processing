@@ -13,7 +13,9 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
     TERM: tempIn|tempOut|tempMean|tempRefe|presAtm|presDiff|presSum|powrH2oSamp|powrH2oRefe|asrpH2o|densMoleH2o|rtioMoleDryH2o|powrCo2Samp|powrCo2Refe|asrpCo2|densMoleCo2|rtioMoleDryCo2|potCool|ssiCo2|ssiH2o
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: concentration-turbulent
   secrets:
   - name: pdr-int-secret

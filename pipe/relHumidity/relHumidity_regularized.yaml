@@ -1,0 +1,35 @@
+---
+pipeline:
+  name: relHumidity_regularized
+transform:
+  cmd:
+  - Rscript
+  - ./flow.rglr.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - DirRglr=data|uncertainty_data|flags
+  - MethRglr=CybiEc
+  - WndwRglr=Trlg
+  - IdxWndw=IdxWndwMin
+  - RptTimeWndw=FALSE
+  - DropNotNumc=FALSE
+  - DirSubCopy=location|uncertainty_coef
+  image: quay.io/battelleecology/neon-is-rglr-r:v1.0.0
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
+input:
+  pfs:
+    name: DIR_IN
+    repo: relHumidity_group_path_hmp155
+    glob: /*/*/*
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 800M
+  cpu: 1.1
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":".2"}]'
+autoscaling: true

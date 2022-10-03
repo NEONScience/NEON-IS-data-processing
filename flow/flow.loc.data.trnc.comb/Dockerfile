@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Truncate and merge data files by location
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.2
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.4
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

@@ -51,7 +51,7 @@ def get_asset_locations(connection: extensions.connection, asset: Asset) -> Feat
             name = row[3]
             locations: FeatureCollection = get_named_location_locations(connection, key)
             properties: List[Property] = get_named_location_properties(connection, key)
-            parents: Dict[str,str] = get_named_location_parents(connection, key)
+            parents: Dict[str, str] = get_named_location_parents(connection, key)
             domain: str = parents['domain'] if parents else None
             site: str = parents['site'] if parents else None
             context: List[str] = get_named_location_context(connection, key)

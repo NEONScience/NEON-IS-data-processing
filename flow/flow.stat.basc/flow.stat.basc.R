@@ -272,26 +272,29 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                      DirOutBase=Para$DirOut,
                      WndwAgr=WndwAgr,
                      ParaStat=ParaStat,
-                     SchmQm=SchmQm,
+                     SchmStat=SchmStat,
                      DirSubCopy=DirSubCopy,
                      log=log
       ),
       error = function(err) {
-        call.stack <- sys.calls() # is like a traceback within "withCallingHandlers"
-        log$error(base::paste0('The following error has occurred (call stack to follow): ',err))
-        print(utils::limitedLabels(call.stack))
+        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
+        
+        # Re-route the failed datum
+        NEONprocIS.base::def.err.datm(
+          err=err,
+          call.stack=call.stack,
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
+          log=log
+        )
       }
     ),
-    error=function(err) {
-      NEONprocIS.base::def.err.datm(
-        DirDatm=idxDirIn,
-        DirErrBase=Para$DirErr,
-        RmvDatmOut=TRUE,
-        DirOutBase=Para$DirOut,
-        log=log
-      )
-    }
+    # This simply to avoid returning the error
+    error=function(err) {}
   )
+  
   
   return()
 } # End loop around datum paths 

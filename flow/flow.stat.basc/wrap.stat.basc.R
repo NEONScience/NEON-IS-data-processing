@@ -52,7 +52,7 @@
 #' and uncertainty_data folders, respectively, of DirIn will be passed into the uncertainty function for use there. 
 #' If expUncert is not in the stat list for the term, this list element may be omitted. 
 #' 
-#' @param SchmQm (Optional).  A json-formatted character string containing the schema for the output statistics
+#' @param SchmStat (Optional).  A json-formatted character string containing the schema for the output statistics
 #' file. If this input is not provided, the output schema for the will be auto-generated from  
 #' the output data frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE STATS MATCHES THE ORDER OF THE TERMS 
 #' IN THE ParaStat ARGUMENT (stats nested within term). See output information below for details. 
@@ -121,7 +121,7 @@ wrap.stat.basc <- function(DirIn,
                          DirOutBase,
                          WndwAgr,
                          ParaStat,
-                         SchmQm=NULL,
+                         SchmStat=NULL,
                          DirSubCopy=NULL,
                          log=NULL
 ){

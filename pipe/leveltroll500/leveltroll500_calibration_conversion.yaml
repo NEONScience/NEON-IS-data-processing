@@ -1,0 +1,42 @@
+---
+pipeline:
+  name: leveltroll500_calibration_conversion
+transform:
+  cmd:
+  - Rscript
+  - ./flow.cal.conv.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileSchmData=$FILE_SCHEMA_DATA
+  - FileSchmQf=$FILE_SCHEMA_FLAGS
+  - TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly
+  - TermQf=pressure|temperature
+  - TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v1.0.4
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '1'
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: leveltroll500_data_calibration_group
+      glob: /leveltroll500/*/*/*/
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: avro_schemas_leveltroll500
+      glob: /leveltroll500/leveltroll500_calibrated.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: avro_schemas_leveltroll500
+      glob: /leveltroll500/flags_calibration_leveltroll500.avsc
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 500M
+  cpu: 1.2
+pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"300M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.2"}]'
+autoscaling: true

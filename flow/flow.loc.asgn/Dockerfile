@@ -1,7 +1,7 @@
-# Dockerfile for NEON IS Data Processing - Location Assignment
+# Dockerfile for NEON IS Data Processing - Calibration assignment
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.2
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.4
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -23,3 +23,4 @@ COPY ./wrap.loc.asgn.R .
 # Run as app user
 RUN chown app:app -R /home/app
 USER app
+
