@@ -1,4 +1,3 @@
-cron_daily_csat3.yaml
 location_asset_csat3.yaml
 location_loader_csat3.yaml
 threshold_loader_csat3.yaml

@@ -1,4 +1,3 @@
-cron_daily_mti300ahrs.yaml
 location_asset_mti300ahrs.yaml
 location_loader_mti300ahrs.yaml
 threshold_loader_mti300ahrs.yaml
