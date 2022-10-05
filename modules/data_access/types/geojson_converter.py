@@ -50,10 +50,10 @@ def convert_active_periods(active_periods: List[ActivePeriod]) -> List[dict]:
     for period in active_periods:
         start_date = period.start_date
         end_date = period.end_date
-        formatted_start_date = date_formatter.to_string(start_date)
-        if end_date is not None:
-            formatted_end_date = date_formatter.to_string(end_date)
-            periods.append(dict(start_date=formatted_start_date, end_date=formatted_end_date))
-        else:
-            periods.append(dict(start_date=formatted_start_date))
+ #       formatted_start_date = date_formatter.to_string(start_date)
+ #       if end_date is not None:
+ #           formatted_end_date = date_formatter.to_string(end_date)
+        periods.append(dict(start_date=start_date, end_date=end_date))
+ #       else:
+ #           periods.append(dict(start_date=start_date))
     return periods
