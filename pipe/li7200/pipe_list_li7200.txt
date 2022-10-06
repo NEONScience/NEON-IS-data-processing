@@ -1,5 +1,4 @@
 li7200_replace_macaddress_with_assetuid.yaml
-cron_daily_li7200.yaml
 location_asset_li7200.yaml
 location_loader_li7200.yaml
 threshold_loader_li7200.yaml
