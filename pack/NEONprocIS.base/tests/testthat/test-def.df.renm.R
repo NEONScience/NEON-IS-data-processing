@@ -8,8 +8,8 @@ test_that("Renaming the dataframe",
             returned_df <- def.df.renm(df = original_df, mappNameVar = mappNameVar)
             testthat::expect_true(is.list(returned_df))
             if (!(length(returned_df) == 0)) {
-              testthat::equals (returned_df$NewA[1], 1)
-              testthat::equals (returned_df$NewB[3], 6)
+              testthat::expect_equal (returned_df$NewA[1], 1)
+              testthat::expect_equal (returned_df$NewB[3], 6)
               
             }
             

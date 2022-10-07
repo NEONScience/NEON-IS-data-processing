@@ -15,8 +15,12 @@ test_that("if valid dataframe, return false",
 test_that("if threshold file is not reachable, return false",
           {
 
-            returnValue <- try(NEONprocIS.qaqc::def.read.thsh.qaqc.list(NameFile = "NameFile"), silent = TRUE)
-            testthat::expect_true((class(returnValue)[1] == "try-error"))
+            returnValue <- try(
+              suppressWarnings(
+                NEONprocIS.qaqc::def.read.thsh.qaqc.list(NameFile = "NameFile")
+                ),
+              silent = TRUE)
+            testthat::expect_true("try-error" %in% class(returnValue))
 
           })
 test_that("when threshold is empty",

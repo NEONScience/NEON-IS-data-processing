@@ -29,7 +29,10 @@ the truncated location information will also be writted to file in the same json
 }
 \description{
 Definition function. Read in a location JSON file for a particular named location
-and truncate the active periods to the date-time range of interest
+and truncate the active periods to the date-time range of interest. 
+NOTE: This function does not include error checking of the input json, since this function is often run 
+in a large loop after the input json has already been checked for conformance to the expected schema. 
+If error checking of the input json is desired, use a function like NEONprocIS.base::def.loc.meta.
 }
 \examples{
 TimeBgn <- base::as.POSIXct('2018-01-01',tz='GMT)

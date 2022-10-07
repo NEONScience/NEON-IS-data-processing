@@ -29,9 +29,8 @@
             "TMI":"000",
             "Data Rate":"0.1",
             "Required Asset Management Location ID":            14957,
-            "Required Asset Management Location Code":"CFGLOC113261"
+            "Required Asset Management Location Code":"CFGLOC113261",
+            "IS Processing Default Start Date": "2018-05-31T00:00:00Z"
         }
-    ],
-    "source_type":"prt",
-    "source_id":    20208
+    ]
 }

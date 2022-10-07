@@ -45,8 +45,8 @@ test_that("retrun extra timestamp in the second file",
             returnList <-NEONprocIS.base::def.rcd.miss.na(fileData=inputfilepaths)
             testthat::expect_true(is.list(returnList))
             expect_true (length(returnList) == 2)
-            testthat::equals(length(returnList$timeAll$readout_time), 6)
-            testthat::equals(returnList$timeBad$readout_time[1], "2019-01-01 07:00:05 GMT")
+            testthat::expect_equal(length(returnList$timeAll$readout_time), 6)
+            testthat::expect_equal(returnList$timeBad$readout_time[1], as.POSIXct("2019-01-01 07:00:05",tz= "GMT"))
 
           }
 
@@ -92,8 +92,8 @@ test_that("extra timestampe in the second file",
             returnList <-NEONprocIS.base::def.rcd.miss.na(fileData=inputfilepaths)
             testthat::expect_true(is.list(returnList))
             expect_true (length(returnList) == 2)
-            testthat::equals(length(returnList$timeAll$readout_time), 6)
-            testthat::equals(returnList$timeBad$readout_time[1], "2019-01-01 07:00:05 GMT")
+            testthat::expect_equal(length(returnList$timeAll$readout_time), 6)
+            testthat::expect_equal(returnList$timeBad$readout_time[1], as.POSIXct("2019-01-01 07:00:05",tz="GMT"))
 
           }
 )
@@ -106,8 +106,8 @@ test_that("NA in one of the columns",
              returnList <-NEONprocIS.base::def.rcd.miss.na(fileData=inputfilepaths)
              testthat::expect_true(is.list(returnList))
              expect_true (length(returnList) == 2)
-             testthat::equals(length(returnList$timeAll$readout_time), 6)
-             testthat::equals(returnList$timeBad$readout_time[1], "2019-01-01 00:00:02 GMT")
+             testthat::expect_equal(length(returnList$timeAll$readout_time), 6)
+             testthat::expect_equal(returnList$timeBad$readout_time[1], as.POSIXct("2019-01-01 00:00:02.262",tz="GMT"))
  
            }
 

@@ -10,7 +10,7 @@ test_that("Output path with prefix filename suffix and extension",
                 sufx = '_Suffix',
                 ext = 'txt'
               )
-            testthat::equals(output_filename, 'Prefix_myFileName_Suffix.txt')
+            testthat::expect_equal(output_filename, 'Prefix_myFileName_Suffix.txt')
           })
 
 test_that("Output when there is no extension in the nameFileIn",
@@ -22,7 +22,7 @@ test_that("Output when there is no extension in the nameFileIn",
                 sufx = '_Suffix',
                 ext = 'txt'
               )
-            testthat::equals(output_filename, 'Prefix_myFileName_Suffix.txt')
+            testthat::expect_equal(output_filename, 'Prefix_myFileName_Suffix.txt')
           })
 
 test_that("Output when there is no suffix",
@@ -31,14 +31,14 @@ test_that("Output when there is no suffix",
               NEONprocIS.base::def.file.name.out(nameFileIn = 'myFileName',
                                                  prfx = 'Prefix_',
                                                  ext = 'txt')
-            testthat::equals(output_filename, 'Prefix_myFileName.txt')
+            testthat::expect_equal(output_filename, 'Prefix_myFileName.txt')
           })
 
 test_that("Output when there is no prefix and suffix",
           {
             output_filename <-
               NEONprocIS.base::def.file.name.out(nameFileIn = 'myFileName', ext = 'txt')
-            testthat::equals(output_filename, 'myFileName.txt')
+            testthat::expect_equal(output_filename, 'myFileName.txt')
           })
 
 test_that("Output when there are multiple periods in the filenameIn",
@@ -50,5 +50,5 @@ test_that("Output when there are multiple periods in the filenameIn",
                 sufx = '_Suffix',
                 ext = 'txt'
               )
-            testthat::equals(output_filename, 'Prefix_myFileName.ext1.ext2_Suffix.txt')
+            testthat::expect_equal(output_filename, 'Prefix_myFileName.ext1.ext2_Suffix.txt')
           })

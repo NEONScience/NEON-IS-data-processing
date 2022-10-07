@@ -10,8 +10,8 @@ test_that("valid files to merge",
             testthat::expect_true(is.list(returnedData))
             if (!(length(returnedData) == 0)) {
               testthat::expect_true (returnedData$source_id[2] == '16247')
-              testthat::equals (returnedData$temp[5], 0.007209014)
-              testthat::equals (returnedData$validCalQF[1], 0)
+              testthat::expect_equal (returnedData$temp[5], 0.007209014)
+              testthat::expect_equal (returnedData$validCalQF[1], 0)
               #testthat::expect_null(returnedData$time[1])
             }
             
@@ -52,8 +52,8 @@ test_that("duplicate columns in the input files",
             testthat::expect_true(is.list(returnedData))
             if (!(length(returnedData) == 0)) {
               testthat::expect_true (returnedData$source_id[2] == '16247')
-              testthat::equals (returnedData$temp[5], 0.007209014)
-              testthat::equals (returnedData$validCalQF[1], 0)
+              testthat::expect_equal (returnedData$temp[5], 0.007209014)
+              testthat::expect_equal (returnedData$validCalQF[1], 0)
               #testthat::expect_null(returnedData$time[1])
             }
             

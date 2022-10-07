@@ -10,7 +10,7 @@ test_that("make sure missing data column are added",
             returnData <- NEONprocIS.base::def.data.mapp.schm.avro(data = data, schm = paste(unlist(schm), collapse=''))
             testthat::expect_true(is.list(returnData))
             testthat::expect_true(length(returnData) == 4)
-            testthat::equals(colnames(returnData), c("source_id","site_id", "readout_time", "temp"))
+            testthat::expect_equal(colnames(returnData), c("source_id","site_id", "readout_time", "temp"))
 
           }
 )
@@ -29,10 +29,10 @@ test_that("Data type is converted when ConvType is sent as true",
             returnData <- NEONprocIS.base::def.data.mapp.schm.avro(data = data, schm = schm, ConvType=TRUE)
             testthat::expect_true(is.list(returnData))
             testthat::expect_true(length(returnData) == 4)
-            testthat::equals(colnames(returnData), c("source_id","site_id", "readout_time", "temp"))
-            testthat::equals(typeof(returnData$source_id, "character"))
-            testthat::equals(class(returnData$temp, "numeric"))
-            testthat::equals(class(returnData$readout_time, "long"))
+            testthat::expect_equal(colnames(returnData), c("source_id","site_id", "readout_time", "temp"))
+            testthat::expect_equal(typeof(returnData$source_id), "character")
+            testthat::expect_equal(class(returnData$temp), "numeric")
+            testthat::expect_equal(class(returnData$readout_time), "integer")
 
            }
 )
@@ -46,9 +46,9 @@ test_that("make sure data is not converted when ConvType is not passed as a para
             returnData <- NEONprocIS.base::def.data.mapp.schm.avro(data = data, schm = paste(unlist(schm), collapse=''))
             testthat::expect_true(is.list(returnData))
             testthat::expect_true(length(returnData) == 4)
-            testthat::equals(colnames(returnData), c("source_id","site_id", "readout_time", "temp"))
-            testthat::equals(typeof(returnData$source_id, "numeric"))
-            testthat::equals(class(returnData$temp, "character"))
+            testthat::expect_equal(colnames(returnData), c("source_id","site_id", "readout_time", "temp"))
+            testthat::expect_equal(class(returnData$source_id), "numeric")
+            testthat::expect_equal(class(returnData$temp), "character")
           }
 
 )

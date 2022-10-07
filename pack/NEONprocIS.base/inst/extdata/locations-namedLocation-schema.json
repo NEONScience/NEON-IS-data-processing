@@ -84,17 +84,25 @@
                   }
                 },
                 "active_periods": {
-                  "minLength": 1,
+                  "minLength": 0,
                   "type": "array",
                   "items": {
-                    "minLength": 1,
+                    "minLength": 2,
                     "type": "object",
                     "required": [
-                      "start_date"
+                      "start_date",
+                      "end_date"
                     ],
                     "properties": {
                       "start_date": {
-                        "type": "string",
+                        "type": ["string", "null"],
+                        "format": "date-time",
+                        "examples": [
+                          "2017-02-07T00:17:20Z"
+                        ]
+                      },
+                      "end_date": {
+                        "type": ["string", "null"],
                         "format": "date-time",
                         "examples": [
                           "2017-02-07T00:17:20Z"

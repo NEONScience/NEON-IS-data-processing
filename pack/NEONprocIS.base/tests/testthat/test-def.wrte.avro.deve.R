@@ -72,14 +72,14 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
               cat("\n |=================================================================================|\n")
               # reset writeSuccess
               writeSuccess = -1
-              writeSuccess <- NEONprocIS.base::def.wrte.avro.deve (
+              writeSuccess <- suppressWarnings(NEONprocIS.base::def.wrte.avro.deve (
                     data = data_df, 
                     NameFile = outFile,
                     NameSchm = NULL, 
                     NameSpceSchm =  NULL, 
                     Schm = NULL, 
                     NameFileSchm = NULL, 
-                    NameLib = 'ravro.so')
+                    NameLib = 'ravro.so'))
               expect_true (file.exists(outFile) && writeSuccess == 0 ) 
               # remove the test ouput file
               if (file.exists(outFile)) {file.remove(outFile)}
@@ -122,6 +122,7 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
               )
               
               expect_true (file.exists(outFile) && writeSuccess == 0 ) 
+              if (file.exists(outFile)) {file.remove(outFile)}
               
               # reset the value of writeSuccess
               writeSuccess = -1
@@ -138,6 +139,7 @@ test_that("   Testing def.wrte.avro.deve.R, definition function. Write AVRO file
                   NameFileSchm = schm,
                   NameLib = 'ravro.so'), silent = TRUE)
               expect_true (writeSuccess == 0) 
- 
+              if (file.exists(outFile)) {file.remove(outFile)}
+              
              }
           })
