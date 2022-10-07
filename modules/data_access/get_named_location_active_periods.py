@@ -29,7 +29,6 @@ def get_active_periods(connection: extensions.connection, named_location_id: int
         rows = cursor.fetchall()
         for row in rows:
             start_date = row[0]
-            if start_date is not None:
-                end_date = row[1]
-                periods.append(ActivePeriod(start_date=start_date, end_date=end_date))
+            end_date = row[1]
+            periods.append(ActivePeriod(start_date=start_date, end_date=end_date))
     return periods
