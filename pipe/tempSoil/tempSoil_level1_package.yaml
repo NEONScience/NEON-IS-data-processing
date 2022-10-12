@@ -2,7 +2,8 @@
 pipeline:
   name: tempSoil_level1_package
 transform:
-  image: quay.io/battelleecology/packager:1
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/packager:2
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
