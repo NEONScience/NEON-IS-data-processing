@@ -37,9 +37,9 @@ def get_groups(connection: extensions.connection, group_prefix: str) -> List[str
         for row in rows:
             mem_id = row[0]
             mem_name = row[1]
-            active_periods: List[ActivePeriod] = get_group_active_periods(connection, group_i d= mem_id)
-            properties: List[Property] = get_group_properties(connection, group_id = mem_id)
-            group_name: List[str] = get_group_names(connection, group_prefix)
+            active_periods: List[ActivePeriod] = get_group_active_periods(connection, group_id=mem_id)
+            properties: List[Property] = get_group_properties(connection, group_id=mem_id)
+            group_name: List[str] = get_group_names(connection, group_prefix=group_prefix)
             groups = Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties)
             yield groups
   
