@@ -19,13 +19,13 @@ def load_groups(out_path: Path, get_groups: Callable[[str], Iterator[Group]], gr
     :param get_groups: A function yielding groups.
     :param group_prefix: group_prefix.
     """
-    for group in get_groups(group_prefix=group_prefix):
-        group_prefix_1 = group_prefix[:-1]
+    group_prefix_1 = group_prefix[:-1]
+    for group_name in get_group_names(group_prefix=group_prefix):
         group_name: str = group.name
-        for schema_name in schema_names:
-#            path = Path(out_path, group_name, mem_name, f'{mem_name}.json')
+        for member_name in get_member_group_names(group_prefix=group_prefix):
+            path = Path(out_path, group_prefix_1, member_name, f'{member_name}.json')
             path.parent.mkdir(parents=True, exist_ok=True)
-#            geojson_data = geojson_converter.convert_named_location(named_location)
+            geojson_data = geojson_converter.convert_group(group_name)
             file_data = geojson.dumps(geojson_data, indent=4, sort_keys=False, default=str)
             with open(path, 'w') as file:
                 log.debug(f'writing file: {path}')
