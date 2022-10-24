@@ -14,7 +14,7 @@ def get_member_groups(connection: extensions.connection, group_prefix: str) -> L
 
     :param connection: A database connection.
     :param group_prefix: A group prefix.
-    :return: The groups.
+    :return: The member groups.
     """
     sql = '''
         select

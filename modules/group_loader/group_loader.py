@@ -11,17 +11,17 @@ import data_access.types.geojson_converter as geojson_converter
 log = structlog.get_logger()
 
 
-def load_groups(out_path: Path, get_group: Callable[[str], Iterator[Group]], group_prefix: str) -> None:
+def load_groups(out_path: Path, get_groups: Callable[[str], Iterator[Group]], group_prefix: str) -> None:
     """
     Write location files into the output path.
 
     :param out_path: The path for writing files.
-    :param get_group: A function yielding groups.
+    :param get_groups: A function yielding groups.
     :param group_prefix: group_prefix.
     """
-    for group in get_group(group_prefix=group_prefix):
-        group_name = group_prefix[:-1]
-#        location_name: str = group.name
+    for group in get_groups(group_prefix=group_prefix):
+        group_prefix_1 = group_prefix[:-1]
+        group_name: str = group.name
         for schema_name in schema_names:
 #            path = Path(out_path, group_name, mem_name, f'{mem_name}.json')
             path.parent.mkdir(parents=True, exist_ok=True)
