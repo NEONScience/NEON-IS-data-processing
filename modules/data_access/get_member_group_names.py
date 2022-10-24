@@ -8,7 +8,7 @@ from data_access.types.active_period import ActivePeriod
 from data_access.types.property import Property
 from data_access.get_group_active_periods import get_active_periods
 
-def get_member_groups(connection: extensions.connection, group_prefix: str) -> List[str]:
+def get_member_group_names(connection: extensions.connection, group_prefix: str) -> List[str]:
     """
     Get member groups for a group prefix, i.e., pressure-air_.
 
