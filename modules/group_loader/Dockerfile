@@ -1,8 +1,8 @@
 ####
 #
-# This dockerfile will build the location loader module.
+# This dockerfile will build the group loader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t location_loader:latest -f location_loader/Dockerfile .
+# docker build -t group_loader:latest -f group_loader/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
