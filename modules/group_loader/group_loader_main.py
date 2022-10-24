@@ -22,8 +22,8 @@ def main() -> None:
     log_config.configure(log_level)
 
     with closing(connect(db_url)) as connection:
-        get_groups_partial = partial(get_groups, connection=connection)
-        load_groups(out_path=out_path, get_groups_partial, group_prefix=group_prefix)
+        get_member_groups_partial = partial(get_member_groups, connection=connection)
+        load_groups(out_path=out_path, get_groups=get_member_groups_partial, group_prefix=group_prefix)
 
 if __name__ == "__main__":
     main()
