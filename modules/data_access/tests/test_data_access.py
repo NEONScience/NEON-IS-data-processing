@@ -96,12 +96,12 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_named_location_site(self):
         parents = get_named_location_parents(self.connection, self.named_location_id)
-        site = parents['site']
+        (site_id, site) = parents['site']
         self.assertTrue(site == 'ORNL')
 
     def test_get_named_location_domain(self):
         parents = get_named_location_parents(self.connection, self.named_location_id)
-        site = parents['domain']
+        (site_id, site) = parents['domain']
         self.assertTrue(site == 'D07')
 
     def test_get_named_locations(self):
