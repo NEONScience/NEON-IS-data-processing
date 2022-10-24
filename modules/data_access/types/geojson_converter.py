@@ -45,6 +45,18 @@ def convert_named_location(location: NamedLocation) -> FeatureCollection:
     return FeatureCollection([feature])
 
 
+def convert_group(group: Group) -> FeatureCollection:
+    active_periods = convert_active_periods(group.active_periods)
+    properties = dict(name=group.name,
+                      type=group.type,
+                      group=group.group,
+                      active_periods=active_periods)
+    feature = Feature(properties=properties)
+    for p in group.properties:
+        feature[p.name] = p.value
+    return FeatureCollection([feature])
+
+
 def convert_active_periods(active_periods: List[ActivePeriod]) -> List[dict]:
     periods = []
     for period in active_periods:
