@@ -21,12 +21,13 @@ def get_group_names (connection: extensions.connection, group_prefix: str) -> Li
         where
         	g.group_id = gm.group_id 
         and
-            g.group_name like '%s%%'
+            g.group_name like %s
     '''
 
     groups: List[str] = []
+    group_prefix_1: str = group_prefix+'%'
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [group_prefix=group_prefix])
+        cursor.execute(sql, [group_prefix_1])
         rows = cursor.fetchall()
         for row in rows:
             group_name = row[0]

@@ -6,6 +6,7 @@ import common.date_formatter as date_formatter
 from data_access.types.named_location import NamedLocation
 from data_access.types.asset_location import AssetLocation
 from data_access.types.active_period import ActivePeriod
+from data_access.types.group import Group
 
 
 def convert_asset_location(location: AssetLocation) -> Feature:
@@ -48,7 +49,6 @@ def convert_named_location(location: NamedLocation) -> FeatureCollection:
 def convert_group(group: Group) -> FeatureCollection:
     active_periods = convert_active_periods(group.active_periods)
     properties = dict(name=group.name,
-                      type=group.type,
                       group=group.group,
                       active_periods=active_periods)
     feature = Feature(properties=properties)

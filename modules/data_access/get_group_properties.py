@@ -18,13 +18,13 @@ def get_group_properties(connection: extensions.connection, group_id: int) -> Li
     """
     sql = '''
         select
-            group.name,
-            group.hor,
-            group.ver
+            g.group_name,
+            g.hor,
+            g.ver
         from
-            group
+            "group" g
         where
-            group_id = %s
+            g.group_id = %s
     '''
     properties: List[Property] = []
     with closing(connection.cursor()) as cursor:
