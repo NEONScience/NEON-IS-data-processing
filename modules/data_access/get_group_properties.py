@@ -27,6 +27,8 @@ def get_group_properties(connection: extensions.connection, group_id: int) -> Li
             g.group_id = %s
     '''
     properties: List[Property] = []
+    hor_name = "HOR"
+    ver_name = "VER"
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_id])
         rows = cursor.fetchall()
@@ -34,6 +36,6 @@ def get_group_properties(connection: extensions.connection, group_id: int) -> Li
             name = row[0]
             hor = row[1]
             ver = row[2]
-            properties.append(Property(name=name, value=hor))
-            properties.append(Property(name=name, value=ver))
+            properties.append(Property(name=hor_name, value=hor))
+            properties.append(Property(name=ver_name, value=ver))
     return properties

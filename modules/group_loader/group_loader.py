@@ -22,7 +22,6 @@ def load_groups(out_path: Path, get_group: Callable[[str], Iterator[Group]], gro
     group_prefix_1 = group_prefix[:-1]
     for group in get_group(group_prefix=group_prefix):
         member_name: str = group.name
-        group_name str = group.group
         path = Path(out_path, group_prefix_1, member_name, f'{member_name}.json')
         path.parent.mkdir(parents=True, exist_ok=True)
         geojson_data = geojson_converter.convert_group(group)

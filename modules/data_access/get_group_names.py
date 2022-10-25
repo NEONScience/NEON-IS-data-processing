@@ -14,7 +14,7 @@ def get_group_names (connection: extensions.connection, group_prefix: str) -> Li
     :return: The group names.
     """
     sql = '''
-        select
+        select distinct 
              g.group_name
         from 
              "group" g, group_member gm 
@@ -24,12 +24,11 @@ def get_group_names (connection: extensions.connection, group_prefix: str) -> Li
             g.group_name like %s
     '''
 
-    groups: List[str] = []
+    group_name: str = ""
     group_prefix_1: str = group_prefix+'%'
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_prefix_1])
         rows = cursor.fetchall()
         for row in rows:
             group_name = row[0]
-            groups.append(group_name)
-    return groups
+    return group_name
