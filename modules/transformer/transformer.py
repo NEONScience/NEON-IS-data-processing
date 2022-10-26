@@ -3,7 +3,6 @@ import os
 import json
 import pandas as pd
 from pandas import DataFrame
-import datetime
 import fnmatch
 import math
 import csv
@@ -17,7 +16,6 @@ def transform(*, year_index: int) -> None:
     """
     :param year_index: index of year in data path
     """
-
     workbook_file = os.environ['WORKBOOK_PATH']
     locations_path = os.path.join(os.environ['DATA_PATH'], 'locations')
     data_path = os.path.join(os.environ['DATA_PATH'], 'data')
@@ -34,8 +32,8 @@ def transform(*, year_index: int) -> None:
     data_path_parts = os.environ['DATA_PATH'].split(os.path.sep)
     formatted_date = '-'.join(data_path_parts[year_index:year_index+3])
 
-    # hasData by output file
-    hasDataByFile = {}
+    # has data by output file
+    has_data_by_file = {}
 
     locations = os.listdir(locations_path)
     for location in locations:
@@ -57,7 +55,6 @@ def transform(*, year_index: int) -> None:
         tmi_by_file = dict(zip(data_files, [os.path.splitext(data_file)[0].split('_')[-1] for data_file in data_files]))
 
         for tmi in list(set(tmi_by_file.values())):
-
             # construct filenames
             dp_parts = workbook['dpID'][0].split('.')
             dp_parts[dp_parts.index('DOM')] = loc_data["features"][0]["properties"]["domain"]
@@ -72,12 +69,12 @@ def transform(*, year_index: int) -> None:
             basic_filepath = os.path.join(output_path, basic_filename)
             expanded_filepath = os.path.join(output_path, expanded_filename)
 
-            tmi_files = [os.path.join(location_data_path, k) for k,v in tmi_by_file.items() if v == tmi]
+            tmi_files = [os.path.join(location_data_path, k) for k, v in tmi_by_file.items() if v == tmi]
 
             # import and concatenate data files
             data = pd.read_parquet(tmi_files[0])
             for tmi_file in tmi_files[1:]:
-                data = pd.concat([data, pd.read_parquet(tmi_file).iloc[:,2:]], 1)
+                data = pd.concat([data, pd.read_parquet(tmi_file).iloc[:, 2:]], 1)
 
             # format columns
             for column in data.columns:
@@ -91,19 +88,24 @@ def transform(*, year_index: int) -> None:
             data[workbook['fieldName'][workbook['fieldName'].isin(data.columns) == False]] = ""
 
             # determine data availability
-            hasDataByFile[basic_filename] = not data[workbook.loc[(workbook['dataCategory'] == 'Y') & (workbook['downloadPkg'] == 'basic')]['fieldName'].values].isnull().values.all()
-            hasDataByFile[expanded_filename] = \
-                not data[workbook.loc[(workbook['dataCategory'] == 'Y') & \
-                        ((workbook['downloadPkg'] == 'basic') | (workbook['downloadPkg'] == 'expanded'))]['fieldName'].values].isnull().values.all()
+            has_data_by_file[basic_filename] = not data[workbook.loc[
+                (workbook['dataCategory'] == 'Y') &
+                (workbook['downloadPkg'] == 'basic')]['fieldName'].values].isnull().values.all()
+            has_data_by_file[expanded_filename] = \
+                not data[workbook.loc[(workbook['dataCategory'] == 'Y') & ((workbook['downloadPkg'] == 'basic') |
+                                    (workbook['downloadPkg'] == 'expanded'))]['fieldName'].values].isnull().values.all()
 
             # extract and write datasets
             os.makedirs(output_path, exist_ok=True)
             # basic
-            basic_columns = workbook.loc[(workbook['downloadPkg'] == 'basic') & (workbook['table'] == table_by_tmi[tmi]), ['rank','fieldName']]
+            basic_columns = workbook.loc[(workbook['downloadPkg'] == 'basic') &
+                                         (workbook['table'] == table_by_tmi[tmi]), ['rank','fieldName']]
             data[basic_columns.sort_values('rank')['fieldName']].to_csv(basic_filepath, index=False)
             # expanded
             if workbook['downloadPkg'].str.contains('expanded').any():
-                expanded_columns = workbook.loc[((workbook['downloadPkg'] == 'basic') | (workbook['downloadPkg'] == 'expanded')) & (workbook['table'] == table_by_tmi[tmi]), ['rank','fieldName']]
+                expanded_columns = workbook.loc[((workbook['downloadPkg'] == 'basic') |
+                                                 (workbook['downloadPkg'] == 'expanded'))
+                                                & (workbook['table'] == table_by_tmi[tmi]), ['rank', 'fieldName']]
                 data[expanded_columns.sort_values('rank')['fieldName']].to_csv(expanded_filepath, index=False)
 
     # write metadata manifest
@@ -111,13 +113,12 @@ def transform(*, year_index: int) -> None:
     with open(manifest_filepath, 'w') as manifest_csv:
         writer = csv.writer(manifest_csv)
         writer.writerow(['file','hasData'])
-        for key in hasDataByFile.keys():
-            writer.writerow([key, hasDataByFile[key]])
+        for key in has_data_by_file.keys():
+            writer.writerow([key, has_data_by_file[key]])
     
 
 # Apply pub format to a column of a dataframe
 def format_column(dataframe: DataFrame, column: str, format: str):
-
     if format == "yyyy-MM-dd'T'HH:mm:ss'Z'(floor)":
         dataframe[column] = dataframe[column].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
 
