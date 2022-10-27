@@ -46,10 +46,10 @@ def load() -> None:
                 with open(file_path, 'w') as asset_macaddress_file:
                     asset_macaddress_file.write(str(asset_uid))
             except BaseException as err:
-                print(f"Unexpected {asset_uid}, {mac_address}")
+                log.error(f"Unexpected {asset_uid}, {mac_address}")
                 raise err
     else:
-        print(f"Asset call failed with error code: {response.status_code} error with your request")
+        log.error(f"Asset call failed with error code: {response.status_code}.")
 
 
 if __name__ == '__main__':
