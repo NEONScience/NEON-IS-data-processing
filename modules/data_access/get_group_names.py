@@ -5,12 +5,12 @@ from typing import List
 from psycopg2 import extensions
 
 
-def get_group_names (connection: extensions.connection, group_prefix: str) -> List[str]:
+def get_group_names (connection: extensions.connection, mem_group_id: int) -> List[str]:
     """
     Get group names for a group_prefix.
 
     :param connection: A database connection.
-    :param group_id: The group prefix.
+    :param mem_group_id: The member group id.
     :return: The group names.
     """
     sql = '''
@@ -21,14 +21,13 @@ def get_group_names (connection: extensions.connection, group_prefix: str) -> Li
         where
         	g.group_id = gm.group_id 
         and
-            g.group_name like %s
+            gm.member_group_id = %s
     '''
 
-    group_name: str = ""
-    group_prefix_1: str = group_prefix+'%'
+    group_names: List[str] = []
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [group_prefix_1])
+        cursor.execute(sql, [mem_group_id])
         rows = cursor.fetchall()
         for row in rows:
-            group_name = row[0]
-    return group_name
+            group_names = row[0]
+    return group_names

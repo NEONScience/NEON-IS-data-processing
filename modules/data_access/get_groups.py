@@ -34,7 +34,7 @@ def get_groups(connection: extensions.connection, group_prefix: str) -> List[str
             g.group_name like %s)
     '''
 
-    groups: List[str] = []
+    groups: List[Group] = []
     group_prefix_1: str = group_prefix+'%'
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_prefix_1])
@@ -44,7 +44,7 @@ def get_groups(connection: extensions.connection, group_prefix: str) -> List[str
             mem_name = row[1]
             active_periods: List[ActivePeriod] = get_active_periods(connection, group_id=mem_id)
             properties: List[Property] = get_group_properties(connection, group_id=mem_id)
-            group_name: List[str] = get_group_names(connection, group_prefix=group_prefix)
+            group_name: List[str] = get_group_names(connection, mem_group_id=mem_id)
             groups = Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties)
             yield groups
   
