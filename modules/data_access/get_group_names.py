@@ -5,7 +5,7 @@ from typing import List
 from psycopg2 import extensions
 
 
-def get_group_names (connection: extensions.connection, mem_group_id: int) -> List[str]:
+def get_group_names (connection: extensions.connection, group_id: int) -> List[str]:
     """
     Get group names for a group_prefix.
 
@@ -14,19 +14,17 @@ def get_group_names (connection: extensions.connection, mem_group_id: int) -> Li
     :return: The group names.
     """
     sql = '''
-        select distinct 
+        select  
              g.group_name
         from 
-             "group" g, group_member gm 
+             "group" g 
         where
-        	g.group_id = gm.group_id 
-        and
-            gm.member_group_id = %s
+        	g.group_id = %s 
     '''
 
     group_names: List[str] = []
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [mem_group_id])
+        cursor.execute(sql, [group_id])
         rows = cursor.fetchall()
         for row in rows:
             group_names = row[0]
