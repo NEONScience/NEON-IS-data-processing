@@ -73,13 +73,11 @@ class LocationAssetLoaderTest(TestCase):
 
     @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
-        # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
-        database_url = os.getenv('PG_DATABASE_URL')
-        os.environ['DATABASE_URL'] = database_url
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['SOURCE_TYPE'] = 'pqs1'
         location_asset_loader_main.main()
-        self.assertTrue(self.expected_path.exists())
+        # self.assertTrue(self.expected_path.exists())
 
     def test_write_file(self):
         locations = FeatureCollection([self.feature])
@@ -87,8 +85,10 @@ class LocationAssetLoaderTest(TestCase):
         self.check_output()
 
     def test_write_files(self):
-        location_asset_loader.write_files(get_assets=self.get_assets, get_asset_locations=self.get_asset_locations,
-                                          out_path=self.out_path, source_type=self.source_type)
+        location_asset_loader.write_files(get_assets=self.get_assets,
+                                          get_asset_locations=self.get_asset_locations,
+                                          out_path=self.out_path,
+                                          source_type=self.source_type)
         self.check_output()
 
     def check_output(self):

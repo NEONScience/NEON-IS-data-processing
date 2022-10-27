@@ -2,25 +2,27 @@
 from contextlib import closing
 from typing import List
 
-from psycopg2 import extensions
+from data_access.db_connector import DbConnector
 
 
-def get_named_location_group(connection: extensions.connection, named_location_id: int) -> List[str]:
+def get_named_location_group(connector: DbConnector, named_location_id: int) -> List[str]:
     """
     Get context entries for a named location.
 
-    :param connection: A database connection.
+    :param connector: A database connection.
     :param named_location_id: The named location ID.
     :return: The context entries.
     """
-    sql = '''
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
         select
-        g.group_name
-        from named_location_group nlg, "group" g
+            g.group_name
+        from 
+            {schema}.named_location_group nlg, {schema}."group" g
         where
             nlg.group_id = g.group_id and nlg.named_location_id = %s
     '''
-
     groups: List[str] = []
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [named_location_id])

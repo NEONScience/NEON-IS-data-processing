@@ -10,7 +10,8 @@ from data_access.types.asset import Asset
 log = structlog.get_logger()
 
 
-def write_files(*, get_assets: Callable[[str], Iterator[Asset]],
+def write_files(*,
+                get_assets: Callable[[str], Iterator[Asset]],
                 get_asset_locations: Callable[[Asset], FeatureCollection],
                 out_path: Path,
                 source_type: str) -> None:

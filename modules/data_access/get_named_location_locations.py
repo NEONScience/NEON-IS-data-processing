@@ -2,25 +2,27 @@
 from contextlib import closing
 from typing import List
 
-from psycopg2 import extensions
 from geojson import Point, Polygon, Feature, FeatureCollection
 
 import common.date_formatter as date_formatter
 from data_access.get_geolocation_properties import get_geolocation_properties
+from data_access.db_connector import DbConnector
 
 
-def get_named_location_locations(connection: extensions.connection, named_location_id: int) -> FeatureCollection:
+def get_named_location_locations(connector: DbConnector, named_location_id: int) -> FeatureCollection:
     """
     Get the locations associated with the named location in GEOJson format.
 
-    :param connection: A database connection.
+    :param connector: A database connection.
     :param named_location_id: The named location ID.
     :return: FeatureCollection of the locations associated with the named location.
     """
-    sql = '''
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
         select
             locn.locn_id,
-            ST_AsText(locn_geom) as point,
+            {schema}.ST_AsText(locn_geom) as point,
             locn_nam_locn_strt_date, 
             locn_nam_locn_end_date, 
             locn_alph_ortn, 
@@ -32,11 +34,11 @@ def get_named_location_locations(connection: extensions.connection, named_locati
             nam_locn_id_off, 
             nam_locn_name
         from 
-            locn
+            {schema}.locn
         join 
-            locn_nam_locn on locn.locn_id = locn_nam_locn.locn_id
+            {schema}.locn_nam_locn on locn.locn_id = locn_nam_locn.locn_id
         join 
-            nam_locn on locn.nam_locn_id_off = nam_locn.nam_locn_id
+            {schema}.nam_locn on locn.nam_locn_id_off = nam_locn.nam_locn_id
         where
             locn_nam_locn.nam_locn_id = %s
     '''
@@ -57,7 +59,7 @@ def get_named_location_locations(connection: extensions.connection, named_locati
             z_offset = float(row[9])
             named_location_offset_id = row[10]
             named_location_offset_name = row[11]
-            location_properties = get_geolocation_properties(connection, location_id)
+            location_properties = get_geolocation_properties(connector, location_id)
             # convert dates
             if start_date is not None:
                 start_date = date_formatter.to_string(start_date)
@@ -68,7 +70,7 @@ def get_named_location_locations(connection: extensions.connection, named_locati
             reference_feature = None
             if (named_location_offset_id is not None) and (named_location_offset_id != named_location_id):
                 # recursively retrieve the reference locations
-                reference_locations = get_named_location_locations(connection, named_location_offset_id)
+                reference_locations = get_named_location_locations(connector, named_location_offset_id)
                 # build the reference feature
                 reference_location_properties = dict(name=named_location_offset_name, locations=reference_locations)
                 reference_feature = Feature(geometry=None, properties=reference_location_properties)

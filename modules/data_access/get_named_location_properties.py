@@ -2,30 +2,32 @@
 from contextlib import closing
 from typing import List
 
-from psycopg2 import extensions
-
 import common.date_formatter as date_formatter
 from data_access.types.property import Property
 
+from data_access.db_connector import DbConnector
 
-def get_named_location_properties(connection: extensions.connection, named_location_id: int) -> List[Property]:
+
+def get_named_location_properties(connector: DbConnector, named_location_id: int) -> List[Property]:
     """
     Get the properties associated with a named location.
 
-    :param connection: A database connection.
+    :param connector: A database connection.
     :param named_location_id: The named location ID to search.
     :return: The named location properties.
     """
-    sql = '''
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
         select
             attr.attr_name,
             property.string_value,
             property.number_value,
             property.date_value
         from
-            property
+            {schema}.property
         join
-            attr on property.attr_id = attr.attr_id
+            {schema}.attr on property.attr_id = attr.attr_id
         where
             property.nam_locn_id = %s
     '''

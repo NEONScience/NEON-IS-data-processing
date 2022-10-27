@@ -14,7 +14,6 @@ log = structlog.get_logger()
 def load_locations(out_path: Path, get_locations: Callable[[str], Iterator[NamedLocation]], source_type: str) -> None:
     """
     Write location files into the output path.
-
     :param out_path: The path for writing files.
     :param get_locations: A function yielding named locations.
     :param source_type: sensor type.

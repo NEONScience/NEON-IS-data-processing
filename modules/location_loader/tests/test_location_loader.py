@@ -26,28 +26,26 @@ class LocationLoaderTest(TestCase):
 
     @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
-        # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
-        database_url = os.getenv('PG_DATABASE_URL')
         os.environ['LOCATION_TYPE'] = 'CONFIG'
-        os.environ['DATABASE_URL'] = database_url
+        os.environ['SOURCE_TYPE'] = 'pqs1'
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         location_loader_main.main()
         file_path = Path(self.out_path, 'pqs1/CFGLOC100243/CFGLOC100243.json')
         self.assertTrue(file_path.exists())
 
-    @unittest.skip('Test skipped.')
     def test_location_loader(self):
         site = 'CPER'
+        domain = 'D10'
         location = 'CFGLOC123'
         schema_names = set('prt')
         description = 'A test location.'
         expected_type = 'CONFIG'
+        group = ['group']
 
-        def get_locations() -> List[NamedLocation]:
+        def get_locations(source_type) -> List[NamedLocation]:
             """
             Return a mock named location.
-
             :return: The named location data.
             """
             prop = Property(name='property1', value='value1')
@@ -57,14 +55,16 @@ class LocationLoaderTest(TestCase):
                                            type=expected_type,
                                            description=description,
                                            site=site,
+                                           domain=domain,
                                            schema_names=schema_names,
                                            context=list(schema_names),
                                            active_periods=[active_period],
+                                           group=group,
                                            properties=[prop])
             return [named_location]
 
         # test
-        location_loader.load_locations(out_path=self.out_path, get_locations=get_locations)
+        location_loader.load_locations(out_path=self.out_path, get_locations=get_locations, source_type='prt')
         # check output
         file_path = Path(self.out_path, next(iter(schema_names)), location, f'{location}.json')
         self.assertTrue(file_path.exists())

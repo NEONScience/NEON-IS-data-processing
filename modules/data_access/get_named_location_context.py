@@ -2,22 +2,24 @@
 from contextlib import closing
 from typing import List
 
-from psycopg2 import extensions
+from data_access.db_connector import DbConnector
 
 
-def get_named_location_context(connection: extensions.connection, named_location_id: int) -> List[str]:
+def get_named_location_context(connector: DbConnector, named_location_id: int) -> List[str]:
     """
     Get context entries for a named location.
 
-    :param connection: A database connection.
+    :param connector: A database connection.
     :param named_location_id: The named location ID.
     :return: The context entries.
     """
-    sql = '''
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
         select 
             context_code
         from 
-            named_location_context 
+            {schema}.named_location_context 
         where 
             named_location_id = %s
     '''

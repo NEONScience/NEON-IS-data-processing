@@ -4,11 +4,12 @@ from pandas import DataFrame
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from psycopg2 import extensions
+from data_access.db_connector import DbConnector
 
 
-def create_pub(connection: extensions.connection, pub: DataFrame, version: str):
-
+def create_pub(connector: DbConnector, pub: DataFrame, version: str):
+    connection = connector.get_connection()
+    schema = connector.get_schema()
     domain_index = 1
     site_index = 2
     package_index = 11
@@ -16,8 +17,8 @@ def create_pub(connection: extensions.connection, pub: DataFrame, version: str):
     date_delimiter = "-"
     timestamp = datetime.datetime.utcnow()
 
-    dp_pub_sql = '''
-        INSERT INTO dp_pub
+    dp_pub_sql = f'''
+        INSERT INTO {schema}.dp_pub
            (dp_pub_id,
             dp_idq, 
             site, 
@@ -33,8 +34,8 @@ def create_pub(connection: extensions.connection, pub: DataFrame, version: str):
         RETURNING dp_pub_id
     '''
 
-    dp_pub_object_sql = '''
-        INSERT INTO dp_pub_object
+    dp_pub_object_sql = f'''
+        INSERT INTO {schema}.dp_pub_object
            (dp_pub_object_id,
             dp_pub_id,
             object_type,
@@ -46,21 +47,21 @@ def create_pub(connection: extensions.connection, pub: DataFrame, version: str):
         VALUES (nextval('dp_pub_object_id_seq1'),%s,%s,%s,%s,%s,%s,%s)
     '''
 
-    find_dp_pub_sql = '''
+    find_dp_pub_sql = f'''
         select 
             dp_pub_id, release_status
         from 
-            dp_pub 
+            {schema}.dp_pub 
         where 
             dp_idq = %s and site = %s and data_interval_start = %s and data_interval_end = %s 
     '''
 
-    delete_dp_pub_sql = '''
-        delete from dp_pub where dp_pub_id = %s 
+    delete_dp_pub_sql = f'''
+        delete from {schema}.dp_pub where dp_pub_id = %s 
     '''
 
-    hasDataByPackage = {}
-    objectsByPackage = {}
+    has_data_by_package = {}
+    objects_by_package = {}
 
     with closing(connection.cursor()) as cursor:
         try:
@@ -101,27 +102,28 @@ def create_pub(connection: extensions.connection, pub: DataFrame, version: str):
                 tran_date = timestamp
 
                 # update has_data
-                if package_type in hasDataByPackage.keys():
-                    hasDataByPackage[package_type] = 'Y' if (hasDataByPackage[package_type] == 'Y' or has_data == 'Y') else 'N'
+                if package_type in has_data_by_package.keys():
+                    has_data_by_package[package_type] = 'Y' if (has_data_by_package[package_type] == 'Y'
+                                                                or has_data == 'Y') else 'N'
                 else:
-                    hasDataByPackage[package_type] = has_data
+                    has_data_by_package[package_type] = has_data
                 # store dp_pub_object tuple
                 object_tuple = (object_type, object_id, object_size, checksum, tran_date, version)
-                if package_type in objectsByPackage.keys():
-                    thisPackage = objectsByPackage[package_type]
+                if package_type in objects_by_package.keys():
+                    thisPackage = objects_by_package[package_type]
                     thisPackage.append(object_tuple)
-                    objectsByPackage[package_type] = thisPackage
+                    objects_by_package[package_type] = thisPackage
                 else:
-                    objectsByPackage[package_type] = [object_tuple]
+                    objects_by_package[package_type] = [object_tuple]
 
-            for package_type in objectsByPackage.keys():
+            for package_type in objects_by_package.keys():
                 # insert dp_pub and return ID
-                cursor.execute(dp_pub_sql, (dp_idq, site, package_type, data_interval_start, data_interval_end, \
-                                hasDataByPackage[package_type], status, create_date, update_date, release_status))
+                cursor.execute(dp_pub_sql, (dp_idq, site, package_type, data_interval_start, data_interval_end,
+                                has_data_by_package[package_type], status, create_date, update_date, release_status))
                 dp_pub_id = cursor.fetchone()[0]
 
                 # insert dp_pub_objects
-                for object_tuple in objectsByPackage[package_type]:
+                for object_tuple in objects_by_package[package_type]:
                     cursor.execute(dp_pub_object_sql, (dp_pub_id,) + object_tuple)
 
             connection.commit()

@@ -3,28 +3,30 @@ from contextlib import closing
 from typing import Dict, List
 
 from geojson import Feature, FeatureCollection
-from psycopg2 import extensions
 
 from data_access.get_named_location_locations import get_named_location_locations
 from data_access.get_named_location_context import get_named_location_context
 from data_access.get_named_location_group import get_named_location_group
 from data_access.get_named_location_parents import get_named_location_parents
 from data_access.get_named_location_properties import get_named_location_properties
+from data_access.db_connector import DbConnector
 from data_access.types.asset import Asset
 from data_access.types.asset_location import AssetLocation
 from data_access.types.property import Property
 import data_access.types.geojson_converter as geojson_converter
 
 
-def get_asset_locations(connection: extensions.connection, asset: Asset) -> FeatureCollection:
+def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollection:
     """
     Get an asset's location history in GEOJson format.
 
-    :param connection: The database connection.
+    :param connector: The database connection.
     :param asset: The asset.
     :return: The asset's location history.
     """
-    sql = '''
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
         select
             is_asset_location.nam_locn_id,
             is_asset_location.install_date,
@@ -32,7 +34,7 @@ def get_asset_locations(connection: extensions.connection, asset: Asset) -> Feat
             nam_locn.nam_locn_name,
             type.type_name
         from
-            is_asset_location, nam_locn, type
+            {schema}.is_asset_location, {schema}.nam_locn, {schema}.type
         where
             is_asset_location.asset_uid = %s
         and
@@ -49,13 +51,13 @@ def get_asset_locations(connection: extensions.connection, asset: Asset) -> Feat
             install_date = row[1]
             remove_date = row[2]
             name = row[3]
-            locations: FeatureCollection = get_named_location_locations(connection, key)
-            properties: List[Property] = get_named_location_properties(connection, key)
-            parents: Dict[str, str] = get_named_location_parents(connection, key)
+            locations: FeatureCollection = get_named_location_locations(connector, key)
+            properties: List[Property] = get_named_location_properties(connector, key)
+            parents: dict[str, str] = get_named_location_parents(connector, key)
             domain: str = parents['domain'] if parents else None
             site: str = parents['site'] if parents else None
-            context: List[str] = get_named_location_context(connection, key)
-            group: List[str] = get_named_location_group(connection, key)
+            context: List[str] = get_named_location_context(connector, key)
+            group: List[str] = get_named_location_group(connector, key)
             asset_location = AssetLocation(name=name, domain=domain, site=site, install_date=install_date,
                                            remove_date=remove_date, context=context, group=group, properties=properties,
                                            locations=locations)

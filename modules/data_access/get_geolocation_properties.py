@@ -2,30 +2,31 @@
 from contextlib import closing
 from typing import List
 
-from psycopg2 import extensions
-
 import common.date_formatter as date_formatter
 from data_access.types.property import Property
+from data_access.db_connector import DbConnector
 
 
-def get_geolocation_properties(connection: extensions.connection, geolocation_id: int) -> List[Property]:
+def get_geolocation_properties(connector: DbConnector, geolocation_id: int) -> List[Property]:
     """
     Get the properties associated with a geolocation.
 
-    :param connection: A database connection.
+    :param connector: A database connection.
     :param geolocation_id: The geolocation ID to search.
     :return: The geolocation properties.
     """
-    sql = '''
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
         select
             attr.attr_name,
             property.string_value,
             property.number_value,
             property.date_value
         from
-            property
+            {schema}.property
         join
-            attr on property.attr_id = attr.attr_id
+            {schema}.attr on property.attr_id = attr.attr_id
         where
             property.locn_id = %s
     '''
