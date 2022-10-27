@@ -34,17 +34,33 @@ def get_groups(connection: extensions.connection, group_prefix: str) -> List[str
             g.group_name like %s)
     '''
 
+    sql2 = '''
+        select distinct 
+             g.group_id
+        from 
+             "group" g, group_member gm 
+        where
+        	g.group_id = gm.group_id 
+        and
+            gm.member_group_id = %s
+    '''
+
     groups: List[Group] = []
-    group_prefix_1: str = group_prefix+'%'
+    group_prefix_1: str = group_prefix + '%'
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [group_prefix_1])
+        cursor.execute(sql,[group_prefix_1])
         rows = cursor.fetchall()
         for row in rows:
             mem_id = row[0]
             mem_name = row[1]
-            active_periods: List[ActivePeriod] = get_active_periods(connection, group_id=mem_id)
-            properties: List[Property] = get_group_properties(connection, group_id=mem_id)
-            group_name: List[str] = get_group_names(connection, mem_group_id=mem_id)
-            groups = Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties)
-            yield groups
+            group_names: List[str] = get_group_names(connection,mem_group_id=mem_id)
+            cursor.execute(sql2,[mem_id])
+            rows2 = cursor.fetchall()
+            for row2 in rows2:
+                group_id = row2[0]
+                active_periods: List[ActivePeriod] = get_active_periods(connection,group_id=group_id)
+                properties: List[Property] = get_group_properties(connection,group_id=group_id)
+                group_name: List[str] = get_group_names(connection, mem_group_id=mem_id)
+                groups = Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties)
+                yield groups
   
