@@ -9,15 +9,16 @@
 
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
-git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir'
+git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
 git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
-source_type='li191r'
-product='parQuantumLine'
+pipe_list_prefix='pipe_list_'
+source_type='hmp155'
+product='relHumidity'
 
 # Define paths based on base paths and product information above 
-spec_path_l0=$git_path_pipelines/pipe/l0_data_loader
-spec_path_source_type=$git_path_pipelines/pipe/$source_type
-spec_path_product=$git_path_pipelines/pipe/$product
+spec_path_l0=$git_path_pipelines/l0_data_loader
+spec_path_source_type=$git_path_pipelines/$source_type
+spec_path_product=$git_path_pipelines/$product
 
 # Create sensor-specific import_trigger with a small amount of data
 pachctl create repo import_trigger_$source_type
@@ -72,7 +73,7 @@ pachctl finish commit uncertainty_fdas_$source_type@master
 # The (ordered) list of pipeline files should be located in the file pipe_list_SOURCETYPE.txt in the 
 # directory of pipeline specs for the source type
 unset pipelines
-pipelines=`cat $spec_path_source_type/pipe_list_$source_type.txt`
+pipelines=`cat $spec_path_source_type/$pipe_list_prefix$source_type.txt`
 for pipe in $(echo ${pipelines[*]}); do
 echo pachctl create pipeline -f $spec_path_source_type/$pipe
 pachctl create pipeline -f $spec_path_source_type/$pipe
@@ -90,7 +91,7 @@ pachctl stop pipeline cron_daily_$source_type
 # The (ordered) list of pipeline files should be located in the file pipe_list_PRODUCT.txt in the 
 # directory of pipeline specs for the data product
 unset pipelines
-pipelines=`cat $spec_path_product/pipe_list_$product.txt`
+pipelines=`cat $spec_path_product/$pipe_list_prefix$product.txt`
 for pipe in $(echo ${pipelines[*]}); do
 echo pachctl create pipeline -f $spec_path_product/$pipe
 pachctl create pipeline -f $spec_path_product/$pipe
@@ -124,7 +125,3 @@ for day in $(echo ${days[*]}); do
 pachctl put file -r import_trigger_$source_type@master:/2020/01/$day -f $data_path/import_trigger_FULL/2020/01/$day
 done
 pachctl finish commit import_trigger_$source_type@master
-
-
-
-
