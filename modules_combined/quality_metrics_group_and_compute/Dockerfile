@@ -34,7 +34,7 @@ COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 
-# Build in the basic stats module
+# Build in the quality metrics module
 ARG MODULE_DIR="flow"
 ARG APP_DIR="flow.qaqc.qm"
 

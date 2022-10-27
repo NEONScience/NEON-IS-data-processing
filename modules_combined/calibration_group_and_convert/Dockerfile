@@ -40,16 +40,14 @@ COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 COPY ./flow/flow.cal.conv/renv.lock .
 RUN R -e 'renv::restore(lockfile="./renv.lock")'
 
-
-
-# Create app user
-RUN groupadd appuser && \
-    useradd appuser -g appuser
-
 # Copy in R code
 COPY ./flow/flow.cal.conv/flow.cal.conv.R .
 COPY ./flow/flow.cal.conv/wrap.cal.conv.dp0p.R .
 
-# Run as app user
+
+# Create app user
+RUN groupadd appuser && \
+    useradd appuser -g appuser# Run as app user
+    
 RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser
