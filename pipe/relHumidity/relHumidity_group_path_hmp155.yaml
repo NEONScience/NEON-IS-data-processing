@@ -23,7 +23,7 @@ transform:
 input:
   pfs:
     name: SOURCE_PATH
-    repo: hmp155_date_gap_filler
+    repo: hmp155_fill_date_gaps_and_regularize
     glob: /hmp155/*/*/*
 parallelism_spec:
   constant: 1
