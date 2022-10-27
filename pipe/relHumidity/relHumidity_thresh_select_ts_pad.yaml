@@ -42,7 +42,7 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: relHumidity_regularized
+      repo: relHumidity_group_path_hmp155
       glob: /*/*/*
   - pfs:
       name: FILE_THRESHOLDS

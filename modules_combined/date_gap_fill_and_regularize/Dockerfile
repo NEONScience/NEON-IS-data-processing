@@ -1,16 +1,17 @@
-# Dockerfile for NEON IS Data Processing - combined filter-joiner and Calibration Conversion
-# Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
-# docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
+# Dockerfile for NEON IS Data Processing - Combined date gap filler and regularization
+# This image combines the two modules: date_gap_filler and flow.rgr
+# Build with the following command
+# docker build --no-cache -t neon-is-gf-rglr -f <path to this file> <path to parent directory of flow/ and modules/>
 
-# Start with the calibration package image. 
-FROM quay.io/battelleecology/neon-is-pack-cal-r:v1.0.4
+# Start with the base R image. 
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.5
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 
-# Add in the python-based filter-joiner module
+# Build in the filter-joiner python module
 ARG MODULE_DIR="modules"
-ARG APP_DIR="filter_joiner"
+ARG APP_DIR="date_gap_filler"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
@@ -30,24 +31,30 @@ RUN apt update && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* 
 
+
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
+# Build in the module
+ARG MODULE_DIR="flow"
 
 # Copy the lockfile and restore known working versions of R dependency packages
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./flow/flow.cal.conv/renv.lock .
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
-
-# Copy in R code
-COPY ./flow/flow.cal.conv/flow.cal.conv.R .
-COPY ./flow/flow.cal.conv/wrap.cal.conv.dp0p.R .
-
+COPY ./${MODULE_DIR}/flow.rglr/renv.lock ./renv.lock
+RUN R -e 'renv::restore(lockfile="./renv.lock")' 
+RUN git clone -b deve https://github.com/NEONScience/eddy4R.git 
+RUN R -e 'renv::install("./eddy4R/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
 
 # Create app user
 RUN groupadd appuser && \
-    useradd appuser -g appuser# Run as app user
-    
+    useradd appuser -g appuser
+WORKDIR /usr/src/app
+
+# Copy in application code
+COPY ./${MODULE_DIR}/flow.rglr/wrap.rglr.R .
+COPY ./${MODULE_DIR}/flow.rglr/flow.rglr.R .
+
+# Run as app user
 RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser
