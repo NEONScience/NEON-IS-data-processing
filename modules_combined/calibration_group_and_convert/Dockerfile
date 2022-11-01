@@ -3,7 +3,7 @@
 # docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
 
 # Start with the calibration package image. 
-FROM quay.io/battelleecology/neon-is-pack-cal-r:v1.0.4
+FROM quay.io/battelleecology/neon-is-pack-cal-r:v1.0.6
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -47,7 +47,8 @@ COPY ./flow/flow.cal.conv/wrap.cal.conv.dp0p.R .
 
 # Create app user
 RUN groupadd appuser && \
-    useradd appuser -g appuser# Run as app user
+    useradd appuser -g appuser
     
+# Run as app user
 RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

@@ -135,7 +135,7 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="Name" type="xs:string" />
-                    <xs:element name="Value" type="xs:decimal" />
+                    <xs:element name="Value" type="xs:string" />
                   </xs:sequence>
                   <xs:attribute name="units" type="xs:string" use="required" />
                 </xs:complexType>
