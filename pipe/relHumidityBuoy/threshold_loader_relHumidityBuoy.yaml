@@ -23,7 +23,7 @@ transform:
     env_var: DATABASE_URL
 input:
   pfs:
-    repo: cron_daily_hmp155_tick
+    repo: hmp155_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 resource_requests:

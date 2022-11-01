@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: location_asset_hmp155
+  name: hmp155_location_asset
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -20,7 +20,7 @@ transform:
     env_var: DATABASE_URL
 input:
   pfs:
-    repo: cron_daily_hmp155_tick
+    repo: hmp155_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 resource_requests:
