@@ -6,6 +6,7 @@ from contextlib import closing
 from functools import partial
 
 import common.log_config as log_config
+from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 from data_access.get_named_locations import get_named_locations
 from location_loader.location_loader import load_locations
@@ -20,8 +21,8 @@ def main() -> None:
     out_path: Path = env.path('OUT_PATH')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
-
-    with closing(DbConnector()) as connector:
+    db_config = read_from_mount(Path('/var/db_secret'))
+    with closing(DbConnector(db_config)) as connector:
         get_named_locations_partial = partial(get_named_locations, connector=connector, location_type=location_type)
         load_locations(out_path=out_path, get_locations=get_named_locations_partial, source_type=source_type)
 
