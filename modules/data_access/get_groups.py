@@ -23,7 +23,8 @@ def get_groups(connection: extensions.connection,group_prefix: str) -> List[str]
     sql_nlg = '''
 
  	    select
-        	nlg.named_location_id as mem_id, nl.nam_locn_name  as mem_name, nlg.group_id as group_id
+        	nlg.named_location_id as mem_id, nl.nam_locn_name  as mem_name, 
+        	nlg.group_id as group_id, g.group_name as group_name
         from 
         	named_location_group nlg, "group" g, nam_locn nl
         where 
@@ -40,21 +41,24 @@ def get_groups(connection: extensions.connection,group_prefix: str) -> List[str]
     '''
     sql_gm = '''
 
-       select
-             g2.group_id as mem_id, g2.group_name as mem_name, gm.group_id group_id
+ 	    select 
+        	gm.member_group_id, g2.group_name as mem_name, 
+        	g.group_id as group_id, g.group_name as group_name
         from 
-             "group" g2, group_member gm
-        where
-            g2.group_id in (select gm.member_group_id 
-        from 
-            "group" g, group_member gm
-        where
-          	g.group_id = gm.group_id 
-        and
-            g.group_name  like %s)
+        	group_member gm, "group" g, "group" g2
+        where 
+        	gm.group_id = g.group_id
+        and 
+        	gm.member_group_id = g2.group_id 
+        and 
+        	gm.member_group_id in (select g3.group_id 
+        from  
+        	"group" g3)
+        and 
+        	g.group_name like %s
 
     '''
-            
+
     groups: List[Group] = []
     group_prefix_1: str = group_prefix + '%'
     with closing(connection.cursor()) as cursor:
@@ -67,9 +71,8 @@ def get_groups(connection: extensions.connection,group_prefix: str) -> List[str]
             mem_id = row[0]
             mem_name = row[1]
             group_id = row[2]
-            #            group_names: List[str] = get_group_names(connection,mem_group_id=mem_id)
+            group_name = row[3]
             active_periods: List[ActivePeriod] = get_active_periods(connection,group_id=group_id)
             properties: List[Property] = get_group_properties(connection,group_id=group_id)
-            group_name: List[str] = get_group_names(connection,group_id=group_id)
             groups = Group(name=mem_name,group=group_name,active_periods=active_periods,properties=properties)
             yield groups
