@@ -23,9 +23,9 @@ def write_files(*,
     :param out_path: Path for writing files.
     :param source_type: The data source type.
     """
-    for asset in get_assets(source_type):
+    for asset in get_assets(source_type=source_type):
         log.debug(f'Processing asset: {asset.id}')
-        locations: FeatureCollection = get_asset_locations(asset)
+        locations: FeatureCollection = get_asset_locations(asset=asset)
         write_file(asset=asset, locations=locations, out_path=out_path)
 
 

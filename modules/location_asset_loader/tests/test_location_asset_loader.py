@@ -5,15 +5,14 @@ from pathlib import Path
 from geojson import Feature, FeatureCollection, load
 import unittest
 
-from pyfakefs.fake_filesystem_unittest import TestCase
-
+from data_access.tests.database_test import DatabaseBackedTest
 from data_access.types.asset import Asset
 
 import location_asset_loader.location_asset_loader_main as location_asset_loader_main
 import location_asset_loader.location_asset_loader as location_asset_loader
 
 
-class LocationAssetLoaderTest(TestCase):
+class LocationAssetLoaderTest(DatabaseBackedTest):
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -73,11 +72,12 @@ class LocationAssetLoaderTest(TestCase):
 
     @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
+        self.configure_mount()
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['SOURCE_TYPE'] = 'pqs1'
         location_asset_loader_main.main()
-        # self.assertTrue(self.expected_path.exists())
+        self.assertTrue(self.expected_path.exists())
 
     def test_write_file(self):
         locations = FeatureCollection([self.feature])

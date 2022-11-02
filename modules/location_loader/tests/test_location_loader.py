@@ -7,9 +7,8 @@ import unittest
 import geojson
 import json
 
-from pyfakefs.fake_filesystem_unittest import TestCase
-
 from common.date_formatter import to_datetime
+from data_access.tests.database_test import DatabaseBackedTest
 from data_access.types.named_location import NamedLocation
 from data_access.types.property import Property
 from data_access.types.active_period import ActivePeriod
@@ -17,7 +16,7 @@ import location_loader.location_loader as location_loader
 import location_loader.location_loader_main as location_loader_main
 
 
-class LocationLoaderTest(TestCase):
+class LocationLoaderTest(DatabaseBackedTest):
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -26,6 +25,7 @@ class LocationLoaderTest(TestCase):
 
     @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
+        self.configure_mount()
         os.environ['LOCATION_TYPE'] = 'CONFIG'
         os.environ['SOURCE_TYPE'] = 'pqs1'
         os.environ['OUT_PATH'] = str(self.out_path)

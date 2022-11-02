@@ -25,8 +25,8 @@ def main() -> None:
     log.debug(f'out_path: {out_path}')
     db_config = read_from_mount(Path('/var/db_secret'))
     with closing(DbConnector(db_config)) as connector:
-        get_assets_partial = partial(get_assets, connector=connector)
-        get_asset_locations_partial = partial(get_asset_locations, connector=connector)
+        get_assets_partial = partial(get_assets, connector)
+        get_asset_locations_partial = partial(get_asset_locations, connector)
         location_asset_loader.write_files(get_assets=get_assets_partial,
                                           get_asset_locations=get_asset_locations_partial,
                                           out_path=out_path,
