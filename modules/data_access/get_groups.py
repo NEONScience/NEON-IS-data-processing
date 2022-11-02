@@ -8,7 +8,6 @@ from data_access.types.active_period import ActivePeriod
 from data_access.types.group import Group
 from data_access.types.property import Property
 from data_access.get_group_properties import get_group_properties
-from data_access.get_group_names import get_group_names
 from data_access.get_group_active_periods import get_active_periods
 
 
@@ -37,6 +36,8 @@ def get_groups(connection: extensions.connection,group_prefix: str) -> List[str]
         	nam_locn nl)
         and 
         	g.group_name like %s
+        group by nlg.named_location_id, nl.nam_locn_name, 
+        	nlg.group_id, g.group_name
 
     '''
     sql_gm = '''
@@ -56,9 +57,12 @@ def get_groups(connection: extensions.connection,group_prefix: str) -> List[str]
         	"group" g3)
         and 
         	g.group_name like %s
+        group by gm.member_group_id, g2.group_name, g.group_id, g.group_name
 
     '''
 
+    group_names: List[str] = []
+    group_ids: List[int] = []
     groups: List[Group] = []
     group_prefix_1: str = group_prefix + '%'
     with closing(connection.cursor()) as cursor:
