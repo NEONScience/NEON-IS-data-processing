@@ -9,6 +9,7 @@ import environs
 import common.log_config as log_config
 from data_access.get_thresholds import get_thresholds
 from data_access.db_connector import DbConnector
+from data_access.db_config_reader import read_from_mount
 
 from threshold_loader.threshold_loader import load_thresholds
 
@@ -22,8 +23,8 @@ def main() -> None:
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'out_path: {out_path}')
-
-    with closing(DbConnector()) as connector:
+    db_config = read_from_mount(Path('/var/db_secret'))
+    with closing(DbConnector(db_config)) as connector:
         get_thresholds_partial = partial(get_thresholds, connector=connector)
         load_thresholds(get_thresholds_partial, out_path, term=term, context=context)
 
