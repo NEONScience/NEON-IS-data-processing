@@ -58,7 +58,7 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: import_trigger_hmp155
+    repo: hmp155_import_trigger
     glob: "/*/*/*"
 output_branch: master
 parallelism_spec:

@@ -19,11 +19,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_hmp155
+      repo: hmp155_location_loader
       glob: /hmp155/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_hmp155_list_years
+      repo: hmp155_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
   constant: 2
