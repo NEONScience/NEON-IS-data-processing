@@ -46,7 +46,7 @@ input:
       glob: /*/*/*
   - pfs:
       name: FILE_THRESHOLDS
-      repo: threshold_relHumidity
+      repo: relHumidity_threshold
       glob: /thresholds.json
 parallelism_spec:
   constant: 1

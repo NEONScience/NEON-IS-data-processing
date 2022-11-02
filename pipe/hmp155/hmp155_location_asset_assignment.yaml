@@ -19,11 +19,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_asset_hmp155
+      repo: hmp155_location_asset
       glob: /hmp155/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_hmp155_list_years
+      repo: hmp155_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 2

@@ -75,8 +75,8 @@ input:
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: DATE_LIMITER_PATH
-          repo: hmp155_date_gap_filler_limiter
-          glob: /(*/*/*)
+          repo: hmp155_cron_daily_and_date_control
+          glob: /hmp155/(*/*/*)
           joinOn: $1
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
