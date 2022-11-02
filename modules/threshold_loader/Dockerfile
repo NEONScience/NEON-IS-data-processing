@@ -22,11 +22,11 @@ RUN update-ca-trust && \
             shadow-utils \
             gcc \
             libzstd  \
-            python38 \
-            python38-pip \
-            python38-wheel \
-            python38-devel \
-            python38-setuptools && \
+            python39 \
+            python39-pip \
+            python39-wheel \
+            python39-devel \
+            python39-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt && \
