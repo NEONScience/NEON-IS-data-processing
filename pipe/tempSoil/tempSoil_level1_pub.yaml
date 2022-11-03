@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_level1_pub 
 transform:
-  image: quay.io/battelleecology/pub_uploader:2
+  image: quay.io/battelleecology/pub_uploader:3
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -12,13 +12,8 @@ transform:
     OUT_PATH: "/pfs/out"
     VERSION: 'pipeline_test'
   secrets:
-    [
-      {
-       "name": "pdr-int-secret",
-       "key": "uri",
-       "env_var": "DATABASE_URL"
-       }
-    ]
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input: 
   pfs: 
     name: DATA_PATH

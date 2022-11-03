@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_loader:111
+  image: quay.io/battelleecology/location_loader:112
   cmd:
   - /bin/bash
   stdin:
@@ -16,9 +16,8 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
   secrets:
-  - name: pdr-int-secret
-    key: uri
-    env_var: DATABASE_URL
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
     repo: cron_daily_ptb330a_tick

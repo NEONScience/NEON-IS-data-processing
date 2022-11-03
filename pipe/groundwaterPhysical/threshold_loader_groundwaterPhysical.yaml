@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/threshold_loader:103
+  image: quay.io/battelleecology/threshold_loader:104
   cmd:
   - /bin/bash
   stdin:
@@ -18,9 +18,8 @@ transform:
     # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: groundwater
   secrets:
-  - name: pdr-int-secret
-    key: uri
-    env_var: DATABASE_URL
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
     repo: cron_daily_aquatroll200_tick
