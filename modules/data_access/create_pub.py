@@ -30,7 +30,8 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
             create_date, 
             update_date, 
             release_status)
-        VALUES (nextval('dp_pub_id_seq1'),%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        VALUES 
+            (nextval('dp_pub_id_seq1'), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING dp_pub_id
     '''
 
@@ -44,7 +45,8 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
             checksum,
             tran_date,
             supplier_version_id)
-        VALUES (nextval('dp_pub_object_id_seq1'),%s,%s,%s,%s,%s,%s,%s)
+        VALUES 
+            (nextval('dp_pub_object_id_seq1'), %s, %s, %s, %s, %s, %s, %s)
     '''
 
     find_dp_pub_sql = f'''
@@ -110,16 +112,17 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
                 # store dp_pub_object tuple
                 object_tuple = (object_type, object_id, object_size, checksum, tran_date, version)
                 if package_type in objects_by_package.keys():
-                    thisPackage = objects_by_package[package_type]
-                    thisPackage.append(object_tuple)
-                    objects_by_package[package_type] = thisPackage
+                    this_package = objects_by_package[package_type]
+                    this_package.append(object_tuple)
+                    objects_by_package[package_type] = this_package
                 else:
                     objects_by_package[package_type] = [object_tuple]
 
             for package_type in objects_by_package.keys():
                 # insert dp_pub and return ID
                 cursor.execute(dp_pub_sql, (dp_idq, site, package_type, data_interval_start, data_interval_end,
-                                has_data_by_package[package_type], status, create_date, update_date, release_status))
+                                            has_data_by_package[package_type], status, create_date, update_date,
+                                            release_status))
                 dp_pub_id = cursor.fetchone()[0]
 
                 # insert dp_pub_objects
