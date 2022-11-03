@@ -9,9 +9,10 @@ from data_access.types.group import Group
 from data_access.types.property import Property
 from data_access.get_group_properties import get_group_properties
 from data_access.get_group_active_periods import get_active_periods
+from data_access.get_group_loader_group import get_group_loader_group
 
 
-def get_groups(connection: extensions.connection,group_prefix: str) -> List[str]:
+def get_groups(connection: extensions.connection, group_prefix: str) -> List[str]:
     """
     Get member groups for a group prefix, i.e., pressure-air_.
 
@@ -21,47 +22,41 @@ def get_groups(connection: extensions.connection,group_prefix: str) -> List[str]
     """
     sql_nlg = '''
 
- 	    select
-        	nlg.named_location_id as mem_id, nl.nam_locn_name  as mem_name, 
-        	nlg.group_id as group_id, g.group_name as group_name
-        from 
-        	named_location_group nlg, "group" g, nam_locn nl
-        where 
-        	nlg.group_id = g.group_id
-        and 
-        	nlg.named_location_id = nl.nam_locn_id 
-        and 
-        	nlg.named_location_id in (select nl.nam_locn_id 
-        from  
-        	nam_locn nl)
-        and 
-        	g.group_name like %s
-        group by nlg.named_location_id, nl.nam_locn_name, 
-        	nlg.group_id, g.group_name
+         select
+             nlg.named_location_id as mem_id, nl.nam_locn_name  as mem_name
+         from 
+             named_location_group nlg, "group" g, nam_locn nl
+         where 
+             nlg.group_id = g.group_id
+         and 
+             nlg.named_location_id = nl.nam_locn_id 
+         and 
+             nlg.named_location_id in (select nl.nam_locn_id 
+         from  
+             nam_locn nl)
+         and 
+             g.group_name like %s
 
     '''
     sql_gm = '''
 
- 	    select 
-        	gm.member_group_id, g2.group_name as mem_name, 
-        	g.group_id as group_id, g.group_name as group_name
-        from 
-        	group_member gm, "group" g, "group" g2
-        where 
-        	gm.group_id = g.group_id
-        and 
-        	gm.member_group_id = g2.group_id 
-        and 
-        	gm.member_group_id in (select g3.group_id 
-        from  
-        	"group" g3)
-        and 
-        	g.group_name like %s
-        group by gm.member_group_id, g2.group_name, g.group_id, g.group_name
+         select 
+             gm.member_group_id, g2.group_name as mem_name
+         from 
+             group_member gm, "group" g, "group" g2
+         where 
+             gm.group_id = g.group_id
+         and 
+             gm.member_group_id = g2.group_id 
+         and 
+             gm.member_group_id in (select g3.group_id 
+         from  
+             "group" g3)
+         and 
+             g.group_name like %s
 
     '''
-
-    group_names: List[str] = []
+    
     group_ids: List[int] = []
     groups: List[Group] = []
     group_prefix_1: str = group_prefix + '%'
@@ -74,9 +69,37 @@ def get_groups(connection: extensions.connection,group_prefix: str) -> List[str]
         for row in rows:
             mem_id = row[0]
             mem_name = row[1]
-            group_id = row[2]
-            group_name = row[3]
-            active_periods: List[ActivePeriod] = get_active_periods(connection,group_id=group_id)
-            properties: List[Property] = get_group_properties(connection,group_id=group_id)
-            groups = Group(name=mem_name,group=group_name,active_periods=active_periods,properties=properties)
-            yield groups
+            group_ids: List[int] = get_group_loader_group(connection, mem_id)
+            for group_id in group_ids:
+                group_name: str = get_group_loader_group_name(connection, group_id=group_id)
+                active_periods: List[ActivePeriod] = get_active_periods(connection, group_id=group_id)
+                properties: List[Property] = get_group_properties(connection, group_id=group_id)
+                groups = Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties)
+                yield groups
+
+
+def get_group_loader_group_name(connection: extensions.connection, group_id: int) -> str:
+    """
+    Get group name for a group id.
+
+    :param connection: A database connection.
+    :param group_id: A group id.
+    :return: The Group name.
+    """  
+    sql_groupname = '''
+
+         select 
+             g.group_name 
+         from 
+            "group" g
+         where 
+             g.group_id = %s
+
+    '''
+    
+    group_name: str = ""
+    with closing(connection.cursor()) as cursor:
+        cursor.execute(sql_groupname, [group_id])
+        row = cursor.fetchone()
+        group_name = row[0]
+    return group_name
