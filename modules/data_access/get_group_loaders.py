@@ -24,7 +24,7 @@ def get_group_loaders(connection: extensions.connection, group_prefix: str) -> I
     """
     sql_nlg = '''
 
-         select
+         select distinct
              nlg.named_location_id as mem_id, nl.nam_locn_name  as mem_name
          from 
              named_location_group nlg, "group" g, nam_locn nl
@@ -42,7 +42,7 @@ def get_group_loaders(connection: extensions.connection, group_prefix: str) -> I
     '''
     sql_gm = '''
 
-         select 
+         select distinct 
              gm.member_group_id, g2.group_name as mem_name
          from 
              group_member gm, "group" g, "group" g2
