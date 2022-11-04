@@ -31,7 +31,7 @@ def get_group_loader_group_id(connection: extensions.connection, mem_id: int) ->
          from 
              group_member gm, "group" g
          where
-             gm.member_group_id = g.group_id 
+             gm.group_id = g.group_id 
          and 
              gm.member_group_id = %s
  	
