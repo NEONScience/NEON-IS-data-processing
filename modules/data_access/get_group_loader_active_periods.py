@@ -7,7 +7,7 @@ from psycopg2 import extensions
 from data_access.types.active_period import ActivePeriod
 
 
-def get_active_periods(connection: extensions.connection, group_id: int) -> List[ActivePeriod]:
+def get_group_loader_active_periods(connection: extensions.connection, group_id: int) -> List[ActivePeriod]:
     """
     Get the active time periods for a named location.
 

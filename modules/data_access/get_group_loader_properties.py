@@ -8,7 +8,7 @@ import common.date_formatter as date_formatter
 from data_access.types.property import Property
 
 
-def get_group_properties(connection: extensions.connection, group_id: int) -> List[Property]:
+def get_group_loader_properties(connection: extensions.connection, group_id: int) -> List[Property]:
     """
     Get the properties associated with a named location.
 

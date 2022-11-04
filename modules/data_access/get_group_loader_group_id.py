@@ -5,7 +5,7 @@ from typing import List
 from psycopg2 import extensions
 
 
-def get_group_loader_group(connection: extensions.connection, mem_id: int) -> List[int]:
+def get_group_loader_group_id(connection: extensions.connection, mem_id: int) -> List[int]:
     """
     Get context entries for a named location.
 
