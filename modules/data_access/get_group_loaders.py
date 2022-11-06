@@ -59,7 +59,6 @@ def get_group_loaders(connection: extensions.connection, group_prefix: str) -> I
 
     '''
     
-    group_ids: List[int] = []
     groups: List[Group] = []
     group_name: str = ""
     group_prefix_1: str = group_prefix + '%'
@@ -77,8 +76,8 @@ def get_group_loaders(connection: extensions.connection, group_prefix: str) -> I
                 group_name: str = get_group_loader_group_name(connection, group_id=group_id)
                 active_periods: List[ActivePeriod] = get_group_loader_active_periods(connection, group_id=group_id)
                 properties: List[Property] = get_group_loader_properties(connection, group_id=group_id)
-                groups = Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties)
-                yield groups
+                groups.append(Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties))         
+    return groups
 
 
 def get_group_loader_group_name(connection: extensions.connection, group_id: int) -> str:
