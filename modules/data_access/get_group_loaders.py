@@ -20,8 +20,9 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
     :return: The Group.
     """
     sql_nlg = '''
-         select
-             nlg.named_location_id as mem_id, nl.nam_locn_name as mem_name
+
+         select distinct
+             nlg.named_location_id as mem_id, nl.nam_locn_name  as mem_name
          from 
              named_location_group nlg, "group" g, nam_locn nl
          where 
@@ -32,10 +33,12 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
              nlg.named_location_id in (select nl.nam_locn_id from nam_locn nl)
          and 
              g.group_name like %s
+
     '''
 
     sql_gm = '''
-         select 
+
+         select distinct 
              gm.member_group_id, g2.group_name as mem_name
          from 
              group_member gm, "group" g, "group" g2
@@ -49,6 +52,7 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
              "group" g3)
          and 
              g.group_name like %s
+
     '''
 
     group_prefix_1: str = group_prefix + '%'
@@ -86,6 +90,7 @@ def get_group_loader_group_name(connector: DbConnector, group_id: int) -> str:
             "group" g
          where 
              g.group_id = %s
+
     '''
     group_name: str = ''
     with closing(connector.get_connection().cursor()) as cursor:
