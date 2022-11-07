@@ -4,5 +4,5 @@ from datetime import datetime
 
 
 class ActivePeriod(NamedTuple):
-    start_date: datetime
+    start_date: Optional[datetime]
     end_date: Optional[datetime]

@@ -2,15 +2,15 @@
 from contextlib import closing
 from typing import List
 
-from psycopg2 import extensions
+from data_access.db_connector import DbConnector
 
 
-def get_group_loader_group_id(connection: extensions.connection, mem_id: int) -> List[int]:
+def get_group_loader_group_id(connector: DbConnector, member_id: int) -> List[int]:
     """
     Get context entries for a named location.
 
-    :param connection: A database connection.
-    :param mem_id: The member group or named location ID.
+    :param connector: A database connection.
+    :param member_id: The member group or named location ID.
     :return: The group IDs for the group member.
     """
     sql_1 = '''
@@ -38,14 +38,13 @@ def get_group_loader_group_id(connection: extensions.connection, mem_id: int) ->
     '''
 
     group_ids: List[int] = []
-    with closing(connection.cursor()) as cursor:
-        cursor.execute(sql_1,[mem_id])
+    with closing(connector.get_connection().cursor()) as cursor:
+        cursor.execute(sql_1, [member_id])
         rows_1 = cursor.fetchall()
-        cursor.execute(sql_2,[mem_id])
+        cursor.execute(sql_2, [member_id])
         rows_2 = cursor.fetchall()
         rows = rows_1 + rows_2
         for row in rows:
             group_id = row[0]
             group_ids.append(group_id)
     return group_ids
-

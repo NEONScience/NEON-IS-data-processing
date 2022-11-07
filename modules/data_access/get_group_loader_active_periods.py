@@ -2,17 +2,16 @@
 from contextlib import closing
 from typing import List
 
-from psycopg2 import extensions
-
+from data_access.db_connector import DbConnector
 from data_access.types.active_period import ActivePeriod
 
 
-def get_group_loader_active_periods(connection: extensions.connection, group_id: int) -> List[ActivePeriod]:
+def get_group_loader_active_periods(connector: DbConnector, group_id: int) -> List[ActivePeriod]:
     """
     Get the active time periods for a named location.
 
-    :param connection: A database connection.
-    :param named_location_id: A named location ID.
+    :param connector: A database connector.
+    :param group_id: A named location ID.
     :return: The active periods.
     """
     sql = '''
@@ -24,7 +23,7 @@ def get_group_loader_active_periods(connection: extensions.connection, group_id:
             group_id = %s
     '''
     periods: List[ActivePeriod] = []
-    with closing(connection.cursor()) as cursor:
+    with closing(connector.get_connection().cursor()) as cursor:
         cursor.execute(sql, [group_id])
         rows = cursor.fetchall()
         for row in rows:
