@@ -54,13 +54,7 @@ def convert_group(group: Group) -> FeatureCollection:
     feature = Feature(properties=properties)
     for p in group.properties:
         feature[p.name] = p.value
-    feature_per_member: Feature = {}
-    f_mems = feature.properties.get('name')
-    print(f'f_mem in geojson_converter.convert_group before for:    {f_mems}')
-    print(f'group.name in geojson_converter.convert_group before for:    {group.name}')
-    for g_mem in group.name:
-        feature_per_member.update(feature)
-    return FeatureCollection([feature_per_member])
+    return FeatureCollection([feature])
 
 
 def convert_active_periods(active_periods: List[ActivePeriod]) -> List[dict]:
