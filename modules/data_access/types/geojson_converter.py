@@ -59,9 +59,7 @@ def convert_group(group: Group) -> FeatureCollection:
     print(f'f_mem in geojson_converter.convert_group before for:    {f_mems}')
     print(f'group.name in geojson_converter.convert_group before for:    {group.name}')
     for g_mem in group.name:
-         for f_mem in f_mems:
-             if g_mem == f_mem:
-                 feature_per_member.update(feature)
+        feature_per_member.update(feature)
     return FeatureCollection([feature_per_member])
 
 
