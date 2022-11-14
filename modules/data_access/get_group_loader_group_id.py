@@ -7,7 +7,7 @@ from psycopg2 import extensions
 
 def get_group_loader_group_id(connection: extensions.connection, mem_id: int) -> List[int]:
     """
-    Get context entries for a named location.
+    Get Group IDs for a named location.
 
     :param connection: A database connection.
     :param mem_id: The member group or named location ID.

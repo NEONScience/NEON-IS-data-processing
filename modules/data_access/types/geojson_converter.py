@@ -47,14 +47,21 @@ def convert_named_location(location: NamedLocation) -> FeatureCollection:
 
 
 def convert_group(group: Group) -> FeatureCollection:
-    active_periods = convert_active_periods(group.active_periods)
-    properties = dict(name=group.name,
-                      group=group.group,
-                      active_periods=active_periods)
-    feature = Feature(properties=properties)
-    for p in group.properties:
-        feature[p.name] = p.value
-    return FeatureCollection([feature])
+    g = 0
+    g_len = len(group) - 1
+    feature_list = []
+    while g < g_len:
+        active_periods = convert_active_periods(group[g].active_periods)
+        properties = dict(name=group[g].name,
+                  group=group[g].group,
+                  active_periods=active_periods)
+        feature = Feature(properties=properties)
+        for p in group[g].properties:
+            feature[p.name] = p.value
+        feature_list.append(feature)
+        g = g + 1
+    print(f'feature_list before return in geojson converter feature: {feature_list}')
+    return FeatureCollection(feature_list)
 
 
 def convert_active_periods(active_periods: List[ActivePeriod]) -> List[dict]:
