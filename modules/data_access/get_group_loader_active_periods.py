@@ -11,7 +11,7 @@ def get_group_loader_active_periods(connector: DbConnector, group_id: int) -> Li
     Get the active time periods for a group id.
 
     :param connector: A database connector.
-    :param group_id: A named location ID.
+    :param group_id: A group ID.
     :return: The active periods.
     """
     sql = '''
