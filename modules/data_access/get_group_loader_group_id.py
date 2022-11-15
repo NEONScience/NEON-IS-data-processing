@@ -7,7 +7,7 @@ from data_access.db_connector import DbConnector
 
 def get_group_loader_group_id(connector: DbConnector, member_id: int) -> List[int]:
     """
-    Get context entries for a named location.
+    Get Group IDs for a named location.
 
     :param connector: A database connection.
     :param member_id: The member group or named location ID.
