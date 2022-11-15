@@ -12,7 +12,7 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
 
     :param connector: A database connection.
     :param group_id: The group ID to search.
-    :return: The group id properties.
+    :return: The group properties.
     """
     sql = '''
         select
