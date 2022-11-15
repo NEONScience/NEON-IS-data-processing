@@ -13,7 +13,7 @@ log = structlog.get_logger()
 
 def load_groups(out_path: Path, get_groups: Callable[[str], Iterator[Group]], group_prefix: str) -> None:
     """
-    Write location files into the output path.
+    Write group loader jsons into the output path.
 
     :param out_path: The path for writing files.
     :param get_groups: A function yielding groups.

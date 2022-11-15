@@ -8,7 +8,7 @@ from data_access.types.active_period import ActivePeriod
 
 def get_group_loader_active_periods(connector: DbConnector, group_id: int) -> List[ActivePeriod]:
     """
-    Get the active time periods for a named location.
+    Get the active time periods for a group id.
 
     :param connector: A database connector.
     :param group_id: A named location ID.
