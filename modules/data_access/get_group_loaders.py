@@ -55,6 +55,8 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
 
     '''
 
+    groups: List[Group] = []
+    group_name: str = ""
     group_prefix_1: str = group_prefix + '%'
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
@@ -63,16 +65,20 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
         cursor.execute(sql_gm, [group_prefix_1])
         rows_gm = cursor.fetchall()
         rows = rows_nlg + rows_gm
+        groups_all = []
         for row in rows:
             mem_id = row[0]
             mem_name = row[1]
-            group_ids: List[int] = get_group_loader_group_id(connector, member_id=mem_id)
+            groups = []
+            group_ids: List[int] = get_group_loader_group_id(connection, mem_id=mem_id)
             for group_id in group_ids:
-                group_name: str = get_group_loader_group_name(connector, group_id=group_id)
-                active_periods: List[ActivePeriod] = get_group_loader_active_periods(connector, group_id=group_id)
-                properties: List[Property] = get_group_loader_properties(connector, group_id=group_id)
-                groups = Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties)
-                yield groups
+                group_name: str = get_group_loader_group_name(connection, group_id=group_id)
+                active_periods: List[ActivePeriod] = get_group_loader_active_periods(connection, group_id=group_id)
+                properties: List[Property] = get_group_loader_properties(connection, group_id=group_id)
+                groups.append(Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties))
+            groups.append(groups)
+            groups_all.append(groups) 
+    return groups_all
 
 
 def get_group_loader_group_name(connector: DbConnector, group_id: int) -> str:

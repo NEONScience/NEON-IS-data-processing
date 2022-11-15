@@ -14,7 +14,7 @@ def get_group_loader_group_id(connector: DbConnector, member_id: int) -> List[in
     :return: The group IDs for the group member.
     """
     sql_1 = '''
-         select distinct 
+         select distinct
              gm.group_id 
          from 
              named_location_group nlg, "group_member" gm
