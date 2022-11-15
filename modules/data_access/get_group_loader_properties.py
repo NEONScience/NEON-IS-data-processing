@@ -11,7 +11,7 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
     Get the properties associated with a group id.
 
     :param connector: A database connection.
-    :param group_id: The named location ID to search.
+    :param group_id: The group ID to search.
     :return: The group id properties.
     """
     sql = '''
