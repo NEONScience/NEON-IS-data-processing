@@ -60,7 +60,6 @@ def convert_group(group: Group) -> FeatureCollection:
             feature[p.name] = p.value
         feature_list.append(feature)
         g = g + 1
-    print(f'feature_list before return in geojson converter feature: {feature_list}')
     return FeatureCollection(feature_list)
 
 

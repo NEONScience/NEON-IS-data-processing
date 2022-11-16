@@ -70,11 +70,11 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
             mem_id = row[0]
             mem_name = row[1]
             groups = []
-            group_ids: List[int] = get_group_loader_group_id(connection, mem_id=mem_id)
+            group_ids: List[int] = get_group_loader_group_id(connector, mem_id=mem_id)
             for group_id in group_ids:
-                group_name: str = get_group_loader_group_name(connection, group_id=group_id)
-                active_periods: List[ActivePeriod] = get_group_loader_active_periods(connection, group_id=group_id)
-                properties: List[Property] = get_group_loader_properties(connection, group_id=group_id)
+                group_name: str = get_group_loader_group_name(connector, group_id=group_id)
+                active_periods: List[ActivePeriod] = get_group_loader_active_periods(connector, group_id=group_id)
+                properties: List[Property] = get_group_loader_properties(connector, group_id=group_id)
                 groups.append(Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties))
             groups.append(groups)
             groups_all.append(groups) 

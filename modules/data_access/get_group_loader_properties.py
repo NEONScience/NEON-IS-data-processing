@@ -27,7 +27,8 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
     properties: List[Property] = []
     hor_name = "HOR"
     ver_name = "VER"
-    with closing(connector.get_connection().cursor()) as cursor:
+    connection = connector.get_connection()
+    with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_id])
         rows = cursor.fetchall()
         for row in rows:

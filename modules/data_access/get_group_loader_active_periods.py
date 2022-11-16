@@ -23,7 +23,8 @@ def get_group_loader_active_periods(connector: DbConnector, group_id: int) -> Li
             group_id = %s
     '''
     periods: List[ActivePeriod] = []
-    with closing(connector.get_connection().cursor()) as cursor:
+    connection = connector.get_connection()
+    with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_id])
         rows = cursor.fetchall()
         for row in rows:
