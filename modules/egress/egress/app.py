@@ -12,12 +12,13 @@ def main() -> None:
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')
     log_level: str = env.log_level('LOG_LEVEL')
+    egress_url: str = env.str('EGRESS_URL')
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'data_dir: {data_path}')
     log.debug(f'out_dir: {out_path}')
 
-    egress = Egress(data_path, out_path)
+    egress = Egress(data_path, out_path, egress_url)
     egress.upload()
 
 

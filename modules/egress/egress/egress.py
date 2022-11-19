@@ -14,7 +14,7 @@ log = get_logger()
 
 class Egress:
 
-    def __init__(self, data_path: Path, out_path: Path) -> None:
+    def __init__(self, data_path: Path, out_path: Path, egress_url: str) -> None:
         """
         Constructor.
 
@@ -34,7 +34,7 @@ class Egress:
         self.date_delimiter = "-"
         self.date_format = '%Y%m%dT%H%M%S'
         self.date_range_delimiter = "--"
-        self.s3_prefix = "https://" + os.environ['CUSTOM_ENDPOINT'] + "/" + os.environ['AMAZON_BUCKET'] + "/"
+        self.egress_prefix = egress_url + "/"
 
     def upload(self) -> None:
         
@@ -71,7 +71,8 @@ class Egress:
                     log.debug(f'source_path: {file_path} link_path: {link_path}')
                     link_path.parent.mkdir(parents=True, exist_ok=True)
                     # construct object ID
-                    objectIdByFile[filename] = self.s3_prefix + base_path
+                    key = self.filename_delimiter.join(filename.split(self.filename_delimiter)[:-2])
+                    objectIdByFile[key] = self.egress_prefix + base_path
                     if not link_path.exists():
                         link_path.symlink_to(file_path)
             for key in objectIdByFile:
