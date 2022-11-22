@@ -8,6 +8,7 @@ transform:
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
+  - FileSchmQm=$FILE_SCHEMA_QM
   - Tmi=005
   - VarTimeBgn=readout_time
   - VarTimeEnd=readout_time
@@ -34,6 +35,10 @@ input:
       name: DIR_IN
       repo: groundwaterPhysical_qaqc_flags_group
       glob: /aquatroll200/*/*/*
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: avro_schemas_groundwaterPhysical
+      glob: /groundwaterPhysical/groundwaterPhysical_aquatroll200_dp01_quality_metrics.avsc
 parallelism_spec:
   constant: 1
 resource_requests:
