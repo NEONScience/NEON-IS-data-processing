@@ -4,14 +4,14 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/group_loader:503
+  image: quay.io/battelleecology/group_loader:513
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
   - python3 -m group_loader.group_loader_main
   env:
-    GROUP_PREFIX: test-group_
+    GROUP_PREFIX: pressure-air_
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
   secrets:
