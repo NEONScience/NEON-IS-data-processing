@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/egress:8
+  image: quay.io/battelleecology/egress:12
   cmd:
   - /bin/bash
   stdin:
@@ -14,6 +14,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    EGRESS_URL: https://storage.googleapis.com/neon-int-publication/egress-test
 output_branch: master
 input:
   pfs:
@@ -22,7 +23,7 @@ input:
     branch: master
     glob: /ptb330a/*/*/*
 egress:
-  URL: s3://int-omnipipe
+  URL: gs://neon-int-publication/egress-test
 standby: true
 
 scheduling_spec:

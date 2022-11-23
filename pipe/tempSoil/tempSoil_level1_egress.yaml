@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_level1_egress
 transform:
-  image: docker.io/dlenz/egress:1
+  image: docker.io/dlenz/egress:12
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -10,13 +10,14 @@ transform:
   env:
     LOG_LEVEL: INFO
     OUT_PATH: "/pfs/out"
+    EGRESS_URL: https://storage.googleapis.com/neon-int-publication/egress-test
 input: 
   pfs: 
     name: DATA_PATH
     repo: tempSoil_level1_package
     glob: /*/*/*
 egress:
-  URL: s3://int-omnipipe
+  URL: gs://neon-int-publication/egress-test
 resource_requests:
   memory: 300M
   cpu: 0.3
