@@ -32,7 +32,7 @@ information included, and only one location is included in the location-based lo
 output. Defaults to NULL, in which the logger will be created and used within the function.}
 }
 \value{
-
+A data frame with location metadata.
 }
 \description{
 Definition function. Read sensor locations json file and return a data frame of metadata/properties 

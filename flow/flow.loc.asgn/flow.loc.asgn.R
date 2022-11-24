@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Location assignment module for NEON IS data processing
+#' @title Location or group assignment module for NEON IS data processing
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
@@ -25,8 +25,8 @@
 #' Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the parameter will be assigned
 #' from the system environment variable matching the value string. The arguments are:
 #'
-#' 1. "DirIn=value", where value is the starting directory path where to search for locations files. 
-#' The full repository must be structured as follows: #/pfs/BASE_REPO/SOURCE_TYPE/SOURCE_ID, 
+#' 1. "DirIn=value", where value is the starting directory path where to search for location or group files. 
+#' The full repository must be structured as follows: #/pfs/BASE_REPO/SOURCE_TYPE/ID, 
 #' where # indicates any number of parent and child directories of any name, so long as they are not pfs.
 #' 
 #' The SOURCE_ID folder holds any number of location files pertaining to the SOURCE_ID. 
@@ -53,12 +53,13 @@
 #' 2020
 #' 2021
 #'
-#' 5. "TypeFile=value", where value is the type of location file. 
-#' Options are 'asset' and 'namedLocation'. Only one may be specified. 'asset' corresponds to a 
+#' 5. "TypeFile=value", where value is the type of file. 
+#' Options are 'asset', 'namedLocation', and 'group'. Only one may be specified. 'asset' corresponds to a 
 #' location file for a particular asset, which includes information about where and for how long
 #' the asset was installed, including its geolocation history. 'namedLocation' corresponds to a 
 #' location file specific to a named location, including the properties of that named location and
-#' the dates over which it was active (should have been producing data).
+#' the dates over which it was active (should have been producing data). 'group' corresponds to a group
+#' file specific to a group member, including what groups the member is in and properties of the group.
 #' 
 #' Note: This script implements optional parallelization as well as logging (described in 
 #' \code{\link[NEONprocIS.base]{def.log.init}}), both of which use system environment variables if available. 
@@ -75,7 +76,7 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.loc.asgn.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" 
+#' Rscript flow.loc.asgn.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "TypeFile=asset"
 
 #' @seealso \code{\link[NEONprocIS.base]{def.log.init}}
 
@@ -84,6 +85,8 @@
 #     original creation, refactored from flow.loc.filt
 #   Cove Sturtevant (2021-08-31)
 #     Add datum error routing
+#   Cove Sturtevant (2022-11-22)
+#     Add option for group files
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -134,14 +137,14 @@ if(base::length(yearFill) == 0 || base::any(base::is.na(yearFill))){
 timeBgn <- base::as.POSIXct(x=paste0(min(yearFill),'-01-01'),tz='GMT')
 timeEnd <- base::as.POSIXct(x=paste0(max(yearFill)+1,'-01-01'),tz='GMT')
 
-# Check that TypeFile is either 'asset' or 'namedLocation'
+# Check that TypeFile is one of 'asset', 'namedLocation', or 'group'
 log$debug(base::paste0('Type of location files: ', Para$TypeFile))
-if(base::length(Para$TypeFile) != 1 || !(Para$TypeFile %in% c('asset','namedLocation'))){
-  log$fatal("TypeFile must be either 'asset' or 'namedLocation'. See documentation.")
+if(base::length(Para$TypeFile) != 1 || !(Para$TypeFile %in% c('asset','namedLocation','group'))){
+  log$fatal("TypeFile must be either 'asset', 'namedLocation', or 'group'. See documentation.")
   stop()
 }
 
-# Find all the input paths. We will process each one.
+# Find all the input paths (terminal directories). We will process each one.
 DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
                               nameDirSub = NULL,
