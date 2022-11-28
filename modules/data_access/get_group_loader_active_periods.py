@@ -8,10 +8,10 @@ from data_access.types.active_period import ActivePeriod
 
 def get_group_loader_active_periods(connector: DbConnector, group_id: int) -> List[ActivePeriod]:
     """
-    Get the active time periods for a named location.
+    Get the active time periods for a group id.
 
     :param connector: A database connector.
-    :param group_id: A named location ID.
+    :param group_id: A group ID.
     :return: The active periods.
     """
     sql = '''
@@ -23,7 +23,8 @@ def get_group_loader_active_periods(connector: DbConnector, group_id: int) -> Li
             group_id = %s
     '''
     periods: List[ActivePeriod] = []
-    with closing(connector.get_connection().cursor()) as cursor:
+    connection = connector.get_connection()
+    with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_id])
         rows = cursor.fetchall()
         for row in rows:
