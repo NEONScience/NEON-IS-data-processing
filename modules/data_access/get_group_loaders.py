@@ -57,7 +57,9 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
 
     groups: List[Group] = []
     group_name: str = ""
-    group_prefix_1: str = group_prefix[:-1] + '\_%'
+    group_prefix_1 = group_prefix + '%'
+    if group_prefix[-1] == "_":
+        group_prefix_1 = group_prefix[:-1] + '\_%'
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql_nlg, [group_prefix_1])

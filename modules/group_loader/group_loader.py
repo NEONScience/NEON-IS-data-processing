@@ -19,7 +19,9 @@ def load_groups(out_path: Path, get_groups: Callable[[str], Iterator[Group]], gr
     :param get_groups: A function yielding groups.
     :param group_prefix: group_prefix.
     """
-    group_prefix_path = group_prefix[:-1]
+    group_prefix_path = group_prefix
+    if group_prefix[-1] == "_":
+        group_prefix_path = group_prefix[:-1]
     for group in get_groups(group_prefix=group_prefix):
         if group != []:
             member_name: str = group[0].name
