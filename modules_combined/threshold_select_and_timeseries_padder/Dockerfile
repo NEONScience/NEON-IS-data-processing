@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-thsh-slct-ts-pad -f <path to this file> <path to parent directory of flow/ and modules/>
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.3
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.4
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

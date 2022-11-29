@@ -3,7 +3,7 @@ pipeline:
   name: relHumidity_qm_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:v1.0.0
+  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:v1.0.1
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
