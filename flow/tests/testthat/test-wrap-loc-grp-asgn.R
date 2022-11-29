@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Unit test for wrap.loc.asgn.R, which assign and filter the location file(s) for a sensor ID to each data day for which each applies
+#' @title Unit test for wrap.loc.grp.asgn.R, which assign and filter the location file(s) for a sensor ID to each data day for which each applies
 
 #' @author
 #' Mija Choi\email{choim@battelleecology.org} \cr
@@ -45,7 +45,7 @@
 
 #' @examples
 #' Not run
-#' wrap.loc.asgn(DirIn="pfs/location_asset/ptb330a/10312",
+#' wrap.loc.grp.asgn(DirIn="pfs/location_asset/ptb330a/10312",
 #'              DirOutBase="pfs/out",
 #'              TimeBgn=as.POSIXct('2019-01-01',tz='GMT),
 #'              TimeEnd=as.POSIXct('2019-06-01',tz='GMT),
@@ -59,17 +59,21 @@
 #     Original Creation
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of wrap.loc.asgn.R\n")
+context("\n                       Unit test of wrap.loc.grp.asgn.R\n")
 
-# Unit test of wrap.loc.asgn.R
-test_that("Unit test of wrap.loc.asgn.R", {
-  source('../../flow.loc.asgn/wrap.loc.asgn.R')
+# Unit test of wrap.loc.grp.asgn.R
+test_that("Unit test of wrap.loc.grp.asgn.R", {
+  source('../../flow.loc.grp.asgn/wrap.loc.grp.asgn.R')
   library(stringr)
   
   wk_dir <- getwd()
   testOutputDir = "pfs/out"
   
-  # Test scenario 1:: within the valid time range
+  
+  
+  ### Test group A - location assignment ###
+  
+  # Test scenario A1:: within the valid time range
   # 10312 does not have "active_periods" pass TypeFile = 'asset'
   #
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/location_asset/ptb330a/10312')
@@ -83,7 +87,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
     unlink(testOutputDir, recursive = TRUE)
   }
   TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT')
-  returnedOutputDir <- wrap.loc.asgn(
+  returnedOutputDir <- wrap.loc.grp.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
     TimeBgn =   TimeBgn,
@@ -95,7 +99,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   fileLocPath <- base::paste0("location/", fileLoc)
   testthat::expect_true (any(file.exists(testOutputDir,fileLocPath, recursive = TRUE)))
   #
-  # Test scenario 2:: within the valid time range
+  # Test scenario A2:: within the valid time range
   # 100959 has "active_periods" pass TypeFile = 'namedLocation'
   
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/location_asset/ptb330a/100959')
@@ -108,7 +112,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-  returnedOutputDir <- wrap.loc.asgn(
+  returnedOutputDir <- wrap.loc.grp.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
     TimeBgn = TimeBgn,
@@ -119,7 +123,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   fileLocPath <- base::paste0("location/", fileLoc)
   testthat::expect_true (any(file.exists(testOutputDir,fileLocPath, recursive = TRUE)))
   #
-  # Test scenario 3:: within the valid time range
+  # Test scenario A3:: within the valid time range
   # pass TypeFile = 'namedLocation', but the json does not have "active_periods" 
   # Errs out
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/location_asset/ptb330a/10312')
@@ -132,7 +136,7 @@ test_that("Unit test of wrap.loc.asgn.R", {
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-  returnedOutputDir <- try (wrap.loc.asgn(
+  returnedOutputDir <- try (wrap.loc.grp.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
     TimeBgn = TimeBgn,
@@ -143,11 +147,11 @@ test_that("Unit test of wrap.loc.asgn.R", {
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
   
   #
-  # Test scenario 4:: pass invalid TypeFile
+  # Test scenario A4:: pass invalid TypeFile
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-  returnedOutputDir <- try(wrap.loc.asgn(
+  returnedOutputDir <- try(wrap.loc.grp.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
     TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
@@ -157,13 +161,13 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
   #
-  # Test scenario 5:: not within the valid time range
+  # Test scenario A5:: not within the valid time range
   #
   # clean out the test output dirs and file recursively
   if (dir.exists(testOutputDir)) {
     unlink(testOutputDir, recursive = TRUE)
   }
-  returnedOutputDir <- try(wrap.loc.asgn(
+  returnedOutputDir <- try(wrap.loc.grp.asgn(
     DirIn = 'pfs/location_asset/ptb330a/10312',
     DirOutBase = testOutputDir,
     TimeBgn = as.POSIXct('2018-01-01', tz = 'GMT'),
@@ -173,10 +177,10 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   testthat::expect_true (!(dir.exists(testOutputDir)))
  
-  # Test scenario 6: more than 1 file
+  # Test scenario A6: more than 1 file
   
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/locations_2files/hmp155/10267')
-  returnedOutputDir <- try(wrap.loc.asgn(
+  returnedOutputDir <- try(wrap.loc.grp.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
     TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
@@ -186,10 +190,10 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
   
-  # Test scenario 7:: no files in the input dir
+  # Test scenario A7:: no files in the input dir
   
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/locations_nofiles/prt/10312/')
-  returnedOutputDir <- wrap.loc.asgn(
+  returnedOutputDir <- wrap.loc.grp.asgn(
     DirIn = testInputDir,
     DirOutBase = testOutputDir,
     TimeBgn = as.POSIXct('2019-01-01', tz = 'GMT'),
@@ -199,4 +203,61 @@ test_that("Unit test of wrap.loc.asgn.R", {
   
   testthat::expect_true (!dir.exists(testOutputDir))
 
+  
+  ### Test group B - group assignment ###
+  
+  # Test scenario B1:: within the valid time range
+  # pass TypeFile = 'group'
+  #
+  testInputDir <- base::paste0(wk_dir, '/', 'pfs/group_loader/test-group/CFGLOC100016')
+  fileGrp <- base::dir(testInputDir)
+  
+  # clean out the test output dirs and file recursively
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  
+  TimeBgn = as.POSIXct('2022-10-27', tz = 'GMT')
+  TimeEnd = as.POSIXct('2022-11-05', tz = 'GMT')
+  returnedOutputDir <- wrap.loc.grp.asgn(
+    DirIn = testInputDir,
+    DirOutBase = testOutputDir,
+    TimeBgn = TimeBgn,
+    TimeEnd = TimeEnd,
+    TypeFile = 'group'
+  )
+  
+  testthat::expect_true (all(file.exists(paste0(testOutputDir,'/test-group/2022/',c('10/27','10/28','10/29','10/30','10/31','11/01','11/02','11/03','11/04'),'/CFGLOC100016'), recursive = TRUE)))
+  testthat::expect_false (any(file.exists(paste0(testOutputDir,'/test-group/2022/',c('10/26','11/05')), recursive = TRUE)))
+  
+  
+  # Test scenario B2:: partial valid time range
+  # pass TypeFile = 'group'
+  #
+  testInputDir <- base::paste0(wk_dir, '/', 'pfs/group_loader/test-group/rel-humidity_CPER000040')
+  fileGrp <- base::dir(testInputDir)
+  
+  # clean out the test output dirs and file recursively
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  
+  TimeBgn = as.POSIXct('2022-10-27', tz = 'GMT')
+  TimeEnd = as.POSIXct('2022-11-05', tz = 'GMT')
+  returnedOutputDir <- wrap.loc.grp.asgn(
+    DirIn = testInputDir,
+    DirOutBase = testOutputDir,
+    TimeBgn = TimeBgn,
+    TimeEnd = TimeEnd,
+    TypeFile = 'group'
+  )
+  
+  testthat::expect_true (all(file.exists(paste0(testOutputDir,'/test-group/2022/',c('10/29','10/30'),'/rel-humidity_CPER000040'), recursive = TRUE)))
+  testthat::expect_false (any(file.exists(paste0(testOutputDir,'/test-group/2022/',c('10/28','10/31')), recursive = TRUE)))
+  
+  # clean out the test output dirs and file recursively
+  if (dir.exists(testOutputDir)) {
+    unlink(testOutputDir, recursive = TRUE)
+  }
+  
 })

@@ -76,7 +76,7 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.loc.asgn.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "TypeFile=asset"
+#' Rscript flow.loc.grp.asgn.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "TypeFile=asset"
 
 #' @seealso \code{\link[NEONprocIS.base]{def.log.init}}
 
@@ -92,7 +92,7 @@ library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.loc.asgn.R")
+source("./wrap.loc.grp.asgn.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -158,7 +158,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.loc.asgn(DirIn=idxDirIn,
+      wrap.loc.grp.asgn(DirIn=idxDirIn,
                     DirOutBase=Para$DirOut,
                     TimeBgn=timeBgn,
                     TimeEnd=timeEnd,

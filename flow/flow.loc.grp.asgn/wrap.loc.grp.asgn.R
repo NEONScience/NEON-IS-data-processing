@@ -46,7 +46,7 @@
 
 #' @examples
 #' Not run
-#' wrap.loc.asgn(DirIn="/pfs/tempSoil_group/prt/25658",
+#' wrap.loc.grp.asgn(DirIn="/pfs/tempSoil_group/prt/25658",
 #'              DirOutBase="/pfs/out",
 #'              TimeBgn=as.POSIXct('2019-01-01',tz='GMT),
 #'              TimeEnd=as.POSIXct('2019-06-01',tz='GMT),
@@ -63,11 +63,11 @@
 #   Cove Sturtevant (2022-11-22)
 #     Add option for group files
 ##############################################################################################
-wrap.loc.asgn <- function(DirIn,
+wrap.loc.grp.asgn <- function(DirIn,
                           DirOutBase,
                           TimeBgn,
                           TimeEnd,
-                          TypeFile=c('asset','namedLocation')[0],
+                          TypeFile=c('asset','namedLocation','group')[0],
                           log=NULL
                           ){
 
