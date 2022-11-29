@@ -8,11 +8,11 @@ from data_access.types.property import Property
 
 def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[Property]:
     """
-    Get the properties associated with a named location.
+    Get the properties associated with a group id.
 
     :param connector: A database connection.
-    :param group_id: The named location ID to search.
-    :return: The named location properties.
+    :param group_id: The group ID to search.
+    :return: The group properties.
     """
     sql = '''
         select
@@ -27,7 +27,8 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
     properties: List[Property] = []
     hor_name = "HOR"
     ver_name = "VER"
-    with closing(connector.get_connection().cursor()) as cursor:
+    connection = connector.get_connection()
+    with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_id])
         rows = cursor.fetchall()
         for row in rows:
