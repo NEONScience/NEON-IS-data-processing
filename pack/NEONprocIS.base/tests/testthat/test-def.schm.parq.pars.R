@@ -13,8 +13,8 @@ test_that("when parquest schm is passed, return all the elements in the schema",
             returnData <- try(NEONprocIS.base::def.schm.parq.pars(schm = schm), silent = TRUE)
             testthat::expect_false((class(returnData)[1] == "try-error"))
             testthat::expect_true(is.list(returnData))
-            testthat::equals(class(returnData$suspectCalQF, "string"))
-            testthat::equals(class(returnData$readout_time, "POSIXct"))
+            testthat::expect_equal(returnData$type[2], "string")
+            testthat::expect_equal(returnData$name[1], "readout_time")
           
           })
 

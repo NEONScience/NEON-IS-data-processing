@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_asset_loader:28
+  image: quay.io/battelleecology/location_asset_loader:29
   cmd:
   - /bin/bash
   stdin:
@@ -15,9 +15,8 @@ transform:
     LOG_LEVEL: INFO
     SOURCE_TYPE: pqs1
   secrets:
-  - name: pdr-int-secret
-    key: uri
-    env_var: DATABASE_URL
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
     repo: cron_daily_pqs1_tick
@@ -26,6 +25,33 @@ input:
 resource_requests:
   memory: 100M
   cpu: 0.05
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"400M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.4"}]'
 autoscaling: true
 
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"400M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.4"
+    }
+  ]

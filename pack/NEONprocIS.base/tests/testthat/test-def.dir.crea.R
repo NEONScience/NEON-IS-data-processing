@@ -41,7 +41,10 @@ test_that("Data directory created without subpath",
             
             NEONprocIS.base::def.dir.crea(DirSub = dirSub)
             testthat::expect_true(dir.exists(dirSub))
- 
+            if (dir.exists(dirSub)) {
+              unlink(dirSub, recursive = TRUE)
+            }
+            
 # Test 3, input directory, DirBgn, is not passed in and DirSub is NULL, the default, NULL, will be assigned
             
             NEONprocIS.base::def.dir.crea(DirSub = dirSub)

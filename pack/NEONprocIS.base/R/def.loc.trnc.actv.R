@@ -6,7 +6,10 @@
 
 #' @description
 #' Definition function. Read in a location JSON file for a particular named location
-#' and truncate the active periods to the date-time range of interest
+#' and truncate the active periods to the date-time range of interest. 
+#' NOTE: This function does not include error checking of the input json, since this function is often run 
+#' in a large loop after the input json has already been checked for conformance to the expected schema. 
+#' If error checking of the input json is desired, use a function like NEONprocIS.base::def.loc.meta.
 
 #' @param NameFileIn Filename (including relative or absolute path). Must be json format.
 #' @param NameFileOut Filename (including relative or absolute path). Must be json format. Defaults to
@@ -38,6 +41,10 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-08-19)
 #     original creation
+#   Cove Sturtevant (2022-09-22)
+#     accommodate new format of active periods (always a start and end date if there is 
+#        an active period, even if they are null)
+#     remove error checking (see Description for rationale)
 ##############################################################################################
 def.loc.trnc.actv <-
   function(NameFileIn,
@@ -48,31 +55,6 @@ def.loc.trnc.actv <-
     # Initialize log if not input
     if (is.null(log)) {
       log <- NEONprocIS.base::def.log.init()
-    }
-    #
-    # First, validate the syntax of input json to see if it is valid
-    #
-    validateJson <-
-      NEONprocIS.base::def.validate.json (NameFileIn)
-   
-    # Second, validate the json against the schema only if the syntax is valid.
-    # Otherwise, validateJsonSchema errors out due to the syntax error
-    #
-    validateJsonSchema <- FALSE
-    if(validateJson == TRUE){
-      locJsonSchema <- system.file("extdata", "locations-namedLocation-schema.json", package="NEONprocIS.base")
-      validateJsonSchema <-
-        NEONprocIS.base::def.validate.json.schema (NameFileIn, locJsonSchema)
-    }
-    #if the validation fails, the function will not be executed 
-    if (validateJson == FALSE || validateJsonSchema == FALSE) {
-      log$error(
-        base::paste0(
-          'In def.loc.trnc.actv::: Erred out due to the json validation failure of this file, ',
-          NameFileIn
-        )
-      )
-      stop("In def.loc.trnc.actv::::: Erred out due to the validation failure of the input JSON")
     }
 
     FmtTime <- '%Y-%m-%dT%H:%M:%SZ' # Time format in the location file
@@ -89,16 +71,15 @@ def.loc.trnc.actv <-
     # Load in the raw json info
     loc <- rjson::fromJSON(file = NameFileIn, simplify = FALSE)
     
-    # Pull the active dates, and add end dates if not present
+    # Pull the active dates, and add start/end dates if not present
     timeActv <- base::lapply(loc$features[[1]]$properties$active_periods,
                              FUN=function(idxList){
-                                 nameListIdx <- names(idxList)
-                                 if('start_date' %in% nameListIdx){
+                                 if(!base::is.null(idxList$start_date)){
                                    timeBgnIdx <- base::as.POSIXct(idxList$start_date,format=FmtTime,tz='GMT')
                                  } else {
                                    timeBgnIdx <- TimeBgn
                                  }
-                                 if('end_date' %in% nameListIdx){
+                                 if(!base::is.null(idxList$end_date)){
                                    timeEndIdx <- base::as.POSIXct(idxList$end_date,format=FmtTime,tz='GMT')
                                  } else {
                                    timeEndIdx <- TimeEnd
@@ -125,8 +106,11 @@ def.loc.trnc.actv <-
     )
     
     # Get rid of the active dates we nulled out
-    setKeep <- !(base::unlist(base::lapply(timeActv,is.null)))
-    loc$features[[1]]$properties$active_periods <- timeActv[setKeep]
+    if (base::length(timeActv) > 0){
+      setKeep <- !(base::unlist(base::lapply(timeActv,is.null)))
+      loc$features[[1]]$properties$active_periods <- timeActv[setKeep]
+    }
+    
     log$info('Named location file filtered successfully.')
     
     # Write to file

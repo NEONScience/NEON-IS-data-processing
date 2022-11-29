@@ -10,7 +10,8 @@ from data_access.types.asset import Asset
 log = structlog.get_logger()
 
 
-def write_files(*, get_assets: Callable[[str], Iterator[Asset]],
+def write_files(*,
+                get_assets: Callable[[str], Iterator[Asset]],
                 get_asset_locations: Callable[[Asset], FeatureCollection],
                 out_path: Path,
                 source_type: str) -> None:
@@ -22,9 +23,9 @@ def write_files(*, get_assets: Callable[[str], Iterator[Asset]],
     :param out_path: Path for writing files.
     :param source_type: The data source type.
     """
-    for asset in get_assets(source_type):
+    for asset in get_assets(source_type=source_type):
         log.debug(f'Processing asset: {asset.id}')
-        locations: FeatureCollection = get_asset_locations(asset)
+        locations: FeatureCollection = get_asset_locations(asset=asset)
         write_file(asset=asset, locations=locations, out_path=out_path)
 
 

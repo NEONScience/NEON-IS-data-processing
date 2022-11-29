@@ -14,7 +14,7 @@ transform:
   - RmvFlow=TRUE
   - RmvHeat=TRUE
   - FileSchmQf=$SCHEMA_FLAGS
-  image: quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:v1.0.0
+  image: quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:v1.0.1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -35,5 +35,32 @@ parallelism_spec:
 resource_requests:
   memory: 1G
   cpu: 2
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2.2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.5"}]'
 autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2.2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]

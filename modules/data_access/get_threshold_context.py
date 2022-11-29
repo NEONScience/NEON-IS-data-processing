@@ -2,25 +2,26 @@
 from contextlib import closing
 from typing import List
 
-from psycopg2 import extensions
+from data_access.db_connector import DbConnector
 
 
-def get_threshold_context(connection: extensions.connection, threshold_uuid: str) -> List[str]:
+def get_threshold_context(connector: DbConnector, threshold_uuid: str) -> List[str]:
     """
     Get all context codes for a threshold.
 
-    :param connection: A database connection.
+    :param connector: A database connection.
     :param threshold_uuid: The threshold UUID.
-    :param ctxt: The string of context(s) separated by | if more than one.
     :return: The context codes.
     """
+    connection = connector.get_connection()
+    schema = connector.get_schema()
     context_codes: List[str] = []
     with closing(connection.cursor()) as cursor:
-        sql = '''
+        sql = f'''
             select 
                 context_code 
             from 
-                threshold_context 
+                {schema}.threshold_context 
             where
                 threshold_uuid = %s
         '''

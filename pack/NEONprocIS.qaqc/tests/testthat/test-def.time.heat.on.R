@@ -11,7 +11,7 @@ test_that("calculate the time on dataHeat State is always false",
             rpt <- NEONprocIS.qaqc::def.time.heat.on(dataHeat = dataHeat)
             testthat::expect_true(is.list(rpt))
             expect_true(length(rpt) == 2)
-            testthat::equals(rpt[2]$timeOff[1], "2019-04-30 18:10:20 MDT")
+            testthat::expect_equal(rpt$timeOff[1], as.POSIXct("2019-05-01 00:10:20",tz="GMT"))
             #  testthat::expect_that(rpt[1]$timeOn[1], equals(base::as.POSIXct("NA")))
 
           }
@@ -29,8 +29,8 @@ test_that("calculate the time on dataHeat when TimeOffAuto is not null",
             rpt <- NEONprocIS.qaqc::def.time.heat.on(dataHeat = dataHeat, TimeOffAuto= timeOffAuto)
             testthat::expect_true(is.list(rpt))
             expect_true(length(rpt) == 2)
-            testthat::equals(rpt[2]$timeOff[1], "2019-05-01 18:48:28 MDT")
-            testthat::equals(rpt[1]$timeOn[1], "2019-05-01 18:18:28 MDT")
+            testthat::expect_equal(rpt$timeOff[1], as.POSIXct("2019-05-02 00:48:28",tz="GMT"))
+            testthat::expect_equal(rpt$timeOn[1],  as.POSIXct("2019-05-02 00:18:28",tz="GMT"))
 
           }
 
@@ -47,9 +47,7 @@ test_that("calculate the time on dataHeat when TimeOffAuto is null",
             rpt <- NEONprocIS.qaqc::def.time.heat.on(dataHeat = dataHeat, TimeOffAuto = timeOffAuto)
             testthat::expect_true(is.list(rpt))
             expect_true(length(rpt) == 2)
-            testthat::equals(rpt[2]$timeOff[1], "2019-05-02 00:48:28 MDT")
-            #  testthat::expect_that(rpt[1]$timeOn[1], equals(base::as.POSIXct("NA")))
-
+            testthat::expect_equal(rpt$timeOff[1], as.POSIXct("2019-05-02 00:48:28",tz="GMT"))
           }
 
 )

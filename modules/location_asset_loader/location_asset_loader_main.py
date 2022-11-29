@@ -6,7 +6,8 @@ from pathlib import Path
 from functools import partial
 
 import common.log_config as log_config
-from data_access.db_connector import connect
+from data_access.db_config_reader import read_from_mount
+from data_access.db_connector import DbConnector
 from data_access.get_assets import get_assets
 from data_access.get_asset_locations import get_asset_locations
 
@@ -19,14 +20,13 @@ def main() -> None:
     env = environs.Env()
     source_type: str = env.str('SOURCE_TYPE')
     out_path: Path = env.path('OUT_PATH')
-    db_url: str = env.str('DATABASE_URL')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
     log.debug(f'out_path: {out_path}')
-
-    with closing(connect(db_url)) as connection:
-        get_assets_partial = partial(get_assets, connection)
-        get_asset_locations_partial = partial(get_asset_locations, connection)
+    db_config = read_from_mount(Path('/var/db_secret'))
+    with closing(DbConnector(db_config)) as connector:
+        get_assets_partial = partial(get_assets, connector)
+        get_asset_locations_partial = partial(get_asset_locations, connector)
         location_asset_loader.write_files(get_assets=get_assets_partial,
                                           get_asset_locations=get_asset_locations_partial,
                                           out_path=out_path,

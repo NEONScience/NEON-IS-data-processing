@@ -2,24 +2,25 @@
 from contextlib import closing
 from typing import List
 
-from psycopg2 import extensions
-
 from data_access.types.active_period import ActivePeriod
+from data_access.db_connector import DbConnector
 
 
-def get_active_periods(connection: extensions.connection, named_location_id: int) -> List[ActivePeriod]:
+def get_active_periods(connector: DbConnector, named_location_id: int) -> List[ActivePeriod]:
     """
     Get the active time periods for a named location.
 
-    :param connection: A database connection.
+    :param connector: A database connection.
     :param named_location_id: A named location ID.
     :return: The active periods.
     """
-    sql = '''
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
         select 
             start_date, end_date 
         from 
-            active_period 
+            {schema}.active_period 
         where 
             named_location_id = %s
     '''
@@ -29,7 +30,6 @@ def get_active_periods(connection: extensions.connection, named_location_id: int
         rows = cursor.fetchall()
         for row in rows:
             start_date = row[0]
-            if start_date is not None:
-                end_date = row[1]
-                periods.append(ActivePeriod(start_date=start_date, end_date=end_date))
+            end_date = row[1]
+            periods.append(ActivePeriod(start_date=start_date, end_date=end_date))
     return periods

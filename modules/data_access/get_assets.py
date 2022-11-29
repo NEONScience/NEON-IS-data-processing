@@ -2,25 +2,29 @@
 from contextlib import closing
 from typing import Iterator
 
-from psycopg2 import extensions
-
 from data_access.types.asset import Asset
+from data_access.db_connector import DbConnector
 
 
-def get_assets(connection: extensions.connection, source_type: str) -> Iterator[Asset]:
+def get_assets(connector: DbConnector, source_type: str) -> Iterator[Asset]:
     """
     Get assets for source_type.
 
-    :param connection: A database connection.
+    :param connector: A database connection.
     :param source_type: The type of sensor.
     :return: The assets.
     """
-    sql = '''
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
          select
              asset.asset_uid,
              is_sensor_type.avro_schema_name
          from
-             asset, is_asset_assignment, is_asset_definition, is_sensor_type
+             {schema}.asset, 
+             {schema}.is_asset_assignment, 
+             {schema}.is_asset_definition, 
+             {schema}.is_sensor_type
          where
              asset.asset_uid = is_asset_assignment.asset_uid
          and

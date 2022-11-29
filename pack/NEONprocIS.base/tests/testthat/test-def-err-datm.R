@@ -69,12 +69,17 @@ test_that("   Testing Route datum errors to specified location", {
   }
   
   # Test 1, RmvDatmOut = TRUE
+  dirOut <- 'pfs/proc_group_output/prt/2019/01/01/27134'
+  dirOutErr <- 'pfs/proc_group_output/errored_datums/prt/2019/01/01/27134'
+  dir.create(dirOut,recursive=TRUE)
   returned_err_datm <- NEONprocIS.base::def.err.datm(
     DirDatm = DirDatm,
     DirErrBase = DirErrBase,
     RmvDatmOut = TRUE,
     DirOutBase = DirOutBase
   )
+  testthat::expect_false(dir.exists(dirOut))
+  testthat::expect_true(dir.exists(dirOutErr))
   
   # Test 2,  DirErrBase = NULL
   
@@ -86,6 +91,7 @@ test_that("   Testing Route datum errors to specified location", {
                                                          DirErrBase = NULL,
                                                          DirOutBase = DirOutBase),
                            silent = TRUE)
+  testthat::expect_equal(base::class(returned_err_datm),'try-error')
   
   # Test 3,  DirOutBase not passed in, default to NULL
   
@@ -93,23 +99,27 @@ test_that("   Testing Route datum errors to specified location", {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  returned_err_datm <- try(NEONprocIS.base::def.err.datm(DirDatm = DirDatm,
-                                                         DirErrBase = DirErrBase,
-                                                         RmvDatmOut = TRUE),
-                           silent = TRUE)
-  
-  # Test 4,  DirDatm is not an existing dir
-  #          AND DirOutBase not passed in, default to NULL
+  returned_err_datm <- NEONprocIS.base::def.err.datm(DirDatm = DirDatm,
+                                                     DirErrBase = DirErrBase,
+                                                     RmvDatmOut = TRUE)
+  testthat::expect_null(returned_err_datm)
+  testthat::expect_true(dir.exists(dirOutErr))
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
-  if (dir.exists(DirErrBase)) {
-    unlink(DirErrBase, recursive = TRUE)
-  }
-  returned_err_datm <- try(NEONprocIS.base::def.err.datm(DirDatm = DirDatm_notExist,
-                                                         DirErrBase = DirErrBase,
-                                                         RmvDatmOut = TRUE),
-                           silent = TRUE)
   
+  # Test 4,  DirDatm is not an existing dir
+  #          AND DirOutBase not passed in, default to NULL
+  # 
+  # if (dir.exists(DirErrBase)) {
+  #   unlink(DirErrBase, recursive = TRUE)
+  # }
+  # returned_err_datm <- NEONprocIS.base::def.err.datm(DirDatm = DirDatm_notExist,
+  #                                                    DirErrBase = DirErrBase,
+  #                                                    DirOutBase = DirOutBase,
+  #                                                    RmvDatmOut = TRUE)
+  # testthat::expect_null(returned_err_datm)
+  # testthat::expect_false(dir.exists(dirOutErr))
+  # 
 })

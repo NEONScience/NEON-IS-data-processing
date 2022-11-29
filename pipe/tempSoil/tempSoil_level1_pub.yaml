@@ -2,7 +2,7 @@
 pipeline:
   name: tempSoil_level1_pub 
 transform:
-  image: quay.io/battelleecology/pub_uploader:2
+  image: quay.io/battelleecology/pub_uploader:3
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -12,15 +12,42 @@ transform:
     OUT_PATH: "/pfs/out"
     VERSION: 'pipeline_test'
   secrets:
-    [
-      {
-       "name": "pdr-int-secret",
-       "key": "uri",
-       "env_var": "DATABASE_URL"
-       }
-    ]
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input: 
   pfs: 
     name: DATA_PATH
     repo: tempSoil_level1_egress 
     glob: /*/*/*/
+resource_requests:
+  memory: 300M
+  cpu: 0.3
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "1"
+    }
+  ]

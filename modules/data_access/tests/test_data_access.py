@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 import json
-import os
 import unittest
+from contextlib import closing
+
 from typing import List, Set
 
 from geojson import FeatureCollection, dumps as geojson_dumps
 
-from data_access.db_connector import connect
+import data_access.db_config_reader as db_config_reader
+from data_access.db_connector import DbConnector
 from data_access.get_asset_locations import get_asset_locations
 from data_access.get_assets import get_assets
 from data_access.get_named_location_active_periods import get_active_periods
@@ -21,33 +23,45 @@ from data_access.get_thresholds import get_thresholds
 from data_access.types.active_period import ActivePeriod
 from data_access.types.asset import Asset
 from data_access.types.property import Property
+from data_access.tests.database_test import DatabaseBackedTest
 
 
-class DataAccessTest(unittest.TestCase):
+# @unittest.skip('Integration tests.')
+class DataAccessTest(DatabaseBackedTest):
+
+    connector = None
+
+    @classmethod
+    def setUpClass(cls):
+        db_config = db_config_reader.read_from_environment()
+        connector = DbConnector(db_config)
+        cls.connector = connector
+        cls.named_location_id = 31720
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.connector.get_connection().close()
 
     @staticmethod
     def print_geojson(feature_collection: FeatureCollection) -> None:
         geojson_data = geojson_dumps(feature_collection, indent=4, sort_keys=False, default=str)
         print(f'Geojson data: \n{geojson_data}')
 
-    def setUp(self):
-        # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
-        self.db_url = os.getenv('DATABASE_URL')
-        if self.db_url is None:
-            raise unittest.SkipTest('DATABASE_URL environment variable not set, skipping tests.')
-        self.connection = connect(self.db_url)
-        self.named_location_id = 31720
+    def test_read_mount(self):
+        """Test if the connection can also be established through files on the filesystem."""
+        with closing(DbConnector(self.get_config())) as db:
+            self.assertTrue(db is not None)
 
     def test_get_asset_locations(self):
         asset = Asset(id=18521, type='prt')  # soil plot test
-        feature_collection: FeatureCollection = get_asset_locations(self.connection, asset)
+        feature_collection: FeatureCollection = get_asset_locations(self.connector, asset)
         self.print_geojson(feature_collection)
         self.assertTrue(feature_collection is not None)
 
     def test_get_assets(self):
         i = 0
         asset = None
-        for asset in get_assets(self.connection, source_type='prt'):
+        for asset in get_assets(self.connector, source_type='prt'):
             if i > 0:
                 break
             print(f'asset id: {asset.id} type: {asset.type}')
@@ -55,33 +69,33 @@ class DataAccessTest(unittest.TestCase):
         self.assertTrue(asset is not None)
 
     def test_get_named_location_active_periods(self):
-        active_periods: List[ActivePeriod] = get_active_periods(self.connection, self.named_location_id)
+        active_periods: List[ActivePeriod] = get_active_periods(self.connector, self.named_location_id)
         self.assertTrue(active_periods is not None)
 
     @unittest.skip('These data are frequently updated, only use this test for specific cases.')
     def test_get_named_location_context(self):
-        context: List[str] = get_named_location_context(self.connection, self.named_location_id)
+        context: List[str] = get_named_location_context(self.connector, self.named_location_id)
         expected_context = ['par-met', 'upward-facing', 'par-met-351', 'ir-biological-temperature']
         self.assertTrue(context == expected_context)
 
     @unittest.skip('These data are frequently updated, only use this test for specific cases.')
     def test_get_named_location_group(self):
-        group: List[str] = get_named_location_group(self.connection, self.named_location_id)
+        group: List[str] = get_named_location_group(self.connector, self.named_location_id)
         expected_group = [376]
         self.assertTrue(group == expected_group)
 
     def test_get_named_location_locations(self):
         # Point geometry
-        result = get_named_location_locations(self.connection, self.named_location_id)
+        result = get_named_location_locations(self.connector, self.named_location_id)
         print(f'result: {json.dumps(result, indent=2)}')
         # Polygon geometry
-        result = get_named_location_locations(self.connection, 314)
+        result = get_named_location_locations(self.connector, 314)
         print(f'result: {json.dumps(result, indent=2)}')
         self.assertTrue(result is not None)
 
     @unittest.skip('These data are frequently updated, only use this test for specific cases.')
     def test_get_named_location_properties(self):
-        properties: List[Property] = get_named_location_properties(self.connection, self.named_location_id)
+        properties: List[Property] = get_named_location_properties(self.connector, self.named_location_id)
         prop = properties[4]
         print(f'prop: {prop}')
         self.assertTrue(prop.name == 'Required Asset Management Location ID')
@@ -90,24 +104,24 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_named_location_schema_name(self):
         named_location_id = 158818
-        schema_names: Set = get_named_location_schema_name(self.connection, named_location_id)
+        schema_names: Set = get_named_location_schema_name(self.connector, named_location_id)
         print(f'schema_names: {schema_names}')
         self.assertTrue(next(iter(schema_names)) == 'prt')
 
     def test_get_named_location_site(self):
-        parents = get_named_location_parents(self.connection, self.named_location_id)
-        site = parents['site']
+        parents = get_named_location_parents(self.connector, self.named_location_id)
+        (site_id, site) = parents['site']
         self.assertTrue(site == 'ORNL')
 
     def test_get_named_location_domain(self):
-        parents = get_named_location_parents(self.connection, self.named_location_id)
-        site = parents['domain']
+        parents = get_named_location_parents(self.connector, self.named_location_id)
+        (site_id, site) = parents['domain']
         self.assertTrue(site == 'D07')
 
     def test_get_named_locations(self):
         location = None
         i = 0
-        for location in get_named_locations(self.connection, 'CONFIG', 'prt'):
+        for location in get_named_locations(self.connector, 'CONFIG', 'prt'):
             if i > 0:
                 break
             i += 1
@@ -116,12 +130,9 @@ class DataAccessTest(unittest.TestCase):
 
     def test_get_thresholds(self):
         i = 0
-        for threshold in get_thresholds(self.connection, 'term'):
+        for threshold in get_thresholds(self.connector, 'term'):
             if i > 0:
                 break
             print(f'threshold: {threshold}')
             i += 1
             self.assertTrue(threshold is not None)
-
-    def tearDown(self):
-        self.connection.close()

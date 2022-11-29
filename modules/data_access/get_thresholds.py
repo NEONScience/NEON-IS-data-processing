@@ -2,15 +2,16 @@
 from contextlib import closing
 from typing import List, Iterator
 
-from psycopg2 import extensions
-
 import common.date_formatter as date_formatter
 from data_access.types.threshold import Threshold
 from data_access.get_threshold_context import get_threshold_context
+from data_access.db_connector import DbConnector
 
 
-def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Threshold]:
-    sql = '''
+def get_thresholds(connector: DbConnector, term: str) -> Iterator[Threshold]:
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
          select
              attr.column_name,
              threshold.term_name,
@@ -24,15 +25,15 @@ def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Thr
              property.number_value,
              property.string_value
          from
-             pdr.condition
+             {schema}.condition
          join
-             pdr.threshold on condition.threshold_uuid = threshold.threshold_uuid
+             {schema}.threshold on condition.threshold_uuid = threshold.threshold_uuid
          join
-             pdr.property on condition.condition_uuid = property.condition_uuid
+             {schema}.property on condition.condition_uuid = property.condition_uuid
          join
-             pdr.attr on attr.attr_id = property.attr_id
+             {schema}.attr on attr.attr_id = property.attr_id
          join
-             pdr.nam_locn on pdr.nam_locn.nam_locn_id = pdr.condition.nam_locn_id
+             {schema}.nam_locn on nam_locn.nam_locn_id = condition.nam_locn_id
          where
              property.condition_uuid is not null
          and 
@@ -42,8 +43,7 @@ def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Thr
      '''
     sql_2 = sql.replace("and \n             threshold.term_name = ANY (%s)", "")
     with closing(connection.cursor()) as cursor:
-        if (term == 'none'):
-            term_l = []
+        if term == 'none':
             cursor.execute(sql_2)
         else:
             term_l = term.split("|")
@@ -74,7 +74,7 @@ def get_thresholds(connection: extensions.connection, term: str) -> Iterator[Thr
                 end_date = date_formatter.to_string(end_date)
             if number_value is not None:
                 number_value = float(number_value)
-            context: List[str] = get_threshold_context(connection, threshold_uuid)
+            context: List[str] = get_threshold_context(connector, threshold_uuid)
             threshold = Threshold(threshold_name=threshold_name,
                                   term_name=term_name,
                                   location_name=location_name,

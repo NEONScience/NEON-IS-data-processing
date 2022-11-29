@@ -15,5 +15,6 @@ def main() -> None:
     log_config.configure(log_level)
     transform(year_index=year_index)
 
+
 if __name__ == '__main__':
     main()

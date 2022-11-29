@@ -4,13 +4,13 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - ./flow.loc.asgn.R
+  - ./flow.loc.grp.asgn.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=namedLocation
-  image: quay.io/battelleecology/neon-is-loc-asgn-r:v1.0.0
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.3
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -19,16 +19,43 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_hmp155
+      repo: hmp155_location_loader
       glob: /hmp155/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_hmp155_list_years
+      repo: hmp155_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
   constant: 2
 resource_requests:
   memory: 300M
   cpu: 1.2
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"100M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.1"}]'
 autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"100M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.1"
+    }
+  ]

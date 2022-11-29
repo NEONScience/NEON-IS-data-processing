@@ -1,0 +1,116 @@
+---
+pipeline:
+  name: hmp155_fill_date_gaps_and_regularize
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-gf-rglr:v1.0.1
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /usr/src/app/pfs/interimData
+  - mkdir -p /usr/src/app/pfs/interimData
+  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
+  - python3 -m date_gap_filler.date_gap_filler_main
+  - '# Run second module - regularize'
+  - Rscript ./flow.rglr.R
+    DirIn=/usr/src/app/pfs/interimData
+    DirOut=/pfs/out
+    DirErr=/pfs/out/errored_datums
+    "DirRglr=data|uncertainty_data|flags"
+    MethRglr=CybiEc
+    WndwRglr=Trlg
+    IdxWndw=IdxWndwMin
+    RptTimeWndw=FALSE
+    DropNotNumc=FALSE
+    "DirSubCopy=location|uncertainty_coef"
+  env:
+    # Environment variables for date gap filler
+    LOG_LEVEL: INFO
+    OUT_PATH: /usr/src/app/pfs/interimData
+    OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
+    DATA_SOURCE_TYPE_INDEX: '3'
+    DATA_YEAR_INDEX: '4'
+    DATA_MONTH_INDEX: '5'
+    DATA_DAY_INDEX: '6'
+    DATA_LOCATION_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
+    LOCATION_SOURCE_TYPE_INDEX: '3'
+    LOCATION_YEAR_INDEX: '4'
+    LOCATION_MONTH_INDEX: '5'
+    LOCATION_DAY_INDEX: '6'
+    LOCATION_INDEX: '7'
+    EMPTY_FILE_TYPE_INDEX: '4'
+    LINK_TYPE: COPY # options are COPY or SYMLINK
+    # Environment variables for regularizer
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
+input:
+  cross:
+  - pfs:
+      name: EMPTY_FILE_PATH
+      repo: empty_files_hmp155
+      glob: /hmp155
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - group:
+    - pfs:
+        name: DATA_PATH
+        repo: hmp155_location_group_and_restructure
+        # For full-scale daily processing, glob should be /hmp155/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /hmp155/(*/*/*/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
+        glob: /hmp155/(*/*/*/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
+        # glob: /hmp155/(*/*/*)
+        group_by: $1
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - join:
+      - pfs:
+          name: LOCATION_PATH
+          repo: hmp155_location_active_dates_assignment
+          # For full-scale daily processing, glob should be /li191r/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /hmp155/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
+          glob: /hmp155/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
+          # glob: /hmp155/(*/*/*)
+          # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
+          joinOn: $2
+          group_by: $1
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      - pfs:
+          name: DATE_LIMITER_PATH
+          repo: hmp155_cron_daily_and_date_control
+          glob: /hmp155/(*/*/*)
+          joinOn: $1
+          group_by: $1
+          empty_files: true # This can remain true even if LINK_TYPE=COPY
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 800M
+  cpu: 1.1
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]

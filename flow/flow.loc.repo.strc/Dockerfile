@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Restructure repo by location
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.3
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.6
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

@@ -39,7 +39,7 @@ input:
         name: DATA_PATH
         repo: prt_merge_data_by_location
         # For full-scale daily processing, glob should be /prt/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /prt/(*/*/*/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244))
-        glob: /prt/(*/*/*/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244|CFGLOC101775|CFGLOC101777|CFGLOC107926)) 
+        glob: /prt/(*/*/*/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244|CFGLOC101775|CFGLOC101777|CFGLOC107926|CFGLOC108354|CFGLOC108356|CFGLOC108358)) 
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
@@ -47,7 +47,7 @@ input:
           name: LOCATION_PATH
           repo: prt_location_active_dates_assignment
           # For full-scale daily processing, glob should be /prt/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /prt/((*/*/*)/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244))
-          glob: /prt/((*/*/*)/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244|CFGLOC101775|CFGLOC101777|CFGLOC107926)) 
+          glob: /prt/((*/*/*)/(CFGLOC100471|CFGLOC100474|CFGLOC100480|CFGLOC100483|CFGLOC100238|CFGLOC100241|CFGLOC100244|CFGLOC101775|CFGLOC101777|CFGLOC107926|CFGLOC108354|CFGLOC108356|CFGLOC108358)) 
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           joinOn: $2
           group_by: $1
@@ -64,6 +64,33 @@ parallelism_spec:
 resource_requests:
   memory: 400M
   cpu: 0.5
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"2G"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"1.5"}]'
 autoscaling: true
 
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "1.5"
+    }
+  ]

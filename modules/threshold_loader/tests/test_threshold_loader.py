@@ -5,14 +5,13 @@ from pathlib import Path
 import unittest
 from typing import Iterator
 
-from pyfakefs.fake_filesystem_unittest import TestCase
-
+from data_access.tests.database_test import DatabaseBackedTest
 from data_access.types.threshold import Threshold
 import threshold_loader.threshold_loader_main as threshold_loader_main
 from threshold_loader.threshold_loader import load_thresholds
 
 
-class ThresholdLoaderTest(TestCase):
+class ThresholdLoaderTest(DatabaseBackedTest):
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -72,9 +71,9 @@ class ThresholdLoaderTest(TestCase):
 
     @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
-        # database URL in the form: postgresql://[user]@[url]:[port]/[database_name]?password=[pass]
-        database_url = os.getenv('PG_DATABASE_URL')
-        os.environ['DATABASE_URL'] = database_url
+        self.configure_mount()
+        os.environ['TERM'] = 'veloXaxs|veloYaxs|veloZaxs|veloSoni|tempSoni'
+        os.environ['CTXT'] = '3Dwind'
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         threshold_loader_main.main()

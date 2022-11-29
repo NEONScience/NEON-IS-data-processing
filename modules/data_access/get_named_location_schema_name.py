@@ -2,22 +2,28 @@
 from contextlib import closing
 from typing import Set
 
-from psycopg2 import extensions
+from data_access.db_connector import DbConnector
 
 
-def get_named_location_schema_name(connection: extensions.connection, named_location_id: int) -> Set[str]:
+def get_named_location_schema_name(connector: DbConnector, named_location_id: int) -> Set[str]:
     """
     Get the schema name for a named location.
 
-    :param connection: The database connection.
+    :param connector: The database connection.
     :param named_location_id: The named location name.
     :return: The schema name.
     """
-    sql = '''
+    connection = connector.get_connection()
+    schema = connector.get_schema()
+    sql = f'''
         select 
             is_sensor_type.avro_schema_name
         from 
-            is_sensor_type, is_asset_definition, is_asset_assignment, is_asset_location, nam_locn
+            {schema}.is_sensor_type, 
+            {schema}.is_asset_definition, 
+            {schema}.is_asset_assignment, 
+            {schema}.is_asset_location, 
+            {schema}.nam_locn
         where
             is_sensor_type.sensor_type_name = is_asset_definition.sensor_type_name
         and 

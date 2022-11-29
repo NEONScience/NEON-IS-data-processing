@@ -52,11 +52,9 @@ test_that("when NameFileSchm exists, write the file",
             NameFile <- 'out.parquet'
             Dict <- c(TRUE)
             NameFileSchm <- "def.wrte.parq/prt_calibrated.avsc"
-            rpt <- try(NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile, Dict =  Dict, NameFileSchm = NameFileSchm), silent = TRUE)
-            testthat::expect_false((class(rpt)[1] == "try-error"))
+            rpt <- NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile, Dict =  Dict, NameFileSchm = NameFileSchm)
             testthat::expect_true((length(rpt) == 4))
-        #    testthat::expect_true(names(rpt), "source_id" "site_id" "readout_time" "temp")
-            
+
             if (file.exists(NameFile)) { file.remove(NameFile)}
             
           })

@@ -1,0 +1,32 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC113261",
+                "type":"CONFIG",
+                "description":"San Joaquin Barometric Pressure",
+                "domain":"D17",
+                "site":"SJER",
+                "context":[
+                    "barometric-pressure",
+                    "terrestrial"
+                ],
+                "group": [
+                    "barometric-pressure-805"
+                ],
+                "active_periods":[
+                ]
+            },
+            "HOR":"000",
+            "VER":"035",
+            "TMI":"000",
+            "Data Rate":"0.1",
+            "Required Asset Management Location ID":            14957,
+            "Required Asset Management Location Code":"CFGLOC113261",
+            "IS Processing Default Start Date": "2018-05-31T00:00:00Z"
+        }
+    ]
+}
