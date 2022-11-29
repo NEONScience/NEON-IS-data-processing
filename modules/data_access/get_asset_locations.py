@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from typing import Dict, List
+from typing import List, Tuple
 
 from geojson import Feature, FeatureCollection
 
@@ -53,9 +53,9 @@ def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollecti
             name = row[3]
             locations: FeatureCollection = get_named_location_locations(connector, key)
             properties: List[Property] = get_named_location_properties(connector, key)
-            parents: dict[str, str] = get_named_location_parents(connector, key)
-            domain: str = parents['domain'] if parents else None
-            site: str = parents['site'] if parents else None
+            parents: dict[str, Tuple[int, str]] = get_named_location_parents(connector, key)
+            (domain_id, domain) = parents['domain'] if parents else None
+            (site_id, site) = parents['site'] if parents else None
             context: List[str] = get_named_location_context(connector, key)
             group: List[str] = get_named_location_group(connector, key)
             asset_location = AssetLocation(name=name, domain=domain, site=site, install_date=install_date,
