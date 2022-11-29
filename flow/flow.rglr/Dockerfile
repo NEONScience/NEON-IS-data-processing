@@ -2,7 +2,8 @@
 
 # Start with the neon-is-base-r image. 
 # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.5 as intermediate
+#FROM quay.io/battelleecology/neon-is-base-r:v1.0.6 #as intermediate
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.6
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -14,24 +15,26 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 # variable in from the host, clone the repo in this intermediate build, then copy the relevant package 
 # into the final build and install from there. To pass in the environment variable holding the token,
 # use: docker build --build-arg auth_token=$GITHUB_PAT ...
-ARG auth_token
-ENV GITHUB_PAT=$auth_token
-
+#ARG auth_token
+#ENV GITHUB_PAT=$auth_token
+#
 # Clone the NEON-FIU-algorithm repo using our token
-RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
-
+#RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
+#
 # Now make the final build, which will leave behind our access token
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.5
-
+#FROM quay.io/battelleecology/neon-is-base-r:v1.0.6
+#
 # copy the eddy4R.base package from the previous image
-COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
+#COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
 
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Install the eddy4R.base package, including dependencies (usually this is done through renv.lock file when pulling from public repo - comment this line)
-RUN R -e 'renv::install("/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
+RUN git clone -b deve https://github.com/NEONScience/eddy4R.git 
+#RUN R -e 'renv::install("/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
+RUN R -e 'renv::install("./eddy4R/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
 
 # Create app user
 RUN groupadd app && \

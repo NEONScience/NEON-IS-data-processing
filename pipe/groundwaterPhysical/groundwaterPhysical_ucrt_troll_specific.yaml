@@ -13,7 +13,7 @@ transform:
   - FileSchmData=$SCHEMA_DATA
   - FileSchmUcrt=$SCHEMA_UCRT
   - FileSchmSciStats=$SCHEMA_SCI
-  image: quay.io/battelleecology/neon-is-troll-uncertainty-r:v0.0.15
+  image: quay.io/battelleecology/neon-is-troll-uncertainty-r:v1.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

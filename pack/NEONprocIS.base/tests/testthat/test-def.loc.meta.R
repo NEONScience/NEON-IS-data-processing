@@ -110,21 +110,33 @@ test_that("location that have install, removal, and remove data after timeBgn",
             
           })
 
-test_that("test the active dates",
+test_that("test the active dates when not empty",
           {
             nameFile <- "def.loc.meta/test_input/pfs/2020/12/31/CFGLOC113261/location/CFGLOC113261.json"
-            timeBgn <- base::as.POSIXct('2020-12-30',tz='GMT')
-            timeEnd <- base::as.POSIXct('2021-01-31',tz='GMT')
+            timeBgn <- base::as.POSIXct('2015-12-30',tz='GMT')
+            timeEnd <- base::as.POSIXct('2025-01-31',tz='GMT')
             locProp <- geojsonsf::geojson_sf(nameFile)
-            timeActvList <- data.frame(rjson::fromJSON(json_str=locProp$active_periods[1]))
-            
-            timeActvStarttGMT <- base::as.POSIXct(timeActvList[,1],tz='GMT')
-            timeActvEndGMT <- base::as.POSIXct(timeActvList[,2],tz='GMT')
+
+            timeActvStarttGMT <- base::as.POSIXct("2020-12-31",tz='GMT')
+            timeActvEndGMT <- base::as.POSIXct("2021-01-01",tz='GMT')
             
             locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile, TimeBgn = timeBgn, TimeEnd=timeEnd)
             
             expect_true (locationMetaData$site == locProp$site)
-            expect_true (locationMetaData$active_periods[[1]][[1]] ==  timeActvStarttGMT)
-            expect_true (locationMetaData$active_periods[[1]][[2]] ==  timeActvEndGMT)
+            expect_true (is.data.frame(locationMetaData$active_periods[[1]]))
+            expect_true (all.equal(names(locationMetaData$active_periods[[1]]),c('start_date','end_date')))
+            expect_true (locationMetaData$active_periods[[1]]$start_date[1] ==  timeActvStarttGMT)
+            expect_true (locationMetaData$active_periods[[1]]$end_date[1] ==  timeActvEndGMT)
+            expect_true (is.na(locationMetaData$active_periods[[1]]$end_date[2]))
+            expect_true (nrow(locationMetaData$active_periods[[1]])==3)
             
+          })
+
+test_that("test the active dates when empty",
+          {
+            nameFile <- "def.loc.meta/test_input/pfs/2020/12/31/CFGLOC113261/location/CFGLOC113261_2.json"
+            locationMetaData <- NEONprocIS.base::def.loc.meta(NameFile = nameFile)
+            expect_true (is.data.frame(locationMetaData$active_periods[[1]]))
+            expect_true (all.equal(names(locationMetaData$active_periods[[1]]),c('start_date','end_date')))
+            expect_true (nrow(locationMetaData$active_periods[[1]])==0)
           })

@@ -1,0 +1,17 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC100245",
+                "group": "test-group_1",
+                "active_periods": [
+                ]
+            },
+            "HOR": null,
+            "VER": null
+        }
+    ]
+}
