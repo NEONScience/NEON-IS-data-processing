@@ -106,8 +106,11 @@ def.loc.trnc.actv <-
     )
     
     # Get rid of the active dates we nulled out
-    setKeep <- !(base::unlist(base::lapply(timeActv,is.null)))
-    loc$features[[1]]$properties$active_periods <- timeActv[setKeep]
+    if (base::length(timeActv) > 0){
+      setKeep <- !(base::unlist(base::lapply(timeActv,is.null)))
+      loc$features[[1]]$properties$active_periods <- timeActv[setKeep]
+    }
+    
     log$info('Named location file filtered successfully.')
     
     # Write to file

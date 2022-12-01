@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Calibration assignment
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.5
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.6
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -17,8 +17,8 @@ RUN groupadd app && \
 WORKDIR /home/app
 
 # Copy in application code
-COPY ./flow.loc.asgn.R .
-COPY ./wrap.loc.asgn.R .
+COPY ./flow.loc.grp.asgn.R .
+COPY ./wrap.loc.grp.asgn.R .
 
 # Run as app user
 RUN chown app:app -R /home/app

@@ -24,6 +24,7 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
 #' @return 
+#' A data frame with location metadata.
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -227,6 +228,18 @@ def.loc.meta <- function(NameFile,
     if(!base::is.na(locProp$active_periods[idxLoc])){
 
       timeActvList <- rjson::fromJSON(json_str=locProp$active_periods[idxLoc])
+      
+      # Turn NULL to NA
+      timeActvList <- base::lapply(timeActvList,FUN=function(timeActvIdx){
+        if(base::is.null(timeActvIdx$start_date)){
+          timeActvIdx$start_date <- NA
+        }
+        if(base::is.null(timeActvIdx$end_date)){
+          timeActvIdx$end_date <- NA
+        }
+        return(timeActvIdx)
+      }
+      )
       
       numActv <- base::length(timeActvList)
       dmmyChar <- base::rep(NA,times=numActv)

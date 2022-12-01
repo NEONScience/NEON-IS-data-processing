@@ -15,7 +15,7 @@ transform:
   - GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|persistenceQF
   - GrpQfBeta1=:nullQF|gapQF|rangeQF|stepQF|persistenceQF
   - GrpQfBetaIgnr1=:nullQF|gapQF
-  image: quay.io/battelleecology/neon-is-qaqc-qm-r:v1.0.0
+  image: quay.io/battelleecology/neon-is-qaqc-qm-r:v1.0.1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

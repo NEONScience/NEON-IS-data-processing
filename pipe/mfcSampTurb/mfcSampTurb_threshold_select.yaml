@@ -14,7 +14,7 @@ transform:
   - TermCtxt3=presAtm
   - TermCtxt4=temp
   - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-thsh-slct-r:v0.0.18
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v1.0.18
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

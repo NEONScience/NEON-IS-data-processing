@@ -30,7 +30,7 @@ transform:
   - TermCtxt19=ssiCo2
   - TermCtxt20=ssiH2o
   - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-thsh-slct-r:v1.0.0
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v1.0.1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
