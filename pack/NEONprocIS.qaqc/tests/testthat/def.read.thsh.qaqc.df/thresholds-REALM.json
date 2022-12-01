@@ -1,0 +1,84 @@
+{
+    "thresholds": [
+        {
+            "threshold_name": "Range Threshold Hard Max",
+            "term_name": "relativeHumidity",
+            "location_name": "REALM",
+            "context": [
+                "relative-humidity",
+                "terrestrial"
+            ],
+            "start_date": "2000-01-01T00:00:00Z",
+            "end_date": null,
+            "is_date_constrained": "N",
+            "start_day_of_year": null,
+            "end_day_of_year": null,
+            "number_value": 102.0,
+            "string_value": null
+        },
+        {
+            "threshold_name": "Gap Test value - # missing points",
+            "term_name": "relativeHumidity",
+            "location_name": "REALM",
+            "context": [
+                "relative-humidity",
+                "terrestrial"
+            ],
+            "start_date": "2000-01-01T00:00:00Z",
+            "end_date": null,
+            "is_date_constrained": "N",
+            "start_day_of_year": null,
+            "end_day_of_year": null,
+            "number_value": 4.0,
+            "string_value": null
+        },
+        {
+            "threshold_name": "Despiking maximum (%) missing points per window",
+            "term_name": "temperature",
+            "location_name": "ABBY",
+            "context": [
+                "relative-humidity",
+                "terrestrial"
+            ],
+            "start_date": "2000-01-01T00:00:00Z",
+            "end_date": null,
+            "is_date_constrained": "N",
+            "start_day_of_year": null,
+            "end_day_of_year": null,
+            "number_value": 10.0,
+            "string_value": null
+        },
+        {
+            "threshold_name": "Gap Test value - # missing points",
+            "term_name": "temperature",
+            "location_name": "REALM",
+            "context": [
+                "relative-humidity",
+                "terrestrial"
+            ],
+            "start_date": "2000-01-01T00:00:00Z",
+            "end_date": null,
+            "is_date_constrained": "N",
+            "start_day_of_year": null,
+            "end_day_of_year": null,
+            "number_value": 4.0,
+            "string_value": null
+        },
+        {
+            "threshold_name": "Persistence (change)",
+            "term_name": "temperature",
+            "location_name": "REALM",
+            "context": [
+                "relative-humidity",
+                "terrestrial"
+            ],
+            "start_date": "2000-01-01T00:00:00Z",
+            "end_date": null,
+            "is_date_constrained": "N",
+            "start_day_of_year": null,
+            "end_day_of_year": null,
+            "number_value": 0.01,
+            "string_value": null
+        }
+        ]
+}
