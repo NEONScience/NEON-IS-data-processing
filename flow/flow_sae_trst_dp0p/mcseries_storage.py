@@ -12,13 +12,13 @@ log = get_logger()
 class McseriesStorage(McseriesTurb):
 
     def data_conversion(self, filename) -> pd.DataFrame:
-        outputdf = super.data_conversion(filename)
-        outputdf['qfFrt00'] = outputdf['frt00'].apply(lambda x: -1 if math.isnan(x) else self.get_qf_frt00(x))
+        df = super().data_conversion(filename)
+        df['qfFrt00'] = df['frt00'].apply(lambda x: -1 if math.isnan(x) else self.get_qf_frt00(x)).astype('int8')
 
-        return outputdf
+        return df
 
     def get_qf_frt00(self, frt00: float) -> int:
-        if frt00 < 0.8 * super.CONV_CONST or frt00 > 1.2 * super.CONV_CONST:
+        if frt00 < 0.8 * self.CONV_CONST or frt00 > 1.2 * self.CONV_CONST:
             return 1
         else:
             return 0

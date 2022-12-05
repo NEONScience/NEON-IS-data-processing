@@ -2,6 +2,14 @@
 import math
 
 
+# get site atmospheric pressure
+def get_site_presAtm(site):
+    # List < SimpleMetadataDTO > dto = locClient.getLocationMetadataBySite(site, "PresAtmSite");
+    # TODO
+    ambient_press = -1
+    return ambient_press
+
+
 # get bit value from a base10 number
 def get_nth_bit(number, n) -> int:
     return (int(number) >> n) & 0x0001

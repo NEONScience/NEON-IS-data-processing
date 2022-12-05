@@ -1,5 +1,4 @@
-environs==9.3.2
-fastparquet==0.6.0.post1
-structlog==21.5.0
-pandas==1.2.4
-pyarrow==4.0.0
+environs==9.5.0
+structlog==22.1.0
+pandas==1.5.1
+pyarrow==10.0.0

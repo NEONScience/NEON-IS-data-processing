@@ -12,38 +12,36 @@ log = get_logger()
 
 class Csat3(L0toL0p):
 
-    cvdry = 717.6
-    cpdry = 1004.64
     mdry = 28.9645
     r = 8314.4621
-    data_columns = ['source_id', 'site', 'readout_time', 'veloXaxs', 'veloYaxs', 'veloZaxs', 'veloSoni']
+    gammad = 1.4
+    data_columns = {'ux_wind_speed': 'veloXaxs',
+                    'uy_wind_speed': 'veloYaxs',
+                    'uz_wind_speed': 'veloZaxs',
+                    'speed_of_sound': 'veloSoni'}
 
     def data_conversion(self, filename: str) -> pd.DataFrame:
-        df = pd.read_parquet(filename)
-        outputdf = df.copy()
-        log.debug(f'{outputdf.columns}')
-        log.info(df['site_id'][0])
-        log.info(df['source_id'][0])
-        # del outputdf['source_id']
-        # del outputdf['site_id']
-        del outputdf['diagnostic_word']
-        outputdf.columns = self.data_columns
+        df = super().data_conversion(filename)
 
-        outputdf['tempSoni'] = df['speed_of_sound'].apply(lambda x: math.nan if math.isnan(x) else self.get_temp_soni(x))
-        outputdf['index'] = df['diagnostic_word'].apply(lambda x: math.nan if math.isnan(x) else get_range_bits(x, 0, 5))
-        outputdf['qfSoniUnrs'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == -99999 else 0)
-        outputdf['qfSoniData'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61503 else 0)
-        outputdf['qfSoniTrig'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61440 else 0)
-        outputdf['qfSoniComm'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61441 else 0)
-        outputdf['qfSoniCode'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61442 else 0)
-        outputdf['qfSoniTemp'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit(x, 15))
-        outputdf['qfSoniSgnlPoor'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit(x, 14))
-        outputdf['qfSoniSgnlHigh'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit(x, 13))
-        outputdf['qfSoniSgnlLow'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit(x, 12))
-        return outputdf
+        df['tempSoni'] = df['speed_of_sound'].apply(lambda x: math.nan if math.isnan(x) else self.get_temp_soni(x)).astype('float32')
+        del df['speed_of_sound']
+        df['idx'] = df['diagnostic_word'].apply(lambda x: math.nan if math.isnan(x) else get_range_bits(x, 0, 5)).astype('int8')
+        df['qfSoniUnrs'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == -99999 else 0).astype('int8')
+        df['qfSoniData'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61503 else 0).astype('int8')
+        df['qfSoniTrig'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61440 else 0).astype('int8')
+        df['qfSoniComm'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61441 else 0).astype('int8')
+        df['qfSoniCode'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61442 else 0).astype('int8')
+        df['qfSoniTemp'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit(x, 15)).astype('int8')
+        df['qfSoniSgnlPoor'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit(x, 14)).astype('int8')
+        df['qfSoniSgnlHigh'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit(x, 13)).astype('int8')
+        df['qfSoniSgnlLow'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit(x, 12)).astype('int8')
+        del df['diagnostic_word']
+        df.rename(columns=self.data_columns, inplace=True)
+        log.debug(f'{df.columns}')
+        return df
 
     def get_temp_soni(self, veloSoni: float) -> float:
-        return veloSoni * veloSoni * self.cvdry * self.mdry / (self.cpdry * self.r)
+        return veloSoni * veloSoni * self.mdry / (self.gammad * self.r)
 
 
 def main() -> None:

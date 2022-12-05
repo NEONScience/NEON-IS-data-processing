@@ -13,57 +13,74 @@ log = get_logger()
 
 class Li7200(L0toL0p):
 
+    data_columns = {'h2o_absorbing_wavelength': 'powrH2oSamp',
+                    'h2o_nonabsorbing_wavelength': 'powrH2oRefe',
+                    'h2o_raw': 'asrpH2o',
+                    'co2_raw': 'asrpCo2',
+                    'index': 'idx',
+                    'co2_absorbing_wavelength': 'powrCo2Samp',
+                    'co2_nonabsorbing_wavelength': 'powrCo2Refe',
+                    'diagnostic_value_2': 'diag02',
+                    'cooler': 'potCool'}
+
+    drop_columns = ['date', 'time', 'co2_mass_density', 'h2o_mass_density', 'auxiliary_input_1',
+                    'auxiliary_input_2', 'auxiliary_input_3', 'auxiliary_input_4',
+                    'smart_flux_voltage_in', 'co2_mole_fraction', 'h2o_mole_fraction',
+                    'dew_point', 'average_temperature', 'average_signal_strength', 'delta_signal_strength',
+                    'measured_flow_rate', 'volumetric_flow_rate', 'flow_pressure', 'flow_power', 'flow_drive']
+
     def data_conversion(self, filename) -> pd.DataFrame:
-        df = pd.read_parquet(filename)
-        outputdf = pd.DataFrame()
-        log.debug(f'{df.columns}')
-        log.info(df['site_id'][0])
-        log.info(df['source_id'][0])
+        df = super().data_conversion(filename)
+        df.drop(columns=self.drop_columns, inplace=True)
 
-        outputdf['source_id'] = df['source_id']
-        outputdf['site'] = df['site_id']
-        outputdf['readout_time'] = df['readout_time']
-        outputdf['tempIn'] = df['temperature_inlet'].apply(lambda x: math.nan if math.isnan(x) else get_temp_kelvin(x))
-        outputdf['tempOut'] = df['temperature_outlet'].apply(lambda x: math.nan if math.isnan(x) else get_temp_kelvin(x))
-        outputdf['tempRefe'] = df['temperature'].apply(lambda x: math.nan if math.isnan(x) else get_temp_kelvin(x))
-        outputdf['tempMean'] = (outputdf['tempIn'] + outputdf['tempOut']) / 2
-        outputdf['presSum'] = df['pressure'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x))
-        outputdf['presDiff'] = df['differential_pressure'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x))
-        outputdf['presAtm'] = df['absolute_pressure'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x))
+        df['tempIn'] = df['temperature_inlet'].apply(lambda x: math.nan if math.isnan(x) else get_temp_kelvin(x)).astype('float32')
+        del df['temperature_inlet']
+        df['tempOut'] = df['temperature_outlet'].apply(lambda x: math.nan if math.isnan(x) else get_temp_kelvin(x)).astype('float32')
+        del df['temperature_outlet']
+        df['tempRefe'] = df['temperature'].apply(lambda x: math.nan if math.isnan(x) else get_temp_kelvin(x)).astype('float32')
+        del df['temperature']
+        df['tempMean'] = (df['tempIn'] + df['tempOut']) / 2
+        df['presSum'] = df['pressure'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x)).astype('float32')
+        del df['pressure']
+        df['presDiff'] = df['differential_pressure'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x)).astype('float32')
+        del df['differential_pressure']
+        df['presAtm'] = df['absolute_pressure'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x)).astype('float32')
+        del df['absolute_pressure']
         # data from presto don't have presAtm, need to get from presSum-presDiff
-        if outputdf['presAtm'].isnull().all():
-            outputdf['presAtm'] = outputdf['presSum'] - outputdf['presDiff']
+        if df['presAtm'].isnull().all():
+            df['presAtm'] = df['presSum'] - df['presDiff']
 
-        outputdf['powrH2oSamp'] = df['h2o_absorbing_wavelength']
-        outputdf['powrH2oRefe'] = df['h2o_nonabsorbing_wavelength']
-        outputdf['asrpH2o'] = df['h2o_raw']
-        outputdf['densMoleH2o'] = df['h2o_concentration_density'].apply(lambda x: math.nan if math.isnan(x) else mmol_to_mol(x))
-        outputdf['rtioMoleDryH2o'] = df['h2o_mole_fraction_dry'].apply(lambda x: math.nan if math.isnan(x) else mmol_to_mol(x))
+        df['densMoleH2o'] = df['h2o_concentration_density'].apply(lambda x: math.nan if math.isnan(x) else mmol_to_mol(x)).astype('float32')
+        del df['h2o_concentration_density']
+        df['rtioMoleDryH2o'] = df['h2o_mole_fraction_dry'].apply(lambda x: math.nan if math.isnan(x) else mmol_to_mol(x)).astype('float32')
+        del df['h2o_mole_fraction_dry']
 
-        outputdf['powrCo2Samp'] = df['co2_absorbing_wavelength']
-        outputdf['powrCo2Refe'] = df['co2_nonabsorbing_wavelength']
-        outputdf['asrpCo2'] = df['co2_raw']
-        outputdf['densMoleCo2'] = df['co2_molar_density'].apply(lambda x: math.nan if math.isnan(x) else mmol_to_mol(x))
-        outputdf['rtioMoleDryCo2'] = df['co2_mole_fraction_dry'].apply(lambda x: math.nan if math.isnan(x) else umol_to_mol(x))
+        df['densMoleCo2'] = df['co2_molar_density'].apply(lambda x: math.nan if math.isnan(x) else mmol_to_mol(x)).astype('float32')
+        del df['co2_molar_density']
+        df['rtioMoleDryCo2'] = df['co2_mole_fraction_dry'].apply(lambda x: math.nan if math.isnan(x) else umol_to_mol(x)).astype('float32')
+        del df['co2_mole_fraction_dry']
 
-        outputdf['idx'] = df['index']
-        outputdf['diag02'] = df['diagnostic_value_2']
-        outputdf['potCool'] = df['cooler']
-        outputdf['ssiCo2'] = df['co2_signal_strength'].apply(lambda x: math.nan if math.isnan(x) else from_percentage(x))
-        outputdf['ssiH2o'] = df['h2o_signal_strength'].apply(lambda x: math.nan if math.isnan(x) else from_percentage(x))
+        df['ssiCo2'] = df['co2_signal_strength'].apply(lambda x: math.nan if math.isnan(x) else from_percentage(x)).astype('float32')
+        del df['co2_signal_strength']
+        df['ssiH2o'] = df['h2o_signal_strength'].apply(lambda x: math.nan if math.isnan(x) else from_percentage(x)).astype('float32')
+        del df['h2o_signal_strength']
 
-        outputdf['qfIrgaTurbHead'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 12))
-        outputdf['qfIrgaTurbTempOut'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 11))
-        outputdf['qfIrgaTurbTempIn'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 10))
-        outputdf['qfIrgaTurbAux'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 9))
-        outputdf['qfIrgaTurbPres'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 8))
-        outputdf['qfIrgaTurbChop'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 7))
-        outputdf['qfIrgaTurbDetc'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 6))
-        outputdf['qfIrgaTurbPll'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 5))
-        outputdf['qfIrgaTurbSync'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 4))
+        df['qfIrgaTurbHead'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 12)).astype('int8')
+        df['qfIrgaTurbTempOut'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 11)).astype('int8')
+        df['qfIrgaTurbTempIn'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 10)).astype('int8')
+        df['qfIrgaTurbAux'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 9)).astype('int8')
+        df['qfIrgaTurbPres'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 8)).astype('int8')
+        df['qfIrgaTurbChop'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 7)).astype('int8')
+        df['qfIrgaTurbDetc'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 6)).astype('int8')
+        df['qfIrgaTurbPll'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 5)).astype('int8')
+        df['qfIrgaTurbSync'] = df['diagnostic_value'].apply(lambda x: -1 if math.isnan(x) else get_nth_bit_opposite(x, 4)).astype('int8')
         lower4bits = df['diagnostic_value'].apply(lambda x: math.nan if math.isnan(x) else get_range_bits(x, 0, 3))
-        outputdf['qfIrgaTurbAgc'] = (lower4bits * 6.25 + 6.25) / 100
-        return outputdf
+        df['qfIrgaTurbAgc'] = ((lower4bits * 6.25 + 6.25) / 100).astype('float32')
+        del df['diagnostic_value']
+
+        df.rename(columns=self.data_columns, inplace=True)
+        log.debug(f'{df.columns}')
+        return df
 
 
 def main() -> None:
@@ -73,6 +90,8 @@ def main() -> None:
 
     li7200 = Li7200(cal_term_map)
     li7200.l0tol0p()
+
+    log.debug("done.")
 
 
 if __name__ == "__main__":
