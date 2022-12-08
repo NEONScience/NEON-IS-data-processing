@@ -1,13 +1,13 @@
 ####
 #
-# This dockerfile will build the location group path module.
+# This dockerfile will build the group path module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t location_group_path:latest -f location_group_path/Dockerfile .
+# docker build -t group_path:latest -f group_path/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="location_group_path"
+ARG APP_DIR="group_path"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
