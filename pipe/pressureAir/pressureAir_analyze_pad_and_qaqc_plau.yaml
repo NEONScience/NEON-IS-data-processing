@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: relHumidity_analyze_pad_and_qaqc_plau
+  name: pressureAir_analyze_pad_and_qaqc_plau
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -24,29 +24,27 @@ transform:
     DirOut=/pfs/out
     DirErr=/pfs/out/errored_datums
     FileSchmQf=$SCHEMA_FLAGS
-    "TermTest1=relativeHumidity:null|gap|range|step(rmv)|spike|persistence(rmv)"
-    "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)"
-    "TermTest3=dewPoint:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)"
-    VarAddFileQf=errorState
+    "TermTest1=barometricPressure:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)"
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /usr/src/app/pfs/interimData
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
       name: DATA_PATH
-      repo: relHumidity_thresh_select_ts_pad
+      repo: pressureAir_thresh_select_ts_pad
       glob: /*/*/*
   - pfs:
       name: SCHEMA_FLAGS
-      repo: relHumidity_avro_schemas
-      glob: /relHumidity/flags_plausibility_relHumidity.avsc
+      repo: pressureAir_avro_schemas
+      glob: /pressureAir/flags_plausibility_pressureAir.avsc
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 600M
+  memory: 400M
   cpu: 1.2
 autoscaling: true
 scheduling_spec:

@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pressureAir_seaLevelCorr_group
+  name: pressureAir_relHumidity_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/filter_joiner:11
@@ -18,19 +18,27 @@ transform:
         - path:
             name: QUALITY_METRICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/*/*/quality_metrics/**
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/ptb330a/*/quality_metrics/**
             # Join on group ID (already joined below by day)
             join_indices: [6]
+            outer_join: true
         - path:
             name: STATISTICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/*/*/stats/**
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/ptb330a/*/stats/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
+            outer_join: true
         - path:
             name: LOCATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/LOCATION_PATH/*/*/*/*/*/*/location/**
+            glob_pattern: /pfs/LOCATION_PATH/*/*/*/*/ptb330a/*/location/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+        - path:
+            name: RELHUMIDITY_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/RELHUMIDITY_PATH/*/*/*/*/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
     OUT_PATH: /pfs/out
@@ -41,19 +49,27 @@ input:
   join:
   - pfs:
       name: QUALITY_METRICS_PATH
-      repo: pressureAir_quality_metrics
+      repo: pressureAir_qm_group_and_compute
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      outer_join: true
   - pfs:
       name: STATISTICS_PATH
-      repo: pressureAir_statistics
+      repo: pressureAir_stats_group_and_compute
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      outer_join: true
   - pfs:
       name: LOCATION_PATH
       repo: pressureAir_group_path_ptb330a
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: RELHUMIDITY_PATH
+      repo: pressureAir_group_path_relHumidity
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
@@ -62,5 +78,32 @@ parallelism_spec:
 resource_requests:
   memory: 200M
   cpu: 0.1
-pod_patch: '[{"op":"replace","path":"/containers/1/resources/requests/memory","value":"500M"},{"op":"replace","path":"/containers/1/resources/requests/cpu","value":"0.3"}]'
-autoscaling: true
+autoscaling: false
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"500M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.3"
+    }
+  ]

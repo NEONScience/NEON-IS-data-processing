@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: relHumidity_stats_group_and_compute
+  name: pressureAir_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/neon-is-stat-basc-grp:v1.0.1
@@ -19,9 +19,7 @@ transform:
     DirErr=/pfs/out/errored_datums
     FileSchmStat=$FILE_SCHEMA_STATS
     "WndwAgr=001|030"
-    "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
-    "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
-    "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
+    "TermStat1=barometricPressure:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
   env:
     # Environment variables for filter-joiner
     CONFIG: |
@@ -33,13 +31,13 @@ transform:
         - path:
             name: QAQC_PATH
             # Filter for data & uncertainty_data directories
-            glob_pattern: /pfs/QAQC_PATH/*/*/*/*/hmp155/*/data/**
+            glob_pattern: /pfs/QAQC_PATH/*/*/*/*/ptb330a/*/data/**
             # Join on named location (already joined below by day)
             join_indices: [6]
         - path:
             name: UNCERTAINTY_PATH
             # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/hmp155/*/uncertainty*/**
+            glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/ptb330a/*/uncertainty*/**
             # Join on named location (already joined below by day)
             join_indices: [6]
     OUT_PATH: /usr/src/app/pfs/interimData
@@ -52,25 +50,25 @@ input:
   cross:
   - pfs:
       name: FILE_SCHEMA_STATS
-      repo: relHumidity_avro_schemas
-      glob: /relHumidity/relHumidity_dp01_stats.avsc
+      repo: pressureAir_avro_schemas
+      glob: /pressureAir/pressureAir_dp01_stats.avsc
   - join:
     - pfs:
         name: QAQC_PATH
-        repo: relHumidity_analyze_pad_and_qaqc_plau
+        repo: pressureAir_analyze_pad_and_qaqc_plau
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: UNCERTAINTY_PATH
-        repo: relHumidity_group_path_hmp155
+        repo: pressureAir_group_path_ptb330a
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 1
 resource_requests: 
-  memory: 400M
+  memory: 300M
   cpu: 1.2
 autoscaling: true
 scheduling_spec:
@@ -94,7 +92,7 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
+      "value":"2.2G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",

@@ -1,35 +1,23 @@
 ---
 pipeline:
-  name: threshold_pressureAir
+  name: ptb330a_data_years
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/threshold_loader:104
+  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m threshold_loader.threshold_loader_main
-  env:
-    OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
-    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
-    TERM: barometricPressure
-    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
-    CTXT: barometric-pressure
-  secrets:
-  - name: db-pdr-secret
-    mount_path: /var/db_secret
+  - ls $REPO_IN > /pfs/out/data_years.txt
 input:
   pfs:
-    repo: cron_daily_ptb330a_tick
-    glob: /*
+    name: REPO_IN
+    repo: ptb330a_data_source_trino
+    glob: /ptb330a
     empty_files: true
 resource_requests:
-  memory: 120M
-  cpu: 0.05
+  memory: 1K
+  cpu: 0.01
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -55,6 +43,6 @@ pod_patch: |-
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.05"
+      "value": "0.5"
     }
   ]

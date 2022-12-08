@@ -22,7 +22,7 @@ input:
       glob: /ptb330a/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_ptb330a_list_years
+      repo: ptb330a_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4

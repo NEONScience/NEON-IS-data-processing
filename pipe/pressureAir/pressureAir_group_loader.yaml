@@ -1,33 +1,31 @@
----
 pipeline:
-  name: location_loader_ptb330a
+  name: pressureAir_group_loader
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_loader:112
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m location_loader.location_loader_main
+    - /bin/bash
   env:
-    LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: ptb330a
-    OUT_PATH: /pfs/out
+    GROUP_PREFIX: pressure-air_
     LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+  image: quay.io/battelleecology/group_loader:515
+  image_pull_secrets:
+    - battelleecology-quay-read-all-pull-secret
   secrets:
   - name: db-pdr-secret
     mount_path: /var/db_secret
+  stdin:
+    - '#!/bin/bash'
+    - python3 -m group_loader.group_loader_main
 input:
   pfs:
-    repo: cron_daily_ptb330a_tick
-    glob: /*
+    branch: master
     empty_files: true
+    glob: /*
+    repo: ptb330a_cron_daily_and_date_control_tick
 resource_requests:
-  memory: 300M
   cpu: 1.5
+  memory: 300M
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -49,10 +47,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"400M"
+      "value":"500M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "0.3"
     }
   ]

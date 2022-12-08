@@ -1,9 +1,9 @@
 ---
 pipeline:
-  name: relHumidity_stats_group_and_compute
+  name: ptb330a_calibration_group_and_convert
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-basc-grp:v1.0.1
+  image: quay.io/battelleecology/neon-is-cal-grp-conv:v1.0.2
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -12,65 +12,71 @@ transform:
   - mkdir -p /usr/src/app/pfs/interimData
   - '# Run first module - filter-joiner (using environment variables below as input parameters)'
   - python3 -m filter_joiner.filter_joiner_main
-  - '# Run second module - basic stats'
-  - Rscript ./flow.stat.basc.R 
+  - '# Run second module - calibration conversion'
+  - Rscript ./flow.cal.conv.R 
     DirIn=/usr/src/app/pfs/interimData
     DirOut=/pfs/out
-    DirErr=/pfs/out/errored_datums
-    FileSchmStat=$FILE_SCHEMA_STATS
-    "WndwAgr=001|030"
-    "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
-    "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
-    "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
+    DirErr=/pfs/out/errored_datums 
+    FileSchmData=$FILE_SCHEMA_DATA
+    FileSchmQf=$FILE_SCHEMA_FLAGS
+    "TermFuncConv=barometricPressure:def.cal.conv.poly"
+    "TermQf=barometricPressure"
+    "TermFuncUcrt=barometricPressure:def.ucrt.meas.cnst"
   env:
     # Environment variables for filter-joiner
     CONFIG: |
       ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
-      # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
-            name: QAQC_PATH
-            # Filter for data & uncertainty_data directories
-            glob_pattern: /pfs/QAQC_PATH/*/*/*/*/hmp155/*/data/**
-            # Join on named location (already joined below by day)
-            join_indices: [6]
-        - path:
-            name: UNCERTAINTY_PATH
+            name: DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/hmp155/*/uncertainty*/**
+            glob_pattern: /pfs/DATA_PATH/ptb330a/*/*/*/*/**
             # Join on named location (already joined below by day)
-            join_indices: [6]
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/CALIBRATION_PATH/ptb330a/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
     OUT_PATH: /usr/src/app/pfs/interimData
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '1' # Option for stats module
+    PARALLELIZATION_INTERNAL: '1' # Option for calibration conversion module
 input:
   cross:
   - pfs:
-      name: FILE_SCHEMA_STATS
-      repo: relHumidity_avro_schemas
-      glob: /relHumidity/relHumidity_dp01_stats.avsc
+      name: FILE_SCHEMA_DATA
+      repo: ptb330a_avro_schemas
+      glob: /ptb330a/ptb330a_calibrated.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: ptb330a_avro_schemas
+      glob: /ptb330a/flags_calibration_ptb330a.avsc
   - join:
     - pfs:
-        name: QAQC_PATH
-        repo: relHumidity_analyze_pad_and_qaqc_plau
-        glob: /(*)/(*)/(*)
+        name: DATA_PATH
+        repo: ptb330a_data_source_trino
+        glob: /ptb330a/(*)/(*)/(*)
         joinOn: $1/$2/$3
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
-        name: UNCERTAINTY_PATH
-        repo: relHumidity_group_path_hmp155
-        glob: /(*)/(*)/(*)
+        name: CALIBRATION_PATH
+        repo: ptb330a_calibration_assignment
+        glob: /ptb330a/(*)/(*)/(*)
         joinOn: $1/$2/$3
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
   constant: 1
-resource_requests: 
-  memory: 400M
+resource_requests:
+  memory: 500M
   cpu: 1.2
 autoscaling: true
 scheduling_spec:
@@ -94,7 +100,7 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
+      "value":"300M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",

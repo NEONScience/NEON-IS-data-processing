@@ -52,11 +52,11 @@ input:
   cross:
   - pfs:
       name: FILE_SCHEMA_DATA
-      repo: avro_schemas_hmp155
+      repo: hmp155_avro_schemas
       glob: /hmp155/hmp155_calibrated.avsc
   - pfs:
       name: FILE_SCHEMA_FLAGS
-      repo: avro_schemas_hmp155
+      repo: hmp155_avro_schemas
       glob: /hmp155/flags_calibration_hmp155.avsc
   - join:
     - pfs:

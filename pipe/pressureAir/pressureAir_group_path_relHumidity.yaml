@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pressureAir_group_path_ptb330a
+  name: pressureAir_group_path_relHumidity
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -39,18 +39,18 @@ input:
       glob: /pressure-air/(*/*/*)
       joinOn: $1
   - union: 
+    # - pfs:
+    #     # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+    #     name: LOCATION_FOCUS_PATH
+    #     repo: ptb330a_fill_date_gaps_and_regularize
+    #     glob: /ptb330a/(*/*/*)
+    #     joinOn: $1
     - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: ptb330a_fill_date_gaps_and_regularize
-        glob: /ptb330a/(*/*/*)
+        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
+        name: GROUP_FOCUS_PATH
+        repo: relHumidity_level1_group
+        glob: /(*/*/*)
         joinOn: $1
-#    - pfs:
-#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
-#        name: GROUP_FOCUS_PATH
-#        repo: relHumidity_level1_group
-#        glob: /(*/*/*)
-#        joinOn: $1
 parallelism_spec:
   constant: 1
 resource_requests:
