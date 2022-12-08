@@ -1,17 +1,18 @@
 ---
 pipeline:
-  name: group_loader_test
+  name: pressuretransducer_location_loader
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/group_loader:515
+  image: quay.io/battelleecology/location_loader:112
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m group_loader.group_loader_main
+  - python3 -m location_loader.location_loader_main
   env:
-    GROUP_PREFIX: pressure-air-
+    LOCATION_TYPE: CONFIG
+    SOURCE_TYPE: pressuretransducer
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
   secrets:
@@ -19,14 +20,13 @@ transform:
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: cron_daily_ptb330a_tick
+    repo: pressuretransducer_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 resource_requests:
   memory: 300M
   cpu: 1.5
-autoscaling: true  
-
+autoscaling: true
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -44,5 +44,14 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-  
-  
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"400M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]
