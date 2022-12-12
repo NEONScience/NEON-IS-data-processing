@@ -20,10 +20,12 @@ def main() -> None:
         location_focus_path: Path = env.path('LOCATION_FOCUS_PATH')
     else:
         location_focus_path: Path = None
+        
     if 'GROUP_FOCUS_PATH' in os.environ:
         group_focus_path: Path = env.path('GROUP_FOCUS_PATH')
     else: 
         group_focus_path: Path = None
+        
     group: str = env.str('GROUP')
     out_path: Path = env.path('OUT_PATH')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
