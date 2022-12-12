@@ -31,6 +31,7 @@ def main() -> None:
     group_assignment_month_index: int = env.int('GROUP_ASSIGNMENT_MONTH_INDEX')
     group_assignment_day_index: int = env.int('GROUP_ASSIGNMENT_DAY_INDEX')
     group_assignment_member_index: int = env.int('GROUP_ASSIGNMENT_MEMBER_INDEX')
+    group_assignment_data_type_index: int = env.int('GROUP_ASSIGNMENT_DATA_TYPE_INDEX')
     if location_focus_path is not None:
         location_focus_source_type_index: int = env.int('LOCATION_FOCUS_SOURCE_TYPE_INDEX')
         location_focus_year_index: int = env.int('LOCATION_FOCUS_YEAR_INDEX')
@@ -66,6 +67,7 @@ def main() -> None:
                     group_assignment_month_index=group_assignment_month_index,
                     group_assignment_day_index=group_assignment_day_index,
                     group_assignment_member_index=group_assignment_member_index,
+                    group_assignment_data_type_index=group_assignment_data_type_index,
                     location_focus_source_type_index=location_focus_source_type_index,
                     location_focus_year_index=location_focus_year_index,
                     location_focus_month_index=location_focus_month_index,

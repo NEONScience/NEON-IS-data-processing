@@ -27,6 +27,7 @@ class GroupPath:
         self.out_path = config.out_path
         self.group = config.group
         self.path_parser = PathParser(config)
+        self.group_data_type = 'group'
         self.group_assignment_key_indices = (config.group_assignment_year_index, config.group_assignment_month_index, config.group_assignment_day_index, config.group_assignment_member_index)
         self.location_focus_key_indices = (config.location_focus_year_index, config.location_focus_month_index, config.location_focus_day_index, config.location_focus_location_index)
         self.group_focus_key_indices = (config.group_focus_year_index, config.group_focus_month_index, config.group_focus_day_index, config.group_focus_group_index)
@@ -90,14 +91,17 @@ class GroupPath:
             # Loop through the group_assignment paths for the key to look for the groups file
             for path in group_assignment_key_paths[key]:
                 if path.is_file():
-                    # get the groups from the group file
-                    groups_all = group_file_parser.get_group(path)
-                    log.debug(f'groups found: {groups_all}')
-                    groups = group_file_parser.get_group_matches(groups_all, self.group)
-                    log.debug(f'groups matched: {groups}')
-                    # Get the data key paths associated with this key
-                    associated_paths: List[Path] = data_key_paths[key]
-                    path_groups.append(PathGroup(path, associated_paths, groups))
+                    # If this is the group file, proceed
+                    year, month, day, member, data_type, remainder = self.path_parser.parse_group_assignment(path)
+                    if data_type == self.group_data_type:
+                        # get the groups from the group file
+                        groups_all = group_file_parser.get_group(path)
+                        log.debug(f'groups found: {groups_all}')
+                        groups = group_file_parser.get_group_matches(groups_all, self.group)
+                        log.debug(f'groups matched: {groups}')
+                        # Get the data key paths associated with this key
+                        associated_paths: List[Path] = data_key_paths[key]
+                        path_groups.append(PathGroup(path, associated_paths, groups))
         return path_groups
 
     def link_files(self, path_groups: List[PathGroup], path_type: str) -> None:
@@ -110,9 +114,9 @@ class GroupPath:
         """
         for path_group in path_groups:
             # Parse the group file path and link to output 
-            year, month, day, member, remainder = self.path_parser.parse_group_assignment(path_group.group_file_path)
+            year, month, day, member, data_type, remainder = self.path_parser.parse_group_assignment(path_group.group_file_path)
             for group in path_group.groups:
-                link_path = Path(self.out_path, year, month, day, group, *remainder)
+                link_path = Path(self.out_path, year, month, day, group, data_type, *remainder)
                 link_path.parent.mkdir(parents=True, exist_ok=True)
                 if not link_path.exists():
                     log.debug(f'file: {path_group.group_file_path} link: {link_path}')

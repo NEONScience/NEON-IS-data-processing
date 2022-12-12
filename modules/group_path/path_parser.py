@@ -12,8 +12,9 @@ class PathParser:
         self.group_assignment_month_index = config.group_assignment_month_index
         self.group_assignment_day_index = config.group_assignment_day_index
         self.group_assignment_member_index = config.group_assignment_member_index
+        self.group_assignment_data_type_index = config.group_assignment_data_type_index
         self.group_assignment_max_value = max([self.group_assignment_year_index, self.group_assignment_month_index, self.group_assignment_day_index,
-                                               self.group_assignment_member_index])        
+                                               self.group_assignment_member_index, self.group_assignment_data_type_index])        
         self.location_focus_source_type_index = config.location_focus_source_type_index
         self.location_focus_year_index = config.location_focus_year_index
         self.location_focus_month_index = config.location_focus_month_index
@@ -34,14 +35,15 @@ class PathParser:
         else:
             self.group_focus_max_value = None
 
-    def parse_group_assignment(self, path: Path) -> Tuple[str, str, str, str, Tuple[str]]:
+    def parse_group_assignment(self, path: Path) -> Tuple[str, str, str, str, str, Tuple[str]]:
         parts = path.parts
         year: str = parts[self.group_assignment_year_index]
         month: str = parts[self.group_assignment_month_index]
         day: str = parts[self.group_assignment_day_index]
         member: str = parts[self.group_assignment_member_index]
+        data_type: str = parts[self.group_assignment_data_type_index]
         remainder: Tuple[str] = parts[self.group_assignment_max_value + 1:]
-        return year, month, day, member, remainder
+        return year, month, day, member, data_type, remainder
     
     def parse_location_focus(self, path: Path) -> Tuple[str, str, str, str, str, Tuple[str]]:
         parts = path.parts

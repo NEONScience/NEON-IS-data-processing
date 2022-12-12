@@ -12,6 +12,7 @@ class Config(NamedTuple):
     group_assignment_month_index: int
     group_assignment_day_index: int
     group_assignment_member_index: int
+    group_assignment_data_type_index: int
     location_focus_source_type_index: int
     location_focus_year_index: int
     location_focus_month_index: int
