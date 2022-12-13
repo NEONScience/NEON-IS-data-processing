@@ -31,8 +31,8 @@ into the same group directory in the output.
 Location focus path: A repository that is organized like:
     /SOURCE_TYPE/YEAR/MONTH/DAY/NAMED_LOCATION/...
 Any repository contents for a NAMED_LOCATION that is a member of an active
-GROUP_NAME matching the GROUP_PREFIX as found in the group assignment path will be 
-placed in the output for the group at the following location:
+GROUP_NAME matching the GROUP_PREFIX as found in the group assignment path will 
+be placed in the output for the group at the following location:
      /YEAR/MONTH/DAY/GROUP_NAME/NAMED_LOCATION/...
 
 Group focus path: A repository that is organized like:
