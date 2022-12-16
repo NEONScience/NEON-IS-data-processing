@@ -43,7 +43,7 @@
               "site",
               "install_date",
               "remove_date",
-              "context"
+              "context",
               "locations"
             ],
             "properties": {

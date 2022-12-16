@@ -12,9 +12,6 @@
                 "context":[
                     "aspirated-single"
                 ],
-                "group": [
-                    "aspirated-single-121"
-                ],
                 "locations":{
                     "type":"FeatureCollection",
                     "features":[
