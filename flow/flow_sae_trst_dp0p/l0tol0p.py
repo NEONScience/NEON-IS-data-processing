@@ -7,6 +7,7 @@ import os
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
+import shutil
 
 from flow_sae_trst_dp0p.cal_flags import get_cal_val_flags
 from flow_sae_trst_dp0p import log_config
@@ -31,10 +32,13 @@ class L0toL0p:
         out_path: The output path for linking.
         file_dirs: The directories to files need l0 to l0p transformation.
         relative_path_index: Starting index of the input path to include in the output path.
-        new_source_type_name: Replace source_type with the new name in the output path,
+        new_source_type_name(optional): Replace source_type with the new name in the output path,
                 may happen when multiple data products derived from same sensor type,
                 e.g. mcseries -> mfcSampTurb
         When new_source_type_name is defined, relative_path_index is the index after that of replaced source type
+        location_link_type(optional): Link or copy location directory to output,
+                when defined, must be either "SYMLINK" or "COPY"
+                if not defined, the location directory will not be shown in output repo
        """
         self.cal_term_map = cal_term_map or {}
         self.calibrated_qf_list = calibrated_qf_list or []
@@ -45,6 +49,10 @@ class L0toL0p:
         self.file_dirs: list = env.list('FILE_DIR')
         self.relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
         self.new_source_type_name: str = env.str('NEW_SOURCE_TYPE_NAME', None)
+        self.location_link_type: str = env.str('LOCATION_LINK_TYPE', None)
+        if self.location_link_type and self.location_link_type != 'SYMLINK' and self.location_link_type != 'COPY':
+            raise ValueError('defined LOCATION_LINK_TYPE must be either "SYMLINK" or "COPY". '
+                             'If not defined, location directory will not be linked/copied to output.')
         log_level: str = env.log_level('LOG_LEVEL', 'DEBUG')
         log_config.configure(log_level)
 
@@ -90,6 +98,8 @@ class L0toL0p:
         out_file = ''
         for root, directories, files in os.walk(str(self.in_path)):
             if root.endswith('location'):
+                if self.location_link_type:
+                    self.link_location(root, files)
                 continue
             if not out_df.empty and len(directories) > 0:
                 if any(tmp_dir in directories for tmp_dir in self.file_dirs):
@@ -110,12 +120,7 @@ class L0toL0p:
                                               left_on=['readout_time'], right_on=['readout_time'])
                         self.get_combined_qfcal(out_df)
                     else:
-                        if self.new_source_type_name:
-                            out_file = Path(self.out_path, Path(self.new_source_type_name),
-                                            *Path(path).parts[self.relative_path_index:])
-                        else:
-                            out_file = Path(self.out_path, *Path(path).parts[self.relative_path_index:])
-                        out_file.parent.mkdir(parents=True, exist_ok=True)
+                        out_file = self.create_output_path(path)
                         if out_df.empty:
                             out_df = self.data_conversion(path)
                         else:
@@ -134,3 +139,27 @@ class L0toL0p:
                        coerce_timestamps='ms', allow_truncated_timestamps=False)
         # out_df.to_parquet(out_file, use_dictionary=dupcols, version="2.4", compression='zstd', compression_level=8,
         #                   coerce_timestamps='ms', allow_truncated_timestamps=False)
+
+    def create_output_path(self, path: Path):
+        if self.new_source_type_name:
+            new_path = Path(self.out_path, Path(self.new_source_type_name),
+                            *Path(path).parts[self.relative_path_index:])
+        else:
+            new_path = Path(self.out_path, *Path(path).parts[self.relative_path_index:])
+        new_path.parent.mkdir(parents=True, exist_ok=True)
+        log.debug(f'new path is {new_path}.')
+        return new_path
+
+    def link_location(self, path: Path, files: List[str]):
+        new_path = self.create_output_path(path)
+        if self.location_link_type == 'SYMLINK':
+            log.debug(f'Linking path {new_path} to {path}')
+            if not new_path.exists():
+                new_path.symlink_to(path)
+        else:
+            log.debug(f'Copying path {path} to {new_path}.')
+            new_path.mkdir(parents=True, exist_ok=True)
+            for file in files:
+                new_file_path = Path(new_path, file)
+                if not new_file_path.exists():
+                    shutil.copy2(Path(path, file), new_file_path)
