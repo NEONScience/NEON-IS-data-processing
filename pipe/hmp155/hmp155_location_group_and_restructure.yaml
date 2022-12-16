@@ -53,7 +53,7 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH: /usr/src/app/pfs/interimData1
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK
 input:

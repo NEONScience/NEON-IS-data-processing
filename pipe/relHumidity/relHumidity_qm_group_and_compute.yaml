@@ -59,7 +59,7 @@ input:
   cross:
   - pfs:
       name: FILE_SCHEMA_QM
-      repo: avro_schemas_relHumidity
+      repo: relHumidity_avro_schemas
       glob: /relHumidity/relHumidity_dp01_quality_metrics.avsc
   - join:
     - pfs:

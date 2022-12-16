@@ -27,7 +27,7 @@ input:
       glob: /*/*/*
   - pfs:
       name: SCHEMA_COMB
-      repo: avro_schemas_relHumidityBuoy
+      repo: relHumidityBuoy_avro_schemas
       glob: /relHumidityBuoy/relHumidityBuoy_dp01_stats_instantaneous.avsc
 parallelism_spec:
   constant: 1

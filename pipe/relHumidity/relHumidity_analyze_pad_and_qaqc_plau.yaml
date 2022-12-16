@@ -41,7 +41,7 @@ input:
       glob: /*/*/*
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas_relHumidity
+      repo: relHumidity_avro_schemas
       glob: /relHumidity/flags_plausibility_relHumidity.avsc
 parallelism_spec:
   constant: 1

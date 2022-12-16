@@ -1,0 +1,90 @@
+---
+pipeline:
+  name: pressureAir_group_path_ptb330a
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/group_path:17
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m group_path.group_path_main
+  env:
+    GROUP: pressure-air_
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+    GROUP_ASSIGNMENT_YEAR_INDEX: '4'
+    GROUP_ASSIGNMENT_MONTH_INDEX: '5'
+    GROUP_ASSIGNMENT_DAY_INDEX: '6'
+    GROUP_ASSIGNMENT_MEMBER_INDEX: '7'
+    GROUP_ASSIGNMENT_DATA_TYPE_INDEX: '8'
+    LOCATION_FOCUS_SOURCE_TYPE_INDEX: '3'
+    LOCATION_FOCUS_YEAR_INDEX: '4'
+    LOCATION_FOCUS_MONTH_INDEX: '5'
+    LOCATION_FOCUS_DAY_INDEX: '6'
+    LOCATION_FOCUS_LOCATION_INDEX: '7'
+    LOCATION_FOCUS_DATA_TYPE_INDEX: '8'
+    GROUP_FOCUS_YEAR_INDEX: '3'
+    GROUP_FOCUS_MONTH_INDEX: '4'
+    GROUP_FOCUS_DAY_INDEX: '5'
+    GROUP_FOCUS_GROUP_INDEX: '6'
+input:
+# The input to the group_path module must be a join between the group_assignment module and the union of any/all 
+#   data repos that are currently in a location focus structure or a (different/L1+ dependency) group focus structure
+  join:
+  - pfs:
+      # name must be GROUP_ASSIGNMENT_PATH
+      name: GROUP_ASSIGNMENT_PATH
+      repo: pressureAir_group_assignment
+      glob: /pressure-air/(*/*/*)
+      joinOn: $1
+  - union: 
+    - pfs:
+        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+        name: LOCATION_FOCUS_PATH
+        repo: ptb330a_fill_date_gaps_and_regularize
+        glob: /ptb330a/(*/*/*)
+        joinOn: $1
+#    - pfs:
+#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
+#        name: GROUP_FOCUS_PATH
+#        repo: relHumidity_level1_group
+#        glob: /(*/*/*)
+#        joinOn: $1
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 300M
+  cpu: 0.3
+autoscaling: false
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]
+
+

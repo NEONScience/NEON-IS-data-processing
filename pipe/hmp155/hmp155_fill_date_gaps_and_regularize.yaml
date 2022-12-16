@@ -50,7 +50,7 @@ input:
   cross:
   - pfs:
       name: EMPTY_FILE_PATH
-      repo: empty_files_hmp155
+      repo: hmp155_empty_files
       glob: /hmp155
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - group:

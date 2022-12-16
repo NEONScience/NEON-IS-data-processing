@@ -52,7 +52,7 @@ input:
   cross:
   - pfs:
       name: FILE_SCHEMA_STATS
-      repo: avro_schemas_relHumidity
+      repo: relHumidity_avro_schemas
       glob: /relHumidity/relHumidity_dp01_stats.avsc
   - join:
     - pfs:
