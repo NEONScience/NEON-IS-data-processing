@@ -62,7 +62,7 @@ input:
     glob: "/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 2
+  constant: 5
 resource_requests:
   memory: 500M
   cpu: 0.7

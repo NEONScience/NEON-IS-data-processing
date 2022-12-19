@@ -47,7 +47,7 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '1' # Option for stats module
+    PARALLELIZATION_INTERNAL: '2' # Option for stats module
 input:
   cross:
   - pfs:
@@ -68,10 +68,10 @@ input:
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 1
+  constant: 5
 resource_requests: 
-  memory: 400M
-  cpu: 1.2
+  memory: 1G
+  cpu: 2.2
 autoscaling: true
 scheduling_spec:
   node_selector:

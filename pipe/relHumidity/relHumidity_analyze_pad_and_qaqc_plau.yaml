@@ -33,6 +33,7 @@ transform:
     OUT_PATH: /usr/src/app/pfs/interimData
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
+    PARALLELIZATION_INTERNAL: '4'
 input:
   cross:
   - pfs:
@@ -44,10 +45,10 @@ input:
       repo: relHumidity_avro_schemas
       glob: /relHumidity/flags_plausibility_relHumidity.avsc
 parallelism_spec:
-  constant: 1
+  constant: 5
 resource_requests:
-  memory: 600M
-  cpu: 1.2
+  memory: 2.5G
+  cpu: 4.3
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -70,7 +71,7 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2.2G"
+      "value":"1G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
