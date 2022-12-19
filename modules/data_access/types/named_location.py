@@ -12,6 +12,5 @@ class NamedLocation(NamedTuple):
     site: str
     schema_names: Set[str]
     context: List[str]
-    group: List[str]
     active_periods: List[ActivePeriod]
     properties: List[Property]

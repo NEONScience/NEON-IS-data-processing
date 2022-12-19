@@ -13,7 +13,7 @@ from data_access.get_named_location_group import get_named_location_group
 from data_access.get_named_location_parents import get_named_location_parents
 from data_access.db_connector import DbConnector
 
-
+processingStartDate = "IS Processing Default Start Date"
 def get_named_locations(connector: DbConnector, location_type: str, source_type: str) -> Iterator[NamedLocation]:
     """
     Get the named locations of the given type.
@@ -67,7 +67,6 @@ def get_named_locations(connector: DbConnector, location_type: str, source_type:
             description = row[2]
             active_periods: List[ActivePeriod] = get_active_periods(connector, key)
             context: List[str] = get_named_location_context(connector, key)
-            group: List[str] = get_named_location_group(connector, key)
             properties: List[Property] = get_named_location_properties(connector, key)
             schema_names: Set[str] = {source_type}
             parents: Dict[str, Tuple[int, str]] = get_named_location_parents(connector, key)
@@ -79,12 +78,11 @@ def get_named_locations(connector: DbConnector, location_type: str, source_type:
             if processing_start_date is None:
                 processing_start_date = get_site_start_date(connector, site_id)
                 if processing_start_date is not None:
-                    properties.append(Property(name=processing_start_date, value=processing_start_date))
+                    properties.append(Property(name=processingStartDate, value=processing_start_date))
             else:
-                properties.append(Property(name=processing_start_date, value=processing_start_date))
+                properties.append(Property(name=processingStartDate, value=processing_start_date))
             named_location = NamedLocation(name=name, type=location_type, description=description,
-                                           domain=domain, site=site, schema_names=schema_names, context=context,
-                                           group=group, active_periods=active_periods, properties=properties)
+                                           domain=domain, site=site, schema_names=schema_names, context=context, active_periods=active_periods, properties=properties)
             yield named_location
 
 
@@ -94,9 +92,8 @@ def get_site_start_date(connector: DbConnector, site_id: int) -> Optional[dateti
 
 
 def get_processing_start_date(properties: List[Property]) -> Optional[datetime]:
-    property_name = 'IS Processing Default Start Date'
     for prop in properties:
         name = prop.name
-        if name == property_name:
+        if name == processingStartDate:
             return prop.value
     return None

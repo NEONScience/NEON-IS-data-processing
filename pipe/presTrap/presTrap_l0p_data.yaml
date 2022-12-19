@@ -1,31 +1,30 @@
 ---
 pipeline:
-  name: location_loader_aquatroll200
+  name: presTrap_l0p_data
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_loader:122
-  cmd:
-  - /bin/bash
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:v0.4.1
+  cmd: ["/bin/bash"]
   stdin:
-  - '#!/bin/bash'
-  - python3 -m location_loader.location_loader_main
+  - "#!/bin/bash"
+  - "python3 -m flow_sae_trst_dp0p.pressuretransducer_watertrap"
   env:
-    LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: aquatroll200
     OUT_PATH: /pfs/out
+    FILE_DIR: data
     LOG_LEVEL: INFO
-  secrets:
-  - name: db-pdr-secret
-    mount_path: /var/db_secret
+    NEW_SOURCE_TYPE_NAME: presTrap
+    RELATIVE_PATH_INDEX: "4"
+    LOCATION_LINK_TYPE: SYMLINK #SYMLINK or COPY, if not defined, location will not be in output repo
 input:
   pfs:
-    repo: cron_daily_aquatroll200_tick
-    glob: /*
-    empty_files: true
+    name: IN_PATH
+    repo: presTrap_context_filter
+    glob: /pressuretransducer/(*)/(*)/(*)
+parallelism_spec:
+  constant: 8
 resource_requests:
-  memory: 300M
-  cpu: 1.5
+  memory: 100MB
+  cpu: 0.5
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -48,12 +47,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"400M"
+      "value":"700M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "0.2"
     }
   ]
-
 
