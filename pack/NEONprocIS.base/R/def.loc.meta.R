@@ -60,7 +60,7 @@
 #     Accommodate updates to location files that ensure all possible scenarios for active periods 
 #        are represented.
 #   Mija Choi (2022-12-16)
-#     Modified accordingly after group is removed from location_loader output 
+#     Modified to remove grp checking as group is removed from location_loader output 
 ##############################################################################################
 def.loc.meta <- function(NameFile,
                          NameLoc=NULL,
@@ -213,19 +213,6 @@ def.loc.meta <- function(NameFile,
     if(base::length(ctxt) == 0 || base::nchar(ctxt) == 0) {
       ctxt <- NA
     }
-    
-    # format multiple values for named location group
-    # the code below is commented out due to grp is no longer applicable
-    #
-    # grp <- locProp$group[idxLoc]
-    # grp <- base::gsub(pattern='[\\[\\"]',replacement="",x=grp)
-    # grp <- base::gsub(pattern='\\]',replacement="",x=grp)
-    # grp <- base::strsplit(grp,',')[[1]]
-    # grp <- base::paste0(base::unique(grp),collapse='|')
-    # 
-    # if(base::length(grp) == 0 || base::nchar(grp) == 0) {
-    #   grp <- NA
-    # }
     
     # Parse any active dates and place in a data frame
     if(!base::is.na(locProp$active_periods[idxLoc])){
