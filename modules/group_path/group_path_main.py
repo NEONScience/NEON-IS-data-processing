@@ -1,4 +1,50 @@
 #!/usr/bin/env python3
+""" Group path module
+The group path module brings together the members of a (data product) group
+and inserts the group name into the path structure so that follows the 
+convention:
+    /YEAR/MONTH/DAY/GROUP_NAME/...
+
+The baseline input is the path to the group assignment repository, which 
+in the format:
+    /GROUP_PREFIX/YEAR/MONTH/DAY/GROUP_MEMBER/group/group_member_file.json
+The group assignment repository includes information for each member of a 
+group that matches the group prefix. Any days that a group is active are 
+populated with a file for each member of the group. The group_member_file.json
+will be named for the group member and includes all the groups that the member
+is included in for that day (limited to those groups that match the 
+GROUP_PREFIX). 
+
+The path to the group assignment repository is required. The
+group file will be read in order to learn the GROUP_NAMEs that the 
+GROUP_MEMBER is in for the day. The group_member_file.json will be placed in 
+the output repository in the following location:
+    /YEAR/MONTH/DAY/GROUP_NAME/group/group_member_file.json
+Thus, if there are multiple members of the GROUP_NAME, there will be a file for 
+each member.
+
+The paths of two additional types of repository structures are optional inputs
+to this module and serve the purpose of joining the data from each group member 
+into the same group directory in the output.
+
+Location focus path: A repository that is organized like:
+    /SOURCE_TYPE/YEAR/MONTH/DAY/NAMED_LOCATION/...
+Any repository contents for a NAMED_LOCATION that is a member of an active
+GROUP_NAME matching the GROUP_PREFIX as found in the group assignment path will 
+be placed in the output for the group at the following location:
+     /YEAR/MONTH/DAY/GROUP_NAME/NAMED_LOCATION/...
+
+Group focus path: A repository that is organized like:
+    /YEAR/MONTH/DAY/DEPENDENT_GROUP_NAME/...
+This repository is already organized in a group structure, but including groups 
+that are potential members of the groups with GROUP_PREFIX. Any repository 
+contents for the DEPENDENT_GROUP_NAME that is a member of an active
+group matching the GROUP_PREFIX as found in the group assignment path will be 
+placed in the output for the group at the following location:
+     /YEAR/MONTH/DAY/GROUP_NAME/DEPENDENT_GROUP_NAME/...
+
+""" 
+# ---------------------------------------------------------------------------
 from structlog import get_logger
 import environs
 import os
