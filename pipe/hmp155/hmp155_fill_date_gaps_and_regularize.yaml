@@ -58,8 +58,8 @@ input:
         name: DATA_PATH
         repo: hmp155_location_group_and_restructure
         # For full-scale daily processing, glob should be /hmp155/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /hmp155/(*/*/*/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
-        # glob: /hmp155/(*/*/*/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
-        glob: /hmp155/(*/*/*)
+        glob: /hmp155/(*/*/*/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
+        # glob: /hmp155/(*/*/*)
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
@@ -67,11 +67,11 @@ input:
           name: LOCATION_PATH
           repo: hmp155_location_active_dates_assignment
           # For full-scale daily processing, glob should be /li191r/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /hmp155/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
-          # glob: /hmp155/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
-          glob: /hmp155/(*/*/*)
+          glob: /hmp155/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
+          # glob: /hmp155/(*/*/*)
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
-          # joinOn: $2
-          joinOn: $1
+          joinOn: $2
+          # joinOn: $1
           group_by: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
