@@ -13,9 +13,6 @@
                     "surfacewater",
                     "water-quality"
                 ],
-                "group": [
-                    "water-quality-274"
-                ],
                 "locations": {
                     "type": "FeatureCollection",
                     "features": [
@@ -105,9 +102,6 @@
                     "surfacewater",
                     "water-quality"
                 ],
-                "group": [
-                    "water-quality-237"
-                ],
                 "locations": {
                     "type": "FeatureCollection",
                     "features": [
@@ -196,9 +190,6 @@
                 "context": [
                     "surfacewater",
                     "water-quality"
-                ],
-                "group": [
-                    "water-quality-247"
                 ],
                 "locations": {
                     "type": "FeatureCollection",
