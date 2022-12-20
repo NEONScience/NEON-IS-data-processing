@@ -1,14 +1,26 @@
 ---
 pipeline:
-  name: relHumidity_level1_group
+  name: relHumidity_level1_group_and_consolidate
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:11
-  cmd: ["/bin/bash"]
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/level1_group_and_consolidate:v0.0.2
+  cmd:
+  - "/bin/bash"
   stdin:
   - "#!/bin/bash"
-  - "python3 -m filter_joiner.filter_joiner_main"
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /usr/interimData/*
+  - '# Set some environment variables for the first module'
+  - export OUT_PATH=$OUT_PATH_1
+  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
+  - python3 -m filter_joiner.filter_joiner_main
+  - '# Set some environment variables for the second module'
+  - export OUT_PATH=$OUT_PATH_2
+  - '# Run second module - level 1 consolidate (using environment variables below as input parameters)'
+  - python3 -m level1_consolidate.level1_consolidate_main
   env:
+    # Environment variables for filter-joiner
     CONFIG: |
       ---
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
@@ -28,15 +40,29 @@ transform:
             # Join on group ID(already joined below by day)
             join_indices: [6]
         - path:
-            name: LOCATION_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/LOCATION_PATH/*/*/*/*/hmp155/*/location/**
+            name: GROUP_PATH
+            # Grab group information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
-    OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: "3"
-    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
+        - path:
+            name: LOCATION_PATH
+            # Grab location information
+            glob_pattern: /pfs/LOCATION_PATH/*/*/*/*/*/*/location/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+    OUT_PATH_1: /usr/interimData # This will be transfered to OUT_PATH for the first module
+    LOG_LEVEL: INFO # Also shared with level 1 consolidate module
+    RELATIVE_PATH_INDEX: "3" # Also shared with level 1 consolidate module
+    LINK_TYPE: COPY # options are COPY or SYMLINK
+    # Environment variables for level 1 consolidation
+    IN_PATH: /usr/interimData
+    OUT_PATH_2: /pfs/out # This will be transfered to OUT_PATH for the second module
+    GROUP_INDEX: "6"
+    GROUP_METADATA_INDEX: "7"
+    GROUP_METADATA_NAME: group
+    DATA_TYPE_INDEX: "9"
+    DATA_TYPE_NAMES: location,stats,quality_metrics
 input:
   join:
   - pfs:
@@ -52,17 +78,24 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
-      name: LOCATION_PATH
-      repo: relHumidity_group_path_hmp155
+      name: GROUP_PATH
+      repo: relHumidity_group_path
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: LOCATION_PATH
+      repo: relHumidity_group_path
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+output_branch: master
 parallelism_spec:
   constant: 1
 resource_requests:
   memory: 200M
   cpu: 0.1
-autoscaling: true
+autoscaling: false
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -91,3 +124,5 @@ pod_patch: |-
       "value": "0.3"
     }
   ]
+
+

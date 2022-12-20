@@ -36,6 +36,12 @@ transform:
             # Join on group ID(already joined below by day)
             join_indices: [6]
         - path:
+            name: GROUP_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+        - path:
             name: RELHUMIDITY_PATH
             # Filter for data directory
             glob_pattern: /pfs/RELHUMIDITY_PATH/*/*/*/*/**
@@ -68,6 +74,12 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
+      name: GROUP_PATH
+      repo: pressureAir_group_path_ptb330a
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
       name: RELHUMIDITY_PATH
       repo: pressureAir_group_path_relHumidity
       glob: /(*)/(*)/(*)
@@ -78,7 +90,7 @@ parallelism_spec:
 resource_requests:
   memory: 200M
   cpu: 0.1
-autoscaling: false
+autoscaling: true
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

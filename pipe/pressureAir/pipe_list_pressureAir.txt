@@ -1,4 +1,5 @@
 pressureAir_group_loader.yaml
+pressureAir_group_assignment.yaml
 pressureAir_group_path_ptb330a.yaml
 pressureAir_threshold_loader.yaml
 pressureAir_thresh_select_ts_pad.yaml

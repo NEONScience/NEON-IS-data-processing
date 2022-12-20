@@ -70,7 +70,7 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: REGULARIZED_FLAGS_PATH
-        repo: relHumidity_group_path_hmp155
+        repo: relHumidity_group_path
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
