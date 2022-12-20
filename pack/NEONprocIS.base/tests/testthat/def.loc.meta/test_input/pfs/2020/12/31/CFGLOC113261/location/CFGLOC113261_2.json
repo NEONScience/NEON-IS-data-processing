@@ -14,9 +14,6 @@
                     "barometric-pressure",
                     "terrestrial"
                 ],
-                "group": [
-                    "barometric-pressure-805"
-                ],
                 "active_periods":[
                 ]
             },
