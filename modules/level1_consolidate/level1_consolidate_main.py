@@ -1,4 +1,43 @@
 #!/usr/bin/env python3
+""" Level 1 consolidate module
+This module consolidates the path structure after data product computations
+have been performed to prepare the data for publication.The input path 
+structure must be in 'group focus', as follows:
+    /YEAR/MONTH/DAY/GROUP_NAME/...
+                               group/
+                               SOURCE_TYPE/
+                                  NAMED_LOCATION_ID
+                                     DATA_TYPE/
+                               DEPENDENT_GROUP/ (optional)
+The output structure moves the chosen DATA_TYPE directories to direct children
+of the GROUP_NAME directory, retains the 'group' directory with group metadata, 
+and drops any DEPENDENT_GROUP directories. The output structure is as follows:
+    /YEAR/MONTH/DAY/GROUP_NAME/...
+                               group/
+                               DATA_TYPE/
+Input parameters are specified in environment variables as follows:
+    IN_PATH: The path to the input data, ending at any parent directory up 
+        to GROUP_NAME
+    OUT_PATH: The base output path that will replace IN_PATH up to 
+        RELATIVE_PATH_INDEX
+    LOG_LEVEL: The logging level to report at. Options are: 'DEBUG','INFO',
+        'WARN','ERROR','FATAL'
+    RELATIVE_PATH_INDEX: The starting index of the directory in IN_PATH that 
+        will be retained, along with its children (as modified by this code) 
+        and place in OUT_PATH.
+    GROUP_INDEX: The index of the directory in IN_PATH pertaining to 
+        GROUP_NAME in the documentation above.
+    GROUP_METADATA_INDEX: The index of the directory in IN_PATH pertaining 
+        to group metadata, identifed as 'group' in the documentation above.
+    GROUP_METADATA_NAME: The name of the directory pertaining to group 
+        metadata. Typically this will be 'group' as documented above.
+    DATA_TYPE_INDEX: The index of the directory in IN_PATH pertaining 
+        to DATA_TYPE in the documentation above. 
+    DATA_TYPE_NAMES: The name(s) of the director(ies) pertaining to the 
+        DATA_TYPEs that should be placed in the output, separated by 
+        commas.Example ('stats,quality_metrics,location'). 
+""" 
+# ---------------------------------------------------------------------------
 import environs
 import structlog
 from pathlib import Path

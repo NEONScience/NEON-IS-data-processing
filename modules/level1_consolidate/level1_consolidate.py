@@ -6,16 +6,12 @@ import structlog
 
 log = structlog.get_logger()
 
-
 class Level1Consolidate:
     def __init__(self, config: Config) -> None:
         """
         Constructor.
-
+        
         :param config: named tuple.
-        :param out_path: The output path for writing joined files.
-        :param relative_path_index: Trim input file paths to this index.
-        :param symlink: Use a symlink to place files in the output (True) or use a straight copy (False) 
         """
         self.in_path = config.in_path
         self.out_path = config.out_path
@@ -27,12 +23,8 @@ class Level1Consolidate:
         self.data_type_names=config.data_type_names
     def consolidate_paths(self) -> None:
         """
-        Re-order a path into the sequence defined by the indices and link the path
-        to the new path in the output directory.
-    
-        :param in_path: A path containing files.
-        :param out_path: The output path for linking files.
-        :param indices: The desired path element sequence.
+        Consolidate paths to the output structure for level 1 data. 
+
         """
         for path in self.in_path.rglob('*'):
             if path.is_file():
@@ -43,12 +35,10 @@ class Level1Consolidate:
                     link_path.symlink_to(path)
     def consolidate_path(self, path: Path) -> Path:
         """
-        Re-order a path into a new path based on the indices.
+        Place an file in the output according to the desired path structure.
     
         :param path: The source path.
-        :param indices: The desired path element sequence.
-        :param out_path: The base root for the new path.
-        :return: The new re-ordered path.
+
         """
         path_parts = path.parts
         new_path = Path(self.out_path)
@@ -66,10 +56,12 @@ class Level1Consolidate:
             group_metadata_part = path_parts[self.group_metadata_index:]
             new_path = new_path.joinpath(*group_metadata_part)
         elif data_type_name_check is not None and data_type_name_check in self.data_type_names:
+            # We have a data output as specified in the input parameters
             group_part = path_parts[self.relative_path_index:self.group_index+1]
             new_path = new_path.joinpath(Path(*group_part))
             data_type_part = path_parts[self.data_type_index:]
             new_path = new_path.joinpath(*data_type_part)
         else:
             new_path: Path = None
+            log.debug(f'ignoring: {path}')
         return new_path

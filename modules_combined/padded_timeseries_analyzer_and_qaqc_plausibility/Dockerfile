@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-anls-ts-pad-qaqc-plau -f <path to this file> <path to parent directory of flow/ and modules/>
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.4
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.5
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
