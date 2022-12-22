@@ -22,7 +22,6 @@ def convert_asset_location(location: AssetLocation) -> Feature:
                               install_date=install_date,
                               remove_date=remove_date,
                               context=location.context,
-                              group=location.group,
                               locations=location.locations)
     feature = Feature(properties=feature_properties)
     for p in location.properties:
