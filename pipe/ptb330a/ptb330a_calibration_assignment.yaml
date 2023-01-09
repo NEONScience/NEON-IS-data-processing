@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.3
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -18,11 +18,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: calibration_ptb330a
+      repo: ptb330a_calibration
       glob: /ptb330a/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_ptb330a_list_years
+      repo: ptb330a_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4

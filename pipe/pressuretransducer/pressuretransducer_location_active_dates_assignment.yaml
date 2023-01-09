@@ -1,0 +1,62 @@
+---
+pipeline:
+  name: pressuretransducer_location_active_dates_assignment
+transform:
+  cmd:
+  - Rscript
+  - ./flow.loc.asgn.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileYear=$FILE_YEAR
+  - TypeFile=namedLocation
+  image: quay.io/battelleecology/neon-is-loc-asgn-r:v1.0.1
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: pressuretransducer_location_loader
+      glob: /pressuretransducer/*
+  - pfs:
+      name: FILE_YEAR
+      repo: pressuretransducer_data_years
+      glob: /data_years.txt
+parallelism_spec:
+  constant: 4
+resource_requests:
+  memory: 500M
+  cpu: 1
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"100M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.1"
+    }
+  ]
+

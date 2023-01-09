@@ -13,7 +13,7 @@ transform:
   - TermCtxt2=temperature|surfacewater
   - TermCtxt3=conductivity|surfacewater
   - DirSubCopy=location|data
-  image: quay.io/battelleecology/neon-is-thsh-slct-r:v1.0.0
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:v1.0.1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

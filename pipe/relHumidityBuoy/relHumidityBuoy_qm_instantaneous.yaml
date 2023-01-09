@@ -21,7 +21,7 @@ transform:
   - GrpQfBeta3=dewPoint:dewPointNullQF|dewPointGapQF|dewPointRangeQF|dewPointStepQF|dewPointSpikeQF|dewPointPersistenceQF
   - GrpQfBetaIgnr3=dewPoint:dewPointNullQF|dewPointGapQF
   - Tmi=001
-  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v1.0.0
+  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:v1.0.1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -35,7 +35,7 @@ input:
       glob: /*/*/*
   - pfs:
       name: FILE_SCHEMA_QM
-      repo: avro_schemas_relHumidityBuoy
+      repo: relHumidityBuoy_avro_schemas
       glob: /relHumidityBuoy/relHumidityBuoy_dp01_qm_instantaneous.avsc
 parallelism_spec:
   constant: 1

@@ -13,7 +13,7 @@ transform:
   - TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly
   - TermQf=pressure|temperature
   - TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst
-  image: quay.io/battelleecology/neon-is-cal-conv-r:v1.0.6
+  image: quay.io/battelleecology/neon-is-cal-conv-r:v1.0.7
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

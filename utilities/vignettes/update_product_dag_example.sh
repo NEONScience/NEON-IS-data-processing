@@ -8,22 +8,14 @@
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir'
-source_type='prt'
-product='tempSoil'
+source_type='hmp155'
+product='relHumidity'
 
 # Define paths based on base paths and product information above 
-spec_path_l0=$git_path_pipelines/pipe/l0_data_loader
 spec_path_source_type=$git_path_pipelines/pipe/$source_type
 spec_path_product=$git_path_pipelines/pipe/$product
 
 pachctl start transaction
-
-# Load L0 data
-# *** First, create/edit/update all pipeline specs ***
-# Note, if your data_source_SOURCETYPE_site pipeline spec is still json, use the converter at: https://www.json2yaml.com/
-pachctl update pipeline -f $spec_path_l0/'data_source_'$source_type'_site.yaml'
-pachctl update pipeline -f $spec_path_l0/'data_source_'$source_type'_linkmerge.yaml'
-
 
 # Set up source type pipeline
 # Read in the pipelines (in order) for this source type and stand them up

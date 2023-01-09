@@ -22,6 +22,7 @@ test_that("valid nameFileIn and NameFileOut, one active period outside range of 
             testthat::expect_true(is.list(loc))
             testthat::expect_equal(loc$type, "FeatureCollection")
             testthat::expect_equal(length(loc$features[[1]]$properties$active_periods), 1)
+            testthat::expect_true(file.exists(nameFileOut))
             if (file.exists(nameFileOut)) { file.remove(nameFileOut)}
 
 

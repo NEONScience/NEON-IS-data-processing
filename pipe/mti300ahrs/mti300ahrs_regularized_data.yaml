@@ -14,7 +14,7 @@ transform:
   - IdxWndw=Clst
   - RptTimeWndw=FALSE
   - DropNotNumc=FALSE
-  image: quay.io/battelleecology/neon-is-rglr-r:v1.0.0
+  image: quay.io/battelleecology/neon-is-rglr-r:v1.0.3
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

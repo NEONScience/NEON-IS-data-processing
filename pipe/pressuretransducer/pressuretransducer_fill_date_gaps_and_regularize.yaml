@@ -1,0 +1,116 @@
+---
+pipeline:
+  name: pressuretransducer_fill_date_gaps_and_regularize
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-gf-rglr:v1.0.2
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /usr/src/app/pfs/interimData
+  - mkdir -p /usr/src/app/pfs/interimData
+  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
+  - python3 -m date_gap_filler.date_gap_filler_main
+  - '# Run second module - regularize'
+  - Rscript ./flow.rglr.R
+    DirIn=/usr/src/app/pfs/interimData
+    DirOut=/pfs/out
+    DirErr=/pfs/out/errored_datums
+    "DirRglr=data"
+    MethRglr=CybiEc
+    WndwRglr=Cntr
+    IdxWndw=Clst
+    RptTimeWndw=FALSE
+    DropNotNumc=FALSE
+    "DirSubCopy=location"
+  env:
+    # Environment variables for date gap filler
+    LOG_LEVEL: DEBUG
+    OUT_PATH: /usr/src/app/pfs/interimData
+    OUTPUT_DIRECTORIES: data,location
+    DATA_SOURCE_TYPE_INDEX: '3'
+    DATA_YEAR_INDEX: '4'
+    DATA_MONTH_INDEX: '5'
+    DATA_DAY_INDEX: '6'
+    DATA_LOCATION_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
+    LOCATION_SOURCE_TYPE_INDEX: '3'
+    LOCATION_YEAR_INDEX: '4'
+    LOCATION_MONTH_INDEX: '5'
+    LOCATION_DAY_INDEX: '6'
+    LOCATION_INDEX: '7'
+    EMPTY_FILE_TYPE_INDEX: '4'
+    LINK_TYPE: COPY # options are COPY or SYMLINK
+    # Environment variables for regularizer
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
+input:
+  cross:
+  - pfs:
+      name: EMPTY_FILE_PATH
+      repo: empty_files_pressuretransducer
+      glob: /pressuretransducer
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - group:
+    - pfs:
+        name: DATA_PATH
+        repo: pressuretransducer_location_group_and_restructure
+        # For full-scale daily processing, glob should be /pressuretransducer/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /pressuretransducer/(*/*/*/(CFGLOC108321|...|CFGLOC110994))
+        glob: /pressuretransducer/((*/*/*)/(CFGLOC103648|CFGLOC104730|CFGLOC105231|CFGLOC106590|CFGLOC107046|CFGLOC107047|CFGLOC107048|CFGLOC107049|CFGLOC107050|CFGLOC107051|CFGLOC107052|CFGLOC107053|CFGLOC107054|CFGLOC107055|CFGLOC107056|CFGLOC107057|CFGLOC107058|CFGLOC107059|CFGLOC107060|CFGLOC107068|CFGLOC107069|CFGLOC107070|CFGLOC107071|CFGLOC107072|CFGLOC107073|CFGLOC107074|CFGLOC107075|CFGLOC107076|CFGLOC107077|CFGLOC107078|CFGLOC107079|CFGLOC107080|CFGLOC107081|CFGLOC107082|CFGLOC109219|CFGLOC109220|CFGLOC109221|CFGLOC109222|CFGLOC109223|CFGLOC109224|CFGLOC109225|CFGLOC109226|CFGLOC109227|CFGLOC109228|CFGLOC109229|CFGLOC109230|CFGLOC109231|CFGLOC109232|CFGLOC109233|CFGLOC109241|CFGLOC109242|CFGLOC109243|CFGLOC109244|CFGLOC109245|CFGLOC109246|CFGLOC109247|CFGLOC109248|CFGLOC109249|CFGLOC109250|CFGLOC109251|CFGLOC109252|CFGLOC109253|CFGLOC109254|CFGLOC109255|CFGLOC110635|CFGLOC110636|CFGLOC110637|CFGLOC110638|CFGLOC110639|CFGLOC110640|CFGLOC110641|CFGLOC110642|CFGLOC110643|CFGLOC110644|CFGLOC110645|CFGLOC110646|CFGLOC110647|CFGLOC110648|CFGLOC110649|CFGLOC110688|CFGLOC110941|CFGLOC110942|CFGLOC110943|CFGLOC110944|CFGLOC110945|CFGLOC110946|CFGLOC110947|CFGLOC110948|CFGLOC110949|CFGLOC110950|CFGLOC110951|CFGLOC110952|CFGLOC110953|CFGLOC110954|CFGLOC110955|CFGLOC111001|CFGLOC113185|CFGLOC113186|CFGLOC113187|CFGLOC113188|CFGLOC113189|CFGLOC113190|CFGLOC113191|CFGLOC113192|CFGLOC113193|CFGLOC113194|CFGLOC113195|CFGLOC113196|CFGLOC113197|CFGLOC113198|CFGLOC113199|CFGLOC113666|CFGLOC113667|CFGLOC113668|CFGLOC113669|CFGLOC113670|CFGLOC113671|CFGLOC113672|CFGLOC113673|CFGLOC113674|CFGLOC113675|CFGLOC113676|CFGLOC113677|CFGLOC113678|CFGLOC113679|CFGLOC113680|CFGLOC113749))
+        #glob: /pressuretransducer/((*/*/*/(CFGLOC103648|CFGLOC104730|CFGLOC105231|CFGLOC106590|CFGLOC107046|CFGLOC107047|CFGLOC107048|CFGLOC107049|CFGLOC107050|CFGLOC107051|CFGLOC107052|CFGLOC107053|CFGLOC107054|CFGLOC107055|CFGLOC107056|CFGLOC107057|CFGLOC107058|CFGLOC107059|CFGLOC107060|CFGLOC107068|CFGLOC107069|CFGLOC107070))
+        group_by: $1
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - join:
+      - pfs:
+          name: LOCATION_PATH
+          repo: pressuretransducer_location_active_dates_assignment
+          # For full-scale daily processing, glob should be /pressuretransducer/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /pressuretransducer/((*/*/*)/(CFGLOC108321|...|CFGLOC110994))
+          glob: /pressuretransducer/((*/*/*)/(CFGLOC103648|CFGLOC104730|CFGLOC105231|CFGLOC106590|CFGLOC107046|CFGLOC107047|CFGLOC107048|CFGLOC107049|CFGLOC107050|CFGLOC107051|CFGLOC107052|CFGLOC107053|CFGLOC107054|CFGLOC107055|CFGLOC107056|CFGLOC107057|CFGLOC107058|CFGLOC107059|CFGLOC107060|CFGLOC107068|CFGLOC107069|CFGLOC107070|CFGLOC107071|CFGLOC107072|CFGLOC107073|CFGLOC107074|CFGLOC107075|CFGLOC107076|CFGLOC107077|CFGLOC107078|CFGLOC107079|CFGLOC107080|CFGLOC107081|CFGLOC107082|CFGLOC109219|CFGLOC109220|CFGLOC109221|CFGLOC109222|CFGLOC109223|CFGLOC109224|CFGLOC109225|CFGLOC109226|CFGLOC109227|CFGLOC109228|CFGLOC109229|CFGLOC109230|CFGLOC109231|CFGLOC109232|CFGLOC109233|CFGLOC109241|CFGLOC109242|CFGLOC109243|CFGLOC109244|CFGLOC109245|CFGLOC109246|CFGLOC109247|CFGLOC109248|CFGLOC109249|CFGLOC109250|CFGLOC109251|CFGLOC109252|CFGLOC109253|CFGLOC109254|CFGLOC109255|CFGLOC110635|CFGLOC110636|CFGLOC110637|CFGLOC110638|CFGLOC110639|CFGLOC110640|CFGLOC110641|CFGLOC110642|CFGLOC110643|CFGLOC110644|CFGLOC110645|CFGLOC110646|CFGLOC110647|CFGLOC110648|CFGLOC110649|CFGLOC110688|CFGLOC110941|CFGLOC110942|CFGLOC110943|CFGLOC110944|CFGLOC110945|CFGLOC110946|CFGLOC110947|CFGLOC110948|CFGLOC110949|CFGLOC110950|CFGLOC110951|CFGLOC110952|CFGLOC110953|CFGLOC110954|CFGLOC110955|CFGLOC111001|CFGLOC113185|CFGLOC113186|CFGLOC113187|CFGLOC113188|CFGLOC113189|CFGLOC113190|CFGLOC113191|CFGLOC113192|CFGLOC113193|CFGLOC113194|CFGLOC113195|CFGLOC113196|CFGLOC113197|CFGLOC113198|CFGLOC113199|CFGLOC113666|CFGLOC113667|CFGLOC113668|CFGLOC113669|CFGLOC113670|CFGLOC113671|CFGLOC113672|CFGLOC113673|CFGLOC113674|CFGLOC113675|CFGLOC113676|CFGLOC113677|CFGLOC113678|CFGLOC113679|CFGLOC113680|CFGLOC113749))
+          # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
+          joinOn: $2
+          group_by: $1
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK. 
+      - pfs:
+          name: DATE_LIMITER_PATH
+          repo: pressuretransducer_cron_daily_and_date_control
+          glob: /pressuretransducer/(*/*/*)
+          joinOn: $1
+          group_by: $1
+          empty_files: true # This can remain true even if LINK_TYPE=COPY
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 800M
+  cpu: 1.1
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]
+

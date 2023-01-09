@@ -3,7 +3,7 @@ pipeline:
   name: relHumidity_qm_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:v1.0.0
+  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:v1.0.1
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -54,12 +54,12 @@ transform:
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK
-    PARALLELIZATION_INTERNAL: '1' # Option for quality metrics module
+    PARALLELIZATION_INTERNAL: '2' # Option for quality metrics module
 input:
   cross:
   - pfs:
       name: FILE_SCHEMA_QM
-      repo: avro_schemas_relHumidity
+      repo: relHumidity_avro_schemas
       glob: /relHumidity/relHumidity_dp01_quality_metrics.avsc
   - join:
     - pfs:
@@ -70,15 +70,15 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: REGULARIZED_FLAGS_PATH
-        repo: relHumidity_group_path_hmp155
+        repo: relHumidity_group_path
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 1
+  constant: 5
 resource_requests:
-  memory: 400M
-  cpu: 1.2
+  memory: 800M
+  cpu: 2.2
 autoscaling: true
 scheduling_spec:
   node_selector:

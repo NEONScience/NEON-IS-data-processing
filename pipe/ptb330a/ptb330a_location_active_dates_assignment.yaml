@@ -4,13 +4,13 @@ pipeline:
 transform:
   cmd:
   - Rscript
-  - ./flow.loc.asgn.R
+  - ./flow.loc.grp.asgn.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=namedLocation
-  image: quay.io/battelleecology/neon-is-loc-asgn-r:v1.0.1
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -19,17 +19,17 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_ptb330a
+      repo: ptb330a_location_loader
       glob: /ptb330a/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_ptb330a_list_years
+      repo: ptb330a_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
-  constant: 4
+  constant: 2
 resource_requests:
   memory: 300M
-  cpu: 0.5
+  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:

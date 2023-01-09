@@ -3,7 +3,7 @@ pipeline:
   name: relHumidity_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-basc-grp:v1.0.0
+  image: quay.io/battelleecology/neon-is-stat-basc-grp:v1.0.1
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -47,12 +47,12 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '1' # Option for stats module
+    PARALLELIZATION_INTERNAL: '2' # Option for stats module
 input:
   cross:
   - pfs:
       name: FILE_SCHEMA_STATS
-      repo: avro_schemas_relHumidity
+      repo: relHumidity_avro_schemas
       glob: /relHumidity/relHumidity_dp01_stats.avsc
   - join:
     - pfs:
@@ -63,15 +63,15 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: UNCERTAINTY_PATH
-        repo: relHumidity_group_path_hmp155
+        repo: relHumidity_group_path
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 1
+  constant: 5
 resource_requests: 
-  memory: 400M
-  cpu: 1.2
+  memory: 1G
+  cpu: 2.2
 autoscaling: true
 scheduling_spec:
   node_selector:

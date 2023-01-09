@@ -5,7 +5,7 @@ from typing import List
 from data_access.db_connector import DbConnector
 
 
-def get_group_loader_group_id(connector: DbConnector, member_id: int) -> List[int]:
+def get_group_loader_group_id(connector: DbConnector, mem_id: int) -> List[int]:
     """
     Get Group IDs for a named location.
 
@@ -14,12 +14,12 @@ def get_group_loader_group_id(connector: DbConnector, member_id: int) -> List[in
     :return: The group IDs for the group member.
     """
     sql_1 = '''
-         select distinct 
-             gm.group_id 
+         select distinct
+             g.group_id 
          from 
-             named_location_group nlg, "group_member" gm
+             named_location_group nlg, "group" g
          where
-             nlg.group_id = gm.group_id 
+             nlg.group_id = g.group_id 
          and 
              nlg.named_location_id = %s
    	
@@ -38,10 +38,11 @@ def get_group_loader_group_id(connector: DbConnector, member_id: int) -> List[in
     '''
 
     group_ids: List[int] = []
-    with closing(connector.get_connection().cursor()) as cursor:
-        cursor.execute(sql_1, [member_id])
+    connection = connector.get_connection()
+    with closing(connection.cursor()) as cursor:
+        cursor.execute(sql_1, [mem_id])
         rows_1 = cursor.fetchall()
-        cursor.execute(sql_2, [member_id])
+        cursor.execute(sql_2, [mem_id])
         rows_2 = cursor.fetchall()
         rows = rows_1 + rows_2
         for row in rows:

@@ -24,6 +24,7 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
 #' @return 
+#' A data frame with location metadata.
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -58,6 +59,8 @@
 #     Incorporate IS default processing start date 
 #     Accommodate updates to location files that ensure all possible scenarios for active periods 
 #        are represented.
+#   Mija Choi (2022-12-16)
+#     Modified to remove grp checking as group is removed from location_loader output 
 ##############################################################################################
 def.loc.meta <- function(NameFile,
                          NameLoc=NULL,
@@ -81,7 +84,6 @@ def.loc.meta <- function(NameFile,
                           remove_date=dmmyPosx,
                           active_periods=dmmyChar,
                           context=dmmyChar,
-                          group=dmmyChar,
                           location_id=dmmyChar,
                           location_code=dmmyChar,
                           HOR=dmmyChar,
@@ -212,21 +214,22 @@ def.loc.meta <- function(NameFile,
       ctxt <- NA
     }
     
-    # format multiple values for named location group
-    grp <- locProp$group[idxLoc]
-    grp <- base::gsub(pattern='[\\[\\"]',replacement="",x=grp)
-    grp <- base::gsub(pattern='\\]',replacement="",x=grp)
-    grp <- base::strsplit(grp,',')[[1]]
-    grp <- base::paste0(base::unique(grp),collapse='|')
-    
-    if(base::length(grp) == 0 || base::nchar(grp) == 0) {
-      grp <- NA
-    }
-    
     # Parse any active dates and place in a data frame
     if(!base::is.na(locProp$active_periods[idxLoc])){
 
       timeActvList <- rjson::fromJSON(json_str=locProp$active_periods[idxLoc])
+      
+      # Turn NULL to NA
+      timeActvList <- base::lapply(timeActvList,FUN=function(timeActvIdx){
+        if(base::is.null(timeActvIdx$start_date)){
+          timeActvIdx$start_date <- NA
+        }
+        if(base::is.null(timeActvIdx$end_date)){
+          timeActvIdx$end_date <- NA
+        }
+        return(timeActvIdx)
+      }
+      )
       
       numActv <- base::length(timeActvList)
       dmmyChar <- base::rep(NA,times=numActv)
@@ -268,7 +271,6 @@ def.loc.meta <- function(NameFile,
                                     install_date=locProp$install_date[idxLoc],
                                     remove_date=locProp$remove_date[idxLoc],
                                     context=ctxt,
-                                    group=grp,
                                     active_periods=NA,
                                     IS_Processing_Default_Start_Date=timeProcBgnDflt,
                                     location_id=propFill[['Required Asset Management Location ID']],
