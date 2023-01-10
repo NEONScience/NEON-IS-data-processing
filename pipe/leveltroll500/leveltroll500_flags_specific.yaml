@@ -17,11 +17,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: leveltroll500_calibration_conversion
+      repo: leveltroll500_calibration_group_and_convert
       glob: /leveltroll500/*/*/*/
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas_leveltroll500
+      repo: leveltroll500_avro_schemas
       glob: /troll_shared/flags_troll_specific.avsc
 resource_requests:
   memory: 500M
