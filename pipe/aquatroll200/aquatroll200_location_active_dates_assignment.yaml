@@ -19,11 +19,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_aquatroll200
+      repo: aquatroll200_location_loader
       glob: /aquatroll200/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_aquatroll200_list_years
+      repo: aquatroll200_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
   constant: 1

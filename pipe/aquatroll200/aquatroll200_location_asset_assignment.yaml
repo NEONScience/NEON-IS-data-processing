@@ -19,11 +19,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_asset_aquatroll200
+      repo: aquatroll200_location_asset
       glob: /aquatroll200/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_aquatroll200_list_years
+      repo: aquatroll200_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 2
