@@ -1,36 +1,35 @@
 ---
 pipeline:
-  name: groundwaterPhysical_regularized
+  name: groundwaterPhysical_group_assignment
 transform:
   cmd:
   - Rscript
-  - ./flow.rglr.R
+  - ./flow.loc.grp.asgn.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
-  - DirRglr=data|uncertainty_data|flags
-  - MethRglr=CybiEc
-  - WndwRglr=Trlg
-  - IdxWndw=IdxWndwMin
-  - RptTimeWndw=FALSE
-  - DropNotNumc=FALSE
-  - DirSubCopy=location|uncertainty_coef
-  image: quay.io/battelleecology/neon-is-rglr-r:v1.0.3
+  - FileYear=$FILE_YEAR
+  - TypeFile=group
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
-    PARALLELIZATION_INTERNAL: '1'
 input:
-  pfs:
-    name: DIR_IN
-    repo: groundwaterPhysical_context_filter
-    glob: /aquatroll200/*/*/*
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: groundwaterPhysical_group_loader
+      glob: /groundwater-physical/*
+  - pfs:
+      name: FILE_YEAR
+      repo: aquatroll200_cron_daily_and_date_control
+      glob: /data_years.txt
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 800M
-  cpu: 1.1
+  memory: 300M
+  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -53,11 +52,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
+      "value":"100M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": ".2"
+      "value": "0.1"
     }
   ]
-

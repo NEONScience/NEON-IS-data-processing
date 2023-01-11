@@ -60,7 +60,7 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: aquatroll200_calibration_group_and_convert
+      repo: aquatroll200_flags_specific_and_cond_conv
       glob: /aquatroll200/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true

@@ -1,35 +1,31 @@
----
 pipeline:
-  name: threshold_groundwaterPhysical
+  name: groundwaterPhysical_group_loader
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/threshold_loader:104
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m threshold_loader.threshold_loader_main
+    - /bin/bash
   env:
-    OUT_PATH: /pfs/out
+    GROUP_PREFIX: groundwater-physical_
     LOG_LEVEL: INFO
-    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
-    TERM: pressure|temperature|conductivity
-    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
-    CTXT: groundwater
+    OUT_PATH: /pfs/out
+  image: quay.io/battelleecology/group_loader:515
+  image_pull_secrets:
+    - battelleecology-quay-read-all-pull-secret
   secrets:
   - name: db-pdr-secret
     mount_path: /var/db_secret
+  stdin:
+    - '#!/bin/bash'
+    - python3 -m group_loader.group_loader_main
 input:
   pfs:
-    repo: cron_daily_aquatroll200_tick
-    glob: /*
+    branch: master
     empty_files: true
+    glob: /*
+    repo: aquatroll200_cron_daily_and_date_control_tick
 resource_requests:
-  memory: 120M
-  cpu: 0.05
+  cpu: 1.5
+  memory: 300M
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -51,11 +47,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
+      "value":"500M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.05"
+      "value": "0.3"
     }
   ]
-

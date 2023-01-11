@@ -50,7 +50,7 @@ input:
 resource_requests:
   memory: 500M
   cpu: 1.2
-autoscaling: false
+autoscaling: true
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
