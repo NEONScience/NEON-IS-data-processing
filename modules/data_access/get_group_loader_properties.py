@@ -18,7 +18,8 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
         select
             g.group_name,
             g.hor,
-            g.ver
+            g.ver, 
+            g.visibility_code
         from
             "group" g
         where
@@ -27,6 +28,7 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
     properties: List[Property] = []
     hor_name = "HOR"
     ver_name = "VER"
+    visibility_code_name = "VISIBILITY_CODE"
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_id])
@@ -35,6 +37,8 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
             # name = row[0]
             hor = row[1]
             ver = row[2]
+            visibility_code = row[3]
             properties.append(Property(name=hor_name, value=hor))
             properties.append(Property(name=ver_name, value=ver))
+            properties.append(Property(name=visibility_code_name, value=visibility_code))
     return properties
