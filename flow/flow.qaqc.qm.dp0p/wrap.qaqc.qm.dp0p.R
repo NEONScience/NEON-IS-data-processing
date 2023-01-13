@@ -72,6 +72,10 @@
 #' endDateTime and will not be treated as a flag. If it is not found in any of the input files, endDateTime will be 
 #' populated with the values in readout_time.
 #' 
+#' @param VarIgnr (optional) character vector. The names of the variables that should be ignored if 
+#' found in the input files. No quality metrics will be computed for these variables and they will not be included 
+#' in the output. Do not include readout_time here.  Defaults to NULL.
+#' 
 #' @param Tmi (Optional). Character value. A 3-character index specifying the NEON timing index to include
 #' in the output file name. Default is "000".
 #' 
@@ -183,6 +187,7 @@ wrap.qaqc.qm.dp0p <- function(DirIn,
                               ParaForc=NULL,
                               VarTimeBgn="readout_time",
                               VarTimeEnd="readout_time",
+                              VarIgnr=NULL,
                               Tmi="000",
                               SchmQm=NULL,
                               DirSubCopy=NULL,
@@ -227,6 +232,9 @@ wrap.qaqc.qm.dp0p <- function(DirIn,
           nameVarTime = 'readout_time',
           log = log
     )
+  
+  # Remove any columns for variables we should ignore (and readout time)
+  qf <- qf[,!(base::names(qf) %in% VarIgnr)]
   
   # Take stock of our quality flags
   numNa <- base::apply(X = base::is.na(qf),

@@ -4,7 +4,7 @@ transform:
   cmd:
     - /bin/bash
   env:
-    GROUP_PREFIX: rel-humidity_
+    GROUP_PREFIX: rel-humidity
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
   image: quay.io/battelleecology/group_loader:515

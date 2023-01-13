@@ -15,14 +15,14 @@ transform:
   - mkdir -p /usr/src/app/pfs/interimData
   - '# Run first module - threshold_select'
   - Rscript ./flow.thsh.slct.R 
-    DirIn=$REPO_LOCATIONS
-    DirOut=/usr/src/app/pfs/interimData
-    DirErr=/pfs/out/errored_datums
-    FileThsh=$FILE_THRESHOLDS
-    "TermCtxt1=relativeHumidity|relative-humidity"
-    "TermCtxt2=temperature|relative-humidity"
-    "TermCtxt3=dewPoint|relative-humidity"
-    "DirSubCopy=location|data"
+      DirIn=$REPO_LOCATIONS
+      DirOut=/usr/src/app/pfs/interimData
+      DirErr=/pfs/out/errored_datums
+      FileThsh=$FILE_THRESHOLDS
+      "TermCtxt1=relativeHumidity|relative-humidity"
+      "TermCtxt2=temperature|relative-humidity"
+      "TermCtxt3=dewPoint|relative-humidity"
+      "DirSubCopy=location|data"
   - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
   - cp -rL /usr/src/app/pfs/interimData /usr/src/app/pfs/interimDataCopy 
   - rm -r -f /usr/src/app/pfs/interimData 
