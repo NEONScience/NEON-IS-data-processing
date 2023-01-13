@@ -110,11 +110,11 @@ input:
         glob: /surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc
     - pfs:
         name: SCHEMA_UCRT_TROLL_AQUATROLL
-        repo: avro_schemas_surfacewaterPhysical
+        repo: surfacewaterPhysical_avro_schemas
         glob: /surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc
     - pfs:
         name: SCHEMA_SCI_TROLL
-        repo: avro_schemas_surfacewaterPhysical
+        repo: surfacewaterPhysical_avro_schemas
         glob: /surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc
     - group:
       - join:
@@ -139,11 +139,11 @@ input:
         glob: /surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc
     - pfs:
         name: SCHEMA_UCRT_TROLL_LEVELTROLL
-        repo: avro_schemas_surfacewaterPhysical
+        repo: surfacewaterPhysical_avro_schemas
         glob: /surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt.avsc
     - pfs:
         name: SCHEMA_SCI_TROLL
-        repo: avro_schemas_surfacewaterPhysical
+        repo: surfacewaterPhysical_avro_schemas
         glob: /surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc
     - group:
       - join:

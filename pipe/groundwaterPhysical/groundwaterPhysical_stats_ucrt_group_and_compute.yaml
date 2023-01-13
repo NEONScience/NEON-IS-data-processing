@@ -66,15 +66,15 @@ input:
       glob: /groundwaterPhysical/groundwaterPhysical_dp01_stats.avsc
   - pfs:
       name: SCHEMA_DATA_TROLL
-      repo: avro_schemas_groundwaterPhysical
+      repo: groundwaterPhysical_avro_schemas
       glob: /groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_data.avsc
   - pfs:
       name: SCHEMA_UCRT_TROLL
-      repo: avro_schemas_groundwaterPhysical
+      repo: groundwaterPhysical_avro_schemas
       glob: /groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_ucrt.avsc
   - pfs:
       name: SCHEMA_SCI_TROLL
-      repo: avro_schemas_groundwaterPhysical
+      repo: groundwaterPhysical_avro_schemas
       glob: /groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_sci_stats.avsc
   - join:
     - pfs:
