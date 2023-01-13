@@ -1,29 +1,35 @@
 ---
 pipeline:
-  name: surfacewaterPhysical_padded_timeseries_analyzer
+  name: surfacewaterPhysical_group_assignment
 transform:
+  cmd:
+  - Rscript
+  - ./flow.loc.grp.asgn.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileYear=$FILE_YEAR
+  - TypeFile=group
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/padded_timeseries_analyzer:15
-  cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
   env:
-    OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: '3'
 input:
-  pfs:
-    name: DATA_PATH
-    repo: surfacewaterPhysical_timeseries_padder
-    glob: /*/*/*/*
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: surfacewaterPhysical_group_loader
+      glob: /surfacewater-physical/*
+  - pfs:
+      name: FILE_YEAR
+      repo: leveltroll500_cron_daily_and_date_control
+      glob: /data_years.txt
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 600M
-  cpu: 0.1
+  memory: 300M
+  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -46,10 +52,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"400M"
+      "value":"100M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
+      "value": "0.1"
     }
   ]

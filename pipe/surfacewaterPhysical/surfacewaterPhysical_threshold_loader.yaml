@@ -1,33 +1,34 @@
 ---
 pipeline:
-  name: surfacewaterPhysical_timeseries_padder
+  name: surfacewaterPhysical_threshold
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/timeseries_padder:36
+  image: quay.io/battelleecology/threshold_loader:104
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 4
-    --monthindex 5 --dayindex 6 --locindex 7 --subdirindex 8
+  - python3 -m threshold_loader.threshold_loader_main
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    PAD_DIR: data
-    RELATIVE_PATH_INDEX: '3'
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: pressure|temperature|conductivity
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: surfacewater
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
-    name: DATA_PATH
-    repo: surfacewaterPhysical_threshold_select
-    glob: /*/*/*/*
-parallelism_spec:
-  constant: 1
+    repo: leveltroll500_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
 resource_requests:
-  memory: 400M
-  cpu: 0.2
+  memory: 120M
+  cpu: 0.05
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -49,10 +50,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2.5G"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.8"
+      "value": "0.1"
     }
   ]
+

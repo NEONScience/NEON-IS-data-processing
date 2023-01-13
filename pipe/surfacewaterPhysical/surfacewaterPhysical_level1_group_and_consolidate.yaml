@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: groundwaterPhysical_level1_group_and_consolidate
+  name: surfacewaterPhysical_level1_group_and_consolidate
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -30,13 +30,13 @@ transform:
         - path:
             name: QUALITY_METRICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/aquatroll200/*/*/**
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/*/*/*/**
             # Join on group ID (already joined below by day)
             join_indices: [6]
         - path:
             name: STATISTICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/aquatroll200/*/*/**
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/*/*/*/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
         - path:
@@ -57,30 +57,24 @@ transform:
     GROUP_METADATA_NAME: group
     # path index of names of directories to include in the output
     DATA_TYPE_INDEX: "9"
-    DATA_TYPE_NAMES: location,stats,quality_metrics,uncertainty_data,sci_stats,data
+    DATA_TYPE_NAMES: location,stats,quality_metrics,uncertainty_data,sci_stats
 input:
   join:
   - pfs:
       name: QUALITY_METRICS_PATH
-      repo: groundwaterPhysical_qm_avg_inst_group_compute
+      repo: surfacewaterPhysical_qm_group_and_compute
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
-      repo: groundwaterPhysical_stats_ucrt_group_and_compute
+      repo: surfacewaterPhysical_stats_ucrt_group_and_compute
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: GROUP_PATH
-      repo: groundwaterPhysical_group_path
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: LOCATION_PATH
-      repo: groundwaterPhysical_group_path
+      repo: surfacewaterPhysical_group_path
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
