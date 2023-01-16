@@ -33,9 +33,9 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
     properties: List[Property] = []
     hor_name = "HOR"
     ver_name = "VER"
-    site_name = "SITE"
-    domain_name = "DOMAIN"
-    visibility_code_name = "VISIBILITY_CODE"
+    site_name = "site"
+    domain_name = "domain"
+    visibility_code_name = "visibility_code"
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_id])
@@ -52,7 +52,7 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
             domain: str = name_domain
             properties.append(Property(name=site_name, value=site))
             properties.append(Property(name=domain_name, value=domain))
+            properties.append(Property(name=visibility_code_name, value=visibility_code))
             properties.append(Property(name=hor_name, value=hor))
             properties.append(Property(name=ver_name, value=ver))
-            properties.append(Property(name=visibility_code_name, value=visibility_code))
     return properties

@@ -7,7 +7,7 @@ transform:
     GROUP_PREFIX: rel-humidity_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
-  image: quay.io/battelleecology/group_loader:515
+  image: quay.io/battelleecology/group_loader:529
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
   secrets:
