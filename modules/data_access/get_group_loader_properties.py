@@ -33,8 +33,8 @@ def get_group_loader_properties(connector: DbConnector, group_id: int) -> List[P
     properties: List[Property] = []
     hor_name = "HOR"
     ver_name = "VER"
-    site_name = "site"
-    domain_name = "domain"
+    site_name = "SITE"
+    domain_name = "DOMAIN"
     visibility_code_name = "VISIBILITY_CODE"
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
