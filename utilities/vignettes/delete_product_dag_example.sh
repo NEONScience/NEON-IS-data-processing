@@ -12,8 +12,8 @@
 
 # Define paths
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
-source_type='hmp155'
-product='relHumidity'
+source_type='aquatroll200'
+product='surfacewaterPhysical'
 pipe_list_prefix='pipe_list_'
 ext='.yaml' # file extension for pipeline specs specified in the pipe_list files. Must be consistent.
 
@@ -28,7 +28,7 @@ spec_path_product=$git_path_pipelines/$product
 unset pipelines
 pipelines=`tac $spec_path_product/$pipe_list_prefix$product.txt`
 for pipe in $(echo ${pipelines[*]}); do
-echo pachctl delete pipeline -f ${pipe/$ext}
+echo pachctl delete pipeline ${pipe/$ext}
 pachctl delete pipeline ${pipe/$ext}
 done
 
@@ -39,7 +39,7 @@ done
 unset pipelines
 pipelines=`tac $spec_path_source_type/$pipe_list_prefix$source_type.txt`
 for pipe in $(echo ${pipelines[*]}); do
-echo pachctl delete pipeline -f ${pipe/$ext}
+echo pachctl delete pipeline ${pipe/$ext}
 pachctl delete pipeline ${pipe/$ext}
 done
 
