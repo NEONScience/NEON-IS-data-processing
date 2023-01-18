@@ -7,8 +7,8 @@ transform:
   - ./flow.loc.grp.asgn.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
-  - FileYear=$FILE_YEAR
   - DirErr=/pfs/out/errored_datums
+  - FileYear=$FILE_YEAR
   - TypeFile=namedLocation
   image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.4
   image_pull_secrets:
@@ -19,11 +19,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_leveltroll500
+      repo: leveltroll500_location_loader
       glob: /leveltroll500/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_leveltroll500_list_years
+      repo: leveltroll500_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
   constant: 1

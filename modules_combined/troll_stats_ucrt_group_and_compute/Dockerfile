@@ -1,9 +1,9 @@
-# Dockerfile for NEON IS Data Processing - Basic statistics module combined with filter-joiner
+# Dockerfile for NEON IS Data Processing - Basic statistics module combined with filter-joiner and troll-specific uncertainty
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
-# docker build -t neon-is-stat-basc-grp -f ./modules_combined/stats_group_and_compute/Dockerfile .
+# docker build -t neon-is-troll-stat-ucrt-grp -f ./modules_combined/troll_stats_ucrt_group_and_compute/Dockerfile .
 
 # Start with the R stats package image. 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.0.4
+FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.0.3
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -36,19 +36,23 @@ COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 # Build in the basic stats module
 ARG MODULE_DIR="flow"
-ARG APP_DIR="flow.stat.basc"
+ARG APP_DIR_1="flow.stat.basc"
+ARG APP_DIR_2="flow.troll.uncertainty"
 
 # Copy the lockfile and restore known working versions of R dependency packages
-COPY ./${MODULE_DIR}/${APP_DIR}/renv.lock ./renv.lock
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
+COPY ./${MODULE_DIR}/${APP_DIR_1}/renv.lock ./renv.lock.1
+RUN R -e 'renv::restore(lockfile="./renv.lock.1")'
+COPY ./${MODULE_DIR}/${APP_DIR_1}/renv.lock ./renv.lock.2
+RUN R -e 'renv::restore(lockfile="./renv.lock.2")'
 
 # Create app user
 RUN groupadd appuser && \
     useradd appuser -g appuser
 
 # Copy in application code
-COPY ./${MODULE_DIR}/${APP_DIR}/wrap.stat.basc.R .
-COPY ./${MODULE_DIR}/${APP_DIR}/flow.stat.basc.R .
+COPY ./${MODULE_DIR}/${APP_DIR_1}/wrap.stat.basc.R .
+COPY ./${MODULE_DIR}/${APP_DIR_1}/flow.stat.basc.R .
+COPY ./${MODULE_DIR}/${APP_DIR_2}/flow.troll.uncertainty.R .
 
 # Run as app user
 RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}

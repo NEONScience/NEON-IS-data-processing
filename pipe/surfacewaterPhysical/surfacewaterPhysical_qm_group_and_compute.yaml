@@ -1,0 +1,176 @@
+---
+pipeline:
+  name: surfacewaterPhysical_qm_group_and_compute
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:v1.0.1
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /usr/src/app/pfs/interimData
+  - mkdir -p /usr/src/app/pfs/interimData
+  - '# Determine which source type we have'
+  - if [ ${FILE_SCHEMA_QM_AQUATROLL+x} ]
+  - then export DATA_TYPE=aquatroll
+  - elif [ ${FILE_SCHEMA_QM_LEVELTROLL+x} ]
+  - then export DATA_TYPE=leveltroll
+  - else echo "FATAL - Input repository names do not match expectations. Check pipeline specification."
+  - fi
+  - echo "Data type detected = $DATA_TYPE"
+  - '# '
+  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
+  - python3 -m filter_joiner.filter_joiner_main
+  - '# Run second module - quality metrics'
+  - '# If Aquatroll...'
+  - if [ $DATA_TYPE = 'aquatroll' ]
+  - then 
+      Rscript ./flow.qaqc.qm.R 
+      DirIn=/usr/src/app/pfs/interimData
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      FileSchmQm=$FILE_SCHEMA_QM_AQUATROLL
+      "WndwAgr=005|030"
+      "WghtAlphBeta=2|1"
+      Thsh=0.2
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF"
+      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
+      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF"
+      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
+      "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF"
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
+      "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
+  - elif [ $DATA_TYPE = 'leveltroll' ]
+  - then 
+      Rscript ./flow.qaqc.qm.R 
+      DirIn=/usr/src/app/pfs/interimData
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      FileSchmQm=$FILE_SCHEMA_QM_LEVELTROLL
+      "WndwAgr=005|030"
+      "WghtAlphBeta=2|1"
+      Thsh=0.2
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF"
+      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
+      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF"
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF:-1"
+  - else echo "FATAL - Cannot determine source_type as aquatroll or leveltroll. Aborting..."
+  - fi
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: QAQC_PLAUSIBILITY_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: REGULARIZED_FLAGS_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
+            # Join on named location (already joined below by day
+            join_indices: [6]
+    OUT_PATH: /usr/src/app/pfs/interimData
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK
+    PARALLELIZATION_INTERNAL: '2' # Option for quality metrics module
+input:
+# We're going to send in the aquatroll locations separately from the leveltroll locations
+# The 'separate' part is achieved by the union. Each datum in a union is sent in separately to the container. 
+# Each datum consists of a cross between the aquatroll or leveltroll data and it's associated avro schema 
+# for the output. The group nested within this cross is what allows us to send in all the aquatroll data for 
+# each day in as one datum. It groups by day AND sensor type.
+# We need to do some distinguishing between these sensor types when we execute the code above. We'll 
+# determine which sensor type we have by seeing which FILE_SCHEMA_QM_[SOURCE_TYPE] environment variable is populated 
+# in the container. 
+  union:
+  - cross:
+    - pfs:
+        name: FILE_SCHEMA_QM_AQUATROLL
+        repo: surfacewaterPhysical_avro_schemas
+        glob: /surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_quality_metrics.avsc
+    - group:
+      - join:
+        - pfs:
+            name: QAQC_PLAUSIBILITY_PATH
+            repo: surfacewaterPhysical_analyze_pad_and_qaqc_plau
+            glob: /(*/*/*)/*/(aquatroll200)
+            joinOn: $1
+            group_by: $1$2
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        - pfs:
+            name: REGULARIZED_FLAGS_PATH
+            repo: surfacewaterPhysical_group_path
+            glob: /(*/*/*)/*/(aquatroll200)
+            joinOn: $1
+            group_by: $1$2
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - cross:
+    - pfs:
+        name: FILE_SCHEMA_QM_LEVELTROLL
+        repo: surfacewaterPhysical_avro_schemas
+        glob: /surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_quality_metrics.avsc
+    - group:
+      - join:
+        - pfs:
+            name: QAQC_PLAUSIBILITY_PATH
+            repo: surfacewaterPhysical_analyze_pad_and_qaqc_plau
+            glob: /(*/*/*)/*/(leveltroll500)
+            joinOn: $1
+            group_by: $1$2
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        - pfs:
+            name: REGULARIZED_FLAGS_PATH
+            repo: surfacewaterPhysical_group_path
+            glob: /(*/*/*)/*/(leveltroll500)
+            joinOn: $1
+            group_by: $1$2
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+resource_requests:
+  memory: 800M
+  cpu: 2.2
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"500M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.3"
+    }
+  ]
