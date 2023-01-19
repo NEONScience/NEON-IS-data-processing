@@ -51,13 +51,13 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
             create_date = row[7]
             last_update = row[8]
             srf = Srf(group_name=group_name,
-                      sr_id=sr_id,
+                      id=sr_id,
                       start_date=start_date,
                       end_date=end_date,
-                      srfTermName=srfTermName,
+                      measurement_stream_name=srfTermName,
+                      srf_term_name=srfTermName,
                       srf=srf,
                       user_comment=user_comment,
                       create_date=create_date,
-                      last_update=last_update)
+                      last_update_date=last_update)
             yield threshold
-
