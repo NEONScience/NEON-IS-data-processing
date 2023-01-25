@@ -19,11 +19,9 @@ def load_srfs(out_path: Path, get_srfs: Callable[[str], Iterator[Srf]], group_pr
     :param get_groups: A function yielding groups.
     :param group_prefix: group_prefix.
     """
-    group_prefix_path = group_prefix
-    if group_prefix[-1] == "_":
-        group_prefix_path = group_prefix[:-1]
-    srf_name_str: str = "_science_review_flags"
-    srf_file_name: str = (group_prefix_path,f'{srf_name_str}.json')
+    
+    srf_name: str = "_science_review_flags"
+    srf_file_name: str = (group_prefix_path,f'{srf_name}.json')
     with open(Path(out_path,srf_file_name), 'w') as file:
         srfs = []
         for srf in get_srfs(group_prefix=group_prefix):
