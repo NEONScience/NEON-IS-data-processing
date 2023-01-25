@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from contextlib import closing
 from typing import List, Iterator
+import common.date_formatter as date_formatter
 
 from data_access.db_connector import DbConnector
 from data_access.types.srf import Srf
@@ -56,12 +57,12 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
             last_update = row[9]
             srf = Srf(group_name=group_name,
                       id=sr_id,
-                      start_date=start_date,
-                      end_date=end_date,
+                      start_date=date_formatter.to_string(start_date),
+                      end_date=date_formatter.to_string(end_date),
                       measurement_stream_name=meas_strm_name,
                       srf_term_name=srfTermName,
                       srf=srf,
                       user_comment=user_comment,
-                      create_date=create_date,
-                      last_update_date=last_update)
+                      create_date=date_formatter.to_string(create_date),
+                      last_update_date=date_formatter.to_string(last_update))
             yield srf
