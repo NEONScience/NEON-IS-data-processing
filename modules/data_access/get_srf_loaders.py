@@ -22,7 +22,7 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
         from 
             "group" g , data_product_group dpg, nam_locn nl, meas_strm ms , science_review sr
         where 
-            g.group_name  = ANY (%s)
+            g.group_name  like %s
 		and 
 	  		g.group_id = dpg.group_id
         and 
@@ -36,10 +36,12 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
              
      '''
 
-    group_prefix_n = group_prefix.split("|")
+    group_prefix_1 = group_prefix + '%'
+    if group_prefix[-1] == "_":
+        group_prefix_1 = group_prefix[:-1] + '\_%'
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, (group_prefix_n,))
+        cursor.execute(sql, [group_prefix_1])
         rows = cursor.fetchall()
         for row in rows:
             group_name = row[0]
