@@ -1,0 +1,182 @@
+[
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE12",
+      "Value":"196652.000000000",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE11",
+      "Value":"151424.000000000",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE10",
+      "Value":"0.000000000",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE9",
+      "Value":"0.000001858",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE8",
+      "Value":"0.000021328",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE7",
+      "Value":"0.000000741",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE6",
+      "Value":"-0.000000006",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE5",
+      "Value":"0.001548637",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE4",
+      "Value":"0.015548793",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE3",
+      "Value":"0.012025538",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE2",
+      "Value":"0.016467528",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE1",
+      "Value":"0.014861324",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD3",
+      "Value":"294",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD2",
+      "Value":"23",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD1",
+      "Value":"294",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA3",
+      "Value":"0.023650",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA2",
+      "Value":"0.000793",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      196652,
+      "term":"barometricPressure",
+      "start_date":"2020-01-01T00:00:00.000Z",
+      "end_date":"2020-01-02T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA1",
+      "Value":"0.023663",
+      ".attrs":"kPa"
+   }
+]

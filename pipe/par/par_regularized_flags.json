@@ -16,7 +16,7 @@
       "RptTimeWndw=FALSE",
       "DropNotNumc=FALSE"
     ],
-    "image": "quay.io/battelleecology/neon-is-rglr-r:v1.0.3,
+    "image": "quay.io/battelleecology/neon-is-rglr-r:v1.0.4",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

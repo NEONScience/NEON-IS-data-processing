@@ -148,6 +148,12 @@
 #'
 #' @return Regularized data output in Parquet format in DirOut, where DirOut directory
 #' replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
+#' Note that if a location file is present in the input directory and active periods are found within
+#' the location file, regularized output will be provided over the time range(s) of the active period(s). 
+#' Thus, ensure that any desired truncation of the active periods (as performed in the location active dates
+#  assignment module) is done before running this code to limit the overall range of regularized output. If no 
+#  location file is found, or no active periods are provided in the location file, regularized output will be 
+#  provided for the data day as determined from the directory structure.
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -206,6 +212,8 @@
 #     Applied internal parallelization
 #   Cove Sturtevant (2021-09-01)
 #     Move main functionality to wrapper function and add error routing
+#   Cove Sturtevant (2023-01-19)
+#     Enable regularized time period to be controlled by active periods
 ##############################################################################################
 library(foreach)
 library(doParallel)
