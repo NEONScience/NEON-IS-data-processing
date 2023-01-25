@@ -516,10 +516,10 @@
     },
     "neonUtilities": {
       "Package": "neonUtilities",
-      "Version": "2.1.4",
+      "Version": "2.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "18b36fde548c127232793c7fda0f4c79",
+      "Hash": "c128a2d6ed68601b0066062ba4ea67e4",
       "Requirements": [
         "R.utils",
         "curl",

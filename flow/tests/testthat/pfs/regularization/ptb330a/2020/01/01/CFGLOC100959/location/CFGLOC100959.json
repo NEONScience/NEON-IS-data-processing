@@ -1,0 +1,35 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC100959",
+                "type":"CONFIG",
+                "description":"Harvard Forest Barometric Pressure",
+                "domain":"D01",
+                "site":"HARV",
+                "context":[
+
+                ],
+                "active_periods":[
+                    {
+                        "start_date":"2020-01-01T13:31:12Z",
+                        "end_date":"2020-01-02T18:06:52Z"
+                    }
+                ]
+            },
+            "HOR":"000",
+            "Required Asset Management Location Code":"CFGLOC100959",
+            "TMI":"000",
+            "Data Rate":"0.1",
+            "VER":"025",
+            "Required Asset Management Location ID":            2000,
+            "FreqSamp":"0.1",
+            "Cal$PrdLab":"1",
+            "IdxLoca":"000_025",
+            "IS Processing Default Start Date":"2014-10-09T00:00:00Z"
+        }
+    ]
+}

@@ -1,0 +1,108 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC101256",
+                "domain":"D10",
+                "site":"ARIK",
+                "install_date":"2020-01-01T00:00:00Z",
+                "remove_date":"2020-01-02T00:00:00Z",
+                "context":[
+
+                ],
+                "locations":{
+                    "type":"FeatureCollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "geometry":{
+                                "type":"Point",
+                                "coordinates":[
+                                                                        -102.450966,
+                                                                        39.756546,
+                                                                        1191.796
+                                ]
+                            },
+                            "properties":{
+                                "start_date":"2020-01-01T00:00:00Z",
+                                "end_date":"2020-01-02T00:00:00Z",
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "gamma":                                0,
+                                "x_offset":                                0,
+                                "y_offset":                                0.05,
+                                "z_offset":                                1.69,
+                                "reference_location":null,
+                                "location_properties":[
+                                    [
+                                        "UTM Zone",
+                                        "13N"
+                                    ],
+                                    [
+                                        "Elevation uncertainty",
+                                                                                0.1
+                                    ],
+                                    [
+                                        "County",
+                                        "Yuma"
+                                    ],
+                                    [
+                                        "Geodetic datum",
+                                        "WGS84"
+                                    ],
+                                    [
+                                        "Country",
+                                        "USA"
+                                    ],
+                                    [
+                                        "Coordinate source",
+                                        "AIS_SURVEY"
+                                    ],
+                                    [
+                                        "Coordinate uncertainty",
+                                                                                0.231
+                                    ],
+                                    [
+                                        "State province",
+                                        "CO"
+                                    ],
+                                    [
+                                        "Survey horizontal uncertainty",
+                                                                                0.019
+                                    ],
+                                    [
+                                        "Real world elevation uncertainty",
+                                                                                0.1
+                                    ],
+                                    [
+                                        "Survey vertical uncertainty",
+                                                                                0.012
+                                    ],
+                                    [
+                                        "Transformation RMSE",
+                                                                                0.131
+                                    ],
+                                    [
+                                        "Real world coordinate uncertainty",
+                                                                                0.1
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "HOR":"200",
+            "Required Asset Management Location Code":"CFGLOC101256",
+            "TMI":"000",
+            "Data Rate":"0.1",
+            "VER":"000",
+            "Required Asset Management Location ID":            2398
+        }
+    ],
+    "source_id":    12743,
+    "source_type":"ptb330a"
+}

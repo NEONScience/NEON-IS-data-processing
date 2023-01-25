@@ -25,7 +25,12 @@
 #' The data folder holds a any number of data files to be regularized.
 #' The location folder holds json files with the location data corresponding to the data files in the data
 #' directory. The regularization frequency will be gathered from the location files for rows in ParaRglr where
-#' ParaRglr$FreqRglr is NA. 
+#' ParaRglr$FreqRglr is NA. In addition, if the location file is present and active periods are found within
+#' the location file, regularized output will be provided over the time range(s) of the active period(s). 
+#' Thus, ensure that any desired truncation of the active periods (as performed in the location active dates
+#  assignment module) is done before running this code to limit the overall range of regularized output. If no 
+#  location file is found, or no active periods are provided in the location file, regularized output will be 
+#  provided for the data day as determined from the directory structure.
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
@@ -92,6 +97,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-09-02)
 #     Convert flow script to wrapper function
+#   Cove Sturtevant (2023-01-19)
+#     Enable regularized time period to be controlled by active periods
 ##############################################################################################
 wrap.rglr <- function(DirIn,
                       DirOutBase,
@@ -121,35 +128,71 @@ wrap.rglr <- function(DirIn,
     log$error(base::paste0('No location data found in ', dirLoc))
     stop()
   } else if (numFileLoc > 1) {
-    fileLoc <- fileLoc[1]
     log$warn(base::paste0(
       'There is more than location file in ',
       dirLoc,
-      '. Using ',
-      fileLoc
+      '. Queries for location information will access files in the following preference order until the desired property is found: ',
+      base::paste0(fileLoc,collapse=','),
+      ''
     ))
   } 
   
-  # Read regularization frequency from location file if expected
-  if (expcLoc){
+  # Read in location file(s) if present
+  locMeta <- list()
+  timeActv <- base::data.frame(start_date=timeBgn,end_date=timeEnd) # Initialize active period
+  if (numFileLoc > 0) {
     # Grab the named location from the directory structure
     nameLoc <-
       utils::tail(InfoDirIn$dirSplt, 1) # Location identifier from directory path
     
-    # Find the location we're looking for in the locations file
-    nameFileLoc <- base::paste0(dirLoc, '/', fileLoc)
-    locMeta <-
-      NEONprocIS.base::def.loc.meta(
-        NameFile = nameFileLoc,
-        NameLoc = nameLoc,
-        TimeBgn = timeBgn,
-        TimeEnd = timeEnd,
-        log = log
-      )
-    FreqRglrLoc <- base::as.numeric(locMeta$dataRate[1])
+    locMeta <- base::lapply(base::paste0(dirLoc,'/',fileLoc),
+                            NEONprocIS.base::def.loc.meta,
+                            NameLoc = nameLoc,
+                            TimeBgn = timeBgn,
+                            TimeEnd = timeEnd,
+                            log = log)
+    
+    # Get active periods - If no active periods are found, use the default timeBgn and timeEnd 
+    # determined from the daily directory structure (initialized above). Note that excluding data based on no
+    # active periods is done in a separate module (location active dates assignment). Also
+    # note that if active periods are found, data will be regularized over that entire interval. 
+    # Ensure that any desired truncation of the active periods (as performed in the location active dates
+    # assignment module) is done before running this code to limit the overall range of regularization.
+    timeActvAll <- base::lapply(locMeta,
+                                FUN=function(locMetaIdx){
+                                    if(base::length(locMetaIdx$active_periods) > 0){
+                                      return(locMetaIdx$active_periods)
+                                    } else {
+                                      return(NA)
+                                    }
+                                  }
+                                )
+    timeActvLoc <- utils::head(timeActvAll[!is.na(timeActvAll)],1)
+    if(base::length(timeActvLoc) > 0){
+      timeActv <- timeActvLoc[[1]][[1]]
+    }
+    
+    # Turn any NA start/end dates into timeBgn/timeEnd
+    timeActv$start_date[base::is.na(timeActv$start_date)] <- timeBgn
+    timeActv$end_date[base::is.na(timeActv$end_date)] <- timeEnd
+   
+    # Sort active periods based on start time
+    timeActv <- timeActv[base::order(timeActv$start_date),]
+    
+    log$debug(base::paste0(base::nrow(timeActv),' active periods found. Regularized data will be output only for active periods.'))
+  }
+  
+  # Read regularization frequency from location file if expected
+  if (expcLoc){
+
+    # Get the first populated value from the location files
+    freqAll <- base::unlist(
+      base::lapply(locMeta,FUN=function(locMetaIdx){locMetaIdx$dataRate[1]})
+    )
+    FreqRglrLoc <- base::as.numeric(utils::head(freqAll[!is.na(freqAll)],1))
     
     # Error check
-    if (base::is.na(FreqRglrLoc)) {
+    if (base::length(FreqRglrLoc) == 0 || base::is.na(FreqRglrLoc)) {
       log$error(
         base::paste0(
           'Cannot determine regularization frequency from location file for datum path ',
@@ -226,48 +269,58 @@ wrap.rglr <- function(DirIn,
         stop()
       }
       
-      # Regularize the data
-      BgnRglr <- base::as.POSIXlt(timeBgn)
-      EndRglr <- base::as.POSIXlt(timeEnd)
-      idxTime <- base::which(nameVarIn == 'readout_time')
-      dataRglr <-
-        eddy4R.base::def.rglr(
-          timeMeas = base::as.POSIXlt(data$readout_time),
-          dataMeas = base::subset(data, select = -idxTime),
-          BgnRglr = BgnRglr,
-          EndRglr = EndRglr,
-          FreqRglr = FreqRglrIdx,
-          MethRglr = ParaRglr$MethRglr[idxRowParaRglr],
-          WndwRglr = ParaRglr$WndwRglr[idxRowParaRglr],
-          IdxWndw = ParaRglr$IdxWndw[idxRowParaRglr],
-          DropNotNumc = ParaRglr$DropNotNumc[idxRowParaRglr],
-          RptTimeWndw = ParaRglr$RptTimeWndw[idxRowParaRglr]
-        )
-      
-      # Make sure we return the regularized data as the same class it came in with
-      for (idxVarRglr in base::names(dataRglr$dataRglr)) {
-        base::class(dataRglr$dataRglr[[idxVarRglr]]) <-
-          base::class(data[[idxVarRglr]])
+      # Run through each active period, regularizing the data
+      rpt <- list()
+      for (idxTimeActv in base::seq_len(base::nrow(timeActv))){
+        
+        # Regularize the data
+        BgnRglr <- base::as.POSIXlt(timeActv$start_date[idxTimeActv])
+        EndRglr <- base::as.POSIXlt(timeActv$end_date[idxTimeActv])
+        log$debug(base::paste0('Regularizing over active period: ',BgnRglr,' to ', EndRglr))
+        
+        idxTime <- base::which(nameVarIn == 'readout_time')
+        dataRglr <-
+          eddy4R.base::def.rglr(
+            timeMeas = base::as.POSIXlt(data$readout_time),
+            dataMeas = base::subset(data, select = -idxTime),
+            BgnRglr = BgnRglr,
+            EndRglr = EndRglr,
+            FreqRglr = FreqRglrIdx,
+            MethRglr = ParaRglr$MethRglr[idxRowParaRglr],
+            WndwRglr = ParaRglr$WndwRglr[idxRowParaRglr],
+            IdxWndw = ParaRglr$IdxWndw[idxRowParaRglr],
+            DropNotNumc = ParaRglr$DropNotNumc[idxRowParaRglr],
+            RptTimeWndw = ParaRglr$RptTimeWndw[idxRowParaRglr]
+          )
+        
+        # Make sure we return the regularized data as the same class it came in with
+        for (idxVarRglr in base::names(dataRglr$dataRglr)) {
+          base::class(dataRglr$dataRglr[[idxVarRglr]]) <-
+            base::class(data[[idxVarRglr]])
+        }
+        
+        # Add the readout time back in, and potentially the bin start and end times
+        rpt[[idxTimeActv]] <-
+          base::data.frame(readout_time = dataRglr$timeRglr,
+                           stringsAsFactors = FALSE)
+        rpt[[idxTimeActv]] <- base::cbind(rpt[[idxTimeActv]], dataRglr$dataRglr)
+        
+        # Match the original column order (minus any variables we dropped)
+        setColOrd <- base::match(nameVarIn,base::names(rpt[[idxTimeActv]]))
+        rpt[[idxTimeActv]] <- rpt[[idxTimeActv]][,setColOrd[!is.na(setColOrd)]]
+        
+        # Tack on the time window start and end times to the end of the data frame
+        if(ParaRglr$RptTimeWndw[idxRowParaRglr] == TRUE){
+          rpt[[idxTimeActv]] <- base::cbind(rpt[[idxTimeActv]], dataRglr$timeWndw)
+        }
+        
+        # Remove any data points outside the active period
+        rpt[[idxTimeActv]] <-
+          rpt[[idxTimeActv]][rpt[[idxTimeActv]]$readout_time >= BgnRglr & rpt[[idxTimeActv]]$readout_time < EndRglr, ]
+        
       }
-      
-      # Add the readout time back in, and potentially the bin start and end times
-      rpt <-
-        base::data.frame(readout_time = dataRglr$timeRglr,
-                         stringsAsFactors = FALSE)
-      rpt <- base::cbind(rpt, dataRglr$dataRglr)
-      
-      # Match the original column order (minus any variables we dropped)
-      setColOrd <- base::match(nameVarIn,base::names(rpt))
-      rpt <- rpt[,setColOrd[!is.na(setColOrd)]]
-      
-      # Tack on the time window start and end times to the end of the data frame
-      if(ParaRglr$RptTimeWndw[idxRowParaRglr] == TRUE){
-        rpt <- base::cbind(rpt, dataRglr$timeWndw)
-      }
-      
-      # Remove any data points outside this day
-      rpt <-
-        rpt[rpt$readout_time >= BgnRglr & rpt$readout_time < EndRglr, ]
+      # Combine regularized data from all active periods
+      rpt <- base::do.call(base::rbind,rpt)
       
       # select output schema
       if (base::is.na(ParaRglr$SchmRglr[idxRowParaRglr])) {
@@ -284,10 +337,11 @@ wrap.rglr <- function(DirIn,
           data = rpt,
           NameFile = fileOut,
           NameFileSchm = NULL,
-          Schm = idxSchmRglr
+          Schm = idxSchmRglr,
+          log=log
         ),
         silent = TRUE)
-      if (base::class(rptWrte) == 'try-error') {
+      if (base::any(base::class(rptWrte) == 'try-error')) {
         log$error(base::paste0(
           'Cannot write regularized data in file ',
           fileOut,
