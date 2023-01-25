@@ -11,7 +11,7 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
     Get science_review data for a group prefix, i.e., pressure-air_.
 
     :param connector: A database connector.
-    :param group_prefix: A group prefix, i.e., 'surfacewater-physical_PRLA130100'.
+    :param group_prefix: A group prefix, one or more separated with a pipe (|).
     :return: The Srf.
     """
 
@@ -22,7 +22,9 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
         from 
             "group" g , data_product_group dpg, nam_locn nl, meas_strm ms , science_review sr
         where 
-            g.group_name like %s
+            g.group_name  = ANY (%s)
+		and 
+	  		g.group_id = dpg.group_id
         and 
             nl.nam_locn_id = g.named_location_id
         and 
@@ -33,12 +35,11 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
             substring (sr.meas_strm_name from 15 for 13) = substring (dpg.dp_idq  from 15 for 13 ) 
              
      '''
-    group_prefix_1 = group_prefix + '%'
-    if group_prefix[-1] == "_":
-        group_prefix_1 = group_prefix[:-1] + '\_%'
+
+    group_prefix_n = group_prefix.split("|")
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [group_prefix_1])
+        cursor.execute(sql, (group_prefix_n,))
         rows = cursor.fetchall()
         for row in rows:
             group_name = row[0]
