@@ -20,19 +20,20 @@ def load_srfs(out_path: Path, get_srfs: Callable[[str], Iterator[Srf]], group_pr
     :param get_groups: A function yielding groups.
     :param group_prefix: group_prefix.
     """
-    group_prefix_path = group_prefix
-    if group_prefix[-1] == "_":
-        group_prefix_path = group_prefix[:-1]
-
     srf_name: str = "_science_review_flags"
-    srf_file_name: str = group_prefix_path + f'{srf_name}.json'
-    path: str = Path(out_path, group_prefix_path, srf_file_name)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, 'w') as file:
-        srfs = []
-        for srf in get_srfs(group_prefix=group_prefix):
-            srfs.append(srf._asdict())
+    srfs = []
+    for srf in get_srfs(group_prefix=group_prefix):
+        srfs.append(srf._asdict())
+    if not srfs:
+        print("Science review is not written")
+    else:
+        groupname: str = srfs[0]["group_name"]
+        srf_file_name: str = groupname + f'{srf_name}.json'
+        path: str = Path(out_path, groupname, srf_file_name)
+        path.parent.mkdir(parents=True, exist_ok=True)
         srf_data = {}
         srf_data.update({'science_review_flags': srfs})
         json_data = json.dumps(srf_data, indent=4, sort_keys=False, default=str)
-        file.write(json_data)
+        with open(path, 'w') as file:
+            file.write(json_data)
+        
