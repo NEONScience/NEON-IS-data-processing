@@ -12,7 +12,7 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
     Get science_review data for a group prefix, i.e., pressure-air_.
 
     :param connector: A database connector.
-    :param group_prefix: A group prefix, one or more separated with a pipe (|).
+    :param group_prefix: A group prefix, i.e., rel-humidity_ or surfacewater-physical_.
     :return: The Srf.
     """
 
@@ -21,11 +21,11 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
             g.group_name, sr.id, sr.start_date, sr.end_date, sr.meas_strm_name, 
             ms.term_name as "srfTermName", sr.srf, sr.user_comment, sr.create_date, sr.last_update
         from 
-            "group" g , data_product_group dpg, nam_locn nl, meas_strm ms , science_review sr
+            "group" g, data_product_group dpg, nam_locn nl, meas_strm ms, science_review sr
         where 
             g.group_name  like %s
-		and 
-	  		g.group_id = dpg.group_id
+        and 
+            g.group_id = dpg.group_id
         and 
             nl.nam_locn_id = g.named_location_id
         and 
