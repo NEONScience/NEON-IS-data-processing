@@ -24,7 +24,7 @@ transform:
   - "  site=${arr[5]}"
   - "  export GEN_DATE=$year-$month-$day"
   - "  export GEN_SITE_NAME=$site"
-  - "  export GEN_OUTPUT_DIR=/pfs/out/li7200/$year/$month/$day"
+  - "  export GEN_OUTPUT_DIR=/usr/src/app/interimData/li7200/$year/$month/$day"
   - "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem"
   - "  mkdir -p $GEN_OUTPUT_DIR"
   - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip"
@@ -66,7 +66,7 @@ parallelism_spec:
 resource_requests:
   memory: 500M
   cpu: 0.7
-autoscaling: false
+autoscaling: true
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

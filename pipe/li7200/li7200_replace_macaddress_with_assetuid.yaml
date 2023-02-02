@@ -18,7 +18,7 @@ input:
   - join:
     - pfs:
         name: DATA_PATH
-        repo: data_source_li7200_linkmerge
+        repo: li7200_data_source_trino
         glob: /li7200/*/*/*/(*)
         group_by: $1
         join_on: $1
