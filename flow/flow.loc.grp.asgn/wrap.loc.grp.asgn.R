@@ -126,7 +126,7 @@ wrap.loc.grp.asgn <- function(DirIn,
   # Assign and filter each file
   for(idxFile in file){
     
-    # Get metadata for all thefiles in the directory, including install and remove dates and/or active periods
+    # Get metadata for all the files in the directory, including install and remove dates and/or active periods
     nameFile <- base::paste0(DirIn, '/', idxFile)
     # ------- Compile the dates over which this location file applies. -------
     # Install/remove dates for asset install

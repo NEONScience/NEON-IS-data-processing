@@ -1,45 +1,44 @@
 ##############################################################################################
-#' @title Location or group assignment module for NEON IS data processing
+#' @title Science Review Flag assignment module for NEON IS data processing
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
-#' @description Workflow. Assign the location file(s) for a sensor ID to each data day which it applies
-#' over 1 or more data years. When assigning the location file to each data day, the location 
-#' information is filtered to that relevant only to the data day and resaved. This includes truncating
-#' any dates in the locations file that span the data day to the start or end of the data day, as applicable. 
-#' Original dates falling within the data day will not be modified. This code works for 
-#' both sensor-based location files as well as location-based location files.
+#' @description Workflow. Assign the science review flag (SRF) file(s) for a group ID to each data day which it applies
+#' over 1 or more data years. When assigning the SRF file to each data day, the  
+#' information is filtered to that relevant only to the data day and resaved. This includes filtering
+#' out all things that might change without impacting the flagging, including create/update dates and user comment.
+#' In addition, the start and end dates are truncated to the start or end of the data day, as applicable. 
+#' Original dates falling within the data day will not be modified. 
 #'
 #' General code workflow:
 #'    Parse input parameters
-#'    Determine the years over which to assign location files
-#'    For each sensor ID:
-#'      Read the location file(s) for the sensor ID 
-#'      Create a folder structure of all relevant data days for the sensor ID.
-#'      Filter the original location file for info relevant to the data day and resave it in the location
-#'          directory for that sensor ID and day
+#'    Determine the years over which to assign SRF files
+#'    For each group:
+#'      Read the srf file(s) 
+#'      Create a folder structure of all relevant data days for the group.
+#'      Filter the original SRF file for info relevant to the data day and re-save it to the output
 #'      
 #' This script is run at the command line with the following arguments. Each argument must be a string in the format
 #' "Para=value", where "Para" is the intended parameter name and "value" is the value of the parameter.
 #' Note: If the "value" string begins with a $ (e.g. $DIR_IN), the value of the parameter will be assigned
 #' from the system environment variable matching the value string. The arguments are:
 #'
-#' 1. "DirIn=value", where value is the starting directory path where to search for location or group files. 
-#' The full repository must be structured as follows: #/pfs/BASE_REPO/SOURCE_TYPE/ID, 
+#' 1. "DirIn=value", where value is the starting directory path where to search for SRF files. 
+#' The full repository must be structured as follows: #/pfs/BASE_REPO/GROUP_ID, 
 #' where # indicates any number of parent and child directories of any name, so long as they are not pfs.
 #' 
-#' The SOURCE_ID folder holds any number of location files pertaining to the SOURCE_ID. 
-#' There may be no further subdirectories of SOURCE_ID.
+#' The GROUP_ID folder holds any number of SRF files pertaining to the GROUP_ID. Typically there will only be one file. 
+#' There may be no further subdirectories of GROUP_ID.
 #'
 #' For example:
-#' Input path = /scratch/pfs/proc_group/prt/27134/:
-#'    prt_27134_locations.json
+#' Input path = /scratch/pfs/proc_group/surfacewater-physical_PRLA130100/:
+#'    surfacewater-physical_PRLA130100_science_review_flags.json
 #' 
-#' Note that DirIn can be any point between #/pfs and #/pfs/BASE_REPO/SOURCE_TYPE/SOURCE_ID. 
-#' For the folder stucture in the example above, DirIn=/scratch/pfs will process all SOURCE_IDs found 
-#' within the recursive path structure. In contrast, DirIn=/scratch/pfs/proc_group_prt/27134
-#' will process only SOURCE_ID 27134.
+#' Note that DirIn can be any point between #/pfs and #/pfs/BASE_REPO/GROUP_ID. 
+#' For the folder structure in the example above, DirIn=/scratch/pfs will process all GROUP_IDs found 
+#' within the recursive path structure. In contrast, DirIn=/scratch/pfs/proc_group/surfacewater-physical_PRLA130100
+#' will process only GROUP_ID surfacewater-physical_PRLA130100.
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion of DirIn.
 #' 
@@ -52,21 +51,13 @@
 #' 2019
 #' 2020
 #' 2021
-#'
-#' 5. "TypeFile=value", where value is the type of file. 
-#' Options are 'asset', 'namedLocation', and 'group'. Only one may be specified. 'asset' corresponds to a 
-#' location file for a particular asset, which includes information about where and for how long
-#' the asset was installed, including its geolocation history. 'namedLocation' corresponds to a 
-#' location file specific to a named location, including the properties of that named location and
-#' the dates over which it was active (should have been producing data). 'group' corresponds to a group
-#' file specific to a group member, including what groups the member is in and properties of the group.
 #' 
 #' Note: This script implements optional parallelization as well as logging (described in 
 #' \code{\link[NEONprocIS.base]{def.log.init}}), both of which use system environment variables if available. 
 
-#' @return A directory structure in the format DirOut/SOURCE_TYPE/YEAR/MONTH/DAY/SOURCE_ID/location, where 
+#' @return A directory structure in the format DirOut/YEAR/MONTH/DAY/GROUP_ID/science_review_flags, where 
 #' DirOut replaces the input directory structure up to #/pfs/BASE_REPO (see inputs above) and the terminal path 
-#' includes the filtered location files applicable to the year, month, day, and source_id indicated in 
+#' includes the filtered location files applicable to the year, month, day, and GROUP_ID indicated in 
 #' the path. 
 
 #' @references
@@ -76,23 +67,19 @@
 
 #' @examples
 #' # From command line:
-#' Rscript flow.loc.grp.asgn.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "TypeFile=asset"
+#' Rscript flow.srf.asgn.R "DirIn=/pfs/proc_group/surfacewater-physical_PRLA130100" "DirOut=/pfs/out" "DirErr=/pfs/out/errored_datums" "FileYear=/pfs/intended_data_years/data_years.txt"
 
 #' @seealso \code{\link[NEONprocIS.base]{def.log.init}}
 
 # changelog and author contributions / copyrights
-#   Cove Sturtevant (2021-03-15)
-#     original creation, refactored from flow.loc.filt
-#   Cove Sturtevant (2021-08-31)
-#     Add datum error routing
-#   Cove Sturtevant (2022-11-22)
-#     Add option for group files
+#   Cove Sturtevant (2023-01-26)
+#     original creation, refactored from flow.loc.grp.asgn
 ##############################################################################################
 library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.loc.grp.asgn.R")
+source("./wrap.srf.asgn.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -118,7 +105,7 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut","DirErr","FileYear","TypeFile"),
+    NameParaReqd = c("DirIn", "DirOut","DirErr","FileYear"),
     log = log
   )
 
@@ -137,13 +124,6 @@ if(base::length(yearFill) == 0 || base::any(base::is.na(yearFill))){
 timeBgn <- base::as.POSIXct(x=paste0(min(yearFill),'-01-01'),tz='GMT')
 timeEnd <- base::as.POSIXct(x=paste0(max(yearFill)+1,'-01-01'),tz='GMT')
 
-# Check that TypeFile is one of 'asset', 'namedLocation', or 'group'
-log$debug(base::paste0('Type of location files: ', Para$TypeFile))
-if(base::length(Para$TypeFile) != 1 || !(Para$TypeFile %in% c('asset','namedLocation','group'))){
-  log$fatal("TypeFile must be either 'asset', 'namedLocation', or 'group'. See documentation.")
-  stop()
-}
-
 # Find all the input paths (terminal directories). We will process each one.
 DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
@@ -158,11 +138,10 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.loc.grp.asgn(DirIn=idxDirIn,
+      wrap.srf.asgn(DirIn=idxDirIn,
                     DirOutBase=Para$DirOut,
                     TimeBgn=timeBgn,
                     TimeEnd=timeEnd,
-                    TypeFile=Para$TypeFile,
                     log=log
       ),
       error = function(err) {

@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Basic QA/QC module (plausibility)
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.5
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.6
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

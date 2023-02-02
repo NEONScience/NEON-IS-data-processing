@@ -1,6 +1,8 @@
-# Dockerfile for NEON IS Data Processing - Sensor-specific QA/QC module for aspirated air temperature
+# Dockerfile for NEON IS Data Processing - Science Review Flag Assignment Module
+# Example command (must be run from parent directory (flow/flow.srf.asgn) in Docker context:
+# docker build -t neon-is-srf-asgn-r .
 
-# Start with the neon-is-pack-qaqc-r image. 
+# Start with the base image. 
 FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.6
 
 # maintainer handle
@@ -16,7 +18,8 @@ RUN groupadd app && \
 WORKDIR /home/app
 
 # Copy in application code
-COPY ./flow.qaqc.temp.air.aspi.R .
+COPY ./flow.srf.asgn.R .
+COPY ./wrap.srf.asgn.R .
 
 # Run as app user
 RUN chown app:app -R /home/app
