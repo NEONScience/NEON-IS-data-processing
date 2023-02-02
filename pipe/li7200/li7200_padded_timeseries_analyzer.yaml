@@ -24,8 +24,8 @@ input:
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 600M
-  cpu: 0.1
+  memory: 5G
+  cpu: 0.5
 autoscaling: true
 scheduling_spec:
   node_selector:
