@@ -27,21 +27,28 @@ def load_srfs(out_path: Path, get_srfs: Callable[[str], Iterator[Srf]], group_pr
     if not srfs:
         print("Science review is not written")
     else:
-#        print(f'==== srfs are :        {srfs}')
-#        print(f'==== srfs[0] are :        {srfs[0]}')
-
         s = 0
         s_len = len(srfs)
+        groupnames = []
         while s < s_len:
-            groupname: str = srfs[s]["group_name"]
-            print(f'==== groupname is :        {groupname}')
-            srf_file_name: str = groupname + f'{srf_name}.json'
-            path: str = Path(out_path, groupname, srf_file_name)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            srf_data = {}
-            srf_data.update({'science_review_flags': srfs})
-            json_data = json.dumps(srf_data, indent=4, sort_keys=False, default=str)
+            gname: str = srfs[s]["group_name"]
+            if gname not in groupnames:
+                groupnames.append(gname)
             s = s + 1
-            with open(path, 'w') as file:
-                file.write(json_data)
+        for groupname in groupnames:
+            s = -1
+            srfs_group = []
+            while s < (s_len-1):
+                s = s + 1
+                if (groupname == srfs[s]["group_name"]):
+                    srfs_group.append(srfs[s])
+                    print(f'==== srfs_group are :        {srfs_group}')
+                    srf_file_name: str = groupname + f'{srf_name}.json'
+                    path: str = Path(out_path, groupname, srf_file_name)
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    srf_data = {}
+                    srf_data.update({'science_review_flags': srfs_group})
+                    json_data = json.dumps(srf_data, indent=4, sort_keys=False, default=str)
+                    with open(path, 'w') as file:
+                        file.write(json_data)
         
