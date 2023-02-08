@@ -1,0 +1,104 @@
+---
+pipeline:
+  name: parQuantumLine_qm_group_and_compute
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:v1.0.1
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /usr/src/app/pfs/interimData
+  - mkdir -p /usr/src/app/pfs/interimData
+  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
+  - python3 -m filter_joiner.filter_joiner_main
+  - '# Run second module - quality metrics'
+  - Rscript ./flow.qaqc.qm.R 
+    DirIn=/usr/src/app/pfs/interimData
+    DirOut=/pfs/out
+    DirErr=/pfs/out/errored_datums
+    FileSchmQm=$FILE_SCHEMA_QM
+    "WndwAgr=001|030"
+    "WghtAlphBeta=2|1"
+    Thsh=0.2
+    "GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|persistenceQF"
+    "GrpQfBeta1=:nullQF|gapQF|rangeQF|stepQF|persistenceQF"
+    "GrpQfBetaIgnr1=:nullQF|gapQF"
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: QAQC_PLAUSIBILITY_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: REGULARIZED_FLAGS_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
+            # Join on named location (already joined below by day
+            join_indices: [6]
+    OUT_PATH: /usr/src/app/pfs/interimData
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK
+    PARALLELIZATION_INTERNAL: '2' # Option for quality metrics module
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: parQuantumLine_avro_schemas
+      glob: /parQuantumLine/parQuantumLine_dp01_quality_metrics.avsc
+  - join:
+    - pfs:
+        name: QAQC_PLAUSIBILITY_PATH
+        repo: parQuantumLine_analyze_pad_and_qaqc_plau
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: REGULARIZED_FLAGS_PATH
+        repo: parQuantumLine_group_path
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 2
+resource_requests:
+  memory: 600M
+  cpu: 2.2
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]

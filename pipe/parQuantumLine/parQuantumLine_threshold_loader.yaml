@@ -1,32 +1,34 @@
 ---
 pipeline:
-  name: location_asset_li191r
+  name: parQuantumLine_threshold
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_asset_loader:32
+  image: quay.io/battelleecology/threshold_loader:104
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m location_asset_loader.location_asset_loader_main
+  - python3 -m threshold_loader.threshold_loader_main
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: li191r
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: par
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: upward-facing
   secrets:
   - name: db-pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: cron_daily_li191r_tick
+    repo: li191r_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 resource_requests:
-  memory: 100M
+  memory: 120M
   cpu: 0.05
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -48,11 +50,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"400M"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.4"
+      "value": "0.1"
     }
   ]
 
