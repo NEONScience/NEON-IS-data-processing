@@ -1,0 +1,42 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC101256",
+                "type":"CONFIG",
+                "description":"Arikaree River Barometric Pressure",
+                "domain":"D10",
+                "site":"ARIK",
+                "context":[
+
+                ],
+                "active_periods":[
+                    {
+                        "start_date":"2020-01-01T00:00:00Z",
+                        "end_date":"2020-01-01T02:00:00Z"
+                    },
+                    {
+                        "start_date":"2020-01-01T03:00:00Z",
+                        "end_date":"2020-01-01T04:00:00Z"
+                    },
+                    {
+                        "start_date":"2020-01-01T04:00:00Z",
+                        "end_date":"2020-01-01T05:00:00Z"
+                    }
+
+
+                ]
+            },
+            "HOR":"200",
+            "Required Asset Management Location Code":"CFGLOC101256",
+            "TMI":"000",
+            "Data Rate":"0.1",
+            "VER":"000",
+            "Required Asset Management Location ID":            2398,
+            "IS Processing Default Start Date":"2016-03-05T00:00:00Z"
+        }
+    ]
+}

@@ -57,7 +57,7 @@ parallelism_spec:
 resource_requests:
   memory: 300M
   cpu: 0.3
-autoscaling: false
+autoscaling: true
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

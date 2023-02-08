@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=asset
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.3
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -19,11 +19,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_asset_leveltroll500
+      repo: leveltroll500_location_asset
       glob: /leveltroll500/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_leveltroll500_list_years
+      repo: leveltroll500_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 2
@@ -31,7 +31,6 @@ resource_requests:
   memory: 300M
   cpu: 1.3
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

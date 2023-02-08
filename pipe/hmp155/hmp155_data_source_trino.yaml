@@ -27,7 +27,7 @@ transform:
   - "  export GEN_OUTPUT_DIR=/usr/src/app/interimData/hmp155/$year/$month/$day"
   - "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem"
   - "  mkdir -p $GEN_OUTPUT_DIR"
-  - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip"
+  - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second"
   - done
   - '# Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day'
   - python3 -m parquet_linkmerge.parquet_linkmerge_main
@@ -62,7 +62,7 @@ input:
     glob: "/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 2
+  constant: 5
 resource_requests:
   memory: 500M
   cpu: 0.7

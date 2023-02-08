@@ -48,7 +48,7 @@
 #' 
 #' 4. "FileYear=value", where value is the path to a single file that contains only a list of numeric years. The 
 #' minumum and maximum of the years found in the file will determine the maximum date range to populate the 
-#' output repository with calibration files. No header. Each and every row should be a numeric year. Example file:
+#' output repository with files. No header. Each and every row should be a numeric year. Example file:
 #' 2019
 #' 2020
 #' 2021

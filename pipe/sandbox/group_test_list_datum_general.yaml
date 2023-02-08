@@ -1,0 +1,52 @@
+---
+pipeline:
+  name: group_test_list_datum
+transform:
+  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
+  cmd:
+  - "/bin/bash"
+  stdin:
+  - "#!/bin/bash"
+  - echo '---------------------NEW DATUM------------------------'
+  - echo $group_test
+  - ls /pfs/group_test/*/*/*/*/*
+input:
+  group:
+  - pfs:
+      name: group_test
+      repo: surfacewaterPhysical_thresh_select_ts_pad
+      glob: /(*/*/*)/*/(*)
+      group_by: "$1$2"
+      empty_files: true
+resource_requests:
+  memory: 64M
+  cpu: 0.2
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"64M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.1"
+    }
+  ]

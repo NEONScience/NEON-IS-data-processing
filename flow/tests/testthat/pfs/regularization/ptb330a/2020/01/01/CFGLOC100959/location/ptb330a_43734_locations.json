@@ -1,0 +1,139 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC100959",
+                "domain":"D01",
+                "site":"HARV",
+                "install_date":"2020-01-01T00:00:00Z",
+                "remove_date":"2020-01-02T00:00:00Z",
+                "context":[
+
+                ],
+                "locations":{
+                    "type":"FeatureCollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "geometry":null,
+                            "properties":{
+                                "start_date":"2020-01-01T00:00:00Z",
+                                "end_date":"2020-01-02T00:00:00Z",
+                                "alpha":                                0,
+                                "beta":                                0,
+                                "gamma":                                0,
+                                "x_offset":                                -0.03,
+                                "y_offset":                                1.71,
+                                "z_offset":                                5.65,
+                                "reference_location":{
+                                    "type":"Feature",
+                                    "geometry":null,
+                                    "properties":{
+                                        "name":"TOWER100450",
+                                        "locations":{
+                                            "type":"FeatureCollection",
+                                            "features":[
+                                                {
+                                                    "type":"Feature",
+                                                    "geometry":{
+                                                        "type":"Point",
+                                                        "coordinates":[
+                                                                                                                        -72.17265,
+                                                                                                                        42.53691,
+                                                                                                                        348.12784
+                                                        ]
+                                                    },
+                                                    "properties":{
+                                                        "start_date":"2020-01-01T00:00:00Z",
+                                                        "end_date":"2020-01-02T00:00:00Z",
+                                                        "alpha":                                                        0,
+                                                        "beta":                                                        0,
+                                                        "gamma":                                                        0,
+                                                        "x_offset":                                                        0,
+                                                        "y_offset":                                                        0,
+                                                        "z_offset":                                                        0,
+                                                        "reference_location":null,
+                                                        "location_properties":[
+                                                            [
+                                                                "UTM Zone",
+                                                                "18N"
+                                                            ],
+                                                            [
+                                                                "State province",
+                                                                "MA"
+                                                            ],
+                                                            [
+                                                                "Country",
+                                                                "USA"
+                                                            ],
+                                                            [
+                                                                "County",
+                                                                "Worcester"
+                                                            ],
+                                                            [
+                                                                "Geodetic datum",
+                                                                "WGS84"
+                                                            ],
+                                                            [
+                                                                "y Azimuth Angle",
+                                                                                                                                180
+                                                            ],
+                                                            [
+                                                                "x Azimuth Angle",
+                                                                                                                                270
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "location_properties":[
+                                    [
+                                        "UTM Zone",
+                                        "18N"
+                                    ],
+                                    [
+                                        "County",
+                                        "Worcester"
+                                    ],
+                                    [
+                                        "Country",
+                                        "USA"
+                                    ],
+                                    [
+                                        "Geodetic datum",
+                                        "WGS84"
+                                    ],
+                                    [
+                                        "State province",
+                                        "MA"
+                                    ],
+                                    [
+                                        "Elevation uncertainty",
+                                                                                0.02
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "HOR":"000",
+            "Required Asset Management Location Code":"CFGLOC100959",
+            "TMI":"000",
+            "Data Rate":"0.1",
+            "VER":"025",
+            "Required Asset Management Location ID":            2000,
+            "FreqSamp":"0.1",
+            "Cal$PrdLab":"1",
+            "IdxLoca":"000_025"
+        }
+    ],
+    "source_id":    43734,
+    "source_type":"ptb330a"
+}

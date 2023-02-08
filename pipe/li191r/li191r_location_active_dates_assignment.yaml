@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=namedLocation
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.3
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -19,11 +19,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_li191r
+      repo: li191r_location_loader
       glob: /li191r/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_li191r_list_years
+      repo: li191r_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
   constant: 4
@@ -59,4 +59,3 @@ pod_patch: |-
       "value": "0.1"
     }
   ]
-

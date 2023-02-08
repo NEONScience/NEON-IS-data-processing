@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Troll Elevation Conversion and Uncertainty Calculations
 
-# Start with the neon-is-base-r image. 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.0.2
+# Start with the NEON IS stats package image 
+FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.0.4
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org

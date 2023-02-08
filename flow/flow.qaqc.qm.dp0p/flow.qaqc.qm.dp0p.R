@@ -121,6 +121,11 @@
 #' Note that the logic described here occurs before the alpha, beta, and final quality flags are calculated, and
 #' forcing actions will occur following increasing value of X in QfForcX.
 #'
+#' 12. "VarIgnr=value" (optional), where value contains the names of the variables that should be ignored if 
+#' found in the input files, separated by pipes (|) (e.g. "VarIgnr=test1QF|test2QF"). Do not include 
+#' readout_time here. No quality metrics will be computed for these variables and they will not be included 
+#' in the output. Defaults to empty. 
+#' 
 #' 11. "Tmi=value" (optional), where value is a 3-character index specifying the NEON timing index to include
 #' in the output file name. If not input, "000" is used.
 #'
@@ -181,6 +186,8 @@
 #   Cove Sturtevant (2021-11-08)
 #     Move main functionality to wrapper function
 #     Add error routing
+#   Cove Sturtevant (2023-01-13)
+#     Add option to ignore variables in the input files
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -221,6 +228,7 @@ Para <-
       base::paste0("GrpQfBeta", 1:100),
       base::paste0("QfForc", 1:100),
       base::paste0("GrpQfBetaIgnr", 1:100),
+      "VarIgnr",
       "Tmi",
       "DirSubCopy"
     ),
@@ -452,6 +460,10 @@ if (base::length(nameParaGrpQfBetaIgnr) > 0) {
   }
 }
 
+# Retrieve variables to ignore in the flags files
+VarIgnr <- setdiff(Para$VarIgnr,'readout_time')
+log$debug(base::paste0('Variables to ingnore if found in input files: ',base::paste0(VarIgnr,collapse=',')))
+
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <-
@@ -488,6 +500,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                         ParaForc=ParaForc,
                         VarTimeBgn=Para$VarTimeBgn,
                         VarTimeEnd=Para$VarTimeEnd,
+                        VarIgnr=VarIgnr,
                         Tmi=Para$Tmi,
                         SchmQm=SchmQm,
                         DirSubCopy=DirSubCopy,

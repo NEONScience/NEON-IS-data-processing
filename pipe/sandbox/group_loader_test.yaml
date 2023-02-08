@@ -1,0 +1,58 @@
+pipeline:
+  name: group_loader_test_cove
+input:
+  pfs:
+    branch: master
+    empty_files: true
+    glob: /*
+    name: cron_daily_ptb330a_tick
+    repo: cron_daily_ptb330a_tick
+output_branch: master
+resource_requests:
+  cpu: 1.5
+  memory: 300M
+transform:
+  cmd:
+    - /bin/bash
+  env:
+    GROUP_PREFIX: test-group_
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+  image: quay.io/battelleecology/group_loader:515
+  image_pull_secrets:
+    - battelleecology-quay-read-all-pull-secret
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
+  stdin:
+    - '#!/bin/bash'
+    - python3 -m group_loader.group_loader_main
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"500M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.3"
+    }
+  ]

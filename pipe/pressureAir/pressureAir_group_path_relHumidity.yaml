@@ -49,7 +49,7 @@ input:
     - pfs:
         # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
         name: GROUP_FOCUS_PATH
-        repo: relHumidity_level1_group
+        repo: relHumidity_level1_group_and_consolidate
         glob: /(*/*/*)
         joinOn: $1
 parallelism_spec:

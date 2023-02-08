@@ -65,6 +65,9 @@ def.wrte.parq <- function(data,
   
   numVar <- base::length(data)
   numRow <- base::nrow(data)
+  
+  data_attr <- attributes(data)
+  data_schm = data_attr$schema
 
   if(base::length(Dict) == 1){
     Dict <- base::rep(Dict,numVar)
@@ -80,6 +83,7 @@ def.wrte.parq <- function(data,
   if(base::is.null(Schm) && base::is.null(NameFileSchm)){
     # Schema to be constructed from data frame. We done.
     log$debug('Auto-creating schema using data frame.')
+    data <- arrow::arrow_table(data, schema= data_schm)
 
   } else {
     # Schema specified in inputs
@@ -133,14 +137,18 @@ def.wrte.parq <- function(data,
     for(idxVar in base::seq_len(numVar)){
       enblDict <- try(base::length(base::unique(data[[idxVar]])) < 0.7*numRow,silent=TRUE) # Fails for some arrow types
       if(base::all(base::class(enblDict) != 'try-error')){
-        Dict[idxVar] <- TRUE
-      } 
+        if(!("POSIXt" %in% class(data[[idxVar]]))){
+          Dict[idxVar] <- TRUE
+        }
+        
+        
+      }
     }    
   }
 
   
   # Write the data
-  rpt <- arrow::write_parquet(x=data,sink=NameFile,compression=CompType,compression_level=CompLvl,use_dictionary=Dict) 
+  rpt <- arrow::write_parquet(x=data,sink=NameFile,compression=CompType,compression_level=CompLvl,use_dictionary=Dict, coerce_timestamps='ms', allow_truncated_timestamps=TRUE) 
     
   log$debug(base::paste0('Wrote parquet file: ',NameFile))
   return(rpt)

@@ -1,7 +1,11 @@
 # Dockerfile for NEON IS Data Processing - QAQC package
+# Example command (must be run from project parent directory (pack/NEONprocIS.qaqc) in Docker context:
+# docker build --no-cache -t neon-is-pack-qaqc-r .
+# docker build --build-arg auth_token=$GITHUB_PAT --no-cache -t neon-is-pack-qaqc-r .
+
 
 # Start with the neon-is-base-r image. # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base & eddy4R.qaqc
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.6 as intermediate
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.7 as intermediate
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -23,7 +27,7 @@ RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/N
 #RUN git clone -b def.plau.impr.velo https://$GITHUB_PAT:x-oauth-basic@github.com/covesturtevant/NEON-FIU-algorithm-covesturtevant.git
 
 # Now make the final build, which will leave behind our access token
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.6
+FROM quay.io/battelleecology/neon-is-base-r:v1.0.7
 
 # copy the eddy4R.base package from the previous image
 COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/

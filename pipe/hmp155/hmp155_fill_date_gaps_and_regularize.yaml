@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-gf-rglr:v1.0.1
+  image: quay.io/battelleecology/neon-is-gf-rglr:v1.0.3
   cmd:
   - /bin/bash
   stdin:
@@ -71,6 +71,7 @@ input:
           # glob: /hmp155/(*/*/*)
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           joinOn: $2
+          # joinOn: $1
           group_by: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:

@@ -21,7 +21,7 @@ input:
 parallelism_spec:
   constant: 8
 resource_requests:
-  memory: 2Gi
+  memory: 2.5G
   cpu: 1
 autoscaling: true
 scheduling_spec:
@@ -45,11 +45,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"700M"
+      "value":"2G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
+      "value": "0.5"
     }
   ]
 

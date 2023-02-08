@@ -3,25 +3,60 @@ pipeline:
   name: relHumidity_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-basc-grp:v1.0.1
+  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:v1.0.2
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
   - rm -r -f /usr/src/app/pfs/interimData
   - mkdir -p /usr/src/app/pfs/interimData
+  - '# Determine which group type we have'
+  - if [ ${FILE_SCHEMA_STATS_MET+x} ]
+  - then export GROUP_TYPE=met
+  - elif [ ${FILE_SCHEMA_STATS_BUOY+x} ]
+  - then export GROUP_TYPE=buoy
+  - else echo "FATAL - Input repository names do not match expectations. Check pipeline specification."
+  - fi
+  - echo "Group type detected = $GROUP_TYPE"
+  - '# '
   - '# Run first module - filter-joiner (using environment variables below as input parameters)'
   - python3 -m filter_joiner.filter_joiner_main
   - '# Run second module - basic stats'
-  - Rscript ./flow.stat.basc.R 
-    DirIn=/usr/src/app/pfs/interimData
-    DirOut=/pfs/out
-    DirErr=/pfs/out/errored_datums
-    FileSchmStat=$FILE_SCHEMA_STATS
-    "WndwAgr=001|030"
-    "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
-    "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
-    "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
+  - '# If met...'
+  - if [ $GROUP_TYPE = 'met' ]
+  - then 
+      Rscript ./flow.stat.basc.R 
+      DirIn=/usr/src/app/pfs/interimData
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      FileSchmStat=$FILE_SCHEMA_STATS_MET
+      "WndwAgr=001|030"
+      "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
+      "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
+      "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
+  - elif [ $GROUP_TYPE = 'buoy' ]
+  - then 
+  -   Rscript ./flow.stat.basc.R
+        DirIn=/usr/src/app/pfs/interimData
+        DirOut=/pfs/out
+        DirErr=/pfs/out/errored_datums
+        FileSchmStat=$FILE_SCHEMA_STATS_BUOY
+        WndwAgr=030
+        "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
+        "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
+        "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
+  -   Rscript ./flow.data.comb.ts.R
+        DirIn=/usr/src/app/pfs/interimData
+        DirOut=/pfs/out
+        DirErr=/pfs/out/errored_datums
+        FileSchmComb=$FILE_SCHEMA_STATS_INST_BUOY
+        "DirComb=data|uncertainty_data"
+        NameDirCombOut=stats
+        NameVarTime=readout_time
+        "ColKeep=readout_time|readout_time|relativeHumidity|relativeHumidity_ucrtExpn|temperature|temperature_ucrtExpn|dewPoint|dewPoint_ucrtExpn"
+        NameFileSufx=_basicStats_001
+  - else echo "FATAL - Cannot determine group_type as met or buoy. Aborting..."
+  - fi
   env:
     # Environment variables for filter-joiner
     CONFIG: |
@@ -47,31 +82,68 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '1' # Option for stats module
+    PARALLELIZATION_INTERNAL: '2' # Option for stats module
 input:
-  cross:
-  - pfs:
-      name: FILE_SCHEMA_STATS
-      repo: relHumidity_avro_schemas
-      glob: /relHumidity/relHumidity_dp01_stats.avsc
-  - join:
+# We're going to send in the buoy locations separately from the tower/soil/met-station locations
+# The 'separate' part is achieved by the union. Each datum in a union is sent in separately to the container. 
+# Each datum consists of a cross between the data and it's associated avro schema 
+# for the output. The group nested within this cross is what allows us to send in all the buoy data for 
+# each day in as one datum and all the tower/soil/met-station data for one day as a datum. It groups by day AND group type.
+# We need to do some distinguishing between these gorup types when we execute the code above. We'll 
+# determine which group type we have by seeing which FILE_SCHEMA_STATS_[GROUP_TYPE] environment variable is populated 
+# in the container. 
+  union:
+  - cross:
     - pfs:
-        name: QAQC_PATH
-        repo: relHumidity_analyze_pad_and_qaqc_plau
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        name: FILE_SCHEMA_STATS_MET
+        repo: relHumidity_avro_schemas
+        glob: /relHumidity/relHumidity_dp01_stats.avsc
+    - group:
+      - join:
+        - pfs:
+            name: QAQC_PATH
+            repo: relHumidity_analyze_pad_and_qaqc_plau
+            glob: /(*/*/*)/(rel-humidity_)*
+            joinOn: $1
+            group_by: $1$2
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        - pfs:
+            name: UNCERTAINTY_PATH
+            repo: relHumidity_group_path
+            glob: /(*/*/*)/(rel-humidity_)*
+            joinOn: $1
+            group_by: $1$2
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - cross:
     - pfs:
-        name: UNCERTAINTY_PATH
-        repo: relHumidity_group_path_hmp155
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        name: FILE_SCHEMA_STATS_BUOY
+        repo: relHumidity_avro_schemas
+        glob: /relHumidityBuoy/relHumidityBuoy_dp01_stats.avsc
+    - pfs:
+        name: FILE_SCHEMA_STATS_INST_BUOY
+        repo: relHumidity_avro_schemas
+        glob: /relHumidityBuoy/relHumidityBuoy_dp01_stats_instantaneous.avsc
+    - group:
+      - join:
+        - pfs:
+            name: QAQC_PATH
+            repo: relHumidity_analyze_pad_and_qaqc_plau
+            glob: /(*/*/*)/(rel-humidity-buoy_)*
+            joinOn: $1
+            group_by: $1$2
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+        - pfs:
+            name: UNCERTAINTY_PATH
+            repo: relHumidity_group_path
+            glob: /(*/*/*)/(rel-humidity-buoy_)*
+            joinOn: $1
+            group_by: $1$2
+            empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 1
+  constant: 5
 resource_requests: 
-  memory: 400M
-  cpu: 1.2
+  memory: 1G
+  cpu: 2.2
 autoscaling: true
 scheduling_spec:
   node_selector:
