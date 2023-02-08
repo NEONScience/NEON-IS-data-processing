@@ -59,7 +59,6 @@ class LocationLoaderTest(DatabaseBackedTest):
                                            schema_names=schema_names,
                                            context=list(schema_names),
                                            active_periods=[active_period],
-                                           group=group,
                                            properties=[prop])
             return [named_location]
 
