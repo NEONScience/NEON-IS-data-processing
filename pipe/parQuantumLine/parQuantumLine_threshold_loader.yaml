@@ -1,29 +1,33 @@
 ---
 pipeline:
-  name: li7200_calibration_validation
+  name: parQuantumLine_threshold
 transform:
-  cmd:
-  - Rscript
-  - ./flow.cal.conv.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - TermQf=h2o_raw|co2_raw
-  image: quay.io/battelleecology/neon-is-cal-conv-r:v1.0.7
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/threshold_loader:104
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m threshold_loader.threshold_loader_main
   env:
+    OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: par
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: upward-facing
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
-    name: DIR_IN
-    repo: li7200_data_calibration_group
-    glob: /li7200/*/*/*/
-parallelism_spec:
-  constant: 1
+    repo: li191r_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
 resource_requests:
-  memory: 2.5G
-  cpu: 1
+  memory: 120M
+  cpu: 0.05
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -46,11 +50,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "0.1"
     }
   ]
 

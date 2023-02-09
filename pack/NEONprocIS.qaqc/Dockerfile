@@ -1,4 +1,8 @@
 # Dockerfile for NEON IS Data Processing - QAQC package
+# Example command (must be run from project parent directory (pack/NEONprocIS.qaqc) in Docker context:
+# docker build --no-cache -t neon-is-pack-qaqc-r .
+# docker build --build-arg auth_token=$GITHUB_PAT --no-cache -t neon-is-pack-qaqc-r .
+
 
 # Start with the neon-is-base-r image. # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base & eddy4R.qaqc
 FROM quay.io/battelleecology/neon-is-base-r:v1.0.7 as intermediate

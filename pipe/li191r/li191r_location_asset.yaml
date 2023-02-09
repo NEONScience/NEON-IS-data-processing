@@ -1,36 +1,31 @@
 ---
 pipeline:
-  name: data_source_li191r_linkmerge
+  name: li191r_location_asset
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/parquet_linkmerge:16
+  image: quay.io/battelleecology/location_asset_loader:32
   cmd:
-  - bash
+  - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m parquet_linkmerge.parquet_linkmerge_main
+  - python3 -m location_asset_loader.location_asset_loader_main
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE_INDEX: '3'
-    YEAR_INDEX: '4'
-    MONTH_INDEX: '5'
-    DAY_INDEX: '6'
-    SOURCE_ID_INDEX: '7'
+    SOURCE_TYPE: li191r
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
-    name: IN_PATH
-    repo: data_source_li191r_site
-    glob: /li191r/*/*/*
-output_branch: master
-parallelism_spec:
-  constant: 4
+    repo: li191r_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
 resource_requests:
   memory: 100M
-  cpu: 0.1
+  cpu: 0.05
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -52,10 +47,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"200M"
+      "value":"400M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "0.4"
     }
   ]

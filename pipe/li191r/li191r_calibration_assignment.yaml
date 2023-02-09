@@ -18,11 +18,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: calibration_li191r
+      repo: li191r_calibration
       glob: /li191r/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_li191r_list_years
+      repo: li191r_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4
@@ -30,7 +30,6 @@ resource_requests:
   memory: 200M
   cpu: 0.8
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -59,4 +58,3 @@ pod_patch: |-
       "value": "1.5"
     }
   ]
-
