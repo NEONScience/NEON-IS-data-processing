@@ -162,7 +162,7 @@ input:
             group_by: $1$2
             empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 2
 resource_requests: 
   memory: 800M
   cpu: 2

@@ -1,24 +1,35 @@
 ---
 pipeline:
-  name: data_source_li191r_list_years
+  name: test_srf_assignment
 transform:
-  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - ls $REPO_IN > /pfs/out/data_years.txt
+  - Rscript
+  - ./flow.srf.asgn.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileYear=$FILE_YEAR
+  image: quay.io/battelleecology/neon-is-srf-asgn-r:v1.0.0
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
 input:
-  pfs:
-    name: REPO_IN
-    repo: data_source_li191r_linkmerge
-    glob: /li191r
-    empty_files: true
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: srf_loader_test
+      glob: /*
+  - pfs:
+      name: FILE_YEAR
+      repo: test_cron_daily_and_date_control
+      glob: /data_years.txt
+parallelism_spec:
+  constant: 4
 resource_requests:
-  memory: 1K
-  cpu: 0.01
+  memory: 200M
+  cpu: 0.8
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -40,11 +51,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
+      "value":"3G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "2"
     }
   ]
 
