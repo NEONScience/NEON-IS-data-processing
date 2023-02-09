@@ -17,8 +17,8 @@ def load_srfs(out_path: Path, get_srfs: Callable[[str], Iterator[Srf]], group_pr
     Write srf loader jsons into the output path.
 
     :param out_path: The path for writing files, /GROUP/GROUP_science_review_flags.json
-    :param get_groups: A function yielding groups.
-    :param group_prefix: group_prefix.
+    :param get_srfs: A function yielding srfs.
+    :param group_prefix: A group prefix, i.e., rel-humidity_ or surfacewater-physical_.
     """
     srf_name: str = "_science_review_flags"
     srfs = []
@@ -42,7 +42,6 @@ def load_srfs(out_path: Path, get_srfs: Callable[[str], Iterator[Srf]], group_pr
                 s = s + 1
                 if (groupname == srfs[s]["group_name"]):
                     srfs_group.append(srfs[s])
-                    print(f'==== srfs_group are :        {srfs_group}')
                     srf_file_name: str = groupname + f'{srf_name}.json'
                     path: str = Path(out_path, groupname, srf_file_name)
                     path.parent.mkdir(parents=True, exist_ok=True)
