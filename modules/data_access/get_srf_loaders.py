@@ -19,21 +19,17 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
     sql = f'''
         select 
             g.group_name, sr.id, sr.start_date, sr.end_date, sr.meas_strm_name, 
-            ms.term_name as "srfTermName", sr.srf, sr.user_comment, sr.create_date, sr.last_update
+            t.term_name as "srfTermName", sr.srf, sr.user_comment, sr.create_date, sr.last_update
         from 
-            "group" g, data_product_group dpg, nam_locn nl, meas_strm ms, science_review sr
+            "group" g , data_product_group dpg, science_review sr, term t
         where 
-            g.group_name  like %s
-        and 
-            g.group_id = dpg.group_id
-        and 
-            nl.nam_locn_id = g.named_location_id
-        and 
-            ms.nam_locn_id = nl.nam_locn_id
-        and 
-            sr.meas_strm_name = ms.meas_strm_name 
-        and 
-            substring (sr.meas_strm_name from 15 for 13) = substring (dpg.dp_idq  from 15 for 13 ) 
+            g.group_name like %s
+		and 
+	  		g.group_id = dpg.group_id 
+	  	and 
+	  		substring (dpg.dp_idq  from 15 for 13 ) = substring (sr.meas_strm_name from 15 for 13)
+	  	and 
+        	t.term_number = cast(substring (sr.meas_strm_name from 29 for 5)  AS INTEGER) 
              
      '''
 
