@@ -20,7 +20,7 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
         select 
             g.group_name, sr.id, sr.start_date, sr.end_date, sr.meas_strm_name, 
             t.term_name as "srfTermName", sr.srf, sr.user_comment, sr.create_date, 
-            sr.last_update, g.hor, g.ver, nl.nam_locn_name as "site"
+            sr.last_update
         from 
             "group" g, nam_locn nl, data_product_group dpg, science_review sr, term t
         where 
