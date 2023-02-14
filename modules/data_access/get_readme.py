@@ -4,7 +4,7 @@ from contextlib import closing
 from data_access.db_connector import DbConnector
 
 
-def get_readme(connector: DbConnector) -> bytes:
+def get_readme(connector: DbConnector) -> str:
     """
     Get the README template for data product publication.
 
@@ -19,4 +19,4 @@ def get_readme(connector: DbConnector) -> bytes:
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql)
         mem_view: memoryview = cursor.fetchone()[0]
-        return mem_view.tobytes()
+        return mem_view.tobytes().decode('UTF-8')
