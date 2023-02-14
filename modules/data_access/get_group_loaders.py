@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from typing import List, Iterator
+from typing import List
 
 from data_access.db_connector import DbConnector
 from data_access.types.active_period import ActivePeriod
@@ -11,7 +11,7 @@ from data_access.get_group_loader_active_periods import get_group_loader_active_
 from data_access.get_group_loader_group_id import get_group_loader_group_id
 
 
-def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Group]:
+def get_group_loaders(connector: DbConnector, group_prefix: str) -> list[list[Group]]:
     """
     Get member groups for a group prefix, i.e., pressure-air_.
 
@@ -20,7 +20,6 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
     :return: The Group.
     """
     sql_nlg = '''
-
          select distinct
              nlg.named_location_id as mem_id, nl.nam_locn_name  as mem_name
          from 
@@ -33,11 +32,9 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
              nlg.named_location_id in (select nl.nam_locn_id from nam_locn nl)
          and 
              g.group_name like %s
-
     '''
 
     sql_gm = '''
-
          select distinct 
              gm.member_group_id, g2.group_name as mem_name
          from 
@@ -52,7 +49,6 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
              "group" g3)
          and 
              g.group_name like %s
-
     '''
 
     groups: List[Group] = []
@@ -74,11 +70,13 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Gro
             groups = []
             group_ids: List[int] = get_group_loader_group_id(connector, mem_id=mem_id)
             for group_id in group_ids:
-                group_name: str = get_group_loader_group_name(connector, group_id=group_id, group_prefix_1=group_prefix_1)
+                group_name: str = get_group_loader_group_name(connector, group_id=group_id,
+                                                              group_prefix_1=group_prefix_1)
                 if group_name != "":
                     active_periods: List[ActivePeriod] = get_group_loader_active_periods(connector, group_id=group_id)
                     properties: List[Property] = get_group_loader_properties(connector, group_id=group_id)
-                    groups.append(Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties))        
+                    groups.append(
+                        Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties))
             groups.append(groups)
             groups_all.append(groups)
     return groups_all
@@ -90,8 +88,9 @@ def get_group_loader_group_name(connector: DbConnector, group_id: int, group_pre
 
     :param connector: A database connection.
     :param group_id: A group id.
+    :param group_prefix_1: The group prefix.
     :return: The Group name.
-    """  
+    """
     sql_group_name = '''
          select 
              g.group_name 
@@ -100,8 +99,7 @@ def get_group_loader_group_name(connector: DbConnector, group_id: int, group_pre
          where 
              g.group_id = %s
          and 
-         	 g.group_name like %s
-
+            g.group_name like %s
     '''
     group_name: str = ''
     with closing(connector.get_connection().cursor()) as cursor:
