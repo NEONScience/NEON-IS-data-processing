@@ -26,7 +26,7 @@ from data_access.types.property import Property
 from data_access.tests.database_test import DatabaseBackedTest
 
 
-# @unittest.skip('Integration tests.')
+@unittest.skip('Integration tests.')
 class DataAccessTest(DatabaseBackedTest):
 
     connector = None
