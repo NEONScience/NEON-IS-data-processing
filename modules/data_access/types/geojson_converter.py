@@ -52,7 +52,8 @@ def convert_group(group: Group) -> FeatureCollection:
         active_periods = convert_active_periods(group[g].active_periods)
         properties = dict(name=group[g].name,
                   group=group[g].group,
-                  active_periods=active_periods)
+                  active_periods=active_periods,
+                  data_product_ID=group[g].data_product_ID)
         feature = Feature(properties=properties)
         for p in group[g].properties:
             feature[p.name] = p.value

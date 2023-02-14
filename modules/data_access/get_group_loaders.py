@@ -8,6 +8,7 @@ from data_access.types.group import Group
 from data_access.types.property import Property
 from data_access.get_group_loader_properties import get_group_loader_properties
 from data_access.get_group_loader_active_periods import get_group_loader_active_periods
+from data_access.get_group_loader_dp_ids import get_group_loader_dp_ids
 from data_access.get_group_loader_group_id import get_group_loader_group_id
 
 
@@ -21,7 +22,7 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> list[list[Gr
     """
     sql_nlg = '''
          select distinct
-             nlg.named_location_id as mem_id, nl.nam_locn_name  as mem_name
+             nlg.named_location_id, nl.nam_locn_name
          from 
              named_location_group nlg, "group" g, nam_locn nl
          where 
@@ -36,7 +37,7 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> list[list[Gr
 
     sql_gm = '''
          select distinct 
-             gm.member_group_id, g2.group_name as mem_name
+             gm.member_group_id, g2.group_name
          from 
              group_member gm, "group" g, "group" g2
          where 
@@ -74,9 +75,10 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> list[list[Gr
                                                               group_prefix_1=group_prefix_1)
                 if group_name != "":
                     active_periods: List[ActivePeriod] = get_group_loader_active_periods(connector, group_id=group_id)
+                    data_product_ids: List[str] = get_group_loader_dp_ids(connector, group_id=group_id)
                     properties: List[Property] = get_group_loader_properties(connector, group_id=group_id)
-                    groups.append(
-                        Group(name=mem_name, group=group_name, active_periods=active_periods, properties=properties))
+                    groups.append(Group(name=mem_name, group=group_name, active_periods=active_periods,
+                    data_product_ID=data_product_ids, properties=properties))
             groups.append(groups)
             groups_all.append(groups)
     return groups_all
