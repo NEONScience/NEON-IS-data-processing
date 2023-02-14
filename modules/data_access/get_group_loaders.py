@@ -12,7 +12,7 @@ from data_access.get_group_loader_dp_ids import get_group_loader_dp_ids
 from data_access.get_group_loader_group_id import get_group_loader_group_id
 
 
-def get_group_loaders(connector: DbConnector, group_prefix: str) -> list[list[Group]]:
+def get_group_loaders(connector: DbConnector, group_prefix: str) -> List[Group]:
     """
     Get member groups for a group prefix, i.e., pressure-air_.
 
