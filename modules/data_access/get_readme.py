@@ -18,5 +18,5 @@ def get_readme(connector: DbConnector) -> bytes:
     '''
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql)
-        mem_view: memoryview = cursor.fetchone()
+        mem_view: memoryview = cursor.fetchone()[0]
         return mem_view.tobytes()
