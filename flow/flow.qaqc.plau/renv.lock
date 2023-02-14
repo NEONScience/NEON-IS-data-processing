@@ -115,22 +115,6 @@
         "iterators"
       ]
     },
-    "eddy4R.qaqc": {
-      "Package": "eddy4R.qaqc",
-      "Version": "0.2.15",
-      "Source": "unknown",
-      "Hash": "d0e475783726c3616a2a9707ca1589bb",
-      "Requirements": [
-        "RcppRoll",
-        "Rmisc",
-        "ggplot2",
-        "gridExtra",
-        "gtable",
-        "lattice",
-        "plyr",
-        "reshape2"
-      ]
-    },
     "fansi": {
       "Package": "fansi",
       "Version": "1.0.3",
