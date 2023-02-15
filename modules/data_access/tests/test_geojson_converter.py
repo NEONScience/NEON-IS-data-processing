@@ -24,7 +24,6 @@ class GeoJsonConverterTest(unittest.TestCase):
         install_datetime = date_formatter.to_datetime(install_date)
         remove_datetime = date_formatter.to_datetime(remove_date)
         context_list = [context]
-        group_list = [group]
         properties = [Property(name='prop1', value='value1')]
         location_start_date = '2020-01-01T00:00:00Z'
         location_end_date = '2020-01-10T00:00:00Z'
@@ -47,7 +46,7 @@ class GeoJsonConverterTest(unittest.TestCase):
         location['prop1'] = 'value1'
         locations = FeatureCollection([location])
         asset_location = AssetLocation(name=name, domain=domain, site=site, install_date=install_datetime, 
-                                       remove_date=remove_datetime, context=context_list, group=group_list, properties=properties, 
+                                       remove_date=remove_datetime, context=context_list, properties=properties, 
                                        locations=locations)
         feature = geojson_converter.convert_asset_location(asset_location)
         geojson_data = dumps(feature, indent=4, sort_keys=False, default=str)
@@ -59,7 +58,6 @@ class GeoJsonConverterTest(unittest.TestCase):
         self.assertTrue(properties['install_date'] == install_date)
         self.assertTrue(properties['remove_date'] == remove_date)
         self.assertTrue(properties['context'][0] == context)
-        self.assertTrue(properties['group'][0] == group)
         self.assertTrue(json_data['prop1'] == 'value1')
         locations = properties['locations']
         location = locations['features'][0]
@@ -82,12 +80,11 @@ class GeoJsonConverterTest(unittest.TestCase):
         start_date = '2020-01-01T00:00:00Z'
         end_date = '2020-01-02T00:00:00Z'
         context = 'context'
-        group = 'group'
         active_period = ActivePeriod(start_date=date_formatter.to_datetime(start_date),
                                      end_date=date_formatter.to_datetime(end_date))
         prop = Property(name='prop1', value='value1')
         named_location = NamedLocation(name=name, type=location_type, description=description, domain=domain, site=site,
-                                       schema_names=set('prt'), context=[context], group=[group], active_periods=[active_period],
+                                       schema_names=set('prt'), context=[context], active_periods=[active_period],
                                        properties=[prop])
         feature = geojson_converter.convert_named_location(named_location)
         geojson_data = dumps(feature, indent=4, sort_keys=False, default=str)
@@ -101,7 +98,6 @@ class GeoJsonConverterTest(unittest.TestCase):
         self.assertTrue(properties['site'] == site)
         self.assertTrue(properties['description'] == description)
         self.assertTrue(properties['context'][0] == context)
-        self.assertTrue(properties['group'][0] == group)
         self.assertTrue(properties['active_periods'][0]['start_date'] == start_date)
         self.assertTrue(properties['active_periods'][0]['end_date'] == end_date)
         self.assertTrue(feature['prop1'] == 'value1')
