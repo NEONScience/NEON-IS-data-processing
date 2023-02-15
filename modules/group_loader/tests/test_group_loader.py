@@ -35,13 +35,14 @@ class GroupLoaderTest(DatabaseBackedTest):
     def test_group_loader(self):
         s_date = '2022-11-07T11:56:11Z'
         e_date = '2022-11-08T12:57:12Z'
+        data_product_id = 'DP1.20008.001'
 
         def get_groups(group_prefix) -> List[Group]:
             print(f'prefix: {group_prefix}')
             """Mock function to return groups."""
             periods = [ActivePeriod(start_date=to_datetime(s_date), end_date=to_datetime(e_date))]
             props = [Property('HOR', '000'), Property('VER', '000')]
-            group = Group('test-group_2', 'test-group_1', active_periods=periods, properties=props)
+            group = Group('test-group_2', 'test-group_1', active_periods=periods, data_product_ID=data_product_id, properties=props)
             return [group]
 
         # test the function
@@ -63,5 +64,6 @@ class GroupLoaderTest(DatabaseBackedTest):
             self.assertTrue(period['end_date'] == e_date)
             self.assertTrue(properties['name'] == 'test-group_2')
             self.assertTrue(properties['group'] == 'test-group_1')
+            self.assertTrue(properties['data_product_ID'] == data_product_id)
             self.assertTrue(features['HOR'] == '000')
             self.assertTrue(features['VER'] == '000')

@@ -8,4 +8,5 @@ class Group(NamedTuple):
     name: str
     group: str
     active_periods: List[ActivePeriod]
+    data_product_ID: List[str]
     properties: List[Property]

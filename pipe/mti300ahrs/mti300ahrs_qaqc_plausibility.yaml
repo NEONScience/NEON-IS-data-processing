@@ -21,7 +21,7 @@ transform:
   - TermTest10=angXaxs:range|step|persistence
   - TermTest11=angYaxs:range|step|persistence
   - TermTest12=angZaxs:range|step|persistence
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v1.0.4
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v1.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

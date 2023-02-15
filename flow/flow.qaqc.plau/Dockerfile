@@ -1,7 +1,9 @@
 # Dockerfile for NEON IS Data Processing - Basic QA/QC module (plausibility)
+# Build with the following command
+# docker build --no-cache -t neon-is-qaqc-plau-r <path to this directory>
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.5
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.7
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

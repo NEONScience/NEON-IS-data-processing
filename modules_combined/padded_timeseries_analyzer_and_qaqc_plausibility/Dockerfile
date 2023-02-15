@@ -1,10 +1,10 @@
 # Dockerfile for NEON IS Data Processing - Combined padded_timeseries_analyzer and Basic QA/QC module (plausibility)
 # Example command (must be run from project root directory to include both modules in Docker context):
 # Build with the following command
-# docker build --no-cache -t neon-is-anls-ts-pad-qaqc-plau -f <path to this file> <path to parent directory of flow/ and modules/>
+# docker build --no-cache -t neon-is-ts-pad-anls-qaqc-plau -f <path to this file> <path to parent directory of flow/ and modules/>
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.5
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.7
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
