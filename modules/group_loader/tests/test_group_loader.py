@@ -40,8 +40,9 @@ class GroupLoaderTest(DatabaseBackedTest):
             print(f'prefix: {group_prefix}')
             """Mock function to return groups."""
             periods = [ActivePeriod(start_date=to_datetime(s_date), end_date=to_datetime(e_date))]
+            data_product_id = 'DP1.20008.001'
             props = [Property('HOR', '000'), Property('VER', '000')]
-            group = Group('test-group_2', 'test-group_1', active_periods=periods, properties=props)
+            group = Group('test-group_2', 'test-group_1', active_periods=periods, data_product_ID=data_product_id, properties=props)
             return [group]
 
         # test the function
