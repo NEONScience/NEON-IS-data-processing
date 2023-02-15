@@ -29,7 +29,7 @@ class EgressTest(TestCase):
     def test_egress(self):
         os.environ["CUSTOM_ENDPOINT"] = "endpoint"
         os.environ["AMAZON_BUCKET"] = "bucket"
-        egress = Egress(self.input_dir, self.out_dir)
+        egress = Egress(self.input_dir, self.out_dir, 'egressurl')
         egress.upload()
         self.check_output()
 
