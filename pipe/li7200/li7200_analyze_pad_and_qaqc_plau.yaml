@@ -1,0 +1,97 @@
+---
+pipeline:
+  name: li7200_analyze_pad_and_qaqc_plau
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:v1.0.2
+  cmd:
+  - /bin/bash
+  stdin:
+  - "#!/bin/bash"
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /usr/src/app/pfs/interimData
+  - rm -r -f /usr/src/app/pfs/interimDataCopy
+  - mkdir -p /usr/src/app/pfs/interimData
+  - '# Run first module - padded_timeseries_analyzer'
+  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+  - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
+  - cp -rL /usr/src/app/pfs/interimData /usr/src/app/pfs/interimDataCopy 
+  - rm -r -f /usr/src/app/pfs/interimData 
+  - '# Run second module - qaqc plausibility'
+  - Rscript ./flow.qaqc.plau.R
+    DirIn=/usr/src/app/pfs/interimDataCopy
+    DirOut=/pfs/out
+    DirErr=/pfs/out/errored_datums
+    FileSchmQf=$SCHEMA_FLAGS
+    "TermTest1=tempIn:range|step|persistence"
+    "TermTest2=tempOut:range|step|persistence"
+    "TermTest3=tempMean:range|step|persistence"
+    "TermTest4=tempRefe:range|step|persistence"
+    "TermTest5=presAtm:range|step|persistence"
+    "TermTest6=presDiff:range|step|persistence"
+    "TermTest7=presSum:range|step|persistence"
+    "TermTest8=powrH2oSamp:range|step|persistence"
+    "TermTest9=powrH2oRefe:range|step|persistence"
+    "TermTest10=asrpH2o:range|step|persistence"
+    "TermTest11=densMoleH2o:range|step|persistence"
+    "TermTest12=rtioMoleDryH2o:range|step|persistence"
+    "TermTest13=powrCo2Samp:range|step|persistence"
+    "TermTest14=powrCo2Refe:range|step|persistence"
+    "TermTest15=asrpCo2:range|step|persistence"
+    "TermTest16=densMoleCo2:range|step|persistence"
+    "TermTest17=rtioMoleDryCo2:range|step|persistence"
+    "TermTest18=potCool:range|step|persistence"
+    "TermTest19=ssiCo2:range|step|persistence"
+    "TermTest20=ssiH2o:range|step|persistence"
+    #VarAddFileQf=errorState
+  env:
+    # Environment variables for padded timeseries analyzer
+    OUT_PATH: /usr/src/app/pfs/interimData
+    LOG_LEVEL: DEBUG
+    RELATIVE_PATH_INDEX: '3'
+input:
+  cross:
+  - pfs:
+      name: DATA_PATH
+      repo: li7200_thresh_select_ts_pad
+      glob: /li7200/*/*/*/*
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: li7200_avro_schemas
+      glob: /li7200/flags_plausibility_li7200.avsc
+parallelism_spec:
+  constant: 5
+resource_requests:
+  memory: 5.0G
+  cpu: 1.0
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2.2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]
+  

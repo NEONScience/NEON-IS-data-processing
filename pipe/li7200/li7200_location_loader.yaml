@@ -1,30 +1,31 @@
 ---
 pipeline:
-  name: location_asset_li7200
+  name: li7200_location_loader
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_asset_loader:32
+  image: quay.io/battelleecology/location_loader:122
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m location_asset_loader.location_asset_loader_main
+  - python3 -m location_loader.location_loader_main
   env:
+    LOCATION_TYPE: CONFIG
+    SOURCE_TYPE: li7200
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: li7200
   secrets:
   - name: db-pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: cron_daily_li7200_tick
+    repo: li7200_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 resource_requests:
-  memory: 100M
-  cpu: 0.05
+  memory: 300M
+  cpu: 1.5
 autoscaling: true
 
 scheduling_spec:
@@ -52,7 +53,7 @@ pod_patch: |-
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.4"
+      "value": "0.5"
     }
   ]
 

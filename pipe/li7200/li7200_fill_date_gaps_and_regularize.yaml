@@ -1,18 +1,35 @@
 ---
 pipeline:
-  name: li7200_date_gap_filler
+  name: li7200_fill_date_gaps_and_regularize
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/date_gap_filler:12
+  image: quay.io/battelleecology/neon-is-gf-rglr:v1.0.3
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /usr/src/app/pfs/interimData
+  - mkdir -p /usr/src/app/pfs/interimData
+  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
   - python3 -m date_gap_filler.date_gap_filler_main
+  - '# Run second module - regularize'
+  - Rscript ./flow.rglr.R
+    DirIn=/usr/src/app/pfs/interimData
+    DirOut=/pfs/out
+    DirErr=/pfs/out/errored_datums
+    "DirRglr=data|flags"
+    MethRglr=CybiEc
+    WndwRglr=Cntr
+    IdxWndw=Clst
+    RptTimeWndw=FALSE
+    DropNotNumc=FALSE
+    "DirSubCopy=location"
   env:
-    LOG_LEVEL: DEBUG
-    OUT_PATH: /pfs/out
+    # Environment variables for date gap 
+    LOG_LEVEL: INFO
+    OUT_PATH: /usr/src/app/pfs/interimData
     OUTPUT_DIRECTORIES: data,location,flags
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
@@ -26,44 +43,49 @@ transform:
     LOCATION_DAY_INDEX: '6'
     LOCATION_INDEX: '7'
     EMPTY_FILE_TYPE_INDEX: '4'
-    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
+    LINK_TYPE: COPY # options are COPY or SYMLINK
+    # Environment variables for regularizer
+    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
       name: EMPTY_FILE_PATH
-      repo: empty_files_li7200
+      repo: li7200_empty_files
       glob: /li7200
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - group:
     - pfs:
         name: DATA_PATH
-        repo: li7200_merge_data_by_location
-        # For full-scale daily processing, glob should be /li7200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li7200/(*/*/*/(CFGLOC103628|CFGLOC104711|CFGLOC105209|CFGLOC106584|CFGLOC110680|CFGLOC109640|CFGLOC110993|CFGLOC113251|CFGLOC113732))
+        repo: li7200_location_group_and_restructure
+        # For full-scale daily processing, glob should be /li7200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li7200/(*/*/*/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
         glob: /li7200/(*/*/*/(CFGLOC103628|CFGLOC104711|CFGLOC105209|CFGLOC106584|CFGLOC110680|CFGLOC109640|CFGLOC110993|CFGLOC113251|CFGLOC113732)) 
+        # glob: /li7200/(*/*/*)
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
       - pfs:
           name: LOCATION_PATH
           repo: li7200_location_active_dates_assignment
-          # For full-scale daily processing, glob should be /li7200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li7200/((*/*/*)/(CFGLOC103628|CFGLOC104711|CFGLOC105209|CFGLOC106584|CFGLOC110680|CFGLOC109640|CFGLOC110993|CFGLOC113251|CFGLOC113732))
+          # For full-scale daily processing, glob should be /li191r/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li7200/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
           glob: /li7200/((*/*/*)/(CFGLOC103628|CFGLOC104711|CFGLOC105209|CFGLOC106584|CFGLOC110680|CFGLOC109640|CFGLOC110993|CFGLOC113251|CFGLOC113732)) 
+          # glob: /li7200/(*/*/*)
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           joinOn: $2
+          # joinOn: $1
           group_by: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: DATE_LIMITER_PATH
-          repo: li7200_date_gap_filler_limiter
-          glob: /(*/*/*)
+          repo: li7200_cron_daily_and_date_control
+          glob: /li7200/(*/*/*)
           joinOn: $1
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 150M
-  cpu: 0.5
+  memory: 5G
+  cpu: 1.1
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -86,11 +108,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"700M"
+      "value":"2G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
       "value": "0.5"
     }
   ]
-
