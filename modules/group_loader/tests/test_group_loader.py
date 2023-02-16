@@ -36,14 +36,17 @@ class GroupLoaderTest(DatabaseBackedTest):
         s_date = '2022-11-07T11:56:11Z'
         e_date = '2022-11-08T12:57:12Z'
         data_product_id = 'DP1.20008.001'
+        group: List[Group] = []
+        groups = []
 
         def get_groups(group_prefix) -> List[Group]:
             print(f'prefix: {group_prefix}')
             """Mock function to return groups."""
             periods = [ActivePeriod(start_date=to_datetime(s_date), end_date=to_datetime(e_date))]
             props = [Property('HOR', '000'), Property('VER', '000')]
-            group = Group(name='test-group_2', group='test-group_1', active_periods=periods, data_product_ID=data_product_id, properties=props)
-            return [group]
+            group.append(Group(name=mem_name, group=group_name, active_periods=active_periods, data_product_ID=data_product_ids, properties=properties))
+            groups.append(group)
+            return groups
 
         # test the function
         group_loader.load_groups(out_path=self.out_path, get_groups=get_groups, group_prefix='test-')
