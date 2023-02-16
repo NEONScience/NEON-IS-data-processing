@@ -53,7 +53,7 @@ class GroupLoaderTest(DatabaseBackedTest):
         group_loader.load_groups(out_path=self.out_path, get_groups=get_groups, group_prefix='test-')
 
         # check the output
-        file_path = Path(self.out_path, 'test', 'test-group_2', 'test-group_2.json')
+        file_path = Path(self.out_path, 'test-', 'test-group_2', 'test-group_2.json')
         self.assertTrue(file_path.exists())
         with open(file_path) as file:
             file_data = geojson.load(file)
