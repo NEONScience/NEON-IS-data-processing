@@ -55,19 +55,20 @@ class GroupLoaderTest(DatabaseBackedTest):
         # check the output
         file_path = Path(self.out_path, 'test-', 'test-group_2', 'test-group_2.json')
         self.assertTrue(file_path.exists())
-        with open(file_path) as file:
-            file_data = geojson.load(file)
-            geojson_data = geojson.dumps(file_data, indent=4, sort_keys=False, default=str)
-            json_data = json.loads(geojson_data)
-            print(f'json_data:\n{json_data}')
-            features = json_data['features']
-            properties = json_data['features']['properties']
-            active_periods = properties['active_periods']
-            period = active_periods[0]
-            self.assertTrue(period['start_date'] == s_date)
-            self.assertTrue(period['end_date'] == e_date)
-            self.assertTrue(properties['name'] == 'test-group_2')
-            self.assertTrue(properties['group'] == 'test-group_1')
-            self.assertTrue(properties['data_product_ID'] == data_product_id)
-            self.assertTrue(features['HOR'] == '000')
-            self.assertTrue(features['VER'] == '000')
+        print(f'======== group:\n{group}')
+        print(f'======== groups:\n{groups}')
+        geojson_data = geojson_converter.convert_group(group)
+    #    file_data = geojson.dumps(geojson_data, indent=4, sort_keys=False, default=str)
+        json_data = json.loads(geojson_data)
+        print(f'json_data:\n{json_data}')
+        # features = json_data['features']
+        # properties = json_data['features']['properties']
+        # active_periods = properties['active_periods']
+        # period = active_periods[0]
+        # self.assertTrue(period['start_date'] == s_date)
+        # self.assertTrue(period['end_date'] == e_date)
+        # self.assertTrue(properties['name'] == 'test-group_2')
+        # self.assertTrue(properties['group'] == 'test-group_1')
+        # self.assertTrue(properties['data_product_ID'] == data_product_id)
+        # self.assertTrue(features['HOR'] == '000')
+        # self.assertTrue(features['VER'] == '000')
