@@ -45,7 +45,7 @@ class GroupLoaderTest(DatabaseBackedTest):
             periods = [ActivePeriod(start_date=to_datetime(s_date), end_date=to_datetime(e_date))]
             props = [Property('HOR', '000'), Property('VER', '000')]
             group.append(Group(name='test-group_2', group='test-group_1', active_periods=periods, 
-            data_product_ID=data_product_id, properties=properties))
+            data_product_ID=data_product_id, properties=props))
             groups.append(group)
             return groups
 
