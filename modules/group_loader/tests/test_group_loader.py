@@ -44,7 +44,8 @@ class GroupLoaderTest(DatabaseBackedTest):
             """Mock function to return groups."""
             periods = [ActivePeriod(start_date=to_datetime(s_date), end_date=to_datetime(e_date))]
             props = [Property('HOR', '000'), Property('VER', '000')]
-            group.append(Group(name=mem_name, group=group_name, active_periods=active_periods, data_product_ID=data_product_ids, properties=properties))
+            group.append(Group(name='test-group_2', group='test-group_1', active_periods=active_periods, 
+            data_product_ID=data_product_ids, properties=properties))
             groups.append(group)
             return groups
 
