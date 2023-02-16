@@ -9,6 +9,7 @@ import json
 
 from data_access.tests.database_test import DatabaseBackedTest
 from data_access.types.group import Group
+import data_access.types.geojson_converter as geojson_converter
 from data_access.types.property import Property
 from data_access.types.active_period import ActivePeriod
 from group_loader import group_loader_main, group_loader
