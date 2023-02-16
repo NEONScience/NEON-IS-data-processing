@@ -59,7 +59,7 @@ class GroupLoaderTest(DatabaseBackedTest):
             file_data = geojson.load(file)
             geojson_data = geojson.dumps(file_data, indent=4, sort_keys=False, default=str)
             json_data = json.loads(geojson_data)
-            # print(f'json_data:\n{json_data}')
+            print(f'json_data:\n{json_data}')
             features = json_data['features'][0]
             properties = json_data['features'][0]['properties']
             active_periods = properties['active_periods']
