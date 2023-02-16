@@ -3,20 +3,21 @@ pipeline:
   name: li7200_l0p_data
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:v0.3.2
+  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:v0.4.1
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - "python3 -m flow_sae_trst_dp0p.li7200"
   env:
     OUT_PATH: /pfs/out
-    FILE_DIR: data,flags
+    FILE_DIR: data, flags
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: "3"
+    RELATIVE_PATH_INDEX: "4"
+    LOCATION_LINK_TYPE: SYMLINK #SYMLINK or COPY, if not defined, location will not be in output repo
 input:
   pfs:
     name: IN_PATH
-    repo: li7200_regularized_data
+    repo: li7200_fill_date_gaps_and_regularize
     glob: /li7200/(*)/(*)/(*)
 parallelism_spec:
   constant: 8

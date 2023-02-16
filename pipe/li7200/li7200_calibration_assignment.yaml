@@ -20,11 +20,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: calibration_li7200
+      repo: li7200_calibration
       glob: /li7200/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_li7200_list_years
+      repo: li7200_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4

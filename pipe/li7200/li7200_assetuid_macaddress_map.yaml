@@ -21,7 +21,7 @@ transform:
     env_var: DATABASE_URL
 input:
   pfs:
-    repo: cron_daily_li7200_tick
+    repo: li7200_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 resource_requests:
