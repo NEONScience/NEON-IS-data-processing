@@ -10,9 +10,9 @@ transform:
   - "python3 -m flow_sae_trst_dp0p.li7200"
   env:
     OUT_PATH: /pfs/out
-    FILE_DIR: data, flags
+    FILE_DIR: data,flags
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: "4"
+    RELATIVE_PATH_INDEX: "3"
     LOCATION_LINK_TYPE: SYMLINK #SYMLINK or COPY, if not defined, location will not be in output repo
 input:
   pfs:

@@ -68,7 +68,7 @@ input:
 parallelism_spec:
   constant: 4
 resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 0.6
 autoscaling: true
 scheduling_spec:
