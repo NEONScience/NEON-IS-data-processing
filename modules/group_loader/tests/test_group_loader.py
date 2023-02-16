@@ -60,8 +60,8 @@ class GroupLoaderTest(DatabaseBackedTest):
             geojson_data = geojson.dumps(file_data, indent=4, sort_keys=False, default=str)
             json_data = json.loads(geojson_data)
             print(f'json_data:\n{json_data}')
-            features = json_data['features'][0]
-            properties = json_data['features'][0]['properties']
+            features = json_data['features']
+            properties = json_data['features']['properties']
             active_periods = properties['active_periods']
             period = active_periods[0]
             self.assertTrue(period['start_date'] == s_date)
