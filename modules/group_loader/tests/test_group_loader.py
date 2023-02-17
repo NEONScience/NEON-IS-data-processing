@@ -57,7 +57,7 @@ class GroupLoaderTest(DatabaseBackedTest):
         file_path = Path(self.out_path, 'test-', 'test-group_2', 'test-group_2.json')
         self.assertTrue(file_path.exists())
         print(f'======== group:\n{group}')
-        geojson_data = geojson_converter.convert_group(group)
+        geojson_data = geojson_converter.convert_group(groups)
         print(f'======== geojson_data:\n{geojson_data}')
         file_data = geojson.dumps(geojson_data, indent=4, sort_keys=False, default=str)
         print(f'======== file_data:\n{file_data}')
