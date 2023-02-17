@@ -58,8 +58,8 @@ class GroupLoaderTest(DatabaseBackedTest):
         self.assertTrue(file_path.exists())
         geojson_data = geojson_converter.convert_group(groups)
         features = geojson_data['features']
-        properties = geojson_data['features']['properties']
         print(f'======== geojson_data:\n{geojson_data}')
+        properties = geojson_data['features']['properties']
         active_periods = properties['active_periods']
         period = active_periods[0]
         self.assertTrue(period['start_date'] == s_date)
