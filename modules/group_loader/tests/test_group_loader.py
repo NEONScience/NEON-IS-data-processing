@@ -9,15 +9,13 @@ import json
 
 from data_access.tests.database_test import DatabaseBackedTest
 from data_access.types.group import Group
-import data_access.types.geojson_converter as geojson_converter
 from data_access.types.property import Property
 from data_access.types.active_period import ActivePeriod
+from common.date_formatter import to_datetime
 
-
+import data_access.types.geojson_converter as geojson_converter
 import group_loader.group_loader as group_loader
 import group_loader.group_loader_main as group_loader_main
-
-from common.date_formatter import to_datetime
 
 
 class GroupLoaderTest(DatabaseBackedTest):

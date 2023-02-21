@@ -9,9 +9,10 @@ import json
 
 from data_access.tests.database_test import DatabaseBackedTest
 from data_access.types.srf import Srf
-import data_access.types.geojson_converter as geojson_converter
 from data_access.types.property import Property
 from data_access.types.active_period import ActivePeriod
+
+import data_access.types.geojson_converter as geojson_converter
 import srf_loader.srf_loader as srf_loader
 import srf_loader.srf_loader_main as srf_loader_main
 
