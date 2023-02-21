@@ -12,7 +12,11 @@ from data_access.types.group import Group
 import data_access.types.geojson_converter as geojson_converter
 from data_access.types.property import Property
 from data_access.types.active_period import ActivePeriod
-from group_loader import group_loader_main, group_loader
+
+
+import group_loader.group_loader as group_loader
+import group_loader.group_loader_main as group_loader_main
+
 from common.date_formatter import to_datetime
 
 
