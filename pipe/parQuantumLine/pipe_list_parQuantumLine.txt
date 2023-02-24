@@ -1,5 +1,7 @@
 parQuantumLine_group_loader.yaml
 parQuantumLine_group_assignment.yaml
+parQuantumLine_srf_loader.yaml
+parQuantumLine_srf_assignment.yaml
 parQuantumLine_group_path.yaml
 parQuantumLine_threshold_loader.yaml
 parQuantumLine_thresh_select_ts_pad.yaml

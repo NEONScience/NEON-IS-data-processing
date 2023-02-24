@@ -30,9 +30,9 @@ transform:
             join_indices: [6]
             outer_join: true
         - path:
-            name: LOCATION_PATH
+            name: GROUP_PATH
             # Filter for data directory
-            glob_pattern: /pfs/LOCATION_PATH/*/*/*/*/ptb330a/*/location/**
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/ptb330a/*/location/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
         - path:
@@ -67,12 +67,6 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
       outer_join: true
-  - pfs:
-      name: LOCATION_PATH
-      repo: pressureAir_group_path_ptb330a
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: GROUP_PATH
       repo: pressureAir_group_path_ptb330a

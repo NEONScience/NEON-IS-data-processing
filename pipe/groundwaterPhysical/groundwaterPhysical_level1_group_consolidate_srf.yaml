@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:v1.0.2
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:v1.0.4
   cmd:
   - "/bin/bash"
   stdin:
@@ -36,6 +36,7 @@ transform:
       DirErr=/pfs/out/errored_datums
       "DirData=data|sci_stats|uncertainty_data|stats|quality_metrics"
       PathPubWb=$PUB_WORKBOOKS
+      "DirSubCopy=science_review_flags|location|group"
   env:
     # Environment variables for filter-joiner
     CONFIG: |

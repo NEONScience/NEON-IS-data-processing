@@ -1,5 +1,7 @@
 groundwaterPhysical_group_loader.yaml
 groundwaterPhysical_group_assignment.yaml
+groundwaterPhysical_srf_loader.yaml
+groundwaterPhysical_srf_assignment.yaml
 groundwaterPhysical_group_path.yaml
 groundwaterPhysical_threshold_loader.yaml
 groundwaterPhysical_thresh_select_ts_pad.yaml

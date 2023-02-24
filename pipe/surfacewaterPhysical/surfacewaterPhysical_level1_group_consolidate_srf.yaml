@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: parQuantumLine_level1_group_consolidate_srf
+  name: surfacewaterPhysical_level1_group_consolidate_srf
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -34,7 +34,7 @@ transform:
       DirIn=/data/pfs/interimC
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums
-      "DirData=stats|quality_metrics"
+      "DirData=sci_stats|uncertainty_data|stats|quality_metrics"
       PathPubWb=$PUB_WORKBOOKS
       "DirSubCopy=science_review_flags|group|location"
   env:
@@ -48,25 +48,19 @@ transform:
         - path:
             name: QUALITY_METRICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/**
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/*/*/*/**
             # Join on group ID (already joined below by day)
             join_indices: [6]
         - path:
             name: STATISTICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/**
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/*/*/*/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
         - path:
             name: GROUP_PATH
             # Grab group information
             glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
-            # Join on group ID(already joined below by day)
-            join_indices: [6]
-        - path:
-            name: GROUP_PATH
-            # Grab location information
-            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/location/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
     OUT_PATH_1: /data/interimA # Transfered to OUT_PATH for the first module
@@ -103,43 +97,40 @@ transform:
     IN_PATH: /data/interimB
     OUT_PATH_3: /data/pfs/interimC # This will be transfered to OUT_PATH for the second module
     GROUP_INDEX: "6"
-    # path index of names of group-level metadata to include in the output
     GROUP_METADATA_INDEX: "7"
     GROUP_METADATA_NAMES: group,science_review_flags
     # path index of names of directories to include in the output
     DATA_TYPE_INDEX: "9"
-    DATA_TYPE_NAMES: location,stats,quality_metrics
+    DATA_TYPE_NAMES: location,stats,quality_metrics,uncertainty_data,sci_stats
 
-# Environment variables for pub table and srf module
-    PARALLELIZATION_INTERNAL: '1'
 input:
   cross:
   - pfs: 
       name: PUB_WORKBOOKS
-      repo: parQuantumLine_pub_workbooks
+      repo: surfacewaterPhysical_pub_workbooks
       glob: /
   - join:
     - pfs:
         name: QUALITY_METRICS_PATH
-        repo: parQuantumLine_qm_group_and_compute
+        repo: surfacewaterPhysical_qm_group_and_compute
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: STATISTICS_PATH
-        repo: parQuantumLine_stats_group_and_compute
+        repo: surfacewaterPhysical_stats_ucrt_group_and_compute
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: GROUP_PATH
-        repo: parQuantumLine_group_path
+        repo: surfacewaterPhysical_group_path
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: SRF_PATH
-        repo: parQuantumLine_srf_assignment
+        repo: surfacewaterPhysical_srf_assignment
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
