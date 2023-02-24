@@ -4,16 +4,16 @@ This module consolidates the path structure after data product computations
 have been performed to prepare the data for publication.The input path 
 structure must be in 'group focus', as follows:
     /YEAR/MONTH/DAY/GROUP_NAME/...
-                               group/
+                               GROUP_METADATA/
                                SOURCE_TYPE/
                                   NAMED_LOCATION_ID
                                      DATA_TYPE/
                                DEPENDENT_GROUP/ (optional)
 The output structure moves the chosen DATA_TYPE directories to direct children
-of the GROUP_NAME directory, retains the 'group' directory with group metadata, 
+of the GROUP_NAME directory, retains the GROUP_METADATA directory with group metadata, 
 and drops any DEPENDENT_GROUP directories. The output structure is as follows:
     /YEAR/MONTH/DAY/GROUP_NAME/...
-                               group/
+                               GROUP_METADATA/
                                DATA_TYPE/
 Input parameters are specified in environment variables as follows:
     IN_PATH: The path to the input data, ending at any parent directory up 
@@ -28,9 +28,9 @@ Input parameters are specified in environment variables as follows:
     GROUP_INDEX: The index of the directory in IN_PATH pertaining to 
         GROUP_NAME in the documentation above.
     GROUP_METADATA_INDEX: The index of the directory in IN_PATH pertaining 
-        to group metadata, identifed as 'group' in the documentation above.
-    GROUP_METADATA_NAME: The name of the directory pertaining to group 
-        metadata. Typically this will be 'group' as documented above.
+        to group metadata, identifed as GROUP_METADATA in the documentation above.
+    GROUP_METADATA_NAMES: The name(s) of the directory pertaining to group 
+        metadata, separated by commas. Example ('group','science_review_flags').
     DATA_TYPE_INDEX: The index of the directory in IN_PATH pertaining 
         to DATA_TYPE in the documentation above. 
     DATA_TYPE_NAMES: The name(s) of the director(ies) pertaining to the 
@@ -55,7 +55,7 @@ def main() -> None:
     relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     group_index: int = env.int('GROUP_INDEX')
     group_metadata_index: int = env.int('GROUP_METADATA_INDEX')
-    group_metadata_name: str = env.str('GROUP_METADATA_NAME')
+    group_metadata_names: list = env.list('GROUP_METADATA_NAMES')
     data_type_index: int = env.int('DATA_TYPE_INDEX')
     data_type_names: list = env.list('DATA_TYPE_NAMES')
     log_config.configure(log_level)
@@ -66,7 +66,7 @@ def main() -> None:
                     relative_path_index=relative_path_index,
                     group_index=group_index,
                     group_metadata_index=group_metadata_index,
-                    group_metadata_name=group_metadata_name,
+                    group_metadata_names=group_metadata_names,
                     data_type_index=data_type_index,
                     data_type_names=data_type_names)
     leve1_consolidate = Level1Consolidate(config)

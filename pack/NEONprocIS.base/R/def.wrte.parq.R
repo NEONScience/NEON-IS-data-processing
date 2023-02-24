@@ -48,6 +48,9 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-04-06)
 #     original creation
+#   Cove Sturtevant (2023-02-21)
+#     Convert avro schema to parquet schema and convert to arrow table before writing parquet file. 
+#     This retains the data types (and likely space savings) upon write
 ##############################################################################################
 def.wrte.parq <- function(data,
                           NameFile,
@@ -66,9 +69,6 @@ def.wrte.parq <- function(data,
   numVar <- base::length(data)
   numRow <- base::nrow(data)
   
-  data_attr <- attributes(data)
-  data_schm = data_attr$schema
-
   if(base::length(Dict) == 1){
     Dict <- base::rep(Dict,numVar)
   }
@@ -81,41 +81,41 @@ def.wrte.parq <- function(data,
   
   # Convert data according to schema
   if(base::is.null(Schm) && base::is.null(NameFileSchm)){
-    # Schema to be constructed from data frame. We done.
-    log$debug('Auto-creating schema using data frame.')
-    data <- arrow::arrow_table(data, schema= data_schm)
+    # No schema was input.
+    # Look for a schema attached as an attribute of the data (as produced by NEONprocIS.base::def.read.parq)
+    schmData = base::attr(data,'schema')
+    
+    if(!base::is.null(schmData) && 'ArrowObject' %in% base::class(schmData)){
+      log$debug('Using parquet schema attached as an attribute to the data frame.')
+    } else {
+      schmData <- NULL
+      log$debug('Auto-creating schema using data frame.')
+    }
+  
+    # Use schema attached as attribute to the data, or auto-construct it from the data frame.
+    data <- arrow::arrow_table(data, schema=schmData)
 
   } else {
-    # Schema specified in inputs
-    nameVarIn <- base::names(data)
-
-    # Parquet Schema
-    if('ArrowObject' %in% base::class(Schm)){
-      
+    
+    if (!base::is.null(Schm) && 'ArrowObject' %in% base::class(Schm)){
+      # Schema specified in inputs as a parquet schema.
       log$debug('Using parquet schema from input argument Schm.')
       
       # Pull the col names and data types from the schema
       typeVar <- NEONprocIS.base::def.schm.parq.pars(Schm,log=log)
       
-
-    } else if (!base::is.null(Schm)) {
+    } else if (!base::is.null(Schm) || !base::is.null(NameFileSchm)) {
+        
+      log$debug('Creating parquet schema from input avro schema.')
+    
+      # Create parquet schema from the avro schema
+      Schm <- NEONprocIS.base::def.schm.parq.from.schm.avro(FileSchm=NameFileSchm,Schm=Schm,log=log)    
       
-      log$debug('Using avro schema from input argument Schm.')
-  
       # Pull the col names and data types from the schema
-      typeVar <- NEONprocIS.base::def.schm.avro.pars(Schm=Schm,log=log)$var
-    
-    } else {
-  
-      log$debug('Reading avro schema from file.')
+      typeVar <- NEONprocIS.base::def.schm.parq.pars(Schm,log=log)
       
-      # Read in avro schema file
-      con <- base::file(NameFileSchm,open='r')
-      Schm <- base::paste0(base::readLines(con),collapse='')
-      base::close(con)
-      typeVar <- NEONprocIS.base::def.schm.avro.pars(Schm=Schm,log=log)$var
     }
-    
+      
     # Rename the variables to match the schema
     if(numVar != base::length(typeVar$name)){
       log$error('Number of variables in the data does not match number of variables in the schema.')
@@ -123,9 +123,11 @@ def.wrte.parq <- function(data,
     } else {
       base::names(data) <- typeVar$name
     }
-    
-    # Assign the data type for each column from the schema
+    # In order to reliably apply the schema, we need to do some type conversion of the data first.
     data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
+    
+    # Apply the arrow schema
+    data <- arrow::arrow_table(data, schema=Schm)
     
   }
   
@@ -141,15 +143,28 @@ def.wrte.parq <- function(data,
           Dict[idxVar] <- TRUE
         }
         
-        
       }
     }    
   }
 
-  
   # Write the data
-  rpt <- arrow::write_parquet(x=data,sink=NameFile,compression=CompType,compression_level=CompLvl,use_dictionary=Dict, coerce_timestamps='ms', allow_truncated_timestamps=TRUE) 
-    
-  log$debug(base::paste0('Wrote parquet file: ',NameFile))
-  return(rpt)
+  rpt <- base::try(
+    arrow::write_parquet(x=data,
+                         sink=NameFile,
+                         compression=CompType,
+                         compression_level=CompLvl,
+                         use_dictionary=Dict, 
+                         coerce_timestamps='ms', 
+                         allow_truncated_timestamps=TRUE
+                         ),
+    silent=FALSE
+  )
+  
+  if('try-error' %in% base::class(rpt)){
+    log$error(base::paste0('Could not write parquet file ',NameFile))
+    stop()
+  } else {
+    log$debug(base::paste0('Wrote parquet file: ',NameFile))
+    return(rpt)
+  }
 }

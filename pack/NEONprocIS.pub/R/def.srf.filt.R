@@ -14,10 +14,10 @@
 #' fall within the time of interest are not modified.  
 #' NOTE: This function does not include error checking of the data frame, since this function is often run 
 #' in a large loop after the input json file has already been checked for conformance to the expected schema. 
-#' If error checking of the srf contents is desired, use a function like NEONprocIS.qaqc::def.read.srf to 
+#' If error checking of the srf contents is desired, use a function like NEONprocIS.pub::def.read.srf to 
 #' read in the SRF data fed into this function.
 
-#' @param srf Data frame of science review flags, as read from NEONprocIS.qaqc::def.read.srf
+#' @param srf Data frame of science review flags, as read from NEONprocIS.pub::def.read.srf
 #' @param NameFileOut Optional. Filename (including relative or absolute path) to write the filtered output.
 #' Defaults to NULL, in which case only the filtered data frame will be returned.
 #' @param TimeBgn POSIX timestamp of the start time (inclusive)
@@ -28,7 +28,7 @@
 
 #' @return The filtered SRF data frame. If NameFileOut is specified, 
 #' the truncated information will also be written to file in json format (the same json format as the function 
-#' NEONprocIS.qaqc::def.read.srf expects. 
+#' NEONprocIS.pub::def.read.srf expects. 
 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -44,7 +44,7 @@
 #' srfFilt <- def.srf.filt(srf,NameFileOut,TimeBgn,TimeEnd)
 
 
-#' @seealso \link[NEONprocIS.qaqc]{def.read.srf}
+#' @seealso \link[NEONprocIS.pub]{def.read.srf}
 
 #' @export
 

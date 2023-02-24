@@ -99,10 +99,10 @@ wrap.srf.asgn <- function(DirIn,
     
     # Read in the srf file
     nameFile <- fs::path(DirIn,idxFile)
-    srf <- NEONprocIS.qaqc::def.read.srf(NameFile=nameFile)
+    srf <- NEONprocIS.pub::def.read.srf(NameFile=nameFile)
     
     # Filter for srfs in our time range of interest
-    srf <- NEONprocIS.qaqc::def.srf.filt(srf=srf,TimeBgn=TimeBgn,TimeEnd=TimeEnd,log=log)
+    srf <- NEONprocIS.pub::def.srf.filt(srf=srf,TimeBgn=TimeBgn,TimeEnd=TimeEnd,log=log)
     
     # Compile the dates over which this file applies.
     timeAsgn <- base::data.frame(timeBgn=srf$start_date,
@@ -158,7 +158,7 @@ wrap.srf.asgn <- function(DirIn,
       # Filter the file for the data day and save it to the output
       nameFileOut <- fs::path(dirOut[idxDay],idxFile)
       
-      srfFilt <- NEONprocIS.qaqc::def.srf.filt(srf=srf,
+      srfFilt <- NEONprocIS.pub::def.srf.filt(srf=srf,
                                                 NameFileOut=nameFileOut,
                                                 TimeBgn=ts[idxDay],
                                                 TimeEnd=ts[idxDay]+timeDiffDay,

@@ -8,6 +8,6 @@ class Config(NamedTuple):
     relative_path_index: int
     group_index: int
     group_metadata_index: int
-    group_metadata_name: str
+    group_metadata_names: list
     data_type_index: int
     data_type_names: list

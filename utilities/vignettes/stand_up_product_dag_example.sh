@@ -12,8 +12,8 @@ data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc.
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
 git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
 pipe_list_prefix='pipe_list_'
-source_type='hmp155'
-product='relHumidity'
+source_type='aquatroll200'
+product='groundwaterPhysical'
 
 # Define paths based on base paths and product information above 
 spec_path_source_type=$git_path_pipelines/$source_type
@@ -49,17 +49,23 @@ pachctl start commit $source_type'_avro_schemas'@master
 pachctl put file -r $source_type'_avro_schemas'@master:/$source_type -f $git_path_avro/avro_schemas/$source_type
 pachctl finish commit $source_type'_avro_schemas'@master
 
+# Create source-type-specific fdas uncertainty (ONLY IF NEEDED FOR YOUR SOURCE TYPE)
+pachctl create repo $source_type'_uncertainty_fdas'
+pachctl start commit $source_type'_uncertainty_fdas'@master
+pachctl put file -r $source_type'_uncertainty_fdas'@master:/ -f $data_path/uncertainty_fdas/
+pachctl finish commit $source_type'_uncertainty_fdas'@master
+
 # Create product-specific avro_schemas
 pachctl create repo $product'_avro_schemas'
 pachctl start commit $product'_avro_schemas'@master
 pachctl put file -r $product'_avro_schemas'@master:/$product -f $git_path_avro/avro_schemas/$product
 pachctl finish commit $product'_avro_schemas'@master
 
-# Create source-type-specific fdas uncertainty (ONLY IF NEEDED FOR YOUR SOURCE TYPE)
-pachctl create repo $source_type'_uncertainty_fdas'
-pachctl start commit $source_type'_uncertainty_fdas'@master
-pachctl put file -r $source_type'_uncertainty_fdas'@master:/ -f $data_path/uncertainty_fdas/
-pachctl finish commit $source_type'_uncertainty_fdas'@master
+# Create product-specific pub_workbooks
+pachctl create repo $product'_pub_workbooks'
+pachctl start commit $product'_pub_workbooks'@master
+pachctl put file -r $product'_pub_workbooks'@master:/$product -f $data_path/pub_workbooks/$product
+pachctl finish commit $product'_pub_workbooks'@master
 
 # Set up source type pipeline
 # Read in the pipelines (in order) for this source type and stand them up
