@@ -7,11 +7,11 @@ from structlog import get_logger
 import environs
 
 import common.log_config as log_config
-from data_access.get_readme import get_readme
+from readme_loader.get_readme import get_readme
 from data_access.db_connector import DbConnector
 from data_access.db_config_reader import read_from_mount
 
-from readme_loader.readme_loader import load_readme
+from readme_loader.loader import load_readme
 
 
 def main() -> None:
