@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
-import os, glob, sys
-from pathlib import Path
-from unittest import TestCase
-from transformer.transformer import transform, format_column, format_sig
-import transformer.transformer_main as transformer_main
-from testfixtures import TempDirectory
-import json
-import pandas as pd
 import datetime
 import fnmatch
+import glob
+import json
 import logging
+import os
+import sys
+from pathlib import Path
+from unittest import TestCase
+
+import pandas as pd
+from testfixtures import TempDirectory
+
+import transformer.transformer_main as transformer_main
+from transformer.tests.location_data import get_location_data
+from transformer.transformer import transform, format_column, format_sig
+
 
 class TransformerTest(TestCase):
 
@@ -18,7 +24,7 @@ class TransformerTest(TestCase):
         self.log = logging.getLogger("testlog")
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-        # create temporary dir
+        # generate_readme temporary dir
         self.temp_dir = TempDirectory()
         self.temp_dir_name = self.temp_dir.path
         self.input_path = Path(self.temp_dir_name, "repo/inputs")
@@ -33,7 +39,7 @@ class TransformerTest(TestCase):
         os.makedirs(Path(self.data_path, 'data', self.location))
         self.year_index = self.data_path.parts.index("2019")
 
-        # create workbook dataframe
+        # generate_readme workbook dataframe
         workbook = pd.DataFrame()
         workbook['fieldName'] = ['startDateTime', 'endDateTime', 'mean']
         workbook['DPNumber'] = 'dpnumber.001'
@@ -46,13 +52,11 @@ class TransformerTest(TestCase):
         # write workbook to csv
         workbook.to_csv(self.workbook_path, sep ='\t', index=False)
 
-        # create location json
-        locdata = {'type': 'FeatureCollection', 'features': [{'type': 'Feature', 'geometry': None, 'properties': {'name': 'CFGLOC101746', 'type': 'CONFIG', 'description': 'Central Plains Soil Temp Profile SP1, Z5 Depth', 'domain': 'D10', 'site': 'CPER', 'context': ['soil'], 'active_periods': [{'start_date': '2016-04-08T00:00:00Z'}]}, 'HOR': '001', 'VER': '505', 'TMI': '000', 'Data Rate': '0.1', 'Required Asset Management Location ID': 3095, 'Required Asset Management Location Code': 'CFGLOC101746'}]}
         # write location to json
         with open(self.location_path, 'w') as f:
-            json.dump(locdata, f)
+            json.dump(get_location_data(), f)
 
-        # create data dataframe
+        # generate_readme data dataframe
         self.data = pd.DataFrame()
         start_times = [1546473660, 1546473720, 1546473780]
         end_times = [1546473720, 1546473780, 1546473840]

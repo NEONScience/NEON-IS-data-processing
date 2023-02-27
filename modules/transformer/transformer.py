@@ -79,10 +79,10 @@ def transform(*, year_index: int) -> None:
             # format columns
             for column in data.columns:
                 if not workbook['fieldName'].str.contains(column).any():
-                    format = 'asIs'
+                    column_format = 'asIs'
                 else:
-                    format = workbook['pubFormat'][workbook[workbook['fieldName'] == column].index.values[0]]
-                format_column(data, column, format)
+                    column_format = workbook['pubFormat'][workbook[workbook['fieldName'] == column].index.values[0]]
+                format_column(data, column, column_format)
             
             # add empty columns for any fields specified in workbook that are not present in the data
             data[workbook['fieldName'][workbook['fieldName'].isin(data.columns) == False]] = ""
@@ -107,35 +107,38 @@ def transform(*, year_index: int) -> None:
                                                  (workbook['downloadPkg'] == 'expanded'))
                                                 & (workbook['table'] == table_by_tmi[tmi]), ['rank', 'fieldName']]
                 data[expanded_columns.sort_values('rank')['fieldName']].to_csv(expanded_filepath, index=False)
+    write_manifest(output_path, has_data_by_file)
 
-    # write metadata manifest
+
+def write_manifest(output_path: str, has_data_by_file: dict):
+    """Write metadata manifest."""
     manifest_filepath = os.path.join(output_path, 'manifest.csv')
     with open(manifest_filepath, 'w') as manifest_csv:
         writer = csv.writer(manifest_csv)
-        writer.writerow(['file','hasData'])
+        writer.writerow(['file', 'hasData'])
         for key in has_data_by_file.keys():
             writer.writerow([key, has_data_by_file[key]])
     
 
 # Apply pub format to a column of a dataframe
-def format_column(dataframe: DataFrame, column: str, format: str):
-    if format == "yyyy-MM-dd'T'HH:mm:ss'Z'(floor)":
+def format_column(dataframe: DataFrame, column: str, column_format: str):
+    if column_format == "yyyy-MM-dd'T'HH:mm:ss'Z'(floor)":
         dataframe[column] = dataframe[column].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
 
-    if fnmatch.fnmatch(format, "*.*(round)"):
-        pyformat = '{:.' + str(format.count('#')) + '}'
-        dataframe[column] = dataframe[column].map(pyformat.format)
+    if fnmatch.fnmatch(column_format, "*.*(round)"):
+        py_format = '{:.' + str(column_format.count('#')) + '}'
+        dataframe[column] = dataframe[column].map(py_format.format)
 
-    if fnmatch.fnmatch(format, "signif_*(round)"):
-        n_digits = format.count('#')
+    if fnmatch.fnmatch(column_format, "signif_*(round)"):
+        n_digits = column_format.count('#')
         dataframe[column] = [format_sig(element, n_digits) for element in dataframe[column]]
 
-    if format == 'integer':
+    if column_format == 'integer':
         dataframe[column] = dataframe[column].round().map('{:.0f}'.format)
 
 
-# Format a number to n_digits significant figures and at most 7 decimal places.
 def format_sig(element, n_digits):
+    """Format a number to n_digits significant figures and at most 7 decimal places."""
     rounded = round(element, -int(math.floor(math.log10(abs(element))-(n_digits-1))))
     # Format as decimal
     formatted = ("%.16f" % rounded).rstrip('0').rstrip('.')
