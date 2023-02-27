@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from functools import partial
 from pathlib import Path
 
 from structlog import get_logger
@@ -17,11 +16,41 @@ from readme_generator.data_product_keyword import get_keywords
 from readme_generator.generator import generate_readme, Config
 
 
+def make_get_data_product(connector: DbConnector):
+    def f(dp_idq: str):
+        return get_data_product(connector, dp_idq)
+    return f
+
+
+def make_get_keywords(connector: DbConnector):
+    def f(dp_idq: str):
+        return get_keywords(connector, dp_idq)
+    return f
+
+
+def make_get_log_entries(connector: DbConnector):
+    def f(dp_idq: str):
+        return get_log_entries(connector, dp_idq)
+    return f
+
+
+def make_get_geometry(connector: DbConnector):
+    def f(dp_idq: str):
+        return get_geometry(connector, dp_idq)
+    return f
+
+
+def make_get_descriptions(connector: DbConnector):
+    def f():
+        return get_descriptions(connector)
+    return f
+
+
 def main() -> None:
     env = environs.Env()
     in_path: Path = env.path('IN_PATH')
     out_path: Path = env.path('OUT_PATH')
-    template_path: Path = env.str('TEMPLATE_PATH')
+    template_path: Path = env.path('TEMPLATE_PATH')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
     log = get_logger()
@@ -32,17 +61,12 @@ def main() -> None:
         template_path=template_path)
     db_config = read_from_mount(Path('/var/db_secret'))
     with closing(DbConnector(db_config)) as connector:
-        get_data_product_partial = partial(get_data_product, connector=connector)
-        get_log_entries_partial = partial(get_log_entries, connector=connector)
-        get_geometry_partial = partial(get_geometry, connector=connector)
-        get_descriptions_partial = partial(get_descriptions, connector=connector)
-        get_keywords_partial = partial(get_keywords, connector=connector)
         generate_readme(config=config,
-                        get_log_entries=get_log_entries_partial,
-                        get_data_product=get_data_product_partial,
-                        get_geometry=get_geometry_partial,
-                        get_descriptions=get_descriptions_partial,
-                        get_keywords=get_keywords_partial)
+                        get_log_entries=make_get_log_entries(connector),
+                        get_data_product=make_get_data_product(connector),
+                        get_geometry=make_get_geometry(connector),
+                        get_descriptions=make_get_descriptions(connector),
+                        get_keywords=make_get_keywords(connector))
 
 
 if __name__ == '__main__':

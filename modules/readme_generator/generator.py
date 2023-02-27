@@ -88,7 +88,7 @@ def generate_readme(
                 level = parts.level
                 dp_number = parts.dp_number
                 revision = parts.revision
-                dp_idq = f'{level}.{dp_number}.{revision}'
+                dp_idq = f'NEON.DOM.SITE.{level}.{dp_number}.{revision}'
                 description = file_descriptions.get(dp_idq)
                 if not description:
                     description = None
@@ -122,7 +122,7 @@ def generate_readme(
     readme_data.update(site=site)
     readme_data.update(domain=domain)
     readme_data.update(data_product=data_product)
-    readme_data.update(keywords=', '.join(keywords))
+    readme_data.update(keywords=keywords)
     readme_data.update(data_start_date=oldest_data_date)
     readme_data.update(data_end_date=newest_data_date)
     readme_data.update(coordinates=coordinates)
