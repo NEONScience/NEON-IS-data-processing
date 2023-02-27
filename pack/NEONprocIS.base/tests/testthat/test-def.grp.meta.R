@@ -6,7 +6,7 @@ test_that("Valid input file. Return group metadata",
             metaGrp <- NEONprocIS.base::def.grp.meta(NameFile = nameFile)
             expect_true (is.data.frame(metaGrp))
             expect_true (nrow(metaGrp) == 4)
-            expect_true (all.equal(names(metaGrp),c("member",'group','active_periods','HOR','VER','products')))
+            expect_true (all.equal(names(metaGrp),c("member",'group','active_periods','HOR','VER','data_product_ID','site','domain','visibility_code')))
           })
 
 test_that("Invalid schema. Return error.",
