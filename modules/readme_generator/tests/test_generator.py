@@ -31,7 +31,7 @@ class ReadmeCreatorTest(DatabaseBackedTest):
 
     def add_template_file(self) -> None:
         template_real_path = Path(os.path.dirname(__file__), 'template.j2')
-        self.template_path = Path('/template.j2')
+        self.template_path = Path('/templates/template.j2')
         self.fs.add_real_file(template_real_path, target_path=self.template_path)
 
     def add_data_file(self) -> None:
@@ -183,9 +183,10 @@ class ReadmeCreatorTest(DatabaseBackedTest):
         assert len(csv_files) == 5
 
     @unittest.skip('Integration test skipped.')
-    # TODO: implement and test.
     def test_main(self):
         self.configure_mount()
+        os.environ['IN_PATH'] = str(self.in_path)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['TEMPLATE_PATH'] = str(self.template_path)
         readme_generator_main.main()

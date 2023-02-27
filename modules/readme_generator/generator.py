@@ -88,7 +88,7 @@ def generate_readme(
                 level = parts.level
                 dp_number = parts.dp_number
                 revision = parts.revision
-                dp_idq = f'{level}.{dp_number}.{revision}'
+                dp_idq = f'NEON.DOM.SITE.{level}.{dp_number}.{revision}'
                 description = file_descriptions.get(dp_idq)
                 if not description:
                     description = None

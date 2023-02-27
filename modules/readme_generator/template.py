@@ -5,6 +5,7 @@ from jinja2 import Environment, FileSystemLoader, Template
 
 
 def render(template_path: Path, data) -> str:
+    print(f'\ntemplate_path: {template_path}\n')
     environment: Environment = Environment(
         loader=FileSystemLoader(template_path.parent),
         trim_blocks=True,
