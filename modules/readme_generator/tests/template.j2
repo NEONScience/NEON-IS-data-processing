@@ -1,6 +1,6 @@
-{% set file_prefix = 'NEON.{}.{}.{}'.format(domain, site, data_product.short_idq) %}
-{% set os_is_type = 'TOS-structured TIS Data Product Type' %}{# TODO: get this from the DB #}
 {% set gen_time = now.strftime('%Y%m%d%H%MZ') %}
+{% set os_is_type = 'TOS-structured TIS Data Product Type' %}
+{% set file_prefix = 'NEON.{}.{}.{}'.format(domain, site, data_product.short_idq) %}
 This data package was produced by and downloaded from the National Ecological Observatory Network (NEON). NEON is
 funded by the National Science Foundation (Awards 0653461, 0752017, 1029808, 1138160, 1246537, 1638695, 1638696,
 1724433) and managed cooperatively by Battelle. These data are provided under the terms of the NEON data policy at
@@ -31,7 +31,7 @@ Sensor(s): {{data_product.sensor}}
     endif
 %}
 
-Keywords: {{keywords}}
+Keywords: {{(', ').join(keywords)}}
 
 
 QUERY INFORMATION
@@ -135,7 +135,7 @@ of this data package. For a more recent log, please visit this data product's de
 https://data.neonscience.org/data-products/{{data_product.short_idq}}.
 
 {%
-    for change_log in dp_change_logs
+    for change_log in change_logs
 %}
 Issue Date: {{change_log.issue_date}}
 Issue: {{change_log.issue}}
@@ -143,7 +143,7 @@ Issue: {{change_log.issue}}
         for entry in change_log.dates_locations
 %}
     Date Range: {{entry.date_range_start}} to {{entry.date_range_end}}
-    Location(s) Affected: {{entry.locations_affected}}
+    Location(s) Affected: {{', '.join(entry.location_affected)}}
 {%
         endfor
 %}
