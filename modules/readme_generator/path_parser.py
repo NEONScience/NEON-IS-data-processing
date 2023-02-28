@@ -6,7 +6,7 @@ class FilenameParts(NamedTuple):
     site: str
     domain: str
     level: str
-    dp_number: str
+    data_product_number: str
     revision: str
 
 
@@ -33,6 +33,10 @@ def parse_filename(filename: str) -> FilenameParts:
     domain = parts[1]
     site = parts[2]
     level = parts[3]
-    dp_number = parts[4]
+    data_product_number = parts[4]
     revision = parts[5]
-    return FilenameParts(domain=domain, site=site, level=level,  dp_number=dp_number, revision=revision)
+    return FilenameParts(domain=domain,
+                         site=site,
+                         level=level,
+                         data_product_number=data_product_number,
+                         revision=revision)

@@ -45,6 +45,7 @@ def make_get_geometry(connector: DbConnector):
 
 
 def make_get_descriptions(connector: DbConnector):
+    """Closure to hide database connector from client."""
     def f():
         return get_descriptions(connector)
     return f
