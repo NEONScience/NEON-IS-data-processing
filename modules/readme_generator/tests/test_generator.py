@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import logging
 import os
 from datetime import datetime
 from pathlib import Path
@@ -11,14 +12,16 @@ import readme_generator.generator_main as readme_generator_main
 from readme_generator.file_descriptions import remove_prefix
 from readme_generator.log_entry import LogEntry
 from readme_generator.data_product import DataProduct
-from readme_generator.generator import generate_readme, Config, get_time_span
+from readme_generator.generator import generate_readme, Paths, get_time_span, DataFunctions
+
+log = logging.getLogger()
 
 
 def to_datetime(date: str) -> datetime:
     return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
 
-class ReadmeCreatorTest(DatabaseBackedTest):
+class ReadmeGeneratorTest(DatabaseBackedTest):
 
     def setUp(self):
         self.setUpPyfakefs()
@@ -34,12 +37,6 @@ class ReadmeCreatorTest(DatabaseBackedTest):
         self.template_path = Path('/templates/template.j2')
         self.fs.add_real_file(template_real_path, target_path=self.template_path)
 
-    def add_data_file(self) -> None:
-        data_file_real_path = Path(os.path.dirname(__file__), 'data_file.csv')
-        self.data_file_path = Path(
-            'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.basic.csv')
-        self.fs.add_real_file(data_file_real_path, target_path=self.data_file_path)
-
     def add_data_files(self) -> None:
         root_path = Path(os.path.dirname(__file__), 'test_files')
 
@@ -49,8 +46,8 @@ class ReadmeCreatorTest(DatabaseBackedTest):
 
         data_1 = 'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.basic.csv'
         data_1_real_path = Path(root_path, data_1)
-        data_1_target_path = Path(self.in_path, data_1)
-        self.fs.add_real_file(data_1_real_path, target_path=data_1_target_path)
+        self.data_1_target_path = Path(self.in_path, data_1)
+        self.fs.add_real_file(data_1_real_path, target_path=self.data_1_target_path)
 
         data_2 = 'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.expanded.csv'
         data_2_real_path = Path(root_path, data_2)
@@ -68,8 +65,7 @@ class ReadmeCreatorTest(DatabaseBackedTest):
         self.fs.add_real_file(data_4_real_path, target_path=data_4_target_path)
 
     def test_get_min_max_times(self):
-        self.add_data_file()
-        start_time, end_time = get_time_span(self.data_file_path)
+        start_time, end_time = get_time_span(self.data_1_target_path)
         assert start_time == '2020-01-02T00:00:00Z'
         assert end_time == '2020-01-03T00:00:00Z'
 
@@ -106,7 +102,7 @@ class ReadmeCreatorTest(DatabaseBackedTest):
 
         def get_data_product(dp_idq: str) -> DataProduct:
             """Mock function for getting the data product."""
-            print(f'dp_idq: {dp_idq}')
+            log.debug(f'dp_idq: {dp_idq}')
             real_path = Path(os.path.dirname(__file__), 'dp_catalog_data.json')
             target_path = Path('/dp_catalog_data.json')
             self.fs.add_real_file(real_path, target_path=target_path)
@@ -145,7 +141,7 @@ class ReadmeCreatorTest(DatabaseBackedTest):
 
         def get_geometry(location_name: str) -> str:
             """Mock function for getting the site geometry."""
-            print(f'location_name: {location_name}')
+            log.debug(f'location_name: {location_name}')
             return 'POINT Z (-104.745591 40.815536 1653.9151)'
 
         def get_descriptions() -> Dict[str, str]:
@@ -164,18 +160,17 @@ class ReadmeCreatorTest(DatabaseBackedTest):
 
         def get_keywords(dp_idq: str):
             """Mock function to get a data product's keywords."""
-            print(f'dp_idq: {dp_idq}')
+            log.debug(f'dp_idq: {dp_idq}')
             return ['soil temperature', 'profile', 'soil']
 
-        config = Config(in_path=self.in_path, out_path=self.out_path, template_path=self.template_path)
+        paths = Paths(in_path=self.in_path, out_path=self.out_path, template_path=self.template_path)
+        functions = DataFunctions(get_log_entries=get_log_entries,
+                                  get_data_product=get_data_product,
+                                  get_geometry=get_geometry,
+                                  get_descriptions=get_descriptions,
+                                  get_keywords=get_keywords)
 
-        generate_readme(
-            config=config,
-            get_log_entries=get_log_entries,
-            get_data_product=get_data_product,
-            get_geometry=get_geometry,
-            get_descriptions=get_descriptions,
-            get_keywords=get_keywords)
+        generate_readme(paths=paths, functions=functions)
 
         readme_files = list(Path(self.out_path, 'CPER', '2020', '01').glob('*.txt'))
         csv_files = list(Path(self.out_path, 'CPER', '2020', '01', '02').glob('*.csv'))

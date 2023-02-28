@@ -15,5 +15,4 @@ class FileDescriptionsTest(DatabaseBackedTest):
         self.configure_mount()
         dp_config = read_from_environment()
         descriptions: Dict[str, str] = get_descriptions(DbConnector(dp_config))
-        for key in descriptions:
-            print(f'key: {key} value: {descriptions.get(key)}')
+        assert len(descriptions) == 115

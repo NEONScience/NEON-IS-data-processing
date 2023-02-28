@@ -22,10 +22,18 @@ class DataFile(NamedTuple):
     description: str
 
 
-class Config(NamedTuple):
+class Paths(NamedTuple):
     in_path: Path
     out_path: Path
     template_path: Path
+
+
+class DataFunctions(NamedTuple):
+    get_log_entries: Callable[[str], List[LogEntry]]
+    get_data_product: Callable[[str], DataProduct]
+    get_geometry: Callable[[str], str]
+    get_descriptions: Callable[[], Dict[str, str]]
+    get_keywords: Callable[[str], List[str]]
 
 
 def get_readme_filename(domain: str, site: str, idq: str, d: datetime) -> str:
@@ -54,20 +62,13 @@ def link_file(path: Path, link_path: Path) -> None:
         link_path.symlink_to(path)
 
 
-def generate_readme(
-        *,
-        config: Config,
-        get_log_entries: Callable[[str], List[LogEntry]],
-        get_data_product: Callable[[str], DataProduct],
-        get_geometry: Callable[[str], str],
-        get_descriptions: Callable[[], Dict[str, str]],
-        get_keywords: Callable[[str], List[str]]) -> None:
+def generate_readme(*, paths: Paths, functions: DataFunctions) -> None:
 
-    in_path = config.in_path
-    out_path = config.out_path
-    template_path = config.template_path
+    in_path = paths.in_path
+    out_path = paths.out_path
+    template_path = paths.template_path
 
-    file_descriptions = get_descriptions()
+    file_descriptions = functions.get_descriptions()
 
     site = None
     domain = None
@@ -109,11 +110,11 @@ def generate_readme(
             link_file(path, link_path)
 
     now: datetime = datetime.now(timezone.utc)
-    data_product: DataProduct = get_data_product(dp_idq)
-    keywords: List[str] = get_keywords(dp_idq)
-    log_entries: List[LogEntry] = get_log_entries(dp_idq)
+    data_product: DataProduct = functions.get_data_product(dp_idq)
+    keywords: List[str] = functions.get_keywords(dp_idq)
+    log_entries: List[LogEntry] = functions.get_log_entries(dp_idq)
     change_log_entries: List[ChangeLog] = get_change_log(dp_idq, log_entries)
-    geometry: str = get_geometry(site)
+    geometry: str = functions.get_geometry(site)
     coordinates: str = get_point_coordinates(geometry)
     data_file_count: int = len(data_files)
 
