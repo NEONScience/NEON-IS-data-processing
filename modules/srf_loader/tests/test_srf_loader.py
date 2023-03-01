@@ -47,9 +47,7 @@ class SrfLoaderTest(DatabaseBackedTest):
         self.assertTrue(file_path.exists())
         with open(file_path) as file:
             json_data = json.load(file)
-            print(f'======== json_data:\n{json_data}')
             srfs = json_data['science_review_flags'][0]
-            print(f'======== srfs:\n{srfs}')
             group_name: str = srfs['group_name']
             id: int = srfs['id']
             start_date = srfs['start_date']
