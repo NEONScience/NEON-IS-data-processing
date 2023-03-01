@@ -13,34 +13,39 @@ from readme_generator.location_geometry import get_geometry
 from readme_generator.log_entry import get_log_entries
 from readme_generator.data_product import get_data_product
 from readme_generator.data_product_keyword import get_keywords
-from readme_generator.generator import generate_readme, Config
+from readme_generator.generator import generate_readme, Paths, DataFunctions
 
 
 def make_get_data_product(connector: DbConnector):
-    def f(dp_idq: str):
-        return get_data_product(connector, dp_idq)
+    """Closure to hide database connector from client."""
+    def f(data_product_id: str):
+        return get_data_product(connector, data_product_id)
     return f
 
 
 def make_get_keywords(connector: DbConnector):
-    def f(dp_idq: str):
-        return get_keywords(connector, dp_idq)
+    """Closure to hide database connector from client."""
+    def f(data_product_id: str):
+        return get_keywords(connector, data_product_id)
     return f
 
 
 def make_get_log_entries(connector: DbConnector):
-    def f(dp_idq: str):
-        return get_log_entries(connector, dp_idq)
+    """Closure to hide database connector from client."""
+    def f(data_product_id: str):
+        return get_log_entries(connector, data_product_id)
     return f
 
 
 def make_get_geometry(connector: DbConnector):
-    def f(dp_idq: str):
-        return get_geometry(connector, dp_idq)
+    """Closure to hide database connector from client."""
+    def f(data_product_id: str):
+        return get_geometry(connector, data_product_id)
     return f
 
 
 def make_get_descriptions(connector: DbConnector):
+    """Closure to hide database connector from client."""
     def f():
         return get_descriptions(connector)
     return f
@@ -55,18 +60,15 @@ def main() -> None:
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'out_path: {out_path}')
-    config = Config(
-        in_path=in_path,
-        out_path=out_path,
-        template_path=template_path)
     db_config = read_from_mount(Path('/var/db_secret'))
     with closing(DbConnector(db_config)) as connector:
-        generate_readme(config=config,
-                        get_log_entries=make_get_log_entries(connector),
-                        get_data_product=make_get_data_product(connector),
-                        get_geometry=make_get_geometry(connector),
-                        get_descriptions=make_get_descriptions(connector),
-                        get_keywords=make_get_keywords(connector))
+        paths = Paths(in_path=in_path, out_path=out_path, template_path=template_path)
+        functions = DataFunctions(get_log_entries=make_get_log_entries(connector),
+                                  get_data_product=make_get_data_product(connector),
+                                  get_geometry=make_get_geometry(connector),
+                                  get_descriptions=make_get_descriptions(connector),
+                                  get_keywords=make_get_keywords(connector))
+        generate_readme(paths=paths, functions=functions)
 
 
 if __name__ == '__main__':
