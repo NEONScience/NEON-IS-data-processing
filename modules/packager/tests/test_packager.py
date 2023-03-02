@@ -16,7 +16,7 @@ class Packager(TestCase):
     def setUp(self):
         self.log = logging.getLogger('testlog')
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-        self.temp_dir = TempDirectory()  # create temporary dir
+        self.temp_dir = TempDirectory()  # generate_readme temporary dir
         self.temp_dir_name = self.temp_dir.path
         self.input_path = Path(self.temp_dir_name, 'repo/inputs')
         self.data_path = Path(self.input_path, 'CPER/2019/05')

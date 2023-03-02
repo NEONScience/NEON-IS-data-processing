@@ -1,0 +1,67 @@
+[
+	{
+		"dp_change_log_id" : 2334,
+		"dp_idq" : "NEON.DOM.SITE.DP1.00041.001",
+		"issue_date" : "2018-05-01T06:00:00.000Z",
+		"resolved_date" : "2018-05-01T06:00:00.000Z",
+		"date_range_start" : "2012-01-01T07:00:00.000Z",
+		"date_range_end" : "2018-04-26T06:00:00.000Z",
+		"location_affected" : "WOOD soil plot 2 measurement levels 6 and 7 (HOR.VER: 002.506, 002.507)",
+		"issue" : "Sensor locations were swapped in database.",
+		"resolution" : "Corrected sensor locations in database. Applied manual flagging to previously collected data.",
+		"change_by" : "audit-initialization",
+		"tran_date" : "2023-01-16T02:42:42.164Z"
+	},
+	{
+		"dp_change_log_id" : 2329,
+		"dp_idq" : "NEON.DOM.SITE.DP1.00041.001",
+		"issue_date" : "2018-05-01T06:00:00.000Z",
+		"resolved_date" : "2018-05-01T06:00:00.000Z",
+		"date_range_start" : "2012-01-01T07:00:00.000Z",
+		"date_range_end" : "2018-04-11T06:00:00.000Z",
+		"location_affected" : "DSNY soil plot 3 measurement levels 3 and 5 (HOR.VER: 003.503, 003.505)",
+		"issue" : "Sensor locations were swapped in database.",
+		"resolution" : "Corrected sensor locations in database. Applied manual flagging to previously collected data.",
+		"change_by" : "audit-initialization",
+		"tran_date" : "2023-01-16T02:42:42.164Z"
+	},
+	{
+		"dp_change_log_id" : 704,
+		"dp_idq" : "NEON.DOM.SITE.DP1.00041.001",
+		"issue_date" : "2017-10-24T06:00:00.000Z",
+		"resolved_date" : "2017-10-31T06:00:00.000Z",
+		"date_range_start" : "2017-08-04T06:00:00.000Z",
+		"date_range_end" : "2017-10-31T06:00:00.000Z",
+		"location_affected" : "ABBY",
+		"issue" : "Discovered sensor malfunction with sparse auto-flagging.",
+		"resolution" : "Applied manual flagging. Sensor issue appeared to resolve itself.",
+		"change_by" : "audit-initialization",
+		"tran_date" : "2023-01-16T02:42:42.164Z"
+	},
+	{
+		"dp_change_log_id" : 6229,
+		"dp_idq" : "NEON.DOM.SITE.DP1.00041.001",
+		"issue_date" : "2018-05-24T06:00:00.000Z",
+		"resolved_date" : "2018-05-24T06:00:00.000Z",
+		"date_range_start" : "2018-08-06T06:00:00.000Z",
+		"date_range_end" : "2018-09-01T06:00:00.000Z",
+		"location_affected" : "DO5 STEI soil plot 2 measurement level 3 (HOR.VER: 002.503)",
+		"issue" : "Sensor malfunction resulted in implausible measurements that were not identified by automated flagging.",
+		"resolution" : "Data were manually flagged. Sensor malfunction is ongoing, but measurements are currently being identified by automated flagging algorithms.",
+		"change_by" : "audit-initialization",
+		"tran_date" : "2023-01-16T02:42:42.164Z"
+	},
+	{
+		"dp_change_log_id" : 7454,
+		"dp_idq" : "NEON.DOM.SITE.DP1.00041.001",
+		"issue_date" : "2018-05-24T06:00:00.000Z",
+		"resolved_date" : "2018-05-24T06:00:00.000Z",
+		"date_range_start" : "2017-08-15T06:00:00.000Z",
+		"date_range_end" : "2018-06-30T06:00:00.000Z",
+		"location_affected" : "D06 KONZ soil plot 2 measurement level 1 (HOR.VER: 002.501)",
+		"issue" : "Sensor malfunction resulted in implausible measurements that were not identified by automated flagging.",
+		"resolution" : "Data were manually flagged. Sensor malfunction is ongoing, but measurements are currently being identified by automated flagging algorithms.",
+		"change_by" : "audit-initialization",
+		"tran_date" : "2023-01-16T02:42:42.164Z"
+	}
+]

@@ -18,15 +18,15 @@ class EventLocationGroupTest(TestCase):
         self.out_path = Path('/out')
         self.data_path = Path('/data/events/heater/2019/01/01', self.source_id)
         self.location_path = Path('/location')
-        # create data file
+        # generate_readme data file
         self.data_file = f'heater_{self.source_id}_events_2019-01-01.json'
         self.input_data_path = Path(self.data_path, self.data_file)
         self.fs.create_file(self.input_data_path)
-        # create location file
+        # generate_readme location file
         self.location_file = f'heater_{self.source_id}_locations.json'
         self.input_location_path = Path(self.location_path, 'heater', self.source_id, self.location_file)
         self.fs.create_file(self.input_location_path)
-        # create output directory
+        # generate_readme output directory
         self.fs.create_dir(self.out_path)
         # path indices
         self.source_type_index = 3
