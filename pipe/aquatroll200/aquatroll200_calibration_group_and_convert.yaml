@@ -19,7 +19,7 @@ transform:
     DirErr=/pfs/out/errored_datums 
     FileSchmData=$FILE_SCHEMA_DATA
     FileSchmQf=$FILE_SCHEMA_FLAGS
-    "TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly|conductivity:def.cal.conv.poly.m"
+    "TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly|conductivity:def.cal.conv.poly.split"
     "TermQf=pressure|temperature|conductivity"
     "TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst|conductivity:def.ucrt.meas.cnst"
   env:
