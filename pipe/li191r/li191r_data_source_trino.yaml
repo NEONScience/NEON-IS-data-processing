@@ -18,10 +18,17 @@ transform:
   - '  echo "Processing $path"'
   - "  p=${path#/pfs}"
   - '  IFS="/"; arr=($p); unset IFS;'
-  - "  year=${arr[2]}"
-  - "  month=${arr[3]}"
-  - "  day=${arr[4]}"
-  - "  site=${arr[5]}"
+  - "  year=${arr[3]}"
+  - "  month=${arr[4]}"
+  - "  day=${arr[5]}"
+  - "  site=${arr[6]}"
+  - '  type=$(echo $site | cut -f 2 -d "." --only-delimited); # Extract the "kafka" from site.kafka if present'
+  - '  if [ "$type" = "kafka" ]'
+  - "  then "
+  - '    echo "$year/$month$day/$site is indicated to be streaming from Kafka. Skipping..."'
+  - '    continue'
+  - '  fi'
+  - '  echo "Extracting data from Trino for $year/$month/$day/$site"'
   - "  export GEN_DATE=$year-$month-$day"
   - "  export GEN_SITE_NAME=$site"
   - "  export GEN_OUTPUT_DIR=/usr/src/app/interimData/li191r/$year/$month/$day"
@@ -58,8 +65,8 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: li191r_import_trigger
-    glob: "/*/*/*"
+    repo: li191r_cron_daily_and_date_control
+    glob: "/li191r/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5
