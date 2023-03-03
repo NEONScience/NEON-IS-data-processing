@@ -77,7 +77,7 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_qaqc_data_group')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2020/01/02')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -86,7 +86,8 @@
 #' changelog and author contributions / copyrights
 #'   Nora Catolico (2021-02-02)
 #'     original creation
-#'
+#'   Nora Catolico (2023-03-03)
+#'     updated for no troll data use case
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -266,50 +267,52 @@ for (idxDirIn in DirIn){
   CFGLOC<-tail(x=fileOutSplt,n=1)
   
   # Which location history matches each readout_time
-  troll_all<-NULL
-  if(length(LocationHist$CFGLOC)>0){
-    for(i in 1:length(LocationHist$CFGLOC)){
-      startDate<-LocationHist$CFGLOC[[i]]$start_date
-      endDate<-LocationHist$CFGLOC[[i]]$end_date
-      troll_sub<-trollData[trollData$readout_time>=startDate && trollData$readout_time<endDate,]
-      troll_sub$sensorElevation<- LocationHist$CFGLOC[[i]]$geometry$coordinates[3]
-      troll_sub$z_offset<- LocationHist$CFGLOC[[i]]$z_offset
-      troll_sub$survey_uncert <- LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty` #includes survey uncertainty and hand measurements
-      troll_sub$real_world_uncert <-LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`  
-      if(i==1){
-        troll_all<-troll_sub
-      }else{
-        troll_all<-rbind(troll_all,troll_sub)
+  if(length(trollData)>0){
+    troll_all<-NULL
+    if(length(LocationHist$CFGLOC)>0){
+      for(i in 1:length(LocationHist$CFGLOC)){
+        startDate<-LocationHist$CFGLOC[[i]]$start_date
+        endDate<-LocationHist$CFGLOC[[i]]$end_date
+        troll_sub<-trollData[trollData$readout_time>=startDate & trollData$readout_time<endDate,]
+        troll_sub$sensorElevation<- LocationHist$CFGLOC[[i]]$geometry$coordinates[3]
+        troll_sub$z_offset<- LocationHist$CFGLOC[[i]]$z_offset
+        troll_sub$survey_uncert <- LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty` #includes survey uncertainty and hand measurements
+        troll_sub$real_world_uncert <-LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`  
+        if(i==1){
+          troll_all<-troll_sub
+        }else{
+          troll_all<-rbind(troll_all,troll_sub)
+        }
       }
+      trollData<-troll_all
     }
-    troll_all$startDateTime<-as.POSIXct(troll_all$readout_time)
-    troll_all$endDateTime<-as.POSIXct(troll_all$readout_time)
-    trollData<-troll_all
-  }
-
-  #calculate water table elevation
-  trollData$elevation<-NA
-  if(length(LocationHist)>0){
-    trollData$elevation<-trollData$sensorElevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
+    trollData$startDateTime<-as.POSIXct(troll_all$readout_time)
+    trollData$endDateTime<-as.POSIXct(troll_all$readout_time)
+  
+    #calculate water table elevation
+    trollData$elevation<-NA
+    if(length(LocationHist)>0){
+      trollData$elevation<-trollData$sensorElevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
+    }
+    
+    #Define troll type
+    #include conductivity based on sensor type
+    if(grepl("aquatroll",idxDirIn)){
+      sensor<-"aquatroll200"
+    }else{
+      sensor<-"leveltroll500"
+    }
+    
+    #Create dataframe for output data
+    dataOut <- trollData
+    if(sensor=="aquatroll200"){
+      dataCol <- c("startDateTime","endDateTime","pressure","temperature","conductivity","elevation")
+    }else{
+      dataCol <- c("startDateTime","endDateTime","pressure","temperature","elevation") 
+    }
+    dataOut <- dataOut[,dataCol]
   }
   
-  #Define troll type
-  #include conductivity based on sensor type
-  if(grepl("aquatroll",idxDirIn)){
-    sensor<-"aquatroll200"
-  }else{
-    sensor<-"leveltroll500"
-  }
-  
-  
-  #Create dataframe for output data
-  dataOut <- trollData
-  if(sensor=="aquatroll200"){
-    dataCol <- c("startDateTime","endDateTime","pressure","temperature","conductivity","elevation")
-  }else{
-    dataCol <- c("startDateTime","endDateTime","pressure","temperature","elevation") 
-  }
-  dataOut <- dataOut[,dataCol]
   
   #Write out instantaneous data for groundwater only
   #dataOut[,-1] <-round(dataOut[,-1],2)
