@@ -6,7 +6,7 @@ from readme_generator.generator import Paths
 from readme_generator.github_app_reader import GithubConfig
 
 
-class ApplicationConfig:
+class GeneratorMainConfig:
     """Class to hold the required application inputs for generating a readme file."""
 
     def __init__(self):

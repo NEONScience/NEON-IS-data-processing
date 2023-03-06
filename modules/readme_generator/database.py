@@ -4,12 +4,12 @@ functions in a class hiding the database connection from
 clients.
 """
 from data_access.db_connector import DbConnector
-from readme_generator.data_product import get_data_product
-from readme_generator.data_product_keyword import get_keywords
-from readme_generator.file_descriptions import get_descriptions
+from readme_generator.database_queries.data_product import get_data_product
+from readme_generator.database_queries.data_product_keywords import get_keywords
+from readme_generator.database_queries.file_descriptions import get_descriptions
 from readme_generator.generator import DataFunctions
-from readme_generator.location_geometry import get_geometry
-from readme_generator.log_entry import get_log_entries
+from readme_generator.database_queries.location_geometry import get_geometry
+from readme_generator.database_queries.log_entries import get_log_entries
 
 
 class Database:

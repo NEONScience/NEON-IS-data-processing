@@ -37,7 +37,7 @@ class ReadmeGeneratorMainTest(unittest.TestCase):
         self.db_secrets_path.mkdir(parents=False, exist_ok=True)
         add_secrets(self.db_secrets_path)
 
-    @unittest.skip('Integration test skipped.')
+    # @unittest.skip('Integration test skipped.')
     def test_main(self) -> None:
         # TODO: Specify individual path indices and pass them into path parser.
         pem_path = environs.Env().str('GITHUB_README_APP_PEM')

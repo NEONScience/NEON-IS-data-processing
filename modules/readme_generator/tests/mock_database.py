@@ -7,10 +7,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
 
-from readme_generator.data_product import DataProduct
-from readme_generator.file_descriptions import remove_prefix
+from readme_generator.database_queries.data_product import DataProduct
+from readme_generator.database_queries.file_descriptions import remove_prefix
 from readme_generator.generator import DataFunctions
-from readme_generator.log_entry import LogEntry
+from readme_generator.database_queries.log_entries import LogEntry
 
 
 def to_datetime(date: str) -> datetime:

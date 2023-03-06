@@ -11,10 +11,10 @@ from jinja2 import Template
 
 import common.date_formatter as date_formatter
 from readme_generator.change_log import get_change_log, ChangeLog
-from readme_generator.log_entry import LogEntry
-from readme_generator.data_product import DataProduct
+from readme_generator.database_queries.log_entries import LogEntry
+from readme_generator.database_queries.data_product import DataProduct
 from readme_generator.path_parser import parse_path, parse_filename, FilenameParts
-from readme_generator.location_geometry import get_point_coordinates
+from readme_generator.database_queries.location_geometry import get_point_coordinates
 
 log = structlog.get_logger()
 
