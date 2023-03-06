@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+Module to read data product keywords from the database.
+"""
 from contextlib import closing
 from typing import List
 

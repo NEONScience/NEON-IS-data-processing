@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+Module to read all file descriptions from the database.
+"""
 from contextlib import closing
 from typing import Dict
 

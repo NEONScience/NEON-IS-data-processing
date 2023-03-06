@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+Module to read change log entries from the database.
+"""
 from contextlib import closing
 from datetime import datetime
 from typing import List, NamedTuple

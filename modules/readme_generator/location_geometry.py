@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+Module to read a location's geometry from the database.
+"""
 from contextlib import closing
 
 from data_access.db_connector import DbConnector
