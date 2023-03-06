@@ -1,17 +1,19 @@
-#!/usr/bin/env python3
+"""
+Module to generate a readme file and write it to the filesystem.
+"""
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, List, NamedTuple, Dict, Tuple
 
 import structlog
 import pandas
+from jinja2 import Template
 
 import common.date_formatter as date_formatter
 from readme_generator.change_log import get_change_log, ChangeLog
 from readme_generator.log_entry import LogEntry
 from readme_generator.data_product import DataProduct
 from readme_generator.path_parser import parse_path, parse_filename, FilenameParts
-from readme_generator.template import render
 from readme_generator.location_geometry import get_point_coordinates
 
 log = structlog.get_logger()
@@ -25,7 +27,7 @@ class DataFile(NamedTuple):
 class Paths(NamedTuple):
     in_path: Path
     out_path: Path
-    template_path: Path
+    path_parse_index: int
 
 
 class DataFunctions(NamedTuple):
@@ -48,13 +50,6 @@ def get_time_span(data_file_path: Path) -> Tuple[str, str]:
     return min_start, max_end
 
 
-def write_file(file_path: Path, file_content: str) -> None:
-    print(f'content:\n\n"\n{file_content}\n"\n\n')
-    with open(file_path, mode='w', encoding='utf-8') as file:
-        file.write(file_content)
-        log.debug(f'Wrote {file_path}.')
-
-
 def link_file(path: Path, link_path: Path) -> None:
     link_path.parent.mkdir(parents=True, exist_ok=True)
     if not link_path.exists():
@@ -62,7 +57,7 @@ def link_file(path: Path, link_path: Path) -> None:
         link_path.symlink_to(path)
 
 
-def generate_readme(*, paths: Paths, functions: DataFunctions) -> None:
+def generate_readme(paths: Paths, functions: DataFunctions, readme_template: str) -> None:
     file_descriptions = functions.get_descriptions()
 
     site = None
@@ -76,7 +71,7 @@ def generate_readme(*, paths: Paths, functions: DataFunctions) -> None:
     is_first_file = True
     for path in paths.in_path.rglob('*'):
         if path.is_file():
-            site, year, month, day, filename = parse_path(path)
+            site, year, month, day, filename = parse_path(path, paths.path_parse_index)
             if filename != 'manifest.csv':
                 parts: FilenameParts = parse_filename(filename)
                 domain = parts.domain
@@ -122,7 +117,11 @@ def generate_readme(*, paths: Paths, functions: DataFunctions) -> None:
                        data_file_count=data_file_count,
                        data_files=data_files,
                        change_logs=change_log_entries)
-    readme_content = render(paths.template_path, readme_data)
+    template = Template(readme_template, trim_blocks=True, lstrip_blocks=True)
+    readme_content = template.render(readme_data)
     readme_filename = get_readme_filename(domain, site, data_product_id, now)
     readme_path = Path(paths.out_path, site, year, month, readme_filename)
-    write_file(readme_path, readme_content)
+    readme_path.write_text(readme_content)
+
+    log.debug(f'Readme file: {readme_filename}')
+    log.debug(f'\n\n{readme_content}\n')

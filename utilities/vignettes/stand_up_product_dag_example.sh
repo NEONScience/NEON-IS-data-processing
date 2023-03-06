@@ -19,23 +19,13 @@ product='groundwaterPhysical'
 spec_path_source_type=$git_path_pipelines/$source_type
 spec_path_product=$git_path_pipelines/$product
 
-# Create sensor-specific import_trigger with a small amount of data
-pachctl create repo $source_type'_import_trigger'
-pachctl start commit $source_type'_import_trigger'@master
-sites=(CPER HARV BARC ARIK) # Edit as desired
-days=(01 02 03) # Edit as desired. Jan 2020 is hardcoded throughout this code
-for site in $(echo ${sites[*]}); do 
-for day in $(echo ${days[*]}); do 
-pachctl put file $source_type'_import_trigger'@master:/2020/01/$day/$site -f $data_path/import_trigger_FULL/2020/01/$day/$site
-done
-done
+# Create site list (controls sites to run and indicates kafka start dates)
+# This puts in the site list with only a few sites for testing. Full one is also in the $data_path/site_list/
+# Make sure cron_daily_and_date_control pipeline uses the correct one
+pachctl create repo $source_type'_site_list'
+pachctl start commit $source_type'_site_list'@master
+pachctl put file $source_type'_site_list'@master:/site-list-test.json -f $data_path/site_list/site-list-test.json
 pachctl finish commit $source_type'_import_trigger'@master
-
-# Load in calibrations (must be stored locally. Ideally, set up the python loader instead.
-# pachctl create repo $source_type'_calibration'
-# pachctl start commit $source_type'_calibration'@master
-# pachctl put file -r $source_type'_calibration'@master:/$source_type -f $data_path/calibration/$source_type
-# pachctl finish commit $source_type'_calibration'@master
 
 # Create source-type-specific empty_files
 pachctl create repo $source_type'_empty_files'

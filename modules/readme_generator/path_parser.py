@@ -1,3 +1,6 @@
+"""
+Module to parse input file paths and filenames.
+"""
 from pathlib import Path
 from typing import NamedTuple
 
@@ -18,12 +21,12 @@ class PathParts(NamedTuple):
     filename: str
 
 
-def parse_path(path: Path) -> PathParts:
+def parse_path(path: Path, path_parse_index: int) -> PathParts:
     parts = path.parts
-    site = parts[2]
-    year = parts[3]
-    month = parts[4]
-    day = parts[5]
+    site = parts[path_parse_index+1]
+    year = parts[path_parse_index+2]
+    month = parts[path_parse_index+3]
+    day = parts[path_parse_index+4]
     filename = path.name
     return PathParts(site=site, year=year, month=month, day=day, filename=filename)
 

@@ -59,8 +59,8 @@ class L0toL0p:
     def data_conversion(self, filename) -> pd.DataFrame:
         out_df = pd.read_parquet(filename)
         log.debug(f'{out_df.columns}')
-        log.info(out_df['site_id'][1])
-        log.info(out_df['source_id'][1])
+        #log.info(out_df['site_id'][0])
+        #log.info(out_df['source_id'][0])
         # drop columns not used in l0 to l0p data conversion
         self.drop_kafka_columns(out_df)
         return out_df

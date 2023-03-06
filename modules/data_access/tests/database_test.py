@@ -26,4 +26,3 @@ class DatabaseBackedTest(TestCase):
         self.fs.create_file(Path(mount_path, file_keys.db_name), contents=os.environ[environment_keys.db_name])
         self.fs.create_file(Path(mount_path, file_keys.schema), contents=os.environ[environment_keys.schema])
         return mount_path
-

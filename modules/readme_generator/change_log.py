@@ -1,4 +1,9 @@
-#!/usr/bin/env python3
+"""
+This module contains functions for converting a
+list of log entries into a change log format with
+affected dates and locations added into a list
+for each log entry.
+"""
 from datetime import datetime
 from typing import NamedTuple, List
 
@@ -12,6 +17,7 @@ class DatesLocations(NamedTuple):
 
 
 class ChangeLog(NamedTuple):
+    """The final change log format with a list of dates and affected locations."""
     dp_idq: str
     issue: str
     issue_date: datetime

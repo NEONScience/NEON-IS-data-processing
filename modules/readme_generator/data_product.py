@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+"""
+Module containing functions to read data product data from the database.
+"""
 from contextlib import closing
 from typing import NamedTuple
 
