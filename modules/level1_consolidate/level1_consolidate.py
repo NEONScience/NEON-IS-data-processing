@@ -18,7 +18,7 @@ class Level1Consolidate:
         self.relative_path_index = config.relative_path_index
         self.group_index=config.group_index
         self.group_metadata_index=config.group_metadata_index
-        self.group_metadata_name=config.group_metadata_name
+        self.group_metadata_names=config.group_metadata_names
         self.data_type_index=config.data_type_index
         self.data_type_names=config.data_type_names
     def consolidate_paths(self) -> None:
@@ -49,7 +49,7 @@ class Level1Consolidate:
             group_metadata_name_check: str = path_parts[self.group_metadata_index]
         if len(path_parts) > self.data_type_index:
             data_type_name_check: str = path_parts[self.data_type_index]
-        if group_metadata_name_check is not None and group_metadata_name_check == self.group_metadata_name:
+        if group_metadata_name_check is not None and group_metadata_name_check in self.group_metadata_names:
             # We have a group metadata file. Place it in the output within the group metadata folder, which is a direct child of the group
             group_part = path_parts[self.relative_path_index:self.group_index+1]
             new_path = new_path.joinpath(Path(*group_part))

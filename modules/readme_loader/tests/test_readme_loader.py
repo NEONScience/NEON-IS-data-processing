@@ -5,7 +5,7 @@ import unittest
 
 from data_access.tests.database_test import DatabaseBackedTest
 import readme_loader.readme_loader_main as readme_loader_main
-from readme_loader.readme_loader import load_readme, get_filename
+from readme_loader.loader import load_readme, get_filename
 
 
 class ReadmeLoaderTest(DatabaseBackedTest):
@@ -26,7 +26,7 @@ class ReadmeLoaderTest(DatabaseBackedTest):
 
         load_readme(get_readme, self.out_path)
         expected_path = self.out_path.joinpath(get_filename())
-        self.assertTrue(expected_path.exists())
+        assert expected_path.exists() is True
 
     @unittest.skip('Integration test skipped.')
     def test_main(self):
@@ -35,4 +35,4 @@ class ReadmeLoaderTest(DatabaseBackedTest):
         os.environ['LOG_LEVEL'] = 'DEBUG'
         readme_loader_main.main()
         expected_path = Path(self.out_path, get_filename())
-        self.assertTrue(expected_path.exists())
+        assert expected_path.exists() is True

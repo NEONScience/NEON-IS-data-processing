@@ -19,7 +19,7 @@ class RelatedLocationGrouper:
     def group_files(self) -> None:
         """Link related data and location files into the output path."""
         for path in self.data_path.rglob('*'):
-            # create data type directories as they may be empty
+            # generate_readme data type directories as they may be empty
             if path.is_dir() and len(path.parts) - 1 == self.data_path_parser.max_value:
                 source_type, year, month, day, group, location, data_type = self.data_path_parser.parse_dir(path)
                 output_path = Path(self.out_path, year, month, day, group, source_type, location, data_type)

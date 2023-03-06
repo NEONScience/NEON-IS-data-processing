@@ -22,7 +22,7 @@ input:
       glob: /li191r/*
   - pfs:
       name: FILE_YEAR
-      repo: li191r_data_years
+      repo: li191r_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
   constant: 4

@@ -52,7 +52,7 @@ class Level1ConsolidateTest(TestCase):
         os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
         os.environ['GROUP_INDEX'] = str(self.group_index)
         os.environ['GROUP_METADATA_INDEX'] = str(self.group_metadata_index)
-        os.environ['GROUP_METADATA_NAME'] = str(self.group_metadata_name)
+        os.environ['GROUP_METADATA_NAMES'] = str(self.group_metadata_name)
         os.environ['DATA_TYPE_INDEX'] = str(self.data_type_index)
         os.environ['DATA_TYPE_NAMES'] = self.data_type_names_str
         level1_consolidate_main.main()

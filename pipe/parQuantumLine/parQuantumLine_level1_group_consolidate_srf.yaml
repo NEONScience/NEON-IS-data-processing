@@ -1,0 +1,182 @@
+---
+pipeline:
+  name: parQuantumLine_level1_group_consolidate_srf
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:v1.0.4
+  cmd:
+  - "/bin/bash"
+  stdin:
+  - "#!/bin/bash"
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /data/*
+  - mkdir /data/interimA
+  - mkdir /data/interimB
+  - mkdir -p /data/pfs/interimC
+  - '# Set some environment variables for the first module'
+  - export OUT_PATH=$OUT_PATH_1
+  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
+  - python3 -m filter_joiner.filter_joiner_main
+  - '# Set some environment variables for the second module'
+  - export OUT_PATH=$OUT_PATH_2
+  - export CONFIG=$CONFIG2
+  - '# Run second module - filter-joiner to bring in SRF (using environment variables below as input parameters)'
+  - python3 -m filter_joiner.filter_joiner_main
+  - '# Clean up 1st interim directory (this is the only one we can clean up bc the rest use symlinks)'
+  - rm -rf /data/interimA  
+  - '# Set some environment variables for the 3rd module'
+  - export OUT_PATH=$OUT_PATH_3
+  - '# Run third module - level 1 consolidate (using environment variables below as input parameters)'
+  - python3 -m level1_consolidate.level1_consolidate_main
+  - '# Run fourth and final module - create pub tables and apply science review flags (if any)'
+  - Rscript ./flow.pub.tabl.srf.R
+      DirIn=/data/pfs/interimC
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      "DirData=stats|quality_metrics"
+      PathPubWb=$PUB_WORKBOOKS
+      "DirSubCopy=science_review_flags|group|location"
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: QUALITY_METRICS_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/**
+            # Join on group ID (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: STATISTICS_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+        - path:
+            name: GROUP_PATH
+            # Grab group information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+        - path:
+            name: GROUP_PATH
+            # Grab location information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/location/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+    OUT_PATH_1: /data/interimA # Transfered to OUT_PATH for the first module
+    RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Also shared with 2nd & 3rd modules 
+    LOG_LEVEL: DEBUG # Shared among all modules
+
+# Below are the environment variables for 2nd filter-joiner bringing in the Science review flags 
+# Can't do this in first filter-joiner bc there are only data in the srf assignment
+# repo for groups that have applicable SRFs for the day. Need to pass through the
+# consolidated output with an outer join.
+    CONFIG2: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: CONSOLIDATED_PATH
+            # Filter for data directory
+            glob_pattern: /data/interimA/*/*/*/*/**
+            # Join on group ID (already joined below by day)
+            join_indices: [6]
+            outer_join: True
+        - path:
+            name: SRF_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/SRF_PATH/*/*/*/*/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+    OUT_PATH_2: /data/interimB # This will be transfered to OUT_PATH for the this module
+
+# Environment variables for level 1 consolidation
+    IN_PATH: /data/interimB
+    OUT_PATH_3: /data/pfs/interimC # This will be transfered to OUT_PATH for the second module
+    GROUP_INDEX: "6"
+    # path index of names of group-level metadata to include in the output
+    GROUP_METADATA_INDEX: "7"
+    GROUP_METADATA_NAMES: group,science_review_flags
+    # path index of names of directories to include in the output
+    DATA_TYPE_INDEX: "9"
+    DATA_TYPE_NAMES: location,stats,quality_metrics
+
+# Environment variables for pub table and srf module
+    PARALLELIZATION_INTERNAL: '1'
+input:
+  cross:
+  - pfs: 
+      name: PUB_WORKBOOKS
+      repo: parQuantumLine_pub_workbooks
+      glob: /
+  - join:
+    - pfs:
+        name: QUALITY_METRICS_PATH
+        repo: parQuantumLine_qm_group_and_compute
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: STATISTICS_PATH
+        repo: parQuantumLine_stats_group_and_compute
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: GROUP_PATH
+        repo: parQuantumLine_group_path
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: SRF_PATH
+        repo: parQuantumLine_srf_assignment
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+output_branch: master
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 200M
+  cpu: 0.1
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"500M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.3"
+    }
+  ]
+
+

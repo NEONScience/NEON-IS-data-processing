@@ -4,10 +4,10 @@ transform:
   cmd:
     - /bin/bash
   env:
-    GROUP_PREFIX: surfacewater-physical_
+    GROUP_PREFIX: groundwater-physical_
     LOG_LEVEL: DEBUG
     OUT_PATH: /pfs/out
-  image: quay.io/battelleecology/neon-srf-loader:22
+  image: quay.io/battelleecology/neon-srf-loader:45
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
   secrets:

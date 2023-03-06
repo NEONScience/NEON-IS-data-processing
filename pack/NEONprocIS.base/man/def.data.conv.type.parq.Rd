@@ -2,7 +2,7 @@
 % Please edit documentation in R/def.data.conv.type.parq.R
 \name{def.data.conv.type.parq}
 \alias{def.data.conv.type.parq}
-\title{Convert data types in data frame to match parquet or avro schema data types}
+\title{Convert data types in data frame to be compatible with parquet or avro schema data types}
 \usage{
 def.data.conv.type.parq(data, type, log = NULL)
 }
@@ -11,7 +11,7 @@ def.data.conv.type.parq(data, type, log = NULL)
 
 \item{type}{A data frame of: \cr
 \code{name} Character. Name of data column
-\code{type} Characer. Data type. There may be multiple types, delimited by pipes (|)}
+\code{type} Character. Data type. There may be multiple types, delimited by pipes (|)}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}
@@ -32,6 +32,8 @@ License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }
 \seealso{
 \link[NEONprocIS.base]{def.write.parq}
+
+\link[arrow]{data-type}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}

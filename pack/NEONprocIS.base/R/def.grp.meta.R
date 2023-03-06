@@ -50,7 +50,10 @@ def.grp.meta <- function(NameFile,log=NULL){
                           group=dmmyChar,
                           HOR=dmmyChar,
                           VER=dmmyChar,
-                          product=dmmyChar,
+                          data_product_ID=dmmyChar,
+                          site=dmmyChar,
+                          domain=dmmyChar,
+                          visibility_code=dmmyChar,
                           stringsAsFactors = FALSE)
   
   # First, validate the syntax of input json to see if it is valid. 
@@ -95,7 +98,10 @@ def.grp.meta <- function(NameFile,log=NULL){
                 'active_periods',
                 'HOR',
                 'VER',
-                'products') 
+                'data_product_ID',
+                'site',
+                'domain',
+                'visibility_code') 
   
   # Populate the output data frame
   for(idxGrp in base::seq_len(base::nrow(grpProp))){
@@ -149,13 +155,35 @@ def.grp.meta <- function(NameFile,log=NULL){
       timeActv <- NA
     }
     
-    # HOR and VER are higher-level properties. Grab them.
+    # Parse any data products
+    if(!base::is.na(prop$data_product_ID)){
+      dp <- rjson::fromJSON(json_str=prop$data_product_ID)
+      
+      if(base::length(dp) == 0){
+        dp <- NA
+      } else {
+        dp <- base::paste0(dp,collapse='|')
+      }
+    } else {
+      dp <- NA
+    }
+    
+    # HOR, VER, site, domain, and visibility_code are higher-level properties. Grab them.
     propMore <- grpFull$features[[idxGrp]]
     if(!base::is.null(propMore$HOR)){
       prop$HOR <- propMore$HOR
     }
     if(!base::is.null(propMore$VER)){
       prop$VER <- propMore$VER
+    }
+    if(!base::is.null(propMore$site)){
+      prop$site <- propMore$site
+    }
+    if(!base::is.null(propMore$domain)){
+      prop$domain <- propMore$domain
+    }
+    if(!base::is.null(propMore$visibility_code)){
+      prop$visibility_code <- propMore$visibility_code
     }
     
     # Consolidate the output
@@ -164,10 +192,13 @@ def.grp.meta <- function(NameFile,log=NULL){
                                active_periods=NA,
                                HOR=prop$HOR,
                                VER=prop$VER,
-                               products=prop$products,
+                               data_product_ID=dp,
+                               site=prop$site,
+                               domain=prop$domain,
+                               visibility_code=prop$visibility_code,
                                stringsAsFactors = FALSE)
     rptIdx$active_periods <- timeActv # Add in the (potential) data frame of active periods.
-    
+
     rpt <- base::rbind(rpt,rptIdx)
   }
   

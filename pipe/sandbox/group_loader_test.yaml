@@ -1,5 +1,5 @@
 pipeline:
-  name: group_loader_test_cove
+  name: group_loader_test
 input:
   pfs:
     branch: master
@@ -15,10 +15,10 @@ transform:
   cmd:
     - /bin/bash
   env:
-    GROUP_PREFIX: test-group_
+    GROUP_PREFIX: rel-humidity
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
-  image: quay.io/battelleecology/group_loader:515
+  image: quay.io/battelleecology/group_loader:553
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
   secrets:
