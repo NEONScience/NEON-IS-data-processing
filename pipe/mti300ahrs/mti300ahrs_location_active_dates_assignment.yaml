@@ -14,22 +14,22 @@ transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
 input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_mti300ahrs
+      repo: mti300ahrs_location_loader
       glob: /mti300ahrs/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_mti300ahrs_list_years
+      repo: mti300ahrs_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4
 resource_requests:
-  memory: 300M
-  cpu: 0.5
+  memory: 500M
+  cpu: 1
 autoscaling: true
 scheduling_spec:
   node_selector:
