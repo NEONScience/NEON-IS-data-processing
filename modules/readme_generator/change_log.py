@@ -5,7 +5,7 @@ affected dates and locations added into a list
 for each log entry.
 """
 from datetime import datetime
-from typing import NamedTuple, List
+from typing import NamedTuple, List, Optional
 
 from readme_generator.database_queries.log_entries import LogEntry
 
@@ -22,7 +22,7 @@ class ChangeLog(NamedTuple):
     issue: str
     issue_date: datetime
     resolution: str
-    resolution_date: datetime | None
+    resolution_date: Optional[datetime]
     dates_locations: List[DatesLocations]
 
 

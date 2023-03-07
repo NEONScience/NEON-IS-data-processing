@@ -3,7 +3,7 @@ Module to read files from a Github app.
 """
 import time
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import requests
 import jwt
@@ -17,7 +17,7 @@ class GithubConfig(NamedTuple):
     owner: str
     repo: str
     file_path: str
-    branch: str | None
+    branch: Optional[str]
 
 
 def get_jwt(config: GithubConfig) -> str:

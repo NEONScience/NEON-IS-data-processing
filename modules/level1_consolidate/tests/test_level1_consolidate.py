@@ -64,7 +64,7 @@ class Level1ConsolidateTest(TestCase):
                         relative_path_index=self.relative_path_index,
                         group_index=self.group_index,
                         group_metadata_index=self.group_metadata_index,
-                        group_metadata_name=self.group_metadata_name,
+                        group_metadata_names=[self.group_metadata_name],
                         data_type_index=self.data_type_index,
                         data_type_names=self.data_type_names)
         level1_consolidate=Level1Consolidate(config)
