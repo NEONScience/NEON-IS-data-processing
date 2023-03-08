@@ -4,17 +4,21 @@ import os
 from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
-from readme_generator.generator import generate_readme, Paths, get_time_span
-from readme_generator.tests.mock_database import MockDatabase
+
+from publication_files_generator.filename_formatter import format_timestamp
+from publication_files_generator.readme_generator import generate_readme_file
+from publication_files_generator.file_processor import get_file_time_span, process_input_files
+from publication_files_generator.tests.file_reader import get_data_store
+from publication_files_generator.timestamp import get_timestamp
 
 log = logging.getLogger()
 
 
-class ReadmeGeneratorTest(TestCase):
+class ReadmeFileGeneratorTest(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-        self.test_files_path = Path(os.path.dirname(__file__), 'generator_test_files')
+        self.test_files_path = Path(os.path.dirname(__file__), 'readme_generator_test_files')
         self.in_path = Path('/in/CPER/2020/01/02')
         self.out_path = Path('/out')
         self.fs.create_dir(self.in_path)
@@ -23,7 +27,7 @@ class ReadmeGeneratorTest(TestCase):
         self.add_data_files()
 
     def add_template_file(self) -> None:
-        real_path = Path(os.path.dirname(__file__), 'generator_test_files/template.j2')
+        real_path = Path(os.path.dirname(__file__), 'readme_generator_test_files/template.j2')
         self.template_path = Path('/templates/template.j2')
         self.fs.add_real_file(real_path, target_path=self.template_path)
 
@@ -41,16 +45,24 @@ class ReadmeGeneratorTest(TestCase):
 
     def test_get_time_span(self):
         path = Path(self.in_path, 'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.basic.csv')
-        start_time, end_time = get_time_span(path)
+        start_time, end_time = get_file_time_span(path)
         assert start_time == '2020-01-02T00:00:00Z'
         assert end_time == '2020-01-03T00:00:00Z'
 
     def test_generate_readme(self):
-        paths = Paths(in_path=self.in_path, out_path=self.out_path, path_parse_index=1)
+        in_path_parse_index = 1
         template = self.template_path.read_text()
-        database = MockDatabase(self.fs)
-        data_functions = database.get_data_functions()
-        generate_readme(paths, data_functions, template)
+        data_store = get_data_store(self.fs)
+        input_file_metadata = process_input_files(self.in_path, self.out_path, in_path_parse_index, data_store)
+        timestamp = get_timestamp()
+        formatted_timestamp = format_timestamp(timestamp)
+        variables_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.variables.csv'
+        generate_readme_file(out_path=self.out_path,
+                             data_store=data_store,
+                             input_file_metadata=input_file_metadata,
+                             readme_template=template,
+                             timestamp=timestamp,
+                             variables_filename=variables_filename)
         readme_files = list(Path(self.out_path, 'CPER', '2020', '01').glob('*.txt'))
         csv_files = list(Path(self.out_path, 'CPER', '2020', '01', '02').glob('*.csv'))
         assert len(readme_files) == 1

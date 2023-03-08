@@ -6,7 +6,7 @@ from pathlib import Path
 
 import environs
 
-import readme_generator.generator_main as readme_generator_main
+from publication_files_generator.main import main
 from data_access import db_config_reader
 
 log = logging.getLogger()
@@ -28,7 +28,7 @@ def add_secrets(db_secrets_path) -> None:
 
 
 @unittest.skip('Integration test skipped.')
-class ReadmeGeneratorMainTest(unittest.TestCase):
+class MainTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.test_files_path = Path(os.path.dirname(__file__), 'generator_main_test_files')
@@ -37,28 +37,58 @@ class ReadmeGeneratorMainTest(unittest.TestCase):
         self.db_secrets_path = Path(os.path.dirname(__file__), 'db_secrets')
         self.db_secrets_path.mkdir(parents=False, exist_ok=True)
         add_secrets(self.db_secrets_path)
+        self.site_path = Path(self.out_path, 'CPER')
+        self.year_path = Path(self.site_path, '2020')
+        self.month_path = Path(self.year_path, '01')
+        self.day_path = Path(self.month_path, '02')
 
     def test_main(self) -> None:
         # TODO: Specify individual path indices and pass them into path parser.
         pem_path = environs.Env().str('GITHUB_README_APP_PEM')
         os.environ['IN_PATH'] = str(self.test_files_path)
+        os.environ['IN_PATH_PARSE_INDEX'] = '8'
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['DB_SECRETS_PATH'] = str(self.db_secrets_path)
-        os.environ['PATH_PARSE_INDEX'] = '8'
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['GITHUB_PEM'] = pem_path
         os.environ['GITHUB_APP_ID'] = '300002'
         os.environ['GITHUB_INSTALLATION_ID'] = '34765458'
         os.environ['GITHUB_HOST'] = 'https://api.github.com'
         os.environ['GITHUB_REPO_OWNER'] = 'NEONScience'
-        os.environ['GITHUB_REPO'] = 'neon-metadata-docs'
-        os.environ['GITHUB_README_TEMPLATE_PATH'] = 'readme/readmeTemplate.txt'
+        os.environ['GITHUB_README_REPO'] = 'neon-metadata-docs'
+        os.environ['GITHUB_README_PATH'] = 'readme/readmeTemplate.txt'
+        os.environ['GITHUB_PUBLICATION_WORKBOOK_REPO'] = 'landWaterSoilIPT'
+        os.environ['GITHUB_PUBLICATION_WORKBOOK_PATH'] = 'water_quality/PublicationWorkbook_Water_quality.txt'
         os.environ['GITHUB_BRANCH'] = ''
-        readme_generator_main.main()
+        main()
+        readme_count = len(list(self.month_path.glob('*.txt')))
+        assert readme_count == 1
+        variables_file_count = len(list(self.month_path.glob('*.csv')))
+        assert variables_file_count == 1
+        data_files_count = len(list(self.day_path.glob('*.csv')))
+        assert data_files_count == 5  # Includes manifest.csv file
 
     def tearDown(self) -> None:
-        """Remove the created directories from the filesystem."""
-        # self.out_path.rmdir()
+        """Remove the created files and directories from the filesystem."""
+
+        # delete data files and manifest
+        for path in self.day_path.glob('*'):
+            if path.is_file():
+                path.unlink(missing_ok=True)
+
+        # delete monthly files
+        for path in self.month_path.glob('*'):
+            if path.is_file():
+                path.unlink(missing_ok=True)
+
+        # remove directories
+        self.day_path.rmdir()
+        self.month_path.rmdir()
+        self.year_path.rmdir()
+        self.site_path.rmdir()
+        self.out_path.rmdir()
+
+        # delete database secrets
         for path in self.db_secrets_path.glob('*'):
             path.unlink(missing_ok=True)
         self.db_secrets_path.rmdir()
