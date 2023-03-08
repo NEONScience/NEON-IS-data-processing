@@ -7,7 +7,7 @@ for each log entry.
 from datetime import datetime
 from typing import NamedTuple, List, Optional
 
-from readme_generator.database_queries.log_entries import LogEntry
+from publication_files_generator.database_queries.log_entries import LogEntry
 
 
 class DatesLocations(NamedTuple):
@@ -26,7 +26,7 @@ class ChangeLog(NamedTuple):
     dates_locations: List[DatesLocations]
 
 
-def get_change_log(dp_idq: str, log_entries: List[LogEntry]) -> List[ChangeLog]:
+def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[ChangeLog]:
     """Process the log entries in order to form the list of dates and locations affected
     for each log entry. (NOTE: The logs are currently stored in a flat table. This logic
     would be unnecessary with an improved data model.)"""
@@ -59,7 +59,7 @@ def get_change_log(dp_idq: str, log_entries: List[LogEntry]) -> List[ChangeLog]:
                 if not is_first_loop:
                     dates_locations = DatesLocations(date_range_start, date_range_end, locations)
                     dates_and_locations.append(dates_locations)
-                    change_logs.append(get_log(dp_idq, log_values, dates_and_locations))
+                    change_logs.append(get_log(data_product_id, log_values, dates_and_locations))
 
                 # Pull the log entry values
                 issue_date = log_entry.issue_date
@@ -98,13 +98,13 @@ def get_change_log(dp_idq: str, log_entries: List[LogEntry]) -> List[ChangeLog]:
         # Build the final change log
         dates_locations = DatesLocations(date_range_start, date_range_end, locations)
         dates_and_locations.append(dates_locations)
-        change_logs.append(get_log(dp_idq, log_values, dates_and_locations))
+        change_logs.append(get_log(data_product_id, log_values, dates_and_locations))
     return change_logs
 
 
-def get_log(dp_idq, log_values, dates_and_locations) -> ChangeLog:
+def get_log(data_product_id, log_values, dates_and_locations) -> ChangeLog:
     return ChangeLog(
-         dp_idq=dp_idq,
+         dp_idq=data_product_id,
          issue=log_values['issue'],
          issue_date=log_values['issue_date'],
          resolution=log_values['resolution'],

@@ -21,12 +21,12 @@ class PathParts(NamedTuple):
     filename: str
 
 
-def parse_path(path: Path, path_parse_index: int) -> PathParts:
+def parse_path(path: Path, in_path_parse_index: int) -> PathParts:
     parts = path.parts
-    site = parts[path_parse_index+1]
-    year = parts[path_parse_index+2]
-    month = parts[path_parse_index+3]
-    day = parts[path_parse_index+4]
+    site = parts[in_path_parse_index+1]
+    year = parts[in_path_parse_index+2]
+    month = parts[in_path_parse_index+3]
+    day = parts[in_path_parse_index+4]
     filename = path.name
     return PathParts(site=site, year=year, month=month, day=day, filename=filename)
 

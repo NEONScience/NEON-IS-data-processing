@@ -1,11 +1,11 @@
 ####
-# This dockerfile will build the readme creator module.
+# This dockerfile will build the publication file generator module.
 # Example command (must be run from project root directory to include the 'common' path in the Docker context):
 # docker build -t readme_creator:latest -f readme_creator/Dockerfile .
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="readme_creator"
+ARG APP_DIR="publication_files_generator"
 ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
 ARG CONTAINER_APP_DIR="/usr/src/app"

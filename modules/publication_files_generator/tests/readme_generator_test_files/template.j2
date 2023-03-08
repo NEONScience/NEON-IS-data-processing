@@ -1,4 +1,4 @@
-{% set gen_time = now.strftime('%Y%m%d%H%MZ') %}
+{% set gen_time = timestamp.strftime('%Y%m%d%H%MZ') %}
 {% set os_is_type = 'TOS-structured TIS Data Product Type' %}
 {% set file_prefix = 'NEON.{}.{}.{}'.format(domain, site, data_product.short_idq) %}
 This data package was produced by and downloaded from the National Ecological Observatory Network (NEON). NEON is
@@ -40,7 +40,7 @@ QUERY INFORMATION
 {%
     if data_product.supplier != 'AOP'
 %}
-Date-Time for Data Publication: {{now.strftime('%Y-%m-%d %H:%M')}} (UTC)
+Date-Time for Data Publication: {{timestamp.strftime('%Y-%m-%d %H:%M')}} (UTC)
 Start Date-Time for Queried Data: {{data_start_date.strftime('%Y-%m-%d %H:%M')}} (UTC)
 End Date-Time for Queried Data: {{data_end_date.strftime('%Y-%m-%d %H:%M')}} (UTC)
 {%
@@ -102,7 +102,7 @@ This folder also contains {{data_file_count}} data files:
 {%
     for file in data_files
 %}
-{{file.name}} {% if file.description %}- {{file.description}}{% endif %}
+{{file.filename}} {% if file.description %}- {{file.description}}{% endif %}
 
 {%
     endfor
