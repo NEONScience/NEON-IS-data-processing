@@ -55,7 +55,7 @@ def generate_readme_file(*,
     readme_content = template.render(readme_data)
     readme_filename = format_filename(domain=domain,
                                       site=site,
-                                      data_product_id=data_product.short_idq,
+                                      data_product_id=data_product.short_data_product_id,
                                       timestamp=timestamp,
                                       file_type='readme',
                                       extension='txt')

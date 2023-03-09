@@ -18,7 +18,7 @@ class DatesLocations(NamedTuple):
 
 class ChangeLog(NamedTuple):
     """The final change log format with a list of dates and affected locations."""
-    dp_idq: str
+    data_product_id: str
     issue: str
     issue_date: datetime
     resolution: str
@@ -104,7 +104,7 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
 
 def get_log(data_product_id, log_values, dates_and_locations) -> ChangeLog:
     return ChangeLog(
-         dp_idq=data_product_id,
+         data_product_id=data_product_id,
          issue=log_values['issue'],
          issue_date=log_values['issue_date'],
          resolution=log_values['resolution'],

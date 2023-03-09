@@ -7,12 +7,12 @@ from typing import List
 from data_access.db_connector import DbConnector
 
 
-def get_keywords(connector: DbConnector, dp_idq: str) -> List[str]:
+def get_keywords(connector: DbConnector, data_product_id: str) -> List[str]:
     """
-    Get the data product keywords for the given IDQ.
+    Get the data product keywords for the given ID.
 
     :param connector: A database connection.
-    :param dp_idq: The data product idq.
+    :param data_product_id: The data product ID.
     :return: The data product keywords.
     """
     connection = connector.get_connection()
@@ -29,7 +29,7 @@ def get_keywords(connector: DbConnector, dp_idq: str) -> List[str]:
     '''
     keywords = []
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [dp_idq])
+        cursor.execute(sql, [data_product_id])
         rows = cursor.fetchall()
         for row in rows:
             keyword = row[0]

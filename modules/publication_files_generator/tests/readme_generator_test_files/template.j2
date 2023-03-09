@@ -1,6 +1,6 @@
 {% set gen_time = timestamp.strftime('%Y%m%d%H%MZ') %}
 {% set os_is_type = 'TOS-structured TIS Data Product Type' %}
-{% set file_prefix = 'NEON.{}.{}.{}'.format(domain, site, data_product.short_idq) %}
+{% set file_prefix = 'NEON.{}.{}.{}'.format(domain, site, data_product.short_data_product_id) %}
 This data package was produced by and downloaded from the National Ecological Observatory Network (NEON). NEON is
 funded by the National Science Foundation (Awards 0653461, 0752017, 1029808, 1138160, 1246537, 1638695, 1638696,
 1724433) and managed cooperatively by Battelle. These data are provided under the terms of the NEON data policy at
@@ -9,7 +9,7 @@ https://www.neonscience.org/data-policy.
 DATA PRODUCT INFORMATION
 ------------------------
 
-ID: {{data_product.idq}}
+ID: {{data_product.data_product_id}}
 
 Name: {{data_product.name}}
 
@@ -95,7 +95,7 @@ Sensor position information: {{file_prefix}}.sensor_positions.{{gen_time}}.csv
     endif
 %}
 - Other related documents are available such as engineering specifications, field protocols, and data processing 
-documentation. Please visit https://data.neonscience.org/data-products/{{data_product.short_idq}} for more information.
+documentation. Please visit https://data.neonscience.org/data-products/{{data_product.short_data_product_id}} for more information.
 
 
 This folder also contains {{data_file_count}} data files:
@@ -132,7 +132,7 @@ ISSUE LOG
 
 This log provides a list of issues identified during data collection or processing, prior to publication
 of this data package. For a more recent log, please visit this data product's detail page at
-https://data.neonscience.org/data-products/{{data_product.short_idq}}.
+https://data.neonscience.org/data-products/{{data_product.short_data_product_id}}.
 
 {%
     for change_log in change_logs
@@ -173,7 +173,7 @@ NEON DATA POLICY AND CITATION GUIDELINES
 ----------------------------------------
 
 A citation statement is available in this data product's detail page at
-https://data.neonscience.org/data-products/{{data_product.short_idq}}. Please visit https://www.neonscience.org/data-policy for
+https://data.neonscience.org/data-products/{{data_product.short_data_product_id}}. Please visit https://www.neonscience.org/data-policy for
 more information about NEON's data policy and citation guidelines.
 
 DATA QUALITY AND VERSIONING
