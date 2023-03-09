@@ -1,22 +1,30 @@
 ---
 pipeline:
-  name: data_source_mcseries_list_years
+  name: mcseries_location_asset
 transform:
-  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/location_asset_loader:32
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - ls $REPO_IN > /pfs/out/data_years.txt
+  - python3 -m location_asset_loader.location_asset_loader_main
+  env:
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    SOURCE_TYPE: mcseries
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
-    name: REPO_IN
-    repo: data_source_mcseries_linkmerge
-    glob: /mcseries
+    repo: mcseries_cron_daily_and_date_control_tick
+    glob: /*
     empty_files: true
 resource_requests:
-  memory: 1K
-  cpu: 0.01
+  memory: 100M
+  cpu: 0.05
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -33,17 +41,17 @@ pod_spec: |-
       "effect": "NoSchedule",
       "key": "cloud.google.com/gke-spot",
       "operator": "Exists"
-    }  
+    }
   ] }
 pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
+      "value":"400M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "0.4"
     }
   ]
 

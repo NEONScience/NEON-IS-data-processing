@@ -1,31 +1,22 @@
 ---
 pipeline:
-  name: mcseries_merge_data_by_location
+  name: mcseries_data_years
 transform:
+  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd:
-  - Rscript
-  - /flow.loc.data.trnc.comb.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - DirSubCombData=data|flags
-  - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v0.0.27
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  env:
-    LOG_LEVEL: INFO
-    PARALLELIZATION_INTERNAL: '1'
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - ls $REPO_IN > /pfs/out/data_years.txt
 input:
   pfs:
-    name: DIR_IN
-    repo: mcseries_structure_repo_by_location
-    glob: /mcseries/*/*/*
-parallelism_spec:
-  constant: 1
+    name: REPO_IN
+    repo: mcseries_data_source_trino
+    glob: /mcseries
+    empty_files: true
 resource_requests:
-  memory: 3Gi
-  cpu: 0.8
+  memory: 1K
+  cpu: 0.01
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -48,11 +39,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"700M"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
+      "value": "0.5"
     }
   ]
-
