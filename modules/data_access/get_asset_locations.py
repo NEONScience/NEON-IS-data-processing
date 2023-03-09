@@ -4,9 +4,8 @@ from typing import List, Tuple
 
 from geojson import Feature, FeatureCollection
 
-from data_access.get_named_location_locations import get_named_location_locations
+from data_access.get_named_location_geolocations import get_named_location_geolocations
 from data_access.get_named_location_context import get_named_location_context
-from data_access.get_named_location_group import get_named_location_group
 from data_access.get_named_location_parents import get_named_location_parents
 from data_access.get_named_location_properties import get_named_location_properties
 from data_access.db_connector import DbConnector
@@ -51,7 +50,7 @@ def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollecti
             install_date = row[1]
             remove_date = row[2]
             name = row[3]
-            locations: FeatureCollection = get_named_location_locations(connector, key)
+            locations: FeatureCollection = get_named_location_geolocations(connector, key)
             properties: List[Property] = get_named_location_properties(connector, key)
             parents: dict[str, Tuple[int, str]] = get_named_location_parents(connector, key)
             (domain_id, domain) = parents['domain'] if parents else None
