@@ -1,35 +1,31 @@
 ---
 pipeline:
-  name: mti300ahrs_location_active_dates_assignment
+  name: mti300ahrs_location_loader
 transform:
-  cmd:
-  - Rscript
-  - ./flow.loc.grp.asgn.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - FileYear=$FILE_YEAR
-  - TypeFile=namedLocation
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/location_loader:122
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m location_loader.location_loader_main
   env:
+    LOCATION_TYPE: CONFIG
+    SOURCE_TYPE: mti300ahrs
+    OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: mti300ahrs_location_loader
-      glob: /mti300ahrs/*
-  - pfs:
-      name: FILE_YEAR
-      repo: mti300ahrs_data_years
-      glob: /data_years.txt
-parallelism_spec:
-  constant: 4
+  pfs:
+    repo: mti300ahrs_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
 resource_requests:
-  memory: 500M
-  cpu: 1
+  memory: 300M
+  cpu: 1.5
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -52,11 +48,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"100M"
+      "value":"400M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
+      "value": "0.5"
     }
   ]
-
