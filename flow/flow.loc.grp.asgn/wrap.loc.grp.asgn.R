@@ -223,7 +223,7 @@ wrap.loc.grp.asgn <- function(DirIn,
     tsChar <- base::unique(format(ts,format='%Y/%m/%d')) # Format as year/month/day repo structure and get rid of duplicates
     
     # Create the output directory structure
-    InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+    InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
     typeSrc <- InfoDirIn$dirSplt[InfoDirIn$idxRepo+1]
     id <- InfoDirIn$dirSplt[InfoDirIn$idxRepo+2]
     dirOut <- base::paste0(DirOutBase,'/',typeSrc,'/',tsChar,'/',id,'/',dirFinl)

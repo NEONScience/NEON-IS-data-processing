@@ -5,8 +5,7 @@
 #' Cove Sturtevant \email{csturtevant@battelleecology.org}
 
 #' @description 
-#' Definition function. Read in AVRO file. Uses a super developmental version of the library. The 
-#' requisite dependent libraries must be installed on the host system.
+#' Definition function. Read in parquet file. 
 
 #' @param NameFile String. Name (including relative or absolute path) of AVRO file.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log

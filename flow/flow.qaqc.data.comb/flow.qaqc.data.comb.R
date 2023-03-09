@@ -122,7 +122,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory and formulate the parent output directory
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn,log=log)
   idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
   
   # Copy with a symbolic link the desired subfolders we aren't modifying

@@ -148,7 +148,7 @@ for (idxDirIn in DirIn){
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn,log=log)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
   idxDirInData <- base::paste0(idxDirIn,'/data')

@@ -283,7 +283,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
   }
   
   # ------- Create the output directories for data, flags, and uncertainty --------
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   timeBgn <- InfoDirIn$time # start date for the data
   timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')
   dirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)

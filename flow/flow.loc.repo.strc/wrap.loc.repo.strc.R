@@ -88,7 +88,7 @@ wrap.loc.repo.strc <- function(DirIn,
   } 
 
   # Gather info about the input directory and formulate the parent output directory
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   idSrc <- utils::tail(InfoDirIn$dirSplt,1)
   dirOutPrnt <- base::paste0(c(DirOutBase,InfoDirIn$dirSplt[(InfoDirIn$idxRepo+1):(base::length(InfoDirIn$dirSplt)-1)]),collapse='/')
   

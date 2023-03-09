@@ -137,7 +137,7 @@ for (idxDirIn in DirIn){
   applyAbsCorr <- TRUE
   
   # Create the base output directory.
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn,log=log)
   # Need the source ID for the sensor to write out data
   cfgLoc <- base::dir(base::paste0(idxDirIn,"/exofdom"))
   if(length(cfgLoc) != 1){
