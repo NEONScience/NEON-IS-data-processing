@@ -63,33 +63,33 @@ class MainTest(unittest.TestCase):
         main()
         readme_count = len(list(self.month_path.glob('*.txt')))
         assert readme_count == 1
-        variables_file_count = len(list(self.month_path.glob('*.csv')))
-        assert variables_file_count == 1
+        csv_file_count = len(list(self.month_path.glob('*.csv')))
+        assert csv_file_count == 2  # includes variables and sensor_positions
         data_files_count = len(list(self.day_path.glob('*.csv')))
-        assert data_files_count == 5  # Includes manifest.csv file
+        assert data_files_count == 5  # includes 4 data files and manifest.csv file
 
     def tearDown(self) -> None:
         """Remove the created files and directories from the filesystem."""
+        self.remove_directories()
+        self.remove_database_secrets()
 
+    def remove_directories(self):
         # delete data files and manifest
         for path in self.day_path.glob('*'):
             if path.is_file():
                 path.unlink(missing_ok=True)
-
         # delete monthly files
         for path in self.month_path.glob('*'):
             if path.is_file():
                 path.unlink(missing_ok=True)
-
-        # remove directories
         self.day_path.rmdir()
         self.month_path.rmdir()
         self.year_path.rmdir()
         self.site_path.rmdir()
         self.out_path.rmdir()
 
-        # delete database secrets
+    def remove_database_secrets(self):
         for path in self.db_secrets_path.glob('*'):
             path.unlink(missing_ok=True)
         self.db_secrets_path.rmdir()
-        pass
+

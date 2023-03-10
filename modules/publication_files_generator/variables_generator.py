@@ -25,12 +25,8 @@ def generate_variables_file(*,
             values.append(line[name])
         row += f"{','.join(values)}\n"
         rows += row
-    variables_filename = format_filename(domain=domain,
-                                         site=site,
-                                         data_product_id=data_product_id,
-                                         timestamp=timestamp,
-                                         file_type='variables',
-                                         extension='csv')
+    variables_filename = format_filename(domain=domain, site=site, data_product_id=data_product_id,
+                                         timestamp=timestamp, file_type='variables', extension='csv')
     variables_dir_path = Path(out_path, site, year, month)
     variables_dir_path.mkdir(parents=True, exist_ok=True)
     Path(variables_dir_path, variables_filename).write_text(rows)

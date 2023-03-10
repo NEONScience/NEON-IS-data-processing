@@ -1,57 +1,69 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from functools import partial
 
 from common import log_config
 from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
-from publication_files_generator import github_reader
-from publication_files_generator.config import read_environment, Config
-from publication_files_generator.database import get_data_store
-from publication_files_generator.github_reader import GithubConfig
+from publication_files_generator.application_config import read_environment
+from publication_files_generator.database_queries.data_product import get_data_product
+from publication_files_generator.database_queries.data_product_keywords import get_keywords
+from publication_files_generator.database_queries.file_descriptions import get_descriptions
+from publication_files_generator.database_queries.location_geometry import get_geometry
+from publication_files_generator.database_queries.log_entries import get_log_entries
+from publication_files_generator.database_queries.sensor_locations import get_locations
+from publication_files_generator.github_reader import GithubReader
 from publication_files_generator.file_processor import process_input_files
+from publication_files_generator.sensor_locations_generator import generate_locations_file
 from publication_files_generator.readme_generator import generate_readme_file
 from publication_files_generator.timestamp import get_timestamp
 from publication_files_generator.variables_generator import generate_variables_file
 
 
-def get_github_config(config: Config) -> GithubConfig:
-    return GithubConfig(pem_file_path=config.github_certificate_path,
-                        app_id=config.github_app_id,
-                        installation_id=config.github_installation_id,
-                        host_url=config.github_host,
-                        owner=config.github_repo_owner,
-                        branch=config.github_branch)
-
-
 def main() -> None:
+    """Generate the publication metadata files."""
+    timestamp = get_timestamp()
     config = read_environment()
+    reader = GithubReader(pem_file_path=config.github_certificate_path, app_id=config.github_app_id,
+                          installation_id=config.github_installation_id, host_url=config.github_host,
+                          repo_owner=config.github_repo_owner, branch=config.github_branch)
+    publication_workbook = reader.read_file(config.github_publication_workbook_repo,
+                                            config.github_publication_workbook_path)
+    readme_template = reader.read_file(config.github_readme_repo, config.github_readme_path)
+
     log_config.configure(config.log_level)
     db_config = read_from_mount(config.db_secrets_path)
     with closing(DbConnector(db_config)) as connector:
-        data_store = get_data_store(connector)
-        timestamp = get_timestamp()
-        input_file_metadata = process_input_files(config.in_path,
-                                                  config.out_path,
-                                                  config.in_path_parse_index,
-                                                  data_store)
-        read_file = github_reader.get_read_file(get_github_config(config))
-        readme_template = read_file(config.github_readme_repo, config.github_readme_path)
-        publication_workbook = read_file(config.github_publication_workbook_repo,
-                                         config.github_publication_workbook_path)
+        get_descriptions_partial = partial(get_descriptions, connector)
+        get_locations_partial = partial(get_locations, connector)
+        get_data_product_partial = partial(get_data_product, connector)
+        get_keywords_partial = partial(get_keywords, connector)
+        get_geometry_partial = partial(get_geometry, connector)
+        get_log_entries_partial = partial(get_log_entries, connector)
+        file_metadata = process_input_files(config.in_path, config.out_path, config.in_path_parse_index,
+                                            get_descriptions_partial)
         variables_filename = generate_variables_file(out_path=config.out_path,
-                                                     domain=input_file_metadata.domain,
-                                                     site=input_file_metadata.site,
-                                                     year=input_file_metadata.year,
-                                                     month=input_file_metadata.month,
-                                                     data_product_id=input_file_metadata.data_product_id,
+                                                     domain=file_metadata.domain,
+                                                     site=file_metadata.site,
+                                                     year=file_metadata.year,
+                                                     month=file_metadata.month,
+                                                     data_product_id=file_metadata.data_product_id,
                                                      publication_workbook=publication_workbook,
                                                      timestamp=timestamp)
+        locations_filename = generate_locations_file(in_path=config.in_path, out_path=config.out_path,
+                                                     domain=file_metadata.domain, site=file_metadata.site,
+                                                     year=file_metadata.year, month=file_metadata.month,
+                                                     data_product_id=file_metadata.data_product_id,
+                                                     timestamp=timestamp, get_locations=get_locations_partial)
         generate_readme_file(out_path=config.out_path,
-                             data_store=data_store,
-                             input_file_metadata=input_file_metadata,
+                             file_metadata=file_metadata,
                              readme_template=readme_template,
                              timestamp=timestamp,
-                             variables_filename=variables_filename)
+                             variables_filename=variables_filename,
+                             get_data_product=get_data_product_partial,
+                             get_geometry=get_geometry_partial,
+                             get_keywords=get_keywords_partial,
+                             get_log_entries=get_log_entries_partial)
 
 
 if __name__ == '__main__':

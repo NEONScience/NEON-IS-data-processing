@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 import logging
 import os
+from functools import partial
 from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from publication_files_generator.filename_formatter import format_timestamp
 from publication_files_generator.readme_generator import generate_readme_file
-from publication_files_generator.file_processor import get_file_time_span, process_input_files
-from publication_files_generator.tests.file_reader import get_data_store
+from publication_files_generator.file_processor import get_time_span, process_input_files
+import publication_files_generator.tests.file_data as file_data
 from publication_files_generator.timestamp import get_timestamp
 
 log = logging.getLogger()
@@ -45,24 +46,28 @@ class ReadmeFileGeneratorTest(TestCase):
 
     def test_get_time_span(self):
         path = Path(self.in_path, 'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.basic.csv')
-        start_time, end_time = get_file_time_span(path)
+        start_time, end_time = get_time_span(path)
         assert start_time == '2020-01-02T00:00:00Z'
         assert end_time == '2020-01-03T00:00:00Z'
 
     def test_generate_readme(self):
-        in_path_parse_index = 1
-        template = self.template_path.read_text()
-        data_store = get_data_store(self.fs)
-        input_file_metadata = process_input_files(self.in_path, self.out_path, in_path_parse_index, data_store)
+        readme_template = self.template_path.read_text()
+        get_data_product_partial = partial(file_data.get_data_product, self.fs)
+        get_descriptions_partial = partial(file_data.get_descriptions, self.fs)
+        get_log_entries_partial = partial(file_data.get_log_entries, self.fs)
+        file_metadata = process_input_files(self.in_path, self.out_path, 1, get_descriptions_partial)
         timestamp = get_timestamp()
         formatted_timestamp = format_timestamp(timestamp)
         variables_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.variables.csv'
         generate_readme_file(out_path=self.out_path,
-                             data_store=data_store,
-                             input_file_metadata=input_file_metadata,
-                             readme_template=template,
+                             file_metadata=file_metadata,
+                             readme_template=readme_template,
                              timestamp=timestamp,
-                             variables_filename=variables_filename)
+                             variables_filename=variables_filename,
+                             get_data_product=get_data_product_partial,
+                             get_geometry=file_data.get_geometry,
+                             get_keywords=file_data.get_keywords,
+                             get_log_entries=get_log_entries_partial)
         readme_files = list(Path(self.out_path, 'CPER', '2020', '01').glob('*.txt'))
         csv_files = list(Path(self.out_path, 'CPER', '2020', '01', '02').glob('*.csv'))
         assert len(readme_files) == 1

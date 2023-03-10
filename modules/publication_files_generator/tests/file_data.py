@@ -1,49 +1,27 @@
-"""Module to read data from files instead of a database."""
+"""Functions to read data from files instead of a database."""
 import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Callable
+from typing import List, Dict
 
 from pyfakefs.fake_filesystem import FakeFilesystem
 
-from publication_files_generator.database_queries.data_product import DataProduct
-from publication_files_generator.database_queries.file_descriptions import remove_prefix
-from publication_files_generator.data_store import DataStore
+from publication_files_generator.database_queries.data_product import DataProduct, remove_prefix
 from publication_files_generator.database_queries.log_entries import LogEntry
 
 
-def get_data_store(fs: FakeFilesystem):
-    return DataStore(
-        get_log_entries=_make_get_log_entries(fs),
-        get_data_product=_make_get_data_product(fs),
-        get_geometry=_get_geometry,
-        get_descriptions=_make_get_descriptions(fs),
-        get_keywords=_get_keywords)
+def get_geometry(_location_name: str) -> str:
+    """Mock function for reading the site geometry."""
+    return 'POINT Z (-104.745591 40.815536 1653.9151)'
 
 
-def _make_get_log_entries(fs: FakeFilesystem) -> Callable[[str], List[LogEntry]]:
-    """Closure to hide filesystem from clients."""
-    def f(data_product_id: str):
-        return _get_log_entries(fs, data_product_id)
-    return f
+def get_keywords(_data_product_id: str):
+    """Mock function to get a data product's keywords."""
+    return ['soil temperature', 'profile', 'soil']
 
 
-def _make_get_data_product(fs: FakeFilesystem) -> Callable[[str], DataProduct]:
-    """Closure to hide filesystem from clients."""
-    def f(data_product_id: str) -> DataProduct:
-        return _get_data_product(fs, data_product_id)
-    return f
-
-
-def _make_get_descriptions(fs: FakeFilesystem) -> Callable[[str], Dict[str, str]]:
-    """Closure to hide filesystem from clients."""
-    def f():
-        return _get_descriptions(fs)
-    return f
-
-
-def _get_log_entries(fs: FakeFilesystem, _data_product_id: str) -> List[LogEntry]:
+def get_log_entries(fs: FakeFilesystem, _data_product_id: str) -> List[LogEntry]:
     """Mock function to read the change log entries."""
     path = Path(os.path.dirname(__file__), 'readme_generator_test_files/dp_change_log.json')
     target_path = Path('/dp_change_log.json')
@@ -77,7 +55,7 @@ def _get_log_entries(fs: FakeFilesystem, _data_product_id: str) -> List[LogEntry
     return log_entries
 
 
-def _get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
+def get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
     """Mock function for reading the data product."""
     path = Path(os.path.dirname(__file__), 'readme_generator_test_files/dp_catalog.json')
     target_path = Path('/dp_catalog_data.json')
@@ -117,7 +95,7 @@ def _get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
         remarks=remarks)
 
 
-def _get_descriptions(fs: FakeFilesystem) -> Dict[str, str]:
+def get_descriptions(fs: FakeFilesystem) -> Dict[str, str]:
     """Mock function for reading the file descriptions."""
     path = Path(os.path.dirname(__file__), 'readme_generator_test_files/pub_table_def.json')
     target_path = Path('/pub_table_def.json')
@@ -126,20 +104,10 @@ def _get_descriptions(fs: FakeFilesystem) -> Dict[str, str]:
     with open(target_path) as file:
         json_data = json.load(file)
         for data in json_data:
-            data_product_id: str = remove_prefix(data['dp_idq'])
+            data_product_id: str = data['dp_idq']
             description: str = data['description']
             file_descriptions[data_product_id] = description
     return file_descriptions
-
-
-def _get_geometry(_location_name: str) -> str:
-    """Mock function for reading the site geometry."""
-    return 'POINT Z (-104.745591 40.815536 1653.9151)'
-
-
-def _get_keywords(_data_product_id: str):
-    """Mock function to get a data product's keywords."""
-    return ['soil temperature', 'profile', 'soil']
 
 
 def _to_datetime(date: str) -> datetime:

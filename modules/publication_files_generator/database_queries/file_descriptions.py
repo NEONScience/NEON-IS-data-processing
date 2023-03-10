@@ -7,10 +7,6 @@ from typing import Dict
 from data_access.db_connector import DbConnector
 
 
-def remove_prefix(data_product_id: str):
-    return data_product_id.replace('NEON.DOM.SITE.', '')
-
-
 def get_descriptions(connector: DbConnector) -> Dict[str, str]:
     """
     Get the file descriptions organized by the data product ID.
@@ -26,7 +22,7 @@ def get_descriptions(connector: DbConnector) -> Dict[str, str]:
         cursor.execute(sql)
         rows = cursor.fetchall()
         for row in rows:
-            data_product_id: str = remove_prefix(row[0])
+            data_product_id: str = row[0]
             description: str = row[1]
             descriptions[data_product_id] = description
     return descriptions

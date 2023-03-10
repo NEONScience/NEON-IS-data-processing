@@ -5,7 +5,6 @@ from contextlib import closing
 from typing import NamedTuple
 
 from data_access.db_connector import DbConnector
-from publication_files_generator.database_queries.file_descriptions import remove_prefix
 
 
 class DataProduct(NamedTuple):
@@ -25,6 +24,10 @@ class DataProduct(NamedTuple):
     basic_description: str
     expanded_description: str
     remarks: str
+
+
+def remove_prefix(data_product_id: str):
+    return data_product_id.replace('NEON.DOM.SITE.', '')
 
 
 def get_supplier_full_name(supplier: str) -> str:
