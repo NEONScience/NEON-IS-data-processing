@@ -49,7 +49,7 @@ def.read.srf <- function(NameFile=NULL,
     listSrf <- rjson::fromJSON(json_str=strJson,simplify=TRUE)
     listSrf <- listSrf$science_review_flags
   } else {
-    log$error('NameFile or strJson must be supplied.')
+    stop('NameFile or strJson must be supplied.')
   }
   
   # Turn all the NULLs into NAs
