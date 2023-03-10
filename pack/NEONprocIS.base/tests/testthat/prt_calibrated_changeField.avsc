@@ -27,7 +27,7 @@
       "__neon_units": "millisecond"
     },
     {
-      "name": "temp",
+      "name": "newFieldName",
       "type": [
         "null",
         "float"

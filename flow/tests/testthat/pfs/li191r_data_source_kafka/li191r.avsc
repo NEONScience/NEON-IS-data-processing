@@ -1,0 +1,38 @@
+{
+    "type": "record",
+    "name": "li191r",
+    "namespace": "org.neonscience.schema.device",
+    "doc": "LI-COR LI-191R Line Quantum Sensor",
+    "__version": "1.0",
+    "__neon_parts": [
+        "0323440000"
+    ],
+    "fields": [
+        {
+            "name": "source_id",
+            "type": "string",
+            "doc": "Source serial number or MAC address"
+        },
+        {
+            "name": "site_id",
+            "type": "string",
+            "doc": "NEON site identifier"
+        },
+        {
+            "name": "readout_time",
+            "type": {
+                "type": "long",
+                "logicalType": "timestamp-millis"
+            },
+            "doc": "Timestamp of readout expressed in milliseconds since epoch",
+            "__neon_units": "millisecond"
+        },
+        {
+            "name": "voltage",
+            "type": "float",
+            "doc": "Sensor voltage representing the photosynthetic photon flux density",
+            "__neon_units": "volt",
+            "__neon_stream_id": "0"
+        }
+    ]
+}

@@ -17,8 +17,7 @@ A data frame of the data contained in the Parquet file. The schema is included i
 attribute 'schema'.
 }
 \description{
-Definition function. Read in AVRO file. Uses a super developmental version of the library. The 
-requisite dependent libraries must be installed on the host system.
+Definition function. Read in parquet file.
 }
 \examples{
 myData <- NEONprocIS.base::def.read.parq(NameFile='/scratch/test/myFile.avro')

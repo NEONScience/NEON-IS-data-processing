@@ -38,3 +38,22 @@ test_that(" without date in the directory structue",
             
             
           })
+
+test_that(" Path structure does not conform to expectations",
+          {
+            # No pfs in path structure
+            nameFile <-
+              "def.dir.splt.pach.time/test_input/testFolder/prt/prt_16247_location.json"
+            
+            rpt <- try(NEONprocIS.base::def.dir.splt.pach.time(nameFile),silent=FALSE)
+            expect_true ('try-error' %in% class(rpt))
+
+            # Path not long enough to determine repo
+            nameFile <- "pfs"
+            
+            rpt <- try(NEONprocIS.base::def.dir.splt.pach.time(nameFile),silent=FALSE)
+            expect_true ('try-error' %in% class(rpt))
+            
+            
+            
+          })
