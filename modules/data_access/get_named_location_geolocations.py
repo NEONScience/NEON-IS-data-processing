@@ -9,7 +9,7 @@ from data_access.get_geolocation_properties import get_geolocation_properties
 from data_access.db_connector import DbConnector
 
 
-def get_named_location_locations(connector: DbConnector, named_location_id: int) -> FeatureCollection:
+def get_named_location_geolocations(connector: DbConnector, named_location_id: int) -> FeatureCollection:
     """
     Get the locations associated with the named location in GEOJson format.
 
@@ -70,7 +70,7 @@ def get_named_location_locations(connector: DbConnector, named_location_id: int)
             reference_feature = None
             if (named_location_offset_id is not None) and (named_location_offset_id != named_location_id):
                 # recursively retrieve the reference locations
-                reference_locations = get_named_location_locations(connector, named_location_offset_id)
+                reference_locations = get_named_location_geolocations(connector, named_location_offset_id)
                 # build the reference feature
                 reference_location_properties = dict(name=named_location_offset_name, locations=reference_locations)
                 reference_feature = Feature(geometry=None, properties=reference_location_properties)

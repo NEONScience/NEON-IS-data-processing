@@ -5,11 +5,12 @@ from contextlib import closing
 from typing import NamedTuple
 
 from data_access.db_connector import DbConnector
+from publication_files_generator.database_queries.file_descriptions import remove_prefix
 
 
 class DataProduct(NamedTuple):
-    idq: str
-    short_idq: str
+    data_product_id: str
+    short_data_product_id: str
     name: str
     type_name: str
     description: str
@@ -40,7 +41,7 @@ def get_supplier_full_name(supplier: str) -> str:
     return supplier
 
 
-def get_type_name(connector: DbConnector, dp_idq: str) -> str:
+def get_type_name(connector: DbConnector, data_product_id: str) -> str:
     """Get the data product type."""
     connection = connector.get_connection()
     schema = connector.get_schema()
@@ -55,18 +56,18 @@ def get_type_name(connector: DbConnector, dp_idq: str) -> str:
         dp_catalog.dp_idq = %s
     '''
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [dp_idq])
+        cursor.execute(sql, [data_product_id])
         row = cursor.fetchone()
         type_name = row[0]
     return type_name
 
 
-def get_data_product(connector: DbConnector, dp_idq: str) -> DataProduct:
+def get_data_product(connector: DbConnector, data_product_id: str) -> DataProduct:
     """
-    Get the data product metadata for the given IDQ.
+    Get the data product metadata for the given data product ID.
 
     :param connector: A database connection.
-    :param dp_idq: The data product idq.
+    :param data_product_id: The data product ID.
     :return: The data product metadata.
     """
     connection = connector.get_connection()
@@ -92,9 +93,9 @@ def get_data_product(connector: DbConnector, dp_idq: str) -> DataProduct:
              dp_idq = %s
     '''
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql, [dp_idq])
+        cursor.execute(sql, [data_product_id])
         row = cursor.fetchone()
-        idq = row[0]
+        # id = row[0]
         name = row[1]
         description = row[2]
         category = row[3]
@@ -107,10 +108,10 @@ def get_data_product(connector: DbConnector, dp_idq: str) -> DataProduct:
         basic_description = row[10]
         expanded_description = row[11]
         remarks = row[12]
-    type_name = get_type_name(connector, idq)
+    type_name = get_type_name(connector, data_product_id)
     data_product = DataProduct(
-        idq=idq,
-        short_idq=idq.replace('NEON.DOM.SITE.', ''),
+        data_product_id=data_product_id,
+        short_data_product_id=remove_prefix(data_product_id),
         name=name,
         type_name=type_name,
         description=description,
@@ -124,6 +125,5 @@ def get_data_product(connector: DbConnector, dp_idq: str) -> DataProduct:
         sensor=sensor,
         basic_description=basic_description,
         expanded_description=expanded_description,
-        remarks=remarks
-    )
+        remarks=remarks)
     return data_product

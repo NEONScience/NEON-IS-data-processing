@@ -13,10 +13,10 @@ class DataProductTest(DatabaseBackedTest):
     def test_get_data_product(self):
         self.configure_mount()
         dp_config = read_from_environment()
-        idq = 'NEON.DOM.SITE.DP1.00001.001'
-        data_product = get_data_product(DbConnector(dp_config), idq)
-        assert data_product.idq == idq
-        assert data_product.short_idq == 'DP1.00001.001'
+        data_product_id = 'NEON.DOM.SITE.DP1.00001.001'
+        data_product = get_data_product(DbConnector(dp_config), data_product_id)
+        assert data_product.data_product_id == data_product_id
+        assert data_product.short_data_product_id == 'DP1.00001.001'
         assert data_product.name == '2D wind speed and direction'
         assert data_product.type_name == 'TIS Data Product Type'
         assert data_product.supplier == 'TIS'

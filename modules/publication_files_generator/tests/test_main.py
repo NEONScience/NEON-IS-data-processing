@@ -31,7 +31,7 @@ def add_secrets(db_secrets_path) -> None:
 class MainTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.test_files_path = Path(os.path.dirname(__file__), 'generator_main_test_files')
+        self.test_files_path = Path(os.path.dirname(__file__), 'main_test_files')
         self.out_path = Path(os.path.dirname(__file__), 'output')
         self.out_path.mkdir(parents=False, exist_ok=True)
         self.db_secrets_path = Path(os.path.dirname(__file__), 'db_secrets')

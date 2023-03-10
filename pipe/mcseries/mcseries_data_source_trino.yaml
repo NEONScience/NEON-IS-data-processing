@@ -1,14 +1,17 @@
 ---
 pipeline:
-  name: data_source_mcseries_site
+  name: mcseries_data_source_trino
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/genavro:v1.0.73
+  image: quay.io/battelleecology/data_source_trino:v0.0.4
   cmd:
-  - bash
+  - /bin/bash
   stdin:
   - "#!/usr/bin/env bash"
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /usr/src/app/interimData
+  - '# Run first module - data_source_site (pull data from database by site)'
   - "# Split data source path"
   - echo "Checking $presto_data_source files"
   - for path in $(find -L $import_trigger -type f); do
@@ -21,16 +24,27 @@ transform:
   - "  site=${arr[5]}"
   - "  export GEN_DATE=$year-$month-$day"
   - "  export GEN_SITE_NAME=$site"
-  - "  export GEN_OUTPUT_DIR=/pfs/out/mcseries/$year/$month/$day"
+  - "  export GEN_OUTPUT_DIR=/usr/src/app/interimData/mcseries/$year/$month/$day"
   - "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem"
   - "  mkdir -p $GEN_OUTPUT_DIR"
-  - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip"
+  - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second"
   - done
+  - '# Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day'
+  - python3 -m parquet_linkmerge.parquet_linkmerge_main
   env:
+    # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/mcseries_streams.yaml"
     GEN_SCHEMA_FILE: "/usr/src/app/schemas/mcseries/mcseries.avsc"
-    LOG_LEVEL: info
+    LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
+    # Environment variables for linkmerge step
+    IN_PATH: /usr/src/app/interimData
+    OUT_PATH: /pfs/out
+    SOURCE_TYPE_INDEX: '5'
+    YEAR_INDEX: '6'
+    MONTH_INDEX: '7'
+    DAY_INDEX: '8'
+    SOURCE_ID_INDEX: '9'
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -44,13 +58,13 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: import_trigger_mcseries
+    repo: mcseries_import_trigger
     glob: "/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 4
 resource_requests:
-  memory: 1G
+  memory: 500M
   cpu: 0.7
 autoscaling: true
 scheduling_spec:
@@ -72,12 +86,12 @@ pod_spec: |-
   ] }
 pod_patch: |-
   [
-    { "op": "replace",
+    { "op":"replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
+      "value":"1G"
     },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+    { "op":"replace",
+      "path":"/containers/1/resources/requests/cpu",
+      "value":"0.3"
     }
   ]

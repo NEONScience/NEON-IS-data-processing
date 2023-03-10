@@ -13,8 +13,8 @@ class LogEntryTest(DatabaseBackedTest):
     def test_get_log_entries(self):
         self.configure_mount()
         dp_config = read_from_environment()
-        idq = 'NEON.DOM.SITE.DP1.00001.001'
-        log_entries = get_log_entries(DbConnector(dp_config), idq)
+        data_product_id = 'NEON.DOM.SITE.DP1.00001.001'
+        log_entries = get_log_entries(DbConnector(dp_config), data_product_id)
         entry: LogEntry = log_entries[0]
         assert len(log_entries) == 92
         assert entry.issue == '2D sensor transducer cap became dislodged rendering calibrations invalid.'

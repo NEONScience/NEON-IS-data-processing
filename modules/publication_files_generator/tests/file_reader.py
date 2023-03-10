@@ -24,15 +24,15 @@ def get_data_store(fs: FakeFilesystem):
 
 def _make_get_log_entries(fs: FakeFilesystem) -> Callable[[str], List[LogEntry]]:
     """Closure to hide filesystem from clients."""
-    def f(dp_idq: str):
-        return _get_log_entries(fs, dp_idq)
+    def f(data_product_id: str):
+        return _get_log_entries(fs, data_product_id)
     return f
 
 
 def _make_get_data_product(fs: FakeFilesystem) -> Callable[[str], DataProduct]:
     """Closure to hide filesystem from clients."""
-    def f(dp_idq: str) -> DataProduct:
-        return _get_data_product(fs, dp_idq)
+    def f(data_product_id: str) -> DataProduct:
+        return _get_data_product(fs, data_product_id)
     return f
 
 
@@ -43,7 +43,7 @@ def _make_get_descriptions(fs: FakeFilesystem) -> Callable[[str], Dict[str, str]
     return f
 
 
-def _get_log_entries(fs: FakeFilesystem, _dp_idq: str) -> List[LogEntry]:
+def _get_log_entries(fs: FakeFilesystem, _data_product_id: str) -> List[LogEntry]:
     """Mock function to read the change log entries."""
     path = Path(os.path.dirname(__file__), 'readme_generator_test_files/dp_change_log.json')
     target_path = Path('/dp_change_log.json')
@@ -53,7 +53,7 @@ def _get_log_entries(fs: FakeFilesystem, _dp_idq: str) -> List[LogEntry]:
         json_data = json.load(file)
         for entry in json_data:
             change_log_id: str = entry['dp_change_log_id']
-            dp_idq: str = entry['dp_idq']
+            data_product_id: str = entry['dp_idq']
             issue_date: str = entry['issue_date']
             resolved_date: str = entry['resolved_date']
             date_range_start: str = entry['date_range_start']
@@ -64,7 +64,7 @@ def _get_log_entries(fs: FakeFilesystem, _dp_idq: str) -> List[LogEntry]:
             log_entries.append(
                 LogEntry(
                     change_log_id=int(change_log_id),
-                    dp_idq=dp_idq,
+                    data_product_id=data_product_id,
                     issue_date=_to_datetime(issue_date),
                     resolution_date=_to_datetime(resolved_date),
                     date_range_start=_to_datetime(date_range_start),
@@ -77,7 +77,7 @@ def _get_log_entries(fs: FakeFilesystem, _dp_idq: str) -> List[LogEntry]:
     return log_entries
 
 
-def _get_data_product(fs: FakeFilesystem, _dp_idq: str) -> DataProduct:
+def _get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
     """Mock function for reading the data product."""
     path = Path(os.path.dirname(__file__), 'readme_generator_test_files/dp_catalog.json')
     target_path = Path('/dp_catalog_data.json')
@@ -85,7 +85,7 @@ def _get_data_product(fs: FakeFilesystem, _dp_idq: str) -> DataProduct:
     with open(target_path) as file:
         json_data = json.load(file)
         data = json_data[0]
-        dp_idq: str = data['dp_idq']
+        data_product_id: str = data['dp_idq']
         dp_name: str = data['dp_name']
         dp_description: str = data['dp_desc']
         category: str = data['category']
@@ -99,8 +99,8 @@ def _get_data_product(fs: FakeFilesystem, _dp_idq: str) -> DataProduct:
         expanded_desc: str = data['expanded_desc']
         remarks: str = data['remarks']
     return DataProduct(
-        idq=dp_idq,
-        short_idq=dp_idq.replace('NEON.DOM.SITE.', ''),
+        data_product_id=data_product_id,
+        short_data_product_id=remove_prefix(data_product_id),
         name=dp_name,
         type_name='TIS Data Product Type',
         description=dp_description,
@@ -126,9 +126,9 @@ def _get_descriptions(fs: FakeFilesystem) -> Dict[str, str]:
     with open(target_path) as file:
         json_data = json.load(file)
         for data in json_data:
-            idq: str = remove_prefix(data['dp_idq'])
+            data_product_id: str = remove_prefix(data['dp_idq'])
             description: str = data['description']
-            file_descriptions[idq] = description
+            file_descriptions[data_product_id] = description
     return file_descriptions
 
 
@@ -137,7 +137,7 @@ def _get_geometry(_location_name: str) -> str:
     return 'POINT Z (-104.745591 40.815536 1653.9151)'
 
 
-def _get_keywords(_dp_idq: str):
+def _get_keywords(_data_product_id: str):
     """Mock function to get a data product's keywords."""
     return ['soil temperature', 'profile', 'soil']
 
