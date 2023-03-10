@@ -1,12 +1,11 @@
 from datetime import datetime
 from pathlib import Path
-from typing import NamedTuple, Tuple, List
+from typing import NamedTuple, Tuple, List, Dict, Callable
 
 import pandas
 import structlog
 
 import common.date_formatter as date_formatter
-from publication_files_generator.data_store import DataStore
 from publication_files_generator.path_parser import parse_path, parse_filename, FilenameParts
 
 
@@ -36,7 +35,7 @@ def link_file(path: Path, link_path: Path) -> None:
         link_path.symlink_to(path)
 
 
-def get_file_time_span(data_file_path: Path) -> Tuple[str, str]:
+def get_time_span(data_file_path: Path) -> Tuple[str, str]:
     data_frame = pandas.read_csv(data_file_path)
     min_start = data_frame.loc[0][0]  # First row, first element should be earliest start date.
     max_end = data_frame.iloc[-1].tolist()[1]  # Last row, second element should be latest end date.
@@ -47,10 +46,8 @@ def get_data_product_id(level: str, data_product_number: str, revision: str):
     return f'NEON.DOM.SITE.{level}.{data_product_number}.{revision}'
 
 
-def process_input_files(in_path: Path,
-                        out_path: Path,
-                        in_path_parse_index: int,
-                        data_store: DataStore) -> InputFileMetadata:
+def process_input_files(in_path: Path, out_path: Path, in_path_parse_index: int,
+                        get_descriptions: Callable[[], Dict[str, str]]) -> InputFileMetadata:
     site = None
     domain = None
     year = ''
@@ -60,7 +57,7 @@ def process_input_files(in_path: Path,
     min_data_time = None
     max_data_time = None
     is_first_file = True
-    file_descriptions = data_store.get_descriptions()
+    file_descriptions = get_descriptions()
     for path in in_path.rglob('*'):
         if path.is_file():
             site, year, month, day, filename = parse_path(path, in_path_parse_index)
@@ -75,7 +72,7 @@ def process_input_files(in_path: Path,
                 if not description:
                     description = None
                 data_files.append(DataFile(filename=filename, description=description))
-                min_time, max_time = get_file_time_span(path)
+                min_time, max_time = get_time_span(path)
                 min_date = date_formatter.to_datetime(min_time)
                 max_date = date_formatter.to_datetime(max_time)
                 if is_first_file:
