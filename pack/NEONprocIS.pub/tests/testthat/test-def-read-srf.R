@@ -35,9 +35,27 @@
 test_that("   Testing def.read.srf.R, definition function. Read science review file",{
 
   wk_dir <- getwd()
-#  testOutputDir = "pfs/out"
-  testInputFile <- 'pfs/surfacewaterPhysical_testSRF/surfacewater-physical_PRLA130100/surfacewater-physical_PRLA130100_science_review_flags.json'
+  
+  #1. a correct test json
+  testInputFile <- 'pfs/surfacewaterPhysical_testSRF/surfacewater-physical_ARIK130100/surfacewater-physical_PRLA130100_science_review_flags.json'
   tt = NEONprocIS.pub::def.read.srf(NameFile=testInputFile)
+  print(tt)
+  
+  #2. strJson only provided 
+  strList <- list ("group_name"="surfacewater-physical_PRLA130100", "id"=15381,"start_date"="2019-10-01T10:00:00Z",
+  "end_date"="2020-01-03T00:00:00Z", "measurement_stream_name"="NEON.D09.PRLA.DP1.20016.001.04114.130.100.030",
+  "srf_term_name"="sWatElevFinalQFSciRvw","srf"= 1,
+  "user_comment"="Pressure transducer vent clogged periodically, causing barometric pressure fluctuations to be reflected in data.",
+  "create_date"="2020-11-25T18:45:15Z","last_update_date"="2020-11-25T18:45:15Z")
+  
+  strJson =  rjson::toJSON(strList)
+
+  tt = NEONprocIS.pub::def.read.srf(strJson= strJson)
+  print(tt)
+  
+  
+  #3. no params provided 
+  tt = NEONprocIS.pub::def.read.srf()
   print(tt)
   
 })
