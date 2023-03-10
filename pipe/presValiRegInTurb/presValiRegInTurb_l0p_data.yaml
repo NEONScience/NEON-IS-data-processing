@@ -3,7 +3,7 @@ pipeline:
   name: presValiRegInTurb_l0p_data
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:v0.4.1
+  image: quay.io/battelleecology/neon-sae-trst-dp0p:v1.0.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
