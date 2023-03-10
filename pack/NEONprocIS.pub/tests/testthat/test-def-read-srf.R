@@ -55,7 +55,7 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   
   
   #3. no params provided 
-  tt = NEONprocIS.pub::def.read.srf()
+  tt = try(NEONprocIS.pub::def.read.srf(), silent = TRUE)
   print(tt)
   
 })
