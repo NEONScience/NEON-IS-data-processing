@@ -1,35 +1,35 @@
 ---
 pipeline:
-  name: mfcSampTurb_timeseries_padder
+  name: mfcSampTurb_threshold
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/timeseries_padder:36
+  image: quay.io/battelleecology/threshold_loader:104
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 4
-    --monthindex 5 --dayindex 6 --locindex 7 --subdirindex 8
+  - python3 -m threshold_loader.threshold_loader_main
   env:
     OUT_PATH: /pfs/out
-    PAD_DIR: "data"
-    WINDOW_SIZE: '1'
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: '3'
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: frt00|frt|presAtm|temp
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: turbulent|mass-flow-controller|sampling
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
-    name: DATA_PATH
-    repo: mfcSampTurb_threshold_regularized_group
-    branch: master
-    glob: /mcseries/*/*/*
-output_branch: master
-parallelism_spec:
-  constant: 1
+    repo: mcseries_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
 resource_requests:
-  memory: 400M
-  cpu: 0.2
+  memory: 120M
+  cpu: 0.05
 autoscaling: true
+
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -51,11 +51,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2.5G"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.8"
+      "value": "0.05"
     }
   ]
 

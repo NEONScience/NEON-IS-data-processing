@@ -1,10 +1,10 @@
 ---
 pipeline:
-  name: presValiLine_analyze_pad_and_qaqc_plau
+  name: mfcSampTurb_thresh_select_ts_pad
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:v1.0.2
+  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:v1.0.2
   cmd:
   - /bin/bash
   stdin:
@@ -13,39 +13,47 @@ transform:
   - rm -r -f /usr/src/app/pfs/interimData
   - rm -r -f /usr/src/app/pfs/interimDataCopy
   - mkdir -p /usr/src/app/pfs/interimData
-  - '# Run first module - padded_timeseries_analyzer'
-  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
-  - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
-  - cp -rL /usr/src/app/pfs/interimData /usr/src/app/pfs/interimDataCopy 
-  - rm -r -f /usr/src/app/pfs/interimData 
-  - '# Run second module - qaqc plausibility'
-  - Rscript ./flow.qaqc.plau.R
-    DirIn=/usr/src/app/pfs/interimDataCopy
-    DirOut=/pfs/out
+  - '# Run first module - threshold_select'
+  - Rscript ./flow.thsh.slct.R
+    DirIn=$REPO_LOCATIONS
+    DirOut=/usr/src/app/pfs/interimData
     DirErr=/pfs/out/errored_datums
-    FileSchmQf=$SCHEMA_FLAGS
-    "TermTest1=presDiff:range|step|persistence"
-    "DirSubCopy=threshold|location"
+    FileThsh=$FILE_THRESHOLDS
+    TermCtxt1=frt00
+    TermCtxt2=frt
+    TermCtxt3=presAtm
+    TermCtxt4=temp
+    "DirSubCopy=data|location"
+  - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
+  - cp -rL /usr/src/app/pfs/interimData /usr/src/app/pfs/interimDataCopy
+  - rm -r -f /usr/src/app/pfs/interimData 
+  - '# Run second module - timeseries_padder'
+  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 7 --monthindex 8 --dayindex 9 --locindex 10 --subdirindex 11
+  - '# Final step - collapse the interim directory structure in /pfs/out'
+  - cp -rL /pfs/out/app/pfs/interimDataCopy/* /pfs/out
+  - rm -r /pfs/out/app
   env:
-    # Environment variables for padded timeseries analyzer
-    OUT_PATH: /usr/src/app/pfs/interimData
+    DATA_PATH: /usr/src/app/pfs/interimDataCopy
+    OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: '3'
+    PAD_DIR: data
+    RELATIVE_PATH_INDEX: '6'
+output_branch: master
 input:
   cross:
   - pfs:
-      name: DATA_PATH
-      repo: presValiLine_thresh_select_ts_pad
-      glob: /presValiLine/*/*/*
+      name: REPO_LOCATIONS
+      repo: mfcSampTurb_l0p_data
+      glob: /mfcSampTurb/*/*/*
   - pfs:
-      name: SCHEMA_FLAGS
-      repo: pressuretransducer_avro_schemas
-      glob: /pressuretransducer/flags_plausibility_pressuretransducer.avsc
+      name: FILE_THRESHOLDS
+      repo: mfcSampTurb_threshold
+      glob: /thresholds.json
 parallelism_spec:
-  constant: 1
+  constant: 4
 resource_requests:
-  memory: 600M
-  cpu: 1.2
+  memory: 100M
+  cpu: 0.2
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -68,11 +76,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2.2G"
+      "value":"2G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
       "value": "0.5"
     }
   ]
-  
+

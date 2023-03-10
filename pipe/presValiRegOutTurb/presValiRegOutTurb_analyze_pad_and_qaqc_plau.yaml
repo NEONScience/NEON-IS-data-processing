@@ -25,6 +25,7 @@ transform:
     DirErr=/pfs/out/errored_datums
     FileSchmQf=$SCHEMA_FLAGS
     "TermTest1=presDiff:range|step|persistence"
+    "DirSubCopy=threshold|location"
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /usr/src/app/pfs/interimData
@@ -38,7 +39,7 @@ input:
       glob: /presValiRegOutTurb/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas_pressuretransducer
+      repo: pressuretransducer_avro_schemas
       glob: /pressuretransducer/flags_plausibility_pressuretransducer.avsc
 parallelism_spec:
   constant: 1

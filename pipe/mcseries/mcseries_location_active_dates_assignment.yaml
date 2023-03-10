@@ -19,11 +19,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_mcseries
+      repo: mcseries_location_loader
       glob: /mcseries/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_mcseries_list_years
+      repo: mcseries_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4
