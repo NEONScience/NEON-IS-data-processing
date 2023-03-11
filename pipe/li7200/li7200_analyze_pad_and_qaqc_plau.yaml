@@ -22,9 +22,9 @@ transform:
   - Rscript ./flow.qaqc.plau.R
     DirIn=/usr/src/app/pfs/interimDataCopy
     DirOut=/pfs/out
-    DirSubCopy=threshold
     DirErr=/pfs/out/errored_datums
     FileSchmQf=$SCHEMA_FLAGS
+    "DirSubCopy=threshold|location"
     "TermTest1=tempIn:range|step|persistence"
     "TermTest2=tempOut:range|step|persistence"
     "TermTest3=tempMean:range|step|persistence"
