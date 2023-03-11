@@ -3,7 +3,7 @@
 # If END_DATE unset, set to 2 days ago
 if [ -z $END_DATE ] 
 then 
-  END_DATE=$(date -u -d '2 days ago' +%Y-%m-%d);
+  END_DATE=$(date -u -d "2 days ago" +%Y-%m-%d);
   echo "Input END_DATE is unset. Using 2 days previous."
 fi
 echo "End date = $END_DATE"

@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=asset
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.4
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -23,7 +23,7 @@ input:
       glob: /ptb330a/*
   - pfs:
       name: FILE_YEAR
-      repo: ptb330a_data_years
+      repo: ptb330a_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
   constant: 2

@@ -2,7 +2,7 @@
 pipeline:
   name: li191r_data_source_kafka
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.4-kafka
+  image: quay.io/battelleecology/kafka-loader:v1.0.6-kafka
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
@@ -13,6 +13,7 @@ transform:
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
+    KAFKA_RETENTION_DAYS: "30"
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
@@ -29,6 +30,9 @@ transform:
   - "meta=$(curl -sH 'Metadata-Flavor: Google' http://metadata/computeMetadata/v1/instance/zone)"
   - zone=$(echo $meta | cut -d "/" -f 4)
   - echo $zone
+  - "# Get today's date for evaluating kafka data retention period"
+  - date_today=$(date -u +%Y-%m-%d)
+  - kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
   - "# Get date from input path. Terminal path structure must be /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE"
   - "# Datum must be set at /SOURCE_TYPE/YYYY/MM/DD or /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE"
   - date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
@@ -42,8 +46,11 @@ transform:
   - if [ "$type" != "kafka" ]
   - then 
       echo "$site_file is not indicated to be streaming from Kafka. Skipping...";
+  - elif [ $(date -u +%s -d $date_str) -lt $(date -u +%s -d $kafka_min_date) ]
+  - then
+      echo "Cannot extract $date_str Kafka data for $site. Today's date ($date_today) is beyond the Kafka retention period ($KAFKA_RETENTION_DAYS days). Skipping...";
   - else
-      echo "Extracting data from Kafka for $site";
+      echo "Extracting $date_str kafka data for $site";
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D $OUT_PATH/$SOURCE_TYPE -d $date_str --only current --consumer client.rack=$zone;
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day");
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D $OUT_PATH/$SOURCE_TYPE -d $date_str_1 --only noncurrent --consumer client.rack=$zone
@@ -58,7 +65,7 @@ input:
 resource_requests:
   memory: 300M
   cpu: 1.3
-autoscaling: false
+autoscaling: true
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

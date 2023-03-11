@@ -3,7 +3,7 @@ pipeline:
   name: leveltroll500_location_group_and_restructure
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:v1.0.3
+  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:v1.0.4
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
