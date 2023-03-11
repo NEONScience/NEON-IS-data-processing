@@ -14,7 +14,7 @@ from data_access.get_assets import get_assets
 from data_access.get_named_location_active_periods import get_active_periods
 from data_access.get_named_location_context import get_named_location_context
 from data_access.get_named_location_group import get_named_location_group
-from data_access.get_named_location_locations import get_named_location_locations
+from data_access.get_named_location_geolocations import get_named_location_geolocations
 from data_access.get_named_location_properties import get_named_location_properties
 from data_access.get_named_location_schema_name import get_named_location_schema_name
 from data_access.get_named_location_parents import get_named_location_parents
@@ -84,12 +84,12 @@ class DataAccessTest(DatabaseBackedTest):
         expected_group = [376]
         self.assertTrue(group == expected_group)
 
-    def test_get_named_location_locations(self):
+    def test_get_named_location_geolocations(self):
         # Point geometry
-        result = get_named_location_locations(self.connector, self.named_location_id)
+        result = get_named_location_geolocations(self.connector, self.named_location_id)
         print(f'result: {json.dumps(result, indent=2)}')
         # Polygon geometry
-        result = get_named_location_locations(self.connector, 314)
+        result = get_named_location_geolocations(self.connector, 314)
         print(f'result: {json.dumps(result, indent=2)}')
         self.assertTrue(result is not None)
 
