@@ -1,10 +1,10 @@
 # Dockerfile for NEON IS Data Processing - Select thresholds by date, source-id, term and context, plus the first stage of the timeseries padder (based on thresholds)
 # Example command (must be run from project root directory to include both modules in Docker context):
 # Build with the following command
-# docker build --no-cache -t neon-is-thsh-slct-ts-pad -f <path to this file> <path to parent directory of flow/ and modules/>
+# docker build --no-cache -t neon-is-thsh-slct-ts-pad -f ./modules_combined/threshold_select_and_timeseries_padder/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.7
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.8
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

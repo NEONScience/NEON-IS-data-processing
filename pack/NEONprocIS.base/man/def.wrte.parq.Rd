@@ -16,7 +16,8 @@ def.wrte.parq(
 )
 }
 \arguments{
-\item{data}{Data frame. Data to write to file.}
+\item{data}{Data frame. Data to write to file. This can also be an object of class arrow_dplyr_query,
+but there is currently only support for auto-creating the schema from the object.}
 
 \item{NameFile}{String. Name (including relative or absolute path) of output parquet file.}
 
@@ -37,7 +38,7 @@ the arrow::write_parquet default will be used.}
 
 \item{Dict}{Logical. Vector either length 1 or the same length as the number of columns in \code{data} 
 representing  whether to apply dictionary encoding to each respective data column. If length 1, the 
-choice is applied to all data columns. Defaults to NULL, in which case dictionary enconding is 
+choice is applied to all data columns. Defaults to NULL, in which case dictionary encoding is 
 determined automatically based on the prevalence of repeated values.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log

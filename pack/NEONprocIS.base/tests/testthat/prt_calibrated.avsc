@@ -13,11 +13,7 @@
       "name": "site_id",
       "type": [
           "null",
-          {
-            "type": "fixed",
-            "size": 4,
-            "name": "utf8"
-          }
+          "string"
       ],
       "doc": "NEON site identifier"
     },

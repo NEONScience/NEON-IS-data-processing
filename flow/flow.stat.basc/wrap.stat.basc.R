@@ -226,7 +226,7 @@ wrap.stat.basc <- function(DirIn,
   log$info(base::paste0('Computing statistics for ', base::length(fileData),' input files (separately).'))
   
   # Gather info about the input directory (including date) and create the output directory. 
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- timeBgn + base::as.difftime(1,units='days')
   dirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
@@ -242,7 +242,7 @@ wrap.stat.basc <- function(DirIn,
     }
     NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(DirIn,'/',DirSubCopy),
                                        DirDest=dirOut,
-                                       LnkSubObj=TRUE,
+                                       LnkSubObj=LnkSubObj,
                                        log=log)
   }  
   

@@ -206,7 +206,7 @@ for (idxDirIn in DirIn) {
                        TRUE)
   
   # Gather info about the input directory (including date) and create the output directory.
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn,log=log)
   idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
   idxDirOutComb <- base::paste0(idxDirOut, '/', Para$NameDirCombOut)
   NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,

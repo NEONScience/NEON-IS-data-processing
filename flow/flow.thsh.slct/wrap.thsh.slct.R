@@ -128,7 +128,7 @@ wrap.thsh.slct <- function(DirIn,
   }
   
   # Create the base output directories 
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   dirOutThsh <- base::paste0(dirOut,'/threshold')
   base::dir.create(dirOutThsh,recursive=TRUE)

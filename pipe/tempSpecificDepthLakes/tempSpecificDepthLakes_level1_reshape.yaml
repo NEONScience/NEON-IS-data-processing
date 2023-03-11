@@ -16,7 +16,7 @@ transform:
   - StatDir=stats
   - QmDir=quality_metrics
   - NameFileSufxRm=basicStats|qualityMetrics
-  image: quay.io/battelleecology/neon-is-tsdl-comb-splt-r:v1.0.1
+  image: quay.io/battelleecology/neon-is-tsdl-comb-splt-r:v1.0.2
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

@@ -152,7 +152,7 @@ wrap.cal.asgn <- function(DirIn,
   tsChar <- format(ts,format='%Y/%m/%d') # Format as year/month/day repo structure
   
   # Create the output directory structure
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   typeSrc <- InfoDirIn$dirSplt[InfoDirIn$idxRepo+1]
   idSrc <- InfoDirIn$dirSplt[InfoDirIn$idxRepo+2]
   term <- InfoDirIn$dirSplt[InfoDirIn$idxRepo+3]

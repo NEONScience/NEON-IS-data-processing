@@ -273,7 +273,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn,log=log)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
   base::dir.create(idxDirOut,recursive=TRUE)
@@ -439,7 +439,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   for(idxDirLocTemp in dirLocTemp){
     
     # Gather info about the input directory (including date) and create the output directories. 
-    InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirLocTemp)
+    InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirLocTemp,log=log)
     idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
     idxDirOutData <- base::paste0(idxDirOut,'/data')
     base::dir.create(idxDirOutData,recursive=TRUE)
