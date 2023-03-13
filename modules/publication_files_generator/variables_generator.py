@@ -6,8 +6,7 @@ from pathlib import Path
 from publication_files_generator.filename_formatter import format_filename
 
 
-def generate_variables_file(*,
-                            out_path: Path,
+def generate_variables_file(out_path: Path,
                             domain: str,
                             site: str,
                             year: str,
