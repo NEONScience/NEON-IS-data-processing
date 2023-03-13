@@ -211,7 +211,7 @@ wrap.qaqc.qm.dp0p <- function(DirIn,
   )
   
   # Gather info about the input directory (including date) and create the output directory.
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)
   dirOutQf <- base::paste0(dirOut, '/quality_metrics')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,

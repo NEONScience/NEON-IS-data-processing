@@ -1,23 +1,35 @@
 ---
 pipeline:
-  name: hmp155_data_years
+  name: li191r_kafka_combiner
 transform:
-  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - ls $REPO_IN > /pfs/out/data_years.txt
+  - Rscript
+  - ./flow.kfka.comb.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileSchmL0=$FILE_SCHEMA_L0
+  image: quay.io/battelleecology/neon-is-kfka-comb-r:v1.0.0
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
 input:
-  pfs:
-    name: REPO_IN
-    repo: hmp155_data_source_trino
-    glob: /hmp155
-    empty_files: true
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: li191r_data_source_kafka
+      glob: /li191r/*/*/*
+  - pfs:
+      name: FILE_SCHEMA_L0
+      repo: li191r_avro_schemas
+      glob: /li191r/li191r.avsc
+parallelism_spec:
+  constant: 1
 resource_requests:
-  memory: 1K
-  cpu: 0.01
-autoscaling: true
+  memory: 1G
+  cpu: 1
+autoscaling: false
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -39,7 +51,7 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
+      "value":"2.5G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",

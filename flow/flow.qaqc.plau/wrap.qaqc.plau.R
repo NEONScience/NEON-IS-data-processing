@@ -134,7 +134,7 @@ wrap.qaqc.plau <- function(DirIn,
   fileThsh <- base::dir(dirThsh)
   
   # Gather info about the input directory (including date) and create the output directories. 
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   dirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   dirOutData <- base::paste0(dirOut,'/data')

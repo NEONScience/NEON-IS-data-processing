@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Combine Timeseries Data
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.0.7
+FROM quay.io/battelleecology/neon-is-base-r:v1.1.3
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

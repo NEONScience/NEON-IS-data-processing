@@ -111,7 +111,7 @@ def.err.datm <- function(
     )
 
   # Parse the datum path
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirDatm)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirDatm,log=log)
   
   # Create the error path
   NEONprocIS.base::def.dir.crea(DirBgn=DirErrBase, 

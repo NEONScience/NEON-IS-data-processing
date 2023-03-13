@@ -29,11 +29,12 @@ namePack <- c("NEONprocIS.base",
               "NEONprocIS.qaqc",
               "NEONprocIS.stat",
               "NEONprocIS.wq",
-              "NEONprocIS.pub")[3]
+              "NEONprocIS.pub")[1]
 
 
-# Do you want to run the unit tests for the package?
+# Do you want to run the unit tests for the package? Additionally, want to compute and show test coverage?
 RunTest <- TRUE
+ShowTestCovr <- TRUE
 
 ###
 # start loop around packages
@@ -119,6 +120,11 @@ for(idxNamePack in namePack) {
   if(RunTest==TRUE){
     setwd(paste0(DirWrk, "/", idxNamePack))
     devtools::test(pkg="./")
+    if(ShowTestCovr==TRUE){
+      message('Computing/displaying test coverage...')
+      cov <- covr::package_coverage()
+      covr::report(cov)
+    }
   }
 
 ###

@@ -99,7 +99,7 @@ COPY ./ /pack/NEONprocIS.base/
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
 #RUN R -e 'utils::install.packages(c("devtools"))' && \
 RUN R -e 'utils::install.packages(c("remotes"))' && \
-    R -e 'remotes::install_github("rstudio/renv@0.15.4")' && \
+    R -e 'remotes::install_github("rstudio/renv@0.16.0")' && \
     R -e 'renv::consent(provided=TRUE); renv::restore("/pack/NEONprocIS.base/")' && \
     R -e 'renv::install("/pack/NEONprocIS.base")' && \
     rm -rf /pack

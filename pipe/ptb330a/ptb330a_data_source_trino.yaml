@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: hmp155_data_source_trino
+  name: ptb330a_data_source_trino
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -11,6 +11,9 @@ transform:
   - "#!/usr/bin/env bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
   - rm -r -f /usr/src/app/interimData
+  - "# Get today's date for evaluating kafka data retention period"
+  - date_today=$(date -u +%Y-%m-%d)
+  - kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
   - '# Run first module - data_source_site (pull data from database by site)'
   - "# Split data source path"
   - echo "Checking $presto_data_source files"
@@ -18,13 +21,24 @@ transform:
   - '  echo "Processing $path"'
   - "  p=${path#/pfs}"
   - '  IFS="/"; arr=($p); unset IFS;'
-  - "  year=${arr[2]}"
-  - "  month=${arr[3]}"
-  - "  day=${arr[4]}"
-  - "  site=${arr[5]}"
+  - "  year=${arr[3]}"
+  - "  month=${arr[4]}"
+  - "  day=${arr[5]}"
+  - "  site=${arr[6]}"
+  - '  type=$(echo $site | cut -f 2 -d "." --only-delimited); # Extract the "kafka" from site.kafka if present'
+  - '  if [ "$type" = "kafka" ] && [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]'
+  - "  then "
+  - '    site=$(echo $site | cut -f 1 -d "." --only-delimited); # Extract the site from site.kafka.'
+  - '    echo "$year/$month/$day for $site is indicated to be streaming from Kafka but has passed the Kafka retention period ($KAFKA_RETENTION_DAYS days)."'
+  - '  elif [ "$type" = "kafka" ]'
+  - "  then "
+  - '    echo "$year/$month/$day/$site is indicated to be streaming from Kafka. Skipping..."'
+  - '    continue'
+  - '  fi'
+  - '  echo "Extracting data from Trino for $year/$month/$day/$site"'
   - "  export GEN_DATE=$year-$month-$day"
   - "  export GEN_SITE_NAME=$site"
-  - "  export GEN_OUTPUT_DIR=/usr/src/app/interimData/hmp155/$year/$month/$day"
+  - "  export GEN_OUTPUT_DIR=/usr/src/app/interimData/ptb330a/$year/$month/$day"
   - "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem"
   - "  mkdir -p $GEN_OUTPUT_DIR"
   - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second"
@@ -33,8 +47,8 @@ transform:
   - python3 -m parquet_linkmerge.parquet_linkmerge_main
   env:
     # Environment variables for data conversion step
-    GEN_YAML_CONF: "/usr/src/app/genscript/configs/hmp155_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/hmp155/hmp155.avsc"
+    GEN_YAML_CONF: "/usr/src/app/genscript/configs/ptb330a_streams.yaml"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/ptb330a/ptb330a.avsc"
     LOG_LEVEL: info
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
@@ -45,6 +59,7 @@ transform:
     MONTH_INDEX: '7'
     DAY_INDEX: '8'
     SOURCE_ID_INDEX: '9'
+    KAFKA_RETENTION_DAYS: "30"
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -58,8 +73,8 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: hmp155_import_trigger
-    glob: "/*/*/*"
+    repo: ptb330a_cron_daily_and_date_control
+    glob: "/ptb330a/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 2
