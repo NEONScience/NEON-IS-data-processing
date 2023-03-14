@@ -9,7 +9,8 @@
 #' avro schema to convert column names and/or data types. Any variables of class factor will
 #' be written as class character.
 
-#' @param data Data frame. Data to write to file.
+#' @param data Data frame. Data to write to file. This can also be an object of class arrow_dplyr_query,
+#' but there is currently only support for auto-creating the schema from the object.
 #' @param NameFile String. Name (including relative or absolute path) of output parquet file.
 #' @param Schm Optional. Either a Parquet schema of class ArrowObject, or a Json formatted string 
 #' with an AVRO file schema. Example:\cr
@@ -24,7 +25,7 @@
 #' @param CompLvl Numeric. Compression level. See documentation for arrow::write_parquet for details.
 #' @param Dict Logical. Vector either length 1 or the same length as the number of columns in \code{data} 
 #' representing  whether to apply dictionary encoding to each respective data column. If length 1, the 
-#' choice is applied to all data columns. Defaults to NULL, in which case dictionary enconding is 
+#' choice is applied to all data columns. Defaults to NULL, in which case dictionary encoding is 
 #' determined automatically based on the prevalence of repeated values.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
@@ -51,6 +52,9 @@
 #   Cove Sturtevant (2023-02-21)
 #     Convert avro schema to parquet schema and convert to arrow table before writing parquet file. 
 #     This retains the data types (and likely space savings) upon write
+#   Cove Sturtevant (2023-03-08)
+#     Add support for writing object of class arrow_dplyr_query
+#     Support currently limited to auto-detecting schema
 ##############################################################################################
 def.wrte.parq <- function(data,
                           NameFile,
@@ -66,7 +70,7 @@ def.wrte.parq <- function(data,
     log <- NEONprocIS.base::def.log.init()
   }
   
-  numVar <- base::length(data)
+  numVar <- base::ncol(data)
   numRow <- base::nrow(data)
   
   if(base::length(Dict) == 1){
@@ -86,27 +90,50 @@ def.wrte.parq <- function(data,
     schmData = base::attr(data,'schema')
     
     if(!base::is.null(schmData) && 'ArrowObject' %in% base::class(schmData)){
-      log$debug('Using parquet schema attached as an attribute to the data frame.')
+      log$debug(base::paste0('Using parquet schema attached as an attribute to the data frame for output file ',NameFile))
     } else {
       schmData <- NULL
-      log$debug('Auto-creating schema using data frame.')
+      log$debug(base::paste0('Auto-creating schema for output file ',NameFile))
     }
   
     # Use schema attached as attribute to the data, or auto-construct it from the data frame.
-    data <- arrow::arrow_table(data, schema=schmData)
+    # Note: only data frames will be converted to arrow table. This function also works to 
+    #       pass through data that is already in class arrow_table or arrow_dplyr_query with 
+    #       auto-create schema
+    if("data.frame" %in% base::class(data)){
+      
+      if(!base::is.null(schmData)){
+        # Pull the col names and data types from the schema
+        typeVar <- NEONprocIS.base::def.schm.parq.pars(schmData,log=log)
+        
+        # Rename the variables to match the schema
+        if(numVar != base::length(typeVar$name)){
+          log$error(base::paste0('Number of variables in the data do not match number of variables in the schema (schema is attached as an attribute to the data frame).'))
+          stop()
+        } else {
+          base::names(data) <- typeVar$name
+        }
+        
+        # In order to reliably apply the schema, we need to do some type conversion of the data first.
+        data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
+        
+      }
+      
+      data <- arrow::arrow_table(data, schema=schmData)
+    }
 
   } else {
     
     if (!base::is.null(Schm) && 'ArrowObject' %in% base::class(Schm)){
       # Schema specified in inputs as a parquet schema.
-      log$debug('Using parquet schema from input argument Schm.')
+      log$debug(base::paste0('Using parquet schema from input argument Schm for output file ',NameFile))
       
       # Pull the col names and data types from the schema
       typeVar <- NEONprocIS.base::def.schm.parq.pars(Schm,log=log)
       
     } else if (!base::is.null(Schm) || !base::is.null(NameFileSchm)) {
         
-      log$debug('Creating parquet schema from input avro schema.')
+      log$debug(base::paste0('Creating parquet schema from input avro schema for output file ',NameFile))
     
       # Create parquet schema from the avro schema
       Schm <- NEONprocIS.base::def.schm.parq.from.schm.avro(FileSchm=NameFileSchm,Schm=Schm,log=log)    
@@ -118,7 +145,7 @@ def.wrte.parq <- function(data,
       
     # Rename the variables to match the schema
     if(numVar != base::length(typeVar$name)){
-      log$error('Number of variables in the data does not match number of variables in the schema.')
+      log$error(base::paste0('Number of variables in the data do not match number of variables in the schema for output file ',NameFile))
       stop()
     } else {
       base::names(data) <- typeVar$name
@@ -132,21 +159,23 @@ def.wrte.parq <- function(data,
   }
   
   # Determine whether to use dictionary encoding for each variable
-  if(base::is.null(Dict)){
-    Dict <- base::rep(FALSE,numVar)
-    
-    # Run through each var. If the values repeat often, use dictionary encoding
-    for(idxVar in base::seq_len(numVar)){
-      enblDict <- try(base::length(base::unique(data[[idxVar]])) < 0.7*numRow,silent=TRUE) # Fails for some arrow types
-      if(base::all(base::class(enblDict) != 'try-error')){
-        if(!("POSIXt" %in% class(data[[idxVar]]))){
-          Dict[idxVar] <- TRUE
-        }
-        
-      }
-    }    
+  # Works for both arrow tables and class arrow_dplyr_query
+   if (base::is.null(Dict)){
+    # NOTE: If upgrade to arrow 11, should be able do use n_distinct() without first collecting to save memory
+    library(dplyr)
+    varData <- base::names(data)
+    numUniq <- base::rep(FALSE,times=base::length(varData))
+    base::names(numUniq) <- varData
+    for (varIdx in varData){
+      numUniq[varIdx]  <- data %>%
+        dplyr::select(dplyr::all_of(varIdx)) %>%
+        dplyr::collect() %>%
+        dplyr::n_distinct() 
+    }
+    Dict <- numUniq < 0.7*numRow
   }
-
+  log$debug(base::paste0('Dictionary settings per variable: ',base::paste0(Dict,collapse=' '), ' for output file ',NameFile))
+  
   # Write the data
   rpt <- base::try(
     arrow::write_parquet(x=data,

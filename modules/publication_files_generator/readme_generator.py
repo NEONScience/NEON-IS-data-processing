@@ -43,12 +43,9 @@ def generate_readme_file(readme_template: str,
                        data_files=file_metadata.data_files,
                        change_logs=change_log_entries,
                        variables_filename=variables_filename)
-    readme_filename = format_filename(domain=file_metadata.domain,
-                                      site=file_metadata.site,
+    readme_filename = format_filename(domain=file_metadata.domain, site=file_metadata.site,
                                       data_product_id=data_product.short_data_product_id,
-                                      timestamp=timestamp,
-                                      file_type='readme',
-                                      extension='txt')
+                                      timestamp=timestamp, file_type='readme', extension='txt')
     readme_path = Path(out_path, file_metadata.site, file_metadata.year, file_metadata.month, readme_filename)
     template = Template(readme_template, trim_blocks=True, lstrip_blocks=True)
     readme_content = template.render(readme_data)

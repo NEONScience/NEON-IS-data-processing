@@ -118,7 +118,7 @@ wrap.data.comb.ts <- function(DirIn,
                                full.names = TRUE)
   
   # Gather info about the input directory and create the output directory.
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   idxDirOut <- base::paste0(DirOutBase, InfoDirIn$dirRepo)
   idxDirOutComb <- base::paste0(idxDirOut, '/', NameDirCombOut)
   NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,

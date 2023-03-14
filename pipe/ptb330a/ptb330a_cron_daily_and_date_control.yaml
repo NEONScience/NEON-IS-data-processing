@@ -2,35 +2,30 @@
 pipeline:
   name: ptb330a_cron_daily_and_date_control
 transform:
-  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
+  image: quay.io/battelleecology/neon-is-date-cntl:v0.0.3
   cmd: ["/bin/bash"]
   env:
     # START_DATE and END_DATE indicate the date range (inclusive) to create the /Y/M/D folder structure
     # START_DATE must be set, format "YYYY-MM-DD"
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2020-01-01"
-    END_DATE: "2020-01-03"
+    START_DATE: "2023-03-01"
+    #END_DATE: "2023-01-01"
     SOURCE_TYPE: "ptb330a"
   stdin:
   - "#!/bin/bash"
-  - "# If END_DATE unset, set to yesterday"
-  - "[  -z $END_DATE ] && END_DATE=$(date -u -d '1 day ago' +%Y/%m/%d)"
-  - "# Create daily folder structure from start date to end date"
-  - for d in $(seq $(date -u +%s -d $START_DATE) +86400 $(date -u +%s -d $END_DATE)) ; do
-  - date_path=$(date -u +%Y/%m/%d -d @$d)
-  - echo $OUT_PATH/$SOURCE_TYPE/$date_path
-  - mkdir -p $OUT_PATH/$SOURCE_TYPE/$date_path
-  - touch $OUT_PATH/$SOURCE_TYPE/$date_path/empty
-  - done
-  - "# Finally, create a file listing the data years (for the metadata assignment pipelines)"
-  - ls $OUT_PATH/$SOURCE_TYPE > $OUT_PATH/data_years.txt
+  - ./cron_daily_and_date_control/populate_site_dates.sh
 input:
-  # This cron should be the central driver for daily scheduled updates, such as data ingest and metadata loaders.
-  cron:
-    name: tick
-    spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
-    overwrite: true
+  cross:
+  # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
+  - cron:
+      name: tick
+      spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
+      overwrite: true
+  - pfs:
+      name: SITE_FILE
+      repo: ptb330a_site_list
+      glob: /site-list-test.json
 resource_requests:
   memory: 64M
   cpu: 0.5

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -16,7 +17,8 @@ class TestVariablesFileGenerator(TestCase):
         self.out_path = Path('/out')
         self.fs.create_dir(self.in_path)
         self.fs.create_dir(self.out_path)
-        real_path = Path('variables_generator_test_files', 'publication_workbook_water_quality.txt')
+        real_path = Path(os.path.dirname(__file__),'variables_generator_test_files',
+                         'publication_workbook_water_quality.txt')
         target_path = Path(self.in_path, 'publication_workbook_water_quality.txt')
         self.fs.add_real_file(real_path, target_path=target_path)
         publication_workbook = target_path.read_text()

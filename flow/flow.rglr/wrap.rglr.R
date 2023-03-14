@@ -113,7 +113,7 @@ wrap.rglr <- function(DirIn,
   } 
   
   # Gather info about the input directory (including date) and create the output directory.
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   timeBgn <-
     InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- InfoDirIn$time + base::as.difftime(1, units = 'days')

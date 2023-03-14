@@ -255,7 +255,7 @@ wrap.qaqc.qm <- function(DirIn,
   log$info(base::paste0('Flags from ', base::length(fileQf),' files will be combined for computation of quality metrics.'))
   
   # Gather info about the input directory (including date) and create the output directory. 
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- timeBgn + base::as.difftime(1,units='days')
   dirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)

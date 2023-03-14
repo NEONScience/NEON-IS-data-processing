@@ -12,7 +12,6 @@ from publication_files_generator.sensor_locations_generator import generate_loca
 from publication_files_generator.timestamp import get_timestamp
 
 
-
 @unittest.skip('Not implemented.')
 class LocationsGeneratorTest(TestCase):
 
@@ -72,12 +71,11 @@ class LocationsGeneratorTest(TestCase):
                         x_offset=x_offset,
                         y_offset=y_offset,
                         z_offset=z_offset,
-
-
-                    )
-
+                        location_properties=[],  # TODO run query for properties
+                        named_location_offset_id=reference_id,
+                        named_location_offset_name='')  # TODO run query to fill in
+                    locations.append(sensor_location)
         return locations
-
 
     def test_locations_generator(self):
         timestamp = get_timestamp()

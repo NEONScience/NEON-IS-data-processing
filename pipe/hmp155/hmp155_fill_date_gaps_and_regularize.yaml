@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-gf-rglr:v1.0.3
+  image: quay.io/battelleecology/neon-is-gf-rglr:v1.0.4
   cmd:
   - /bin/bash
   stdin:
@@ -43,7 +43,7 @@ transform:
     LOCATION_DAY_INDEX: '6'
     LOCATION_INDEX: '7'
     EMPTY_FILE_TYPE_INDEX: '4'
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
     # Environment variables for regularizer
     PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:

@@ -11,9 +11,10 @@
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
 git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
+git_path_avro_l0='/home/NEON/csturtevant/R/avro-schemas'
 pipe_list_prefix='pipe_list_'
-source_type='aquatroll200'
-product='groundwaterPhysical'
+source_type='prt'
+product='tempSoil'
 
 # Define paths based on base paths and product information above 
 spec_path_source_type=$git_path_pipelines/$source_type
@@ -25,7 +26,7 @@ spec_path_product=$git_path_pipelines/$product
 pachctl create repo $source_type'_site_list'
 pachctl start commit $source_type'_site_list'@master
 pachctl put file $source_type'_site_list'@master:/site-list-test.json -f $data_path/site_list/site-list-test.json
-pachctl finish commit $source_type'_import_trigger'@master
+pachctl finish commit $source_type'_site_list'@master
 
 # Create source-type-specific empty_files
 pachctl create repo $source_type'_empty_files'
@@ -37,6 +38,7 @@ pachctl finish commit $source_type'_empty_files'@master
 pachctl create repo $source_type'_avro_schemas'
 pachctl start commit $source_type'_avro_schemas'@master
 pachctl put file -r $source_type'_avro_schemas'@master:/$source_type -f $git_path_avro/avro_schemas/$source_type
+pachctl put file $source_type'_avro_schemas'@master:/$source_type/$source_type.avsc -f $git_path_avro_l0/schemas/$source_type/$source_type.avsc
 pachctl finish commit $source_type'_avro_schemas'@master
 
 # Create source-type-specific fdas uncertainty (ONLY IF NEEDED FOR YOUR SOURCE TYPE)
@@ -88,27 +90,13 @@ done
 
 # Bump to full scale for a few days
 # *** First - edits the date_gap_filler pipeline spec to remove restriction on particular CFGLOCs. ***
-# *** Also make any desired edits to the cron_daily_and_date_control pipeline spec to adjust date range to the dates of the import trigger 
+# *** Also make any desired edits to the cron_daily_and_date_control pipeline spec to adjust date range 
 pachctl start transaction
 pachctl update pipeline --reprocess -f $spec_path_source_type/$source_type'_cron_daily_and_date_control.yaml'
 pachctl update pipeline -f $spec_path_source_type/$source_type'_fill_date_gaps_and_regularize.yaml'
-pachctl start commit $source_type'_import_trigger'@master
 pachctl finish transaction
-for day in $(echo ${days[*]}); do 
-pachctl put file -r $source_type'_import_trigger'@master:/2020/01/$day -f $data_path/import_trigger_FULL/2020/01/$day
-done
-pachctl finish commit $source_type'_import_trigger'@master
 
 # Add 1 day at full scale to evaluate resource requests in normal operations
 # *** First - edit the cron_daily_and_date_control pipeline spec to add 1 day to the end date ***
-pachctl start transaction
 pachctl update pipeline --reprocess -f $spec_path_source_type/$source_type'_cron_daily_and_date_control.yaml'
-pachctl start commit $source_type'_import_trigger'@master
-pachctl finish transaction
-#days=(01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30) # Edit as desired
-days=(04)
-for day in $(echo ${days[*]}); do 
-pachctl put file -r $source_type'_import_trigger'@master:/2020/01/$day -f $data_path/import_trigger_FULL/2020/01/$day
-done
-pachctl finish commit $source_type'_import_trigger'@master
 

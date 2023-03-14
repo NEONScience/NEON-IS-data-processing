@@ -13,7 +13,7 @@
       "WndwAgr=001|030",
       "TermStat1=par:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.mult.fdas.volt)"
     ],
-    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v1.0.3",
+    "image": "quay.io/battelleecology/neon-is-stat-basc-r:v1.0.4",
     "image_pull_secrets": [
       "battelleecology-quay-read-all-pull-secret"
     ],

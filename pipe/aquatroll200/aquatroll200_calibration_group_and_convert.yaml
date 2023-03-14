@@ -3,7 +3,7 @@ pipeline:
   name: aquatroll200_calibration_group_and_convert
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-cal-grp-conv:v1.0.2
+  image: quay.io/battelleecology/neon-is-cal-grp-conv:v1.1.3
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
