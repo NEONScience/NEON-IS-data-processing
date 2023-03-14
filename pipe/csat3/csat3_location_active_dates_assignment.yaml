@@ -19,17 +19,17 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_csat3
+      repo: csat3_location_loader
       glob: /csat3/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_csat3_list_years
+      repo: csat3_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4
 resource_requests:
-  memory: 300M
-  cpu: 0.5
+  memory: 500M
+  cpu: 1
 autoscaling: true
 scheduling_spec:
   node_selector:

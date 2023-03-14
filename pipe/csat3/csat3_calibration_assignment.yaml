@@ -20,17 +20,17 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: calibration_csat3
+      repo: csat3_calibration
       glob: /csat3/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_csat3_list_years
+      repo: csat3_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4
 resource_requests:
-  memory: 200M
-  cpu: 0.3
+  memory: 1.0G
+  cpu: 1.0
 autoscaling: true
 scheduling_spec:
   node_selector:
