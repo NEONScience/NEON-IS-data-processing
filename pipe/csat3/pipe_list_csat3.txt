@@ -1,7 +1,5 @@
 csat3_cron_daily_and_date_control.yaml
 csat3_data_source_trino.yaml
-csat3_assetuid_macaddress_map.yaml
-csat3_replace_macaddress_with_assetuid.yaml
 csat3_data_years.yaml
 csat3_calibration_assignment.yaml
 csat3_calibration_group_and_validate.yaml
