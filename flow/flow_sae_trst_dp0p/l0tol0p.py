@@ -59,15 +59,13 @@ class L0toL0p:
     def data_conversion(self, filename) -> pd.DataFrame:
         out_df = pd.read_parquet(filename)
         log.debug(f'{out_df.columns}')
-        #log.info(out_df['site_id'][0])
-        #log.info(out_df['source_id'][0])
         # drop columns not used in l0 to l0p data conversion
         self.drop_kafka_columns(out_df)
         return out_df
 
     @staticmethod
     def drop_kafka_columns(in_df: pd.DataFrame) -> None:
-        kafka_columns = ['kafka_key', 'kafka_topic', 'kafka_partition', 'kafka_offset', 'kafka_ts', 'kakfa_ts_type']
+        kafka_columns = ['kafka_key', 'kafka_topic', 'kafka_partition', 'kafka_offset', 'kafka_ts', 'kakfa_ts_type', 'ds']
         if kafka_columns[0] in in_df.columns:
             in_df.drop(columns=kafka_columns, inplace=True)
 
