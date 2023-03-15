@@ -23,13 +23,13 @@ transform:
     DirIn=/usr/src/app/pfs/interimDataCopy
     DirOut=/pfs/out
     DirErr=/pfs/out/errored_datums
-    DirSubCopy=threshold
     FileSchmQf=$SCHEMA_FLAGS
     "TermTest1=veloXaxs:range|step|persistence"
     "TermTest2=veloYaxs:range|step|persistence"
     "TermTest3=veloZaxs:range|step|persistence"
     "TermTest4=veloSoni:range|step|persistence"
     "TermTest5=tempSoni:range|step|persistence"
+    "DirSubCopy=threshold|location"
     #VarAddFileQf=errorState
   env:
     # Environment variables for padded timeseries analyzer

@@ -36,6 +36,7 @@ transform:
     "TermTest10=angXaxs:range|step|persistence"
     "TermTest11=angYaxs:range|step|persistence"
     "TermTest12=angZaxs:range|step|persistence"
+    "DirSubCopy=threshold|location"
     #VarAddFileQf=errorState
   env:
     # Environment variables for padded timeseries analyzer
