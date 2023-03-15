@@ -3,7 +3,7 @@ pipeline:
   name: csat3_l0p_data
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:v0.3.2
+  image: quay.io/battelleecology/neon-sae-trst-dp0p:v1.1.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -13,16 +13,17 @@ transform:
     FILE_DIR: data,flags
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
+    LOCATION_LINK_TYPE: COPY #SYMLINK or COPY, if not defined, location will not be in output repo
 input:
   pfs:
     name: IN_PATH
-    repo: csat3_regularized_data
+    repo: csat3_fill_date_gaps_and_regularize
     glob: /csat3/(*)/(*)/(*)
 parallelism_spec:
   constant: 8
 resource_requests:
-  memory: 2Gi
-  cpu: 1.2
+  memory: 2.5G
+  cpu: 1
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -45,11 +46,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"400M"
+      "value":"2G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
+      "value": "0.5"
     }
   ]
 

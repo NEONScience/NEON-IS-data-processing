@@ -1,13 +1,30 @@
 ---
 pipeline:
-  name: cron_daily_csat3
+  name: csat3_location_asset
 transform:
-  cmd: ["/bin/bash"]
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/location_asset_loader:32
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m location_asset_loader.location_asset_loader_main
+  env:
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    SOURCE_TYPE: csat3
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
-  cron:
-    name: tick
-    spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
-    overwrite: true
+  pfs:
+    repo: csat3_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
+resource_requests:
+  memory: 100M
+  cpu: 0.05
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -30,11 +47,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
+      "value":"400M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "0.4"
     }
   ]
-

@@ -24,8 +24,7 @@ class Csat3(L0toL0p):
         df = super().data_conversion(filename)
 
         df['tempSoni'] = df['speed_of_sound'].apply(lambda x: math.nan if math.isnan(x) else self.get_temp_soni(x)).astype('float32')
-        del df['speed_of_sound']
-        df['idx'] = df['diagnostic_word'].apply(lambda x: math.nan if math.isnan(x) else get_range_bits(x, 0, 5)).astype('int8')
+        df['idx'] = df['diagnostic_word'].apply(lambda x: math.nan if math.isnan(x) else get_range_bits(x, 0, 5)).astype('float32')
         df['qfSoniUnrs'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == -99999 else 0).astype('int8')
         df['qfSoniData'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61503 else 0).astype('int8')
         df['qfSoniTrig'] = df['diagnostic_word'].apply(lambda x: -1 if math.isnan(x) else 1 if x == 61440 else 0).astype('int8')

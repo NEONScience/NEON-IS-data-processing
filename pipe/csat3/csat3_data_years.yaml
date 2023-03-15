@@ -1,33 +1,23 @@
 ---
 pipeline:
-  name: location_loader_csat3
+  name: csat3_data_years
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_loader:122
+  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m location_loader.location_loader_main
-  env:
-    LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: csat3
-    OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
-  secrets:
-  - name: db-pdr-secret
-    mount_path: /var/db_secret
+  - ls $REPO_IN > /pfs/out/data_years.txt
 input:
   pfs:
-    repo: cron_daily_csat3_tick
-    glob: /*
+    name: REPO_IN
+    repo: csat3_data_source_trino
+    glob: /csat3
     empty_files: true
 resource_requests:
-  memory: 300M
-  cpu: 1.5
+  memory: 1K
+  cpu: 0.01
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -49,7 +39,7 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"400M"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",

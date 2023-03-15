@@ -1,35 +1,33 @@
 ---
 pipeline:
-  name: threshold_csat3
+  name: mfcValiTurb_context_filter
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/threshold_loader:104
+  image: quay.io/battelleecology/context_filter:29
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m threshold_loader.threshold_loader_main
+  - python3 -m context_filter.context_filter_main
   env:
     OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
-    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
-    TERM: veloXaxs|veloYaxs|veloZaxs|veloSoni|tempSoni
-    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
-    CTXT: 3Dwind
-  secrets:
-  - name: db-pdr-secret
-    mount_path: /var/db_secret
+    CONTEXT: validation|turbulent|mass-flow-controller
+    LOG_LEVEL: DEBUG
+    TRIM_INDEX: '3'
+    SOURCE_ID_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
 input:
   pfs:
-    repo: cron_daily_csat3_tick
-    glob: /*
-    empty_files: true
+    name: IN_PATH
+    repo: mcseries_fill_date_gaps_and_regularize
+    glob: /mcseries/*/*/*
+parallelism_spec:
+  constant: 4
 resource_requests:
-  memory: 120M
-  cpu: 0.05
+  memory: 300M
+  cpu: 0.3
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -51,11 +49,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
+      "value":"800M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.05"
+      "value": "1"
     }
   ]
 
