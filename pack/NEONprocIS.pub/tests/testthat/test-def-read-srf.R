@@ -53,20 +53,27 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   
   #2. strJson only provided 
 
-  # strList<- list()
-  # strList1 <- list ("group_name"="surfacewater-physical_PRLA130100", "id"=15381,"start_date"="2019-10-01T10:00:00Z",
-  # "end_date"="2020-01-03T00:00:00Z", "measurement_stream_name"="NEON.D09.PRLA.DP1.20016.001.04114.130.100.030",
-  # "srf_term_name"="sWatElevFinalQFSciRvw","srf"= 1,
-  # "user_comment"="Pressure transducer vent clogged periodically, causing barometric pressure fluctuations to be reflected in data.",
-  # "create_date"="2020-11-25T18:45:15Z","last_update_date"="2020-11-25T18:45:15Z")
-  # 
-  # strList[['science_review_flags']] = strList1
-  # 
-  # tt = NEONprocIS.pub::def.read.srf(strJson = rjson::toJSON(strList))
+  srfItems <- list(
+        "group_name" =  "surfacewater-physical_PRLA130100",
+        "id"= 15381,
+        "start_date" = "2019-10-01T10:00:00Z",
+        "end_date" = "2020-01-03T00:00:00Z",
+        "measurement_stream_name" = "NEON.D09.PRLA.DP1.20016.001.04114.130.100.030",
+        "srf_term_name" = "sWatElevFinalQFSciRvw",
+        "srf" = 1,
+        "user_comment" = "Pressure transducer vent clogged periodically, causing barometric pressure fluctuations to be reflected in data.",
+        "create_date" = "2020-11-25T18:45:15Z",
+        "last_update_date" = "2020-11-25T18:45:15Z"
+        )
 
-  
+  srfList = array(srfItems)
+  srfList <- list("science_review_flags" =  srfList)
+  srfJson = rjson::toJSON(srfList)
+
+  tt = try(NEONprocIS.pub::def.read.srf(strJson = srfJson), silent = TRUE)
+
   #3. no params provided 
-  tt = try(NEONprocIS.pub::def.read.srf(), silent = TRUE)
-  print(tt)
   
+  tt = try(NEONprocIS.pub::def.read.srf(), silent = TRUE)
+
 })
