@@ -53,7 +53,6 @@ def main() -> None:
                                                      data_product_id=file_metadata.data_product_id,
                                                      publication_workbook=publication_workbook,
                                                      timestamp=timestamp)
-        # TODO: Pass this filename to readme.
         positions_filename = generate_positions_file(locations_path=config.locations_path,
                                                      location_path_index=config.location_path_index,
                                                      out_path=config.out_path,

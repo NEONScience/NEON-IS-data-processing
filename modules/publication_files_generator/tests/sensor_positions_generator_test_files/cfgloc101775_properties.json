@@ -1,31 +1,67 @@
 [
 	{
-		"attr_name" : "Geodetic datum",
-		"string_value" : "WGS84",
+		"attr_name" : "Required Asset Management Location ID",
+		"string_value" : null,
+		"number_value" : 3124,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "Required Asset Management Location Code",
+		"string_value" : "CFGLOC101775",
 		"number_value" : null,
 		"date_value" : null
 	},
 	{
-		"attr_name" : "County",
-		"string_value" : "Weld",
+		"attr_name" : "HOR",
+		"string_value" : "002",
 		"number_value" : null,
 		"date_value" : null
 	},
 	{
-		"attr_name" : "State province",
-		"string_value" : "CO",
+		"attr_name" : "VER",
+		"string_value" : "506",
 		"number_value" : null,
 		"date_value" : null
 	},
 	{
-		"attr_name" : "Country",
-		"string_value" : "USA",
+		"attr_name" : "TMI",
+		"string_value" : "000",
 		"number_value" : null,
 		"date_value" : null
 	},
 	{
-		"attr_name" : "UTM Zone",
-		"string_value" : "13N",
+		"attr_name" : "Data Rate",
+		"string_value" : "0.1",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "AngPtch",
+		"string_value" : "2",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "FreqSamp",
+		"string_value" : "0.1",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "AngNedZaxs",
+		"string_value" : "300",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "Cal$PrdLab",
+		"string_value" : "one time before installation",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "DistZaxsLvlMeasSoil",
+		"string_value" : "-0.650",
 		"number_value" : null,
 		"date_value" : null
 	}

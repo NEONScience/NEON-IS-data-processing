@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from pyfakefs.fake_filesystem import FakeFilesystem
 
@@ -47,10 +47,10 @@ def get_log_entries(fs: FakeFilesystem, _data_product_id: str) -> List[LogEntry]
                 LogEntry(
                     change_log_id=int(change_log_id),
                     data_product_id=data_product_id,
-                    issue_date=_to_datetime(issue_date),
-                    resolution_date=_to_datetime(resolved_date),
-                    date_range_start=_to_datetime(date_range_start),
-                    date_range_end=_to_datetime(date_range_end),
+                    issue_date=to_datetime(issue_date),
+                    resolution_date=to_datetime(resolved_date),
+                    date_range_start=to_datetime(date_range_start),
+                    date_range_end=to_datetime(date_range_end),
                     location_affected=location_affected,
                     issue=issue,
                     resolution=resolution
@@ -114,6 +114,9 @@ def get_descriptions(fs: FakeFilesystem) -> Dict[str, str]:
     return file_descriptions
 
 
-def _to_datetime(date: str) -> datetime:
+def to_datetime(date: str) -> Optional[datetime]:
     """Convert the formatted dates in files to datetime objects."""
-    return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+    if date is not None:
+        return datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+    else:
+        return None

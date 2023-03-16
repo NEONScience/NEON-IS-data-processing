@@ -9,10 +9,10 @@ from pyfakefs.fake_filesystem import FakeFilesystem
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from data_access.types.property import Property
-from publication_files_generator.database_queries.geolocation_geometry import Coordinates
 from publication_files_generator.database_queries.named_location import NamedLocation
 from publication_files_generator.database_queries.sensor_geolocations import GeoLocation
 from publication_files_generator.sensor_positions_generator import generate_positions_file
+from publication_files_generator.tests.file_data import to_datetime
 from publication_files_generator.timestamp import get_timestamp
 
 
@@ -45,6 +45,10 @@ class LocationsGeneratorTest(TestCase):
         self.fs.create_dir(self.out_path)
         self.fs.create_dir(self.month_path)
 
+        soilpl101775 = Path(root, 'sensor_positions_generator_test_files/soilpl101755.json')
+        self.soilpl101775_target = Path('/soilpl101775.json')
+        self.fs.add_real_file(soilpl101775, target_path=self.soilpl101775_target)
+
         cfgloc101775 = Path(root, 'sensor_positions_generator_test_files/cfgloc101775.json')
         self.cfgloc101775_target = Path('/cfgloc101775.json')
         self.fs.add_real_file(cfgloc101775, target_path=self.cfgloc101775_target)
@@ -72,7 +76,7 @@ class LocationsGeneratorTest(TestCase):
                                 month=self.month,
                                 data_product_id=self.data_product_id,
                                 timestamp=timestamp,
-                                get_geolocations=self.get_locations,
+                                get_geolocations=self.get_geolocations,
                                 get_named_location=self.get_named_location,
                                 get_geometry=self.get_geometry)
 
@@ -91,12 +95,12 @@ class LocationsGeneratorTest(TestCase):
     def get_properties(self, location_name) -> List[Property]:
         """Read properties from a file."""
         properties = []
-        if location_name == 'CFGLOG101775':
+        if location_name == 'CFGLOC101775':
             with open(self.cfgloc101775_properties_target) as file:
                 json_data = json.load(file)
                 for json_property in json_data:
                     properties.append(self.get_property(json_property))
-        if location_name == 'CFGLOG101777':
+        if location_name == 'CFGLOC101777':
             with open(self.cfgloc101777_properties_target) as file:
                 json_data = json.load(file)
                 for json_property in json_data:
@@ -108,8 +112,8 @@ class LocationsGeneratorTest(TestCase):
         location_name = json_location['nam_locn_name']
         location_id = json_location['locn_id']
         geometry = json_location['point']
-        start_date = json_location['locn_nam_locn_strt_date']
-        end_date = json_location['locn_nam_locn_end_date']
+        start_date = to_datetime(json_location['locn_nam_locn_strt_date'])
+        end_date = to_datetime(json_location['locn_nam_locn_end_date'])
         alpha = json_location['locn_alph_ortn']
         beta = json_location['locn_beta_ortn']
         gamma = json_location['locn_gama_ortn']
@@ -132,22 +136,26 @@ class LocationsGeneratorTest(TestCase):
                            offset_name='SOILPL101755',
                            offset_description='SOILPL101755')
 
-    def get_locations(self, named_location: str) -> List[GeoLocation]:
+    def get_geolocations(self, named_location: str) -> List[GeoLocation]:
         locations: List[GeoLocation] = []
-        if named_location == 'CFGLOG101775':
+        if named_location == 'CFGLOC101775':
             with open(self.cfgloc101775_target) as file:
                 json_data = json.load(file)
                 for json_location in json_data:
                     locations.append(self.get_geolocation(json_location))
-        if named_location == 'CFGLOG1017757':
+        if named_location == 'CFGLOC1017757':
             with open(self.cfgloc101777_target) as file:
+                json_data = json.load(file)
+                for json_location in json_data:
+                    locations.append(self.get_geolocation(json_location))
+        if named_location == 'SOILPL101755':
+            with open(self.soilpl101775_target) as file:
                 json_data = json.load(file)
                 for json_location in json_data:
                     locations.append(self.get_geolocation(json_location))
         return locations
 
     def get_named_location(self, named_location_name) -> NamedLocation:
-        """Create a NamedLocation object."""
         properties = self.get_properties(named_location_name)
         if named_location_name == 'CFGLOC101775':
             return NamedLocation(location_id='138773',
