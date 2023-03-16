@@ -81,6 +81,7 @@ test_that("Unit test of wrap.srf.asgn.R", {
   dayBgn = format(TimeBgn, format="%d")
   yearEnd = format(inputTimeEnd, format="%Y")
   monEnd = format(inputTimeEnd, format="%m")  
+  # If the assignment period ends at 00:00 on a day, remove that day
   dayEndMinus1 = format(inputTimeEnd-1, format="%d")
   testOutputDirBgn <-  base::paste0(testOutputBase,'/',yearBgn,'/',monBgn,'/',dayBgn,'/',group_id, '/',sr_flags, '/')
   testOutputDirEnd <-  base::paste0(testOutputBase,'/',yearEnd,'/',monEnd,'/',dayEndMinus1,'/',group_id, '/',sr_flags, '/')
