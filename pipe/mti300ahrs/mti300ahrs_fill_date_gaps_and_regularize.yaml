@@ -43,7 +43,7 @@ transform:
     LOCATION_DAY_INDEX: '6'
     LOCATION_INDEX: '7'
     EMPTY_FILE_TYPE_INDEX: '4'
-    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
+    LINK_TYPE: COPY # options are COPY or SYMLINK
     # Environment variables for regularizer
     PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:

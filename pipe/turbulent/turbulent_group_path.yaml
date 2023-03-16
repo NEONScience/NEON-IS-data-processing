@@ -43,13 +43,19 @@ input:
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
-        repo: mfcSampTurb_qaqc_plausibility
+        repo: mfcSampTurb_analyze_pad_and_qaqc_plau
         glob: /mcseries/(*/*/*)
         joinOn: $1
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
-        repo: csat3_qaqc_plausibility
+        repo: mfcValiTurb_analyze_pad_and_qaqc_plau
+        glob: /mcseries/(*/*/*)
+        joinOn: $1
+    - pfs:
+        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+        name: LOCATION_FOCUS_PATH
+        repo: csat3_analyze_pad_and_qaqc_plau
         glob: /csat3/(*/*/*)
         joinOn: $1
     - pfs:
@@ -80,7 +86,7 @@ input:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
         repo: presValiRegInTurb_analyze_pad_and_qaqc_plau
-        glob: /presValiRegInTurbTrap/(*/*/*)
+        glob: /presValiRegInTurb/(*/*/*)
         joinOn: $1
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
@@ -97,8 +103,8 @@ input:
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 300M
-  cpu: 0.3
+  memory: 5.0G
+  cpu: 2.5
 autoscaling: true
 scheduling_spec:
   node_selector:
