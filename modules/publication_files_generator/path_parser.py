@@ -11,6 +11,9 @@ class FilenameParts(NamedTuple):
     level: str
     data_product_number: str
     revision: str
+    horizontal_index: str
+    vertical_index: str
+    temporal_index: str
 
 
 class PathParts(NamedTuple):
@@ -38,8 +41,14 @@ def parse_filename(filename: str) -> FilenameParts:
     level = parts[3]
     data_product_number = parts[4]
     revision = parts[5]
+    horizontal_index = parts[6]
+    vertical_index = parts[7]
+    temporal_index = parts[8]
     return FilenameParts(domain=domain,
                          site=site,
                          level=level,
                          data_product_number=data_product_number,
-                         revision=revision)
+                         revision=revision,
+                         horizontal_index=horizontal_index,
+                         vertical_index=vertical_index,
+                         temporal_index=temporal_index)

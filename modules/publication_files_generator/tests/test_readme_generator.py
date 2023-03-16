@@ -18,8 +18,9 @@ log = logging.getLogger()
 class ReadmeFileGeneratorTest(TestCase):
 
     def setUp(self):
+        self.dir = os.path.dirname(__file__)
         self.setUpPyfakefs()
-        self.test_files_path = Path(os.path.dirname(__file__), 'readme_generator_test_files')
+        self.test_files_path = Path(self.dir, 'readme_generator_test_files')
         self.in_path = Path('/in/CPER/2020/01/02')
         self.out_path = Path('/out')
         self.fs.create_dir(self.in_path)
@@ -28,7 +29,7 @@ class ReadmeFileGeneratorTest(TestCase):
         self.add_data_files()
 
     def add_template_file(self) -> None:
-        real_path = Path(os.path.dirname(__file__), 'readme_generator_test_files/template.j2')
+        real_path = Path(self.dir, 'readme_generator_test_files/template.j2')
         self.template_path = Path('/templates/template.j2')
         self.fs.add_real_file(real_path, target_path=self.template_path)
 
@@ -59,11 +60,13 @@ class ReadmeFileGeneratorTest(TestCase):
         timestamp = get_timestamp()
         formatted_timestamp = format_timestamp(timestamp)
         variables_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.variables.csv'
+        positions_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.sensor_positions.csv'
         generate_readme_file(out_path=self.out_path,
                              file_metadata=file_metadata,
                              readme_template=readme_template,
                              timestamp=timestamp,
                              variables_filename=variables_filename,
+                             positions_filename=positions_filename,
                              get_data_product=get_data_product_partial,
                              get_geometry=file_data.get_geometry,
                              get_keywords=file_data.get_keywords,

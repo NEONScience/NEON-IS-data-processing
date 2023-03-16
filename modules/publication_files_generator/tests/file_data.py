@@ -21,9 +21,13 @@ def get_keywords(_data_product_id: str):
     return ['soil temperature', 'profile', 'soil']
 
 
+def root():
+    return os.path.dirname(__file__)
+
+
 def get_log_entries(fs: FakeFilesystem, _data_product_id: str) -> List[LogEntry]:
     """Mock function to read the change log entries."""
-    path = Path(os.path.dirname(__file__), 'readme_generator_test_files/dp_change_log.json')
+    path = Path(root(), 'readme_generator_test_files/dp_change_log.json')
     target_path = Path('/dp_change_log.json')
     fs.add_real_file(path, target_path=target_path)
     log_entries = []
@@ -57,7 +61,7 @@ def get_log_entries(fs: FakeFilesystem, _data_product_id: str) -> List[LogEntry]
 
 def get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
     """Mock function for reading the data product."""
-    path = Path(os.path.dirname(__file__), 'readme_generator_test_files/dp_catalog.json')
+    path = Path(root(), 'readme_generator_test_files/dp_catalog.json')
     target_path = Path('/dp_catalog_data.json')
     fs.add_real_file(path, target_path=target_path)
     with open(target_path) as file:
@@ -97,7 +101,7 @@ def get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
 
 def get_descriptions(fs: FakeFilesystem) -> Dict[str, str]:
     """Mock function for reading the file descriptions."""
-    path = Path(os.path.dirname(__file__), 'readme_generator_test_files/pub_table_def.json')
+    path = Path(root(), 'readme_generator_test_files/pub_table_def.json')
     target_path = Path('/pub_table_def.json')
     fs.add_real_file(path, target_path=target_path)
     file_descriptions = {}

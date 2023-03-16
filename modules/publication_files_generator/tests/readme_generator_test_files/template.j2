@@ -64,14 +64,14 @@ DATA PACKAGE CONTENTS
 This folder contains the following documentation files:
 - This readme file: {{file_prefix}}.readme.{{gen_time}}.txt
 {%
-    if data_product.supplier == 'IS' or data_product.supplier == 'OS' or data_product.type_name == os_is_type
+    if data_product.supplier == 'TIS' or data_product.supplier == 'TOS' or data_product.type_name == os_is_type
 %}
-Term descriptions, data types, and units: {{file_prefix}}.variables.{{gen_time}}.csv
+Term descriptions, data types, and units: {{variables_filename}}
 {%
     endif
 %}
 {%
-    if data_product.supplier == 'OS' or data_product.type_name == os_is_type
+    if data_product.supplier == 'TOS' or data_product.type_name == os_is_type
 %}
 Data entry validation and parsing rules: {{file_prefix}}.validation.{{gen_time}}.csv
 {%
@@ -88,9 +88,9 @@ it at https://www.neonscience.org/about/faq.
     endif
 %}
 {%
-    if data_product.supplier == 'IS' or data_product.type_name == os_is_type
+    if data_product.supplier == 'TIS' or data_product.type_name == os_is_type
 %}
-Sensor position information: {{file_prefix}}.sensor_positions.{{gen_time}}.csv
+Sensor position information: {{positions_filename}}
 {%
     endif
 %}

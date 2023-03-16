@@ -1,0 +1,32 @@
+[
+	{
+		"attr_name" : "Country",
+		"string_value" : "USA",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "County",
+		"string_value" : "Weld",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "UTM Zone",
+		"string_value" : "13N",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "Geodetic datum",
+		"string_value" : "WGS84",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "State province",
+		"string_value" : "CO",
+		"number_value" : null,
+		"date_value" : null
+	}
+]
