@@ -60,7 +60,12 @@ test_that("Unit test of wrap.srf.asgn.R", {
   library(stringr)
   #
   wk_dir <- getwd()
-  testOutputDir = base::paste0(wk_dir, '/', 'pfs/out')
+  testOutputBase = base::paste0(wk_dir, '/', 'pfs/out')
+  group_id = 'surfacewater-physical_ARIK130100'
+  sr_flags = 'science_review_flags'
+  TimeBgn = as.POSIXct('2019-12-28',tz='GMT')
+  TimeEnd = as.POSIXct('2020-12-31',tz='GMT')
+  inputTimeEnd = as.POSIXct('2020-01-03',tz='GMT') 
   
   # 2 periods to process
   
@@ -69,17 +74,27 @@ test_that("Unit test of wrap.srf.asgn.R", {
   }
   
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/surfacewaterPhysical_testSRF/surfacewater-physical_ARIK130100/')
+
+  wrap.srf.asgn(DirIn=testInputDir, DirOutBase=testOutputBase, TimeBgn= TimeBgn, TimeEnd=TimeEnd)
+  yearBgn = format(TimeBgn, format="%Y")
+  monBgn = format(TimeBgn, format="%m")
+  dayBgn = format(TimeBgn, format="%d")
+  yearEnd = format(inputTimeEnd, format="%Y")
+  monEnd = format(inputTimeEnd, format="%m")  
+  dayEndMinus1 = format(inputTimeEnd-1, format="%d")
+  testOutputDirBgn <-  base::paste0(testOutputBase,'/',yearBgn,'/',monBgn,'/',dayBgn,'/',group_id, '/',sr_flags, '/')
+  testOutputDirEnd <-  base::paste0(testOutputBase,'/',yearEnd,'/',monEnd,'/',dayEndMinus1,'/',group_id, '/',sr_flags, '/')
   
-  wrap.srf.asgn(DirIn=testInputDir, DirOutBase=testOutputDir, TimeBgn=as.POSIXct('2019-12-28',tz='GMT'),
-                     TimeEnd=as.POSIXct('2020-12-31',tz='GMT'))
- 
+  testthat::expect_true(file.exists(testOutputDirBgn))
+  testthat::expect_true(file.exists(testOutputDirEnd))
+  
   # no periods to process
   
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
   }
   
-  wrap.srf.asgn(DirIn=testInputDir, DirOutBase=testOutputDir, TimeBgn=as.POSIXct('2021-01-01',tz='GMT'),
+  wrap.srf.asgn(DirIn=testInputDir, DirOutBase=testOutputBase, TimeBgn=as.POSIXct('2021-01-01',tz='GMT'),
                 TimeEnd=as.POSIXct('2021-12-31',tz='GMT'))
   
   # no srf files as input
@@ -99,7 +114,7 @@ test_that("Unit test of wrap.srf.asgn.R", {
   }
   
   testInputDir <- base::paste0(wk_dir, '/', 'pfs/surfacewaterPhysical_testSRF/surfacewater-physical_2Files/')
-  wrap.srf.asgn(DirIn=testInputDir, DirOutBase=testOutputDir, TimeBgn=as.POSIXct('2019-12-01',tz='GMT'),
+  wrap.srf.asgn(DirIn=testInputDir, DirOutBase=testOutputBase, TimeBgn=as.POSIXct('2019-12-01',tz='GMT'),
                 TimeEnd=as.POSIXct('2020-12-31',tz='GMT'))
   
   
