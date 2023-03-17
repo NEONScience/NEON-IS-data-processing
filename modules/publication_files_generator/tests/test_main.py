@@ -60,10 +60,10 @@ class MainTest(unittest.TestCase):
         os.environ['GITHUB_HOST'] = 'https://api.github.com'
         os.environ['GITHUB_REPO_OWNER'] = 'NEONScience'
         os.environ['GITHUB_README_REPO'] = 'neon-metadata-docs'
-        os.environ['GITHUB_README_PATH'] = 'readme/readmeTemplate.txt'
+        os.environ['GITHUB_README_PATH'] = 'readme/template.j2'
         os.environ['GITHUB_PUBLICATION_WORKBOOK_REPO'] = 'landWaterSoilIPT'
         os.environ['GITHUB_PUBLICATION_WORKBOOK_PATH'] = 'water_quality/PublicationWorkbook_Water_quality.txt'
-        os.environ['GITHUB_BRANCH'] = ''
+        os.environ['GITHUB_BRANCH'] = 'NSE-9201'
         main()
         readme_count = len(list(self.month_path.glob('*.txt')))
         assert readme_count == 1

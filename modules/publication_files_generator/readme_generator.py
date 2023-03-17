@@ -27,7 +27,6 @@ def generate_readme_file(readme_template: str,
                          get_keywords: Callable[[str], List[str]]) -> None:
     data_product_id = file_metadata.data_product_id
     data_product: DataProduct = get_data_product(data_product_id)
-    print(f'\n\ndata_product: {data_product}\n\n')
     keywords: List[str] = get_keywords(data_product_id)
     log_entries: List[LogEntry] = get_log_entries(data_product_id)
     change_log_entries: List[ChangeLog] = get_change_log(data_product_id, log_entries)
@@ -54,4 +53,4 @@ def generate_readme_file(readme_template: str,
     readme_content = template.render(readme_data)
     readme_path.write_text(readme_content)
     log.debug(f'Readme path: {readme_path}')
-    log.debug(f'\nReadme content:\n{readme_content}\n')
+    print(f'\nReadme content:\n{readme_content}\n')

@@ -15,7 +15,7 @@ Name: {{data_product.name}}
 
 Description: {{data_product.description}}
 
-NEON Science Team Supplier: {{data_product.supplier}}
+NEON Science Team Supplier: {{data_product.supplier_full_name}}
 
 Abstract: {{data_product.abstract}}
 
@@ -23,13 +23,9 @@ Brief Design Description: {{data_product.design_description}}
 
 Brief Study Area Description: {{data_product.study_description}}
 
-{%
-    if data_product.sensor
-%}
+{% if data_product.sensor %}
 Sensor(s): {{data_product.sensor}}
-{%
-    endif
-%}
+{% endif %}
 
 Keywords: {{(', ').join(keywords)}}
 
@@ -37,24 +33,16 @@ Keywords: {{(', ').join(keywords)}}
 QUERY INFORMATION
 -----------------
 
-{%
-    if data_product.supplier != 'AOP'
-%}
+{% if data_product.supplier != 'AOP' %}
 Date-Time for Data Publication: {{timestamp.strftime('%Y-%m-%d %H:%M')}} (UTC)
 Start Date-Time for Queried Data: {{data_start_date.strftime('%Y-%m-%d %H:%M')}} (UTC)
 End Date-Time for Queried Data: {{data_end_date.strftime('%Y-%m-%d %H:%M')}} (UTC)
-{%
-    endif
-%}
+{%  endif %}
 
 Site: {{site}}
-{%
-    if data_product.supplier != 'AOP'
-%}
+{% if data_product.supplier != 'AOP' %}
 Geographic coordinates (lat/long datum): {{coordinates}}
-{%
-    endif
-%}
+{% endif %}
 Domain: {{domain}}
 
 
@@ -63,60 +51,36 @@ DATA PACKAGE CONTENTS
 
 This folder contains the following documentation files:
 - This readme file: {{file_prefix}}.readme.{{gen_time}}.txt
-{%
-    if data_product.supplier == 'TIS' or data_product.supplier == 'TOS' or data_product.type_name == os_is_type
-%}
+{% if data_product.supplier == 'TIS' or data_product.supplier == 'TOS' or data_product.type_name == os_is_type %}
 Term descriptions, data types, and units: {{variables_filename}}
-{%
-    endif
-%}
-{%
-    if data_product.supplier == 'TOS' or data_product.type_name == os_is_type
-%}
+{% endif %}
+{% if data_product.supplier == 'TOS' or data_product.type_name == os_is_type %}
 Data entry validation and parsing rules: {{file_prefix}}.validation.{{gen_time}}.csv
-{%
-    endif
-%}
-{%
-    if data_product.supplier != 'AOP'
-%}
+{% endif %}
+{% if data_product.supplier != 'AOP' %}
 Machine-readable metadata file describing the data package:
 {{file_prefix}}.EML.{{data_start_date.strftime('%Y%m%d')}}-{{data_end_date.strftime('%Y%m%d')}}.{{gen_time}}.xml.
 This file uses the Ecological Metadata Language (EML) schema. Learn more about this specification and tools to parse
 it at https://www.neonscience.org/about/faq.
-{%
-    endif
-%}
-{%
-    if data_product.supplier == 'TIS' or data_product.type_name == os_is_type
-%}
+{% endif %}
+{% if data_product.supplier == 'TIS' or data_product.type_name == os_is_type %}
 Sensor position information: {{positions_filename}}
-{%
-    endif
-%}
+{% endif %}
 - Other related documents are available such as engineering specifications, field protocols, and data processing 
 documentation. Please visit https://data.neonscience.org/data-products/{{data_product.short_data_product_id}} for more information.
 
 
 This folder also contains {{data_file_count}} data files:
-{%
-    for file in data_files
-%}
+{% for file in data_files %}
 {{file.filename}} {% if file.description %}- {{file.description}}{% endif %}
 
-{%
-    endfor
-%}
+{% endfor %}
 
 Basic download package definition: {{data_product.basic_description}}
 
-{%
-    if data_product.expanded_description
-%}
+{% if data_product.expanded_description %}
 Expanded download package definition: {{data_product.expanded_description}}
-{%
-    endif
-%}
+{% endif %}
 
 
 FILE NAMING CONVENTIONS
@@ -134,38 +98,26 @@ This log provides a list of issues identified during data collection or processi
 of this data package. For a more recent log, please visit this data product's detail page at
 https://data.neonscience.org/data-products/{{data_product.short_data_product_id}}.
 
-{%
-    for change_log in change_logs
-%}
+{% for change_log in change_logs %}
 Issue Date: {{change_log.issue_date}}
 Issue: {{change_log.issue}}
-{%
-        for entry in change_log.dates_locations
-%}
+{%    for entry in change_log.dates_locations %}
     Date Range: {{entry.date_range_start}} to {{entry.date_range_end}}
     Location(s) Affected: {{', '.join(entry.location_affected)}}
-{%
-        endfor
-%}
+{%    endfor %}
 Resolution Date: {{change_log.resolved_date}}
 Resolution: {{change_log.resolution}}
-{%
-    endfor
-%}
+{% endfor %}
 
 ADDITIONAL INFORMATION
 ----------------------
 
-{%
-    if 'fuzzed' in data_product.remarks or 'FUZZED' in data_product.remarks
-%}
+{% if 'fuzzed' in data_product.remarks or 'FUZZED' in data_product.remarks %}
 Protection of species of concern: At most sites, taxonomic IDs of species of concern have been 'fuzzed',
 i.e., reported at a higher taxonomic rank than the raw data, to avoid publishing locations of sensitive species. For
 a few sites with stricter regulations (e.g., Great Smoky Mountains National Park (GRSM)), records for species of
 concern are not published.
-{%
-    endif
-%}
+{% endif %}
 
 {{data_product.remarks}}
 
