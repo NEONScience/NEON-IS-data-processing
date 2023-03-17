@@ -10,23 +10,23 @@ from publication_files_generator.database_queries.sensor_geolocations import Geo
 from publication_files_generator.filename_formatter import get_filename
 
 COLUMNS = ['HOR.VER',
-           'name',
-           'description',
-           'start',
-           'end',
-           'referenceName',
-           'referenceDescription',
-           'referenceStart',
-           'referenceEnd',
+           'sensorLocationID',  # changed from 'name'
+           'sensorLocationDescription',
+           'positionStartDateTime',
+           'positionEndDateTime',
+           'referenceLocationID',  # changed from 'referenceName'
+           'referenceLocationIDDescription',
+           'referenceLocationIDStartDateTime',
+           'referenceLocationIDEndDateTime',
            'xOffset',
            'yOffset',
            'zOffset',
            'pitch',
            'roll',
            'azimuth',
-           'referenceLatitude',
-           'referenceLongitude',
-           'referenceElevation',
+           'locationReferenceLatitude',
+           'locationReferenceLongitude',
+           'locationReferenceElevation',
            'eastOffset',
            'northOffset',
            'xAzimuth',
@@ -34,9 +34,8 @@ COLUMNS = ['HOR.VER',
 
 
 def get_named_location_fields(get_named_location: Callable[[str], NamedLocation],
-                              named_location_name: str) -> Tuple[str, str, str]:
+                              named_location_name: str) -> Tuple[str, str, str, str]:
     named_location = get_named_location(named_location_name)
-    description = named_location.description
     properties = named_location.properties
     horizontal_index = ''
     vertical_index = ''
@@ -45,7 +44,7 @@ def get_named_location_fields(get_named_location: Callable[[str], NamedLocation]
             horizontal_index = prop.value
         if prop.name == 'VER':
             vertical_index = prop.value
-    return description, horizontal_index, vertical_index
+    return named_location.location_id, named_location.description, horizontal_index, vertical_index
 
 
 def get_azimuth_values(geolocation: GeoLocation):
@@ -75,10 +74,10 @@ def generate_positions_file(out_path: Path,
     file_rows = file_header
     for path in locations_path.glob('*'):
         named_location_name = path.parts[location_path_index]
-        (description, horizontal_index, vertical_index) = get_named_location_fields(get_named_location,
-                                                                                    named_location_name)
+        (location_id, description, horizontal_index, vertical_index) = get_named_location_fields(get_named_location,
+                                                                                                 named_location_name)
         row_hor_ver = f'{horizontal_index}.{vertical_index}'
-        row_name = named_location_name
+        row_location_id = location_id
         row_description = description
 
         geolocations = get_geolocations(named_location_name)
@@ -99,12 +98,14 @@ def generate_positions_file(out_path: Path,
             row_pitch = str(geolocation.alpha)
             row_roll = str(geolocation.beta)
             row_azimuth = str(geolocation.gamma)
-            row_reference_name = geolocation.offset_name
-            row_reference_description = geolocation.offset_description
-            reference_coordinates: Coordinates = get_coordinates(get_geometry(geolocation.offset_name))
-            row_reference_latitude = reference_coordinates.latitude
-            row_reference_longitude = reference_coordinates.longitude
-            row_reference_elevation = reference_coordinates.elevation
+            reference_location_name = geolocation.offset_name
+            reference_location = get_named_location(reference_location_name)
+            row_reference_location_id = reference_location.location_id
+            row_reference_location_description = geolocation.offset_description
+            reference_location_coordinates: Coordinates = get_coordinates(get_geometry(reference_location_name))
+            row_reference_location_latitude = reference_location_coordinates.latitude
+            row_reference_location_longitude = reference_location_coordinates.longitude
+            row_reference_location_elevation = reference_location_coordinates.elevation
             (x_azimuth, y_azimuth) = get_azimuth_values(geolocation)
             row_x_azimuth = str(x_azimuth)
             row_y_azimuth = str(y_azimuth)
@@ -126,12 +127,12 @@ def generate_positions_file(out_path: Path,
                 else:
                     row_reference_end = ''
                 row_data = [row_hor_ver,
-                            row_name,
+                            row_location_id,
                             row_description,
                             row_start,
                             row_end,
-                            row_reference_name,
-                            row_reference_description,
+                            row_reference_location_id,
+                            row_reference_location_description,
                             row_reference_start,
                             row_reference_end,
                             row_x_offset,
@@ -140,9 +141,9 @@ def generate_positions_file(out_path: Path,
                             row_pitch,
                             row_roll,
                             row_azimuth,
-                            row_reference_latitude,
-                            row_reference_longitude,
-                            row_reference_elevation,
+                            row_reference_location_latitude,
+                            row_reference_location_longitude,
+                            row_reference_location_elevation,
                             row_east_offset,
                             row_north_offset,
                             row_x_azimuth,

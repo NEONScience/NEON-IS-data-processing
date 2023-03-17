@@ -30,7 +30,7 @@ def create_locations_path(fs: FakeFilesystem) -> Path:
 class LocationsGeneratorTest(TestCase):
 
     def setUp(self) -> None:
-        root = os.path.dirname(__file__)
+        root = Path(os.path.dirname(__file__), 'sensor_positions_generator_test_files')
         self.setUpPyfakefs()
         self.in_path = Path('/in')
         self.out_path = Path('/out')
@@ -45,23 +45,27 @@ class LocationsGeneratorTest(TestCase):
         self.fs.create_dir(self.out_path)
         self.fs.create_dir(self.month_path)
 
-        soilpl101775 = Path(root, 'sensor_positions_generator_test_files/soilpl101755.json')
+        soilpl101775 = Path(root, 'soilpl101755.json')
         self.soilpl101775_target = Path('/soilpl101775.json')
         self.fs.add_real_file(soilpl101775, target_path=self.soilpl101775_target)
 
-        cfgloc101775 = Path(root, 'sensor_positions_generator_test_files/cfgloc101775.json')
+        soilpl101775_properties = Path(root, 'soilpl101755_properties.json')
+        self.soilpl101775_properties_target = Path('/soilpl101775_properties.json')
+        self.fs.add_real_file(soilpl101775_properties, target_path=self.soilpl101775_properties_target)
+
+        cfgloc101775 = Path(root, 'cfgloc101775.json')
         self.cfgloc101775_target = Path('/cfgloc101775.json')
         self.fs.add_real_file(cfgloc101775, target_path=self.cfgloc101775_target)
 
-        cfgloc101775_properties = Path(root, 'sensor_positions_generator_test_files/cfgloc101775_properties.json')
+        cfgloc101775_properties = Path(root, 'cfgloc101775_properties.json')
         self.cfgloc101775_properties_target = Path('/cfgloc101775_properties.json')
         self.fs.add_real_file(cfgloc101775_properties, target_path=self.cfgloc101775_properties_target)
 
-        cfgloc101777 = Path(root, 'sensor_positions_generator_test_files/cfgloc101777.json')
+        cfgloc101777 = Path(root, 'cfgloc101777.json')
         self.cfgloc101777_target = Path('/cfgloc101777.json')
         self.fs.add_real_file(cfgloc101777, target_path=self.cfgloc101777_target)
 
-        cfg101777_properties = Path(root, 'sensor_positions_generator_test_files/cfgloc101777_properties.json')
+        cfg101777_properties = Path(root, 'cfgloc101777_properties.json')
         self.cfgloc101777_properties_target = Path('/cfgloc_101777_properties.json')
         self.fs.add_real_file(cfg101777_properties, target_path=self.cfgloc101777_properties_target)
 
@@ -88,8 +92,7 @@ class LocationsGeneratorTest(TestCase):
 
     @staticmethod
     def get_geometry(_geometry: str) -> str:
-        """Mock function to return the coordinates for a location."""
-        # return Coordinates(latitude='-104.745591', longitude='40.815536', elevation='1653.9151')
+        """Mock function to return the geometry for a location."""
         return 'POLYGON Z ((-104.746013 40.815892 1654.009392,-104.745973 40.815922 1654.052064))'
 
     def get_properties(self, location_name) -> List[Property]:
@@ -102,6 +105,11 @@ class LocationsGeneratorTest(TestCase):
                     properties.append(self.get_property(json_property))
         if location_name == 'CFGLOC101777':
             with open(self.cfgloc101777_properties_target) as file:
+                json_data = json.load(file)
+                for json_property in json_data:
+                    properties.append(self.get_property(json_property))
+        if location_name == 'SOILPL101755':
+            with open(self.soilpl101775_properties_target) as file:
                 json_data = json.load(file)
                 for json_property in json_data:
                     properties.append(self.get_property(json_property))
@@ -166,4 +174,9 @@ class LocationsGeneratorTest(TestCase):
             return NamedLocation('138775',
                                  'CFGLOC101777',
                                  'Central Plains Soil Temp Profile SP2, Z7 Depth',
+                                 properties=properties)
+        if named_location_name == 'SOILPL101755':
+            return NamedLocation('138753',
+                                 'SOILPL101755',
+                                 'Central Plains Soil Plot, SP2',
                                  properties=properties)
