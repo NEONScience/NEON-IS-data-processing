@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+import csv
 import json
 import os
-import unittest
 from pathlib import Path
 from typing import List
 
@@ -26,8 +26,7 @@ def create_locations_path(fs: FakeFilesystem) -> Path:
     return locations
 
 
-# @unittest.skip('Not implemented.')
-class LocationsGeneratorTest(TestCase):
+class PositionsGeneratorTest(TestCase):
 
     def setUp(self) -> None:
         root = Path(os.path.dirname(__file__), 'sensor_positions_generator_test_files')
@@ -71,18 +70,23 @@ class LocationsGeneratorTest(TestCase):
 
     def test_positions_generator(self):
         timestamp = get_timestamp()
-        generate_positions_file(locations_path=create_locations_path(self.fs),
-                                location_path_index=6,
-                                out_path=self.out_path,
-                                domain=self.domain,
-                                site=self.site,
-                                year=self.year,
-                                month=self.month,
-                                data_product_id=self.data_product_id,
-                                timestamp=timestamp,
-                                get_geolocations=self.get_geolocations,
-                                get_named_location=self.get_named_location,
-                                get_geometry=self.get_geometry)
+        filename = generate_positions_file(locations_path=create_locations_path(self.fs),
+                                           location_path_index=6,
+                                           out_path=self.out_path,
+                                           domain=self.domain,
+                                           site=self.site,
+                                           year=self.year,
+                                           month=self.month,
+                                           data_product_id=self.data_product_id,
+                                           timestamp=timestamp,
+                                           get_geolocations=self.get_geolocations,
+                                           get_named_location=self.get_named_location,
+                                           get_geometry=self.get_geometry)
+        file_path = Path(self.out_path, self.site, self.year, self.month, filename)
+        with open(file_path, 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                print(row)
 
     @staticmethod
     def get_property(json_property):
