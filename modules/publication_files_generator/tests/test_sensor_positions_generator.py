@@ -85,8 +85,11 @@ class PositionsGeneratorTest(TestCase):
         file_path = Path(self.out_path, self.site, self.year, self.month, filename)
         with open(file_path, 'r') as file:
             reader = csv.reader(file)
+            i = 0
             for row in reader:
+                i += 1
                 print(row)
+            assert i == 3
 
     @staticmethod
     def get_property(json_property):
@@ -170,17 +173,17 @@ class PositionsGeneratorTest(TestCase):
     def get_named_location(self, named_location_name) -> NamedLocation:
         properties = self.get_properties(named_location_name)
         if named_location_name == 'CFGLOC101775':
-            return NamedLocation(location_id='138773',
+            return NamedLocation(location_id=138773,
                                  name='CFGLOC101775',
                                  description='Central Plains Soil Temp Profile SP2, Z6 Depth',
                                  properties=properties)
         if named_location_name == 'CFGLOC101777':
-            return NamedLocation('138775',
+            return NamedLocation(138775,
                                  'CFGLOC101777',
                                  'Central Plains Soil Temp Profile SP2, Z7 Depth',
                                  properties=properties)
         if named_location_name == 'SOILPL101755':
-            return NamedLocation('138753',
+            return NamedLocation(138753,
                                  'SOILPL101755',
                                  'Central Plains Soil Plot, SP2',
                                  properties=properties)

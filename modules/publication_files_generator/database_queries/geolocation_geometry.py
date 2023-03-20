@@ -6,9 +6,9 @@ from data_access.db_connector import DbConnector
 
 
 class Coordinates(NamedTuple):
-    latitude: str
-    longitude: str
-    elevation: str
+    latitude: float
+    longitude: float
+    elevation: float
 
 
 def get_geometry(connector: DbConnector, named_location_name: str) -> str:
@@ -44,15 +44,17 @@ def get_coordinates(geometry: str) -> Coordinates:
     # POINT Z (-104.745591 40.815536 1653.9151)
     if geometry.startswith('POINT'):
         coordinates = geometry.split('(')[1].replace(')', '')
+        parts = coordinates.split(' ')
     elif geometry.startswith('POLYGON'):
         # POLYGON Z ((-104.746013 40.815892 1654.009392,-104.745973 40.815922 1654.052064, ...))
-        coordinates = geometry.split('((')[1].replace('))', '')
+        trimmed = geometry.split('((')[1].replace('))', '')
+        first_point = trimmed.split(',')[0]
+        parts = first_point.split(' ')
     else:
         raise Exception(f'Location geometry {geometry} is not point or polygon.')
-    parts = coordinates.split(' ')
-    longitude = parts[0]
-    latitude = parts[1]
-    elevation = parts[2]
+    longitude = float(parts[0])
+    latitude = float(parts[1])
+    elevation = float(parts[2])
     return Coordinates(latitude=latitude, longitude=longitude, elevation=elevation)
 
 

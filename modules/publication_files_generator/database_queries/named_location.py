@@ -7,7 +7,7 @@ from data_access.db_connector import DbConnector
 
 
 class NamedLocation(NamedTuple):
-    location_id: str
+    location_id: int
     name: str
     description: str
     properties: List[Property]
@@ -29,7 +29,7 @@ def get_named_location(connector: DbConnector, named_location_name: str) -> Name
              nam_locn_name,
              nam_locn_desc
          from
-             {schema}.nam_locn  
+             {schema}.nam_locn
          where
              nam_locn_name = %s
     '''
