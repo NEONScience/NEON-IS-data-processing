@@ -33,10 +33,10 @@
 # ------ Choose options --------
 
 # Module or local package directory
-#dirWork <- '~/NEON-IS-data-processing/pack/NEONprocIS.wq'
-dirWork <- '~/R/NEON-IS-data-processing-homeDir/flow/flow.thsh.slct'
+dirWork <- '~/R/NEON-IS-data-processing-homeDir/pack/NEONprocIS.base'
+#dirWork <- '~/R/NEON-IS-data-processing-homeDir/flow/flow.kfka.comb'
 #dirWork <- '~/R/NEON-IS-data-processing/flow/flow.troll.uncertainty'
-PackIgnr <- c('NEONprocIS.base','NEONprocIS.cal','NEONprocIS.qaqc','NEONprocIS.wq','NEONprocIS.stat') # These should already be in the respective docker containers
+PackIgnr <- c('NEONprocIS.base','NEONprocIS.cal','NEONprocIS.qaqc','NEONprocIS.wq','NEONprocIS.stat','NEONprocIS.pub') # These should already be in the respective docker containers
 
 # Keep and use the local project that renv creates when creating/updating the lockfile 
 # in dirWork? If TRUE, note .Rprofile and .Rproj files will be created/retained in dirWork, 
