@@ -31,10 +31,12 @@ def add_secrets(db_secrets_path) -> None:
 class MainTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.test_files_path = Path(os.path.dirname(__file__), 'main_test_files')
-        self.out_path = Path(os.path.dirname(__file__), 'output')
+        root = os.path.dirname(__file__)
+        self.data_path = Path(root, 'main_test_files', 'data')
+        self.locations_path = Path(root, 'main_test_files', 'locations', 'CPER', '2020', '01', '02', 'locations')
+        self.out_path = Path(root, 'output')
         self.out_path.mkdir(parents=False, exist_ok=True)
-        self.db_secrets_path = Path(os.path.dirname(__file__), 'db_secrets')
+        self.db_secrets_path = Path(root, 'db_secrets')
         self.db_secrets_path.mkdir(parents=False, exist_ok=True)
         add_secrets(self.db_secrets_path)
         self.site_path = Path(self.out_path, 'CPER')
@@ -45,8 +47,10 @@ class MainTest(unittest.TestCase):
     def test_main(self) -> None:
         # TODO: Specify individual path indices and pass them into path parser.
         pem_path = environs.Env().str('GITHUB_README_APP_PEM')
-        os.environ['IN_PATH'] = str(self.test_files_path)
-        os.environ['IN_PATH_PARSE_INDEX'] = '8'
+        os.environ['IN_PATH'] = str(self.data_path)
+        os.environ['IN_PATH_PARSE_INDEX'] = '9'
+        os.environ['LOCATIONS_PATH'] = str(self.locations_path)
+        os.environ['LOCATION_PATH_INDEX'] = '15'
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['DB_SECRETS_PATH'] = str(self.db_secrets_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
@@ -56,10 +60,10 @@ class MainTest(unittest.TestCase):
         os.environ['GITHUB_HOST'] = 'https://api.github.com'
         os.environ['GITHUB_REPO_OWNER'] = 'NEONScience'
         os.environ['GITHUB_README_REPO'] = 'neon-metadata-docs'
-        os.environ['GITHUB_README_PATH'] = 'readme/readmeTemplate.txt'
+        os.environ['GITHUB_README_PATH'] = 'readme/template.j2'
         os.environ['GITHUB_PUBLICATION_WORKBOOK_REPO'] = 'landWaterSoilIPT'
         os.environ['GITHUB_PUBLICATION_WORKBOOK_PATH'] = 'water_quality/PublicationWorkbook_Water_quality.txt'
-        os.environ['GITHUB_BRANCH'] = ''
+        os.environ['GITHUB_BRANCH'] = 'NSE-9201'
         main()
         readme_count = len(list(self.month_path.glob('*.txt')))
         assert readme_count == 1
@@ -92,4 +96,3 @@ class MainTest(unittest.TestCase):
         for path in self.db_secrets_path.glob('*'):
             path.unlink(missing_ok=True)
         self.db_secrets_path.rmdir()
-

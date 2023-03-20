@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from publication_files_generator.filename_formatter import format_filename
+from publication_files_generator.filename_formatter import get_filename
 from publication_files_generator.timestamp import get_timestamp
 from publication_files_generator.variables_generator import generate_variables_file
 
@@ -28,7 +28,7 @@ class TestVariablesFileGenerator(TestCase):
         month = '01'
         data_product_id = 'DP1.20288.001'
         timestamp = get_timestamp()
-        expected_filename = format_filename(
+        expected_filename = get_filename(
             domain=domain,
             site=site,
             data_product_id=data_product_id,

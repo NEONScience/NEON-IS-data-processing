@@ -37,8 +37,8 @@ def link_file(path: Path, link_path: Path) -> None:
 
 def get_time_span(data_file_path: Path) -> Tuple[str, str]:
     data_frame = pandas.read_csv(data_file_path)
-    min_start = data_frame.loc[0][0]  # First row, first element should be earliest start date.
-    max_end = data_frame.iloc[-1].tolist()[1]  # Last row, second element should be latest end date.
+    min_start = data_frame.loc[0][0]  # First row, first element is the earliest start date.
+    max_end = data_frame.iloc[-1].tolist()[1]  # Last row, second element is the latest end date.
     return min_start, max_end
 
 
@@ -48,11 +48,11 @@ def get_data_product_id(level: str, data_product_number: str, revision: str):
 
 def process_input_files(in_path: Path, out_path: Path, in_path_parse_index: int,
                         get_descriptions: Callable[[], Dict[str, str]]) -> InputFileMetadata:
-    site = None
-    domain = None
+    site = ''
+    domain = ''
     year = ''
     month = ''
-    data_product_id = None
+    data_product_id = ''
     data_files = []
     min_data_time = None
     max_data_time = None
@@ -66,6 +66,9 @@ def process_input_files(in_path: Path, out_path: Path, in_path_parse_index: int,
                 domain = parts.domain
                 level = parts.level
                 data_product_number = parts.data_product_number
+                # horizontal_index = parts.horizontal_index
+                # vertical_index = parts.vertical_index
+                # temporal_index = parts.temporal_index
                 revision = parts.revision
                 data_product_id = get_data_product_id(level, data_product_number, revision)
                 description = file_descriptions.get(data_product_id)

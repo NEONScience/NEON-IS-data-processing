@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from contextlib import closing
 from pandas import DataFrame
 import datetime
