@@ -61,8 +61,7 @@ def get_azimuth_values(geolocation: GeoLocation) -> Tuple[float, float]:
 
 
 def generate_positions_file(out_path: Path,
-                            locations_path: Path,
-                            location_path_index: int,
+                            location_path: Path,
                             domain: str,
                             site: str,
                             year: str,
@@ -79,60 +78,61 @@ def generate_positions_file(out_path: Path,
     with open(Path(root, filename), 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(FILE_COLUMNS)
-        for path in locations_path.glob('*'):
-            named_location_name = path.parts[location_path_index]
-            named_location = get_named_location(named_location_name)
-            (horizontal_index, vertical_index) = get_indices(named_location)
-            row_hor_ver = f'{horizontal_index}.{vertical_index}'
-            row_location_id = named_location.location_id
-            row_description = named_location.description
-            for geolocation in get_geolocations(named_location_name):
-                reference_location_coordinates = get_coordinates(get_geometry(geolocation.offset_name))
-                (x_azimuth, y_azimuth) = get_azimuth_values(geolocation)
-                (east_offset, north_offset) = calculate_offsets(x_azimuth, y_azimuth,
-                                                                geolocation.x_offset, geolocation.y_offset)
-                (row_position_start_date, row_position_end_date) = get_dates(geolocation)
-                row_x_offset: float = round(geolocation.x_offset, 2)
-                row_y_offset: float = round(geolocation.y_offset, 2)
-                row_z_offset: float = round(geolocation.z_offset, 2)
-                row_pitch: float = round(geolocation.alpha, 2)
-                row_roll: float = round(geolocation.beta, 2)
-                row_azimuth: float = round(geolocation.gamma, 2)
-                row_reference_location_id: int = (get_named_location(geolocation.offset_name)).location_id
-                row_reference_location_description: str = geolocation.offset_description
-                row_reference_location_latitude: float = round(reference_location_coordinates.latitude, 6)
-                row_reference_location_longitude: float = round(reference_location_coordinates.longitude, 6)
-                row_reference_location_elevation: float = round(reference_location_coordinates.elevation, 2)
-                row_x_azimuth: float = round(x_azimuth, 2)
-                row_y_azimuth: float = round(y_azimuth, 2)
-                row_east_offset: float = round(east_offset, 2)
-                row_north_offset: float = round(north_offset, 2)
-                for reference_geolocation in get_geolocations(geolocation.offset_name):
-                    (row_reference_location_start_date,
-                     row_reference_location_end_date) = get_dates(reference_geolocation)
-                    row = [row_hor_ver,
-                           row_location_id,
-                           row_description,
-                           row_position_start_date,
-                           row_position_end_date,
-                           row_reference_location_id,
-                           row_reference_location_description,
-                           row_reference_location_start_date,
-                           row_reference_location_end_date,
-                           row_x_offset,
-                           row_y_offset,
-                           row_z_offset,
-                           row_pitch,
-                           row_roll,
-                           row_azimuth,
-                           row_reference_location_latitude,
-                           row_reference_location_longitude,
-                           row_reference_location_elevation,
-                           row_east_offset,
-                           row_north_offset,
-                           row_x_azimuth,
-                           row_y_azimuth]
-                    writer.writerow(row)
+        for path in location_path.glob('*.json'):
+            if path.is_file() and path.name.startswith('CFGLOC'):
+                named_location_name = path.stem
+                named_location = get_named_location(named_location_name)
+                (horizontal_index, vertical_index) = get_indices(named_location)
+                row_hor_ver = f'{horizontal_index}.{vertical_index}'
+                row_location_id = named_location.location_id
+                row_description = named_location.description
+                for geolocation in get_geolocations(named_location_name):
+                    reference_location_coordinates = get_coordinates(get_geometry(geolocation.offset_name))
+                    (x_azimuth, y_azimuth) = get_azimuth_values(geolocation)
+                    (east_offset, north_offset) = calculate_offsets(x_azimuth, y_azimuth,
+                                                                    geolocation.x_offset, geolocation.y_offset)
+                    (row_position_start_date, row_position_end_date) = get_dates(geolocation)
+                    row_x_offset: float = round(geolocation.x_offset, 2)
+                    row_y_offset: float = round(geolocation.y_offset, 2)
+                    row_z_offset: float = round(geolocation.z_offset, 2)
+                    row_pitch: float = round(geolocation.alpha, 2)
+                    row_roll: float = round(geolocation.beta, 2)
+                    row_azimuth: float = round(geolocation.gamma, 2)
+                    row_reference_location_id: int = (get_named_location(geolocation.offset_name)).location_id
+                    row_reference_location_description: str = geolocation.offset_description
+                    row_reference_location_latitude: float = round(reference_location_coordinates.latitude, 6)
+                    row_reference_location_longitude: float = round(reference_location_coordinates.longitude, 6)
+                    row_reference_location_elevation: float = round(reference_location_coordinates.elevation, 2)
+                    row_x_azimuth: float = round(x_azimuth, 2)
+                    row_y_azimuth: float = round(y_azimuth, 2)
+                    row_east_offset: float = round(east_offset, 2)
+                    row_north_offset: float = round(north_offset, 2)
+                    for reference_geolocation in get_geolocations(geolocation.offset_name):
+                        (row_reference_location_start_date,
+                         row_reference_location_end_date) = get_dates(reference_geolocation)
+                        row = [row_hor_ver,
+                               row_location_id,
+                               row_description,
+                               row_position_start_date,
+                               row_position_end_date,
+                               row_reference_location_id,
+                               row_reference_location_description,
+                               row_reference_location_start_date,
+                               row_reference_location_end_date,
+                               row_x_offset,
+                               row_y_offset,
+                               row_z_offset,
+                               row_pitch,
+                               row_roll,
+                               row_azimuth,
+                               row_reference_location_latitude,
+                               row_reference_location_longitude,
+                               row_reference_location_elevation,
+                               row_east_offset,
+                               row_north_offset,
+                               row_x_azimuth,
+                               row_y_azimuth]
+                        writer.writerow(row)
     return filename
 
 

@@ -7,8 +7,7 @@ import environs
 class ApplicationConfig(NamedTuple):
     in_path: Path
     in_path_parse_index: int
-    locations_path: Path
-    location_path_index: int
+    location_path: Path
     out_path: Path
     db_secrets_path: Path
     log_level: str
@@ -28,8 +27,7 @@ def read_environment() -> ApplicationConfig:
     env = environs.Env()
     in_path: Path = env.path('IN_PATH')
     in_path_parse_index: int = env.int('IN_PATH_PARSE_INDEX')
-    locations_path: Path = env.path('LOCATIONS_PATH')
-    location_path_index: int = env.int('LOCATION_PATH_INDEX')
+    location_path: Path = env.path('LOCATION_PATH')
     out_path: Path = env.path('OUT_PATH')
     db_secrets_path: Path = env.path('DB_SECRETS_PATH')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
@@ -45,8 +43,7 @@ def read_environment() -> ApplicationConfig:
     github_publication_workbook_path: str = env.str('GITHUB_PUBLICATION_WORKBOOK_PATH')
     return ApplicationConfig(in_path=in_path,
                              in_path_parse_index=in_path_parse_index,
-                             locations_path=locations_path,
-                             location_path_index=location_path_index,
+                             location_path=location_path,
                              out_path=out_path,
                              db_secrets_path=db_secrets_path,
                              log_level=log_level,
