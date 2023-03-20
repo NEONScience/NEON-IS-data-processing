@@ -8,7 +8,6 @@ import structlog
 import common.date_formatter as date_formatter
 from publication_files_generator.path_parser import parse_path, parse_filename, FilenameParts
 
-
 log = structlog.get_logger()
 
 
@@ -60,15 +59,12 @@ def process_input_files(in_path: Path, out_path: Path, in_path_parse_index: int,
     file_descriptions = get_descriptions()
     for path in in_path.rglob('*'):
         if path.is_file():
-            site, year, month, day, filename = parse_path(path, in_path_parse_index)
+            site, year, month, filename = parse_path(path, in_path_parse_index)
             if filename != 'manifest.csv':
                 parts: FilenameParts = parse_filename(filename)
                 domain = parts.domain
                 level = parts.level
                 data_product_number = parts.data_product_number
-                # horizontal_index = parts.horizontal_index
-                # vertical_index = parts.vertical_index
-                # temporal_index = parts.temporal_index
                 revision = parts.revision
                 data_product_id = get_data_product_id(level, data_product_number, revision)
                 description = file_descriptions.get(data_product_id)
@@ -88,14 +84,13 @@ def process_input_files(in_path: Path, out_path: Path, in_path_parse_index: int,
                     if max_date > max_data_time:
                         max_data_time = max_date
             # Link the file into the output directory.
-            link_path = Path(out_path, site, year, month, day, path.name)
+            link_path = Path(out_path, site, year, month, path.name)
             link_file(path, link_path)
-    return InputFileMetadata(
-        domain=domain,
-        site=site,
-        year=year,
-        month=month,
-        data_product_id=data_product_id,
-        data_files=data_files,
-        min_time=min_data_time,
-        max_time=max_data_time)
+    return InputFileMetadata(domain=domain,
+                             site=site,
+                             year=year,
+                             month=month,
+                             data_product_id=data_product_id,
+                             data_files=data_files,
+                             min_time=min_data_time,
+                             max_time=max_data_time)

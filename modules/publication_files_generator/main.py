@@ -53,8 +53,7 @@ def main() -> None:
                                                      data_product_id=file_metadata.data_product_id,
                                                      publication_workbook=publication_workbook,
                                                      timestamp=timestamp)
-        positions_filename = generate_positions_file(locations_path=config.locations_path,
-                                                     location_path_index=config.location_path_index,
+        positions_filename = generate_positions_file(location_path=config.location_path,
                                                      out_path=config.out_path,
                                                      domain=file_metadata.domain,
                                                      site=file_metadata.site,
