@@ -1,0 +1,100 @@
+{
+    "science_review_flags": [
+        {
+            "group_name": "surfacewater-physical_PRLA140100",
+            "id": 15388,
+            "start_date": "2019-01-10T17:00:00Z",
+            "end_date": "2019-04-09T18:00:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.140.100.005",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Pressure transducer data quality likely compromised by ice acting on transducer",
+            "create_date": "2020-11-25T19:00:39Z",
+            "last_update_date": "2020-11-25T19:00:39Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA140100",
+            "id": 15391,
+            "start_date": "2019-01-10T17:00:00Z",
+            "end_date": "2019-04-09T18:00:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.140.100.030",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Pressure transducer data quality likely compromised by ice acting on transducer",
+            "create_date": "2020-11-25T19:00:41Z",
+            "last_update_date": "2020-11-25T19:00:41Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA140100",
+            "id": 4863,
+            "start_date": "2018-11-28T20:00:00Z",
+            "end_date": "2019-02-04T00:00:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.140.100.030",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Per INC0025078, the sensor infrastructure was damaged by ice affecting measurement accuracy. ",
+            "create_date": "2019-02-04T11:43:49Z",
+            "last_update_date": "2019-02-04T11:43:49Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA140100",
+            "id": 1414,
+            "start_date": "2017-11-03T05:30:00Z",
+            "end_date": "2018-05-04T23:30:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.140.100.005",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Per ticket NEON-12162, water level fell below sensor and ice continued to affect sensor readings through Dec 1 2017 until sensor became fully exposed. ",
+            "create_date": "2018-05-04T17:06:29Z",
+            "last_update_date": "2018-05-04T17:06:29Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA140100",
+            "id": 15389,
+            "start_date": "2019-01-10T17:00:00Z",
+            "end_date": "2019-04-09T18:00:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.140.100.030",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Pressure transducer data quality likely compromised by ice acting on transducer",
+            "create_date": "2020-11-25T19:00:39Z",
+            "last_update_date": "2020-11-25T19:00:39Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA140100",
+            "id": 1415,
+            "start_date": "2017-11-03T05:30:00Z",
+            "end_date": "2018-05-04T23:30:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.140.100.030",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Per ticket NEON-12162, water level fell below sensor and ice continued to affect sensor readings through Dec 1 2017 until sensor became fully exposed. ",
+            "create_date": "2018-05-04T17:06:29Z",
+            "last_update_date": "2018-05-04T17:06:29Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA140100",
+            "id": 4862,
+            "start_date": "2018-11-28T20:00:00Z",
+            "end_date": "2019-02-04T00:00:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.140.100.005",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Per INC0025078, the sensor infrastructure was damaged by ice affecting measurement accuracy. ",
+            "create_date": "2019-02-04T11:43:49Z",
+            "last_update_date": "2019-02-04T11:43:49Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA140100",
+            "id": 15390,
+            "start_date": "2019-01-10T17:00:00Z",
+            "end_date": "2019-04-09T18:00:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.140.100.005",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Pressure transducer data quality likely compromised by ice acting on transducer",
+            "create_date": "2020-11-25T19:00:41Z",
+            "last_update_date": "2020-11-25T19:00:41Z"
+        }
+    ]
+}
