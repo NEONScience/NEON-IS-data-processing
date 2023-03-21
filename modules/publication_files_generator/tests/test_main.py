@@ -33,7 +33,7 @@ class MainTest(unittest.TestCase):
     def setUp(self) -> None:
         root = os.path.dirname(__file__)
         self.data_path = Path(root, 'main_test_files', 'data')
-        self.locations_path = Path(root, 'main_test_files', 'locations', 'CPER', '2020', '01', '02', 'locations')
+        self.location_path = Path(root, 'main_test_files', 'locations', 'CPER', '2020', '01', '02', 'location')
         self.out_path = Path(root, 'output')
         self.out_path.mkdir(parents=False, exist_ok=True)
         self.db_secrets_path = Path(root, 'db_secrets')
@@ -42,15 +42,13 @@ class MainTest(unittest.TestCase):
         self.site_path = Path(self.out_path, 'CPER')
         self.year_path = Path(self.site_path, '2020')
         self.month_path = Path(self.year_path, '01')
-        self.day_path = Path(self.month_path, '02')
 
     def test_main(self) -> None:
         # TODO: Specify individual path indices and pass them into path parser.
         pem_path = environs.Env().str('GITHUB_README_APP_PEM')
         os.environ['IN_PATH'] = str(self.data_path)
         os.environ['IN_PATH_PARSE_INDEX'] = '9'
-        os.environ['LOCATIONS_PATH'] = str(self.locations_path)
-        os.environ['LOCATION_PATH_INDEX'] = '15'
+        os.environ['LOCATION_PATH'] = str(self.location_path)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['DB_SECRETS_PATH'] = str(self.db_secrets_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
@@ -68,25 +66,16 @@ class MainTest(unittest.TestCase):
         readme_count = len(list(self.month_path.glob('*.txt')))
         assert readme_count == 1
         csv_file_count = len(list(self.month_path.glob('*.csv')))
-        assert csv_file_count == 2  # includes variables and sensor_positions
-        data_files_count = len(list(self.day_path.glob('*.csv')))
-        assert data_files_count == 5  # includes 4 data files and manifest.csv file
+        assert csv_file_count == 7  # includes data files, variables file, and sensor_positions file.
 
     def tearDown(self) -> None:
-        """Remove the created files and directories from the filesystem."""
         self.remove_directories()
         self.remove_database_secrets()
 
     def remove_directories(self):
-        # delete data files and manifest
-        for path in self.day_path.glob('*'):
-            if path.is_file():
-                path.unlink(missing_ok=True)
-        # delete monthly files
         for path in self.month_path.glob('*'):
             if path.is_file():
                 path.unlink(missing_ok=True)
-        self.day_path.rmdir()
         self.month_path.rmdir()
         self.year_path.rmdir()
         self.site_path.rmdir()

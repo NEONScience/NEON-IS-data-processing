@@ -16,13 +16,13 @@ from publication_files_generator.tests.file_data import to_datetime
 from publication_files_generator.timestamp import get_timestamp
 
 
-def create_locations_path(fs: FakeFilesystem) -> Path:
-    locations = Path('/CPER/2020/01/02/locations')
-    location_1 = Path(locations, 'CFGLOC101775')
-    location_2 = Path(locations, 'CFGLOC101777')
+def create_location_path(fs: FakeFilesystem) -> Path:
+    locations = Path('/2020/01/02/CPER/location')
+    location_file_1 = Path(locations, 'CFGLOC101775.json')
+    location_file_2 = Path(locations, 'CFGLOC101777.json')
     fs.create_dir(locations)
-    fs.create_dir(location_1)
-    fs.create_dir(location_2)
+    fs.create_file(location_file_1)
+    fs.create_file(location_file_2)
     return locations
 
 
@@ -70,8 +70,7 @@ class PositionsGeneratorTest(TestCase):
 
     def test_positions_generator(self):
         timestamp = get_timestamp()
-        filename = generate_positions_file(locations_path=create_locations_path(self.fs),
-                                           location_path_index=6,
+        filename = generate_positions_file(location_path=create_location_path(self.fs),
                                            out_path=self.out_path,
                                            domain=self.domain,
                                            site=self.site,

@@ -112,21 +112,20 @@ def get_data_product(connector: DbConnector, data_product_id: str) -> DataProduc
         expanded_description = row[11]
         remarks = row[12]
     type_name = get_type_name(connector, data_product_id)
-    data_product = DataProduct(
-        data_product_id=data_product_id,
-        short_data_product_id=remove_prefix(data_product_id),
-        name=name,
-        type_name=type_name,
-        description=description,
-        category=category,
-        supplier=supplier,
-        supplier_full_name=get_supplier_full_name(supplier),
-        short_name=short_name,
-        abstract=abstract,
-        design_description=design_description,
-        study_description=study_description,
-        sensor=sensor,
-        basic_description=basic_description,
-        expanded_description=expanded_description,
-        remarks=remarks)
+    data_product = DataProduct(data_product_id=data_product_id,
+                               short_data_product_id=remove_prefix(data_product_id),
+                               name=name,
+                               type_name=type_name,
+                               description=description,
+                               category=category,
+                               supplier=supplier,
+                               supplier_full_name=get_supplier_full_name(supplier),
+                               short_name=short_name,
+                               abstract=abstract,
+                               design_description=design_description,
+                               study_description=study_description,
+                               sensor=sensor,
+                               basic_description=basic_description,
+                               expanded_description=expanded_description,
+                               remarks=remarks)
     return data_product

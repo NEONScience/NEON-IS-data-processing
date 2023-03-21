@@ -71,21 +71,20 @@ def get_geolocations(connector: DbConnector, named_location: str) -> List[GeoLoc
             offset_id = row[10]
             properties = get_geolocation_properties(connector, location_id)
             (offset_name, offset_description) = get_description(connector, offset_id)
-            location = GeoLocation(
-                location_id=location_id,
-                geometry=geometry,
-                start_date=start_date,
-                end_date=end_date,
-                alpha=alpha,
-                beta=beta,
-                gamma=gamma,
-                x_offset=x_offset,
-                y_offset=y_offset,
-                z_offset=z_offset,
-                offset_id=offset_id,
-                offset_name=offset_name,
-                offset_description=offset_description,
-                properties=properties)
+            location = GeoLocation(location_id=location_id,
+                                   geometry=geometry,
+                                   start_date=start_date,
+                                   end_date=end_date,
+                                   alpha=alpha,
+                                   beta=beta,
+                                   gamma=gamma,
+                                   x_offset=x_offset,
+                                   y_offset=y_offset,
+                                   z_offset=z_offset,
+                                   offset_id=offset_id,
+                                   offset_name=offset_name,
+                                   offset_description=offset_description,
+                                   properties=properties)
             locations.append(location)
     return locations
 

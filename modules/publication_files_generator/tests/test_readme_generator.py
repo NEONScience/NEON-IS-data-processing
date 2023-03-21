@@ -21,7 +21,7 @@ class ReadmeFileGeneratorTest(TestCase):
         self.dir = os.path.dirname(__file__)
         self.setUpPyfakefs()
         self.test_files_path = Path(self.dir, 'readme_generator_test_files')
-        self.in_path = Path('/in/CPER/2020/01/02')
+        self.in_path = Path('/in/CPER/2020/01')
         self.out_path = Path('/out')
         self.fs.create_dir(self.in_path)
         self.fs.create_dir(self.out_path)
@@ -72,6 +72,6 @@ class ReadmeFileGeneratorTest(TestCase):
                              get_keywords=file_data.get_keywords,
                              get_log_entries=get_log_entries_partial)
         readme_files = list(Path(self.out_path, 'CPER', '2020', '01').glob('*.txt'))
-        csv_files = list(Path(self.out_path, 'CPER', '2020', '01', '02').glob('*.csv'))
+        csv_files = list(Path(self.out_path, 'CPER', '2020', '01').glob('*.csv'))
         assert len(readme_files) == 1
         assert len(csv_files) == 5

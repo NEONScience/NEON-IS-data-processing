@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from publication_files_generator.filename_formatter import get_filename
 from publication_files_generator.timestamp import get_timestamp
-from publication_files_generator.variables_generator import generate_variables_file
+from publication_files_generator.variables_generator import write_file
 
 
 class TestVariablesFileGenerator(TestCase):
@@ -17,7 +17,7 @@ class TestVariablesFileGenerator(TestCase):
         self.out_path = Path('/out')
         self.fs.create_dir(self.in_path)
         self.fs.create_dir(self.out_path)
-        real_path = Path(os.path.dirname(__file__),'variables_generator_test_files',
+        real_path = Path(os.path.dirname(__file__), 'variables_generator_test_files',
                          'publication_workbook_water_quality.txt')
         target_path = Path(self.in_path, 'publication_workbook_water_quality.txt')
         self.fs.add_real_file(real_path, target_path=target_path)
@@ -35,14 +35,14 @@ class TestVariablesFileGenerator(TestCase):
             file_type='variables',
             timestamp=timestamp,
             extension='csv')
-        filename = generate_variables_file(out_path=self.out_path,
-                                           domain=domain,
-                                           site=site,
-                                           year=year,
-                                           month=month,
-                                           data_product_id=data_product_id,
-                                           timestamp=timestamp,
-                                           publication_workbook=publication_workbook)
+        filename = write_file(out_path=self.out_path,
+                              domain=domain,
+                              site=site,
+                              year=year,
+                              month=month,
+                              data_product_id=data_product_id,
+                              timestamp=timestamp,
+                              publication_workbook=publication_workbook)
         assert filename == expected_filename
         path = Path(self.out_path, 'CPER', '2020', '01', expected_filename)
         print(f'\nresult:\n{path.read_text()}\n')
