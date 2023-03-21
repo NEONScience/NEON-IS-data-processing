@@ -62,16 +62,14 @@ def get_log_entries(connector: DbConnector, data_product_id: str) -> List[LogEnt
             location_affected = row[6]
             issue = row[7]
             resolution = row[8]
-            log_entry = LogEntry(
-                change_log_id=change_log_id,
-                data_product_id=data_product_id,
-                issue_date=issue_date,
-                resolution_date=resolution_date,
-                date_range_start=date_range_start,
-                date_range_end=date_range_end,
-                location_affected=location_affected,
-                issue=issue,
-                resolution=resolution
-            )
+            log_entry = LogEntry(change_log_id=change_log_id,
+                                 data_product_id=data_product_id,
+                                 issue_date=issue_date,
+                                 resolution_date=resolution_date,
+                                 date_range_start=date_range_start,
+                                 date_range_end=date_range_end,
+                                 location_affected=location_affected,
+                                 issue=issue,
+                                 resolution=resolution)
             log_entries.append(log_entry)
     return log_entries

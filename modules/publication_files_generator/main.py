@@ -18,7 +18,7 @@ from publication_files_generator.file_processor import process_input_files
 from publication_files_generator.sensor_positions_generator import generate_positions_file
 from publication_files_generator.readme_generator import generate_readme_file
 from publication_files_generator.timestamp import get_timestamp
-from publication_files_generator.variables_generator import generate_variables_file
+import publication_files_generator.variables_generator as variables_file
 
 
 def main() -> None:
@@ -28,9 +28,8 @@ def main() -> None:
     reader = GithubReader(pem_file_path=config.github_certificate_path, app_id=config.github_app_id,
                           installation_id=config.github_installation_id, host_url=config.github_host,
                           repo_owner=config.github_repo_owner, branch=config.github_branch)
-    publication_workbook = reader.read_file(config.github_publication_workbook_repo,
-                                            config.github_publication_workbook_path)
     readme_template = reader.read_file(config.github_readme_repo, config.github_readme_path)
+    # eml_boilerplate = reader.read_file(config.github_eml_repo, config.github_eml_path)
 
     log_config.configure(config.log_level)
     db_config = read_from_mount(config.db_secrets_path)
@@ -45,14 +44,8 @@ def main() -> None:
 
         file_metadata = process_input_files(config.in_path, config.out_path, config.in_path_parse_index,
                                             get_descriptions_partial)
-        variables_filename = generate_variables_file(out_path=config.out_path,
-                                                     domain=file_metadata.domain,
-                                                     site=file_metadata.site,
-                                                     year=file_metadata.year,
-                                                     month=file_metadata.month,
-                                                     data_product_id=file_metadata.data_product_id,
-                                                     publication_workbook=publication_workbook,
-                                                     timestamp=timestamp)
+        # TODO: Does this make sense to wrap?
+        variables_filename = variables_file.run(config, reader, file_metadata, timestamp)
         positions_filename = generate_positions_file(location_path=config.location_path,
                                                      out_path=config.out_path,
                                                      domain=file_metadata.domain,
