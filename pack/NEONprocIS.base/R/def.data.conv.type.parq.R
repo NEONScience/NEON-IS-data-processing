@@ -66,6 +66,10 @@ def.data.conv.type.parq <- function(data,
       # Convert to POSIXct. Parquet writer handles this well.
       data[[nameIdx]] <- base::as.POSIXct(data[[nameIdx]],tz='GMT')
       
+    } else if(base::any(base::grepl('dictionary<values=string',typeIdx))){
+      # Use as.character rather than class(..) <- 'character'. Converts factors to character without factors as attributes.
+      data[[nameIdx]] <- base::as.factor(data[[nameIdx]])
+      
     } else if(base::any(typeIdx %in% c('string','utf8','large_utf8','character'))){
       # Use as.character rather than class(..) <- 'character'. Converts factors to character without factors as attributes.
       data[[nameIdx]] <- base::as.character(data[[nameIdx]])

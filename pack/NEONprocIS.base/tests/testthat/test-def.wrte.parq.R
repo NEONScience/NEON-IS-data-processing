@@ -107,6 +107,22 @@ test_that("use arrow schema",
                   
                   if (file.exists(NameFile)) { file.remove(NameFile)}
                   
+                  
+                  # Successful case - arrow schema attached as attribute to the data frame when none is input
+                  # Arrow Class: dictionary<values=string, indices=int32>
+                  data <- NEONprocIS.base::def.read.parq(NameFile='def.wrte.parq/L0_data_resistance.parquet')
+                  # Write it out
+                  rpt <- NEONprocIS.base::def.wrte.parq(data = data, NameFile = NameFile) 
+                  # Read it back in
+                  dataNew <- NEONprocIS.base::def.read.parq(NameFile)
+                  
+                  testthat::expect_true(class(dataNew[[3]]) == 'factor')
+                  
+                  if (file.exists(NameFile)) { file.remove(NameFile)}
+                  
+                  
+                  
+                  
           })
 
 test_that("use schema input as arrow schema object",
