@@ -6,7 +6,7 @@ from pathlib import Path
 
 import environs
 
-from publication_files_generator.main import main
+from publication_files.main import main
 from data_access import db_config_reader
 
 log = logging.getLogger()
@@ -44,7 +44,6 @@ class MainTest(unittest.TestCase):
         self.month_path = Path(self.year_path, '01')
 
     def test_main(self) -> None:
-        # TODO: Specify individual path indices and pass them into path parser.
         pem_path = environs.Env().str('GITHUB_README_APP_PEM')
         os.environ['IN_PATH'] = str(self.data_path)
         os.environ['IN_PATH_PARSE_INDEX'] = '9'

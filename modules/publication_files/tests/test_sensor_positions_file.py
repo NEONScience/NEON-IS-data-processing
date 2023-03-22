@@ -9,11 +9,13 @@ from pyfakefs.fake_filesystem import FakeFilesystem
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from data_access.types.property import Property
-from publication_files_generator.database_queries.named_location import NamedLocation
-from publication_files_generator.database_queries.sensor_geolocations import GeoLocation
-from publication_files_generator.sensor_positions_generator import generate_positions_file
-from publication_files_generator.tests.file_data import to_datetime
-from publication_files_generator.timestamp import get_timestamp
+from publication_files.file_generators.sensor_positions_file import SensorPositionsDatabase
+from publication_files.database_queries.named_location import NamedLocation
+from publication_files.database_queries.geolocations import GeoLocation
+from publication_files.file_metadata import PathElements
+from publication_files.file_generators.sensor_positions_file import write_file
+from publication_files.tests.file_data import to_datetime
+from publication_files.timestamp import get_timestamp
 
 
 def create_location_path(fs: FakeFilesystem) -> Path:
@@ -26,10 +28,10 @@ def create_location_path(fs: FakeFilesystem) -> Path:
     return locations
 
 
-class PositionsGeneratorTest(TestCase):
+class PositionsFileTest(TestCase):
 
     def setUp(self) -> None:
-        root = Path(os.path.dirname(__file__), 'sensor_positions_generator_test_files')
+        root = Path(os.path.dirname(__file__), 'sensor_positions_test_files')
         self.setUpPyfakefs()
         self.in_path = Path('/in')
         self.out_path = Path('/out')
@@ -68,19 +70,16 @@ class PositionsGeneratorTest(TestCase):
         self.cfgloc101777_properties_target = Path('/cfgloc_101777_properties.json')
         self.fs.add_real_file(cfg101777_properties, target_path=self.cfgloc101777_properties_target)
 
-    def test_positions_generator(self):
+    def test_write_file(self):
         timestamp = get_timestamp()
-        filename = generate_positions_file(location_path=create_location_path(self.fs),
-                                           out_path=self.out_path,
-                                           domain=self.domain,
-                                           site=self.site,
-                                           year=self.year,
-                                           month=self.month,
-                                           data_product_id=self.data_product_id,
-                                           timestamp=timestamp,
-                                           get_geolocations=self.get_geolocations,
+        elements = PathElements(domain=self.domain, site=self.site, year=self.year, month=self.month,
+                                data_product_id=self.data_product_id)
+        location_path = create_location_path(self.fs)
+        database = SensorPositionsDatabase(get_geolocations=self.get_geolocations,
                                            get_named_location=self.get_named_location,
                                            get_geometry=self.get_geometry)
+        filename = write_file(location_path=location_path, out_path=self.out_path, elements=elements,
+                              timestamp=timestamp, database=database)
         file_path = Path(self.out_path, self.site, self.year, self.month, filename)
         with open(file_path, 'r') as file:
             reader = csv.reader(file)
