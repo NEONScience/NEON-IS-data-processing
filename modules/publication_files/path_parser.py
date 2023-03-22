@@ -1,6 +1,4 @@
-"""
-Module to parse input file paths and filenames.
-"""
+"""Module to parse input file paths and filenames."""
 from pathlib import Path
 from typing import NamedTuple
 

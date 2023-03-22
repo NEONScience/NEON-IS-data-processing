@@ -7,8 +7,8 @@ from typing import List, Dict, Optional
 
 from pyfakefs.fake_filesystem import FakeFilesystem
 
-from publication_files_generator.database_queries.data_product import DataProduct, remove_prefix
-from publication_files_generator.database_queries.log_entries import LogEntry
+from publication_files.database_queries.data_product import DataProduct, remove_prefix
+from publication_files.database_queries.log_entries import LogEntry
 
 
 def get_geometry(_location_name: str) -> str:
@@ -22,12 +22,12 @@ def get_keywords(_data_product_id: str):
 
 
 def root():
-    return os.path.dirname(__file__)
+    return Path(os.path.dirname(__file__), 'readme_test_files')
 
 
 def get_log_entries(fs: FakeFilesystem, _data_product_id: str) -> List[LogEntry]:
     """Mock function to read the change log entries."""
-    path = Path(root(), 'readme_generator_test_files/dp_change_log.json')
+    path = Path(root(), 'dp_change_log.json')
     target_path = Path('/dp_change_log.json')
     fs.add_real_file(path, target_path=target_path)
     log_entries = []
@@ -43,25 +43,21 @@ def get_log_entries(fs: FakeFilesystem, _data_product_id: str) -> List[LogEntry]
             location_affected: str = entry['location_affected']
             issue: str = entry['issue']
             resolution: str = entry['resolution']
-            log_entries.append(
-                LogEntry(
-                    change_log_id=int(change_log_id),
-                    data_product_id=data_product_id,
-                    issue_date=to_datetime(issue_date),
-                    resolution_date=to_datetime(resolved_date),
-                    date_range_start=to_datetime(date_range_start),
-                    date_range_end=to_datetime(date_range_end),
-                    location_affected=location_affected,
-                    issue=issue,
-                    resolution=resolution
-                )
-            )
+            log_entries.append(LogEntry(change_log_id=int(change_log_id),
+                                        data_product_id=data_product_id,
+                                        issue_date=to_datetime(issue_date),
+                                        resolution_date=to_datetime(resolved_date),
+                                        date_range_start=to_datetime(date_range_start),
+                                        date_range_end=to_datetime(date_range_end),
+                                        location_affected=location_affected,
+                                        issue=issue,
+                                        resolution=resolution))
     return log_entries
 
 
 def get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
     """Mock function for reading the data product."""
-    path = Path(root(), 'readme_generator_test_files/dp_catalog.json')
+    path = Path(root(), 'dp_catalog.json')
     target_path = Path('/dp_catalog_data.json')
     fs.add_real_file(path, target_path=target_path)
     with open(target_path) as file:
@@ -80,28 +76,27 @@ def get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
         basic_description: str = data['basic_desc']
         expanded_desc: str = data['expanded_desc']
         remarks: str = data['remarks']
-    return DataProduct(
-        data_product_id=data_product_id,
-        short_data_product_id=remove_prefix(data_product_id),
-        name=dp_name,
-        type_name='TIS Data Product Type',
-        description=dp_description,
-        category=category,
-        supplier=supplier,
-        supplier_full_name='Terrestrial Instrument System',
-        short_name=dp_shortname,
-        abstract=dp_abstract,
-        design_description=design_description,
-        study_description=study_description,
-        sensor=sensor,
-        basic_description=basic_description,
-        expanded_description=expanded_desc,
-        remarks=remarks)
+    return DataProduct(data_product_id=data_product_id,
+                       short_data_product_id=remove_prefix(data_product_id),
+                       name=dp_name,
+                       type_name='TIS Data Product Type',
+                       description=dp_description,
+                       category=category,
+                       supplier=supplier,
+                       supplier_full_name='Terrestrial Instrument System',
+                       short_name=dp_shortname,
+                       abstract=dp_abstract,
+                       design_description=design_description,
+                       study_description=study_description,
+                       sensor=sensor,
+                       basic_description=basic_description,
+                       expanded_description=expanded_desc,
+                       remarks=remarks)
 
 
 def get_descriptions(fs: FakeFilesystem) -> Dict[str, str]:
     """Mock function for reading the file descriptions."""
-    path = Path(root(), 'readme_generator_test_files/pub_table_def.json')
+    path = Path(root(), 'pub_table_def.json')
     target_path = Path('/pub_table_def.json')
     fs.add_real_file(path, target_path=target_path)
     file_descriptions = {}

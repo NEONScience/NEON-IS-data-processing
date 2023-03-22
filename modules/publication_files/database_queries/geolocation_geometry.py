@@ -58,6 +58,6 @@ def get_coordinates(geometry: str) -> Coordinates:
     return Coordinates(latitude=latitude, longitude=longitude, elevation=elevation)
 
 
-def get_formatted_coordinates(geometry: str) -> str:
+def format_coordinates(geometry: str) -> str:
     coordinates = get_coordinates(geometry)
     return f'{coordinates.latitude} {coordinates.longitude} WGS 84'
