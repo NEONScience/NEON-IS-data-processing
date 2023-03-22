@@ -15,8 +15,9 @@ def.srf.aply(
 }
 \arguments{
 \item{srf}{Data frame of science review flag records to apply, as produced by NEONprocIS.pub::def.read.srf
-Note that the srf records should already be filtered for those corresponding to the location/product instance
-of the data in dataTabl (i.e. (site, domain, HOR, VER) .}
+with column qfFinl added by applying def.srf.qf.finl. Note that the srf records should already be filtered 
+for those corresponding to the location/product instance of the data in dataTabl 
+(i.e. (site, domain, HOR, VER).}
 
 \item{dataTabl}{Data frame of data for a single publication workbook table. Note that the column names in the data frame
 should match those in the pub workbook (need not be ordered the same).}
@@ -51,6 +52,9 @@ of the SRF.
 }
 \examples{
 Currently none
+NOT RUN.
+Add the qfFinl column to the SRF table
+srf$qfFinl <- NEONprocIS.pub::def.srf.term.qf.finl(termSrf=srf$srf_term_name,log=log)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -59,6 +63,8 @@ License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 \link[NEONprocIS.pub]{def.read.srf}
 
 \link[NEONprocIS.pub]{def.read.pub.wb}
+
+\link[NEONprocIS.pub]{def.srf.term.qf.finl}
 }
 \author{
 Cove Sturtevant \email{csturtevant@battelleecology.org}
