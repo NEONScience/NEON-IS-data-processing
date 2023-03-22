@@ -38,7 +38,7 @@ def.read.pub.wb <- function(NameFile,
   }
   
   tryCatch({
-    PubWbList <- base::lapply(FilePubWb,utils::read.delim)
+    PubWbList <- base::lapply(NameFile,utils::read.delim)
     pubWb <- base::do.call(base::rbind,PubWbList)
     
     log$debug(base::paste0('Successfully read in publication workbook: ',NameFile, ' to data frame.'))
