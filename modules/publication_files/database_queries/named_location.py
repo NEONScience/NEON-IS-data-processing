@@ -1,16 +1,30 @@
 from contextlib import closing
-from typing import List, NamedTuple
+from dataclasses import dataclass
+from typing import List, Tuple
 
 from data_access.types.property import Property
 from data_access.get_named_location_properties import get_named_location_properties
 from data_access.db_connector import DbConnector
 
 
-class NamedLocation(NamedTuple):
+@dataclass(frozen=True)
+class NamedLocation:
     location_id: int
     name: str
     description: str
     properties: List[Property]
+
+    def get_indices(self) -> Tuple[str, str]:
+        """Returns the horizontal and vertical indices."""
+        properties = self.properties
+        horizontal_index = ''
+        vertical_index = ''
+        for prop in properties:
+            if prop.name == 'HOR':
+                horizontal_index = prop.value
+            if prop.name == 'VER':
+                vertical_index = prop.value
+        return horizontal_index, vertical_index
 
 
 def get_named_location(connector: DbConnector, named_location_name: str) -> NamedLocation:
@@ -40,8 +54,4 @@ def get_named_location(connector: DbConnector, named_location_name: str) -> Name
         name = row[1]
         description = row[2]
         properties: List[Property] = get_named_location_properties(connector, location_id)
-        named_location = NamedLocation(location_id=location_id,
-                                       name=name,
-                                       description=description,
-                                       properties=properties)
-    return named_location
+        return NamedLocation(location_id=location_id, name=name, description=description, properties=properties)

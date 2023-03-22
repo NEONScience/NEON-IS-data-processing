@@ -7,7 +7,7 @@ for each log entry.
 from datetime import datetime
 from typing import NamedTuple, List, Optional
 
-from publication_files_generator.database_queries.log_entries import LogEntry
+from publication_files.database_queries.log_entries import LogEntry
 
 
 class DatesLocations(NamedTuple):
