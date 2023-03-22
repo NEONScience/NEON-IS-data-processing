@@ -19,7 +19,7 @@
 #' Note that the srf records should already be filtered for those corresponding to the location/product instance
 #' of the data in dataTabl (i.e. (site, domain, HOR, VER).
 #' Note: the qfFinl column is added to the srf data frame using the def.srf.term.qf.finl function:
-#'  srf$qfFinl <- NEONprocIS.pub::def.srf.term.qf.finl(termSrf=srf$srf_term_name,log=log)
+#' srf$qfFinl <- NEONprocIS.pub::def.srf.term.qf.finl(termSrf=srf$srf_term_name,log=log)
 
 #' 
 #' @param dataTabl Data frame of data for a single publication workbook table. Note that the column names in the data frame
