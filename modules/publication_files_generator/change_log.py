@@ -103,10 +103,9 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
 
 
 def get_log(data_product_id, log_values, dates_and_locations) -> ChangeLog:
-    return ChangeLog(
-         data_product_id=data_product_id,
-         issue=log_values['issue'],
-         issue_date=log_values['issue_date'],
-         resolution=log_values['resolution'],
-         resolution_date=log_values['resolution_date'],
-         dates_locations=dates_and_locations)
+    return ChangeLog(data_product_id=data_product_id,
+                     issue=log_values['issue'],
+                     issue_date=log_values['issue_date'],
+                     resolution=log_values['resolution'],
+                     resolution_date=log_values['resolution_date'],
+                     dates_locations=dates_and_locations)

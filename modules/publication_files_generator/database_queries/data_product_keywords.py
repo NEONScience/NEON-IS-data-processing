@@ -1,6 +1,4 @@
-"""
-Module to read data product keywords from the database.
-"""
+"""Module to read data product keywords from the database."""
 from contextlib import closing
 from typing import List
 

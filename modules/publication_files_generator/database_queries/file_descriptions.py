@@ -1,6 +1,4 @@
-"""
-Module to read all file descriptions from the database.
-"""
+"""Module to read all file descriptions from the database."""
 from contextlib import closing
 from typing import Dict
 
