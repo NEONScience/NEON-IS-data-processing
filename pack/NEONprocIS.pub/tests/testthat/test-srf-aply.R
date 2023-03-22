@@ -68,25 +68,16 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   # The qfFinl column is added to the srf data frame using the def.srf.term.qf.finl function:
   srf$qfFinl <- NEONprocIS.pub::def.srf.term.qf.finl(termSrf=srf$srf_term_name,log=log)
 
-  #pubWbDf <- read.csv(file='pfs/pubWb/pubWbDf.csv')
-  #' FileData <- c('/path/to/file1.parquet','/path/to/file2.parquet') # Files must have same # of rows
-  #' data <- base::lapply(FileData,arrow::open_dataset)
-  #' FilePubWb <- 'path/to/publication/workbook.txt'
-  #' pubWb <- NEONprocIS.pub::def.read.pub.wb(NameFile=FilePubWb)
-  #' TablPub <- 'PARQL_30min'
-  #' def.pub.tabl.crea(data,pubWb,TablPub)
- 
   FilePubWb <- 'pfs/pubWb//PublicationWorkbook_elevSurfacewater.txt'
   pubWb <- NEONprocIS.pub::def.read.pub.wb(NameFile=FilePubWb)
   TablPub <- 'PARQL_1min'
   FileData <- c('pfs/pubWb/par-quantum-line_CPER001000_2023-02-03_PARQL_1min_001.parquet') # Files must have same # of rows
   data <- base::lapply(FileData,arrow::open_dataset)
   dataTabl <- NEONprocIS.base::def.read.parq(NameFile = FileData)
- # returnedList <- def.pub.tabl.crea(data=data,pubWb=pubWb,TablPub=tablPub)
   
   NameVarTimeBgn='startDateTime'
   NameVarTimeEnd='endDateTime'
 
   tt = NEONprocIS.pub::def.srf.aply(srf=srf,dataTabl=dataTabl, pubWbTabl=pubWb, NameVarTimeBgn='startDateTime',NameVarTimeEnd='endDateTime')
-  
+  testthat::expect_true(is.data.frame(tt) == TRUE)
 })
