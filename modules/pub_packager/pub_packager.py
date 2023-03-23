@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+import os
+import pandas as pd
+from sortedcontainers import SortedSet
+import datetime
+import hashlib
+import csv
+from typing import List, Iterator, Tuple
+
+from structlog import get_logger
+
+log = get_logger()
+
+
+def pub_package(*, data_path, out_path, publoc_index: int, date_index: int, date_index_length: int, sort_index: int) -> None:
+    """
+    Bundles the required files into a package suitable for publication. Glob must be at the package aggregation level.
+    For example, monthly publication requires glob pattern to be at monthly level (e.g. SITE/YEAR/MONTH)
+
+    :param data_path: The input data path.
+    :param out_path: The output path for writing the package files.
+    :param publoc_index: input path index of the pub package location (typically the site)
+    :param date_index: start input path index of publication date field (e.g. index of the year in the path)
+    :param date_index_length: number of input path indices forming the pub date field. e.g. for monthly pub, this will be 2 (year-month)
+    :param sort_index: index of filename field to sort on (e.g. the day)
+    """
+    
+    # Each PUBLOC at the glob level is a datum (e.g. /year/month/*/PUBLOC). Get all the PUBLOCS, assuming 
+    # there is a manifest.csv embedded directly under each PUBLOC directory 
+    publocs = set()
+    for path in data_path.rglob('manifest.csv'):
+        parts = path.parts
+        publoc = parts[publoc_index]
+        publocs.add(publoc)
+        
+    for publoc in publocs:
+        log.debug(f'Processing datum {data_path} and {publoc}')
+        
+        package_files = {}  # the set of files to be collated into each package file
+        has_data_by_file = {}  # has_data by package file
+        package_path_by_file = {}  # package path by package file
+    
+        # processing timestamp
+        timestamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
+    
+        # get the package path prefix and date field
+        for path in data_path.rglob(publoc+'/*'):
+            if path.is_file():
+                # Get one full path
+                break
+        (path_prefix, date_field) = get_package_prefix(path, publoc_index, date_index, date_index_length)
+
+        for path in data_path.rglob(publoc+'/*'):
+            if path.is_file():
+                file = os.path.basename(path)
+                log.debug(f'{file}')
+                if 'manifest' in file:
+                    log.debug(f'manifest!')
+                    parse_manifest(path, has_data_by_file, sort_index, date_field, timestamp)
+                    continue
+                # get the package filename
+                log.debug(f'package_file!')
+                package_file = get_package_filename(file, sort_index, date_field, timestamp)
+                if package_file in package_files.keys():
+                    package_files[package_file].add(path)
+                else:
+                    package_files[package_file] = SortedSet({path})
+
+    # for root, dirs, files in os.walk(data_path):
+    #     for file in files:
+    #         # if this is the manifest, parse it
+    #         if 'manifest' in file:
+    #             parse_manifest(os.path.join(root, file), has_data_by_file, sort_index, date_field, timestamp)
+    #             continue
+    #         # get the package filename
+    #         package_file = get_package_filename(file, sort_index, date_field, timestamp)
+    #         file_path = os.path.join(root, file)
+    #         if package_file in package_files.keys():
+    #             package_files[package_file].add(file_path)
+    #         else:
+    #             package_files[package_file] = SortedSet({file_path})
+
+        for package_file in package_files.keys():
+            output_file = os.path.join(out_path, path_prefix, package_file)
+            package_path_by_file[package_file] = output_file
+            os.makedirs(os.path.join(out_path, path_prefix), exist_ok=True)
+            is_first_file = True
+            for file in package_files[package_file]:
+                data = pd.read_csv(file)
+                mode = 'a'
+                write_header = False
+                if is_first_file:
+                    mode = 'w'
+                    write_header = True
+                    is_first_file = False
+                data.to_csv(output_file, mode=mode, header=write_header, index=False)
+                log.debug(f'Wrote data file {output_file}')
+    
+        write_manifest(out_path, path_prefix, has_data_by_file, package_path_by_file)
+
+
+def get_package_filename(file, sort_index, date_field, timestamp):
+    filename_fields = file.split('.')[:-1]
+    filename_fields[sort_index] = date_field
+    filename_fields.extend([timestamp, 'csv'])
+    package_file = '.'.join(filename_fields)
+    return package_file
+
+
+def get_package_prefix(data_path, publoc_index, date_index, date_index_length):
+    data_path_parts = data_path.parts
+    path_prefix = os.path.join(data_path_parts[publoc_index],*data_path_parts[date_index: date_index + date_index_length])
+    date_field = '-'.join(data_path_parts[date_index: date_index + date_index_length])
+    return path_prefix, date_field
+
+
+def write_manifest(out_path, path_prefix, has_data_by_file, package_path_by_file):
+    manifest_filepath = os.path.join(out_path, path_prefix, 'manifest.csv')
+    with open(manifest_filepath, 'w') as manifest_csv:
+        writer = csv.writer(manifest_csv)
+        writer.writerow(['file', 'hasData', 'size', 'checksum'])
+        for key in has_data_by_file.keys():
+            # get file size and checksum
+            package_path = package_path_by_file[key]
+            file_size = os.stat(package_path).st_size
+            md5_hash = hashlib.md5()
+            with open(package_path, "rb") as f:
+                for byte_block in iter(lambda: f.read(4096), b""):
+                    md5_hash.update(byte_block)
+            checksum = md5_hash.hexdigest()
+            writer.writerow([key, has_data_by_file[key], file_size, checksum])
+    log.debug(f'Wrote manifest {manifest_filepath}')
+
+
+def parse_manifest(manifest_file, has_data_by_file, sort_index, date_field, timestamp):
+    manifest = pd.read_csv(manifest_file, header=0, squeeze=True, index_col=0).to_dict()
+    for key in manifest.keys():
+        package_file = get_package_filename(key, sort_index, date_field, timestamp)
+        if package_file in has_data_by_file.keys():
+            has_data_by_file[package_file] = has_data_by_file[package_file] | manifest[key]
+        else:
+            has_data_by_file[package_file] = manifest[key]

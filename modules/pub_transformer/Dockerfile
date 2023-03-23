@@ -1,13 +1,13 @@
 ####
 #
-# This dockerfile will build the transformer module.
+# This dockerfile will build the pub_transformer module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t transformer:latest -f transformer/Dockerfile .
+# docker build -t pub_transformer:latest -f pub_transformer/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="transformer"
+ARG APP_DIR="pub_transformer"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"

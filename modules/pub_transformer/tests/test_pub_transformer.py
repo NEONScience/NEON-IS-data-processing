@@ -12,32 +12,30 @@ from unittest import TestCase
 import pandas as pd
 from testfixtures import TempDirectory
 
-import transformer.transformer_main as transformer_main
-from transformer.tests.location_data import get_location_data
-from transformer.transformer import transform, format_column, format_sig
+import pub_transformer.pub_transformer_main as pub_transformer_main
+from pub_transformer.tests.group_data import get_group_data
+from pub_transformer.pub_transformer import pub_transform, format_column, format_sig
 
 
-class TransformerTest(TestCase):
+class PubTransformerTest(TestCase):
 
     def setUp(self):
 
-        self.log = logging.getLogger("testlog")
-        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-
-        # generate_readme temporary dir
         self.temp_dir = TempDirectory()
         self.temp_dir_name = self.temp_dir.path
         self.input_path = Path(self.temp_dir_name, "repo/inputs")
-        self.data_path = Path(self.input_path, "CPER/2019/05/24")
+        self.data_path = Path(self.input_path, "2019/05/24/CPER")
         self.out_path = Path(self.temp_dir_name, "outputs")
-        self.output_path = Path(self.out_path, "CPER/2019/05/24")
-        self.location = "CFGLOC123"
+        self.output_path = Path(self.out_path, "2019/05/24/CPER")
+        self.group = "par-quantum-line_CPER001000"
         self.workbook_path = Path(self.input_path, 'workbook.csv')
-        self.location_path = Path(self.data_path, 'locations', self.location, 'location.json')
-        self.data_file = Path(self.data_path, 'data', self.location, 'data_001.parquet')
-        os.makedirs(Path(self.data_path, 'locations', self.location))
-        os.makedirs(Path(self.data_path, 'data', self.location))
+        self.group_path = Path(self.data_path, 'group', self.group, 'group.json')
+        self.data_file = Path(self.data_path, 'data', self.group, 'data_001.parquet')
+        os.makedirs(Path(self.data_path, 'group', self.group))
+        os.makedirs(Path(self.data_path, 'data', self.group))
         self.year_index = self.data_path.parts.index("2019")
+        self.data_type_index = self.data_file.parts.index("data")
+        self.group_metadata_dir = "group"
 
         # generate_readme workbook dataframe
         workbook = pd.DataFrame()
@@ -46,15 +44,15 @@ class TransformerTest(TestCase):
         workbook['downloadPkg'] = 'basic'
         workbook['rank'] = [1,2,3]
         workbook['table'] = 'table001'
-        workbook['dpID'] = 'NEON.DOM.SITE.DP1.00041.001'
+        workbook['dpID'] = 'NEON.DOM.SITE.DP1.00066.001'
         workbook['pubFormat'] = ["yyyy-MM-dd'T'HH:mm:ss'Z'(floor)", '*.###(round)', 'asIs']
         workbook['dataCategory'] = 'Y'
         # write workbook to csv
         workbook.to_csv(self.workbook_path, sep ='\t', index=False)
 
-        # write location to json
-        with open(self.location_path, 'w') as f:
-            json.dump(get_location_data(), f)
+        # write group to json
+        with open(self.group_path, 'w') as f:
+            json.dump(get_group_data(), f)
 
         # generate_readme data dataframe
         self.data = pd.DataFrame()
@@ -95,25 +93,30 @@ class TransformerTest(TestCase):
         return
 
     def test_transform(self):
-        os.environ["WORKBOOK_PATH"] = str(self.workbook_path)
-        os.environ["DATA_PATH"] = str(self.data_path)
-        os.environ["OUT_PATH"] = str(self.out_path)
-        transform(year_index=self.year_index)
+        pub_transform(data_path=self.data_path,
+                      out_path=self.out_path,
+                      workbook_file=self.workbook_path,
+                      year_index=self.year_index,
+                      data_type_index=self.data_type_index,
+                      group_metadata_dir=self.group_metadata_dir)
         self.check_output()
 
     def test_main(self):
+        os.environ["LOG_LEVEL"] = "DEBUG"
         os.environ["WORKBOOK_PATH"] = str(self.workbook_path)
         os.environ["DATA_PATH"] = str(self.data_path)
         os.environ["OUT_PATH"] = str(self.out_path)
         os.environ["YEAR_INDEX"] = str(self.year_index)
-        transformer_main.main()
+        os.environ["DATA_TYPE_INDEX"] = str(self.data_type_index)
+        os.environ["GROUP_METADATA_DIR"] = str(self.group_metadata_dir)
+        pub_transformer_main.main()
         self.check_output()
 
     def check_output(self):
         os.chdir(self.output_path)
         out_files = glob.glob("*.csv")
-        self.log.debug("NUMBER OF OUTPUT FILES = " + str(len(out_files)))
-        basic_pattern = 'NEON.D10.CPER.DP1.00041.001.001.505.001.table001.2019-05-24.basic.csv'
+        print("NUMBER OF OUTPUT FILES = " + str(len(out_files)))
+        basic_pattern = 'NEON.D10.CPER.DP1.00066.001.001.000.001.table001.2019-05-24.basic.csv'
         self.assertTrue(len(out_files) == 2)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern) | fnmatch.fnmatch(out_files[1], basic_pattern))
 

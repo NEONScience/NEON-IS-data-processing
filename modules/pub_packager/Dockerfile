@@ -1,13 +1,13 @@
 ####
 #
-# This dockerfile will build the packager module.
+# This dockerfile will build the pub_packager module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t packager:latest -f packager/Dockerfile .
+# docker build -t pub_packager:latest -f pub_packager/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="packager"
+ARG APP_DIR="pub_packager"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
