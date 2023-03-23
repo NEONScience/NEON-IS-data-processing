@@ -75,6 +75,8 @@
 #     original creation
 #   Cove Sturtevant (2021-04-15)
 #     add support for array variables/calibrations that utilize multiple stream IDs for the same term
+#   Cove Sturtevant (2023-03-23)
+#     fix bug when cal is copied in a block of directories where one fails causing the whole block to fail
 ##############################################################################################
 wrap.cal.asgn <- function(DirIn,
                           DirOutBase,
@@ -168,19 +170,14 @@ wrap.cal.asgn <- function(DirIn,
     # Copy the file to the appropriate output directories
     if (base::sum(setDir) > 0) {
       
-      # Break up setDir into groups of 100 to avoid error "system call failed: Argument list too long"
-      dirOutPrd <- dirOut[setDir]
-      setBin <- base::seq.int(from=1,to=base::length(dirOutPrd),by=100)
-      for (idx in setBin){
-        setDirIdx <- idx:base::min(base::length(dirOutPrd),idx+99)
+      for(dirOutIdx in dirOut[setDir]){
         rpt <- base::system(
           base::paste0(
             'ln -s ',
             calSlct$path[idxPrd],
             calSlct$file[idxPrd],
             ' ',
-            dirOutPrd[setDirIdx],
-            collapse = ' && '
+            dirOutIdx
           )
         )
         
@@ -188,28 +185,26 @@ wrap.cal.asgn <- function(DirIn,
           log$error(
             base::paste0(
               calSlct$file[idxPrd],
-              ' could NOT be copied to daily folders between ',
-              dirOut[setDir][1],
-              ' and ',
-              utils::tail(dirOut[setDir],1),
+              ' could NOT be copied to ',
+              dirOutIdx,
               '. Look for warnings from system command.'
             )
           )
           stop()
         }
-      } # End loop around 100-file groups
-    } # End copy of calibration file to relevant date folders
-    
-    log$info(
-      base::paste0(
-        calSlct$file[idxPrd],
-        ' copied to all daily folders between ',
-        dirOut[setDir][1],
-        ' and ',
-        utils::tail(dirOut[setDir],1)
+      } # End copy of calibration file to relevant date folders
+      
+      log$info(
+        base::paste0(
+          calSlct$file[idxPrd],
+          ' copied to all daily folders between ',
+          dirOut[setDir][1],
+          ' and ',
+          utils::tail(dirOut[setDir],1)
+        )
       )
-    )
-
+    } # End if-statement for any relevant output dates
+    
   } # End loop around calibration periods
   
   return()
