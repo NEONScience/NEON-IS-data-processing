@@ -1,34 +1,30 @@
 ---
 pipeline:
-  name: li191r_calibration_assignment
+  name: parQuantumLine_level1_pub_group
 transform:
-  cmd:
-  - Rscript
-  - ./flow.cal.asgn.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.6
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/pub_grouper:v1.0.10
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m pub_grouper.pub_grouper_main"
   env:
-    LOG_LEVEL: INFO
-input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: li191r_calibration
-      glob: /li191r/*
-  - pfs:
-      name: FILE_YEAR
-      repo: li191r_cron_daily_and_date_control
-      glob: /data_years.txt
-parallelism_spec:
-  constant: 4
+    LOG_LEVEL: DEBUG
+    OUT_PATH: "/pfs/out"
+    YEAR_INDEX: '3'
+    GROUP_INDEX: '6'
+    DATA_TYPE_INDEX: '7'
+    GROUP_METADATA_DIR: group
+    PUBLOC_KEY: site
+    LINK_TYPE: SYMLINK
+input: 
+  pfs: 
+    name: DATA_PATH
+    repo: parQuantumLine_level1_group_consolidate_srf
+    glob: /*/*/*
 resource_requests:
-  memory: 200M
-  cpu: 0.8
+  memory: 300M
+  cpu: 0.3
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -51,10 +47,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"4G"
+      "value":"2G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "1.5"
+      "value": "1"
     }
   ]

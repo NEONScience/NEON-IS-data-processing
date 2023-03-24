@@ -1,0 +1,55 @@
+---
+pipeline:
+  name: parQuantumLine_level1_pub_package
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/pub_packager:v1.0.2
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m pub_packager.pub_packager_main"
+  env:
+    LOG_LEVEL: DEBUG
+    OUT_PATH: "/pfs/out"
+    PUBLOC_INDEX: '6'
+    DATE_INDEX: '3' # Starting index of date in path (i.e. year index)
+    DATE_INDEX_LENGTH: '2' # length of date index for pub package (should be 2 for monthly)
+    SORT_INDEX: '10' # File name index corresponding to date field (delimiter = .)
+input: 
+  pfs: 
+    name: DATA_PATH
+    repo: parQuantumLine_level1_pub_transform
+    # Glob must be at same level as pub package (e.g. monthly)
+    glob: /*/*/
+resource_requests:
+  memory: 300M
+  cpu: 0.3
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "1"
+    }
+  ]
