@@ -61,23 +61,32 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
 
   wk_dir <- getwd()
   
-  #1.  
-  testInputFile <- 'pfs/pubWb/surfacewater-physical_PRLA130100_science_review_flags.json'
+  #1. Check to see if the science review flag to the data in a publication table
+  #testInputFile <- 'pfs/pubWb/surfacewater-physical_PRLA130100_science_review_flags.json'
+  testInputFile <- 'pfs/pubWb/par-quantum-line_CPER001000_science_review_flags.json'
   srf = NEONprocIS.pub::def.read.srf(NameFile=testInputFile)
   
-  # The qfFinl column is added to the srf data frame using the def.srf.term.qf.finl function:
+  # srf needs to have the qfFinl column
   srf$qfFinl <- NEONprocIS.pub::def.srf.term.qf.finl(termSrf=srf$srf_term_name,log=log)
 
-  FilePubWb <- 'pfs/pubWb//PublicationWorkbook_elevSurfacewater.txt'
+  #FilePubWb <- 'pfs/pubWb//PublicationWorkbook_elevSurfacewater.txt'
+  FilePubWb <- 'pfs/pubWb//PublicationWorkbook_parQuantumLine.txt'
   pubWb <- NEONprocIS.pub::def.read.pub.wb(NameFile=FilePubWb)
   TablPub <- 'PARQL_1min'
   FileData <- c('pfs/pubWb/par-quantum-line_CPER001000_2023-02-03_PARQL_1min_001.parquet') # Files must have same # of rows
   data <- base::lapply(FileData,arrow::open_dataset)
   dataTabl <- NEONprocIS.base::def.read.parq(NameFile = FileData)
   
-  NameVarTimeBgn='startDateTime'
-  NameVarTimeEnd='endDateTime'
+  TimeBgn='startDTime'
+  TimeEnd='endDateTime'
 
-  tt = NEONprocIS.pub::def.srf.aply(srf=srf,dataTabl=dataTabl, pubWbTabl=pubWb, NameVarTimeBgn='startDateTime',NameVarTimeEnd='endDateTime')
-  testthat::expect_true(is.data.frame(tt) == TRUE)
+  returnedDataTabl = NEONprocIS.pub::def.srf.aply(srf=srf,dataTabl=dataTabl, pubWbTabl=pubWb, NameVarTimeBgn=TimeBgn,NameVarTimeEnd=TimeEnd)
+
+  testthat::expect_true(is.data.frame(returnedDataTabl) == TRUE)
+  # A data frame with the same format and size of dataTabl.
+  testthat::expect_true((nrow(returnedDataTabl) == nrow(dataTabl)) == TRUE)
+  testthat::expect_true((ncol(returnedDataTabl)>= ncol(dataTabl)) == TRUE)
+  # A data frame with applicable SRF actions applied.
+  testthat::expect_true(any(srf$qfFinl %in% colnames(returnedDataTabl)))
+  
 })
