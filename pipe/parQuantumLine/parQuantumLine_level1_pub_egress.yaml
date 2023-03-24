@@ -1,28 +1,24 @@
 ---
 pipeline:
-  name: parQuantumLine_level1_pub_transform
+  name: parQuantumLine_level1_pub_egress
 transform:
-  image: quay.io/battelleecology/pub_transformer:v1.0.2
+  image: quay.io/battelleecology/pub_egress:v1.0.6
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - "python3 -m pub_transformer.pub_transformer_main"
+  - "python3 -m pub_egress.pub_egress.app"
   env:
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     OUT_PATH: "/pfs/out"
-    YEAR_INDEX: '3'
-    DATA_TYPE_INDEX: '7'
-    GROUP_METADATA_DIR: group
+    EGRESS_URL: https://storage.googleapis.com/neon-int-publication/egress-test
 input: 
-  cross:
-  - pfs: 
-      name: DATA_PATH
-      repo: parQuantumLine_level1_pub_group
-      glob: /*/*/*
-  - pfs: 
-      name: WORKBOOK_PATH
-      repo: parQuantumLine_pub_workbooks
-      glob: /parQuantumLine/PublicationWorkbook_parQuantumLine.txt
+  pfs: 
+    name: DATA_PATH
+    repo: parQuantumLine_level1_pub_package
+    # Glob must be at each intended pub datum (i.e. each site/year/month)
+    glob: /*/*/*
+egress:
+  URL: gs://neon-int-publication/egress-test
 resource_requests:
   memory: 300M
   cpu: 0.3

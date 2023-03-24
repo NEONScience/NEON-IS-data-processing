@@ -1,20 +1,20 @@
 ####
 #
-# This dockerfile will build the egress module.
+# This dockerfile will build the pub_egress module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t egress:latest -f egress/Dockerfile .
+# docker build -t pub_egress:latest -f pub_egress/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="egress/egress"
+ARG APP_DIR="pub_egress/pub_egress"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY egress/requirements.txt ${CONTAINER_APP_DIR}
+COPY pub_egress/requirements.txt ${CONTAINER_APP_DIR}
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \

@@ -4,7 +4,7 @@ from structlog import get_logger
 from pathlib import Path
 
 from common import log_config as log_config
-from egress.egress.egress import Egress
+from pub_egress.pub_egress.pub_egress import Pub_egress
 
 
 def main() -> None:
@@ -18,7 +18,7 @@ def main() -> None:
     log.debug(f'data_dir: {data_path}')
     log.debug(f'out_dir: {out_path}')
 
-    egress = Egress(data_path, out_path, egress_url)
+    egress = Pub_egress(data_path, out_path, egress_url)
     egress.upload()
 
 

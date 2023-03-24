@@ -53,6 +53,9 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_file: Path, year_
     
         # has data by output file
         has_data_by_file = {}
+        
+        # visibility by output file
+        visibility_by_file = {}
     
         groups = os.listdir(group_metadata_path)
         for group in groups:
@@ -66,7 +69,13 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_file: Path, year_
             site = group_data["features"][0]["site"]
             day_path = os.path.sep.join(data_path_parts[year_index:year_index+3])
             output_path = os.path.join(out_path, day_path, site)
-              
+            
+            # Get additional group properties
+            domain = group_data["features"][0]["domain"]
+            hor = group_data["features"][0]["HOR"]
+            ver = group_data["features"][0]["VER"]
+            visibility = group_data["features"][0]["visibility_code"]
+            
             # determine time indexes from data filenames
             group_data_path = os.path.join(data_path, group)
             data_files = os.listdir(group_data_path)
@@ -76,9 +85,9 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_file: Path, year_
             for tmi in list(set(tmi_by_file.values())):
                 # construct filenames
                 dp_parts = workbook['dpID'][0].split('.')
-                dp_parts[dp_parts.index('DOM')] = group_data["features"][0]["domain"]
+                dp_parts[dp_parts.index('DOM')] = domain
                 dp_parts[dp_parts.index('SITE')] = site
-                dp_parts.extend([group_data["features"][0]["HOR"], group_data["features"][0]["VER"], tmi, table_by_tmi[tmi]])
+                dp_parts.extend([hor, ver, tmi, table_by_tmi[tmi]])
                 basic_filename_parts = dp_parts
                 expanded_filename_parts = dp_parts.copy()
                 basic_filename_parts.extend([formatted_date, 'basic', 'csv'])
@@ -113,7 +122,11 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_file: Path, year_
                 has_data_by_file[expanded_filename] = \
                     not data[workbook.loc[(workbook['dataCategory'] == 'Y') & ((workbook['downloadPkg'] == 'basic') |
                                         (workbook['downloadPkg'] == 'expanded'))]['fieldName'].values].isnull().values.all()
-    
+                
+                # Record portal visibility
+                visibility_by_file[basic_filename] = visibility
+                visibility_by_file[expanded_filename] = visibility
+                
                 # extract and write datasets
                 os.makedirs(output_path, exist_ok=True)
                 # basic
@@ -126,17 +139,17 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_file: Path, year_
                                                      (workbook['downloadPkg'] == 'expanded'))
                                                     & (workbook['table'] == table_by_tmi[tmi]), ['rank', 'fieldName']]
                     data[expanded_columns.sort_values('rank')['fieldName']].to_csv(expanded_filepath, index=False)
-        write_manifest(output_path, has_data_by_file)
+        write_manifest(output_path, has_data_by_file, visibility_by_file)
 
 
-def write_manifest(output_path: str, has_data_by_file: dict):
+def write_manifest(output_path: str, has_data_by_file: dict, visibility_by_file: dict):
     """Write metadata manifest."""
     manifest_filepath = os.path.join(output_path, 'manifest.csv')
     with open(manifest_filepath, 'w') as manifest_csv:
         writer = csv.writer(manifest_csv)
-        writer.writerow(['file', 'hasData'])
+        writer.writerow(['file', 'hasData', 'visibility'])
         for key in has_data_by_file.keys():
-            writer.writerow([key, has_data_by_file[key]])
+            writer.writerow([key, has_data_by_file[key], visibility_by_file[key]])
     
 
 # Apply pub format to a column of a dataframe
