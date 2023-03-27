@@ -35,11 +35,11 @@ class Pub_packager(TestCase):
         with open(self.data_file_2, 'w') as f:
             f.write('file 2 content')
         with open(self.manifest_file_1, 'w') as f:
-            f.write('file, has_data\n')
-            f.write('NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05-24.basic.csv,True')
+            f.write('file,hasData,visibility\n')
+            f.write('NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05-24.basic.csv,True,public')
         with open(self.manifest_file_2, 'w') as f:
-            f.write('file, has_data\n')
-            f.write('NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05-25.basic.csv,True')
+            f.write('file,hasData,visibility\n')
+            f.write('NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05-25.basic.csv,True,public')
         self.publoc_index = self.data_file_1.parts.index('CPER')
         self.date_index = self.data_file_1.parts.index('2019')
         self.date_index_length = 2

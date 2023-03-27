@@ -39,6 +39,8 @@ def pub_package(*, data_path, out_path, publoc_index: int, date_index: int, date
         package_files = {}  # the set of files to be collated into each package file
         has_data_by_file = {}  # has_data by package file
         package_path_by_file = {}  # package path by package file
+        visibility_by_file = {} # visibility by package file
+
     
         # processing timestamp
         timestamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
@@ -55,30 +57,14 @@ def pub_package(*, data_path, out_path, publoc_index: int, date_index: int, date
                 file = os.path.basename(path)
                 log.debug(f'{file}')
                 if 'manifest' in file:
-                    log.debug(f'manifest!')
-                    parse_manifest(path, has_data_by_file, sort_index, date_field, timestamp)
+                    parse_manifest(path, has_data_by_file, visibility_by_file, sort_index, date_field, timestamp)
                     continue
                 # get the package filename
-                log.debug(f'package_file!')
                 package_file = get_package_filename(file, sort_index, date_field, timestamp)
                 if package_file in package_files.keys():
                     package_files[package_file].add(path)
                 else:
                     package_files[package_file] = SortedSet({path})
-
-    # for root, dirs, files in os.walk(data_path):
-    #     for file in files:
-    #         # if this is the manifest, parse it
-    #         if 'manifest' in file:
-    #             parse_manifest(os.path.join(root, file), has_data_by_file, sort_index, date_field, timestamp)
-    #             continue
-    #         # get the package filename
-    #         package_file = get_package_filename(file, sort_index, date_field, timestamp)
-    #         file_path = os.path.join(root, file)
-    #         if package_file in package_files.keys():
-    #             package_files[package_file].add(file_path)
-    #         else:
-    #             package_files[package_file] = SortedSet({file_path})
 
         for package_file in package_files.keys():
             output_file = os.path.join(out_path, path_prefix, package_file)
@@ -96,7 +82,7 @@ def pub_package(*, data_path, out_path, publoc_index: int, date_index: int, date
                 data.to_csv(output_file, mode=mode, header=write_header, index=False)
                 log.debug(f'Wrote data file {output_file}')
     
-        write_manifest(out_path, path_prefix, has_data_by_file, package_path_by_file)
+        write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file)
 
 
 def get_package_filename(file, sort_index, date_field, timestamp):
@@ -114,11 +100,11 @@ def get_package_prefix(data_path, publoc_index, date_index, date_index_length):
     return path_prefix, date_field
 
 
-def write_manifest(out_path, path_prefix, has_data_by_file, package_path_by_file):
+def write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file):
     manifest_filepath = os.path.join(out_path, path_prefix, 'manifest.csv')
     with open(manifest_filepath, 'w') as manifest_csv:
         writer = csv.writer(manifest_csv)
-        writer.writerow(['file', 'hasData', 'size', 'checksum'])
+        writer.writerow(['file', 'hasData', 'visibility', 'size', 'checksum'])
         for key in has_data_by_file.keys():
             # get file size and checksum
             package_path = package_path_by_file[key]
@@ -128,15 +114,18 @@ def write_manifest(out_path, path_prefix, has_data_by_file, package_path_by_file
                 for byte_block in iter(lambda: f.read(4096), b""):
                     md5_hash.update(byte_block)
             checksum = md5_hash.hexdigest()
-            writer.writerow([key, has_data_by_file[key], file_size, checksum])
+            writer.writerow([key, has_data_by_file[key], visibility_by_file[key], file_size, checksum])
     log.debug(f'Wrote manifest {manifest_filepath}')
 
 
-def parse_manifest(manifest_file, has_data_by_file, sort_index, date_field, timestamp):
-    manifest = pd.read_csv(manifest_file, header=0, squeeze=True, index_col=0).to_dict()
-    for key in manifest.keys():
+def parse_manifest(manifest_file, has_data_by_file, visibility_by_file, sort_index, date_field, timestamp):
+    manifest_hasData = pd.read_csv(manifest_file, header=0, squeeze=True, index_col=0,usecols=['file','hasData']).to_dict()
+    manifest_visibility = pd.read_csv(manifest_file, header=0, squeeze=True, index_col=0,usecols=['file','visibility']).to_dict()
+    for key in manifest_hasData.keys():
         package_file = get_package_filename(key, sort_index, date_field, timestamp)
         if package_file in has_data_by_file.keys():
-            has_data_by_file[package_file] = has_data_by_file[package_file] | manifest[key]
+            has_data_by_file[package_file] = has_data_by_file[package_file] | manifest_hasData[key]
+            visibility_by_file[package_file] = visibility_by_file[package_file]
         else:
-            has_data_by_file[package_file] = manifest[key]
+            has_data_by_file[package_file] = manifest_hasData[key]
+            visibility_by_file[package_file] = manifest_visibility[key]

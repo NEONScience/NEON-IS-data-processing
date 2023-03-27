@@ -3,7 +3,7 @@ pipeline:
   name: parQuantumLine_level1_pub_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/pub_packager:v1.0.1
+  image: quay.io/battelleecology/pub_packager:v1.0.2
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -24,7 +24,7 @@ input:
 resource_requests:
   memory: 300M
   cpu: 0.3
-autoscaling: false
+autoscaling: true
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
