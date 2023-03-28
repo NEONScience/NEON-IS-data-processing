@@ -6,7 +6,7 @@
             "geometry": null,
             "properties": {
                 "name": "CFGLOC101669",
-                "group": "surfacewater-physical_ARIK101100",
+                "group": "surfacewater-physical_PRLA102100",
                 "active_periods": [
                     {
                         "start_date": "2020-01-02T00:00:00Z",
@@ -19,10 +19,10 @@
                     "DP1.20054.001"
                 ]
             },
-            "site": "ARIK",
+            "site": "PRLA",
             "domain": "D10",
             "visibility_code": "public",
-            "HOR": "101",
+            "HOR": "102",
             "VER": "100"
         }
     ]

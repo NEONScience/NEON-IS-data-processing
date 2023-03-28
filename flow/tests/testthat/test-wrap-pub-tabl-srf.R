@@ -83,8 +83,8 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   DirOutBase = "pfs/out"
   
   DirData=c('stats','quality_metrics')
-  FilePubWb = 'pfs/pubWb/PublicationWorkbook_parQuantumLine.txt'
-  TablPub = 'PARQL_1min' 
+  FilePubWb = 'pfs/pubWb/PublicationWorkbook_elevSurfacewater.txt'
+  TablPub = 'EOS_30_min' 
   TimeBgn ='startDateTime'
   TimeEnd ='endDateTime'
   DirSubCopy = NULL
@@ -92,8 +92,9 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
-  
-  wrap.pub.tabl(DirIn=DirIn,
+ 
+  #1. Happy path test 
+  wrap.pub.tabl.srf(DirIn=DirIn,
                 DirOutBase=DirOutBase,
                 DirData=c('stats','quality_metrics'),
                 FilePubWb=FilePubWb,
@@ -102,4 +103,39 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
                 NameVarTimeEnd=TimeEnd,
                 DirSubCopy=DirSubCopy)
 
+  #2. an error if no matching pub tables
+  
+  TablPub = 'EOS_30' 
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  try(wrap.pub.tabl.srf(DirIn=DirIn,
+                    DirOutBase=DirOutBase,
+                    DirData=c('stats','quality_metrics'),
+                    FilePubWb=FilePubWb,
+                    TablPub=TablPub,
+                    NameVarTimeBgn=TimeBgn,
+                    NameVarTimeEnd=TimeEnd,
+                    DirSubCopy=DirSubCopy), silent=TRUE)
+  
+  #3. an error if no matching pub tables 
+  
+  TablPub = 'EOS_30_min' 
+  DirIn = "pfs/swPhysical_level1_group_consolidate/2020/01/02/surfacewater-physical_ARIK102100"
+  
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  try(wrap.pub.tabl.srf(DirIn=DirIn,
+                        DirOutBase=DirOutBase,
+                        DirData=c('stats','quality_metrics'),
+                        FilePubWb=FilePubWb,
+                        TablPub=TablPub,
+                        NameVarTimeBgn=TimeBgn,
+                        NameVarTimeEnd=TimeEnd,
+                        DirSubCopy=DirSubCopy), silent=TRUE)
 })
