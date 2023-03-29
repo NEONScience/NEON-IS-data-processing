@@ -76,24 +76,28 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
 
   source('../../flow.pub.tabl.srf/wrap.pub.tabl.srf.R')
   
-  #1. 
- # wk_dir <- getwd()
-  DirIn = "pfs/swPhysical_level1_group_consolidate/2020/01/02/surfacewater-physical_ARIK101100"
-#  DirIn = paste(wk_dir,DirIn)
   DirOutBase = "pfs/out"
-  
   DirData=c('stats','quality_metrics')
-  FilePubWb = 'pfs/pubWb/PublicationWorkbook_elevSurfacewater.txt'
-  TablPub = 'EOS_30_min' 
   TimeBgn ='startDateTime'
   TimeEnd ='endDateTime'
-  DirSubCopy = NULL
+  DirSubCopydata = 'data'
+  DirSubCopygroup = 'group'
+  DirSubCopynull = NULL
 
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
  
   #1. Happy path test 
+  
+  dirInBase = "pfs"
+  baseRepo = 'swPhysical_level1_group_consolidate'
+  dateDir = '2020/01/02'
+  groupRepo = 'sw-physical_ARIK101100'
+  DirIn = fs::path(dirInBase,baseRepo,dateDir,groupRepo)
+  FilePubWb = 'pfs/pubWb/PublicationWorkbook_elevSurfacewater.txt'
+  TablPub = 'EOS_30_min' 
+  
   wrap.pub.tabl.srf(DirIn=DirIn,
                 DirOutBase=DirOutBase,
                 DirData=c('stats','quality_metrics'),
@@ -101,11 +105,68 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
                 TablPub=TablPub,
                 NameVarTimeBgn=TimeBgn,
                 NameVarTimeEnd=TimeEnd,
-                DirSubCopy=DirSubCopy)
-
-  #2. an error if no matching pub tables
+                DirSubCopy= DirSubCopydata)
   
-  TablPub = 'EOS_30' 
+  DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
+  expect_true(file.exists(DirOutput, recursive = TRUE))
+  
+  wrap.pub.tabl.srf(DirIn=DirIn,
+                    DirOutBase=DirOutBase,
+                    DirData=c('stats','quality_metrics'),
+                    FilePubWb=FilePubWb,
+                    TablPub=TablPub,
+                    NameVarTimeBgn=TimeBgn,
+                    NameVarTimeEnd=TimeEnd,
+                    DirSubCopy= DirSubCopygroup)
+  
+  DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'group')
+  expect_true(file.exists(DirOutput, recursive = TRUE))
+  
+  #2. an error if 
+  
+  dateDir = '2020/01/02'
+  groupRepo = 'sw-physical_PRLA102100'
+  DirIn = fs::path(dirInBase,baseRepo,dateDir,groupRepo)
+  FilePubWb = 'pfs/pubWb/PublicationWorkbook_parQuantumLine.txt'
+  TablPub = 'PARQL_1_min'
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  try(wrap.pub.tabl.srf(DirIn=DirIn,
+                        DirOutBase=DirOutBase,
+                        DirData=c('stats','quality_metrics'),
+                        FilePubWb=FilePubWb,
+                        TablPub=TablPub,
+                        NameVarTimeBgn=TimeBgn,
+                        NameVarTimeEnd=TimeEnd,
+                        DirSubCopy=DirSubCopynull), silent=TRUE)
+  
+  #3. an error if no matching pub tables 
+  
+  DirIn = "pfs/swPhysical_level1_group_consolidate/2020/01/02/sw-physical_PRLA102100"
+  FilePubWb = 'pfs/pubWb/PublicationWorkbook_parQuantumLine.txt'
+  TablPub = 'PARQL_1min'
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  try(wrap.pub.tabl.srf(DirIn=DirIn,
+                        DirOutBase=DirOutBase,
+                        DirData=c('stats','quality_metrics'),
+                        FilePubWb=FilePubWb,
+                        TablPub=TablPub,
+                        NameVarTimeBgn=TimeBgn,
+                        NameVarTimeEnd=TimeEnd,
+                        DirSubCopy=DirSubCopy), silent=TRUE)
+  
+  #4. an error if no matching pub tables
+  
+  DirIn = "pfs/swPhysical_level1_group_consolidate/2020/01/02/surfacewater-physical_ARIK101100"
+  TablPub = 'EOS_30_min'
+  FilePubWb = 'pfs/pubWb/PublicationWorkbook_elevSurfacewater.txt'
   
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
@@ -120,22 +181,5 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
                     NameVarTimeEnd=TimeEnd,
                     DirSubCopy=DirSubCopy), silent=TRUE)
   
-  #3. an error if no matching pub tables 
-  
-  TablPub = 'EOS_30_min' 
-  DirIn = "pfs/swPhysical_level1_group_consolidate/2020/01/02/surfacewater-physical_ARIK102100"
-  
-  
-  if (dir.exists(DirOutBase)) {
-    unlink(DirOutBase, recursive = TRUE)
-  }
-  
-  try(wrap.pub.tabl.srf(DirIn=DirIn,
-                        DirOutBase=DirOutBase,
-                        DirData=c('stats','quality_metrics'),
-                        FilePubWb=FilePubWb,
-                        TablPub=TablPub,
-                        NameVarTimeBgn=TimeBgn,
-                        NameVarTimeEnd=TimeEnd,
-                        DirSubCopy=DirSubCopy), silent=TRUE)
+
 })
