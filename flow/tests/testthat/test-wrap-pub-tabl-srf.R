@@ -110,6 +110,9 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
   expect_true(file.exists(DirOutput, recursive = TRUE))
   
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
   wrap.pub.tabl.srf(DirIn=DirIn,
                     DirOutBase=DirOutBase,
                     DirData=c('stats','quality_metrics'),
@@ -164,7 +167,7 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   
   #4. an error if no matching pub tables
   
-  DirIn = "pfs/swPhysical_level1_group_consolidate/2020/01/02/surfacewater-physical_ARIK101100"
+  DirIn = "pfs/swPhysical_level1_group_consolidate/2020/01/02/sw-physical_ARIK101100"
   TablPub = 'EOS_30_min'
   FilePubWb = 'pfs/pubWb/PublicationWorkbook_elevSurfacewater.txt'
   
