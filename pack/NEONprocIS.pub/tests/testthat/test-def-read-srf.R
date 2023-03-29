@@ -37,7 +37,7 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   wk_dir <- getwd()
   
   #1. a correct test json
-  testInputFile <- 'pfs/surfacewaterPhysical_testSRF/surfacewater-physical_ARIK130100/surfacewater-physical_PRLA130100_science_review_flags.json'
+  testInputFile <- 'pfs/surfacewaterPhysical_testSRF/sw-physical_ARIK130100/sw-physical_PRLA130100_science_review_flags.json'
   tt = NEONprocIS.pub::def.read.srf(NameFile=testInputFile)
   testthat::expect_true(is.data.frame(tt) == TRUE)
   testthat::expect_true(tt$group_name[1] == "surfacewater-physical_PRLA130100")
