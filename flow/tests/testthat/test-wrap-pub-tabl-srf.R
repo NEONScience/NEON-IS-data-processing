@@ -109,7 +109,25 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   
   DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
   expect_true(file.exists(DirOutput, recursive = TRUE))
+ 
+  # TablPub is not passed
+ 
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
   
+  wrap.pub.tabl.srf(DirIn=DirIn,
+                    DirOutBase=DirOutBase,
+                    DirData=c('stats','quality_metrics'),
+                    FilePubWb=FilePubWb,
+                    NameVarTimeBgn=TimeBgn,
+                    NameVarTimeEnd=TimeEnd,
+                    DirSubCopy= DirSubCopynull)
+  
+  #DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
+  #expect_true(file.exists(DirOutput, recursive = TRUE))
+  
+  #
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
