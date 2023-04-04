@@ -110,22 +110,70 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
   expect_true(file.exists(DirOutput, recursive = TRUE))
  
-  # TablPub is not passed
+  # DP Ids are not in srf
+  
+  groupRepo_noMatch = 'noMatchingDpId-sw-physical_ARIK101100'
+  DirIn_noMatch = fs::path(dirInBase,baseRepo,dateDir,groupRepo_noMatch)
+  FilePubWb_noMatch = 'pfs/pubWb/noMatchingDpId-PW_elevSurfacewater.txt'
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  try(wrap.pub.tabl.srf(DirIn=DirIn_noMatch,
+                    DirOutBase=DirOutBase,
+                    DirData=c('stats','quality_metrics'),
+                    FilePubWb=FilePubWb_noMatch,
+                    TablPub=TablPub,
+                    NameVarTimeBgn=TimeBgn,
+                    NameVarTimeEnd=TimeEnd,
+                    DirSubCopy= DirSubCopydata),silent=TRUE)
+  
+  DirOutput = fs::path(DirOutBase,dateDir,groupRepo_noMatch,'data')
+  expect_true(file.exists(DirOutput, recursive = TRUE))
+  
+  # No data product Id in group file
+  
+  groupRepo_noIdDpGrp = 'noIdDpGrp-sw-physical_ARIK101100'
+  DirIn_noIdDpGrp = fs::path(dirInBase,baseRepo,dateDir,groupRepo_noIdDpGrp)
+  
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
+  }
+  
+  try(wrap.pub.tabl.srf(DirIn=DirIn_noIdDpGrp,
+                    DirOutBase=DirOutBase,
+                    DirData=c('stats','quality_metrics'),
+                    FilePubWb=FilePubWb,
+                    TablPub=TablPub,
+                    NameVarTimeBgn=TimeBgn,
+                    NameVarTimeEnd=TimeEnd,
+                    DirSubCopy= DirSubCopynull),silent=TRUE)
+  
+  # DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
+  # expect_true(file.exists(DirOutput, recursive = TRUE))
+  
+  
+  # TablPub=NULL and NULL in table of FilePubWb
  
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  wrap.pub.tabl.srf(DirIn=DirIn,
+  FilePubWb_tableNULL = 'pfs/pubWb/tableNULL-PW_elevSurfacewater.txt'
+  
+  TablPub_null = NULL
+  try(wrap.pub.tabl.srf(DirIn=DirIn,
                     DirOutBase=DirOutBase,
                     DirData=c('stats','quality_metrics'),
-                    FilePubWb=FilePubWb,
+                    FilePubWb=FilePubWb_tableNULL,
+                    TablPub=TablPub_null,
                     NameVarTimeBgn=TimeBgn,
                     NameVarTimeEnd=TimeEnd,
-                    DirSubCopy= DirSubCopynull)
+                    DirSubCopy= DirSubCopynull), silent=TRUE)
   
-  #DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
-  #expect_true(file.exists(DirOutput, recursive = TRUE))
+  DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
+  expect_true(file.exists(DirOutput, recursive = TRUE))
   
   #
   if (dir.exists(DirOutBase)) {

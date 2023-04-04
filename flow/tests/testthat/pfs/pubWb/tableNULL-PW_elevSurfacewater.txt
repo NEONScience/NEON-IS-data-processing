@@ -1,0 +1,2 @@
+rank	DPName	dpID	dpIDSource	DPNumber	table	tableDescription	fieldName	description	dataType	units	measurementScale	ontologyMapping	pubFormat	exampleEntry	usage	fieldType	tableType	inputs	ingestDPIDSource	ingestTableSource	ingestFieldSource	inputFieldParameter	filterSampleClass	timeIndex	timeDescription	downloadPkg	dataCategory	sampleInfo	lovName	primaryKey	redactionFlag
+
