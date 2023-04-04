@@ -1,30 +1,27 @@
 ---
 pipeline:
-  name: parQuantumLine_level1_pub_egress
+  name: parQuantumLine_level1_pub_upload
 transform:
-  image: quay.io/battelleecology/pub_egress:v1.0.6
+  image: quay.io/battelleecology/pub_uploader:3
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - "python3 -m pub_egress.pub_egress.app"
+  - export LOG_LEVEL=DEBUG
+  - python3 -m pub_uploader.pub_uploader_main
   env:
     LOG_LEVEL: DEBUG
     OUT_PATH: "/pfs/out"
-    EGRESS_URL: https://storage.googleapis.com/neon-int-publication/egress-test
+    VERSION: 'pipeline_test'
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input: 
-  join:
-  - pfs: 
-      name: DATA_PATH
-      repo: parQuantumLine_level1_pub_package
-      # Glob must be at each intended pub datum (i.e. each site/year/month)
-      glob: /*/(*/*)
-      joinOn: $1
-  - pfs: 
-      repo: parQuantumLine_cron_monthly_and_pub_control
-      glob: /(*/*)
-      joinOn: $1
-egress:
-  URL: gs://neon-int-publication/egress-test
+  pfs: 
+    name: DATA_PATH
+    repo: parQuantumLine_level1_pub_egress 
+    glob: /*/*/*/
 resource_requests:
   memory: 300M
   cpu: 0.3
