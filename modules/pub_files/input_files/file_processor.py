@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Tuple, NamedTuple, Callable, Dict
+from typing import Tuple, NamedTuple, Callable
 
 import pandas
 import structlog
@@ -8,18 +8,21 @@ import common.date_formatter as date_formatter
 from pub_files.data_product import DataProduct
 from pub_files.input_files.file_metadata import DataFile, FileMetadata, PathElements, DataFiles
 from pub_files.input_files.path_parser import parse_path
-from pub_files.input_files.filename_parser import parse_filename, FilenameParts
+from pub_files.input_files.filename_parser import parse_filename, FilenameData
+from pub_files.publication_workbook import PublicationWorkbook
 
 log = structlog.get_logger()
 
 
 class FileProcessorDatabase(NamedTuple):
-    get_descriptions: Callable[[], Dict[str, str]]
     get_data_product: Callable[[str], DataProduct]
 
 
-def process(in_path: Path, out_path: Path, in_path_parse_index: int, database: FileProcessorDatabase) -> FileMetadata:
-    file_descriptions = database.get_descriptions()
+def process(in_path: Path,
+            out_path: Path,
+            in_path_parse_index: int,
+            publication_workbook: PublicationWorkbook,
+            database: FileProcessorDatabase) -> FileMetadata:
     site = ''
     domain = ''
     year = ''
@@ -33,16 +36,17 @@ def process(in_path: Path, out_path: Path, in_path_parse_index: int, database: F
         if path.is_file():
             (site, year, month, filename) = parse_path(path, in_path_parse_index)
             if filename != 'manifest.csv':
-                parts: FilenameParts = parse_filename(filename)
-                domain = parts.domain
-                level = parts.level
-                data_product_number = parts.data_product_number
-                revision = parts.revision
+                line_count = sum(1 for line in open(path))
+                filename_data: FilenameData = parse_filename(filename)
+                domain = filename_data.domain
+                level = filename_data.level
+                data_product_number = filename_data.data_product_number
+                revision = filename_data.revision
                 data_product_id = get_data_product_id(level, data_product_number, revision)
-                description = file_descriptions.get(data_product_id)
+                description = publication_workbook.get_file_description(filename_data)
                 if not description:
                     description = None
-                data_file = DataFile(filename=filename, description=description)
+                data_file = DataFile(filename=filename, description=description, line_count=line_count)
                 data_files.append(data_file)
                 min_time, max_time = get_time_span(path)
                 min_date = date_formatter.to_datetime(min_time)

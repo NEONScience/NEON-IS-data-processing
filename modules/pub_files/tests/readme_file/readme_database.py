@@ -3,15 +3,15 @@ import json
 import os
 from functools import partial
 from pathlib import Path
-from typing import List, Dict
+from typing import List
 
 from pyfakefs.fake_filesystem import FakeFilesystem
 
-from pub_files.database_queries.geolocation_geometry import Geometry
-from pub_files.tests.file_date_converter import to_datetime
 from pub_files.data_product import DataProduct
+from pub_files.database_queries.geolocation_geometry import Geometry
 from pub_files.database_queries.log_entries import LogEntry
-from pub_files.file_writers.readme.readme_file import ReadmeDatabase
+from pub_files.output_files.readme.readme_file import ReadmeDatabase
+from pub_files.tests.file_date_converter import to_datetime
 
 
 def get_database(fs: FakeFilesystem) -> ReadmeDatabase:
@@ -96,17 +96,3 @@ def get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
                        basic_description=basic_description,
                        expanded_description=expanded_desc,
                        remarks=remarks)
-
-
-def get_descriptions(fs: FakeFilesystem) -> Dict[str, str]:
-    path = Path(root(), 'file_descriptions.json')
-    target_path = Path('/file_descriptions.json')
-    fs.add_real_file(path, target_path=target_path)
-    file_descriptions = {}
-    with open(target_path) as file:
-        json_data = json.load(file)
-        for data in json_data:
-            data_product_id: str = data['dp_idq']
-            description: str = data['description']
-            file_descriptions[data_product_id] = description
-    return file_descriptions

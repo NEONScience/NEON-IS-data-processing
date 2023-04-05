@@ -6,8 +6,8 @@ from pathlib import Path
 
 import environs
 
-from pub_files.main import main
 from data_access import db_config_reader
+from pub_files.main import main
 
 log = logging.getLogger()
 
@@ -43,7 +43,7 @@ class MainTest(unittest.TestCase):
         self.year_path = Path(self.site_path, '2020')
         self.month_path = Path(self.year_path, '01')
 
-    def test_main(self) -> None:
+    def set_environment(self):
         pem_path = environs.Env().str('GITHUB_README_APP_PEM')
         os.environ['IN_PATH'] = str(self.data_path)
         os.environ['IN_PATH_PARSE_INDEX'] = '9'
@@ -58,15 +58,21 @@ class MainTest(unittest.TestCase):
         os.environ['GITHUB_REPO_OWNER'] = 'NEONScience'
         os.environ['GITHUB_README_REPO'] = 'neon-metadata-docs'
         os.environ['GITHUB_README_PATH'] = 'readme/template.j2'
-        os.environ['GITHUB_PUBLICATION_WORKBOOK_REPO'] = 'landWaterSoilIPT'
-        os.environ['GITHUB_PUBLICATION_WORKBOOK_PATH'] = 'water_quality/PublicationWorkbook_Water_quality.txt'
+        os.environ['GITHUB_PUBLICATION_WORKBOOK_REPO'] = 'NEON-FIU-document-IPT'
+        os.environ['GITHUB_PUBLICATION_WORKBOOK_PATH'] = 'soil_temperature/dataPubInfo/NEON.DOC.003785.txt'
         os.environ['GITHUB_EML_REPO'] = 'neon-metadata-docs'
-        os.environ['GITHUB_EML_PATH'] = 'eml/neon_components/NEON_EML_Boilerplate.xml'
+        os.environ['GITHUB_EML_BOILERPLATE_PATH'] = 'eml/neon_components/NEON_EML_Boilerplate.xml'
+        os.environ['GITHUB_EML_CONTACT_PATH'] = 'eml/neon_components/neon_contact.xml'
+        os.environ['GITHUB_EML_INTELLECTUAL_RIGHTS_PATH'] = 'eml/neon_components/neon_intellectualRights.xml'
+        os.environ['GITHUB_EML_UNIT_TYPES_PATH'] = 'eml/neon_components/neon_unitTypes.xml'
         os.environ['GITHUB_BRANCH'] = 'NSE-9201'
+
+    def test_main(self) -> None:
+        self.set_environment()
         main()
         readme_count = len(list(self.month_path.glob('*.txt')))
-        assert readme_count == 1
         csv_file_count = len(list(self.month_path.glob('*.csv')))
+        assert readme_count == 1
         assert csv_file_count == 7  # includes data files, variables file, and sensor_positions file.
 
     def tearDown(self) -> None:

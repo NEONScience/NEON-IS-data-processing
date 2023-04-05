@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from contextlib import closing
 from typing import List, Iterator
 
@@ -41,13 +40,12 @@ def get_thresholds(connector: DbConnector, term: str) -> Iterator[Threshold]:
          order by
              nam_locn.nam_locn_name
      '''
-    sql_2 = sql.replace("and \n             threshold.term_name = ANY (%s)", "")
     with closing(connection.cursor()) as cursor:
         if term == 'none':
-            cursor.execute(sql_2)
+            cursor.execute(sql.replace("and \n             threshold.term_name = ANY (%s)", ""))
         else:
-            term_l = term.split("|")
-            cursor.execute(sql, (term_l,))
+            terms = term.split("|")
+            cursor.execute(sql, (terms,))
         rows = cursor.fetchall()
         for row in rows:
             threshold_name = row[0]

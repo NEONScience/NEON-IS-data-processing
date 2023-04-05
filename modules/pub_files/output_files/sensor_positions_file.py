@@ -3,11 +3,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import NamedTuple, Callable, List, Tuple
 
-from pub_files.database_queries.geolocation_geometry import Geometry
-from pub_files.database_queries.named_locations import NamedLocation
-from pub_files.database_queries.geolocations import GeoLocation
+from pub_files.database.queries.geolocation_geometry import Geometry
+from pub_files.database.queries.named_locations import NamedLocation
+from pub_files.database.queries.geolocations import GeoLocation
 from pub_files.input_files.file_metadata import PathElements
-from pub_files.file_writers.filename_format import get_filename
+from pub_files.output_files.filename_format import get_filename
 
 COLUMNS = ['HOR.VER',
            'sensorLocationID', 'sensorLocationDescription',

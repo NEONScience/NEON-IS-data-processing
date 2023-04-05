@@ -7,6 +7,7 @@ from pub_files.data_product import DataProduct
 class DataFile(NamedTuple):
     filename: str
     description: str
+    line_count: int
 
 
 class DataFiles(NamedTuple):

@@ -2,8 +2,7 @@
 import unittest
 
 import environs
-
-from pub_files.github_files.github_reader import GithubReader, GithubConfig
+from pub_files.external_files.github_reader import GithubReader, GithubConfig
 
 
 @unittest.skip('Skip integration test.')

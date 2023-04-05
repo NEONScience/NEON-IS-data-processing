@@ -4,7 +4,7 @@ import unittest
 from data_access.db_config_reader import read_from_environment
 from data_access.db_connector import DbConnector
 from data_access.tests.database_test import DatabaseBackedTest
-from pub_files.database_queries.geolocations import get_geolocations
+from pub_files.database.queries.geolocations import get_geolocations
 
 
 class SensorLocationTest(DatabaseBackedTest):

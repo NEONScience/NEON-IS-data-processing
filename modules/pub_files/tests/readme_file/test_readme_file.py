@@ -4,17 +4,20 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import pub_files.tests.file_processor_data.file_processor_database as file_processor_data
-from pub_files.file_writers.filename_format import format_timestamp
-from pub_files.file_writers.readme.readme_file import write_file
 import pub_files.input_files.file_processor as file_processor
+import pub_files.tests.file_processor_data.file_processor_database as file_processor_data
 import pub_files.tests.readme_file.readme_database as file_database
+from pub_files.output_files.filename_format import format_timestamp
+from pub_files.output_files.readme.readme_file import write_file
+from pub_files.publication_workbook import PublicationWorkbook
+from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 from pub_files.timestamp import get_timestamp
 
 
 class ReadmeFileTest(TestCase):
 
     def setUp(self):
+        self.workbook = get_workbook()
         self.setUpPyfakefs()
         self.test_files_path = Path(os.path.dirname(__file__))
         self.in_path = Path('/in/CPER/2020/01')
@@ -50,7 +53,9 @@ class ReadmeFileTest(TestCase):
     def test_write_file(self):
         readme_template = self.template_path.read_text()
         file_processor_database = file_processor_data.get_database(self.fs)
-        file_metadata = file_processor.process(self.in_path, self.out_path, 1, file_processor_database)
+        publication_workbook = PublicationWorkbook(self.workbook)
+        file_metadata = file_processor.process(self.in_path, self.out_path, 1, publication_workbook,
+                                               file_processor_database)
         timestamp = get_timestamp()
         formatted_timestamp = format_timestamp(timestamp)
         variables_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.variables.csv'

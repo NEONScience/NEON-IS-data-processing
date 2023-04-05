@@ -5,11 +5,11 @@ from typing import List, NamedTuple, Callable
 import structlog
 from jinja2 import Template
 
-from pub_files.file_writers.readme.change_log_processor import ChangeLog, get_change_log
-from pub_files.database_queries.geolocation_geometry import Geometry
-from pub_files.database_queries.log_entries import LogEntry
+from pub_files.output_files.readme.change_log_processor import ChangeLog, get_change_log
+from pub_files.database.queries.geolocation_geometry import Geometry
+from pub_files.database.queries.log_entries import LogEntry
 from pub_files.input_files.file_metadata import PathElements, DataFiles
-from pub_files.file_writers.filename_format import get_filename
+from pub_files.output_files.filename_format import get_filename
 from pub_files.input_files.file_metadata import FileMetadata
 
 log = structlog.getLogger()

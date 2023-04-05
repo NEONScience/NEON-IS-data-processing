@@ -5,7 +5,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from pub_files.database_queries.named_locations import NamedLocation
-from pub_files.file_writers.eml_file import EmlFile, EmlDatabase
+from pub_files.output_files.eml.eml_file import EmlFile, EmlDatabase
 from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import PathElements, FileMetadata, DataFiles, DataFile
 from pub_files.tests.file_processor_data.file_processor_database import get_data_product

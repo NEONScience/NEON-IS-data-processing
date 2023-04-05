@@ -10,11 +10,11 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from data_access.types.property import Property
 from pub_files.database_queries.geolocation_geometry import Geometry
-from pub_files.file_writers.sensor_positions_file import SensorPositionsDatabase
-from pub_files.database_queries.named_locations import NamedLocation
 from pub_files.database_queries.geolocations import GeoLocation
+from pub_files.database_queries.named_locations import NamedLocation
 from pub_files.input_files.file_metadata import PathElements
-from pub_files.file_writers.sensor_positions_file import SensorPositionsFile
+from pub_files.output_files.sensor_positions_file import SensorPositionsDatabase
+from pub_files.output_files.sensor_positions_file import SensorPositionsFile
 from pub_files.tests.file_date_converter import to_datetime
 from pub_files.timestamp import get_timestamp
 

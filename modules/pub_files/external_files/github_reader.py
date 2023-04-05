@@ -32,6 +32,8 @@ class GithubReader:
         if self.config.branch:
             url = f'{url}?ref={self.config.branch}'
         response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            raise SystemExit(f'Could not find {url} in Github.')
         return response.text
 
     def _get_jwt(self) -> str:

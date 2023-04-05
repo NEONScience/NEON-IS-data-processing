@@ -5,7 +5,7 @@ from typing import List
 from data_access.db_config_reader import read_from_environment
 from data_access.db_connector import DbConnector
 from data_access.tests.database_test import DatabaseBackedTest
-from pub_files.database_queries.data_product_keywords import get_keywords
+from pub_files.database.queries.data_product_keywords import get_keywords
 
 
 class DataProductKeywordTest(DatabaseBackedTest):

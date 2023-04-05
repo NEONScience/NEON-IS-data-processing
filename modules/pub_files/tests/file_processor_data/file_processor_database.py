@@ -2,7 +2,6 @@ import json
 import os
 from functools import partial
 from pathlib import Path
-from typing import Dict
 
 from pyfakefs.fake_filesystem import FakeFilesystem
 
@@ -11,25 +10,8 @@ from pub_files.input_files.file_processor import FileProcessorDatabase
 
 
 def get_database(fs: FakeFilesystem) -> FileProcessorDatabase:
-    get_descriptions_partial = partial(get_descriptions, fs)
     get_data_product_partial = partial(get_data_product, fs)
-    return FileProcessorDatabase(get_descriptions=get_descriptions_partial,
-                                 get_data_product=get_data_product_partial)
-
-
-def get_descriptions(fs: FakeFilesystem) -> Dict[str, str]:
-    """Mock function for reading the file descriptions."""
-    path = Path(os.path.dirname(__file__), 'file_descriptions.json')
-    target_path = Path('/file_descriptions.json')
-    fs.add_real_file(path, target_path=target_path)
-    file_descriptions = {}
-    with open(target_path) as file:
-        json_data = json.load(file)
-        for data in json_data:
-            data_product_id: str = data['dp_idq']
-            description: str = data['description']
-            file_descriptions[data_product_id] = description
-    return file_descriptions
+    return FileProcessorDatabase(get_data_product=get_data_product_partial)
 
 
 def get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
