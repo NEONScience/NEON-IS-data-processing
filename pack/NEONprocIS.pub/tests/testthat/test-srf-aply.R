@@ -88,5 +88,9 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   testthat::expect_true((ncol(returnedDataTabl)>= ncol(dataTabl)) == TRUE)
   # A data frame with applicable SRF actions applied.
   testthat::expect_true(any(srf$qfFinl %in% colnames(returnedDataTabl)))
+  # srf$srf[2] = 2
+  srf$srf[3] = 2
+  returnedDataTabl = NEONprocIS.pub::def.srf.aply(srf=srf,dataTabl=dataTabl, pubWbTabl=pubWb, NameVarTimeBgn=TimeBgn,NameVarTimeEnd=TimeEnd)
+  
   
 })
