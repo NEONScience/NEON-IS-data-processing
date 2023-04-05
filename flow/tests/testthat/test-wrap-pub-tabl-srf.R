@@ -110,7 +110,7 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
   expect_true(file.exists(DirOutput, recursive = TRUE))
  
-  # DP Ids are not in srf
+  #2. DP Ids are not in srf
   
   groupRepo_noMatch = 'noMatchingDpId-sw-physical_ARIK101100'
   DirIn_noMatch = fs::path(dirInBase,baseRepo,dateDir,groupRepo_noMatch)
@@ -127,12 +127,12 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
                     TablPub=TablPub,
                     NameVarTimeBgn=TimeBgn,
                     NameVarTimeEnd=TimeEnd,
-                    DirSubCopy= DirSubCopydata),silent=TRUE)
+                    DirSubCopy= DirSubCopygroup),silent=TRUE)
   
-  DirOutput = fs::path(DirOutBase,dateDir,groupRepo_noMatch,'data')
+  DirOutput = fs::path(DirOutBase,dateDir,groupRepo_noMatch,'group')
   expect_true(file.exists(DirOutput, recursive = TRUE))
   
-  # No data product Id in group file
+  #3. No data product Id in group file
   
   groupRepo_noIdDpGrp = 'noIdDpGrp-sw-physical_ARIK101100'
   DirIn_noIdDpGrp = fs::path(dirInBase,baseRepo,dateDir,groupRepo_noIdDpGrp)
@@ -150,11 +150,11 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
                     NameVarTimeEnd=TimeEnd,
                     DirSubCopy= DirSubCopynull),silent=TRUE)
   
-  # DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
-  # expect_true(file.exists(DirOutput, recursive = TRUE))
+  DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
+  expect_true(!(file.exists(DirOutput, recursive = TRUE)))
   
   
-  # TablPub=NULL and NULL in table of FilePubWb
+  #4. TablPub=NULL and NULL in table of FilePubWb
  
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
@@ -175,7 +175,7 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'data')
   expect_true(file.exists(DirOutput, recursive = TRUE))
   
-  #
+  #5.
   if (dir.exists(DirOutBase)) {
     unlink(DirOutBase, recursive = TRUE)
   }
@@ -191,7 +191,7 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   DirOutput = fs::path(DirOutBase,dateDir,groupRepo,'group')
   expect_true(file.exists(DirOutput, recursive = TRUE))
   
-  #2. an error if 
+  #6. an error if 
   
   dateDir = '2020/01/02'
   groupRepo = 'sw-physical_PRLA102100'
@@ -212,7 +212,7 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
                         NameVarTimeEnd=TimeEnd,
                         DirSubCopy=DirSubCopynull), silent=TRUE)
   
-  #3. an error if no matching pub tables 
+  #7. an error if no matching pub tables 
   
   DirIn = "pfs/swPhysical_level1_group_consolidate/2020/01/02/sw-physical_PRLA102100"
   FilePubWb = 'pfs/pubWb/PublicationWorkbook_parQuantumLine.txt'
@@ -231,7 +231,7 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
                         NameVarTimeEnd=TimeEnd,
                         DirSubCopy=DirSubCopy), silent=TRUE)
   
-  #4. an error if no matching pub tables
+  #8. an error if no matching pub tables
   
   DirIn = "pfs/swPhysical_level1_group_consolidate/2020/01/02/sw-physical_ARIK101100"
   TablPub = 'EOS_30_min'
