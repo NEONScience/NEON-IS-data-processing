@@ -88,6 +88,7 @@
 #     original creation
 ##############################################################################################
 # Define test context
+library(testthat)
 context("\n       | Unit test of Quality metrics module for NEON IS data processing \n")
 
 test_that("Unit test of wrap.thsh.slct.R", {
@@ -95,7 +96,7 @@ test_that("Unit test of wrap.thsh.slct.R", {
   library(stringr)
   
   FileThsh <- "pfs/thresholds.json"
-  thshRaw <- rjson::fromJSON(file = FileThsh, simplify = TRUE)
+  thshRaw <- rjson::fromJSON(file = FileThsh, simplify = TRUE)$thresholds
   # This turns dates to POSIXct, which is required
   thshPosx <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh = thshRaw)
   ParaThsh <- list(list(
@@ -119,14 +120,20 @@ test_that("Unit test of wrap.thsh.slct.R", {
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
   }
   # Test 1, Happy path
-  wrap.thsh.slct(
-    DirIn = DirIn,
-    DirOutBase = DirOutBase,
-    thshRaw = thshRaw,
-    thshPosx = thshPosx,
-    ParaThsh = ParaThsh,
-    DirSubCopy = 'location'
-  )
+ wrap.thsh.slct(
+        DirIn = DirIn,
+        DirOutBase = DirOutBase,
+        thshRaw = thshRaw,
+        thshPosx = thshPosx,
+        ParaThsh = ParaThsh,
+        DirSubCopy = 'location'
+      )
+  file_expc <- 'pfs/out/2020/01/02/CFGLOC101252/threshold/thresholds.json'
+  expect_true(file.exists(file_expc))
+  thshSlct <- rjson::fromJSON(file = file_expc, simplify = TRUE)
+  thshSlct <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh = thshSlct)
+  rptTerm <- unlist(lapply(thshSlct,FUN=function(idxThsh){idxThsh$term_name}))
+  expect_true(length(unique(rptTerm)) == 1 && unique(rptTerm) == ParaThsh[[1]]$Term) 
   
   # Test 1.a, thshPosx = NULL
   
@@ -137,14 +144,15 @@ test_that("Unit test of wrap.thsh.slct.R", {
     cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
     rmSymbLink <- base::lapply(cmdSymbLink, base::system)
   }
-  try(wrap.thsh.slct(
-    DirIn = DirIn,
-    DirOutBase = DirOutBase,
-    thshRaw = thshRaw,
-    thshPosx = NULL,
-    ParaThsh = ParaThsh,
-    DirSubCopy = 'location'
-  ),  silent = TRUE)
+rpt <-  try(wrap.thsh.slct(
+      DirIn = DirIn,
+      DirOutBase = DirOutBase,
+      thshRaw = thshRaw,
+      thshPosx = NULL,
+      ParaThsh = ParaThsh,
+      DirSubCopy = 'location'
+    ),  silent = TRUE)
+expect_true("try-error" %in% class(rpt))
   #
   # Test 2 no location files
   
@@ -153,14 +161,15 @@ test_that("Unit test of wrap.thsh.slct.R", {
   }
   
   DirIn_nofiles = "pfs/hmp_locations_nofiles/prt/10312"
-  try(wrap.thsh.slct(
-    DirIn = DirIn_nofiles,
-    DirOutBase = DirOutBase,
-    thshRaw = thshRaw,
-    thshPosx = thshPosx,
-    ParaThsh = ParaThsh
-  ),  silent = TRUE)
-  
+ rpt <- try(wrap.thsh.slct(
+              DirIn = DirIn_nofiles,
+              DirOutBase = DirOutBase,
+              thshRaw = thshRaw,
+              thshPosx = thshPosx,
+              ParaThsh = ParaThsh
+            ),  silent = TRUE)
+ expect_true("try-error" %in% class(rpt))
+ 
   DirSrc = "10312"
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
   
@@ -175,13 +184,14 @@ test_that("Unit test of wrap.thsh.slct.R", {
   }
   
   DirIn_noLoc = "pfs/hmp_locations_noLocs/2020/01/02/10312"
-  try(wrap.thsh.slct(
-    DirIn = DirIn_noLoc,
-    DirOutBase = DirOutBase,
-    thshRaw = thshRaw,
-    thshPosx = thshPosx,
-    ParaThsh = ParaThsh
-  ),  silent = TRUE)
+  rpt <- try(wrap.thsh.slct(
+      DirIn = DirIn_noLoc,
+      DirOutBase = DirOutBase,
+      thshRaw = thshRaw,
+      thshPosx = thshPosx,
+      ParaThsh = ParaThsh
+    ),  silent = TRUE)
+  expect_true("try-error" %in% class(rpt))
   
   DirSrc = "10312"
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
@@ -198,13 +208,14 @@ test_that("Unit test of wrap.thsh.slct.R", {
   }
   
   DirIn_wrongDir = "pfs/hmp_locations_wrongDir/noYr/01/02/CFGLOC101252"
-  try(wrap.thsh.slct(
-    DirIn = DirIn_wrongDir,
-    DirOutBase = DirOutBase,
-    thshRaw = thshRaw,
-    thshPosx = thshPosx,
-    ParaThsh = ParaThsh
-  ),  silent = TRUE)
+  rpt <- try(wrap.thsh.slct(
+      DirIn = DirIn_wrongDir,
+      DirOutBase = DirOutBase,
+      thshRaw = thshRaw,
+      thshPosx = thshPosx,
+      ParaThsh = ParaThsh
+    ),  silent = TRUE)
+  expect_true("try-error" %in% class(rpt))
   
   DirSrc = "CFGLOC101252"
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
@@ -219,7 +230,7 @@ test_that("Unit test of wrap.thsh.slct.R", {
     unlink(DirOutBase, recursive = TRUE)
   }
   
-  DirIn_2Locs = "pfs/hmp_locations_2files/2020/01/02/10267"
+  DirIn_2Locs = "pfs/hmp_locations_2files/2020/01/02/CFGLOC101658"
   try(wrap.thsh.slct(
     DirIn = DirIn_2Locs,
     DirOutBase = DirOutBase,
@@ -227,11 +238,11 @@ test_that("Unit test of wrap.thsh.slct.R", {
     thshPosx = thshPosx,
     ParaThsh = ParaThsh
   ),  silent = TRUE)
-  DirSrc = "10267"
+  DirSrc = "pfs/out/2020/01/02/CFGLOC101658"
   exstDirSrc <- base::unlist(base::lapply(DirSrc, base::dir.exists))
+  expect_true(all(exstDirSrc))
   
-  if (exstDirSrc) {
-    cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
-    rmSymbLink <- base::lapply(cmdSymbLink, base::system)
+  if (dir.exists(DirOutBase)) {
+    unlink(DirOutBase, recursive = TRUE)
   }
 })

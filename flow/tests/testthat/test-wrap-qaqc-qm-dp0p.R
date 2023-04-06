@@ -124,6 +124,7 @@
 #   Mija Choi (2021-12-06)
 #     original creation
 ##############################################################################################
+library(testthat)
 # Define test context
 context("\n       | Unit test of Basic QA/QC (plausibility) module for NEON IS data processing \n")
 

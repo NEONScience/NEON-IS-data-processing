@@ -92,6 +92,7 @@
 #   Mija Choi (2021-11-10)
 #     original creation
 ##############################################################################################
+library(testthat)
 # Define test context
 context("\n       | Unit test of Basic QA/QC (plausibility) module for NEON IS data processing \n")
 
@@ -235,6 +236,7 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                   DirOutBase=DirOutBase,
                                                   ParaTest=ParaTest,
                                                   VarAddFileQf=VarAddFileQf), silent=TRUE)
+    expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
     
     # Test 7 - Check that the tests to run are wholly contained in the tests run by this code
     # not-null does not exist in c("null", "gap", "range", "step", "spike", "persistence")
@@ -378,5 +380,10 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                  ParaTest=ParaTest,
                                                  DirSubCopy=thresholdDir,
                                                  VarAddFileQf=VarAddFileQf), silent=TRUE)
+   
+   if (dir.exists(DirOutBase)) {
+     unlink(DirOutBase, recursive = TRUE)
+   }
+   
 
 })
