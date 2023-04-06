@@ -15,10 +15,10 @@ class MeasurementScale:
         self.metadata = metadata
         self.database = database
 
-    def get_measurement_scale(self, row: dict) -> Optional[eml.AttributeTypeMeasurementScale]:
+    def get_scale(self, row: dict) -> Optional[eml.AttributeTypeMeasurementScale]:
         measurement_scale = eml.AttributeTypeMeasurementScale()
-        workbook_measurement_scale = self.workbook.get_measurement_scale(row)
-        match workbook_measurement_scale.lower():
+        workbook_scale = self.workbook.get_measurement_scale(row)
+        match workbook_scale.lower():
             case 'nominal':
                 collect_date = self.metadata.data_files.min_time
                 if self.workbook.get_os_lov(row) is not 'NA':
@@ -49,27 +49,26 @@ class MeasurementScale:
                 nominal.non_numeric_domain = non_numeric_domain_type
                 measurement_scale.nominal = nominal
             case 'interval':
-                pass
+                numeric_domain_type = self._get_numeric_domain_type(row)
+                interval = eml.AttributeTypeMeasurementScaleInterval()
+                unit_type = self._get_unit_type(row)
+                precision = self._get_precision(row)
+                interval.unit = unit_type
+                interval.numeric_domain = numeric_domain_type
+                if precision is not None:
+                    interval.precision = precision
+                measurement_scale.interval = interval
             case 'ratio':
-                numeric_domain_type = self.get_numeric_domain_type(row)
-                self.set_bounds(row, numeric_domain_type)
-                unit_type = self.get_unit_type(row)
-                precision = self.get_precision(row)
-                match workbook_measurement_scale.lower():
-                    case 'interval':
-                        interval = eml.AttributeTypeMeasurementScaleInterval()
-                        interval.unit = unit_type
-                        interval.numeric_domain = numeric_domain_type
-                        if precision is not None:
-                            interval.precision = precision
-                        measurement_scale.interval = interval
-                    case 'ratio':
-                        ratio = eml.AttributeTypeMeasurementScaleRatio()
-                        ratio.unit = unit_type
-                        ratio.numeric_domain = numeric_domain_type
-                        if precision is not None:
-                            ratio.precision = precision
-                        measurement_scale.ratio = ratio
+                numeric_domain_type = self._get_numeric_domain_type(row)
+                self._set_bounds(row, numeric_domain_type)
+                unit_type = self._get_unit_type(row)
+                precision = self._get_precision(row)
+                ratio = eml.AttributeTypeMeasurementScaleRatio()
+                ratio.unit = unit_type
+                ratio.numeric_domain = numeric_domain_type
+                if precision is not None:
+                    ratio.precision = precision
+                measurement_scale.ratio = ratio
             case 'datetime':
                 date_time = eml.AttributeTypeMeasurementScaleDateTime()
                 date_time.format_string = self.workbook.get_publication_format(row)
@@ -78,7 +77,7 @@ class MeasurementScale:
                 return None
         return measurement_scale
 
-    def get_numeric_domain_type(self, row) -> eml.NumericDomainType:
+    def _get_numeric_domain_type(self, row) -> eml.NumericDomainType:
         numeric_domain_type = eml.NumericDomainType()
         data_type_code = self.workbook.get_data_type(row)
         if data_type_code.lower() == 'integer':
@@ -87,7 +86,7 @@ class MeasurementScale:
             numeric_domain_type.number_type = eml.NumberType.REAL
         return numeric_domain_type
 
-    def set_bounds(self, row, numeric_domain_type: eml.NumericDomainType) -> None:
+    def _set_bounds(self, row, numeric_domain_type: eml.NumericDomainType) -> None:
         has_max = False
         has_min = False
         bounds = eml.BoundsGroupBounds()
@@ -111,17 +110,17 @@ class MeasurementScale:
         if has_min or has_max:
             numeric_domain_type.bounds.append(bounds)
 
-    def get_unit_type(self, row) -> eml.UnitType:
+    def _get_unit_type(self, row) -> eml.UnitType:
         workbook_unit = self.workbook.get_unit(row)
-        eml_type = self.database.get_unit_eml_type(workbook_unit)
+        eml_unit_type = self.database.get_unit_eml_type(workbook_unit)
         unit_type = eml.UnitType()
-        if eml_type == 'standard':
+        if eml_unit_type == 'standard':
             unit_type.standard_unit = workbook_unit
-        elif eml_type == 'custom':
+        elif eml_unit_type == 'custom':
             unit_type.custom_unit = workbook_unit
         return unit_type
 
-    def get_precision(self, row) -> Optional[float]:
+    def _get_precision(self, row) -> Optional[float]:
         publication_format = self.workbook.get_publication_format(row)
         precision = None
         if '*.#' in publication_format and 'round' in publication_format:

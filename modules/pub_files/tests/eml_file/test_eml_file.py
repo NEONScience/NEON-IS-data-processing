@@ -84,7 +84,7 @@ class EmlTest(TestCase):
 
     @staticmethod
     def get_unit_eml_type(_unit: str) -> str:
-        return 'Custom'
+        return 'custom'
 
     @staticmethod
     def get_spatial_unit(_srid: int) -> str:

@@ -142,6 +142,7 @@ class EmlFile:
         self.eml.dataset.coverage.temporal_coverage = temporal_coverage
 
     def set_data_tables(self) -> None:
+        measurement_scale = MeasurementScale(self.publication_workbook, self.metadata, self.database)
         for file in self.metadata.data_files.files:
             data_table = eml.DataTableType()
             entity_name = Path(file.filename).stem
@@ -158,8 +159,7 @@ class EmlFile:
                 attribute = eml.Attribute()
                 attribute.attribute_name = field_name
                 attribute.attribute_definition = description
-                measurement_scale = MeasurementScale(self.publication_workbook, self.metadata, self.database)
-                attribute.measurement_scale = measurement_scale.get_measurement_scale(row)
+                attribute.measurement_scale = measurement_scale.get_scale(row)
                 attribute_list.attribute.append(attribute)
             data_table.attribute_list = attribute_list
             self.eml.dataset.data_table.append(data_table)
