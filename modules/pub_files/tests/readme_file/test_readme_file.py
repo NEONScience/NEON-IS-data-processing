@@ -11,7 +11,7 @@ from pub_files.output_files.filename_format import format_timestamp
 from pub_files.output_files.readme.readme_file import write_file
 from pub_files.publication_workbook import PublicationWorkbook
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
-from pub_files.timestamp import get_timestamp
+from pub_files.main import get_timestamp
 
 
 class ReadmeFileTest(TestCase):

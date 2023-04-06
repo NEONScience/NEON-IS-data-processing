@@ -1,13 +1,13 @@
 import math
-from dataclasses import dataclass
+import dataclasses
 from datetime import datetime
 from typing import List, Tuple
 
-from common import date_formatter
+import common.date_formatter
 from data_access.types.property import Property
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class GeoLocation:
     location_id: int
     geometry: str
@@ -27,12 +27,12 @@ class GeoLocation:
     def get_dates(self) -> Tuple[str, str]:
         start_date = self.start_date
         if start_date is not None:
-            start = date_formatter.to_string(start_date)
+            start = common.date_formatter.to_string(start_date)
         else:
             start = ''
         end_date = self.end_date
         if end_date is not None:
-            end = date_formatter.to_string(end_date)
+            end = common.date_formatter.to_string(end_date)
         else:
             end = ''
         return start, end

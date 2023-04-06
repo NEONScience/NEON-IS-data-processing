@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stmml:unitList xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.2"
+  xmlns:sch="http://www.ascc.net/xml/schematron"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.xml-cml.org/schema/stmml-1.2"
+  xsi:schemaLocation="http://www.xml-cml.org/schema/stmml-1.2 xsd/stmml.xsd">
+
+  <!-- ======================================================================= -->
+  <!-- ========================= fundamental types =========================== -->
+  <!-- ======================================================================= -->
+
+	<unitType id="length" name="length"> <!--meter-->
+		<dimension name="length"/>
+	</unitType>
+
+	<unitType id="time" name="time"> <!--second-->
+		<dimension name="time"/>
+	</unitType>
+
+	<unitType id="mass" name="mass"> <!--kilogram-->
+		<dimension name="mass"/>
+	</unitType>
+
+	<unitType id="current" name="current"> <!--ampere-->
+		<dimension name="current"/>
+	</unitType>
+
+	<unitType id="temperature" name="temperature"> <!--kelvin-->
+		<dimension name="temperature"/>
+	</unitType>
+
+	<unitType id="amount" name="amount"> <!--mole-->
+		<dimension name="amount"/>
+	</unitType>
+
+	<unitType id="luminosity" name="luminosity"> <!--candela-->
+		<dimension name="luminosity"/>
+	</unitType>
+
+	<unitType id="dimensionless" name="dimensionless"> <!--NULL-->
+		<dimension name="dimensionless"/>
+	</unitType>
+
+	<unitType id="angle" name="angle"> <!--radian-->
+		<dimension name="angle"/>
+	</unitType>
+
+  <!-- ======================================================================= -->
+  <!-- ========================== derived types ============================== -->
+  <!-- ======================================================================= -->
+
+	<unitType id="acceleration" name="acceleration"> <!--metersPerSecondSquared-->
+		<dimension name="length" power="1"/>
+		<dimension name="time" power="-2"/>
+	</unitType>
+
+	<unitType id="charge" name="charge"> <!--coulomb-->
+		<dimension name="current" power="1"/>
+		<dimension name="time" power="1"/>
+	</unitType>
+
+	<unitType id="magneticFieldStrength" name="magneticFieldStrength"> <!--amperePerMeter-->
+		<dimension name="current" power="1"/>
+		<dimension name="length" power="-1"/>
+	</unitType>
+
+	<unitType id="currentDensity" name="currentDensity"> <!--amperePerSquareMeter-->
+		<dimension name="current" power="1"/>
+		<dimension name="length" power="-2"/>
+	</unitType>
+
+	<unitType id="area" name="area"> <!--squareMeters-->
+		<dimension name="length" power="2"/>
+	</unitType>
+
+	<unitType id="lengthReciprocal" name="lengthReciprocal"> <!--waveNumber-->
+		<dimension name="length" power="-1"/>
+	</unitType>
+
+	<unitType id="frequency" name="frequency"> <!--hertz-->
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="volume" name="volume"> <!--cubicMeter-->
+		<dimension name="length" power="3"/>
+	</unitType>
+
+	<unitType id="volumetricArea" name="volumetricArea"> <!--litersPerSquareMeter-->
+		<dimension name="length" power="3"/>
+		<dimension name="length" power="-2"/>
+	</unitType>
+
+	<unitType id="speed" name="speed"> <!--metersPerSecond-->
+		<dimension name="length" power="1"/>
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="massDensity" name="massDensity"> <!--kilogramPerCubicMeter-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="-3"/>
+	</unitType>
+
+	<unitType id="massPerMass" name="massPerMass"> <!--gramPerGram-->
+		<dimension name="mass" power="1"/>
+		<dimension name="mass" power="-1"/>
+	</unitType>
+
+	<unitType id="volumePerVolume" name="volumePerVolume"> <!--cubicCentimetersPerCubicCentimeter-->
+		<dimension name="length" power="3"/>
+		<dimension name="length" power="-3"/>
+	</unitType>
+
+	<unitType id="volumetricRate" name="volumetricRate"> <!--litersPerSecond-->
+		<dimension name="length" power="3"/>
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="volumetricMassDensityRate" name="volumetricMassDensityRate"> <!--gramsPerLiterPerDay-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="-3"/>
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="arealMassDensityRate" name="arealMassDensityRate"> <!--kilogramsPerMeterSquaredPerDay-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="-2"/>
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="specificVolume" name="specificVolume"> <!--cubicMetersPerKilogram-->
+		<dimension name="mass" power="-1"/>
+		<dimension name="length" power="3"/>
+	</unitType>
+
+	<unitType id="amountOfSubstanceConcentration" name="amountOfSubstanceConcentration"> <!--molesPerCubicMeter-->
+		<dimension name="amount" power="1"/>
+		<dimension name="length" power="-3"/>
+	</unitType>
+
+	<unitType id="amountOfSubstanceWeight" name="amountOfSubstanceWeight"> <!--molesPerKilogram-->
+		<dimension name="amount" power="1"/>
+		<dimension name="mass" power="-1"/>
+	</unitType>
+
+	<unitType id="luminance" name="luminance"> <!--candelaPerSquareMeter-->
+		<dimension name="luminosity" power="1"/>
+		<dimension name="length" power="-2"/>
+	</unitType>
+
+	<unitType id="volumetricDensity" name="volumetricDensity"> <!--numberPerMeterCubed-->
+		<dimension name="dimensionless" power="1"/>
+		<dimension name="length" power="-3"/>
+	</unitType>
+
+	<unitType id="arealDensity" name="arealDensity"> <!--numberPerMeterSquared-->
+		<dimension name="dimensionless" power="1"/>
+		<dimension name="length" power="-2"/>
+	</unitType>
+
+	<unitType id="arealMassDensity" name="arealMassDensity"> <!--kilogramsPerSquareMeter-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="-2"/>
+	</unitType>
+
+	<unitType id="specificArea" name="specificArea"> <!--squareMeterPerKilogram-->
+		<dimension name="mass" power="-1"/>
+		<dimension name="length" power="-2"/>
+	</unitType>
+
+	<unitType id="force" name="force"> <!--newton-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="1"/>
+		<dimension name="time" power="-2"/>
+	</unitType>
+
+	<unitType id="energy" name="energy"> <!--joule-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="2"/>
+		<dimension name="time" power="-2"/>
+	</unitType>
+
+	<unitType id="power" name="power"> <!--watt-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="2"/>
+		<dimension name="time" power="-3"/>
+	</unitType>
+
+	<unitType id="potentialDifference" name="potentialDifference"> <!--volt-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="2"/>
+		<dimension name="time" power="-3"/>
+		<dimension name="current" power="-1"/>
+	</unitType>
+
+	<unitType id="capacitance" name="capacitance"> <!--farad-->
+		<dimension name="mass" power="-1"/>
+		<dimension name="length" power="-2"/>
+		<dimension name="time" power="4"/>
+		<dimension name="current" power="2"/>
+	</unitType>
+
+	<unitType id="resistance" name="resistance"> <!--ohm-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="2"/>
+		<dimension name="time" power="-3"/>
+		<dimension name="current" power="-2"/>
+	</unitType>
+
+	<unitType id="resistivity" name="resistivity"> <!--ohmMeter-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="3"/>
+		<dimension name="time" power="-3"/>
+		<dimension name="current" power="-2"/>
+	</unitType>
+
+	<unitType id="conductance" name="conductance"> <!--siemens-->
+		<dimension name="mass" power="-1"/>
+		<dimension name="length" power="-2"/>
+		<dimension name="time" power="3"/>
+		<dimension name="current" power="2"/>
+	</unitType>
+
+	<unitType id="magneticFlux" name="magneticFlux"> <!--weber-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="2"/>
+		<dimension name="time" power="-2"/>
+		<dimension name="current" power="-1"/>
+	</unitType>
+
+	<unitType id="magneticFluxDensity" name="magneticFluxDensity"> <!--tesla-->
+		<dimension name="mass" power="1"/>
+		<dimension name="time" power="-2"/>
+		<dimension name="current" power="-1"/>
+	</unitType>
+
+	<unitType id="inductance" name="inductance"> <!--henry-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="2"/>
+		<dimension name="time" power="-2"/>
+		<dimension name="current" power="-2"/>
+	</unitType>
+
+	<unitType id="illuminance" name="illuminance"> <!--lux-->
+		<dimension name="luminosity" power="1"/>
+		<dimension name="length" power="-2"/>
+	</unitType>
+
+	<unitType id="radionucleotideActivity" name="radionucleotideActivity"> <!--becquerel-->
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="specificEnergy" name="specificEnergy"> <!--gray-->
+		<dimension name="time" power="-2"/>
+		<dimension name="length" power="2"/>
+	</unitType>
+
+	<unitType id="doseEquivalent" name="doseEquivalent"> <!--sievert-->
+		<dimension name="time" power="-2"/>
+		<dimension name="length" power="2"/>
+	</unitType>
+
+	<unitType id="catalyticActivity" name="catalyticActivity"> <!--katal-->
+		<dimension name="time" power="-1"/>
+		<dimension name="amount" power="1"/>
+	</unitType>
+
+	<unitType id="pressure" name="pressure"> <!--pascal-->
+		<dimension name="mass" power="1"/>
+		<dimension name="time" power="-2"/>
+		<dimension name="length" power="1"/>
+	</unitType>
+
+	<unitType id="transmissivity" name="transmissivity"> <!--metersSquaredPerSecond-->
+		<dimension name="length" power="2"/>
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="massSpecificLength" name="massSpecificLength"> <!--metersPerGram-->
+		<dimension name="length" power="1"/>
+		<dimension name="mass" power="-1"/>
+	</unitType>
+
+	<unitType id="massSpecificCount" name="massSpecificCount"> <!--numberPerGram-->
+		<dimension name="dimensionless" power="1"/>
+		<dimension name="mass" power="-1"/>
+	</unitType>
+
+	<unitType id="volumetricMass" name="volumetricMass"> <!--cubicMetersPerKilogram-->
+		<dimension name="length" power="3"/>
+		<dimension name="mass" power="1"/>
+	</unitType>
+
+	<unitType id="luminousFlux" name="luminousFlux"> <!--lumen-->
+		<dimension name="luminosity" power="1"/>
+		<dimension name="length" power="2"/>
+	</unitType>
+
+	<unitType id="variance" name="variance"> <!--molesPerSquareMeterPerSecondSquared-->
+		<dimension name="amount" power="2"/>
+	</unitType>
+
+	<unitType id="arealAmountDensityRate" name="arealAmountDensityRate"> <!--molesPerSquareMeterPerSecond-->
+		<dimension name="amount" power="1"/>
+		<dimension name="length" power="-2"/>
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="intensity" name="intensity"> <!--wattsPerSquareMeter-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="2"/>
+		<dimension name="time" power="-3"/>
+	</unitType>
+
+	<unitType id="amountPerAmount" name="amountPerAmount"> <!--partsPerMillion-->
+		<dimension name="amount" power="1"/>
+		<dimension name="amount" power="-1"/>
+	</unitType>
+
+	<unitType id="conductivity" name="conductivity"> <!--siemensPerMeter-->
+		<dimension name="current" power="2"/>
+		<dimension name="mass" power="-1"/>
+		<dimension name="length" power="-3"/>
+		<dimension name="time" power="-3"/>
+	</unitType>
+
+	<unitType id="amountOfSubstanceChargeWeight" name="amountOfSubstanceChargeWeight"> <!--molesChargePerKilogram-->
+		<dimension name="amount" power="1"/>
+		<dimension name="current" power="1"/>
+		<dimension name="time" power="1"/>
+		<dimension name="mass" power="-1"/>
+	</unitType>
+
+	<unitType id="massRate" name="massRate"> <!--kilogramsPerSecond-->
+		<dimension name="mass" power="1"/>
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="massFlux" name="massFlux"> <!--kilogramsPerMeterSquaredPerDay-->
+		<dimension name="mass" power="1"/>
+		<dimension name="length" power="-2"/>
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+	<unitType id="amountOfSubstanceWeightRate" name="amountOfSubstanceWeightRate"> <!--molesPerKilogramPerSecond-->
+		<dimension name="amount" power="1"/>
+		<dimension name="mass" power="-1"/>
+		<dimension name="time" power="-1"/>
+	</unitType>
+
+</stmml:unitList>

@@ -3,7 +3,7 @@ from contextlib import closing
 from data_access.db_connector import DbConnector
 
 
-def get_spatial_unit(connector: DbConnector, srid: int):
+def get_spatial_unit(connector: DbConnector, srid: int) -> str:
     schema = connector.get_schema()
     connection = connector.get_connection()
     sql = f'''

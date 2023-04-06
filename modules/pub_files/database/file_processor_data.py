@@ -2,7 +2,7 @@ from functools import partial
 
 from data_access.db_connector import DbConnector
 from pub_files.database.queries.data_products import get_data_product
-from pub_files.input_files.file_processor import FileProcessorDatabase
+from pub_files.input_files.file_processor_database import FileProcessorDatabase
 
 
 class FileProcessorData:

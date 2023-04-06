@@ -4,7 +4,7 @@ from data_access.db_connector import DbConnector
 from pub_files.database.queries.geolocation_geometry import get_geometry
 from pub_files.database.queries.data_product_keywords import get_keywords
 from pub_files.database.queries.log_entries import get_log_entries
-from pub_files.output_files.readme.readme_file import ReadmeDatabase
+from pub_files.output_files.readme.readme_database import ReadmeDatabase
 
 
 class ReadmeData:

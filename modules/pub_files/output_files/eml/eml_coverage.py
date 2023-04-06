@@ -3,9 +3,9 @@ from typing import Optional
 from eml.eml_2_2_0 import GeographicCoverageBoundingCoordinatesBoundingAltitudes, \
     GeographicCoverageBoundingCoordinates, GeographicCoverage, LengthUnitType
 
-from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import FileMetadata
+from pub_files.output_files.eml.eml_database import EmlDatabase
 
 
 class EmlCoverage:

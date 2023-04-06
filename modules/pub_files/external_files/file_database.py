@@ -1,9 +1,10 @@
 from pub_files.application_config import ApplicationConfig
-from pub_files.output_files.eml.eml_file import EmlFiles
-from pub_files.external_files.github_reader import GithubConfig, GithubReader
+from pub_files.external_files.github_config import GithubConfig
+from pub_files.external_files.github_reader import GithubReader
+from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 
 
-class GithubFileReader:
+class FileDatabase:
 
     def __init__(self, config: ApplicationConfig):
         github_config = GithubConfig(certificate_path=config.certificate_path,
@@ -14,10 +15,10 @@ class GithubFileReader:
                                      branch=config.branch)
         self.reader = GithubReader(github_config)
         self.config = config
-        self.eml_files = EmlFiles(self.get_eml_boilerplate,
-                                  self.get_eml_contact,
-                                  self.get_eml_intellectual_rights,
-                                  self.get_eml_unit_types)
+        self.eml_files = ExternalEmlFiles(self.get_eml_boilerplate,
+                                          self.get_eml_contact,
+                                          self.get_eml_intellectual_rights,
+                                          self.get_eml_unit_types)
 
     def get_eml_files(self):
         return self.eml_files

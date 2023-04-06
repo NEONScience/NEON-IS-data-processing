@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
+from datetime import datetime, timezone
 
 import pub_files.input_files.file_processor as file_processor
 import pub_files.output_files.readme.readme_file as readme_file
@@ -12,18 +13,22 @@ from pub_files.database.eml_data import EmlData
 from pub_files.database.file_processor_data import FileProcessorData
 from pub_files.database.readme_data import ReadmeData
 from pub_files.database.sensor_positions_data import SensorPositionsData
-from pub_files.external_files.github_file_reader import GithubFileReader
+from pub_files.external_files.file_database import FileDatabase
 from pub_files.output_files.eml.eml_file import EmlFile
-from pub_files.output_files.sensor_positions_file import SensorPositionsFile
+from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsFile
 from pub_files.publication_workbook import PublicationWorkbook
-from pub_files.timestamp import get_timestamp
 
 
-def read_github_files(config: ApplicationConfig):
-    github_file_reader = GithubFileReader(config)
-    eml_files = github_file_reader.get_eml_files()
-    publication_workbook = github_file_reader.get_workbook()
-    readme_template = github_file_reader.get_readme()
+def get_timestamp() -> datetime:
+    """Returns the time in UTC."""
+    return datetime.now(timezone.utc)
+
+
+def get_external_files(config: ApplicationConfig):
+    file_database = FileDatabase(config)
+    eml_files = file_database.get_eml_files()
+    publication_workbook = file_database.get_workbook()
+    readme_template = file_database.get_readme()
     return eml_files, publication_workbook, readme_template
 
 
@@ -35,7 +40,7 @@ def main() -> None:
     out_path = config.out_path
     location_path = config.location_path
     log_config.configure(config.log_level)
-    (eml_files, workbook, readme_template) = read_github_files(config)
+    (eml_files, workbook, readme_template) = get_external_files(config)
     publication_workbook = PublicationWorkbook(workbook)
     db_config = read_from_mount(config.db_secrets_path)
     with closing(DbConnector(db_config)) as connector:

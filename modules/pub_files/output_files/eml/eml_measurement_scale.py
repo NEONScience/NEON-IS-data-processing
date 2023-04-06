@@ -3,8 +3,8 @@ from typing import Optional, List
 import eml.eml_2_2_0 as eml
 
 from pub_files.database.queries.value_list import Value
-from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.input_files.file_metadata import FileMetadata
+from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.publication_workbook import PublicationWorkbook
 
 

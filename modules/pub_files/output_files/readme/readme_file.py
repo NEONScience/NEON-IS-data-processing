@@ -1,6 +1,6 @@
 from datetime import datetime
 from pathlib import Path
-from typing import List, NamedTuple, Callable
+from typing import List
 
 import structlog
 from jinja2 import Template
@@ -11,14 +11,9 @@ from pub_files.database.queries.log_entries import LogEntry
 from pub_files.input_files.file_metadata import PathElements, DataFiles
 from pub_files.output_files.filename_format import get_filename
 from pub_files.input_files.file_metadata import FileMetadata
+from pub_files.output_files.readme.readme_database import ReadmeDatabase
 
 log = structlog.getLogger()
-
-
-class ReadmeDatabase(NamedTuple):
-    get_geometry: Callable[[str], Geometry]
-    get_keywords: Callable[[str], List[str]]
-    get_log_entries: Callable[[str], List[LogEntry]]
 
 
 def write_file(readme_template: str,
@@ -56,5 +51,3 @@ def write_file(readme_template: str,
     template = Template(readme_template, trim_blocks=True, lstrip_blocks=True)
     readme_content = template.render(readme_data)
     readme_path.write_text(readme_content)
-    log.debug(f'Readme path: {readme_path}')
-    log.debug(f'\nReadme content:\n{readme_content}\n')

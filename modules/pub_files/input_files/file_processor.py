@@ -1,21 +1,17 @@
 from pathlib import Path
-from typing import Tuple, NamedTuple, Callable
+from typing import Tuple
 
 import pandas
 import structlog
 
 import common.date_formatter as date_formatter
-from pub_files.data_product import DataProduct
 from pub_files.input_files.file_metadata import DataFile, FileMetadata, PathElements, DataFiles
+from pub_files.input_files.file_processor_database import FileProcessorDatabase
 from pub_files.input_files.path_parser import parse_path
 from pub_files.input_files.filename_parser import parse_filename, FilenameData
 from pub_files.publication_workbook import PublicationWorkbook
 
 log = structlog.get_logger()
-
-
-class FileProcessorDatabase(NamedTuple):
-    get_data_product: Callable[[str], DataProduct]
 
 
 def process(in_path: Path,

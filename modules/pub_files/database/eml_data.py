@@ -1,13 +1,12 @@
 from functools import partial
 
+from data_access.db_connector import DbConnector
+from data_access.get_thresholds import get_thresholds
 from pub_files.database.queries.geolocation_geometry import get_geometry
 from pub_files.database.queries.named_locations import get_named_location
 from pub_files.database.queries.spatial_units import get_spatial_unit
 from pub_files.database.queries.units import get_unit_eml_type
 from pub_files.database.queries.value_list import get_value_list
-
-from data_access.db_connector import DbConnector
-from data_access.get_thresholds import get_thresholds
 from pub_files.output_files.eml.eml_database import EmlDatabase
 
 

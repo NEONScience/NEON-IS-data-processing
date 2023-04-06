@@ -27,6 +27,10 @@ class PublicationWorkbook:
         return row['tableDescription']
 
     @staticmethod
+    def get_description(row: dict) -> str:
+        return row['description']
+
+    @staticmethod
     def get_measurement_scale(row: dict) -> str:
         return row['measurementScale']
 
@@ -46,10 +50,6 @@ class PublicationWorkbook:
     def get_publication_format(row: dict) -> str:
         return row['pubFormat']
 
-    def get_file_description(self, filename_data: FilenameData) -> str:
-        key = self.make_key(filename_data.table_name, filename_data.download_package)
-        return self.file_descriptions[key]
-
     @staticmethod
     def make_key(table_name: str, download_package: str) -> str:
         return f'{table_name}.{download_package}'
@@ -58,9 +58,13 @@ class PublicationWorkbook:
     def remove_comments(csv_file: StringIO):
         for row in csv_file:
             raw = row.split('"<!--')[0].strip()
-            if raw: yield raw
+            if raw:
+                yield raw
 
-    # TODO: Use this in variables_file.py as well.
+    def get_file_description(self, filename_data: FilenameData) -> str:
+        key = self.make_key(filename_data.table_name, filename_data.download_package)
+        return self.file_descriptions[key]
+
     def load(self, workbook: str) -> List[dict]:
         string_io = StringIO(workbook, newline='\n')
         reader = csv.DictReader(self.remove_comments(string_io), delimiter='\t')

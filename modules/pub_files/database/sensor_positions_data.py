@@ -5,7 +5,7 @@ from pub_files.database.queries.geolocations import get_geolocations
 from pub_files.database.queries.named_locations import get_named_location
 
 from data_access.db_connector import DbConnector
-from pub_files.output_files.sensor_positions_file import SensorPositionsDatabase
+from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsDatabase
 
 
 class SensorPositionsData:

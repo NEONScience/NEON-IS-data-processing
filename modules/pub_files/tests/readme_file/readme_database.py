@@ -8,8 +8,8 @@ from typing import List
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from pub_files.data_product import DataProduct
-from pub_files.database_queries.geolocation_geometry import Geometry
-from pub_files.database_queries.log_entries import LogEntry
+from pub_files.database.queries.geolocation_geometry import Geometry
+from pub_files.database.queries.log_entries import LogEntry
 from pub_files.output_files.readme.readme_file import ReadmeDatabase
 from pub_files.tests.file_date_converter import to_datetime
 

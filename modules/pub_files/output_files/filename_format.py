@@ -1,16 +1,16 @@
-"""Functions to standardize file name."""
+"""Functions to standardize output file names."""
 from datetime import datetime
 
 from pub_files.input_files.file_metadata import PathElements
 
 
 def format_timestamp(timestamp: datetime) -> str:
-    """Format the timestamp for inclusion in a filename."""
+    """Returns a standard timestamp format."""
     return timestamp.strftime('%Y%m%dT%H%M%SZ')
 
 
 def get_filename(elements: PathElements, timestamp: datetime, file_type: str, extension: str) -> str:
-    """Returns a standard filename for publication metadata files."""
+    """Returns a standard filename format."""
     formatted_timestamp = format_timestamp(timestamp)
     domain = elements.domain
     site = elements.site

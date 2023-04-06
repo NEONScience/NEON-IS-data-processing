@@ -6,7 +6,7 @@ from pathlib import Path
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from pub_files.data_product import DataProduct
-from pub_files.input_files.file_processor import FileProcessorDatabase
+from pub_files.input_files.file_processor_database import FileProcessorDatabase
 
 
 def get_database(fs: FakeFilesystem) -> FileProcessorDatabase:

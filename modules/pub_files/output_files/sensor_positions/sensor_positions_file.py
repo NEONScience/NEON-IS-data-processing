@@ -1,13 +1,12 @@
 import csv
 from datetime import datetime
 from pathlib import Path
-from typing import NamedTuple, Callable, List, Tuple
+from typing import Tuple
 
 from pub_files.database.queries.geolocation_geometry import Geometry
-from pub_files.database.queries.named_locations import NamedLocation
-from pub_files.database.queries.geolocations import GeoLocation
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.filename_format import get_filename
+from pub_files.output_files.sensor_positions.sensor_positions_database import SensorPositionsDatabase
 
 COLUMNS = ['HOR.VER',
            'sensorLocationID', 'sensorLocationDescription',
@@ -19,12 +18,6 @@ COLUMNS = ['HOR.VER',
            'locationReferenceLatitude', 'locationReferenceLongitude', 'locationReferenceElevation',
            'eastOffset', 'northOffset',
            'xAzimuth', 'yAzimuth']
-
-
-class SensorPositionsDatabase(NamedTuple):
-    get_geolocations: Callable[[str], List[GeoLocation]]
-    get_geometry: Callable[[str], Geometry]
-    get_named_location: Callable[[str], NamedLocation]
 
 
 class SensorPositionsFile:
@@ -49,7 +42,7 @@ class SensorPositionsFile:
         return hor_ver, location.location_id, location.description
 
     def write(self) -> str:
-        filename = get_filename(self.elements, timestamp=self.timestamp, file_type='sensor_positions', extension='csv')
+        filename = get_filename(self.elements, timestamp=self.timestamp, file_type='', extension='csv')
         with open(self.get_file_path(filename), 'w', encoding='UTF8', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
