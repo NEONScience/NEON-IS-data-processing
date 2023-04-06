@@ -1,0 +1,156 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC101658",
+                "domain": "D06",
+                "site": "UKFS",
+                "install_date": "2015-11-20T18:00:00Z",
+                "remove_date": "2016-09-29T19:46:36Z",
+                "context": [],
+                "group": [
+                    "rel-humidity_UKFS003000"
+                ],
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": null,
+                            "properties": {
+                                "start_date": "2010-01-01T00:00:00Z",
+                                "end_date": null,
+                                "alpha": 0.0,
+                                "beta": 0.0,
+                                "gamma": 0.0,
+                                "x_offset": 2.6,
+                                "y_offset": 6.25,
+                                "z_offset": 0.61,
+                                "reference_location": {
+                                    "type": "Feature",
+                                    "geometry": null,
+                                    "properties": {
+                                        "name": "SOILPL101654",
+                                        "locations": {
+                                            "type": "FeatureCollection",
+                                            "features": [
+                                                {
+                                                    "type": "Feature",
+                                                    "geometry": {
+                                                        "type": "Polygon",
+                                                        "coordinates": [
+                                                            [
+                                                                -95.192004,
+                                                                39.039441,
+                                                                306.41
+                                                            ],
+                                                            [
+                                                                -95.191944,
+                                                                39.039445,
+                                                                306.29
+                                                            ],
+                                                            [
+                                                                -95.191947,
+                                                                39.03949,
+                                                                306.41
+                                                            ],
+                                                            [
+                                                                -95.192006,
+                                                                39.039487,
+                                                                307.11
+                                                            ],
+                                                            [
+                                                                -95.192004,
+                                                                39.039441,
+                                                                306.41
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "properties": {
+                                                        "start_date": "2010-01-01T00:00:00Z",
+                                                        "end_date": null,
+                                                        "alpha": 0.0,
+                                                        "beta": 0.0,
+                                                        "gamma": 0.0,
+                                                        "x_offset": 0.0,
+                                                        "y_offset": 0.0,
+                                                        "z_offset": 0.0,
+                                                        "reference_location": null,
+                                                        "location_properties": [
+                                                            [
+                                                                "UTM Zone",
+                                                                "15N"
+                                                            ],
+                                                            [
+                                                                "County",
+                                                                "Jefferson"
+                                                            ],
+                                                            [
+                                                                "Geodetic datum",
+                                                                "WGS84"
+                                                            ],
+                                                            [
+                                                                "State province",
+                                                                "KS"
+                                                            ],
+                                                            [
+                                                                "Country",
+                                                                "USA"
+                                                            ],
+                                                            [
+                                                                "x Azimuth Angle",
+                                                                85.0
+                                                            ],
+                                                            [
+                                                                "y Azimuth Angle",
+                                                                358.0
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "location_properties": [
+                                    [
+                                        "Geodetic datum",
+                                        "WGS84"
+                                    ],
+                                    [
+                                        "UTM Zone",
+                                        "15N"
+                                    ],
+                                    [
+                                        "Country",
+                                        "USA"
+                                    ],
+                                    [
+                                        "County",
+                                        "Jefferson"
+                                    ],
+                                    [
+                                        "State province",
+                                        "KS"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "Required Asset Management Location ID": 2963,
+            "Required Asset Management Location Code": "CFGLOC101658",
+            "HOR": "003",
+            "VER": "000",
+            "TMI": "000",
+            "Data Rate": "0.5",
+            "FreqSamp": "1"
+        }
+    ],
+    "source_id": 10267,
+    "source_type": "hmp155"
+}

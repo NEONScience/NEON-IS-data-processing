@@ -34,7 +34,10 @@ A list of thresholds, with dates in fields start_date and end_date converted to 
 Definition function. Read QA/QC threshold information from json file to list. Convert timestamps to POSIX.
 }
 \examples{
-Currently none
+# Not run
+FileThsh <- "~/pfs/threshold/thresholds.json"
+thshRaw <- rjson::fromJSON(file=FileThsh,simplify=TRUE),silent=FALSE)
+thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh=thshRaw$thresholds) # This turns dates to POSIXct, which is required
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
