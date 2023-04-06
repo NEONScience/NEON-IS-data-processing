@@ -37,7 +37,10 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
   pubWb_file2 <- NEONprocIS.pub::def.read.pub.wb(NameFile=file2)
   pubWb <- NEONprocIS.pub::def.read.pub.wb(NameFile=c(file1,file2))
   expect_true(nrow(pubWb) == (nrow(pubWb_file1) + nrow(pubWb_file2)))
+  
   #2.
-  pubWb <- try(NEONprocIS.pub::def.read.pub.wb(NameFile=c(file1,file2, '.gitignore')), silent=TRUE)
+  pubWb <- try(NEONprocIS.pub::def.read.pub.wb(
+    NameFile=c(file1,file2, 'pfs/pubWb/par-quantum-line_CPER001000_2023-02-03_PARQL_1min_001.parquet')), 
+    silent=TRUE)
 })
 
