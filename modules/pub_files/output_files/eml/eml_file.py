@@ -7,6 +7,7 @@ from xsdata.formats.dataclass.parsers import XmlParser
 from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
 
+import pub_files.output_files.eml.stmml.stmml_1_2 as stmml
 from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.eml.date_formats import DateFormats
@@ -14,6 +15,7 @@ from pub_files.output_files.eml.eml_coverage import EmlCoverage
 from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.output_files.eml.eml_measurement_scale import MeasurementScale
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
+from pub_files.output_files.eml.neon_units import NeonUnits
 from pub_files.publication_workbook import PublicationWorkbook
 
 log = structlog.get_logger()
@@ -137,9 +139,9 @@ class EmlFile:
         range_of_dates = eml.TemporalCoverageRangeOfDates()
         range_of_dates.begin_date = begin_date
         range_of_dates.end_date = end_date
-        temporal_coverage = eml.TemporalCoverage()
+        temporal_coverage = eml.CoverageTemporalCoverage()
         temporal_coverage.range_of_dates = range_of_dates
-        self.eml.dataset.coverage.temporal_coverage = temporal_coverage
+        self.eml.dataset.coverage.temporal_coverage.append(temporal_coverage)
 
     def set_data_tables(self) -> None:
         measurement_scale = MeasurementScale(self.publication_workbook, self.metadata, self.database)
@@ -165,12 +167,43 @@ class EmlFile:
             self.eml.dataset.data_table.append(data_table)
 
     def add_additional_metadata(self):
-        unit_types_file = self.eml_files.get_unit_types()
-        metadata = self.xml_parser.from_string(unit_types_file, eml.EmlAdditionalMetadataMetadata)
-        additional_metadata = eml.EmlAdditionalMetadata()
-        additional_metadata.metadata = metadata
-        self.eml.additional_metadata = [additional_metadata]
+        custom_units_metadata = self.get_custom_units()
+        custom_units_additional_metadata = eml.EmlAdditionalMetadata()
+        custom_units_additional_metadata.metadata = custom_units_metadata
         # TODO: line 490 in MetadataProcessor.java
+
+        unit_types_file = self.eml_files.get_unit_types()
+        unit_types_metadata = self.xml_parser.from_string(unit_types_file, eml.EmlAdditionalMetadataMetadata)
+        unit_types_additional_metadata = eml.EmlAdditionalMetadata()
+        unit_types_additional_metadata.metadata = unit_types_metadata
+        self.eml.additional_metadata = [unit_types_additional_metadata, custom_units_additional_metadata]
+
+    def get_custom_units(self) -> eml.EmlAdditionalMetadataMetadata:
+        neon_units = NeonUnits(self.eml_files.get_units())
+        unit_list = stmml.UnitList()
+        for data_table_type in self.eml.dataset.data_table:
+            attribute_list = data_table_type.attribute_list
+            for attributes in attribute_list.attribute:
+                scale = attributes.measurement_scale
+                interval = scale.interval
+                ratio = scale.ratio
+                unit_name = None
+                if interval:
+                    unit_name = interval.unit.custom_unit
+                    if not unit_name:
+                        unit_name = interval.unit.standard_unit
+                if ratio:
+                    unit_name = ratio.unit.custom_unit
+                    if not unit_name:
+                        unit_name = ratio.unit.standard_unit
+                if unit_name:
+                    unit = neon_units.to_stmml(unit_name)
+                    unit_list.unit.append(unit)
+        config = SerializerConfig(pretty_print=True)
+        serializer = XmlSerializer(config=config)
+        string_content = serializer.render(unit_list)
+        metadata = self.xml_parser.from_string(string_content, eml.EmlAdditionalMetadataMetadata)
+        return metadata
 
     def get_filename(self) -> str:
         elements = self.metadata.path_elements

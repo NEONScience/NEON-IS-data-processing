@@ -6,3 +6,4 @@ class ExternalEmlFiles(NamedTuple):
     get_contact: Callable[[], str]
     get_intellectual_rights: Callable[[], str]
     get_unit_types: Callable[[], str]
+    get_units: Callable[[], str]

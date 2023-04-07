@@ -65,6 +65,7 @@ class MainTest(unittest.TestCase):
         os.environ['GITHUB_EML_CONTACT_PATH'] = 'eml/neon_components/neon_contact.xml'
         os.environ['GITHUB_EML_INTELLECTUAL_RIGHTS_PATH'] = 'eml/neon_components/neon_intellectualRights.xml'
         os.environ['GITHUB_EML_UNIT_TYPES_PATH'] = 'eml/neon_components/neon_unitTypes.xml'
+        os.environ['GITHUB_EML_UNITS_PATH'] = 'eml/neon_components/NEON_units.txt'
         os.environ['GITHUB_BRANCH'] = 'NSE-9201'
 
     def test_main(self) -> None:

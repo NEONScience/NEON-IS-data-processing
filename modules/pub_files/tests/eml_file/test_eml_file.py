@@ -8,6 +8,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 import common.date_formatter
 from data_access.types.threshold import Threshold
 from pub_files.database.queries.named_locations import NamedLocation
+from pub_files.database.queries.units import EmlUnitType
 from pub_files.database.queries.value_list import Value
 from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import PathElements, FileMetadata, DataFiles, DataFile
@@ -38,6 +39,7 @@ class EmlTest(TestCase):
         self.add_contact_file()
         self.add_intellectual_rights_file()
         self.add_unit_types_file()
+        self.add_units_file()
 
     def add_boilerplate_file(self) -> None:
         real_path = Path(self.test_files_path, 'boilerplate.xml')
@@ -59,6 +61,11 @@ class EmlTest(TestCase):
         self.unit_types_path = Path('/unit_types.xml')
         self.fs.add_real_file(real_path, target_path=self.unit_types_path)
 
+    def add_units_file(self) -> None:
+        real_path = Path(self.test_files_path, 'units.csv')
+        self.units_path = Path('/units.csv')
+        self.fs.add_real_file(real_path, target_path=self.units_path)
+
     def get_boilerplate(self) -> str:
         return self.boilerplate_path.read_text('UTF-8')
 
@@ -70,6 +77,9 @@ class EmlTest(TestCase):
 
     def get_unit_types(self) -> str:
         return self.unit_types_path.read_text('UTF-8')
+
+    def get_units(self) -> str:
+        return self.units_path.read_text('UTF-8')
 
     @staticmethod
     def get_named_location(_name):
@@ -83,8 +93,8 @@ class EmlTest(TestCase):
         return Geometry(geometry='POINT Z (-104.745591 40.815536 1653.9151)', srid=4979)
 
     @staticmethod
-    def get_unit_eml_type(_unit: str) -> str:
-        return 'custom'
+    def get_unit_eml_type(_unit: str) -> EmlUnitType:
+        return EmlUnitType(EmlUnitType.custom)
 
     @staticmethod
     def get_spatial_unit(_srid: int) -> str:
@@ -92,7 +102,7 @@ class EmlTest(TestCase):
 
     @staticmethod
     def get_value_list(_list_name: str) -> List[Value]:
-        value = Value(id=1,
+        return [Value(id=1,
                       list_code='list_code',
                       name='value name',
                       rank=1,
@@ -100,58 +110,59 @@ class EmlTest(TestCase):
                       effective_date=get_timestamp(),
                       end_date=get_timestamp(),
                       publication_code='basic',
-                      description='A test value for the list.')
-        return [value]
+                      description='A test value for the list.')]
 
     @staticmethod
     def get_thresholds(_term_name) -> List[Threshold]:
-        threshold = Threshold(threshold_name='threshold_name',
-                              term_name='term_name',
-                              location_name='location_name',
-                              context=['context_1', 'context_2', 'context_3'],
-                              start_date=common.date_formatter.to_string(get_timestamp()),
-                              end_date=common.date_formatter.to_string(get_timestamp()),
-                              is_date_constrained=False,
-                              start_day_of_year=100,
-                              end_day_of_year=200,
-                              number_value=100,
-                              string_value='string_value')
-        return [threshold]
+        return [Threshold(threshold_name='threshold_name',
+                          term_name='term_name',
+                          location_name='location_name',
+                          context=['context_1', 'context_2', 'context_3'],
+                          start_date=common.date_formatter.to_string(get_timestamp()),
+                          end_date=common.date_formatter.to_string(get_timestamp()),
+                          is_date_constrained=False,
+                          start_day_of_year=100,
+                          end_day_of_year=200,
+                          number_value=100,
+                          string_value='string_value')]
 
-    def test_write_file(self):
+    @staticmethod
+    def get_data_files() -> DataFiles:
+        now = datetime.now()
+        name = 'NEON.D10.CPER.DP1.00041.001.210.000.000.prt.2020-03.expanded.20230405T190704Z.csv'
+        data_file = DataFile(filename=name, description='A data file with data.', line_count=15)
+        return DataFiles(files=[data_file], min_time=now, max_time=now)
+
+    def get_file_metadata(self) -> FileMetadata:
         elements = PathElements(domain=self.domain,
                                 site=self.site,
                                 year=self.year,
                                 month=self.month,
                                 data_product_id=self.data_product_id)
-        now = datetime.now()
-        data_file = DataFile(
-                filename='NEON.D10.CPER.DP1.00041.001.210.000.000.prt.2020-03.expanded.20230405T190704Z.csv',
-                description='A data file with data.',
-                line_count=15
-        )
-        data_files = DataFiles(files=[data_file],
-                               min_time=now,
-                               max_time=now)
         data_product = get_data_product(self.fs, _data_product_id='unused')
-        metadata = FileMetadata(path_elements=elements,
-                                data_files=data_files,
-                                data_product=data_product)
-        database = EmlDatabase(get_geometry=self.get_geometry,
-                               get_named_location=self.get_named_location,
-                               get_spatial_unit=self.get_spatial_unit,
-                               get_thresholds=self.get_thresholds,
-                               get_unit_eml_type=self.get_unit_eml_type,
-                               get_value_list=self.get_value_list)
-        eml_files = ExternalEmlFiles(get_boilerplate=self.get_boilerplate,
-                                     get_contact=self.get_contact,
-                                     get_intellectual_rights=self.get_intellectual_rights,
-                                     get_unit_types=self.get_unit_types)
+        return FileMetadata(path_elements=elements, data_files=self.get_data_files(), data_product=data_product)
+
+    def get_database(self) -> EmlDatabase:
+        return EmlDatabase(get_geometry=self.get_geometry,
+                           get_named_location=self.get_named_location,
+                           get_spatial_unit=self.get_spatial_unit,
+                           get_thresholds=self.get_thresholds,
+                           get_unit_eml_type=self.get_unit_eml_type,
+                           get_value_list=self.get_value_list)
+
+    def get_external_files(self) -> ExternalEmlFiles:
+        return ExternalEmlFiles(get_boilerplate=self.get_boilerplate,
+                                get_contact=self.get_contact,
+                                get_intellectual_rights=self.get_intellectual_rights,
+                                get_unit_types=self.get_unit_types,
+                                get_units=self.get_units)
+
+    def test_write_file(self):
         filename = EmlFile(out_path=self.out_path,
-                           metadata=metadata,
-                           eml_files=eml_files,
+                           metadata=self.get_file_metadata(),
+                           eml_files=self.get_external_files(),
                            timestamp=self.timestamp,
-                           database=database,
+                           database=self.get_database(),
                            publication_workbook=self.workbook,
                            package_type='basic').write()
         assert Path(self.out_path, self.site, self.year, self.month, filename).exists()

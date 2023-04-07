@@ -18,7 +18,8 @@ class FileDatabase:
         self.eml_files = ExternalEmlFiles(self.get_eml_boilerplate,
                                           self.get_eml_contact,
                                           self.get_eml_intellectual_rights,
-                                          self.get_eml_unit_types)
+                                          self.get_eml_unit_types,
+                                          self.get_eml_units)
 
     def get_eml_files(self):
         return self.eml_files
@@ -40,3 +41,6 @@ class FileDatabase:
 
     def get_eml_unit_types(self) -> str:
         return self.reader.read_file(self.config.eml_repo, self.config.eml_unit_types_path)
+
+    def get_eml_units(self) -> str:
+        return self.reader.read_file(self.config.eml_repo, self.config.eml_units_path)

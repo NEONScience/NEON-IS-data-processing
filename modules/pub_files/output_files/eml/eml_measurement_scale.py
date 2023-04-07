@@ -2,6 +2,7 @@ from typing import Optional, List
 
 import eml.eml_2_2_0 as eml
 
+from pub_files.database.queries.units import EmlUnitType
 from pub_files.database.queries.value_list import Value
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.eml.eml_database import EmlDatabase
@@ -112,11 +113,11 @@ class MeasurementScale:
 
     def _get_unit_type(self, row) -> eml.UnitType:
         workbook_unit = self.workbook.get_unit(row)
-        eml_unit_type = self.database.get_unit_eml_type(workbook_unit)
+        eml_unit_type: EmlUnitType = self.database.get_unit_eml_type(workbook_unit)
         unit_type = eml.UnitType()
-        if eml_unit_type == 'standard':
+        if eml_unit_type.is_standard():
             unit_type.standard_unit = workbook_unit
-        elif eml_unit_type == 'custom':
+        elif eml_unit_type.is_custom():
             unit_type.custom_unit = workbook_unit
         return unit_type
 
