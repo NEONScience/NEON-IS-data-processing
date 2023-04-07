@@ -1,0 +1,32 @@
+{
+    "type":"FeatureCollection",
+    "features":[
+        {
+            "type":"Feature",
+            "geometry":null,
+            "properties":{
+                "name":"CFGLOC101669",
+                "type":"CONFIG",
+                "description":"Arikaree River Water Level S1",
+                "domain":"D10",
+                "site":"ARIK",
+                "context":[
+                    "surfacewater"
+                ],
+                "active_periods":[
+                    {
+                        "start_date":"2020-01-02T00:00:00Z",
+                        "end_date":"2020-01-03T00:00:00Z"
+                    }
+                ]
+            },
+            "HOR":"101",
+            "Required Asset Management Location Code":"CFGLOC101669",
+            "TMI":"000",
+            "Data Rate":"0.0166666666667",
+            "VER":"100",
+            "Required Asset Management Location ID":            2994,
+            "IS Processing Default Start Date":"2016-03-05T00:00:00Z"
+        }
+    ]
+}
