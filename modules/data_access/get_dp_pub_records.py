@@ -10,7 +10,7 @@ from data_access.db_connector import DbConnector
 from data_access.types.dp_pub import DpPub
 
 
-def get_srf_loaders(connector: DbConnector,dp_id: List[str],data_begin: datetime,data_cutoff: datetime,
+def get_dp_pub_records(connector: DbConnector,dp_id: List[str],data_begin: datetime,data_cutoff: datetime,
                     site: List[str]) -> Iterator[DpPub]:
     """
     Get dp pub records for a dp_id, dataIntervalStart, dataIntervalEnd and any site.
