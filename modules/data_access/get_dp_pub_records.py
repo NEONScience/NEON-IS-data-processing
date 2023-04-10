@@ -54,12 +54,12 @@ def get_dp_pub_records(connector: DbConnector, dp_id: str, data_begin: datetime,
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
         if site == "":
-            cursor.execute(sql.replace("and \n             site = ANY (%s)",""))
+            cursor.execute(sql.replace("and \n             site = ANY (%s)",""),(dpid,data_begin,data_cutoff))
         else:
-            sites = site.split(",")
-        dpids = dpid.split(",")
-    #   cursor.execute(sql,(dpids,data_begin,data_cutoff,sites))
-        cursor.execute(sql,(dpid,data_begin,data_cutoff,site))
+            cursor.execute(sql,(dpid,data_begin,data_cutoff,site))
+    #        sites = site.split(",")
+    #    dpids = dpid.split(",")
+
         rows = cursor.fetchall()
         for row in rows:
             dataProductId = row[0]
