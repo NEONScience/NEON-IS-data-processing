@@ -10,7 +10,7 @@ from data_access.db_connector import DbConnector
 from data_access.types.dp_pub import DpPub
 
 
-def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,data_cutoff: datetime,
+def get_dp_pub_records(connector: DbConnector, dp_id: str, data_begin: datetime, data_cutoff: datetime,
                        site: str) -> Iterator[DpPub]:
     """
     Get dp pub records for a dp_id(s), dataIntervalStart, dataIntervalEnd and any site(s).
@@ -19,11 +19,11 @@ def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,da
     :param dp_id, dataIntervalStart, dataIntervalEnd and any site: A data product id.
     :return: data product records.
 
-    select * from dp_pub
-    where site in ('STER', 'ABBY')
-    and dp_idq  in ('NEON.DOM.SITE.DP1.00017.001', 'NEON.DOM.SITE.DP1.00040.001')
-    and data_interval_start >= '2013-10-01T00:00:00Z'
-    and data_interval_end <= '2013-11-01T00:00:00Z';
+    select * from dp_pub 
+    where dp_idq  in ('NEON.DOM.SITE.DP1.00017.001', 'NEON.DOM.SITE.DP1.00040.001')
+    and data_interval_start >= '2013-10-01T00:00:00Z' 
+    and data_interval_start < '2013-11-01T00:00:00Z'
+    and site in ('STER', 'ABBY')
     """
 
     sql = f'''
@@ -58,7 +58,8 @@ def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,da
         else:
             sites = site.split(",")
         dpids = dpid.split(",")
-        cursor.execute(sql,((dpids,),data_begin,data_cutoff,(sites,)))
+    #    cursor.execute(sql,((dpids,),data_begin,data_cutoff,(sites,)))
+        cursor.execute(sql,(dpids,data_begin,data_cutoff,sites))
         rows = cursor.fetchall()
         for row in rows:
             dataProductId = row[0]
