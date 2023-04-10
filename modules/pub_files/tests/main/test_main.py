@@ -34,7 +34,7 @@ class MainTest(unittest.TestCase):
         root = os.path.dirname(__file__)
         self.data_path = Path(root, 'data')
         self.location_path = Path(root, 'locations')
-        self.out_path = Path(root, 'output')
+        self.out_path = Path(root, 'out')
         self.out_path.mkdir(parents=False, exist_ok=True)
         self.db_secrets_path = Path(root, 'db_secrets')
         self.db_secrets_path.mkdir(parents=False, exist_ok=True)

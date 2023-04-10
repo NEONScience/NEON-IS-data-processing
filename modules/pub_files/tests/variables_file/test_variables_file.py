@@ -17,18 +17,18 @@ class VariablesFileTest(TestCase):
         self.workbook = PublicationWorkbook(get_workbook())
         self.setUpPyfakefs()
         self.in_path = Path('/in')
-        self.out_path = Path('/out')
         self.fs.create_dir(self.in_path)
-        self.fs.create_dir(self.out_path)
         domain = 'D10'
         site = 'CPER'
         year = '2020'
         month = '01'
+        self.out_path = Path('/out', site, year, month)
+        self.fs.create_dir(self.out_path)
         data_product_id = 'DP1.20288.001'
         timestamp = get_timestamp()
         elements = PathElements(domain=domain, site=site, year=year, month=month, data_product_id=data_product_id)
         expected_filename = get_filename(elements, file_type='variables', timestamp=timestamp, extension='csv')
         filename = write_file(out_path=self.out_path, elements=elements, timestamp=timestamp, workbook=self.workbook)
         assert filename == expected_filename
-        path = Path(self.out_path, 'CPER', '2020', '01', expected_filename)
+        path = Path(self.out_path, expected_filename)
         print(f'\nresult:\n{path.read_text()}\n')

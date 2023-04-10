@@ -28,12 +28,12 @@ class EmlTest(TestCase):
         self.setUpPyfakefs()
         self.timestamp = get_timestamp()
         self.test_files_path = Path(os.path.dirname(__file__))
-        self.out_path = Path('/out')
-        self.fs.create_dir(self.out_path)
         self.domain = 'D10'
         self.site = 'CPER'
         self.year = '2020'
         self.month = '01'
+        self.out_path = Path('/out', self.domain, self.site, self.year, self.month)
+        self.fs.create_dir(self.out_path)
         self.data_product_id = 'DP1.00041.01'
         self.add_boilerplate_file()
         self.add_contact_file()
@@ -165,4 +165,4 @@ class EmlTest(TestCase):
                            database=self.get_database(),
                            publication_workbook=self.workbook,
                            package_type='basic').write()
-        assert Path(self.out_path, self.site, self.year, self.month, filename).exists()
+        assert Path(self.out_path, filename).exists()

@@ -35,17 +35,14 @@ class PositionsFileTest(TestCase):
         root = Path(os.path.dirname(__file__), 'data')
         self.setUpPyfakefs()
         self.in_path = Path('/in')
-        self.out_path = Path('/out')
         self.domain = 'D10'
         self.site = 'CPER'
         self.year = '2020'
         self.month = '01'
         self.data_product_id = 'NEON.DOM.SITE.DP1.00041.001'
-        self.month_path = Path(self.in_path, self.site, self.year, self.month)
-
+        self.out_path = Path('/out', self.site, self.year, self.month)
         self.fs.create_dir(self.in_path)
         self.fs.create_dir(self.out_path)
-        self.fs.create_dir(self.month_path)
 
         soilpl101775 = Path(root, 'soilpl101755.json')
         self.soilpl101775_target = Path('/soilpl101775.json')
@@ -81,7 +78,7 @@ class PositionsFileTest(TestCase):
                                            get_geometry=self.get_geometry)
         filename = SensorPositionsFile(location_path=location_path, out_path=self.out_path, elements=elements,
                                        timestamp=timestamp, database=database).write()
-        file_path = Path(self.out_path, self.site, self.year, self.month, filename)
+        file_path = Path(self.out_path, filename)
         with open(file_path, 'r') as file:
             reader = csv.reader(file)
             i = 0
