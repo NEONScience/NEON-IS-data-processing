@@ -1,4 +1,4 @@
-from typing import NamedTuple, List, Optional
+from typing import NamedTuple,List,Optional
 from datetime import datetime
 
 
@@ -14,3 +14,4 @@ class DpPub(NamedTuple):
     updateDate: Optional[datetime]
     releaseStatus: str
     id: int
+
