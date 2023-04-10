@@ -10,8 +10,8 @@ from data_access.db_connector import DbConnector
 from data_access.types.dp_pub import DpPub
 
 
-def get_dp_pub_records(connector: DbConnector,dp_ids: List[str],data_begin: datetime,data_cutoff: datetime,
-                       sites: List[str]) -> Iterator[DpPub]:
+def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,data_cutoff: datetime,
+                       site: str) -> Iterator[DpPub]:
     """
     Get dp pub records for a dp_id(s), dataIntervalStart, dataIntervalEnd and any site(s).
 
@@ -53,7 +53,12 @@ def get_dp_pub_records(connector: DbConnector,dp_ids: List[str],data_begin: date
 
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
-        cursor.execute(sql,(dp_ids,data_begin,data_cutoff,sites))
+        if site == "":
+            cursor.execute(sql.replace("and \n             site = ANY (%s)",""))
+        else:
+            sites = site.split(",")
+        dpids = dpid.split(",")
+        cursor.execute(sql,((dpids,),data_begin,data_cutoff,(sites,)))
         rows = cursor.fetchall()
         for row in rows:
             dataProductId = row[0]
@@ -67,7 +72,7 @@ def get_dp_pub_records(connector: DbConnector,dp_ids: List[str],data_begin: date
             updateDate = row[8]
             releaseStatus = row[9]
             id = row[10]
-            dppub = DpPub(dataProductI=ddataProductId,
+            dppub = DpPub(dataProductI=dataProductId,
                           site=site,
                           dataIntervalStart=date_formatter.to_string(dataIntervalStart),
                           dataIntervalEnd=date_formatter.to_string(dataIntervalEnd),
