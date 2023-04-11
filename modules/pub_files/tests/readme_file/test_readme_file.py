@@ -54,8 +54,12 @@ class ReadmeFileTest(TestCase):
         readme_template = self.template_path.read_text()
         file_processor_database = file_processor_data.get_database(self.fs)
         publication_workbook = PublicationWorkbook(self.workbook)
-        file_metadata = file_processor.process(self.in_path, Path('/out'), 1, publication_workbook,
-                                               file_processor_database)
+        file_metadata = file_processor.process(in_path=self.in_path,
+                                               out_path=Path('/out'),
+                                               in_path_parse_index=1,
+                                               package_type='basic',
+                                               publication_workbook=publication_workbook,
+                                               database=file_processor_database)
         timestamp = get_timestamp()
         formatted_timestamp = format_timestamp(timestamp)
         variables_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.variables.csv'

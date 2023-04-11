@@ -17,6 +17,7 @@ from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.output_files.eml.eml_measurement_scale import MeasurementScale
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 from pub_files.output_files.eml.neon_units import NeonUnits
+from pub_files.output_files.filename_format import format_timestamp
 from pub_files.publication_workbook import PublicationWorkbook
 
 log = structlog.get_logger()
@@ -223,4 +224,5 @@ class EmlFile:
         site = elements.site
         start = DateFormats.format_date(self.metadata.data_files.min_time)
         end = DateFormats.format_date(self.metadata.data_files.max_time)
-        return f'NEON.{domain}.{site}.{product_id}.EML.{start}-{end}.{self.timestamp}.xml'
+        formatted_timestamp = format_timestamp(self.timestamp)
+        return f'NEON.{domain}.{site}.{product_id}.EML.{start}-{end}.{formatted_timestamp}.xml'

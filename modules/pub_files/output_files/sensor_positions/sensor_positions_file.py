@@ -31,7 +31,7 @@ class SensorPositionsFile:
         self.database = database
 
     def write(self) -> str:
-        filename = get_filename(self.elements, timestamp=self.timestamp, file_type='', extension='csv')
+        filename = get_filename(self.elements, timestamp=self.timestamp, file_type='sensor_positions', extension='csv')
         with open(Path(self.out_path, filename), 'w', encoding='UTF8', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
