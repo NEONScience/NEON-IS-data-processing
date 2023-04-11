@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from contextlib import closing
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pub_files.input_files.file_processor as file_processor
 import pub_files.output_files.readme.readme_file as readme_file
@@ -43,41 +44,51 @@ def main() -> None:
     (eml_files, workbook, readme_template) = get_external_files(config)
     publication_workbook = PublicationWorkbook(workbook)
     db_config = read_from_mount(config.db_secrets_path)
+
     with closing(DbConnector(db_config)) as connector:
+
         file_processor_database = FileProcessorData(connector).get_database()
         sensor_positions_database = SensorPositionsData(connector).get_database()
         eml_database = EmlData(connector).get_database()
         readme_database = ReadmeData(connector).get_database()
+
         timestamp = get_timestamp()
         metadata = file_processor.process(in_path, out_path, in_path_parse_index,
                                           publication_workbook,
                                           database=file_processor_database)
+
         elements = metadata.path_elements
-        variables_filename = variables_file.write_file(out_path=out_path,
+        output_path = Path(out_path, elements.site, elements.year, elements.month)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        variables_filename = variables_file.write_file(out_path=output_path,
                                                        elements=elements,
                                                        workbook=publication_workbook,
                                                        timestamp=timestamp)
+
         positions_filename = SensorPositionsFile(location_path=location_path,
-                                                 out_path=out_path,
+                                                 out_path=output_path,
                                                  elements=elements,
                                                  timestamp=timestamp,
                                                  database=sensor_positions_database).write()
-        basic_eml_filename = EmlFile(out_path=out_path,
+
+        basic_eml_filename = EmlFile(out_path=output_path,
                                      metadata=metadata,
                                      eml_files=eml_files,
                                      publication_workbook=publication_workbook,
                                      package_type='basic',
                                      timestamp=timestamp,
                                      database=eml_database).write()
-        expanded_eml_filename = EmlFile(out_path=out_path,
+        expanded_eml_filename = EmlFile(out_path=output_path,
                                         metadata=metadata,
                                         eml_files=eml_files,
                                         publication_workbook=publication_workbook,
                                         package_type='expanded',
                                         timestamp=timestamp,
                                         database=eml_database).write()
+
         eml_filename = basic_eml_filename  # TODO: Which filename to use, or both?
-        readme_file.write_file(out_path=out_path,
+        readme_file.write_file(out_path=output_path,
                                file_metadata=metadata,
                                readme_template=readme_template,
                                timestamp=timestamp,

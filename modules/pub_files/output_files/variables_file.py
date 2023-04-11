@@ -10,8 +10,7 @@ from pub_files.publication_workbook import PublicationWorkbook
 def write_file(out_path: Path, elements: PathElements, workbook: PublicationWorkbook, timestamp: datetime) -> str:
     column_names = ['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat']
     filename = get_filename(elements, timestamp=timestamp, file_type='variables', extension='csv')
-    path = Path(out_path, elements.site, elements.year, elements.month, filename)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    path = Path(out_path, filename)
     with open(path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(column_names)

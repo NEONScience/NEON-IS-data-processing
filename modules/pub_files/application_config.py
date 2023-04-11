@@ -28,3 +28,4 @@ class ApplicationConfig:
         self.eml_contact_path: str = env.str('GITHUB_EML_CONTACT_PATH')
         self.eml_intellectual_rights_path: str = env.str('GITHUB_EML_INTELLECTUAL_RIGHTS_PATH')
         self.eml_unit_types_path: str = env.str('GITHUB_EML_UNIT_TYPES_PATH')
+        self.eml_units_path: str = env.str('GITHUB_EML_UNITS_PATH')

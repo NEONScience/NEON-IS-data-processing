@@ -30,25 +30,14 @@ class SensorPositionsFile:
         self.timestamp = timestamp
         self.database = database
 
-    def get_file_path(self, filename: str) -> Path:
-        path = Path(self.out_path, self.elements.site, self.elements.year, self.elements.month, filename)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        return path
-
-    def get_named_location_data(self, named_location_name: str) -> Tuple[str, int, str]:
-        location = self.database.get_named_location(named_location_name)
-        (horizontal_index, vertical_index) = location.get_indices()
-        hor_ver = f'{horizontal_index}.{vertical_index}'
-        return hor_ver, location.location_id, location.description
-
     def write(self) -> str:
         filename = get_filename(self.elements, timestamp=self.timestamp, file_type='', extension='csv')
-        with open(self.get_file_path(filename), 'w', encoding='UTF8', newline='') as file:
+        with open(Path(self.out_path, filename), 'w', encoding='UTF8', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
             for path in self.location_path.glob('*.json'):
                 if path.is_file() and path.name.startswith('CFGLOC'):
-                    (row_hor_ver, row_location_id, row_description) = self.get_named_location_data(path.stem)
+                    (row_hor_ver, row_location_id, row_description) = self._get_named_location_data(path.stem)
                     for geolocation in self.database.get_geolocations(path.stem):
                         offset_name = geolocation.offset_name
                         geometry: Geometry = self.database.get_geometry(offset_name)
@@ -97,3 +86,9 @@ class SensorPositionsFile:
                                    row_y_azimuth]
                             writer.writerow(row)
         return filename
+
+    def _get_named_location_data(self, named_location_name: str) -> Tuple[str, int, str]:
+        location = self.database.get_named_location(named_location_name)
+        (horizontal_index, vertical_index) = location.get_indices()
+        hor_ver = f'{horizontal_index}.{vertical_index}'
+        return hor_ver, location.location_id, location.description

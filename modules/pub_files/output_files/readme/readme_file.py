@@ -46,8 +46,7 @@ def write_file(readme_template: str,
                        variables_filename=variables_filename,
                        positions_filename=positions_filename,
                        eml_filename=eml_filename)
-    readme_filename = get_filename(elements, timestamp=timestamp, file_type='', extension='txt')
-    readme_path = Path(out_path, elements.site, elements.year, elements.month, readme_filename)
     template = Template(readme_template, trim_blocks=True, lstrip_blocks=True)
-    readme_content = template.render(readme_data)
-    readme_path.write_text(readme_content)
+    content = template.render(readme_data)
+    filename = get_filename(elements, timestamp=timestamp, file_type='readme', extension='txt')
+    Path(out_path, filename).write_text(content)

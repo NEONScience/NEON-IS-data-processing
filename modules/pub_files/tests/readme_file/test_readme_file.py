@@ -21,7 +21,7 @@ class ReadmeFileTest(TestCase):
         self.setUpPyfakefs()
         self.test_files_path = Path(os.path.dirname(__file__))
         self.in_path = Path('/in/CPER/2020/01')
-        self.out_path = Path('/out')
+        self.out_path = Path('/out/CPER/2020/01')
         self.fs.create_dir(self.in_path)
         self.fs.create_dir(self.out_path)
         self.add_template_file()
@@ -54,7 +54,7 @@ class ReadmeFileTest(TestCase):
         readme_template = self.template_path.read_text()
         file_processor_database = file_processor_data.get_database(self.fs)
         publication_workbook = PublicationWorkbook(self.workbook)
-        file_metadata = file_processor.process(self.in_path, self.out_path, 1, publication_workbook,
+        file_metadata = file_processor.process(self.in_path, Path('/out'), 1, publication_workbook,
                                                file_processor_database)
         timestamp = get_timestamp()
         formatted_timestamp = format_timestamp(timestamp)
@@ -69,7 +69,10 @@ class ReadmeFileTest(TestCase):
                    positions_filename=positions_filename,
                    eml_filename=eml_filename,
                    database=file_database.get_database(self.fs))
-        readme_files = list(Path(self.out_path, 'CPER', '2020', '01').glob('*.txt'))
-        csv_files = list(Path(self.out_path, 'CPER', '2020', '01').glob('*.csv'))
+        readme_files = list(Path(self.out_path).glob('*.txt'))
+        csv_files = list(Path(self.out_path).glob('*.csv'))
+        files = list(Path(self.out_path).rglob('*'))
+        for file in files:
+            print(f'file: {file}')
         assert len(readme_files) == 1
         assert len(csv_files) == 5
