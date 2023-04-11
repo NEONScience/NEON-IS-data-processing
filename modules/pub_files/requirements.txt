@@ -1,7 +1,11 @@
+common==0.1.2
+data_access==0.0.1a2
 environs==7.3.1
 Jinja2==3.0.3
 pandas==1.4.2
 pyfakefs==3.6
 PyJWT==2.6.0
 requests==2.26.0
-structlog==22.3.0
+structlog==23.1.0
+xsdata==22.12
+python-eml==0.0.2
