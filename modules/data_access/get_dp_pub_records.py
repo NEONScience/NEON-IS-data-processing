@@ -11,7 +11,7 @@ from data_access.types.dp_pub import DpPub
 
 
 def get_dp_pub_records(connector: DbConnector, dp_id: str, data_begin: datetime, data_cutoff: datetime,
-                       site: str) -> Iterator[DpPub]:
+                       site: None) -> Iterator[DpPub]:
     """
     Get dp pub records for a dp_id, dataIntervalStart, dataIntervalEnd and any site.
 
@@ -53,13 +53,10 @@ def get_dp_pub_records(connector: DbConnector, dp_id: str, data_begin: datetime,
 
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
-        if site == "":
+        if site is None:
             cursor.execute(sql.replace("and \n             site = ANY (%s)",""),(dpid,data_begin,data_cutoff))
         else:
             cursor.execute(sql,(dpid,data_begin,data_cutoff,site))
-    #        sites = site.split(",")
-    #    dpids = dpid.split(",")
-
         rows = cursor.fetchall()
         for row in rows:
             dataProductId = row[0]
