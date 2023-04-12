@@ -16,14 +16,14 @@ def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,da
     Get dp pub records for a dp_id, dataIntervalStart, dataIntervalEnd and any site.
 
     :param connector: A database connector.
-    :param dp_id, dataIntervalStart, dataIntervalEnd and any site: A data product id.
-    :return: data product records. An example query below, 
+    :param dp_id, dataIntervalStart, dataIntervalEnd and any site.
+    :return: data product records for the . An example query below, 
 
     select * from dp_pub 
-    where dp_idq  = 'NEON.DOM.SITE.DP1.00017.001'
+    where dp_idq = 'NEON.DOM.SITE.DP1.00017.001'
     and data_interval_start >= '2013-10-01T00:00:00Z' 
     and data_interval_start < '2013-11-01T00:00:00Z'
-    and site = 'STER'
+    (and site = 'STER')                                 /* site can be None
     """
 
     sql = f'''
@@ -47,8 +47,8 @@ def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,da
              data_interval_start >= %s
          and 
              data_interval_start < %s
-         and 
-             site = %s
+         and                                    /* this clause will be removed
+             site = %s                          /* when site is not passed in.
      '''
 
     connection = connector.get_connection()
