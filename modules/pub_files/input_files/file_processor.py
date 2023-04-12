@@ -14,11 +14,8 @@ from pub_files.publication_workbook import PublicationWorkbook
 log = structlog.get_logger()
 
 
-def process(in_path: Path,
-            out_path: Path,
-            in_path_parse_index: int,
-            publication_workbook: PublicationWorkbook,
-            database: FileProcessorDatabase) -> FileMetadata:
+def process(*, in_path: Path, out_path: Path, in_path_parse_index: int, package_type: str,
+            publication_workbook: PublicationWorkbook, database: FileProcessorDatabase) -> FileMetadata:
     site = ''
     domain = ''
     year = ''
@@ -31,7 +28,7 @@ def process(in_path: Path,
     for path in in_path.rglob('*'):
         if path.is_file():
             (site, year, month, filename) = parse_path(path, in_path_parse_index)
-            if filename != 'manifest.csv':
+            if filename != 'manifest.csv' and package_type in filename:
                 line_count = sum(1 for line in open(path))
                 filename_data: FilenameData = parse_filename(filename)
                 domain = filename_data.domain
@@ -56,9 +53,9 @@ def process(in_path: Path,
                         min_data_time = min_date
                     if max_date > max_data_time:
                         max_data_time = max_date
-            # Link the file into the output directory.
-            link_path = Path(out_path, site, year, month, path.name)
-            link_file(path, link_path)
+                # link the file into the output directory.
+                link_path = Path(out_path, site, year, month, package_type, path.name)
+                link_file(path, link_path)
     path_elements = PathElements(domain=domain, site=site, year=year, month=month, data_product_id=data_product_id)
     data_files = DataFiles(files=data_files, min_time=min_data_time, max_time=max_data_time)
     data_product = database.get_data_product(data_product_id)

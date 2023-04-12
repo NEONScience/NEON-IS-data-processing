@@ -9,7 +9,6 @@ from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.publication_workbook import PublicationWorkbook
 
-
 log = structlog.get_logger()
 
 
@@ -22,65 +21,64 @@ class MeasurementScale:
 
     def get_scale(self, row: dict) -> Optional[eml.AttributeTypeMeasurementScale]:
         measurement_scale = eml.AttributeTypeMeasurementScale()
-        workbook_scale = self.workbook.get_measurement_scale(row)
-        match workbook_scale.lower():
-            case 'nominal':
-                collect_date = self.metadata.data_files.min_time
-                if self.workbook.get_os_lov(row) is not 'NA':
-                    if collect_date is None:
-                        return
-                    else:
-                        non_numeric_domain_type = eml.NonNumericDomainType()
-                        enumerated_domain = eml.NonNumericDomainTypeEnumeratedDomain()
-                        value_list_name = self.workbook.get_os_lov(row)
-                        values: List[Value] = self.database.get_value_list(value_list_name)
-                        for value in values:
-                            end_date = value.end_date
-                            if value.effective_date == collect_date and end_date is None or end_date == collect_date:
-                                code_definition = eml.NonNumericDomainTypeEnumeratedDomainCodeDefinition()
-                                code_definition.code = value.publication_code
-                                code_definition.definition = value.name
-                                enumerated_domain.code_definition.append(code_definition)
-                        non_numeric_domain_type.enumerated_domain.append(enumerated_domain)
-                        nominal = eml.AttributeTypeMeasurementScaleNominal()
-                        nominal.non_numeric_domain = non_numeric_domain_type
-                        measurement_scale.nominal = nominal
-            case 'textdomain':
-                non_numeric_domain_type = eml.NonNumericDomainType()
-                text_domain = eml.NonNumericDomainTypeTextDomain()
-                text_domain.definition = self.workbook.get_table_description(row)
-                non_numeric_domain_type.text_domain.append(text_domain)
-                nominal = eml.AttributeTypeMeasurementScaleNominal()
-                nominal.non_numeric_domain = non_numeric_domain_type
-                measurement_scale.nominal = nominal
-            case 'interval':
-                numeric_domain_type = self._get_numeric_domain_type(row)
-                interval = eml.AttributeTypeMeasurementScaleInterval()
-                unit_type = self._get_unit_type(row)
-                precision = self._get_precision(row)
-                if unit_type is not None:
-                    interval.unit = unit_type
-                interval.numeric_domain = numeric_domain_type
-                if precision is not None:
-                    interval.precision = precision
-                measurement_scale.interval = interval
-            case 'ratio':
-                numeric_domain_type = self._get_numeric_domain_type(row)
-                self._set_bounds(row, numeric_domain_type)
-                unit_type = self._get_unit_type(row)
-                precision = self._get_precision(row)
-                ratio = eml.AttributeTypeMeasurementScaleRatio()
-                ratio.unit = unit_type
-                ratio.numeric_domain = numeric_domain_type
-                if precision is not None:
-                    ratio.precision = precision
-                measurement_scale.ratio = ratio
-            case 'datetime':
-                date_time = eml.AttributeTypeMeasurementScaleDateTime()
-                date_time.format_string = self.workbook.get_publication_format(row)
-                measurement_scale.date_time = date_time
-            case _:
-                return None
+        workbook_scale = self.workbook.get_measurement_scale(row).lower()
+        if workbook_scale == 'nominal':
+            collect_date = self.metadata.data_files.min_time
+            if self.workbook.get_os_lov(row) is not 'NA':
+                if collect_date is None:
+                    return
+                else:
+                    non_numeric_domain_type = eml.NonNumericDomainType()
+                    enumerated_domain = eml.NonNumericDomainTypeEnumeratedDomain()
+                    value_list_name = self.workbook.get_os_lov(row)
+                    values: List[Value] = self.database.get_value_list(value_list_name)
+                    for value in values:
+                        end_date = value.end_date
+                        if value.effective_date == collect_date and end_date is None or end_date == collect_date:
+                            code_definition = eml.NonNumericDomainTypeEnumeratedDomainCodeDefinition()
+                            code_definition.code = value.publication_code
+                            code_definition.definition = value.name
+                            enumerated_domain.code_definition.append(code_definition)
+                    non_numeric_domain_type.enumerated_domain.append(enumerated_domain)
+                    nominal = eml.AttributeTypeMeasurementScaleNominal()
+                    nominal.non_numeric_domain = non_numeric_domain_type
+                    measurement_scale.nominal = nominal
+        elif workbook_scale == 'textdomain':
+            non_numeric_domain_type = eml.NonNumericDomainType()
+            text_domain = eml.NonNumericDomainTypeTextDomain()
+            text_domain.definition = self.workbook.get_table_description(row)
+            non_numeric_domain_type.text_domain.append(text_domain)
+            nominal = eml.AttributeTypeMeasurementScaleNominal()
+            nominal.non_numeric_domain = non_numeric_domain_type
+            measurement_scale.nominal = nominal
+        elif workbook_scale == 'interval':
+            numeric_domain_type = self._get_numeric_domain_type(row)
+            interval = eml.AttributeTypeMeasurementScaleInterval()
+            unit_type = self._get_unit_type(row)
+            precision = self._get_precision(row)
+            if unit_type is not None:
+                interval.unit = unit_type
+            interval.numeric_domain = numeric_domain_type
+            if precision is not None:
+                interval.precision = precision
+            measurement_scale.interval = interval
+        elif workbook_scale == 'ratio':
+            numeric_domain_type = self._get_numeric_domain_type(row)
+            self._set_bounds(row, numeric_domain_type)
+            unit_type = self._get_unit_type(row)
+            precision = self._get_precision(row)
+            ratio = eml.AttributeTypeMeasurementScaleRatio()
+            ratio.unit = unit_type
+            ratio.numeric_domain = numeric_domain_type
+            if precision is not None:
+                ratio.precision = precision
+            measurement_scale.ratio = ratio
+        elif workbook_scale == 'datetime':
+            date_time = eml.AttributeTypeMeasurementScaleDateTime()
+            date_time.format_string = self.workbook.get_publication_format(row)
+            measurement_scale.date_time = date_time
+        else:
+            return None
         return measurement_scale
 
     def _get_numeric_domain_type(self, row) -> eml.NumericDomainType:

@@ -42,6 +42,8 @@ class MainTest(unittest.TestCase):
         self.site_path = Path(self.out_path, 'CPER')
         self.year_path = Path(self.site_path, '2020')
         self.month_path = Path(self.year_path, '01')
+        self.basic_path = Path(self.month_path, 'basic')
+        self.expanded_path = Path(self.month_path, 'expanded')
 
     def set_environment(self):
         pem_path = environs.Env().str('GITHUB_README_APP_PEM')
@@ -71,19 +73,26 @@ class MainTest(unittest.TestCase):
     def test_main(self) -> None:
         self.set_environment()
         main()
-        readme_count = len(list(self.month_path.glob('*.txt')))
-        csv_file_count = len(list(self.month_path.glob('*.csv')))
+        readme_count = len(list(self.basic_path.glob('*.txt')))
+        csv_count = len(list(self.basic_path.glob('*.csv')))
+        eml_count = len(list(self.basic_path.glob('*.xml')))
         assert readme_count == 1
-        assert csv_file_count == 7  # includes data files, variables file, and sensor_positions file.
+        assert csv_count == 4  # includes data files, variables file, and sensor_positions file.
+        assert eml_count == 1
 
     def tearDown(self) -> None:
         self.remove_directories()
         self.remove_database_secrets()
 
     def remove_directories(self):
-        for path in self.month_path.glob('*'):
+        for path in self.basic_path.glob('*'):
             if path.is_file():
                 path.unlink(missing_ok=True)
+        for path in self.expanded_path.glob('*'):
+            if path.is_file():
+                path.unlink(missing_ok=True)
+        self.basic_path.rmdir()
+        self.expanded_path.rmdir()
         self.month_path.rmdir()
         self.year_path.rmdir()
         self.site_path.rmdir()
