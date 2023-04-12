@@ -17,7 +17,7 @@ def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,da
 
     :param connector: A database connector.
     :param dp_id, dataIntervalStart, dataIntervalEnd and any site.
-    :return: data product records for the . An example query below, 
+    :return: data product records for the select criteria. An example query below, 
 
     select * from dp_pub 
     where dp_idq = 'NEON.DOM.SITE.DP1.00017.001'
