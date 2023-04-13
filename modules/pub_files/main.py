@@ -38,6 +38,7 @@ def get_external_files(config: ApplicationConfig) -> Tuple[ExternalEmlFiles, str
 
 
 def get_output_path(out_path: Path, path_elements: PathElements, package_type: str) -> Path:
+    """Returns the standard output path for writing files."""
     output_path = Path(out_path, path_elements.site, path_elements.year, path_elements.month, package_type)
     output_path.mkdir(parents=True, exist_ok=True)
     return output_path

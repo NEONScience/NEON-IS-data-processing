@@ -24,7 +24,7 @@ class MeasurementScale:
         workbook_scale = self.workbook.get_measurement_scale(row).lower()
         if workbook_scale == 'nominal':
             collect_date = self.metadata.data_files.min_time
-            if self.workbook.get_os_lov(row) is not 'NA':
+            if self.workbook.get_os_lov(row) != 'NA':
                 if collect_date is None:
                     return
                 else:

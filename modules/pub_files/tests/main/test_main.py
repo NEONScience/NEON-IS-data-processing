@@ -53,7 +53,7 @@ class MainTest(unittest.TestCase):
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['DB_SECRETS_PATH'] = str(self.db_secrets_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
-        os.environ['GITHUB_PEM'] = pem_path
+        os.environ['GITHUB_PEM_PATH'] = pem_path
         os.environ['GITHUB_APP_ID'] = '300002'
         os.environ['GITHUB_INSTALLATION_ID'] = '34765458'
         os.environ['GITHUB_HOST'] = 'https://api.github.com'

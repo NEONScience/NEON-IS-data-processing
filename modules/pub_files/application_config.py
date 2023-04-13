@@ -13,7 +13,7 @@ class ApplicationConfig:
         self.out_path: Path = env.path('OUT_PATH')
         self.db_secrets_path: Path = env.path('DB_SECRETS_PATH')
         self.log_level: str = env.log_level('LOG_LEVEL', 'INFO')
-        self.certificate_path: Path = env.path('GITHUB_PEM')
+        self.certificate_path: Path = env.path('GITHUB_PEM_PATH')
         self.app_id: str = env.str('GITHUB_APP_ID')
         self.installation_id: str = env.str('GITHUB_INSTALLATION_ID')
         self.host: str = env.str('GITHUB_HOST')
