@@ -54,7 +54,8 @@ def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,da
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
         if site is None:
-            cursor.execute(sql.replace("and \n             site = %s",""),(dp_id,data_begin,data_cutoff))
+            sql2 = sql.replace("and \n             site = %s","")
+            cursor.execute(sql2,(dp_id,data_begin,data_cutoff))
         else:
             cursor.execute(sql,(dp_id,data_begin,data_cutoff,site))
         rows = cursor.fetchall()
