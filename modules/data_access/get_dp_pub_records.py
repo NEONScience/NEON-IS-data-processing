@@ -71,7 +71,7 @@ def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,da
             updateDate = row[8]
             releaseStatus = row[9]
             id = row[10]
-            dppub = DpPub(dataProductI=dataProductId,
+            dppub = DpPub(dataProductId=dataProductId,
                           site=site,
                           dataIntervalStart=date_formatter.to_string(dataIntervalStart),
                           dataIntervalEnd=date_formatter.to_string(dataIntervalEnd),
