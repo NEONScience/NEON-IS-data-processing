@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/pub_files:0.0.0
+  image: quay.io/battelleecology/pub_files:0.0.1
   cmd:
     - /bin/bash
   stdin:
@@ -48,3 +48,38 @@ input:
         repo: parQuantumLine_level1_pub_package
         glob: /(*)/*/(*)
         joinOn: $2/$1
+resource_requests:
+  memory: 25M
+  cpu: 0.01
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { 
+    "tolerations": [
+      {
+        "key": "nodepool.neonscience.org/pipeline",
+        "operator": "Exists"
+      },
+      {
+        "effect": "NoSchedule",
+        "key": "cloud.google.com/gke-spot",
+        "operator": "Exists"
+      }
+    ] 
+  }
+pod_patch: |-
+  [
+    { 
+      "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"1G"
+    },
+    { 
+      "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]
