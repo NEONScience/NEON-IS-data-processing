@@ -47,8 +47,8 @@ def get_dp_pub_records(connector: DbConnector,dp_id: str,data_begin: datetime,da
              data_interval_start >= %s
          and 
              data_interval_start < %s
-         and                                    /* this clause will be removed
-             site = %s                          /* when site is not passed in.
+         and 
+             site = %s
      '''
 
     connection = connector.get_connection()
