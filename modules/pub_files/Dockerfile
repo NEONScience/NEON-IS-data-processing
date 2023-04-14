@@ -31,7 +31,6 @@ RUN update-ca-trust && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt && \
-    python3 -mpip uninstall jwt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
     microdnf clean all --disableplugin=subscription-manager && \
     groupadd -g 9999 appuser && \
