@@ -13,14 +13,14 @@ class ExternalFiles:
                                      host=config.host,
                                      repo_owner=config.repo_owner,
                                      branch=config.branch)
-        self.reader = GithubReader(github_config)
-        self.readme_template = self.reader.read_file(config.readme_repo, config.readme_path)
-        self.publication_workbook = self.reader.read_file(config.workbook_repo, config.workbook_path)
-        self.eml_boilerplate = self.reader.read_file(config.eml_repo, config.eml_boilerplate_path)
-        self.eml_contact = self.reader.read_file(config.eml_repo, config.eml_contact_path)
-        self.eml_intellectual_rights = self.reader.read_file(config.eml_repo, config.eml_intellectual_rights_path)
-        self.eml_unit_types = self.reader.read_file(config.eml_repo, config.eml_unit_types_path)
-        self.eml_units = self.reader.read_file(config.eml_repo, config.eml_units_path)
+        reader = GithubReader(github_config)
+        self.readme_template = reader.read_file(config.readme_repo, config.readme_path)
+        self.publication_workbook = reader.read_file(config.workbook_repo, config.workbook_path)
+        self.eml_boilerplate = reader.read_file(config.eml_repo, config.eml_boilerplate_path)
+        self.eml_contact = reader.read_file(config.eml_repo, config.eml_contact_path)
+        self.eml_intellectual_rights = reader.read_file(config.eml_repo, config.eml_intellectual_rights_path)
+        self.eml_unit_types = reader.read_file(config.eml_repo, config.eml_unit_types_path)
+        self.eml_units = reader.read_file(config.eml_repo, config.eml_units_path)
         self.eml_files = ExternalEmlFiles(self.get_eml_boilerplate,
                                           self.get_eml_contact,
                                           self.get_eml_intellectual_rights,
