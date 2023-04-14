@@ -15,7 +15,7 @@ from pub_files.database.eml_data import EmlData
 from pub_files.database.file_processor_data import FileProcessorData
 from pub_files.database.readme_data import ReadmeData
 from pub_files.database.sensor_positions_data import SensorPositionsData
-from pub_files.external_files.file_database import FileDatabase
+from pub_files.external_files.external_files import ExternalFiles
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.eml.eml_file import EmlFile
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
@@ -30,10 +30,10 @@ def get_timestamp() -> datetime:
 
 def get_external_files(config: ApplicationConfig) -> Tuple[ExternalEmlFiles, str, str]:
     """Returns the external files needed for publication file generation."""
-    file_database = FileDatabase(config)
-    eml_files: ExternalEmlFiles = file_database.get_eml_files()
-    publication_workbook: str = file_database.get_workbook()
-    readme_template: str = file_database.get_readme()
+    external_files = ExternalFiles(config)
+    eml_files: ExternalEmlFiles = external_files.get_eml_files()
+    publication_workbook: str = external_files.get_workbook()
+    readme_template: str = external_files.get_readme()
     return eml_files, publication_workbook, readme_template
 
 

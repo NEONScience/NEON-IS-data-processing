@@ -4,7 +4,7 @@ from pub_files.external_files.github_reader import GithubReader
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 
 
-class FileDatabase:
+class ExternalFiles:
 
     def __init__(self, config: ApplicationConfig):
         github_config = GithubConfig(certificate_path=config.certificate_path,
@@ -14,7 +14,13 @@ class FileDatabase:
                                      repo_owner=config.repo_owner,
                                      branch=config.branch)
         self.reader = GithubReader(github_config)
-        self.config = config
+        self.readme_template = self.reader.read_file(config.readme_repo, config.readme_path)
+        self.publication_workbook = self.reader.read_file(config.workbook_repo, config.workbook_path)
+        self.eml_boilerplate = self.reader.read_file(config.eml_repo, config.eml_boilerplate_path)
+        self.eml_contact = self.reader.read_file(config.eml_repo, config.eml_contact_path)
+        self.eml_intellectual_rights = self.reader.read_file(config.eml_repo, config.eml_intellectual_rights_path)
+        self.eml_unit_types = self.reader.read_file(config.eml_repo, config.eml_unit_types_path)
+        self.eml_units = self.reader.read_file(config.eml_repo, config.eml_units_path)
         self.eml_files = ExternalEmlFiles(self.get_eml_boilerplate,
                                           self.get_eml_contact,
                                           self.get_eml_intellectual_rights,
@@ -25,22 +31,22 @@ class FileDatabase:
         return self.eml_files
 
     def get_readme(self) -> str:
-        return self.reader.read_file(self.config.readme_repo, self.config.readme_path)
+        return self.readme_template
 
     def get_workbook(self) -> str:
-        return self.reader.read_file(self.config.workbook_repo, self.config.workbook_path)
+        return self.publication_workbook
 
     def get_eml_boilerplate(self) -> str:
-        return self.reader.read_file(self.config.eml_repo, self.config.eml_boilerplate_path)
+        return self.eml_boilerplate
 
     def get_eml_contact(self) -> str:
-        return self.reader.read_file(self.config.eml_repo, self.config.eml_contact_path)
+        return self.eml_contact
 
     def get_eml_intellectual_rights(self) -> str:
-        return self.reader.read_file(self.config.eml_repo, self.config.eml_intellectual_rights_path)
+        return self.eml_intellectual_rights
 
     def get_eml_unit_types(self) -> str:
-        return self.reader.read_file(self.config.eml_repo, self.config.eml_unit_types_path)
+        return self.eml_unit_types
 
     def get_eml_units(self) -> str:
-        return self.reader.read_file(self.config.eml_repo, self.config.eml_units_path)
+        return self.eml_units
