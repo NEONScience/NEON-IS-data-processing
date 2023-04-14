@@ -16,7 +16,7 @@ class GithubReader:
     def read_file(self, repo: str, file_path: str) -> str:
         """Read a file as a string from a git repo and path."""
         headers = {
-            'Authorization': f'token {self.access_token}',
+            'Author ization': f'token {self.access_token}',
             'Accept': 'application/vnd.github.v3.raw+json'
         }
         url = f'{self.config.host}/repos/{self.config.repo_owner}/{repo}/contents/{file_path}'
@@ -29,7 +29,7 @@ class GithubReader:
 
     def _get_jwt(self) -> str:
         """Get a JSON web token to request an app installation token from Git."""
-        signing_key = jwt.jwk.jwk_from_pem(self.config.certificate_path.read_bytes())
+        signing_key = jwt.jwk_from_pem(self.config.certificate_path.read_bytes())
         payload = {
             'iat': int(time.time()),  # Issued at time
             'exp': int(time.time()) + 600,  # JWT expiration time (10 minutes maximum)
