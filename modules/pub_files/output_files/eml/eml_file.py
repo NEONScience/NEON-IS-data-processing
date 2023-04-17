@@ -213,7 +213,6 @@ class EmlFile:
             config = SerializerConfig(pretty_print=True)
             serializer = XmlSerializer(config=config)
             string_content = serializer.render(unit_list)
-            print(f'string_content: {string_content}')
             return self.xml_parser.from_string(string_content, eml.EmlAdditionalMetadataMetadata)
         return None
 
