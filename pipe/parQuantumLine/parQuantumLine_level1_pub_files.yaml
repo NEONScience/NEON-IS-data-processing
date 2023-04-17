@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/pub_files:0.0.7
+  image: quay.io/battelleecology/pub_files:0.0.8
   cmd:
     - /bin/bash
   stdin:
@@ -23,7 +23,7 @@ transform:
     GITHUB_README_REPO: neon-metadata-docs
     GITHUB_README_PATH: readme/template.j2
     GITHUB_PUBLICATION_WORKBOOK_REPO: NEON-FIU-document-IPT
-    GITHUB_PUBLICATION_WORKBOOK_PATH: PAR/dataPubInfo/par_datapub_NEONDOC002872.txt
+    GITHUB_PUBLICATION_WORKBOOK_PATH: quantum_line_PAR/dataPubInfo/prq_datapub_NEONDOC002880.txt
     GITHUB_EML_REPO: neon-metadata-docs
     GITHUB_EML_BOILERPLATE_PATH: eml/neon_components/NEON_EML_Boilerplate.xml
     GITHUB_EML_CONTACT_PATH: eml/neon_components/neon_contact.xml

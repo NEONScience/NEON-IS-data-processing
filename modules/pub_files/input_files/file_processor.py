@@ -30,7 +30,6 @@ def process(*, in_path: Path, out_path: Path, in_path_parse_index: int, package_
             (site, year, month, filename) = parse_path(path, in_path_parse_index)
             if filename != 'manifest.csv' and package_type in filename:
                 line_count = sum(1 for line in open(path))
-                print(f'filename: {filename}')
                 filename_data: FilenameData = parse_filename(filename)
                 domain = filename_data.domain
                 level = filename_data.level
