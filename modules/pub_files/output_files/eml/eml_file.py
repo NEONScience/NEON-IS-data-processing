@@ -41,7 +41,6 @@ class EmlFile:
     def write(self) -> str:
         self._add_content()
         content = self._render_content()
-        log.debug(f'\n\nEML content:\n{content}\n')
         filename = self._get_filename()
         Path(self.out_path, filename).write_text(content)
         return filename
