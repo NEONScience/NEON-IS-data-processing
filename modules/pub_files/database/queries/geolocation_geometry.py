@@ -23,6 +23,9 @@ def get_geometry(connector: DbConnector, named_location_name: str) -> Geometry:
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [named_location_name])
         row = cursor.fetchone()
+        if row is None:
+            print(f'Could not find geometry for: {named_location_name}.')
+            exit(1)
         geometry: str = row[0]
         srid: int = row[1]
     return Geometry(geometry=geometry, srid=srid)
