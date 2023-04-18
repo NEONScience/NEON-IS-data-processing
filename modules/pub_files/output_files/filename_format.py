@@ -14,5 +14,5 @@ def get_filename(elements: PathElements, timestamp: datetime, file_type: str, ex
     formatted_timestamp = format_timestamp(timestamp)
     domain = elements.domain
     site = elements.site
-    data_product_id = elements.data_product_id.replace('NEON.DOM.SITE', '')
+    data_product_id = elements.data_product_id.replace('NEON.DOM.SITE.', '')
     return f'NEON.{domain}.{site}.{data_product_id}.{formatted_timestamp}.{file_type}.{extension}'
