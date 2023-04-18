@@ -20,18 +20,19 @@ def process(*, in_path: Path, out_path: Path, in_path_parse_index: int, package_
     data_files = []
     min_data_time = None
     max_data_time = None
-    is_first_file = True
     domain = None
     site = None
     year = None
     month = None
     data_product_id = None
+    is_first_file = True
     for path in in_path.rglob('*'):
         if path.is_file() and path.name != 'manifest.csv' and package_type in path.name:
             path_parts: PathParts = parse_path(path, in_path_parse_index)
             site = path_parts.site
             year = path_parts.year
             month = path_parts.month
+            log.debug(f'month: {month}')
             line_count = sum(1 for line in open(path))
             filename_data: FilenameData = parse_filename(path.name)
             domain = filename_data.domain
