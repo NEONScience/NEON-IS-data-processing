@@ -26,7 +26,7 @@ def process(*, in_path: Path, out_path: Path, in_path_parse_index: int, package_
     month = None
     data_product_id = None
     is_first_file = True
-    for path in in_path.rglob('*'):
+    for path in in_path.rglob('*.csv'):
         if path.is_file() and path.name != 'manifest.csv' and package_type in path.name:
             path_parts: PathParts = parse_path(path, in_path_parse_index)
             site = path_parts.site
