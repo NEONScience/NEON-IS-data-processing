@@ -32,7 +32,6 @@ def process(*, in_path: Path, out_path: Path, in_path_parse_index: int, package_
             site = path_parts.site
             year = path_parts.year
             month = path_parts.month
-            log.debug(f'month: {month}')
             line_count = sum(1 for line in open(path))
             filename_data: FilenameData = parse_filename(path.name)
             domain = filename_data.domain
