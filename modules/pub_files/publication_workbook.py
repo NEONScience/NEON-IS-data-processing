@@ -2,7 +2,7 @@ import csv
 from io import StringIO
 from typing import List, Dict
 
-from pub_files.input_files.filename_parser import FilenameData
+from pub_files.input_files.filename_parser import FilenameParts
 
 
 class PublicationWorkbook:
@@ -61,8 +61,8 @@ class PublicationWorkbook:
             if raw:
                 yield raw
 
-    def get_file_description(self, filename_data: FilenameData) -> str:
-        key = self.make_key(filename_data.table_name, filename_data.download_package)
+    def get_file_description(self, parts: FilenameParts) -> str:
+        key = self.make_key(parts.table_name, parts.download_package)
         return self.file_descriptions[key]
 
     def load(self, workbook: str) -> List[dict]:

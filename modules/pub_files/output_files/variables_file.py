@@ -7,7 +7,7 @@ from pub_files.output_files.filename_format import get_filename
 from pub_files.publication_workbook import PublicationWorkbook
 
 
-def write_file(out_path: Path, elements: PathElements, workbook: PublicationWorkbook, timestamp: datetime) -> str:
+def write_file(out_path: Path, elements: PathElements, workbook: PublicationWorkbook, timestamp: datetime) -> Path:
     column_names = ['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat']
     filename = get_filename(elements, timestamp=timestamp, file_type='variables', extension='csv')
     path = Path(out_path, filename)
@@ -19,4 +19,4 @@ def write_file(out_path: Path, elements: PathElements, workbook: PublicationWork
             for column_name in column_names:
                 values.append(line[column_name])
             writer.writerow(values)
-    return filename
+    return path

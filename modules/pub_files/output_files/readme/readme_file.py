@@ -23,7 +23,7 @@ def write_file(readme_template: str,
                variables_filename: str,
                positions_filename: str,
                eml_filename: str,
-               database: ReadmeDatabase) -> None:
+               database: ReadmeDatabase) -> Path:
     elements: PathElements = file_metadata.path_elements
     data_files: DataFiles = file_metadata.data_files
     data_product_id = elements.data_product_id
@@ -49,4 +49,6 @@ def write_file(readme_template: str,
     template = Template(readme_template, trim_blocks=True, lstrip_blocks=True)
     content = template.render(readme_data)
     filename = get_filename(elements, timestamp=timestamp, file_type='readme', extension='txt')
-    Path(out_path, filename).write_text(content)
+    path = Path(out_path, filename)
+    path.write_text(content)
+    return path

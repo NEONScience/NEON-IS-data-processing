@@ -21,7 +21,7 @@ class ReadmeFileTest(TestCase):
         self.setUpPyfakefs()
         self.test_files_path = Path(os.path.dirname(__file__))
         self.in_path = Path('/in/CPER/2020/01')
-        self.out_path = Path('/out/CPER/2020/01')
+        self.out_path = Path('/out/CPER/2020/01/basic')
         self.fs.create_dir(self.in_path)
         self.fs.create_dir(self.out_path)
         self.add_template_file()
@@ -77,6 +77,6 @@ class ReadmeFileTest(TestCase):
         csv_files = list(Path(self.out_path).glob('*.csv'))
         files = list(Path(self.out_path).rglob('*'))
         for file in files:
-            print(f'file: {file}')
+            print(f'output file: {file}')
         assert len(readme_files) == 1
-        assert len(csv_files) == 5
+        assert len(csv_files) == 2

@@ -30,9 +30,10 @@ class SensorPositionsFile:
         self.timestamp = timestamp
         self.database = database
 
-    def write(self) -> str:
+    def write(self) -> Path:
         filename = get_filename(self.elements, timestamp=self.timestamp, file_type='sensor_positions', extension='csv')
-        with open(Path(self.out_path, filename), 'w', encoding='UTF8', newline='') as file:
+        file_path = Path(self.out_path, filename)
+        with open(file_path, 'w', encoding='UTF8', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
             for path in self.location_path.glob('*.json'):
@@ -85,7 +86,7 @@ class SensorPositionsFile:
                                    row_x_azimuth,
                                    row_y_azimuth]
                             writer.writerow(row)
-        return filename
+        return file_path
 
     def _get_named_location_data(self, named_location_name: str) -> Tuple[str, int, str]:
         location = self.database.get_named_location(named_location_name)

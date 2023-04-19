@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from contextlib import closing
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Tuple
 
 import pub_files.input_files.file_processor as file_processor
@@ -16,7 +15,6 @@ from pub_files.database.file_processor_data import FileProcessorData
 from pub_files.database.readme_data import ReadmeData
 from pub_files.database.sensor_positions_data import SensorPositionsData
 from pub_files.external_files.external_files import ExternalFiles
-from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.eml.eml_file import EmlFile
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsFile
@@ -24,7 +22,7 @@ from pub_files.publication_workbook import PublicationWorkbook
 
 
 def get_timestamp() -> datetime:
-    """Returns the time in UTC."""
+    """Returns the current time in UTC."""
     return datetime.now(timezone.utc)
 
 
@@ -35,13 +33,6 @@ def get_external_files(config: ApplicationConfig) -> Tuple[ExternalEmlFiles, str
     publication_workbook: str = external_files.get_workbook()
     readme_template: str = external_files.get_readme()
     return eml_files, publication_workbook, readme_template
-
-
-def get_output_path(out_path: Path, path_elements: PathElements, package_type: str) -> Path:
-    """Returns the standard output path for writing files."""
-    output_path = Path(out_path, path_elements.site, path_elements.year, path_elements.month, package_type)
-    output_path.mkdir(parents=True, exist_ok=True)
-    return output_path
 
 
 def main() -> None:
@@ -64,49 +55,53 @@ def main() -> None:
         (eml_files, workbook, readme_template) = get_external_files(config)
         publication_workbook = PublicationWorkbook(workbook)
 
-        package_types = ['basic', 'expanded']
-        for package_type in package_types:
-            # process the input files
-            metadata = file_processor.process(in_path=in_path,
-                                              out_path=out_path,
-                                              in_path_parse_index=in_path_parse_index,
-                                              package_type=package_type,
-                                              publication_workbook=publication_workbook,
-                                              database=file_processor_database)
-            path_elements = metadata.path_elements
-            output_path = get_output_path(out_path, path_elements, package_type)
+        for package_type in ['basic', 'expanded']:
+            # get required metadata from the input files and link them into the output directory
+            file_metadata = file_processor.process(in_path=in_path,
+                                                   out_path=out_path,
+                                                   in_path_parse_index=in_path_parse_index,
+                                                   package_type=package_type,
+                                                   workbook=publication_workbook,
+                                                   database=file_processor_database)
 
-            # create variables file
-            variables_filename = variables_file.write_file(out_path=output_path,
-                                                           elements=path_elements,
-                                                           workbook=publication_workbook,
-                                                           timestamp=timestamp)
+            # write variables file
+            variables_path = variables_file.write_file(out_path=file_metadata.package_output_path,
+                                                       elements=file_metadata.path_elements,
+                                                       workbook=publication_workbook,
+                                                       timestamp=timestamp)
 
-            # create sensor positions file
-            positions_filename = SensorPositionsFile(location_path=location_path,
-                                                     out_path=output_path,
-                                                     elements=path_elements,
-                                                     timestamp=timestamp,
-                                                     database=sensor_positions_database).write()
+            # write sensor positions file
+            positions_path = SensorPositionsFile(location_path=location_path,
+                                                 out_path=file_metadata.package_output_path,
+                                                 elements=file_metadata.path_elements,
+                                                 timestamp=timestamp,
+                                                 database=sensor_positions_database).write()
 
-            # create eml file
-            eml_filename = EmlFile(out_path=output_path,
-                                   metadata=metadata,
-                                   eml_files=eml_files,
-                                   publication_workbook=publication_workbook,
-                                   package_type='basic',
-                                   timestamp=timestamp,
-                                   database=eml_database).write()
+            # write eml file
+            eml_path = EmlFile(out_path=file_metadata.package_output_path,
+                               file_metadata=file_metadata,
+                               eml_files=eml_files,
+                               publication_workbook=publication_workbook,
+                               package_type=package_type,
+                               timestamp=timestamp,
+                               database=eml_database).write()
 
-            # create readme file
-            readme_file.write_file(out_path=output_path,
-                                   file_metadata=metadata,
-                                   readme_template=readme_template,
-                                   timestamp=timestamp,
-                                   variables_filename=variables_filename,
-                                   positions_filename=positions_filename,
-                                   eml_filename=eml_filename,
-                                   database=readme_database)
+            # write readme file
+            readme_path = readme_file.write_file(out_path=file_metadata.package_output_path,
+                                                 file_metadata=file_metadata,
+                                                 readme_template=readme_template,
+                                                 timestamp=timestamp,
+                                                 variables_filename=variables_path.name,
+                                                 positions_filename=positions_path.name,
+                                                 eml_filename=eml_path.name,
+                                                 database=readme_database)
+
+            # update and write the manifest
+            file_metadata.manifest_file.add_metadata_files(variables_file=variables_path,
+                                                           positions_file=positions_path,
+                                                           eml_file=eml_path,
+                                                           readme_file=readme_path)
+            file_metadata.manifest_file.write()
 
 
 if __name__ == '__main__':

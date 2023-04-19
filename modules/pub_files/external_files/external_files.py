@@ -21,11 +21,11 @@ class ExternalFiles:
         self.eml_intellectual_rights = reader.read_file(config.eml_repo, config.eml_intellectual_rights_path)
         self.eml_unit_types = reader.read_file(config.eml_repo, config.eml_unit_types_path)
         self.eml_units = reader.read_file(config.eml_repo, config.eml_units_path)
-        self.eml_files = ExternalEmlFiles(self.get_eml_boilerplate,
-                                          self.get_eml_contact,
-                                          self.get_eml_intellectual_rights,
-                                          self.get_eml_unit_types,
-                                          self.get_eml_units)
+        self.eml_files = ExternalEmlFiles(self._get_eml_boilerplate,
+                                          self._get_eml_contact,
+                                          self._get_eml_intellectual_rights,
+                                          self._get_eml_unit_types,
+                                          self._get_eml_units)
 
     def get_eml_files(self):
         return self.eml_files
@@ -36,17 +36,17 @@ class ExternalFiles:
     def get_workbook(self) -> str:
         return self.publication_workbook
 
-    def get_eml_boilerplate(self) -> str:
+    def _get_eml_boilerplate(self) -> str:
         return self.eml_boilerplate
 
-    def get_eml_contact(self) -> str:
+    def _get_eml_contact(self) -> str:
         return self.eml_contact
 
-    def get_eml_intellectual_rights(self) -> str:
+    def _get_eml_intellectual_rights(self) -> str:
         return self.eml_intellectual_rights
 
-    def get_eml_unit_types(self) -> str:
+    def _get_eml_unit_types(self) -> str:
         return self.eml_unit_types
 
-    def get_eml_units(self) -> str:
+    def _get_eml_units(self) -> str:
         return self.eml_units
