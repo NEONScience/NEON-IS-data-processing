@@ -98,13 +98,13 @@ of this data package. For a more recent log, please visit this data product's de
 https://data.neonscience.org/data-products/{{data_product.short_data_product_id}}.
 
 {% for change_log in change_logs %}
-Issue Date: {{change_log.issue_date.strftime('%Y-%m-%d')}}
+Issue Date: {{change_log.issue_date}}
 Issue: {{change_log.issue}}
 {%    for entry in change_log.dates_locations %}
-    Date Range: {{entry.date_range_start.strftime('%Y-%m-%d')}} to {{entry.date_range_end.strftime('%Y-%m-%d')}}
+    Date Range: {{entry.date_range_start}} to {{entry.date_range_end}}
     Location(s) Affected: {{', '.join(entry.location_affected)}}
 {%    endfor %}
-Resolution Date: {{change_log.resolution_date.strftime('%Y-%m-%d')}}
+Resolution Date: {{change_log.resolution_date}}
 Resolution: {{change_log.resolution}}
 
 {% endfor %}

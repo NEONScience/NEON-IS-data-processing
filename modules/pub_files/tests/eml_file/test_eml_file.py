@@ -43,6 +43,17 @@ class EmlTest(TestCase):
         self.add_unit_types_file()
         self.add_units_file()
 
+    def test_write_file(self):
+        file_path = EmlFile(out_path=self.out_path,
+                           file_metadata=self.get_file_metadata(),
+                           eml_files=self.get_external_files(),
+                           timestamp=self.timestamp,
+                           database=self.get_database(),
+                           publication_workbook=self.workbook,
+                           package_type='basic').write()
+        print(f'\ncontent:\n\n{file_path.read_text(encoding="utf-8")}\n\n')
+        assert file_path.exists()
+
     def add_boilerplate_file(self) -> None:
         real_path = Path(self.test_files_path, 'boilerplate.xml')
         self.boilerplate_path = Path('/boilerplate.xml')
@@ -169,14 +180,3 @@ class EmlTest(TestCase):
                                 get_intellectual_rights=self.get_intellectual_rights,
                                 get_unit_types=self.get_unit_types,
                                 get_units=self.get_units)
-
-    def test_write_file(self):
-        file_path = EmlFile(out_path=self.out_path,
-                           file_metadata=self.get_file_metadata(),
-                           eml_files=self.get_external_files(),
-                           timestamp=self.timestamp,
-                           database=self.get_database(),
-                           publication_workbook=self.workbook,
-                           package_type='basic').write()
-        print(f'\ncontent:\n\n{file_path.read_text(encoding="utf-8")}\n\n')
-        assert file_path.exists()
