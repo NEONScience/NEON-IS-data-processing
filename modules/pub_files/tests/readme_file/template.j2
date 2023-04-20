@@ -52,19 +52,18 @@ DATA PACKAGE CONTENTS
 This folder contains the following documentation files:
 - This readme file: {{file_prefix}}.readme.{{gen_time}}.txt
 {% if data_product.supplier == 'TIS' or data_product.supplier == 'TOS' or data_product.type_name == os_is_type %}
-Term descriptions, data types, and units: {{variables_filename}}
+- Term descriptions, data types, and units: {{variables_filename}}
 {% endif %}
 {% if data_product.supplier == 'TOS' or data_product.type_name == os_is_type %}
-Data entry validation and parsing rules: {{file_prefix}}.validation.{{gen_time}}.csv
+- Data entry validation and parsing rules: {{file_prefix}}.validation.{{gen_time}}.csv
 {% endif %}
 {% if data_product.supplier != 'AOP' %}
-Machine-readable metadata file describing the data package:
-{{eml_filename}}.
+- Machine-readable metadata file describing the data package: {{eml_filename}}.
 This file uses the Ecological Metadata Language (EML) schema. Learn more about this specification and tools to parse
 it at https://www.neonscience.org/about/faq.
 {% endif %}
 {% if data_product.supplier == 'TIS' or data_product.type_name == os_is_type %}
-Sensor position information: {{positions_filename}}
+- Sensor position information: {{positions_filename}}
 {% endif %}
 - Other related documents are available such as engineering specifications, field protocols, and data processing 
 documentation. Please visit https://data.neonscience.org/data-products/{{data_product.short_data_product_id}} for more information.
@@ -99,14 +98,15 @@ of this data package. For a more recent log, please visit this data product's de
 https://data.neonscience.org/data-products/{{data_product.short_data_product_id}}.
 
 {% for change_log in change_logs %}
-Issue Date: {{change_log.issue_date}}
+Issue Date: {{change_log.issue_date.strftime('%Y-%m-%d')}}
 Issue: {{change_log.issue}}
 {%    for entry in change_log.dates_locations %}
-    Date Range: {{entry.date_range_start}} to {{entry.date_range_end}}
+    Date Range: {{entry.date_range_start.strftime('%Y-%m-%d')}} to {{entry.date_range_end.strftime('%Y-%m-%d')}}
     Location(s) Affected: {{', '.join(entry.location_affected)}}
 {%    endfor %}
-Resolution Date: {{change_log.resolved_date}}
+Resolution Date: {{change_log.resolution_date.strftime('%Y-%m-%d')}}
 Resolution: {{change_log.resolution}}
+
 {% endfor %}
 
 ADDITIONAL INFORMATION

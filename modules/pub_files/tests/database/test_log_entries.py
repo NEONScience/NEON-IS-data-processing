@@ -16,6 +16,6 @@ class LogEntryTest(DatabaseBackedTest):
         data_product_id = 'NEON.DOM.SITE.DP1.00001.001'
         log_entries = get_log_entries(DbConnector(dp_config), data_product_id)
         entry: LogEntry = log_entries[0]
-        assert len(log_entries) == 92
-        assert entry.issue == '2D sensor transducer cap became dislodged rendering calibrations invalid.'
-        assert entry.resolution == 'Sensor swapped. Affected data has had manual flagging applied.'
+        assert len(log_entries) == 141
+        assert entry.issue == 'Sensor mounting bracket bent by tree and sensor unable to be leveled to specifications.'
+        assert entry.resolution == 'New bracket was installed. Data manually flagged.'
