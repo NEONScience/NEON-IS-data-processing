@@ -15,8 +15,10 @@ def write_file(out_path: Path, elements: PathElements, workbook: PublicationWork
         writer = csv.writer(file)
         writer.writerow(column_names)
         for line in workbook.get_workbook():
-            values = []
-            for column_name in column_names:
-                values.append(line[column_name])
-            writer.writerow(values)
+            package = line['downloadPkg']
+            if package != 'none':
+                values = []
+                for column_name in column_names:
+                    values.append(line[column_name])
+                writer.writerow(values)
     return path
