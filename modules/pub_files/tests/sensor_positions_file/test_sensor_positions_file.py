@@ -9,14 +9,14 @@ from pyfakefs.fake_filesystem import FakeFilesystem
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from data_access.types.property import Property
-from pub_files.database.queries.geolocation_geometry import Geometry
-from pub_files.database.queries.geolocations import GeoLocation
-from pub_files.database.queries.named_locations import NamedLocation
+from pub_files.database.geolocation_geometry import Geometry
+from pub_files.database.geolocations import GeoLocation
+from pub_files.database.named_locations import NamedLocation
 from pub_files.input_files.file_metadata import PathElements
+from pub_files.main import get_timestamp
 from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsDatabase
 from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsFile
 from pub_files.tests.file_date_converter import to_datetime
-from pub_files.main import get_timestamp
 
 
 def create_location_path(fs: FakeFilesystem) -> Path:

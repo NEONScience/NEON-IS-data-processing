@@ -2,9 +2,9 @@ from contextlib import closing
 from dataclasses import dataclass
 from typing import List, Tuple
 
-from data_access.types.property import Property
-from data_access.get_named_location_properties import get_named_location_properties
 from data_access.db_connector import DbConnector
+from data_access.get_named_location_properties import get_named_location_properties
+from data_access.types.property import Property
 
 
 @dataclass(frozen=True)

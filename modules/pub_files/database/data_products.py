@@ -2,7 +2,7 @@ from contextlib import closing
 
 from data_access.db_connector import DbConnector
 from pub_files.data_product import DataProduct
-from pub_files.database.queries.data_product_type_names import get_type_name
+from pub_files.database.data_product_type_names import get_type_name
 
 
 def get_data_product(connector: DbConnector, data_product_id: str) -> DataProduct:

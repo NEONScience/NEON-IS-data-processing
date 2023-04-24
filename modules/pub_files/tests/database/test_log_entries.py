@@ -4,7 +4,7 @@ import unittest
 from data_access.db_config_reader import read_from_environment
 from data_access.db_connector import DbConnector
 from data_access.tests.database_test import DatabaseBackedTest
-from pub_files.database.queries.log_entries import get_log_entries, LogEntry
+from pub_files.database.log_entries import get_log_entries, LogEntry
 
 
 class LogEntryTest(DatabaseBackedTest):

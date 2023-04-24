@@ -4,7 +4,7 @@ import unittest
 from data_access.db_config_reader import read_from_environment
 from data_access.db_connector import DbConnector
 from data_access.tests.database_test import DatabaseBackedTest
-from pub_files.database.queries.data_products import get_data_product
+from pub_files.database.data_products import get_data_product
 
 
 class DataProductTest(DatabaseBackedTest):

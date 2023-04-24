@@ -3,8 +3,8 @@ from typing import Optional, List
 import eml.eml_2_2_0 as eml
 import structlog
 
-from pub_files.database.queries.units import EmlUnitType
-from pub_files.database.queries.value_list import Value
+from pub_files.database.units import EmlUnitType
+from pub_files.database.value_list import Value
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.publication_workbook import PublicationWorkbook
@@ -119,7 +119,7 @@ class MeasurementScale:
         eml_unit_type: EmlUnitType = self.database.get_unit_eml_type(workbook_unit)
         unit_type = eml.UnitType()
         if eml_unit_type is None:
-            log.debug(f'workbook_unit: "{workbook_unit}" not found.')
+            # log.debug(f'workbook_unit: "{workbook_unit}" not found.')
             return None
         if eml_unit_type.is_standard():
             unit_type.standard_unit = workbook_unit
