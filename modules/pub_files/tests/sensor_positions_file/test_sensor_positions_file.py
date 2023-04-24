@@ -78,7 +78,6 @@ class PositionsFileTest(TestCase):
                                            get_geometry=self.get_geometry)
         file_path = SensorPositionsFile(location_path=location_path, out_path=self.out_path, elements=elements,
                                        timestamp=timestamp, database=database).write()
-        print(f'file_path: {file_path}')
         with open(file_path, 'r') as file:
             reader = csv.reader(file)
             i = 0
