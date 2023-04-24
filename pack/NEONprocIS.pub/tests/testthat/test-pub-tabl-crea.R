@@ -60,11 +60,8 @@ test_that("   Testing def.pub.tabl.crea.R, Create publication table",
             
             #3. TablPub = 'EOS_1_min' does not exist in the workbook
             returnedList <- NEONprocIS.pub::def.pub.tabl.crea(data=data, pubWb=pubWb, TablPub = 'EOS_1_min')
-            expect_true(returnedList$nameVarMtch == TRUE)
-            
+            expect_identical(returnedList$nameVarMtch, character(0))
           }
         )
 
-
-
-          
+       
