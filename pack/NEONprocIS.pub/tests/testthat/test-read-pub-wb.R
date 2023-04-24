@@ -45,4 +45,5 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
                            'pfs/pubWb/par-quantum-line_CPER001000_2023-02-03_PARQL_1min_001.parquet'
                           )
               ), silent = TRUE)
-          })
+          }
+        )

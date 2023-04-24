@@ -25,11 +25,11 @@ log = structlog.get_logger()
 
 class EmlFile:
 
-    def __init__(self, out_path: Path, metadata: FileMetadata, eml_files: ExternalEmlFiles,
+    def __init__(self, out_path: Path, file_metadata: FileMetadata, eml_files: ExternalEmlFiles,
                  publication_workbook: PublicationWorkbook, package_type: str, timestamp: datetime,
                  database: EmlDatabase) -> None:
         self.out_path = out_path
-        self.metadata: FileMetadata = metadata
+        self.metadata: FileMetadata = file_metadata
         self.eml_files: ExternalEmlFiles = eml_files
         self.publication_workbook = publication_workbook
         self.package_type = package_type
@@ -38,12 +38,13 @@ class EmlFile:
         self.xml_parser = XmlParser()
         self.eml = self.xml_parser.from_string(eml_files.get_boilerplate(), eml.Eml)
 
-    def write(self) -> str:
+    def write(self) -> Path:
         self._add_content()
         content = self._render_content()
         filename = self._get_filename()
-        Path(self.out_path, filename).write_text(content)
-        return filename
+        path = Path(self.out_path, filename)
+        path.write_text(content)
+        return path
 
     def _render_content(self) -> str:
         config = SerializerConfig(pretty_print=True)

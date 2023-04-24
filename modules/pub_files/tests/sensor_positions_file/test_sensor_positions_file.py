@@ -76,9 +76,8 @@ class PositionsFileTest(TestCase):
         database = SensorPositionsDatabase(get_geolocations=self.get_geolocations,
                                            get_named_location=self.get_named_location,
                                            get_geometry=self.get_geometry)
-        filename = SensorPositionsFile(location_path=location_path, out_path=self.out_path, elements=elements,
+        file_path = SensorPositionsFile(location_path=location_path, out_path=self.out_path, elements=elements,
                                        timestamp=timestamp, database=database).write()
-        file_path = Path(self.out_path, filename)
         with open(file_path, 'r') as file:
             reader = csv.reader(file)
             i = 0

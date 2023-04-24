@@ -129,9 +129,8 @@ class MeasurementScale:
 
     def _get_precision(self, row) -> Optional[float]:
         publication_format = self.workbook.get_publication_format(row)
-        precision = None
         if '*.#' in publication_format and 'round' in publication_format:
             hash_count = publication_format.count('#')
-            one = float(1)
-            precision = one / one * (10 ** hash_count)
-        return precision
+            precision = float(1) / (10 ** hash_count)
+            return float(precision)
+        return None

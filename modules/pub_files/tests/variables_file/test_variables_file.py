@@ -28,7 +28,7 @@ class VariablesFileTest(TestCase):
         timestamp = get_timestamp()
         elements = PathElements(domain=domain, site=site, year=year, month=month, data_product_id=data_product_id)
         expected_filename = get_filename(elements, file_type='variables', timestamp=timestamp, extension='csv')
-        filename = write_file(out_path=self.out_path, elements=elements, timestamp=timestamp, workbook=self.workbook)
-        assert filename == expected_filename
+        path = write_file(out_path=self.out_path, elements=elements, timestamp=timestamp, workbook=self.workbook)
+        assert path.name == expected_filename
         path = Path(self.out_path, expected_filename)
         print(f'\nresult:\n{path.read_text()}\n')

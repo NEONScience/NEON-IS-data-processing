@@ -3,10 +3,16 @@ from datetime import datetime
 from pathlib import Path
 from typing import Tuple
 
+import structlog
+
 from pub_files.database.queries.geolocation_geometry import Geometry
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.sensor_positions.sensor_positions_database import SensorPositionsDatabase
+
+
+log = structlog.get_logger()
+
 
 COLUMNS = ['HOR.VER',
            'sensorLocationID', 'sensorLocationDescription',
@@ -30,13 +36,16 @@ class SensorPositionsFile:
         self.timestamp = timestamp
         self.database = database
 
-    def write(self) -> str:
+    def write(self) -> Path:
         filename = get_filename(self.elements, timestamp=self.timestamp, file_type='sensor_positions', extension='csv')
-        with open(Path(self.out_path, filename), 'w', encoding='UTF8', newline='') as file:
+        file_path = Path(self.out_path, filename)
+        with open(file_path, 'w', encoding='UTF8', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
             for path in self.location_path.glob('*.json'):
+                log.debug(f'location_path: {path}')
                 if path.is_file() and path.name.startswith('CFGLOC'):
+                    log.debug(f'location_file: {path}')
                     (row_hor_ver, row_location_id, row_description) = self._get_named_location_data(path.stem)
                     for geolocation in self.database.get_geolocations(path.stem):
                         offset_name = geolocation.offset_name
@@ -85,7 +94,7 @@ class SensorPositionsFile:
                                    row_x_azimuth,
                                    row_y_azimuth]
                             writer.writerow(row)
-        return filename
+        return file_path
 
     def _get_named_location_data(self, named_location_name: str) -> Tuple[str, int, str]:
         location = self.database.get_named_location(named_location_name)

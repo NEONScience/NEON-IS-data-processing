@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/pub_files:0.0.11
+  image: quay.io/battelleecology/pub_files:0.0.19
   cmd:
     - /bin/bash
   stdin:
@@ -37,17 +37,19 @@ transform:
     - name: github-neonscience-app-secret
       mount_path: /var/github_secret
 input:
-  join:
+  group:
     - pfs:
         name: LOCATION_PATH
         repo: parQuantumLine_level1_pub_group
         glob: /*/(*)/*/(*)/location
-        joinOn: $1/$2
+        group_by: $1/$2
+        empty_files: true
     - pfs:
         name: IN_PATH
         repo: parQuantumLine_level1_pub_package
         glob: /(*)/*/(*)
-        joinOn: $2/$1
+        group_by: $2/$1
+        empty_files: false
 resource_requests:
   memory: 25M
   cpu: 0.01
