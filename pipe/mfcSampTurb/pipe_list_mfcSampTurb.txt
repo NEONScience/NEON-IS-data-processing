@@ -1,5 +1,3 @@
-mfcSampTurb_context_filter.yaml
-mfcSampTurb_l0p_data.yaml
 mfcSampTurb_threshold_loader.yaml
 mfcSampTurb_thresh_select_ts_pad.yaml
 mfcSampTurb_analyze_pad_and_qaqc_plau.yaml

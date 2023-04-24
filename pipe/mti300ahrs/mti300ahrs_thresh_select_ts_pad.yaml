@@ -53,7 +53,7 @@ input:
   - pfs:
       name: REPO_LOCATIONS
       repo: mti300ahrs_l0p_data
-      glob: /mti300ahrs/*/*/*
+      glob: /amrs/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
       repo: mti300ahrs_threshold

@@ -40,7 +40,7 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: presValiRegInTurb_l0p_data
+      repo: pressuretransducer_l0p_data
       glob: /presValiRegInTurb/*/*/*
   - pfs:
       name: FILE_THRESHOLDS

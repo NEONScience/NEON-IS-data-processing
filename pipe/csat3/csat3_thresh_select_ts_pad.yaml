@@ -45,7 +45,7 @@ input:
   - pfs:
       name: REPO_LOCATIONS
       repo: csat3_l0p_data
-      glob: /csat3/*/*/*
+      glob: /soni/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
       repo: csat3_threshold

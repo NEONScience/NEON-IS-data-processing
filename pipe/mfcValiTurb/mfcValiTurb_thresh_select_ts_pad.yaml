@@ -43,7 +43,7 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: mfcValiTurb_l0p_data
+      repo: mcseries_l0p_data
       glob: /mfcValiTurb/*/*/*
   - pfs:
       name: FILE_THRESHOLDS

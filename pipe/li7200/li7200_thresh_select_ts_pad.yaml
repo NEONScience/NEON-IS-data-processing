@@ -60,7 +60,7 @@ input:
   - pfs:
       name: REPO_LOCATIONS
       repo: li7200_l0p_data
-      glob: /li7200/*/*/*
+      glob: /irgaTurb/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
       repo: li7200_threshold

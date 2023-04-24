@@ -1,32 +1,36 @@
 ---
 pipeline:
-  name: mfcValiTurb_context_filter
+  name: gascylinder_calibration_assignment
 transform:
+  cmd:
+  - Rscript
+  - ./flow.cal.asgn.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileYear=$FILE_YEAR
+  err_cmd:
+  - 'true'
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/context_filter:29
-  cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m context_filter.context_filter_main
   env:
-    OUT_PATH: /pfs/out
-    CONTEXT: validation|turbulent|mass-flow-controller
-    LOG_LEVEL: DEBUG
-    TRIM_INDEX: '3'
-    SOURCE_ID_INDEX: '7'
-    DATA_TYPE_INDEX: '8'
+    LOG_LEVEL: INFO
 input:
-  pfs:
-    name: IN_PATH
-    repo: mcseries_fill_date_gaps_and_regularize
-    glob: /mcseries/*/*/*
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: gascylinder_calibration
+      glob: /gascylinder/*
+  - pfs:
+      name: FILE_YEAR
+      repo: gascylinder_cron_daily_and_date_control
+      glob: /data_years.txt
 parallelism_spec:
   constant: 4
 resource_requests:
-  memory: 300M
-  cpu: 0.3
+  memory: 2G
+  cpu: 1.0
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -49,11 +53,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"800M"
+      "value":"500M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "1"
+      "value": "0.3"
     }
   ]
 
