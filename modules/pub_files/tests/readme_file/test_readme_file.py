@@ -58,7 +58,7 @@ class ReadmeFileTest(TestCase):
                                                out_path=Path('/out'),
                                                in_path_parse_index=1,
                                                package_type='basic',
-                                               publication_workbook=publication_workbook,
+                                               workbook=publication_workbook,
                                                database=file_processor_database)
         timestamp = get_timestamp()
         formatted_timestamp = format_timestamp(timestamp)

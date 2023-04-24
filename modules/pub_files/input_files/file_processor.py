@@ -25,7 +25,7 @@ def process(*, in_path: Path, out_path: Path, in_path_parse_index: int, package_
     package_output_path = None
     is_first_file = True
     for path in data_paths:
-        line_count = sum(1 for line in open(path))
+        line_count = sum(1 for line in open(path)) - 1 # subtract header
         (site, year, month) = parse_path(path, in_path_parse_index)
         name_parts: FilenameParts = parse_filename(path.name)
         data_product_id = f'NEON.DOM.SITE.{name_parts.level}.{name_parts.data_product_number}.{name_parts.revision}'

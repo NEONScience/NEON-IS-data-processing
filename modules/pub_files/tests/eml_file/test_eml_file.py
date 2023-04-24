@@ -12,6 +12,7 @@ from pub_files.database.queries.units import EmlUnitType
 from pub_files.database.queries.value_list import Value
 from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import PathElements, FileMetadata, DataFiles, DataFile
+from pub_files.input_files.manifest_file import ManifestFile
 from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.output_files.eml.eml_file import EmlFile
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
@@ -32,14 +33,26 @@ class EmlTest(TestCase):
         self.site = 'CPER'
         self.year = '2020'
         self.month = '01'
-        self.out_path = Path('/out', self.domain, self.site, self.year, self.month)
+        self.out_path = Path('/out', self.domain, self.site, self.year, self.month, 'basic')
         self.fs.create_dir(self.out_path)
         self.data_product_id = 'DP1.00041.01'
         self.add_boilerplate_file()
         self.add_contact_file()
         self.add_intellectual_rights_file()
+        self.add_manifest_file()
         self.add_unit_types_file()
         self.add_units_file()
+
+    def test_write_file(self):
+        file_path = EmlFile(out_path=self.out_path,
+                           file_metadata=self.get_file_metadata(),
+                           eml_files=self.get_external_files(),
+                           timestamp=self.timestamp,
+                           database=self.get_database(),
+                           publication_workbook=self.workbook,
+                           package_type='basic').write()
+        print(f'\ncontent:\n\n{file_path.read_text(encoding="utf-8")}\n\n')
+        assert file_path.exists()
 
     def add_boilerplate_file(self) -> None:
         real_path = Path(self.test_files_path, 'boilerplate.xml')
@@ -55,6 +68,11 @@ class EmlTest(TestCase):
         real_path = Path(self.test_files_path, 'intellectual_rights.xml')
         self.intellectual_rights_path = Path('/intellectual_rights.xml')
         self.fs.add_real_file(real_path, target_path=self.intellectual_rights_path)
+
+    def add_manifest_file(self) -> None:
+        real_path = Path('../main/data/CPER/2020/01/manifest.csv')
+        self.manifest_path = Path('/manifest.csv')
+        self.fs.add_real_file(real_path, target_path=self.manifest_path)
 
     def add_unit_types_file(self) -> None:
         real_path = Path(self.test_files_path, 'unit_types.xml')
@@ -140,7 +158,13 @@ class EmlTest(TestCase):
                                 month=self.month,
                                 data_product_id=self.data_product_id)
         data_product = get_data_product(self.fs, _data_product_id='unused')
-        return FileMetadata(path_elements=elements, data_files=self.get_data_files(), data_product=data_product)
+        file_metadata = FileMetadata()
+        file_metadata.path_elements = elements
+        file_metadata.data_files = self.get_data_files()
+        file_metadata.data_product = data_product
+        file_metadata.manifest_file = ManifestFile(self.manifest_path, 'basic', self.out_path)
+        file_metadata.package_output_path = Path(self.out_path)
+        return file_metadata
 
     def get_database(self) -> EmlDatabase:
         return EmlDatabase(get_geometry=self.get_geometry,
@@ -156,13 +180,3 @@ class EmlTest(TestCase):
                                 get_intellectual_rights=self.get_intellectual_rights,
                                 get_unit_types=self.get_unit_types,
                                 get_units=self.get_units)
-
-    def test_write_file(self):
-        filename = EmlFile(out_path=self.out_path,
-                           metadata=self.get_file_metadata(),
-                           eml_files=self.get_external_files(),
-                           timestamp=self.timestamp,
-                           database=self.get_database(),
-                           publication_workbook=self.workbook,
-                           package_type='basic').write()
-        assert Path(self.out_path, filename).exists()

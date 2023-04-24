@@ -36,7 +36,7 @@ def get_log_entries(connector: DbConnector, data_product_id: str) -> List[LogEnt
          where
              dp_idq = %s
         order by
-             issue, dp_idq
+             resolved_date, issue_date
     '''
     log_entries = []
     with closing(connection.cursor()) as cursor:
