@@ -40,7 +40,7 @@ input:
   cross:
   - pfs:
       name: REPO_LOCATIONS
-      repo: presValiRegOutTurb_l0p_data
+      repo: pressuretransducer_l0p_data
       glob: /presValiRegOutTurb/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
@@ -73,7 +73,7 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
+      "value":"1G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",

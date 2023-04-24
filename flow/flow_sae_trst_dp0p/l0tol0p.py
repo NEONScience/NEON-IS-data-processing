@@ -3,6 +3,7 @@ from pathlib import Path
 from structlog import get_logger
 
 import environs
+import json
 import os
 import pandas as pd
 import pyarrow as pa
@@ -21,8 +22,9 @@ class L0toL0p:
     base class for SAE L0 to L0p data transformation
     """
 
-    def __init__(self, cal_term_map: Optional[Dict] = None, calibrated_qf_list: Optional[List] = None,
-                 target_qf_cal_list: Optional[List] = None):
+    def __init__(self, context_dp_map: Optional[Dict] = None, cal_term_map: Optional[Dict] = None,
+                 calibrated_qf_list: Optional[List] = None, target_qf_cal_list: Optional[List] = None):
+
         """
         :param cal_term_map: map for calibrated variables between field names from avro schema and term names from ATBD
         :param calibrated_qf_list: list of quality flag names that were calibrated on site
@@ -43,16 +45,18 @@ class L0toL0p:
         self.cal_term_map = cal_term_map or {}
         self.calibrated_qf_list = calibrated_qf_list or []
         self.target_qf_cal_list = target_qf_cal_list or []
+        self.context_dp_map = context_dp_map or {}
         env = environs.Env()
         self.in_path: Path = env.path('IN_PATH')
         self.out_path: Path = env.path('OUT_PATH')
-        self.file_dirs: list = env.list('FILE_DIR')
+        self.file_dirs: list = env.list('FILE_DIR', [])
         self.relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
         self.new_source_type_name: str = env.str('NEW_SOURCE_TYPE_NAME', None)
         self.location_link_type: str = env.str('LOCATION_LINK_TYPE', None)
         if self.location_link_type and self.location_link_type != 'SYMLINK' and self.location_link_type != 'COPY':
             raise ValueError('defined LOCATION_LINK_TYPE must be either "SYMLINK" or "COPY". '
                              'If not defined, location directory will not be linked/copied to output.')
+        self.out_file = ''
         log_level: str = env.log_level('LOG_LEVEL', 'DEBUG')
         log_config.configure(log_level)
 
@@ -93,52 +97,62 @@ class L0toL0p:
         L0 to l0p transformation.
         """
         out_df = pd.DataFrame()
-        out_file = ''
+        hold_files = {}
         for root, directories, files in os.walk(str(self.in_path)):
             if root.endswith('location'):
+                if self.context_dp_map:
+                    # self.get_location_context(root, files)
+                    self.get_dp_name(root, files)
+                    # TODO
+                    for filepath in hold_files.keys():
+                        out_df = self.read_files(filepath, hold_files[filepath], out_df)
                 if self.location_link_type:
                     self.link_location(root, files)
                 continue
-            if not out_df.empty and len(directories) > 0:
+            if not out_df.empty and directories:
                 if any(tmp_dir in directories for tmp_dir in self.file_dirs):
-                    self.write_to_parquet(out_file, out_df)
+                    self.write_to_parquet(self.out_file, out_df)
                     out_df = pd.DataFrame()
-                    out_file = ''
-            if len(files) > 0:
-                if len(files) > 1:
-                    log.warn("There are more than 1 files under " + root)
-                    log.warn(files)
-                for file in files:
-                    path = Path(root, file)
-                    if "flag" in str(path):
-                        if out_df.empty:
-                            out_df = get_cal_val_flags(path, self.cal_term_map)
-                        else:
-                            out_df = pd.merge(out_df, get_cal_val_flags(path, self.cal_term_map), how='inner',
-                                              left_on=['readout_time'], right_on=['readout_time'])
-                        self.get_combined_qfcal(out_df)
-                    else:
-                        out_file = self.create_output_path(path)
-                        if out_df.empty:
-                            out_df = self.data_conversion(path)
-                        else:
-                            out_df = pd.merge(self.data_conversion(path), out_df, how='inner', left_on=['readout_time'],
-                                              right_on=['readout_time'])
-        if not out_df.empty and out_file != '':
-            self.write_to_parquet(out_file, out_df)
+                    self.out_file = ''
+            if files:
+                if self.context_dp_map and not self.new_source_type_name:
+                    hold_files[root] = files
+                    continue
+                out_df = self.read_files(root, files, out_df)
+        if not out_df.empty and self.out_file:
+            self.write_to_parquet(self.out_file, out_df)
+
+    def read_files(self, filepath: str, files: List, out_df: pd.DataFrame) -> pd.DataFrame:
+        for file in files:
+            path = Path(filepath, file)
+            if "flag" in str(path):
+                if out_df.empty:
+                    out_df = get_cal_val_flags(path, self.cal_term_map)
+                else:
+                    out_df = pd.merge(out_df, get_cal_val_flags(path, self.cal_term_map), how='inner',
+                                      left_on=['readout_time'], right_on=['readout_time'])
+                self.get_combined_qfcal(out_df)
+            else:
+                self.out_file = self.create_output_path(path)
+                if out_df.empty:
+                    out_df = self.data_conversion(path)
+                else:
+                    out_df = pd.merge(self.data_conversion(path), out_df, how='inner', left_on=['readout_time'],
+                                      right_on=['readout_time'])
+            return out_df
 
     @staticmethod
     def write_to_parquet(out_file: str, out_df: pd.DataFrame) -> None:
         hashable_cols = [x for x in out_df.columns if isinstance(out_df[x].iloc[0], Hashable)]
         dupcols = [x.encode('UTF-8') for x in hashable_cols
                    if (out_df[x].duplicated().sum() / (int(out_df[x].size) - 1)) > 0.3]
-        table = pa.Table.from_pandas(out_df)
+        table = pa.Table.from_pandas(df=out_df)
         pq.write_table(table, out_file, use_dictionary=dupcols, version="2.4", compression='zstd', compression_level=8,
                        coerce_timestamps='ms', allow_truncated_timestamps=False)
         # out_df.to_parquet(out_file, use_dictionary=dupcols, version="2.4", compression='zstd', compression_level=8,
         #                   coerce_timestamps='ms', allow_truncated_timestamps=False)
 
-    def create_output_path(self, path: Path):
+    def create_output_path(self, path: str) -> Path:
         if self.new_source_type_name:
             new_path = Path(self.out_path, Path(self.new_source_type_name),
                             *Path(path).parts[self.relative_path_index:])
@@ -148,7 +162,7 @@ class L0toL0p:
         log.debug(f'new path is {new_path}.')
         return new_path
 
-    def link_location(self, path: Path, files: List[str]):
+    def link_location(self, path: str, files: List[str]) -> None:
         new_path = self.create_output_path(path)
         if self.location_link_type == 'SYMLINK':
             log.debug(f'Linking path {new_path} to {path}')
@@ -161,3 +175,21 @@ class L0toL0p:
                 new_file_path = Path(new_path, file)
                 if not new_file_path.exists():
                     shutil.copy2(Path(path, file), new_file_path)
+
+    @staticmethod
+    def get_location_context(path: str, files: List[str]) -> List:
+        for file in files:
+            f = open(Path(path, file))
+            data = json.load(f)
+            for feature in data['features']:
+                context = feature['properties']['context']
+                return context  # ','.join(context)
+
+    def get_dp_name(self, path: str, files: List[str]) -> None:
+        loc_ctxs = self.get_location_context(path, files)
+        # TODO: all element of keys in list of loc_ctxs
+        for key in self.context_dp_map.keys():
+            tmp_keys = key.replace(' ','').split(sep=',')
+            if all(ctx in loc_ctxs for ctx in tmp_keys):
+                self.new_source_type_name = self.context_dp_map[key]
+                return

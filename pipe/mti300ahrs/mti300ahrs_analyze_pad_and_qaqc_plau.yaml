@@ -48,7 +48,7 @@ input:
   - pfs:
       name: DATA_PATH
       repo: mti300ahrs_thresh_select_ts_pad
-      glob: /mti300ahrs/*/*/*/*
+      glob: /amrs/*/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
       repo: mti300ahrs_avro_schemas

@@ -52,7 +52,7 @@ def main() -> None:
     calibrated_qf_list = ['qfCalVeloSoni']
     target_qf_cal_list = ['qfCalTempSoni']
 
-    csat3 = Csat3(cal_term_map, calibrated_qf_list, target_qf_cal_list)
+    csat3 = Csat3(cal_term_map=cal_term_map, calibrated_qf_list=calibrated_qf_list, target_qf_cal_list=target_qf_cal_list)
     csat3.l0tol0p()
 
 
