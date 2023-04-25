@@ -52,7 +52,7 @@ def get_variables(connector: DbConnector, file_name: str) -> List[FileVariables]
         and 
             pf."name" = %s
         inner join 
-	        pdr.term t 
+	        {schema}.term t 
         on 
 	        pff.term_name = t.term_name
     '''
