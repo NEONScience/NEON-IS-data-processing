@@ -1,6 +1,6 @@
 functions-framework==3.2.0
 betterproto==2.0.0b4
-certifi==2022.6.15
+certifi==2022.12.7
 environs==6.0.0
 python-pachyderm==7.3.0
 google-cloud==0.34.0
