@@ -8,10 +8,7 @@ from pub_files.output_files.variables.variables_file_database import VariablesDa
 from pub_files.publication_workbook import PublicationWorkbook
 
 
-def write_file(out_path: Path,
-               elements: PathElements,
-               workbook: PublicationWorkbook,
-               database: VariablesDatabase,
+def write_file(out_path: Path, elements: PathElements, workbook: PublicationWorkbook, database: VariablesDatabase,
                timestamp: datetime) -> Path:
     column_names = ['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat']
     filename = get_filename(elements, timestamp=timestamp, file_type='variables', extension='csv')
@@ -37,5 +34,7 @@ def add_sensor_positions_variables(writer, database: VariablesDatabase) -> None:
         term_name = file_variable.term_name
         download_package = file_variable.download_package
         publication_format = file_variable.publication_format
-        row = [table_name, term_name, description, '', '', download_package, publication_format]
+        data_type = file_variable.data_type
+        units = file_variable.units
+        row = [table_name, term_name, description, data_type, units, download_package, publication_format]
         writer.writerow(row)

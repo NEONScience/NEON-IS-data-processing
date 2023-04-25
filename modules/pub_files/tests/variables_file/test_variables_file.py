@@ -43,6 +43,8 @@ def get_mock_database() -> VariablesDatabase:
     rank = 1
     download_package = 'basic'
     publication_format = '*.##(round)'
+    data_type = 'data_type'
+    units = 'units'
 
     def get_sensor_positions() -> List[FileVariables]:
         return [FileVariables(table_name='sensor_positions',
@@ -50,7 +52,9 @@ def get_mock_database() -> VariablesDatabase:
                               description=description,
                               rank=rank,
                               download_package=download_package,
-                              publication_format=publication_format)]
+                              publication_format=publication_format,
+                              data_type=data_type,
+                              units=units)]
 
     def get_is_science_review() -> List[FileVariables]:
         return [FileVariables(table_name='is_science_review',
@@ -58,7 +62,9 @@ def get_mock_database() -> VariablesDatabase:
                               description=description,
                               rank=rank,
                               download_package=download_package,
-                              publication_format=publication_format)]
+                              publication_format=publication_format,
+                              data_type=data_type,
+                              units=units)]
 
     def get_sae_science_review() -> List[FileVariables]:
         return [FileVariables(table_name='sae_science_review',
@@ -66,7 +72,9 @@ def get_mock_database() -> VariablesDatabase:
                               description=description,
                               rank=rank,
                               download_package=download_package,
-                              publication_format=publication_format)]
+                              publication_format=publication_format,
+                              data_type=data_type,
+                              units=units)]
 
     return VariablesDatabase(get_sensor_positions=get_sensor_positions,
                              get_is_science_review=get_is_science_review,
