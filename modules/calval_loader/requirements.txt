@@ -26,6 +26,6 @@ pathtools==0.1.2
 #psycopg2==2.9.5
 psycopg2-binary==2.8.6
 pyparsing==3.0.6
-setuptools==60.3.1
+setuptools==65.5.1
 watchdog==1.0.2
 Werkzeug==2.0.2
