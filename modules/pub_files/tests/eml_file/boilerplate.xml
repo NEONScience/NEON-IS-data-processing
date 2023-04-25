@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml packageId="" scope="system" system="https://www.neonscience.org" xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.2" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0 eml.xsd">
+    <dataset>
+        <creator id="neon_contact"></creator>
+        <metadataProvider id="neon_contact"></metadataProvider>
+        <publisher id="neon_contact"></publisher>
+        <contact id="neon_contact"></contact>
+        <language>English</language>
+        <project>
+            <title>National Ecological Observatory Network (NEON)</title>
+            <personnel>
+                <role>originator</role>
+                <organizationName>National Ecological Observatory Network (NEON)</organizationName>
+                <address>
+                    <deliveryPoint>1685 38th Street, Suite 100</deliveryPoint>
+                    <city>Boulder</city>
+                    <administrativeArea>CO</administrativeArea>
+                    <postalCode>80301</postalCode>
+                    <country>USA</country>
+                </address>
+                <phone phonetype="voice">720-746-4844</phone>
+                <electronicMailAddress>neonscience@battelleecology.org</electronicMailAddress>
+                <onlineUrl>https://www.neonscience.org</onlineUrl>
+            </personnel>
+            <abstract>
+                <para>The National Ecological Observatory Network is a program sponsored by the National Science Foundation and cooperatively managed by Battelle.</para>
+                <para>NEON's mission is to design, implement, and operate continental-scale research infrastructure to open new horizons in ecological science and education, and to enable ecological analyses and forecasts for the benefit of society.</para>
+            </abstract>
+            <funding>
+                <para>NEON is funded by several National Science Foundation (NSF) awards.</para>
+            </funding>
+            <award>
+                <funderName>National Science Foundation</funderName>
+                <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
+                <awardNumber>1724433</awardNumber>
+                <title>National Ecological Observatory Network: Operations Activities</title>
+                <awardUrl>https://www.nsf.gov/awardsearch/showAward?AWD_ID=1724433</awardUrl>
+            </award>
+            <award>
+                <funderName>National Science Foundation</funderName>
+                <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
+                <awardNumber>1638696</awardNumber>
+                <title>National Ecological Observatory Network: Operations Activities</title>
+                <awardUrl>https://www.nsf.gov/awardsearch/showAward?AWD_ID=1638696</awardUrl>
+            </award>
+            <award>
+                <funderName>National Science Foundation</funderName>
+                <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
+                <awardNumber>1638695</awardNumber>
+                <title>National Ecological Observatory Network: Construction and Transition</title>
+                <awardUrl>https://www.nsf.gov/awardsearch/showAward?AWD_ID=1638695</awardUrl>
+            </award>
+            <award>
+                <funderName>National Science Foundation</funderName>
+                <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
+                <awardNumber>1246537</awardNumber>
+                <title>NEON Initial Operations</title>
+                <awardUrl>https://www.nsf.gov/awardsearch/showAward?AWD_ID=1246537</awardUrl>
+            </award>
+            <award>
+                <funderName>National Science Foundation</funderName>
+                <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
+                <awardNumber>1138160</awardNumber>
+                <title>Construction and Operations of the National Ecological Observatory</title>
+                <awardUrl>https://www.nsf.gov/awardsearch/showAward?AWD_ID=1138160</awardUrl>
+            </award>
+            <award>
+                <funderName>National Science Foundation</funderName>
+                <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
+                <awardNumber>1029808</awardNumber>
+                <title>Cooperative Support Agreement for Major Research Equipment and Facilities Construction (MREFC) of the National Ecological Observatory</title>
+                <awardUrl>https://www.nsf.gov/awardsearch/showAward?AWD_ID=1029808</awardUrl>
+            </award>
+            <award>
+                <funderName>National Science Foundation</funderName>
+                <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
+                <awardNumber>0752017</awardNumber>
+                <title>Organizational and Project Management Support to complete the NEON Construction Ready Design and Project Execution Plan.</title>
+                <awardUrl>https://www.nsf.gov/awardsearch/showAward?AWD_ID=0752017</awardUrl>
+            </award>
+            <award>
+                <funderName>National Science Foundation</funderName>
+                <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
+                <awardNumber>0653461</awardNumber>
+                <title>Initial NEON Procurements for Science and Organizational Development</title>
+                <awardUrl>https://www.nsf.gov/awardsearch/showAward?AWD_ID=0653461</awardUrl>
+            </award>
+            <studyAreaDescription>
+                <citation id="neon_2011_sciencedesign">
+                    <title>"2011 Science Strategy: Enabling Continental-Scale Ecological Forecasting"</title>
+                    <pubDate>2011</pubDate>
+                    <language>English</language>
+                    <intellectualRights>Copyright © 2011 National Ecological Observatory Network (NEON). ALL RIGHTS RESERVED</intellectualRights>
+                    <report>
+                        <totalPages>56</totalPages>
+                    </report>
+                    <distribution>
+                        <online>
+                            <url>https://data.neonscience.org/api/v0/documents/NEON_Strategy_2011u2_0</url>
+                        </online>
+                    </distribution>
+                </citation>
+            </studyAreaDescription>
+            <designDescription>
+                <citation>
+                    <references>neon_2011_sciencedesign</references>
+                </citation>
+            </designDescription>
+        </project>
+        <intellectualRights>
+            <para>NEON Data Usage and Citation Policy</para>
+            <para>Copyright © 2021 National Ecological Observatory Network</para>
+            <para>Permission is hereby granted, free of charge, to any person or organization obtaining a copy of the NEON Observatory data products, associated software and accompanying documentation covered by this license (the "NEON Data Products") to use, reproduce, display, distribute, publish, execute, and transmit the NEON Data Products, and to prepare derivative works of the NEON Data Products, and to permit third-parties to whom the NEON Data Products are furnished to do so, all subject to the following:</para>
+            <para>The copyright notices in the NEON Data Products and this entire statement, including the above copyright statement, license grant, this restriction and the following disclaimer, must be included in all copies of the NEON Data Products, in whole or in part, and all derivative works of the Data Products.</para>
+            <para>The NEON data products are provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, title and non-infringement. In no event shall the copyright holders or anyone distributing the neon data products be liable for any damages or other liability, whether in contract, tort or otherwise, arising from, out of or in connection with the NEON data products.</para>
+        </intellectualRights>
+        <distribution>
+            <online>
+                <url function="information">https://www.neonscience.org/</url>
+            </online>
+        </distribution>
+        <maintenance>
+            <description>
+                <para>These data are available via the NEON website (https://www.neonscience.org).</para>
+            </description>
+            <maintenanceUpdateFrequency>asNeeded</maintenanceUpdateFrequency>
+        </maintenance>
+    </dataset>
+</eml:eml>

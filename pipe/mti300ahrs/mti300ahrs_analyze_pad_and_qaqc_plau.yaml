@@ -36,6 +36,7 @@ transform:
     "TermTest10=angXaxs:range|step|persistence"
     "TermTest11=angYaxs:range|step|persistence"
     "TermTest12=angZaxs:range|step|persistence"
+    "DirSubCopy=threshold|location"
     #VarAddFileQf=errorState
   env:
     # Environment variables for padded timeseries analyzer
@@ -47,7 +48,7 @@ input:
   - pfs:
       name: DATA_PATH
       repo: mti300ahrs_thresh_select_ts_pad
-      glob: /mti300ahrs/*/*/*/*
+      glob: /amrs/*/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
       repo: mti300ahrs_avro_schemas

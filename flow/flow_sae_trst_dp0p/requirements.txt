@@ -1,4 +1,4 @@
 environs==9.5.0
 structlog==22.1.0
 pandas==1.5.1
-pyarrow==10.0.0
+pyarrow==11.0.0

@@ -1,0 +1,87 @@
+---
+pipeline:
+  name: parQuantumLine_level1_pub_files
+transform:
+  image_pull_secrets:
+    - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/pub_files:0.0.23
+  cmd:
+    - /bin/bash
+  stdin:
+    - '#!/bin/bash'
+    - python3 -m pub_files.main
+  env:
+    LOG_LEVEL: DEBUG
+    OUT_PATH: /pfs/out
+    IN_PATH_PARSE_INDEX: '2'
+    DB_SECRETS_PATH: /var/db_secret
+    GITHUB_PEM_PATH: /var/github_secret/key
+    GITHUB_APP_ID: '300002'
+    GITHUB_INSTALLATION_ID: '34765458'
+    GITHUB_HOST: https://api.github.com
+    GITHUB_REPO_OWNER: NEONScience
+    GITHUB_README_REPO: neon-metadata-docs
+    GITHUB_README_PATH: readme/template.j2
+    GITHUB_PUBLICATION_WORKBOOK_REPO: NEON-FIU-document-IPT
+    GITHUB_PUBLICATION_WORKBOOK_PATH: quantum_line_PAR/dataPubInfo/prq_datapub_NEONDOC002880.txt
+    GITHUB_EML_REPO: neon-metadata-docs
+    GITHUB_EML_BOILERPLATE_PATH: eml/neon_components/NEON_EML_Boilerplate.xml
+    GITHUB_EML_CONTACT_PATH: eml/neon_components/neon_contact.xml
+    GITHUB_EML_INTELLECTUAL_RIGHTS_PATH: eml/neon_components/neon_intellectualRights.xml
+    GITHUB_EML_UNIT_TYPES_PATH: eml/neon_components/neon_unitTypes.xml
+    GITHUB_EML_UNITS_PATH: eml/neon_components/NEON_units.txt
+    GITHUB_BRANCH: NSE-9201
+  secrets:
+    - name: db-pdr-secret
+      mount_path: /var/db_secret
+    - name: github-neonscience-app-secret
+      mount_path: /var/github_secret
+input:
+  group:
+    - pfs:
+        name: LOCATION_PATH
+        repo: parQuantumLine_level1_pub_group
+        glob: /*/(*)/*/(*)/location/*
+        group_by: $1/$2
+        empty_files: true
+    - pfs:
+        name: IN_PATH
+        repo: parQuantumLine_level1_pub_package
+        glob: /(*)/*/(*)
+        group_by: $2/$1
+        empty_files: false
+resource_requests:
+  memory: 25M
+  cpu: 0.01
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { 
+    "tolerations": [
+      {
+        "key": "nodepool.neonscience.org/pipeline",
+        "operator": "Exists"
+      },
+      {
+        "effect": "NoSchedule",
+        "key": "cloud.google.com/gke-spot",
+        "operator": "Exists"
+      }
+    ] 
+  }
+pod_patch: |-
+  [
+    { 
+      "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"1G"
+    },
+    { 
+      "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]

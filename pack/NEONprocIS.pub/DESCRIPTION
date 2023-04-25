@@ -1,6 +1,6 @@
 Package: NEONprocIS.pub
 Title: Publication functions for NEON IS data processing
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: 
     person(given = "Cove",
            family = "Sturtevant",

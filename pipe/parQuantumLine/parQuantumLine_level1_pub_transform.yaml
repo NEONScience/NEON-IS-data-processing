@@ -1,0 +1,57 @@
+---
+pipeline:
+  name: parQuantumLine_level1_pub_transform
+transform:
+  image: quay.io/battelleecology/pub_transformer:v1.0.2
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - "python3 -m pub_transformer.pub_transformer_main"
+  env:
+    LOG_LEVEL: INFO
+    OUT_PATH: "/pfs/out"
+    YEAR_INDEX: '3'
+    DATA_TYPE_INDEX: '7'
+    GROUP_METADATA_DIR: group
+input: 
+  cross:
+  - pfs: 
+      name: DATA_PATH
+      repo: parQuantumLine_level1_pub_group
+      glob: /*/*/*
+  - pfs: 
+      name: WORKBOOK_PATH
+      repo: parQuantumLine_pub_workbooks
+      glob: /parQuantumLine/PublicationWorkbook_parQuantumLine.txt
+resource_requests:
+  memory: 300M
+  cpu: 0.3
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"2G"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "1"
+    }
+  ]

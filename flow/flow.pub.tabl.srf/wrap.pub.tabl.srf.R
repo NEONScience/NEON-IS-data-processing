@@ -77,7 +77,7 @@
 #   Cove Sturtevant (2023-02-10)
 #     Initial creation
 ##############################################################################################
-wrap.pub.tabl <- function(DirIn,
+wrap.pub.tabl.srf <- function(DirIn,
                           DirOutBase,
                           DirData=c('stats','quality_metrics'),
                           FilePubWb,

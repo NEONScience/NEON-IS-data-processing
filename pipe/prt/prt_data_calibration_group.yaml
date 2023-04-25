@@ -73,7 +73,7 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
+      "value":"4G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",

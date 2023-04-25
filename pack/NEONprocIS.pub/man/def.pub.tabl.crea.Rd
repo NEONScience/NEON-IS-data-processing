@@ -32,7 +32,13 @@ nameVarMtch: A character vector with the names of the variables in the pub table
 Definition function.
 }
 \examples{
-Currently none
+Not Run
+FileData <- c('/path/to/file1.parquet','/path/to/file2.parquet') # Files must have same # of rows
+data <- base::lapply(FileData,arrow::open_dataset)
+FilePubWb <- 'path/to/publication/workbook.txt'
+pubWb <- NEONprocIS.pub::def.read.pub.wb(NameFile=FilePubWb)
+TablPub <- 'PARQL_30min'
+def.pub.tabl.crea(data,pubWb,TablPub)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

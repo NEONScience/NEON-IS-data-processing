@@ -1,0 +1,275 @@
+unitName	unitDesc	unitAbbr	sourceID	unitType	parentSI	multiplierToSI	constantToSI	measScale
+"(micromole per second per squared meter) squared"	"(micromole per second per squared meter) squared"	(umol/s/m^2)^2	NEON					ratio
+"(watts per meter squared) squared"	"(watts per meter squared) squared"	WPMSS	NEON					ratio
+acre	"1 acre = 4046.8564 square meters"	ac	NEON	area	squareMeter	4046.86		ratio
+ampere	"SI base unit of electrical current, equal to a flow of one coulomb per second"	A	NEON	current	coulombsPerSecond	1		interval
+amperesPerMeter	"amperes per meter"	A/m	NEON	magneticFieldStrength		1		interval
+amperesPerSquareMeter	"amperes per square meter"	A/m^2	NEON	currentDensity		1		interval
+angstrom	"0.00000000001 meters"	Å	NEON	length	meter	0.0000000001		ratio
+angularWavenumber	"The number of radians per distance unit, defined as the symbol k. 1 angular wavenumber or circular wavenumber k = 2*pi/lambda"	k	NEON					ratio
+are	"100 square meters"	a	NEON	area	squareMeter	100		ratio
+atmosphere	"1 atmosphere = 101325 pascals "	atm	EMLUnits	pressure	pascal	101325		ratio
+bar	"1 bar = 100000 pascals"	bar	EMLUnits	pressure	pascal	100000		ratio
+becquerel	"SI derived unit of radioactivity, equivalent to an inverse second"	Bq	NEON	radionucleotideActivity	becquerel	1		ratio
+britishThermalUnit	"1 BTU = 1055.0559 joules"	BTU	NEON	energy	joule	1055.06		ratio
+bushel	"1 bushel = 35.23907 liters"	bsh	EMLUnits	volume	liter	0.035239		ratio
+bushelsPerAcre	"bushels per acre -- 1 bushel = 35.23907 liters/1 acre = 4046.8564 squareMeters"	bsh/ac	NEON	volumetricArea	litersPerSquareMeter	0.0087		ratio
+calendarYear	"an approximation of the number of days of the Earth's orbital period as counted in a given calendar"	y	NEON	time	second			ratio
+calorie	"1 calorie = 4.1868 Joules"	cal	NEON	energy	joule	4.1868		ratio
+candela	"SI unit of luminosity"	cd	NEON	luminosity	candela	1		ratio
+candelasPerSquareMeter	"candelas per square meter"	cd/m^2	NEON	luminance	candelasPerSquareMeter	1		ratio
+celsius	"a common unit of temperature, in degrees"	°C	NEON	temperature	kelvin	1	273.18	interval
+Celsius*Celsius	"Celsius squared"	"Celsius squared"	NEON					ratio
+celsiusSquared	"degrees celsius squared; typically used for variance"	°C^2	NEON	variance				interval
+centigram	"0.00001 kilograms"	cg	NEON	mass	kilogram	0.00001		ratio
+centimeter	"0.01 meters"	cm	NEON	length	meter	0.01		ratio
+centimetersPerSecond	"centimeters per second"	cm/s	EMLUnits	speed	metersPerSecond	0.01		ratio
+centimetersPerYear	"centimeters per year"	cm/y	NEON	speed	metersPerSecond	0.000000000317098		ratio
+centimolesPerKilogram	"centimoles per kilogram"	cmol/kg	NEON	amountOfSubstanceWeight	molesPerKilogram	0.01		ratio
+centisecond	"0.01 seconds"	cs	NEON	time	second	0.01		ratio
+coulomb	"SI unit of charge"	C	NEON	charge	coulomb	1		ratio
+cubicCentimeter	"cubic centimeter"	cm^3	NEON	volume	cubicMeter	0.000001		ratio
+cubicCentimetersPerCubicCentimeter	"cubic centimeters per cubic centimeter"	cm^3/cm^3	NEON	volumePerVolume				ratio
+cubicCentimetersPerCubicCentimeters	"cubic centimeters per cubic centimeter"	cm^3/cm^3	NEON					ratio
+cubicCentimetersPerCubicCentimeterSquared	"cubic centimeters per cubic centimeter squared"	(cm^3/cm^3)^	NEON	volumePerVolume				ratio
+cubicFeetPerSecond	"cubic feet per second"	ft^3/sec	EMLUnits	volumetricRate	litersPerSecond	28.3169		ratio
+cubicInch	"cubic inch"	in^3	EMLUnits	volume	liter	0.0000163871		ratio
+cubicMeter	"cubic meter"	m^3	NEON	volume	cubicMeter	1		ratio
+cubicMetersPerHour	"cubic meters per hour"	m^3/h	NEON	volumetricRate	cubicMetersPerSecond	3600		ratio
+cubicMetersPerKilogram	"cubic meters per kilogram"	m^3/kg	NEON	volumetricMass	cubicMetersPerKilogram	1		ratio
+cubicMetersPerSecond	"cubic meters per second"	m^3/s	EMLUnits	volumetricRate	cubicMetersPerSecond	1		ratio
+cubicMicrometersPerGram	"cubic micrometers per gram"	μm^3/kg	EMLUnits	volumetricMass	cubicMetersPerKilogram	0.000000000000001		ratio
+day	"one day, 86400 seconds"	d	NEON	time	second	86400		ratio
+decigram	"0.0001 kilograms"	dg	NEON	mass	kilogram	0.0001		ratio
+"decimal degree"	"decimal degree"	degree	NEON					ratio
+decimalDegree	"latitude and longitude coordinates expressed as decimal fractions"	DD	NEON	angle	radian	0.0174533		ratio
+decimeter	"0.1 meters"	dm	NEON	length	meter	0.1		ratio
+decisecond	"0.1 seconds"	ds	NEON	time	second	0.1		ratio
+decisiemensPerMeter	"decisiemens per meter"	dS/m	NEON	conductance	siemensPerMeter	0.1		ratio
+degree	"360 degrees comprise a unit circle"	º	EMLUnits	angle	radian	0.0174533		ratio
+"degree Celsius"	"degree Celsius"	C	NEON					ratio
+degrees	"angle in degrees"	deg	NEON					ratio
+"degrees squared"	"degrees squared"	deg^2	NEON					ratio
+degreesSquared	"360 degrees comprise a unit circle; degreesSquared is the units of the variance of degrees"	º^2	NEON	angle	radian			ratio
+dekagram	"0.01 kilograms"	dag	NEON	mass	kilogram	0.01		ratio
+dekameter	"10 meters"	dam	EMLUnits	length	meter	10		ratio
+dekasecond	"10 seconds"	dasec	EMLUnits	time	second	10		ratio
+dimensionless	"a designation asserting the absence of an associated unit"		EMLUnits	dimensionless				interval
+equivalent	"The amount of substance which will either react with or supply one mole of hydrogen ions (H+) in an acid–base reaction; or react with or supply one mole of electrons in a redox reaction"	eq	NEON	amount				ratio
+equivalentsPerLiter	"equivalents per liter"	eq/L	NEON	amountOfSubstanceConcentration				ratio
+fahrenheit	"An obsolescent unit of temperature still used in popular meteorology where there is 180 degrees between the freezing point of water at 32ºF and the boiling point of water at 212ºF. ºF = K* (9/5) -459.67 = ºC * (9/5) + 32."	ºF	NEON	temperature	kelvin	0.556	255.402	interval
+farad	"SI derived unit of electrical capacitance; the capacitance across which, when charged with one coulomb, there is a potential difference of one volt"	F	NEON	capacitance	farad	1		ratio
+fathom	"6 feet"	fathom	NEON	length	meter	1.8288		ratio
+feetPerDay	"feet per day"	ft/day	EMLUnits	speed	metersPerSecond	0.00000352778		ratio
+feetPerHour	"feet per hour"	ft/hr	EMLUnits	speed	metersPerSecond	0.000084667		ratio
+feetPerSecond	"feet per second"	ft/s	EMLUnits	speed	metersPerSecond	0.3048		ratio
+feetSquaredPerDay	"feet squared per day"	ft^2/day	EMLUnits	transmissivity	metersSquaredPerSecond	0.000124586		ratio
+Filename	"Name of file on disk"	NA	NEON					ratio
+foot	"12 inches"	ft	NEON	length	meter	0.3048		ratio
+footPound	"1 foot-pound = 1.355818 joules"	ft-lb	NEON	energy	joule	1.35582		ratio
+formazinNephelometricUnit	"Reflectance at 90 degrees from incident beam with near infrared source. Used for turbidity measurements."	FNU	NEON	luminance				ratio
+gallon	"US liquid gallon"	gal	EMLUnits	volume	liter	3.78541		ratio
+grad	"a plane angle equivalent to 1/400 of a full circle"	grad	EMLUnits	angle	radian	0.015707		ratio
+gram	"0.001 kilograms"	g	NEON	mass	kilogram	0.001		ratio
+gramsPerCentimeterSquaredPerSecond	"grams per centimeter squared per second"	g/cm^2/s	NEON	arealMassDensityRate	kilogramsPerMeterSquaredPerSecond	0.1		ratio
+gramsPerCubicCentimeter	"grams per cubic centimeter"	g/cm^3	EMLUnits	massDensity	kilogramsPerCubicMeter	1000		ratio
+gramsPerGram	"grams per gram"	g/g	NEON	massPerMass	kilogramsPerKilogram	1		ratio
+gramsPerHectarePerDay	"grams per hectare per day"	g/ha/d	NEON	arealMassDensityRate	kilogramsPerMeterSquaredPerSecond	0.0000000000011574		ratio
+gramsPerHectogram	"grams per hectogram"	g/hg	NEON	massPerMass	kilogramsPerKilogram	0.01		ratio
+gramsPerKilogram	"grams per kilogram"	g/kg	NEON	massPerMass	kilogramsPerKilogram	0.001		ratio
+gramsPerLiter	"grams per liter"	g/L	NEON	massDensity	kilogramsPerCubicMeter	1		ratio
+gramsPerLiterPerDay	"grams per liter per day"	g/L/d	NEON	volumetricMassDensityRate	kilogramsPerCubicMeterPerSecond	3600		ratio
+gramsPerMeterSquaredPerYear	"grams per meter squared per year"	g/m^2/y	NEON	arealMassDensityRate	kilogramsPerMeterSquaredPerSecond	0.0000000000317098		ratio
+gramsPerMilliliter	"grams per milliliter"	g/mL	EMLUnits	massFlux	kilogramsPerSecond	0.0000000000317		ratio
+gramsPerSquareMeter	"grams per square meter"	g/m^2	EMLUnits	arealMassDensity	kilogramsPerSquareMeter	0.001		ratio
+gramsPerYear	"grams per year"	g/y	NEON	massFlux	kilogramsPerSecond	0.0000000000317		ratio
+gray	"The gray is a derived unit of ionizing radiation dose in the International System of Units (SI). It is defined as the absorption of one joule of radiation energy per one kilogram of matter"	Gy	NEON	specificEnergy	joulesPerKilogram	1		ratio
+gregorianYear	"365 days in an ordinary year (31536000 seconds); 366 days in a leap year (31622400 seconds)"	y	NEON	time				interval
+hectare	"10000 square meters"	ha	NEON	area	squareMeter	10000		ratio
+hectogram	"0.1 kilogram"	hg	NEON	mass	kilogram	0.1		ratio
+hectometer	"100 meters"	km	NEON	length	meter	100		ratio
+hectosecond	"100 seconds"	hs	NEON	time	second	100		ratio
+henry	"SI derived unit of inductance, equal to an electromotive force of one volt in a closed circuit with a uniform rate of change of current of one ampere per second."	H	NEON	inductance	henry	1		ratio
+hertz	"SI derived unit of frequency, equal to one cycle per second"	Hz	NEON	frequency	hertz	1		ratio
+hour	"3600 seconds"	h	NEON	time	second	3600		ratio
+inch	"An imperial measure of length"	in	NEON	length	meter	0.0254		ratio
+joule	"SI unit of work or energy, equal to the work done by a force of one newton when its point of application moves one meter in the direction of action of the force, equivalent to one 3600th of a watt-hour. 1 joule = 1 newton * 1 meter"	J	NEON	energy	joule	1		ratio
+julianYear	"365.25 days of exactly 86400 SI seconds each, totalling exactly 31557600 seconds in the Julian astronomical yea"	y	NEON	time	second	31557600		ratio
+katal	"SI derived unit for the expression of catalytic activity in moles per second. "	kat	NEON	catalyticActivity	katal	1		ratio
+kelvin	"SI unit of temperature"	K	EMLUnits	temperature	kelvin	1		ratio
+kilogram	"SI unit of mass"	kg	EMLUnits	mass	kilogram	1		ratio
+kilogramsPerCubicMeter	"kilograms per cubic meter"	kg/m^3	NEON	massDensity	kilogramsPerCubicMeter	1		ratio
+kilogramsPerHectare	"kilograms per hectare"	kg/ha	NEON	arealMassDensity	kilogramsPerSquareMeter	0.0001		ratio
+kilogramsPerHectarePerYear	"kilograms per hectare per year"	kg/ha/y	NEON	arealMassDensityRate	kilogramsPerSquareMeterPerSecond	0.000316881		ratio
+kilogramsPerSecond	"kilograms per second"	kg/s	EMLUnits	massFlux	kilogramsPerSecond	1		ratio
+kilogramsPerSquareMeter	"kilograms per square meter"	kg/m^2	EMLUnits	arealMassDensity	kilogramsPerSquareMeter	1		ratio
+kilogramsPerSquareMeterPerSecond	"kilograms per square meter per second"	kg/m^2/s	NEON	arealMassDensityRate	kilogramsPerSquareMeterPerSecond	1		ratio
+kilogramsPerSquareMeterPerYear	"kilograms per square meter per year"	kg/m^2/y	NEON	arealMassDensityRate	kilogramsPerSquareMeterPerSecond	0.0000000316881		ratio
+kilohertz	kilohertz	kHz	EMLUnits	frequency	hertz	1000		ratio
+kiloliter	"1000 cubic liters"	kL	NEON	volume	cubicMeter	1		ratio
+kilometer	"1000 meters"	km	NEON	length	meter	1000		ratio
+kilometersPerHour	"kilometers per hour"	km/h	NEON	speed	metersPerSecond	0.2778		ratio
+kilopascal	"1000 pascals"	kPa	NEON	pressure	pascal	1000		ratio
+kiloPascal*kiloPascal	"kiloPascal squared"	kPa^2	NEON					ratio
+kilopascalsSquared	"kilopascals squared; typically used for variance"	kPa^2	NEON	pressure	pascal			ratio
+kilosecond	"1000 seconds"	ks	EMLUnits	time	second	1000		ratio
+kilovolt	"1000 volts"	kV	NEON	potentialDifference	volt	1000		ratio
+kilowatt	"1000 watts"	kW	NEON	power	watt	1000		ratio
+knot	"one nautical mile per hour"	kn	NEON	speed	metersPerSecond	0.514444		ratio
+liter	"1000 cubic centimeters"	L	NEON	volume	cubicMeter	0.001		ratio
+litersPerHectare	"liters per hectare"	L/ha	NEON	volumetricArea	cubicMetersPerSquareMeter	0.0001		ratio
+litersPerMinute	"liters per minute"	L/min	NEON	volumetricRate	cubicMetersPerSecond	0.000000277778		ratio
+litersPerSecond	"liters per second"	L/s	NEON	volumetricRate	cubicMetersPerSecond	0.001		ratio
+litersPerSquareMeter	"liters per square meter"	L/m^2	NEON	volumetricArea	cubicMetersPerSquareMeter	0.001		ratio
+lumen	"the luminous flux emitted in unit solid angle (steradian) by a uniform point source having a luminous intensity of 1 new candle. Equal to 1 candela * 1 steradian"	lm	NEON	luminousFlux	lumen	1		ratio
+lux	"one lumen per square meter"	lx	NEON	illuminance	lux	1		ratio
+megagram	"1000 kilograms"	Mg	NEON	mass	kilogram	1000		ratio
+megahertz	"1000000 hertz"	MHz	NEON	frequency	hertz	1000000		ratio
+megameter	"1000000 meters"	Mm	NEON	length	meter	1000000		ratio
+megapascal	"1000000 pascals"	MPa	NEON	pressure	pascal	1000000		ratio
+megasecond	"1000000 seconds"	Ms	NEON	time	second	1000000		ratio
+megavolt	"1000000 volts"	MV	NEON	potentialDifference	volt	1000000		ratio
+megawatt	"1000000 watts"	MW	NEON	power	watt	1000000		ratio
+meter	"0.001 kilometer"	m	NEON	length	meter	1		ratio
+"meters per second"	"meters per second"	mps	NEON					ratio
+"meters per second squared"	"meters per second squared"	m/s^2	NEON					ratio
+metersPerDay	"meters per day"	m/d	NEON	speed	metersPerSecond	0.0000115741		ratio
+metersPerGram	"meters per gram"	m/g	NEON	massSpecificLength	metersPerKilogram	0.001		ratio
+metersPerSecond	"meters per second"	m/s	EMLUnits	speed	metersPerSecond	1		ratio
+metersPerSecondSquared	"meters per second squared"	m/s^2	NEON	acceleration	metersPerSecondSquared	1		ratio
+metersSquared	"meters squared; this syntax is used for variance"	m^2	NEON	area				ratio
+metersSquaredPerDay	"meters squared per day; this syntax is used for variance"	m^2/d	NEON	transmissivity	metersSquaredPerSecond	86400		ratio
+metersSquaredPerMeterSquared	"meters squared per meter squared; this syntax is used for variance"	m^2/m^2	NEON	variance				ratio
+metersSquaredPerSecond	"meters squared per second; this syntax is used for variance"	m^2/s	NEON	transmissivity	metersSquaredPerSecond	1		ratio
+microgram	"0.000000001 kilograms"	μg	NEON	mass	kilogram	0.000000001		ratio
+microgramsPerGram	"micrograms per gram"	μg/g	NEON	massPerMass	gramsPerGram	0.000001		ratio
+microgramsPerLiter	"micrograms per liter"	μg/L	NEON	massDensity	kilogramsPerCubicMeter	0.000001		ratio
+microliter	"0.000001 liters"	μL	NEON	volume	cubicMeter	0.000000001		ratio
+micrometer	"0.000001 meters"	μm	NEON	length	meter	0.000001		ratio
+"micromole per second per squared meter"	"micromole per second per squared meter"	umol/s/m^2	NEON					ratio
+micromolesPerLiter	"micromoles per liter"	μM/L	NEON	amountOfSubstanceConcentration	molesPerCubicMeter	0.000000001		ratio
+micromolesPerMole	"micromoles per mole"	μM/M	NEON	amountOfSubstanceConcentration	molesPerMole	0.000001		ratio
+micromolesPerSquareMeterPerSecond	"micromoles per square meter per second"	μM/m^2/s	NEON	arealAmountDensityRate	molesPerSquareMeterPerSecond	0.000001		ratio
+micromolesPerSquareMeterPerSecondSquared	"(micromoles per square meter per second) squared; typically used for variance"	(μM/m^2/s)^2	NEON	variance				ratio
+micron	"0.000001 meters"	μm	NEON	length	meter	0.000001		ratio
+microsecond	"0.000001 seconds"	μs	NEON	time	second	0.000001		ratio
+microsiemensPerCentimeter	"microsiemens per centimeter; used for concentration of ionized dissoved solids"	μS/cm	NEON					ratio
+microsiemensPerCentimeterSquared	"microsiemens per centimeter squared; used for the variance of concentration of ionized dissoved solids"	μS/cm^2	NEON	variance				ratio
+microvolt	"0.000001 volts"	μV	NEON	potentialDifference	volt	0.000001		ratio
+microVolts	"micro Volts"	uV	NEON					ratio
+microwattsPerSquareCentimeterPerSteradianPerNanometer	"microwatts per square centimeter per steradian per nanometer; used for radiance"	μW/cm^2/sr/nm	NEON	intensity				ratio
+mile	"5280 feet or 1609.344 meters"	mi	NEON	length	meter	1609.34		ratio
+milesPerHour	"miles per hour"	mi/h	NEON	speed	metersPerSecond	2.23694		ratio
+milesPerMinute	"miles per minute"	mi/min	NEON	speed	metersPerSecond	0.0372823		ratio
+milesPerSecond	"miles per second"	mi/s	NEON	speed	metersPerSecond	0.000621371		ratio
+milliampere	"0.001 amperes"	mA	NEON	current	ampere	0.001		ratio
+millibar	"0.001 bars"	mbar	NEON	pressure	pascal	0.01		ratio
+milliequivalentsPerLiter	"milliequivalents per liter"	meq/L	NEON	amountOfSubstanceConcentration	molesPerCubicMeter			ratio
+milligram	"0.000001 kilograms"	mg	NEON	mass	kilogram	0.000001		ratio
+milligramsPerCubicCentimeter	"milligrams per cubic centimeter"	mg/cm^3	NEON	volumetricMass	kilogramsPerCubicMeter	1		ratio
+milligramsPerCubicMeter	"millgrams per cubic meter"	mg/m^3	NEON	volumetricMass	kilogramsPerCubicMeter	0.000001		ratio
+milligramsPerKilogram	"milligrams per kilogram"	mg/kg	NEON	massPerMass	kilogramsPerKilogram	0.000001		ratio
+milligramsPerLiter	"milligrams per liter"	mg/L	NEON	volumetricMass	kilogramsPerCubicMeter	0.001		ratio
+milligramsPerMilliliter	"milligrams per milliliter"	mg/mL	NEON	volumetricMass	kilogramsPerCubicMeter	1		ratio
+milligramsPerSquareMeter	"milligrams per square meter"	mg/m^2	NEON	arealMassDensity	kilogramsPerSquareMeter	0.000001		ratio
+millihertz	"0.001 hertz"	mHz	NEON	frequency	hertz	0.001		ratio
+milliliter	"0.001 liters"	mL	NEON	volume	cubicMeter	0.000001		ratio
+millilitersPerMinute	"milliliters per minute"	mL/min	NEON	volumetricRate	cubicMetersPerSecond	0.0000000166667		ratio
+millimeter	"0.001 meters"	mm	NEON	length	meter	0.001		ratio
+millimetersOfMercury	"millimeters of mercury"	mmHg	NEON	pressure	pascal	133.322		ratio
+millimetersPerSecond	"millimeters per second"	mm/s	NEON	speed	metersPerSecond	0.001		ratio
+millimolesPerCubicMeter	"millimoles per cubic meter"	mmol/m^3	NEON	amountOfSubstanceConcentration	molesPerCubicMeter	0.001		ratio
+millimolesPerGram	"millimoles per gram"	mmol/g	NEON	amountOfSubstanceWeight	molesPerKilogram	1		ratio
+millimolesPerLiter	"millimoles per liter"	mmol/L	NEON	amountOfSubstanceConcentration	molesPerCubicMeter	1		ratio
+millimolesPerMole	"millimoles per mole"	mmol/mol	NEON	amountOfSubstanceConcentration	molesPerMole	0.001		ratio
+millisecond	"0.001 seconds"	ms	NEON	time	second	0.001		ratio
+millivolt	"0.001 volts"	mV	NEON	potentialDifference	volt	0.001		ratio
+milliwatt	"0.001 watts"	mW	NEON	power	watt	0.001		ratio
+minute	"60 seconds"	min	NEON	time	second	60		ratio
+molality	"molality = moles per kilogram"	mol/kg	NEON	amountOfSubstanceWeight	molesPerKilogram	1		ratio
+molarity	"molarity = moles per liter"	mol/L	NEON	amountOfSubstanceConcentration	molesPerCubicMeter	1000		ratio
+mole	"SI unit of substance amount"	mol	NEON	amount	mole	1		ratio
+molesPerCubicMeter	"moles per cubic meter"	mol/m^3	NEON	amountOfSubstanceConcentration	molesPerCubicMeter	1		ratio
+molesPerGram	"moles per gram"	mol/g	NEON	amountOfSubstanceWeight	molesPerKilogram	1000		ratio
+molesPerKilogram	"moles per kilogram"	mol/kg	NEON	amountOfSubstanceWeight	molesPerKilogram	1		ratio
+molesPerKilogramPerSecond	"moles per kilogram per second"	mol/kg/s	NEON	amountOfSubstanceWeightFlux	molesPerKilogramPerSecond	1		ratio
+NA	"units not applicable"		NEON					NA
+nanogram	"0.000000000001 kilograms"	ng	NEON	mass	kilogram	0.000000000001		ratio
+nanogramsPerMicroliter	"nanograms per microliter"	ng/μL	NEON	massDensity	kilogramsPerCubicMeter	0.001		ratio
+nanogramsPerMilliliter	"nanograms per milliliter"	ng/mL	NEON	massDensity	kilogramsPerCubicMeter	0.000001		ratio
+nanometer	"0.000000001 meters"	nm	NEON	length	meter	0.000000001		ratio
+nanomolesPerGramPerSecond	"nanomoles per gram per second"	nmol	NEON	amount	mole	0.000000001		ratio
+nanosecond	"0.000000001 seconds"	ns	NEON	time	second	0.000000001		ratio
+nauticalMile	"approximately one minute of arc measured along any meridian;  1,852 meters or about 6,076 feet"	NM	NEON	length	meter	1852		ratio
+newton	"the force needed to accelerate a mass of one kilogram one meter per second squared"	N	NEON	force	newton	1		ratio
+nominalDay	"one day excluding leap seconds, 86400 seconds"	d	NEON	time	second	86400		ratio
+nominalHour	"one hour excluding leap seconds, 3600 seconds"	h	NEON	time	second	3600		ratio
+nominalLeapYear	"one 366 day year excluding leap seconds, 31622400 seconds"	leapYear	NEON	time	second	31622400		ratio
+nominalMinute	"one minute excluding leap seconds, 60 seconds"	min	NEON	time	second	60		ratio
+nominalSecond	"one second"	s	NEON	time	second	1		ratio
+nominalWeek	"one day excluding leap seconds, 604800 seconds"	week	NEON	time	second	604800		ratio
+nominalYear	"one year excluding leap seconds and leap days, 31536000 seconds"	time	NEON	time	second	31536000		ratio
+none	"Unit (or lack thereof) for unitless values, e.g. Stream IDs, Coefficients, etc."	NA	NEON					ratio
+normality	"equivalent per liter"	eq/L	NEON	amountOfSubstanceConcentration				ratio
+number	"a number"	number	NEON	amount				ratio
+numberPerCubicMeter	"number of entities per cubic meter"	number/m^3	NEON	volumetricDensity	numberPerMeterCubed	1		ratio
+numberPerGram	"number of entities per gram"	number/g	NEON	amountOfSubstanceWeight	numberPerKilogram	0.001		ratio
+numberPerLiter	"number of entities per liter"	number/L	NEON	amountOfSubstanceConcentration	numberPerCubicMeter	0.001		ratio
+numberPerMilliliter	"number of entities per milliliter"	number/mL	NEON	amountOfSubstanceConcentration	numberPerCubicMeter	0.000001		ratio
+numberPerSquareKilometer	"number of entities per square kilometer"	number/km^2	NEON	arealDensity	numberPerSquareMeter	1000		ratio
+numberPerSquareMeter	"number of entities per square meter"	number/m^2	NEON	arealDensity	numberPerSquareMeter	1		ratio
+ohm	"SI unit of electrical resistance, expressing the resistance in a circuit transmitting a current of one ampere when subjected to a potential difference of one volt"	Ω	NEON	resistance	ohm	1		ratio
+ohmMeter	"ohm meters"	Ωm	NEON	resistivity	ohmMeter	1		ratio
+Ohms	Ohms	Ohms	NEON					ratio
+partsPerBillionPerCentimeter	"parts per billion per centimeter"	ppb/cm	NEON					ratio
+partsPerMillion	"parts per million"	ppm	NEON	amountPerAmount				ratio
+partsPerMillionVolumetric	"parts per million on a volumetric basis (ppmv or uL/L)"	ppmv	NEON	volumetricDensity				ratio
+partsPerThousand	"parts per thousand"	ppt	NEON	amountPerAmount				ratio
+partsPerTrillion	"parts per trillion"	ppt	NEON	amountPerAmount				ratio
+pascal	"one newton per square meter"	Pa	NEON	pressure	pascal	1		ratio
+percent	percent	%	NEON	amountPerAmount				ratio
+percentSquared	"percent squared; typically associated with variance"	%^2	NEON	variance				ratio
+permill	"parts per thousand (denoted as ‰)"	‰	NEON	amountPerAmount				ratio
+pH	"measure of hydrogen ion concentration"	pH	NEON	amountOfSubstanceConcentration				interval
+pint	"US liquid pint"	pt	NEON	volume	cubicMeter	0.000473176		ratio
+pound	"1 pound in the Avoirdupois (commerce) scale; 0.4536 kilograms"	lb	NEON	mass	kilogram	0.4536		ratio
+poundsPerSquareInch	"pounds per square inch"	lb/in^2	NEON	pressure	pascal	6894.76		ratio
+proportion	proportion	proportion	NEON	amountPerAmount				ratio
+quart	"US liquid quart"	qt	NEON	volume	cubicMeter	0.000946353		ratio
+quinineSulfateUnit	"Fluorescence relative to a quinine sulfate solution standard"	QSU	NEON	amountPerAmount				ratio
+radian	"2 pi radians comprise a unit circle."	rad	NEON	angle	radian	1		ratio
+radiansPerSecond	"radians per second"	rad/s	NEON	speed	radiansPerSecond	1		ratio
+revolutionsPerMinute	"revolutions per minute"	rpm	NEON	speed	radiansPerSecond	0.159155		ratio
+second	"SI unit of time"	s	NEON	time	second	1		ratio
+siemens	"SI unit of electric conductance, electric susceptance and electric admittance. 1 siemens is equal to the reciprocal of 1 ohm, or 1 ampere divided by 1 volt."	S	NEON	conductance	siemens	1		ratio
+siemensPerCentimeter	"siemens per centimeter"	S/cm	NEON	conductivity	siemensPerMeter	0.01		ratio
+siemensPerMeter	"siemens per meter"	S/m	NEON	conductivity	siemensPerMeter	1		ratio
+sievert	"SI derived unit of the health effect of an ionizing radiation dose. Also defined as the biological effect of the deposit of a joule of radiation energy in a kilogram of human tissue."	Sv	NEON		joulesPerKilogram	1		ratio
+spectroscopicWavenumber	"The number of wavelengths per distance unit, represented by the symbol v. 1 wavenumber or spectroscopic wavenumber = 1/lambda."	v	NEON					ratio
+squareCentimeter	"square centimeter"	cm^2	NEON	area	squareMeter	0.0001		ratio
+squareFoot	"12 inches squared"	ft^2	NEON	area	squareMeter	0.092903		ratio
+squareKilometer	"square kilometer"	km^2	NEON	area	squareMeter	1000000		ratio
+squareMeter	"square meter"	m^2	NEON	area	squareMeter	1		ratio
+squareMetersPerKilogram	"square meters per kilogram"	m^2/kg	NEON	massSpecificLength	squareMetersPerKilogram	1		ratio
+squareMile	"square mile"	mi^2	NEON	area	squareMeter	0.00000259		ratio
+squareMillimeter	"square millimeter"	mm^2	NEON	area	squareMeter	0.000001		ratio
+squareYard	"36 inches squared"	yd^2	NEON	area	squareMeter	0.836127		ratio
+tesla	"SI derived unit of the strength of a magnetic field. 1 tesla = one weber per square meter"	T	NEON	magneticFluxDensity	voltSecondsPerSquareMeter	1		ratio
+ton	"standard US (short) ton = 2000 lbs"	ton	NEON	mass	kilogram	907.185		ratio
+tonne	"metric ton or tonne"	tonne	NEON	mass	kilogram	1000		ratio
+tonnesPerHectare	"metric tons or tonnes per hectare"	tonne/ha	NEON	massDensity	kilogramsPerSquareMeter	0.1		ratio
+tonnesPerYear	"tonnes per year"	tonne/y	NEON	massFlux	kilogramsPerSecond	0.0000317098		ratio
+torr	"1/760 of a standard atmosphere or 101325/760 pascals (~133.3 Pa)"	Torr	NEON	pressure	pascal	133.3		ratio
+trap-night	trap-night	trap-night	NEON					ratio
+trapNight	"number of traps set times number of nights; a measure of sampling effort"	trap*night	NEON					ratio
+volt	"SI unit of electromotive force, the difference of potential that would drive one ampere of current against one ohm resistance"	V	NEON	potentialDifference	volt	1		ratio
+voltMetersSquaredPerWatt	"volt-meters squared per watt; unit of calibration coefficient"	Vm^2/W	NEON					ratio
+Volts	Volts	V	NEON					ratio
+watt	"watt = 1 joule per second"	W	NEON	power	joulesPerSecond	1		ratio
+"watts per meter squared"	"radiation per unit area"	wpms	NEON					ratio
+wattsPerSquareMeter	"watts per square meter"	W/m^2	NEON	intensity	wattsPerSquareMeter	1		ratio
+wattsPerSquareMeterSquared	"(watts per square meter) squared; typically used for variance"	(W/m^2)^2	NEON	variance				ratio
+weber	"SI unit of magnetic flux"	Wb	NEON	magneticFlux	weber	1		ratio
+yard	"3 feet"	yd	NEON	length	meter	0.9144		ratio
+yardsPerSecond	"yards per second"	yd/s	NEON	speed	metersPerSecond	0.9144		ratio
+year	"The period of time loosely associated with a calendar or astronomical year or the orbital period of any planet. In general usage, year is used interchangebly with a Gregorian year."	y	NEON	time	second	31557600		ratio

@@ -1,0 +1,52 @@
+{
+    "science_review_flags": [
+        {
+            "group_name": "surfacewater-physical_PRLA130100",
+            "id": 15381,
+            "start_date": "2019-10-01T10:00:00Z",
+            "end_date": "2020-01-03T00:00:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.130.100.030",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Pressure transducer vent clogged periodically, causing barometric pressure fluctuations to be reflected in data.",
+            "create_date": "2020-11-25T18:45:15Z",
+            "last_update_date": "2020-11-25T18:45:15Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA130100",
+            "id": 15380,
+            "start_date": "2020-01-10T10:00:00Z",
+            "end_date": "2020-01-13T00:00:00Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.04114.130.100.005",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "Pressure transducer vent clogged periodically, causing barometric pressure fluctuations to be reflected in data.",
+            "create_date": "2020-11-25T18:45:15Z",
+            "last_update_date": "2020-11-25T18:45:15Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA130100",
+            "id": 29135,
+            "start_date": "2022-01-24T10:52:17Z",
+            "end_date": "2023-01-25T10:52:17Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.02886.130.100.030",
+            "srf_term_name": "sWatElevFinalQF",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2023-01-24T10:52:17Z",
+            "last_update_date": "2023-01-24T10:52:17Z"
+        },
+        {
+            "group_name": "surfacewater-physical_PRLA130100",
+            "id": 29136,
+            "start_date": "2022-01-26T12:32:09Z",
+            "end_date": "2023-01-27T12:32:09Z",
+            "measurement_stream_name": "NEON.D09.PRLA.DP1.20016.001.02886.130.100.000",
+            "srf_term_name": "sWatElevFinalQF",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2023-01-26T12:32:09Z",
+            "last_update_date": "2023-01-26T12:32:09Z"
+        }
+    ]
+}
