@@ -41,7 +41,7 @@ input:
   - pfs:
       name: DATA_PATH
       repo: csat3_thresh_select_ts_pad
-      glob: /csat3/*/*/*/*
+      glob: /soni/*/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
       repo: csat3_avro_schemas

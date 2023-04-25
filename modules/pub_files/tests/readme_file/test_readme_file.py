@@ -5,13 +5,13 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import pub_files.input_files.file_processor as file_processor
-import pub_files.tests.file_processor_data.file_processor_database as file_processor_data
+import pub_files.tests.input_file_processor_data.file_processor_database as file_processor_data
 import pub_files.tests.readme_file.readme_database as file_database
+from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import format_timestamp
 from pub_files.output_files.readme.readme_file import write_file
 from pub_files.publication_workbook import PublicationWorkbook
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
-from pub_files.main import get_timestamp
 
 
 class ReadmeFileTest(TestCase):
@@ -54,12 +54,12 @@ class ReadmeFileTest(TestCase):
         readme_template = self.template_path.read_text()
         file_processor_database = file_processor_data.get_database(self.fs)
         publication_workbook = PublicationWorkbook(self.workbook)
-        file_metadata = file_processor.process(in_path=self.in_path,
-                                               out_path=Path('/out'),
-                                               in_path_parse_index=1,
-                                               package_type='basic',
-                                               workbook=publication_workbook,
-                                               database=file_processor_database)
+        file_metadata = file_processor.process_files(in_path=self.in_path,
+                                                     out_path=Path('/out'),
+                                                     in_path_parse_index=1,
+                                                     package_type='basic',
+                                                     workbook=publication_workbook,
+                                                     database=file_processor_database)
         timestamp = get_timestamp()
         formatted_timestamp = format_timestamp(timestamp)
         variables_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.variables.csv'

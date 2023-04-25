@@ -56,7 +56,7 @@ input:
   - pfs:
       name: DATA_PATH
       repo: li7200_thresh_select_ts_pad
-      glob: /li7200/*/*/*/*
+      glob: /irgaTurb/*/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
       repo: li7200_avro_schemas

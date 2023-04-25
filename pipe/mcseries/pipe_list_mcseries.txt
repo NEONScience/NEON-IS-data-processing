@@ -7,3 +7,4 @@ mcseries_location_group_and_restructure.yaml
 mcseries_location_loader.yaml
 mcseries_location_active_dates_assignment.yaml
 mcseries_fill_date_gaps_and_regularize.yaml
+mcseries_l0p_data.yaml

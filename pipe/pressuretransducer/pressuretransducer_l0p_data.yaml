@@ -1,30 +1,30 @@
 ---
 pipeline:
-  name: mfcValiTurb_l0p_data
+  name: pressuretransducer_l0p_data
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-sae-trst-dp0p:v1.1.0
+  image: quay.io/battelleecology/neon-sae-trst-dp0p:v2.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - "python3 -m flow_sae_trst_dp0p.mcseries_turb"
+  - "python3 -m flow_sae_trst_dp0p.pressuretransducer"
   env:
     OUT_PATH: /pfs/out
     FILE_DIR: data
     LOG_LEVEL: INFO
-    NEW_SOURCE_TYPE_NAME: mfcValiTurb
+    #NEW_SOURCE_TYPE_NAME will be determined by location context when running script
     RELATIVE_PATH_INDEX: "4"
     LOCATION_LINK_TYPE: SYMLINK #SYMLINK or COPY, if not defined, location will not be in output repo
 input:
   pfs:
     name: IN_PATH
-    repo: mfcValiTurb_context_filter
-    glob: /mcseries/(*)/(*)/(*)
+    repo: pressuretransducer_fill_date_gaps_and_regularize
+    glob: /pressuretransducer/(*)/(*)/(*)
 parallelism_spec:
   constant: 8
 resource_requests:
-  memory: 100MB
-  cpu: 0.5
+  memory: 200MB
+  cpu: 0.3
 autoscaling: true
 scheduling_spec:
   node_selector:

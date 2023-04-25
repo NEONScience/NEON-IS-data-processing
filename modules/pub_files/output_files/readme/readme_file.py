@@ -5,12 +5,12 @@ from typing import List
 import structlog
 from jinja2 import Template
 
-from pub_files.output_files.readme.change_log_processor import ChangeLog, get_change_log
-from pub_files.database.queries.geolocation_geometry import Geometry
-from pub_files.database.queries.log_entries import LogEntry
+from pub_files.database.geolocation_geometry import Geometry
+from pub_files.database.log_entries import LogEntry
+from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.input_files.file_metadata import PathElements, DataFiles
 from pub_files.output_files.filename_format import get_filename
-from pub_files.input_files.file_metadata import FileMetadata
+from pub_files.output_files.readme.change_log_processor import ChangeLog, get_change_log
 from pub_files.output_files.readme.readme_database import ReadmeDatabase
 
 log = structlog.getLogger()
