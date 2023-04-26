@@ -42,9 +42,12 @@ class SensorPositionsFile:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
             for path in self.location_path.glob('*.json'):
+                log.debug(f'path: {path}')
                 if path.is_file() and path.name.startswith('CFGLOC'):
+                    log.debug(f'file: {path.name}')
                     (row_hor_ver, row_location_id, row_description) = self._get_named_location_data(path.stem)
                     for geolocation in self.database.get_geolocations(path.stem):
+                        log.debug(f'geolocation: {geolocation.offset_name}')
                         offset_name = geolocation.offset_name
                         geometry: Geometry = self.database.get_geometry(offset_name)
                         (east_offset, north_offset) = geolocation.get_offsets()
