@@ -1,5 +1,5 @@
-import math
 import dataclasses
+import math
 from datetime import datetime
 from typing import List, Tuple
 
@@ -53,9 +53,9 @@ class GeoLocation:
         y_azimuth = 0
         for prop in self.properties:
             if prop.name == 'x Azimuth Angle':
-                x_azimuth = float(prop.value)
+                x_azimuth = float(prop.value.replace('\u2212', '-'))
             if prop.name == 'y Azimuth Angle':
-                y_azimuth = float(prop.value)
+                y_azimuth = float(prop.value.replace('\u2212', '-'))
         return x_azimuth, y_azimuth
 
     def _correct_y_azimuth(self) -> float:
