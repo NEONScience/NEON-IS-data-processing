@@ -42,9 +42,12 @@ class SensorPositionsFile:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
             for path in self.location_path.glob('*.json'):
+                log.debug(f'path: {path}')
                 if path.is_file() and path.name.startswith('CFGLOC'):
+                    log.debug(f'file: {path.name}')
                     (row_hor_ver, row_location_id, row_description) = self._get_named_location_data(path.stem)
                     for geolocation in self.database.get_geolocations(path.stem):
+                        log.debug(f'geolocation: {geolocation.offset_name}')
                         offset_name = geolocation.offset_name
                         geometry: Geometry = self.database.get_geometry(offset_name)
                         (east_offset, north_offset) = geolocation.get_offsets()
@@ -56,7 +59,7 @@ class SensorPositionsFile:
                         row_pitch: float = round(geolocation.alpha, 2)
                         row_roll: float = round(geolocation.beta, 2)
                         row_azimuth: float = round(geolocation.gamma, 2)
-                        row_reference_location_id = (self.database.get_named_location(offset_name)).location_id
+                        row_reference_location_id = (self.database.get_named_location(offset_name)).name
                         row_reference_location_description: str = geolocation.offset_description
                         row_reference_location_latitude: float = round(geometry.latitude, 6)
                         row_reference_location_longitude: float = round(geometry.longitude, 6)
@@ -93,8 +96,8 @@ class SensorPositionsFile:
                             writer.writerow(row)
         return file_path
 
-    def _get_named_location_data(self, named_location_name: str) -> Tuple[str, int, str]:
+    def _get_named_location_data(self, named_location_name: str) -> Tuple[str, str, str]:
         location = self.database.get_named_location(named_location_name)
         (horizontal_index, vertical_index) = location.get_indices()
         hor_ver = f'{horizontal_index}.{vertical_index}'
-        return hor_ver, location.location_id, location.description
+        return hor_ver, location.name, location.description

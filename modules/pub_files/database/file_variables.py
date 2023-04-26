@@ -16,7 +16,7 @@ class FileVariables(NamedTuple):
     data_type: str
     units: str
 
-
+# TODO: break into separate modules for a clear path between SAE and IS and configure what is output in the pipeline spec.
 def get_sensor_positions(connector: DbConnector) -> List[FileVariables]:
     return get_variables(connector, 'Sensor Positions File')
 
@@ -34,7 +34,7 @@ def get_variables(connector: DbConnector, file_name: str) -> List[FileVariables]
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'''
-        select 
+        select
             pf.table_name,
             pf.description,
             pff.rank,
@@ -42,18 +42,19 @@ def get_variables(connector: DbConnector, file_name: str) -> List[FileVariables]
             pff.download_package,
             pff.pub_format,
             t.unit_name,
-            t.data_type_code
-        from 
+            t.data_type_code,
+            t.term_description
+        from
             {schema}.pub_file_field pff
-        inner join 
+        inner join
             {schema}.pub_file pf 
-        on 
-            pf.id = pff.file_id 
-        and 
+        on
+            pf.id = pff.file_id
+        and
             pf."name" = %s
         inner join 
-	        pdr.term t 
-        on 
+	        {schema}.term t
+        on
 	        pff.term_name = t.term_name
     '''
     with closing(connection.cursor(cursor_factory=DictCursor)) as cursor:
@@ -61,7 +62,7 @@ def get_variables(connector: DbConnector, file_name: str) -> List[FileVariables]
         rows = cursor.fetchall()
         for row in rows:
             table_name: str = row['table_name']
-            description: str = row['description']
+            description: str = row['term_description']
             term_name: str = row['term_name']
             rank: int = row['rank']
             download_package: str = row['download_package']
