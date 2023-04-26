@@ -36,7 +36,7 @@ def get_log_entries(connector: DbConnector, data_product_id: str) -> List[LogEnt
          where
              dp_idq = %s
         order by
-             resolved_date, issue_date
+             resolved_date desc, issue_date desc
     '''
     log_entries = []
     with closing(connection.cursor()) as cursor:
@@ -61,5 +61,8 @@ def get_log_entries(connector: DbConnector, data_product_id: str) -> List[LogEnt
                                  location_affected=location_affected,
                                  issue=issue,
                                  resolution=resolution)
-            log_entries.append(log_entry)
+            if date_range_end is None:
+                log_entries.insert(0, log_entry)
+            else:
+                log_entries.append(log_entry)
     return log_entries
