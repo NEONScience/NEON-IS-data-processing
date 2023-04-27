@@ -98,7 +98,8 @@ def get_theta(x_offset, y_offset) -> float:
 def get_property(properties: List[Property], property_name: str) -> Optional[float]:
     for prop in properties:
         if prop.name == property_name:
-            return float(prop.value.replace('\u2212', '-'))
+            # float(prop.value.replace('\u2212', '-'))
+            return float(prop.value)
     return None
 
 
