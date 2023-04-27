@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from typing import Any
 from typing import NamedTuple
 
@@ -36,5 +35,4 @@ class DbConnector:
             password=self.config.password,
             dbname=self.config.database_name,
             sslmode='require',
-            options=f'-c search_path={self.config.schema}'
-        )
+            options=f'-c search_path={self.config.schema}')

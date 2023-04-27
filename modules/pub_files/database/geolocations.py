@@ -1,9 +1,27 @@
 from contextlib import closing
-from typing import List, Tuple
+from datetime import datetime
+from typing import List, Tuple, NamedTuple
 
 from data_access.db_connector import DbConnector
 from data_access.get_geolocation_properties import get_geolocation_properties
-from pub_files.geolocation import GeoLocation
+from data_access.types.property import Property
+
+
+class GeoLocation(NamedTuple):
+    location_id: int
+    geometry: str
+    start_date: datetime
+    end_date: datetime
+    alpha: float
+    beta: float
+    gamma: float
+    x_offset: float
+    y_offset: float
+    z_offset: float
+    offset_id: int
+    offset_name: str
+    offset_description: str
+    properties: List[Property]
 
 
 def get_geolocations(connector: DbConnector, named_location: str) -> List[GeoLocation]:
