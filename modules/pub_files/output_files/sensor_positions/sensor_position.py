@@ -2,9 +2,13 @@ import math
 from datetime import datetime
 from typing import List, Optional, NamedTuple
 
+import structlog
+
 import common.date_formatter
 from data_access.types.property import Property
 from pub_files.database.geolocations import GeoLocation
+
+log = structlog.get_logger()
 
 
 class SensorPosition(NamedTuple):
@@ -19,8 +23,10 @@ class SensorPosition(NamedTuple):
 def get_position(g: GeoLocation) -> SensorPosition:
     start_date = format_date(g.start_date)
     end_date = format_date(g.end_date)
+    log.debug(f'properties: {g.properties}')
     x_azimuth = get_property(g.properties, 'x Azimuth Angle')
     y_azimuth = get_property(g.properties, 'y Azimuth Angle')
+    log.debug(f'x_azimuth: {x_azimuth} y_azimuth: {y_azimuth}')
     radius = get_radius(g.x_offset, g.y_offset)
     theta = get_theta(g.x_offset, g.y_offset)
     cardinal_theta = get_cardinal_theta(x_azimuth, y_azimuth, theta)
