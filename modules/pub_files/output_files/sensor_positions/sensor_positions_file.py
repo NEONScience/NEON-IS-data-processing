@@ -5,6 +5,7 @@ from typing import Tuple
 
 import structlog
 
+import common.date_formatter as date_formatter
 from pub_files.database.geolocation_geometry import Geometry
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.filename_format import get_filename
@@ -24,6 +25,12 @@ COLUMNS = ['HOR.VER',
            'locationReferenceLatitude', 'locationReferenceLongitude', 'locationReferenceElevation',
            'eastOffset', 'northOffset',
            'xAzimuth', 'yAzimuth']
+
+def format_date(date: datetime) -> str:
+    if date is not None:
+        return date_formatter.to_string(date)
+    else:
+        return ''
 
 
 class SensorPositionsFile:
@@ -48,7 +55,7 @@ class SensorPositionsFile:
                     log.debug(f'file: {path.name}')
                     (row_hor_ver, row_location_id, row_description) = self.get_named_location_data(path.stem)
                     for geolocation in self.database.get_geolocations(path.stem):
-                        log.debug(f'geolocation: {geolocation.offset_name}')
+                        log.debug(f'offset named location: {geolocation.offset_name}')
                         offset_name = geolocation.offset_name
                         geometry: Geometry = self.database.get_geometry(offset_name)
                         sensor_position = get_position(geolocation)
@@ -56,8 +63,8 @@ class SensorPositionsFile:
                         north_offset = sensor_position.north_offset
                         x_azimuth = sensor_position.x_azimuth
                         y_azimuth = sensor_position.y_azimuth
-                        row_position_start_date = sensor_position.start_date
-                        row_position_end_date = sensor_position.end_date
+                        row_position_start_date = format_date(geolocation.start_date)
+                        row_position_end_date = format_date(geolocation.end_date)
                         row_x_offset: float = round(geolocation.x_offset, 2)
                         row_y_offset: float = round(geolocation.y_offset, 2)
                         row_z_offset: float = round(geolocation.z_offset, 2)
@@ -74,9 +81,8 @@ class SensorPositionsFile:
                         row_east_offset: float = round(east_offset, 2) if east_offset else ''
                         row_north_offset: float = round(north_offset, 2) if north_offset else ''
                         for reference_geolocation in self.database.get_geolocations(offset_name):
-                            reference_position = get_position(reference_geolocation)
-                            row_reference_location_start_date = reference_position.start_date
-                            row_reference_location_end_date = reference_position.end_date
+                            row_reference_location_start_date = format_date(reference_geolocation.start_date)
+                            row_reference_location_end_date = format_date(reference_geolocation.end_date)
                             row = [row_hor_ver,
                                    row_location_id,
                                    row_description,

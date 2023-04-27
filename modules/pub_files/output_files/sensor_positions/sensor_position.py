@@ -1,10 +1,8 @@
 import math
-from datetime import datetime
 from typing import List, Optional, NamedTuple
 
 import structlog
 
-import common.date_formatter
 from data_access.types.property import Property
 from pub_files.database.geolocations import GeoLocation
 
@@ -12,8 +10,6 @@ log = structlog.get_logger()
 
 
 class SensorPosition(NamedTuple):
-    start_date: str
-    end_date: str
     north_offset: Optional[float]
     east_offset: Optional[float]
     x_azimuth: Optional[float]
@@ -21,13 +17,11 @@ class SensorPosition(NamedTuple):
 
 
 def get_position(g: GeoLocation) -> SensorPosition:
-    start_date = format_date(g.start_date)
-    end_date = format_date(g.end_date)
     log.debug(f'properties: {g.properties}')
     x_azimuth = get_property(g.properties, 'x Azimuth Angle')
     y_azimuth = get_property(g.properties, 'y Azimuth Angle')
     log.debug(f'x_azimuth: {x_azimuth} y_azimuth: {y_azimuth}')
-    radius = get_radius(g.x_offset, g.y_offset)
+    radius = math.sqrt((g.x_offset * g.x_offset) + (g.y_offset * g.y_offset))
     theta = get_theta(g.x_offset, g.y_offset)
     cardinal_theta = get_cardinal_theta(x_azimuth, y_azimuth, theta)
     if not cardinal_theta:
@@ -36,23 +30,21 @@ def get_position(g: GeoLocation) -> SensorPosition:
     else:
         north_offset = get_north_offset(radius, cardinal_theta)
         east_offset = get_east_offset(radius, cardinal_theta)
-    return SensorPosition(start_date=start_date,
-                          end_date=end_date,
-                          north_offset=north_offset,
+    return SensorPosition(north_offset=north_offset,
                           east_offset=east_offset,
                           x_azimuth=x_azimuth,
                           y_azimuth=y_azimuth)
 
 
-def get_north_offset(radius: float, cardinal_theta: float) -> Optional[float]:
+def get_north_offset(radius, cardinal_theta) -> Optional[float]:
     return radius * math.sin(math.radians(cardinal_theta))
 
 
-def get_east_offset(radius: float, cardinal_theta: float) -> Optional[float]:
+def get_east_offset(radius, cardinal_theta) -> Optional[float]:
     return radius * math.cos(math.radians(cardinal_theta))
 
 
-def get_cardinal_theta(x_azimuth, y_azimuth, theta: float) -> Optional[float]:
+def get_cardinal_theta(x_azimuth, y_azimuth, theta) -> Optional[float]:
     if (x_azimuth or y_azimuth) and (x_azimuth != 0 and y_azimuth != 0):
         if x_azimuth and not y_azimuth:
             y_azimuth = 0
@@ -63,11 +55,7 @@ def get_cardinal_theta(x_azimuth, y_azimuth, theta: float) -> Optional[float]:
     return None
 
 
-def get_radius(x_offset: float, y_offset: float) -> float:
-    return math.sqrt((x_offset * x_offset) + (y_offset * y_offset))
-
-
-def correct_y_azimuth(x_azimuth: float, y_azimuth: float) -> float:
+def correct_y_azimuth(x_azimuth, y_azimuth) -> float:
     corrected_y_azimuth = y_azimuth
     if y_azimuth < x_azimuth:
         diff = x_azimuth - y_azimuth
@@ -104,10 +92,3 @@ def get_property(properties: List[Property], property_name: str) -> Optional[flo
         if prop.name == property_name:
             return float(prop.value)
     return None
-
-
-def format_date(date: datetime) -> str:
-    if date is not None:
-        return common.date_formatter.to_string(date)
-    else:
-        return ''
