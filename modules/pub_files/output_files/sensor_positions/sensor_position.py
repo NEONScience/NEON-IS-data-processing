@@ -23,10 +23,7 @@ def get_position(g: GeoLocation) -> SensorPosition:
     y_azimuth = get_property(g.properties, 'y Azimuth Angle')
     radius = get_radius(g.x_offset, g.y_offset)
     theta = get_theta(g.x_offset, g.y_offset)
-    if g.properties:
-        cardinal_theta = get_cardinal_theta(x_azimuth, y_azimuth, theta)
-    else:
-        cardinal_theta = None
+    cardinal_theta = get_cardinal_theta(x_azimuth, y_azimuth, theta)
     if not cardinal_theta:
         north_offset = None
         east_offset = None
@@ -57,6 +54,7 @@ def get_cardinal_theta(x_azimuth, y_azimuth, theta: float) -> Optional[float]:
             x_azimuth = 0
         corrected_y_azimuth = correct_y_azimuth(x_azimuth, y_azimuth)
         return theta - corrected_y_azimuth
+    return None
 
 
 def get_radius(x_offset: float, y_offset: float) -> float:
@@ -98,7 +96,6 @@ def get_theta(x_offset, y_offset) -> float:
 def get_property(properties: List[Property], property_name: str) -> Optional[float]:
     for prop in properties:
         if prop.name == property_name:
-            # float(prop.value.replace('\u2212', '-'))
             return float(prop.value)
     return None
 
