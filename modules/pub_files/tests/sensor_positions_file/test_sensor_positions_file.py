@@ -32,7 +32,8 @@ def create_location_path(fs: FakeFilesystem) -> Path:
 class PositionsFileTest(TestCase):
 
     def setUp(self) -> None:
-        root = Path(os.path.dirname(__file__), 'data')
+        data_root_path = Path(os.path.dirname(__file__), 'data')
+
         self.setUpPyfakefs()
         self.in_path = Path('/in')
         self.domain = 'D10'
@@ -44,50 +45,56 @@ class PositionsFileTest(TestCase):
         self.fs.create_dir(self.in_path)
         self.fs.create_dir(self.out_path)
 
-        soilpl101775 = Path(root, 'soilpl101755.json')
+        soilpl101775 = Path(data_root_path, 'soilpl101755.json')
         self.soilpl101775_target = Path('/soilpl101775.json')
         self.fs.add_real_file(soilpl101775, target_path=self.soilpl101775_target)
 
-        soilpl101775_properties = Path(root, 'soilpl101755_properties.json')
+        soilpl101775_properties = Path(data_root_path, 'soilpl101755_properties.json')
         self.soilpl101775_properties_target = Path('/soilpl101775_properties.json')
         self.fs.add_real_file(soilpl101775_properties, target_path=self.soilpl101775_properties_target)
 
-        cfgloc101775 = Path(root, 'cfgloc101775.json')
+        cfgloc101775 = Path(data_root_path, 'cfgloc101775.json')
         self.cfgloc101775_target = Path('/cfgloc101775.json')
         self.fs.add_real_file(cfgloc101775, target_path=self.cfgloc101775_target)
 
-        cfgloc101775_properties = Path(root, 'cfgloc101775_properties.json')
+        cfgloc101775_properties = Path(data_root_path, 'cfgloc101775_properties.json')
         self.cfgloc101775_properties_target = Path('/cfgloc101775_properties.json')
         self.fs.add_real_file(cfgloc101775_properties, target_path=self.cfgloc101775_properties_target)
 
-        cfgloc101777 = Path(root, 'cfgloc101777.json')
+        cfgloc101777 = Path(data_root_path, 'cfgloc101777.json')
         self.cfgloc101777_target = Path('/cfgloc101777.json')
         self.fs.add_real_file(cfgloc101777, target_path=self.cfgloc101777_target)
 
-        cfg101777_properties = Path(root, 'cfgloc101777_properties.json')
+        cfg101777_properties = Path(data_root_path, 'cfgloc101777_properties.json')
         self.cfgloc101777_properties_target = Path('/cfgloc_101777_properties.json')
         self.fs.add_real_file(cfg101777_properties, target_path=self.cfgloc101777_properties_target)
 
-    def test_write(self):
-        timestamp = get_timestamp()
-        elements = PathElements(domain=self.domain, site=self.site, year=self.year, month=self.month,
-                                data_product_id=self.data_product_id)
+    def test_write(self) -> None:
         location_path = create_location_path(self.fs)
+        timestamp = get_timestamp()
+        elements = PathElements(domain=self.domain,
+                                site=self.site,
+                                year=self.year,
+                                month=self.month,
+                                data_product_id=self.data_product_id)
         database = SensorPositionsDatabase(get_geolocations=self.get_geolocations,
                                            get_named_location=self.get_named_location,
                                            get_geometry=self.get_geometry)
-        file_path = SensorPositionsFile(location_path=location_path, out_path=self.out_path, elements=elements,
-                                       timestamp=timestamp, database=database).write()
+        file_path = SensorPositionsFile(location_path=location_path,
+                                        out_path=self.out_path,
+                                        elements=elements,
+                                        timestamp=timestamp,
+                                        database=database).write()
         with open(file_path, 'r') as file:
             reader = csv.reader(file)
             i = 0
             for row in reader:
                 i += 1
                 print(row)
-            assert i == 3
+            assert i == 3  # header and 2 entries
 
     @staticmethod
-    def get_property(json_property):
+    def get_property(json_property) -> Property:
         name = json_property['attr_name']
         value = json_property['string_value']
         return Property(name=name, value=value)
@@ -153,33 +160,36 @@ class PositionsFileTest(TestCase):
             with open(self.cfgloc101775_target) as file:
                 json_data = json.load(file)
                 for json_location in json_data:
-                    locations.append(self.get_geolocation(json_location))
+                    geo_location = self.get_geolocation(json_location)
+                    locations.append(geo_location)
         if named_location == 'CFGLOC1017757':
             with open(self.cfgloc101777_target) as file:
                 json_data = json.load(file)
                 for json_location in json_data:
-                    locations.append(self.get_geolocation(json_location))
+                    geo_location = self.get_geolocation(json_location)
+                    locations.append(geo_location)
         if named_location == 'SOILPL101755':
             with open(self.soilpl101775_target) as file:
                 json_data = json.load(file)
                 for json_location in json_data:
-                    locations.append(self.get_geolocation(json_location))
+                    geo_location = self.get_geolocation(json_location)
+                    locations.append(geo_location)
         return locations
 
-    def get_named_location(self, named_location_name) -> NamedLocation:
-        properties = self.get_properties(named_location_name)
-        if named_location_name == 'CFGLOC101775':
+    def get_named_location(self, name) -> NamedLocation:
+        properties = self.get_properties(name)
+        if name == 'CFGLOC101775':
             return NamedLocation(location_id=138773,
                                  name='CFGLOC101775',
                                  description='Central Plains Soil Temp Profile SP2, Z6 Depth',
                                  properties=properties)
-        if named_location_name == 'CFGLOC101777':
-            return NamedLocation(138775,
-                                 'CFGLOC101777',
-                                 'Central Plains Soil Temp Profile SP2, Z7 Depth',
+        if name == 'CFGLOC101777':
+            return NamedLocation(location_id=138775,
+                                 name='CFGLOC101777',
+                                 description='Central Plains Soil Temp Profile SP2, Z7 Depth',
                                  properties=properties)
-        if named_location_name == 'SOILPL101755':
-            return NamedLocation(138753,
-                                 'SOILPL101755',
-                                 'Central Plains Soil Plot, SP2',
+        if name == 'SOILPL101755':
+            return NamedLocation(location_id=138753,
+                                 name='SOILPL101755',
+                                 description='Central Plains Soil Plot, SP2',
                                  properties=properties)

@@ -17,7 +17,7 @@ class SensorPosition(NamedTuple):
 
 
 def get_position(g: GeoLocation) -> SensorPosition:
-    log.debug(f'properties: {g.properties}')
+    # log.debug(f'properties: {g.properties}')
     x_azimuth = get_property(g.properties, 'x Azimuth Angle')
     y_azimuth = get_property(g.properties, 'y Azimuth Angle')
     log.debug(f'x_azimuth: {x_azimuth} y_azimuth: {y_azimuth}')
