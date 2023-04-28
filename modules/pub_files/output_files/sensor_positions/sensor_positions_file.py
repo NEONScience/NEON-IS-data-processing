@@ -55,9 +55,8 @@ class SensorPositionsFile:
                     log.debug(f'file: {path.name}')
                     (row_hor_ver, row_location_id, row_description) = self.get_named_location_data(path.stem)
                     for geolocation in self.database.get_geolocations(path.stem):
-                        log.debug(f'offset named location: {geolocation.offset_name}')
                         offset_name = geolocation.offset_name
-                        geometry: Geometry = self.database.get_geometry(offset_name)
+                        offset_geometry: Geometry = self.database.get_geometry(offset_name)
                         sensor_position = get_position(geolocation)
                         east_offset = sensor_position.east_offset
                         north_offset = sensor_position.north_offset
@@ -73,13 +72,13 @@ class SensorPositionsFile:
                         row_azimuth: float = round(geolocation.gamma, 2)
                         row_reference_location_id = (self.database.get_named_location(offset_name)).name
                         row_reference_location_description: str = geolocation.offset_description
-                        row_reference_location_latitude: float = round(geometry.latitude, 6)
-                        row_reference_location_longitude: float = round(geometry.longitude, 6)
-                        row_reference_location_elevation: float = round(geometry.elevation, 2)
-                        row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth else ''
-                        row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth else ''
-                        row_east_offset: float = round(east_offset, 2) if east_offset else ''
-                        row_north_offset: float = round(north_offset, 2) if north_offset else ''
+                        row_reference_location_latitude: float = round(offset_geometry.latitude, 6)
+                        row_reference_location_longitude: float = round(offset_geometry.longitude, 6)
+                        row_reference_location_elevation: float = round(offset_geometry.elevation, 2)
+                        row_x_azimuth: float = round(x_azimuth, 2) # if x_azimuth else ''
+                        row_y_azimuth: float = round(y_azimuth, 2) # if y_azimuth else ''
+                        row_east_offset: float = round(east_offset, 2) # if east_offset else ''
+                        row_north_offset: float = round(north_offset, 2) # if north_offset else ''
                         for reference_geolocation in self.database.get_geolocations(offset_name):
                             row_reference_location_start_date = format_date(reference_geolocation.start_date)
                             row_reference_location_end_date = format_date(reference_geolocation.end_date)
