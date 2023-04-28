@@ -57,7 +57,7 @@ class SensorPositionsFile:
                     geolocations = self.database.get_geolocations(named_location_name)
                     log.debug(f'found {len(geolocations)} geolocations for {named_location_name}')
                     for geolocation in geolocations:
-                        log.debug(f'found geolocation for {named_location_name}')
+                        log.debug(f'found geolocation {geolocation.location_id} for {named_location_name}')
                         # sensor position
                         sensor_position = get_position(geolocation)
                         east_offset = sensor_position.east_offset
