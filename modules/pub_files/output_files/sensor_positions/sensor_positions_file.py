@@ -85,8 +85,8 @@ class SensorPositionsFile:
                             log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
                             row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth is not None else ''
                             row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth is not None else ''
-                            row_east_offset: float = round(east_offset, 2) if east_offset is not None else ''
-                            row_north_offset: float = round(north_offset, 2) if north_offset is not None else ''
+                            row_east_offset: float = round(east_offset, 2)  # if east_offset is not None else ''
+                            row_north_offset: float = round(north_offset, 2)  # if north_offset is not None else ''
                             row_reference_location_start_date = format_date(reference_geolocation.start_date)
                             row_reference_location_end_date = format_date(reference_geolocation.end_date)
                             # create row
