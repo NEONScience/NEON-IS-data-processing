@@ -25,9 +25,11 @@ def get_position(g: GeoLocation) -> SensorPosition:
     theta = get_theta(g.x_offset, g.y_offset)
     cardinal_theta = get_cardinal_theta(x_azimuth, y_azimuth, theta)
     log.debug(f'radius: {radius} theta: {theta} cardinal_theta: {cardinal_theta}')
-    if not cardinal_theta:
-        north_offset = None
-        east_offset = None
+    if cardinal_theta is None:
+        return SensorPosition(north_offset=None,
+                              east_offset=None,
+                              x_azimuth=x_azimuth,
+                              y_azimuth=y_azimuth)
     else:
         north_offset = get_north_offset(radius, cardinal_theta)
         east_offset = get_east_offset(radius, cardinal_theta)
@@ -35,10 +37,10 @@ def get_position(g: GeoLocation) -> SensorPosition:
             north_offset = abs(north_offset)
         if east_offset == -0:
             east_offset = abs(east_offset)
-    return SensorPosition(north_offset=north_offset,
-                          east_offset=east_offset,
-                          x_azimuth=x_azimuth,
-                          y_azimuth=y_azimuth)
+        return SensorPosition(north_offset=north_offset,
+                              east_offset=east_offset,
+                              x_azimuth=x_azimuth,
+                              y_azimuth=y_azimuth)
 
 
 def get_north_offset(radius, cardinal_theta) -> Optional[float]:
