@@ -57,12 +57,6 @@ class SensorPositionsFile:
                     log.debug(f'found {len(geolocations)} geolocations for {named_location_name}')
                     for geolocation in geolocations:
                         log.debug(f'found geolocation {geolocation.location_id} for {named_location_name}')
-                        # sensor position
-                        sensor_position = get_position(geolocation)
-                        east_offset = sensor_position.east_offset
-                        north_offset = sensor_position.north_offset
-                        x_azimuth = sensor_position.x_azimuth
-                        y_azimuth = sensor_position.y_azimuth
                         # offset location
                         offset_name = geolocation.offset_name
                         offset_geometry: Geometry = self.database.get_geometry(offset_name)
@@ -80,10 +74,6 @@ class SensorPositionsFile:
                         row_reference_location_latitude: float = round(offset_geometry.latitude, 6)
                         row_reference_location_longitude: float = round(offset_geometry.longitude, 6)
                         row_reference_location_elevation: float = round(offset_geometry.elevation, 2)
-                        row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth else ''
-                        row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth else ''
-                        row_east_offset: float = round(east_offset, 2) if east_offset else ''
-                        row_north_offset: float = round(north_offset, 2) if north_offset else ''
                         # reference location
                         for reference_geolocation in self.database.get_geolocations(offset_name):
                             log.debug(f'found reference_geolocation for {offset_name}')
@@ -93,6 +83,10 @@ class SensorPositionsFile:
                             east_offset = reference_position.east_offset
                             north_offset = reference_position.north_offset
                             log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
+                            row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth else ''
+                            row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth else ''
+                            row_east_offset: float = round(east_offset, 2) if east_offset else ''
+                            row_north_offset: float = round(north_offset, 2) if north_offset else ''
                             row_reference_location_start_date = format_date(reference_geolocation.start_date)
                             row_reference_location_end_date = format_date(reference_geolocation.end_date)
                             # create row
