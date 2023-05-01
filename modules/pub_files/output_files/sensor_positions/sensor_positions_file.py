@@ -87,6 +87,12 @@ class SensorPositionsFile:
                         # reference location
                         for reference_geolocation in self.database.get_geolocations(offset_name):
                             log.debug(f'found reference_geolocation for {offset_name}')
+                            reference_position = get_position(reference_geolocation)
+                            x_azimuth = reference_position.x_azimuth
+                            y_azimuth = reference_position.y_azimuth
+                            east_offset = reference_position.east_offset
+                            north_offset = reference_position.north_offset
+                            log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
                             row_reference_location_start_date = format_date(reference_geolocation.start_date)
                             row_reference_location_end_date = format_date(reference_geolocation.end_date)
                             # create row
