@@ -57,9 +57,6 @@ class SensorPositionsFile:
                     log.debug(f'found {len(geolocations)} geolocations for {named_location_name}')
                     for geolocation in geolocations:
                         log.debug(f'found geolocation {geolocation.location_id} for {named_location_name}')
-                        sensor_position = get_position(geolocation)
-                        east_offset = sensor_position.east_offset
-                        north_offset = sensor_position.north_offset
                         # offset location
                         offset_name = geolocation.offset_name
                         offset_geometry: Geometry = self.database.get_geometry(offset_name)
@@ -83,8 +80,8 @@ class SensorPositionsFile:
                             reference_position = get_position(reference_geolocation)
                             x_azimuth = reference_position.x_azimuth
                             y_azimuth = reference_position.y_azimuth
-                            # east_offset = reference_position.east_offset
-                            # north_offset = reference_position.north_offset
+                            east_offset = reference_position.east_offset
+                            north_offset = reference_position.north_offset
                             log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
                             row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth else ''
                             row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth else ''
