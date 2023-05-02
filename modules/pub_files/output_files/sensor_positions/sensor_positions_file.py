@@ -51,7 +51,7 @@ class SensorPositionsFile:
         with open(file_path, 'w', encoding='UTF8', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
-            for path in self.location_path.parent.parent.glob('*.json'):
+            for path in self.location_path.parent.parent.rglob('*.json'):
                 # log.debug(f'location path: {path}')
                 if path.is_file() and path.name.startswith('CFGLOC'):
                     named_location_name = path.stem
