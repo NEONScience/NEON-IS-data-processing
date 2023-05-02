@@ -17,23 +17,30 @@ class SensorPosition(NamedTuple):
 
 
 def get_position(g: GeoLocation) -> SensorPosition:
-    # log.debug(f'properties: {g.properties}')
     x_azimuth = get_property(g.properties, 'x Azimuth Angle')
     y_azimuth = get_property(g.properties, 'y Azimuth Angle')
+    log.debug(f'x_offset: {g.x_offset} y_offset: {g.y_offset}')
     log.debug(f'x_azimuth: {x_azimuth} y_azimuth: {y_azimuth}')
     radius = math.sqrt((g.x_offset * g.x_offset) + (g.y_offset * g.y_offset))
     theta = get_theta(g.x_offset, g.y_offset)
     cardinal_theta = get_cardinal_theta(x_azimuth, y_azimuth, theta)
-    if not cardinal_theta:
-        north_offset = None
-        east_offset = None
+    log.debug(f'radius: {radius} theta: {theta} cardinal_theta: {cardinal_theta}')
+    if cardinal_theta is None:
+        return SensorPosition(north_offset=None,
+                              east_offset=None,
+                              x_azimuth=x_azimuth,
+                              y_azimuth=y_azimuth)
     else:
         north_offset = get_north_offset(radius, cardinal_theta)
         east_offset = get_east_offset(radius, cardinal_theta)
-    return SensorPosition(north_offset=north_offset,
-                          east_offset=east_offset,
-                          x_azimuth=x_azimuth,
-                          y_azimuth=y_azimuth)
+        if north_offset == -0:
+            north_offset = abs(north_offset)
+        if east_offset == -0:
+            east_offset = abs(east_offset)
+        return SensorPosition(north_offset=north_offset,
+                              east_offset=east_offset,
+                              x_azimuth=x_azimuth,
+                              y_azimuth=y_azimuth)
 
 
 def get_north_offset(radius, cardinal_theta) -> Optional[float]:
