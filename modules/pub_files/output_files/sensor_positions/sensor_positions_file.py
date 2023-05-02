@@ -51,6 +51,7 @@ class SensorPositionsFile:
         with open(file_path, 'w', encoding='UTF8', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
+            file_rows = []
             for path in self.location_path.parent.parent.rglob('*.json'):
                 # log.debug(f'location path: {path}')
                 if path.is_file() and path.name.startswith('CFGLOC'):
@@ -115,8 +116,9 @@ class SensorPositionsFile:
                                    row_north_offset,
                                    row_x_azimuth,
                                    row_y_azimuth]
-                            # write row
-                            writer.writerow(row)
+                            if row not in file_rows:  # prevent duplicates
+                                file_rows.append(row)
+            writer.writerows(file_rows)
         return file_path
 
     def get_named_location_data(self, named_location_name: str) -> Tuple[str, str, str]:
