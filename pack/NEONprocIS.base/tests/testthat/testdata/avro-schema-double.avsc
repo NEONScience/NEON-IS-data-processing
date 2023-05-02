@@ -7,8 +7,8 @@
        {
       "name": "surfacewaterPressureMean",
       "type": [
-        "double",
-        "null"
+        "null",
+        "double"
         ],
       "default": null,
       "doc": "Arithmetic mean of surface water pressure",
