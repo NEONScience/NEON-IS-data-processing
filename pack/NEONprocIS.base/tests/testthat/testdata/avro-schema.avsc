@@ -163,7 +163,16 @@
         "bytes"
         ],
       "default": null,
-      "doc": "Standard error of the me for surface water elevation",
+      "doc": "Standard error of the med for surface water elevation",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterElevStdErMax",
+      "type": [
+        "null"
+        ],
+      "default": null,
+      "doc": "Standard error of the max for surface water elevation",
       "__neon_units": "kilopascal"
     }
   ]
