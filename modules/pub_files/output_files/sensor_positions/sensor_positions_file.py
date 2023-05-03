@@ -96,8 +96,8 @@ class SensorPositionsFile:
                             row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth is not None else ''
                             row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth is not None else ''
                             # TODO: test, removed rounding of very small floats, it may be setting to 0.
-                            row_east_offset: Decimal = round_up(east_offset) if east_offset is not None else ''
-                            row_north_offset: Decimal = round_up(north_offset) if north_offset is not None else ''
+                            row_east_offset: float = east_offset if east_offset is not None else ''
+                            row_north_offset: float = north_offset if north_offset is not None else ''
                             row_reference_location_start_date = format_date(reference_geolocation.start_date)
                             row_reference_location_end_date = format_date(reference_geolocation.end_date)
                             # create row
