@@ -1,3 +1,24 @@
+##############################################################################################
+#' @title Unit test for def.gro.meta.R, get metadata/properties from groups json file
+
+#' @description
+#' Definition function. Read group json file and return a data frame of metadata/properties 
+#' for the group.
+
+#' @param NameFile Filename (including relative or absolute path). Must be json format.
+#' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+#' output. Defaults to NULL, in which the logger will be created and used within the function.
+
+#' @return 
+#' #' A data frame with group metadata.
+
+# changelog and author contributions / copyrights
+#   Mija Choi (2023-05-03)
+#     Updated the test json due to the group_loader change.
+#     After the original test written, the group_loader is modified 
+#     to have data_product_ID, site, domain and visibility_code in the output json.
+#     The test json is updated accordingly
+
 context("Group metadata tests")
 
 test_that("Valid input file. Return group metadata",
