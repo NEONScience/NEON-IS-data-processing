@@ -1,0 +1,18 @@
+{
+  "type": "record",
+  "name": "surfacewaterPhysical_dp01_troll_specific_sci_stats",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "L1 science statistics for surface water",
+  "fields": [
+       {
+      "name": "surfacewaterPressureMean",
+      "type": [
+        "null",
+        "double"
+        ],
+      "default": null,
+      "doc": "Arithmetic mean of surface water pressure",
+      "__neon_units": "kilopascal"
+    }
+  ]
+}
