@@ -1,6 +1,7 @@
 import csv
 import os
 from datetime import datetime
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 from typing import Tuple
 
@@ -32,6 +33,11 @@ def format_date(date: datetime) -> str:
         return date_formatter.to_string(date)
     else:
         return ''
+
+
+def round_up(value):
+    two_places = Decimal("1e-2")
+    return Decimal(value).quantize(two_places, rounding=ROUND_HALF_UP)
 
 
 class SensorPositionsFile:
@@ -89,8 +95,9 @@ class SensorPositionsFile:
                             # log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
                             row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth is not None else ''
                             row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth is not None else ''
-                            row_east_offset: float = round(east_offset, 2)  # if east_offset is not None else ''
-                            row_north_offset: float = round(north_offset, 2)  # if north_offset is not None else ''
+                            # TODO: test, removed rounding of very small floats, it may be setting to 0.
+                            row_east_offset: Decimal = round_up(east_offset) if east_offset is not None else ''
+                            row_north_offset: Decimal = round_up(north_offset) if north_offset is not None else ''
                             row_reference_location_start_date = format_date(reference_geolocation.start_date)
                             row_reference_location_end_date = format_date(reference_geolocation.end_date)
                             # create row
