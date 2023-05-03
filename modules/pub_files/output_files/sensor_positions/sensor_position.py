@@ -20,13 +20,22 @@ class SensorPosition(NamedTuple):
 def get_position(g: GeoLocation) -> SensorPosition:
     x_azimuth = get_property(g.properties, 'x Azimuth Angle')
     y_azimuth = get_property(g.properties, 'y Azimuth Angle')
-    log.debug(f'x_offset: {g.x_offset} y_offset: {g.y_offset}')
-    log.debug(f'x_azimuth: {x_azimuth} y_azimuth: {y_azimuth}')
+    azimuth_is_zero = False
+    if (x_azimuth is None or x_azimuth == 0) or (y_azimuth is None or y_azimuth == 0):
+        azimuth_is_zero = True
+    if not azimuth_is_zero:
+        if x_azimuth is None:
+            x_azimuth = Decimal(0)
+        if y_azimuth is None:
+            y_azimuth = Decimal(0)
     (east_offset, north_offset) = get_cardinal_offsets(x_azimuth, y_azimuth, g.x_offset, g.y_offset)
     if north_offset == -0:
         north_offset = abs(north_offset)
     if east_offset == -0:
         east_offset = abs(east_offset)
+    log.debug(f'x_offset: {g.x_offset} y_offset: {g.y_offset}')
+    log.debug(f'x_azimuth: {x_azimuth} y_azimuth: {y_azimuth}')
+    log.debug(f'east_offset: {east_offset} north_offset: {north_offset}')
     return SensorPosition(north_offset=north_offset,
                           east_offset=east_offset,
                           x_azimuth=x_azimuth,
@@ -78,10 +87,11 @@ def get_property(properties: List[Property], property_name: str) -> Optional[flo
 
 
 def round_up_two_places(value):
-    two_places = Decimal('1e-2')
-    return Decimal(value).quantize(two_places, rounding=ROUND_UP)
+    return Decimal(value).quantize(Decimal('1e-2'), rounding=ROUND_UP)
 
 
-if __name__ == '__main__':
+def test():
     (east_offset, north_offset) = get_cardinal_offsets(45., 315., .25, .42)
+    print(f'east: {east_offset} north: {north_offset}')
+    (east_offset, north_offset) = get_cardinal_offsets(45., 315., 0, 0)
     print(f'east: {east_offset} north: {north_offset}')

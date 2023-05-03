@@ -11,7 +11,7 @@ import common.date_formatter as date_formatter
 from pub_files.database.geolocation_geometry import Geometry
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.filename_format import get_filename
-from pub_files.output_files.sensor_positions.sensor_position import get_position
+from pub_files.output_files.sensor_positions.sensor_position import get_position, round_up_two_places
 from pub_files.output_files.sensor_positions.sensor_positions_database import SensorPositionsDatabase
 
 log = structlog.get_logger()
@@ -54,22 +54,19 @@ class SensorPositionsFile:
             writer.writerow(COLUMNS)
             file_rows = []
             for path in self.location_path.parent.parent.rglob('*.json'):
-                # log.debug(f'location path: {path}')
                 if path.is_file() and path.name.startswith('CFGLOC'):
                     named_location_name = path.stem
                     (row_hor_ver, row_location_id, row_description) = self.get_named_location_data(named_location_name)
                     geolocations = self.database.get_geolocations(named_location_name)
-                    # log.debug(f'found {len(geolocations)} geolocations for {named_location_name}')
                     for geolocation in geolocations:
-                        # log.debug(f'found geolocation {geolocation.location_id} for {named_location_name}')
                         # offset location
                         offset_name = geolocation.offset_name
                         offset_geometry: Geometry = self.database.get_geometry(offset_name)
                         # set row values with formatting
                         row_position_start_date: str = format_date(geolocation.start_date)
                         row_position_end_date: str = format_date(geolocation.end_date)
-                        row_x_offset: float = round(geolocation.x_offset, 2)
-                        row_y_offset: float = round(geolocation.y_offset, 2)
+                        row_x_offset: Decimal = round_up_two_places(geolocation.x_offset)
+                        row_y_offset: Decimal = round_up_two_places(geolocation.y_offset)
                         row_z_offset: float = round(geolocation.z_offset, 2)
                         row_pitch: float = round(geolocation.alpha, 2)
                         row_roll: float = round(geolocation.beta, 2)
@@ -81,7 +78,11 @@ class SensorPositionsFile:
                         row_reference_location_elevation: float = round(offset_geometry.elevation, 2)
                         # reference location
                         for reference_geolocation in self.database.get_geolocations(offset_name):
-                            # log.debug(f'found reference_geolocation for {offset_name}')
+
+                            # TODO: testing.
+                            # row_x_offset: Decimal = round_up_two_places(geolocation.x_offset)
+                            # row_y_offset: Decimal = round_up_two_places(geolocation.y_offset)
+
                             reference_position = get_position(reference_geolocation)
                             x_azimuth = reference_position.x_azimuth
                             y_azimuth = reference_position.y_azimuth
@@ -90,7 +91,6 @@ class SensorPositionsFile:
                             log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
                             row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth is not None else ''
                             row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth is not None else ''
-                            # TODO: test, removed rounding of very small floats, it may be setting to 0.
                             row_east_offset: Decimal = east_offset if east_offset is not None else ''
                             row_north_offset: Decimal = north_offset if north_offset is not None else ''
                             row_reference_location_start_date = format_date(reference_geolocation.start_date)
