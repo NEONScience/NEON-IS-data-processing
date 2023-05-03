@@ -1,4 +1,5 @@
 import math
+from decimal import Decimal, ROUND_UP
 from typing import List, Optional, NamedTuple, Tuple
 
 import structlog
@@ -10,8 +11,8 @@ log = structlog.get_logger()
 
 
 class SensorPosition(NamedTuple):
-    north_offset: Optional[float]
-    east_offset: Optional[float]
+    north_offset: Optional[Decimal]
+    east_offset: Optional[Decimal]
     x_azimuth: Optional[float]
     y_azimuth: Optional[float]
 
@@ -32,31 +33,31 @@ def get_position(g: GeoLocation) -> SensorPosition:
                           y_azimuth=y_azimuth)
 
 
-def get_cardinal_offsets(x_azimuth, y_azimuth, x_offset, y_offset) -> Tuple[float, float]:
-    diff = 0
-    delta = 0
-    corrected_y_azimuth = y_azimuth
+def get_cardinal_offsets(x_azimuth, y_azimuth, x_offset, y_offset) -> Tuple[Decimal, Decimal]:
+    diff = Decimal(0)
+    delta = Decimal(0)
+    corrected_y_azimuth = Decimal(y_azimuth)
     if y_azimuth < x_azimuth:
         diff = x_azimuth - y_azimuth
     else:
         diff = 360 - y_azimuth + x_azimuth
     if diff > 90:
         delta = diff - 90
-        corrected_y_azimuth = 0.5 * delta + y_azimuth
+        corrected_y_azimuth = Decimal(0.5 * delta + y_azimuth)
         if corrected_y_azimuth >= 360:
             corrected_y_azimuth -= 360
     if diff < 90:
         delta = 90 - diff
-        corrected_y_azimuth = y_azimuth - 0.5 * delta
+        corrected_y_azimuth = Decimal(y_azimuth - 0.5 * delta)
         if corrected_y_azimuth < 0:
             corrected_y_azimuth += 360
     # convert to polar coordinates
-    radius = math.sqrt(x_offset * x_offset + y_offset * y_offset)
-    theta = 0.
+    radius = Decimal(math.sqrt(x_offset * x_offset + y_offset * y_offset))
+    theta = Decimal(0)
     if x_offset == 0:
-        theta = 90.
+        theta = Decimal(90)
     else:
-        theta = math.degrees(math.atan(y_offset/x_offset))
+        theta = Decimal(math.degrees(math.atan(y_offset/x_offset)))
     # quadrant correction
     if x_offset < 0:
         theta += 180
@@ -64,9 +65,9 @@ def get_cardinal_offsets(x_azimuth, y_azimuth, x_offset, y_offset) -> Tuple[floa
         theta += 360
     # rotate by azimuth
     cardinal_theta = theta - corrected_y_azimuth
-    east_offset = radius * math.cos((math.radians(cardinal_theta)))
-    north_offset = radius * math.sin(math.radians(cardinal_theta))
-    return east_offset, north_offset
+    east_offset = Decimal(radius * Decimal(math.cos((math.radians(cardinal_theta)))))
+    north_offset = Decimal(radius * Decimal(math.sin(math.radians(cardinal_theta))))
+    return round_up(east_offset), round_up(north_offset)
 
 
 def get_property(properties: List[Property], property_name: str) -> Optional[float]:
@@ -74,6 +75,11 @@ def get_property(properties: List[Property], property_name: str) -> Optional[flo
         if prop.name == property_name:
             return float(prop.value)
     return None
+
+
+def round_up(value):
+    two_places = Decimal('1e-2')
+    return Decimal(value).quantize(two_places, rounding=ROUND_UP)
 
 
 if __name__ == '__main__':
