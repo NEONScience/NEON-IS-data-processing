@@ -1,6 +1,5 @@
 import csv
 from datetime import datetime
-from decimal import Decimal
 from pathlib import Path
 from typing import Tuple
 
@@ -10,7 +9,7 @@ import common.date_formatter as date_formatter
 from pub_files.database.geolocation_geometry import Geometry
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.filename_format import get_filename
-from pub_files.output_files.sensor_positions.sensor_position import get_position, round_up_two_places
+from pub_files.output_files.sensor_positions.sensor_position import get_position
 from pub_files.output_files.sensor_positions.sensor_positions_database import SensorPositionsDatabase
 
 log = structlog.get_logger()
@@ -63,8 +62,8 @@ class SensorPositionsFile:
                         # set row values with formatting
                         row_position_start_date: str = format_date(geolocation.start_date)
                         row_position_end_date: str = format_date(geolocation.end_date)
-                        row_x_offset: Decimal = round_up_two_places(geolocation.x_offset)
-                        row_y_offset: Decimal = round_up_two_places(geolocation.y_offset)
+                        row_x_offset: float = round(geolocation.x_offset, 2)
+                        row_y_offset: float = round(geolocation.y_offset, 2)
                         row_z_offset: float = round(geolocation.z_offset, 2)
                         row_pitch: float = round(geolocation.alpha, 2)
                         row_roll: float = round(geolocation.beta, 2)
@@ -85,8 +84,8 @@ class SensorPositionsFile:
                             north_offset = reference_position.north_offset
                             row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth is not None else ''
                             row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth is not None else ''
-                            row_east_offset: Decimal = east_offset if east_offset is not None else ''
-                            row_north_offset: Decimal = north_offset if north_offset is not None else ''
+                            row_east_offset: float = round(east_offset, 2) if east_offset is not None else ''
+                            row_north_offset: float = round(north_offset, 2) if north_offset is not None else ''
                             row_reference_location_start_date = format_date(reference_geolocation.start_date)
                             row_reference_location_end_date = format_date(reference_geolocation.end_date)
                             # create row
