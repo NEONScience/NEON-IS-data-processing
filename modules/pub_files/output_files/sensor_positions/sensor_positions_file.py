@@ -1,5 +1,4 @@
 import csv
-import os
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
@@ -46,7 +45,6 @@ class SensorPositionsFile:
         self.database = database
 
     def write(self) -> Path:
-        log.debug(f'LOCATION_DATUM: {os.environ["LOCATION_PATH"]}')
         filename = get_filename(self.elements, timestamp=self.timestamp, file_type='sensor_positions', extension='csv')
         file_path = Path(self.out_path, filename)
         with open(file_path, 'w', encoding='UTF8', newline='') as file:
@@ -78,9 +76,6 @@ class SensorPositionsFile:
                         row_reference_location_elevation: float = round(offset_geometry.elevation, 2)
                         # reference location
                         for reference_geolocation in self.database.get_geolocations(offset_name):
-                            # TODO: testing.
-                            # row_x_offset: Decimal = round_up_two_places(geolocation.x_offset)
-                            # row_y_offset: Decimal = round_up_two_places(geolocation.y_offset)
                             reference_position = get_position(reference_geolocation,
                                                               geolocation.x_offset,
                                                               geolocation.y_offset)
@@ -88,7 +83,6 @@ class SensorPositionsFile:
                             y_azimuth = reference_position.y_azimuth
                             east_offset = reference_position.east_offset
                             north_offset = reference_position.north_offset
-                            log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
                             row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth is not None else ''
                             row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth is not None else ''
                             row_east_offset: Decimal = east_offset if east_offset is not None else ''

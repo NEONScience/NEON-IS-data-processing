@@ -33,9 +33,6 @@ def get_position(g: GeoLocation, x_offset, y_offset) -> SensorPosition:
         north_offset = abs(north_offset)
     if east_offset == -0:
         east_offset = abs(east_offset)
-    log.debug(f'x_offset: {x_offset} y_offset: {y_offset}')
-    log.debug(f'x_azimuth: {x_azimuth} y_azimuth: {y_azimuth}')
-    log.debug(f'east_offset: {east_offset} north_offset: {north_offset}')
     return SensorPosition(north_offset=north_offset,
                           east_offset=east_offset,
                           x_azimuth=x_azimuth,
