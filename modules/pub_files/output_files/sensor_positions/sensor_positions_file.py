@@ -87,7 +87,7 @@ class SensorPositionsFile:
                             y_azimuth = reference_position.y_azimuth
                             east_offset = reference_position.east_offset
                             north_offset = reference_position.north_offset
-                            # log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
+                            log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
                             row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth is not None else ''
                             row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth is not None else ''
                             # TODO: test, removed rounding of very small floats, it may be setting to 0.

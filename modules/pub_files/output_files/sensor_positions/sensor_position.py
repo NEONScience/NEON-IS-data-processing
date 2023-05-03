@@ -67,7 +67,7 @@ def get_cardinal_offsets(x_azimuth, y_azimuth, x_offset, y_offset) -> Tuple[Deci
     cardinal_theta = theta - corrected_y_azimuth
     east_offset = Decimal(radius * Decimal(math.cos((math.radians(cardinal_theta)))))
     north_offset = Decimal(radius * Decimal(math.sin(math.radians(cardinal_theta))))
-    return round_up(east_offset), round_up(north_offset)
+    return round_up_two_places(east_offset), round_up_two_places(north_offset)
 
 
 def get_property(properties: List[Property], property_name: str) -> Optional[float]:
@@ -77,7 +77,7 @@ def get_property(properties: List[Property], property_name: str) -> Optional[flo
     return None
 
 
-def round_up(value):
+def round_up_two_places(value):
     two_places = Decimal('1e-2')
     return Decimal(value).quantize(two_places, rounding=ROUND_UP)
 
