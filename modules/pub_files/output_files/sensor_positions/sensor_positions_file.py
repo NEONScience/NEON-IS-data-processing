@@ -78,12 +78,12 @@ class SensorPositionsFile:
                         row_reference_location_elevation: float = round(offset_geometry.elevation, 2)
                         # reference location
                         for reference_geolocation in self.database.get_geolocations(offset_name):
-
                             # TODO: testing.
                             # row_x_offset: Decimal = round_up_two_places(geolocation.x_offset)
                             # row_y_offset: Decimal = round_up_two_places(geolocation.y_offset)
-
-                            reference_position = get_position(reference_geolocation)
+                            reference_position = get_position(reference_geolocation,
+                                                              geolocation.x_offset,
+                                                              geolocation.y_offset)
                             x_azimuth = reference_position.x_azimuth
                             y_azimuth = reference_position.y_azimuth
                             east_offset = reference_position.east_offset
