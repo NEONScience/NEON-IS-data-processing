@@ -1,0 +1,179 @@
+{
+  "type": "record",
+  "name": "surfacewaterPhysical_dp01_troll_specific_sci_stats",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "L1 science statistics for surface water",
+  "fields": [
+    {
+      "name": "startDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is initiated (inclusive)"
+    },
+    {
+      "name": "endDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-micro"
+      },
+      "doc": "Date and time at which a sampling is completed (exclusive)"
+    },
+    {
+      "name": "updateDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-nano"
+      },
+      "doc": "Date and time at which a sampling is updated (exclusive)"
+    },
+    {
+      "name": "transDateTime",
+      "type": {
+        "type": "time",
+        "logicalType": "time"
+      },
+      "doc": "Date and time at which a sampling is transactined (exclusive)"
+    },
+    {
+      "name": "surfacewaterPressureMean",
+      "type": [
+        "null",
+        "uint8"
+        ],
+      "default": null,
+      "doc": "Arithmetic mean of surface water pressure",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterPressureMinimum",
+      "type": [
+        "null",
+        "uint16"
+        ],
+      "default": null,
+      "doc": "Minimum surface water pressure",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterPressureMaximum",
+      "type": [
+        "null",
+        "uint32"
+        ],
+      "default": null,
+      "doc": "Maximum surface water pressure",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterPressureVariance",
+      "type": [
+        "null",
+        "uint64"
+        ],
+      "default": null,
+      "doc": "Variance in surface water pressure",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterPressureNumPts",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Number of points used to calculate the arithmetic mean of surface water pressure",
+      "__neon_units": "number"
+    },
+    {
+      "name": "surfacewaterPressureStdErMean",
+      "type": [
+        "null",
+        "boolean"
+        ],
+      "default": null,
+      "doc": "Standard error of the mean for surface water pressure",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterElevMean",
+      "type": [
+        "null",
+        "int8"
+        ],
+      "default": null,
+      "doc": "Arithmetic mean of surface water elevation above sea level",
+      "__neon_units": "meter"
+    },
+    {
+      "name": "surfacewaterElevMinimum",
+      "type": [
+        "null",
+        "int16"
+        ],
+      "default": null,
+      "doc": "Minimum surface water elevation",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterElevMaximum",
+      "type": [
+        "null",
+        "int32"
+        ],
+      "default": null,
+      "doc": "Maximum surface water elevation",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterElevVariance",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Variance in surface water elevation",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterElevNumPts",
+      "type": [
+        "null",
+        "int64"
+        ],
+      "default": null,
+      "doc": "Number of points used to calculate the arithmetic mean of surface water elevation",
+      "__neon_units": "number"
+    },
+    {
+      "name": "surfacewaterElevStdErMean",
+      "type": [
+        "null",
+        "uint"
+        ],
+      "default": null,
+      "doc": "Standard error of the mean for surface water elevation",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterElevStdErMed",
+      "type": [
+        "null",
+        "bytes"
+        ],
+      "default": null,
+      "doc": "Standard error of the med for surface water elevation",
+      "__neon_units": "kilopascal"
+    },
+    {
+      "name": "surfacewaterElevStdErMax",
+      "type": [
+        "null"
+        ],
+      "default": null,
+      "doc": "Standard error of the max for surface water elevation",
+      "__neon_units": "kilopascal"
+    }
+  ]
+}

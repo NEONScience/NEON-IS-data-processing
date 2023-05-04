@@ -49,14 +49,13 @@ class SensorPositionsFile:
         with open(file_path, 'w', encoding='UTF8', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
-            for path in self.location_path.glob('*.json'):
+            file_rows = []
+            for path in self.location_path.parent.parent.rglob('*.json'):
                 if path.is_file() and path.name.startswith('CFGLOC'):
                     named_location_name = path.stem
                     (row_hor_ver, row_location_id, row_description) = self.get_named_location_data(named_location_name)
                     geolocations = self.database.get_geolocations(named_location_name)
-                    log.debug(f'found {len(geolocations)} geolocations for {named_location_name}')
                     for geolocation in geolocations:
-                        log.debug(f'found geolocation {geolocation.location_id} for {named_location_name}')
                         # offset location
                         offset_name = geolocation.offset_name
                         offset_geometry: Geometry = self.database.get_geometry(offset_name)
@@ -76,17 +75,17 @@ class SensorPositionsFile:
                         row_reference_location_elevation: float = round(offset_geometry.elevation, 2)
                         # reference location
                         for reference_geolocation in self.database.get_geolocations(offset_name):
-                            log.debug(f'found reference_geolocation for {offset_name}')
-                            reference_position = get_position(reference_geolocation)
+                            reference_position = get_position(reference_geolocation,
+                                                              geolocation.x_offset,
+                                                              geolocation.y_offset)
                             x_azimuth = reference_position.x_azimuth
                             y_azimuth = reference_position.y_azimuth
                             east_offset = reference_position.east_offset
                             north_offset = reference_position.north_offset
-                            log.debug(f'reference x_azimuth: {x_azimuth}, y_azimuth: {y_azimuth}, east_offset: {east_offset}, north_offset: {north_offset}')
-                            row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth else ''
-                            row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth else ''
-                            row_east_offset: float = round(east_offset, 2) if east_offset else ''
-                            row_north_offset: float = round(north_offset, 2) if north_offset else ''
+                            row_x_azimuth: float = round(x_azimuth, 2) if x_azimuth is not None else ''
+                            row_y_azimuth: float = round(y_azimuth, 2) if y_azimuth is not None else ''
+                            row_east_offset: float = round(east_offset, 2) if east_offset is not None else ''
+                            row_north_offset: float = round(north_offset, 2) if north_offset is not None else ''
                             row_reference_location_start_date = format_date(reference_geolocation.start_date)
                             row_reference_location_end_date = format_date(reference_geolocation.end_date)
                             # create row
@@ -112,8 +111,9 @@ class SensorPositionsFile:
                                    row_north_offset,
                                    row_x_azimuth,
                                    row_y_azimuth]
-                            # write row
-                            writer.writerow(row)
+                            if row not in file_rows:  # prevent duplicates
+                                file_rows.append(row)
+            writer.writerows(file_rows)
         return file_path
 
     def get_named_location_data(self, named_location_name: str) -> Tuple[str, str, str]:
