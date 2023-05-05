@@ -15,108 +15,21 @@
                     "type": "FeatureCollection",
                     "features": [
                         {
-                            "type": "Feature",
-                            "geometry": null,
-                            "properties": {
-                                "start_date": "2010-01-01T00:00:00Z",
-                                "end_date": null,
-                                "alpha": 0.0,
-                                "beta": 0.0,
-                                "gamma": 0.0,
-                                "x_offset": -0.03,
-                                "y_offset": 1.71,
-                                "z_offset": 4.94,
-                                "reference_location": {
-                                    "type": "Feature",
-                                    "geometry": null,
-                                    "properties": {
-                                        "name": "TOWER100002",
-                                        "locations": {
-                                            "type": "FeatureCollection",
-                                            "features": [
-                                                {
-                                                    "type": "Feature",
-                                                    "geometry": {
-                                                        "type": "Point",
-                                                        "coordinates": [
-                                                            -103.02929,
-                                                            40.461927,
-                                                            1364.63056
-                                                        ]
-                                                    },
-                                                    "properties": {
-                                                        "start_date": "2010-01-01T00:00:00Z",
-                                                        "end_date": null,
-                                                        "alpha": 0.0,
-                                                        "beta": 0.0,
-                                                        "gamma": 0.0,
-                                                        "x_offset": 0.0,
-                                                        "y_offset": 0.0,
-                                                        "z_offset": 0.0,
-                                                        "reference_location": null,
-                                                        "location_properties": [
-                                                            [
-                                                                "UTM Zone",
-                                                                "13N"
-                                                            ],
-                                                            [
-                                                                "Country",
-                                                                "USA"
-                                                            ],
-                                                            [
-                                                                "County",
-                                                                "Logan"
-                                                            ],
-                                                            [
-                                                                "Geodetic datum",
-                                                                "WGS84"
-                                                            ],
-                                                            [
-                                                                "State province",
-                                                                "CO"
-                                                            ],
-                                                            [
-                                                                "y Azimuth Angle",
-                                                                180.0
-                                                            ],
-                                                            [
-                                                                "x Azimuth Angle",
-                                                                270.0
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                },
-                                "location_properties": [
-                                    [
-                                        "County",
-                                        "Logan"
-                                    ],
-                                    [
-                                        "Geodetic datum",
-                                        "WGS84"
-                                    ],
-                                    [
-                                        "State province",
-                                        "CO"
-                                    ],
-                                    [
-                                        "UTM Zone",
-                                        "13N"
-                                    ],
-                                    [
-                                        "Country",
-                                        "USA"
-                                    ],
-                                    [
-                                        "Elevation uncertainty",
-                                        0.02
-                                    ]
-                                ]
+                          "type": "Feature",
+                          "geometry": null,
+                          "properties": {
+                            "start_date": "2010-01-01T00:00:00Z",
+                            "end_date": null,
+                            "z_offset": 0,
+                            "reference_location": {
+                              "type": "Feature",
+                              "geometry": null,
+                              "properties": {
+                                "name": "SOILPL100441",
+                                "locations": null
+                              }
                             }
+                          }
                         }
                     ]
                 }
