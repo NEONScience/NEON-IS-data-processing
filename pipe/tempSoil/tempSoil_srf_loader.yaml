@@ -1,37 +1,32 @@
----
 pipeline:
-  name: data_source_prt_linkmerge
+  name: tempSoil_srf_loader
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/parquet_linkmerge:16
   cmd:
-  - bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m parquet_linkmerge.parquet_linkmerge_main
+    - /bin/bash
   env:
-    OUT_PATH: /pfs/out
+    GROUP_PREFIX: temp-soil
     LOG_LEVEL: DEBUG
-    SOURCE_TYPE_INDEX: '3'
-    YEAR_INDEX: '4'
-    MONTH_INDEX: '5'
-    DAY_INDEX: '6'
-    SOURCE_ID_INDEX: '7'
+    OUT_PATH: /pfs/out
+  image: quay.io/battelleecology/neon-srf-loader:45
+  image_pull_secrets:
+    - battelleecology-quay-read-all-pull-secret
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
+  stdin:
+    - '#!/bin/bash'
+    - python3 -m srf_loader.srf_loader_main
 input:
   pfs:
-    name: IN_PATH
-    repo: data_source_prt_site
-    glob: /prt/*/*/*
-    lazy: false
+    branch: master
+    empty_files: true
+    glob: /*
+    repo: prt_cron_daily_and_date_control_tick
 output_branch: master
-parallelism_spec:
-  constant: 5
 resource_requests:
-  memory: 200M
-  cpu: 0.3
+  cpu: 1
+  memory: 300M
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -53,10 +48,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
+      "value":"500M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "0.3"
     }
   ]
