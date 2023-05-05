@@ -9,6 +9,7 @@ from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
 
 import pub_files.output_files.eml.stmml.stmml_1_2 as stmml
+from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.eml.date_formats import DateFormats
@@ -18,7 +19,6 @@ from pub_files.output_files.eml.eml_measurement_scale import MeasurementScale
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 from pub_files.output_files.eml.neon_units import NeonUnits
 from pub_files.output_files.filename_format import format_timestamp
-from pub_files.publication_workbook import PublicationWorkbook
 
 log = structlog.get_logger()
 
@@ -154,12 +154,12 @@ class EmlFile:
             data_table.case_sensitive = eml.DataTableTypeCaseSensitive.YES
             data_table.number_of_records = str(file.line_count)
             attribute_list = eml.AttributeList()
-            for row in self.publication_workbook.get_workbook():
-                package_type = self.publication_workbook.get_download_package(row)
+            for row in self.publication_workbook.workbook_rows:
+                package_type = row.download_package
                 if package_type != self.package_type:
                     continue
-                field_name = self.publication_workbook.get_field_name(row)
-                description = self.publication_workbook.get_description(row)
+                field_name = row.field_name
+                description = row.description
                 attribute = eml.Attribute()
                 attribute.attribute_name = field_name
                 attribute.attribute_definition = description

@@ -3,11 +3,11 @@ from typing import Optional, List
 import eml.eml_2_2_0 as eml
 import structlog
 
+from pub_files.database.publication_workbook import PublicationWorkbook, WorkbookRow
 from pub_files.database.units import EmlUnitType
 from pub_files.database.value_list import Value
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.eml.eml_database import EmlDatabase
-from pub_files.publication_workbook import PublicationWorkbook
 
 log = structlog.get_logger()
 
@@ -19,18 +19,18 @@ class MeasurementScale:
         self.metadata = metadata
         self.database = database
 
-    def get_scale(self, row: dict) -> Optional[eml.AttributeTypeMeasurementScale]:
+    def get_scale(self, row: WorkbookRow) -> Optional[eml.AttributeTypeMeasurementScale]:
         measurement_scale = eml.AttributeTypeMeasurementScale()
-        workbook_scale = self.workbook.get_measurement_scale(row).lower()
+        workbook_scale = row.measurement_scale.lower()
         if workbook_scale == 'nominal':
             collect_date = self.metadata.data_files.min_time
-            if self.workbook.get_os_lov(row) != 'NA':
+            if row.lov_code != 'NA':
                 if collect_date is None:
                     return
                 else:
                     non_numeric_domain_type = eml.NonNumericDomainType()
                     enumerated_domain = eml.NonNumericDomainTypeEnumeratedDomain()
-                    value_list_name = self.workbook.get_os_lov(row)
+                    value_list_name = row.lov_code
                     values: List[Value] = self.database.get_value_list(value_list_name)
                     for value in values:
                         end_date = value.end_date
@@ -46,7 +46,7 @@ class MeasurementScale:
         elif workbook_scale == 'textdomain':
             non_numeric_domain_type = eml.NonNumericDomainType()
             text_domain = eml.NonNumericDomainTypeTextDomain()
-            text_domain.definition = self.workbook.get_table_description(row)
+            text_domain.definition = row.table_description
             non_numeric_domain_type.text_domain.append(text_domain)
             nominal = eml.AttributeTypeMeasurementScaleNominal()
             nominal.non_numeric_domain = non_numeric_domain_type
@@ -75,7 +75,7 @@ class MeasurementScale:
             measurement_scale.ratio = ratio
         elif workbook_scale == 'datetime':
             date_time = eml.AttributeTypeMeasurementScaleDateTime()
-            date_time.format_string = self.workbook.get_publication_format(row)
+            date_time.format_string = row.publication_format
             measurement_scale.date_time = date_time
         else:
             return None
@@ -83,18 +83,18 @@ class MeasurementScale:
 
     def _get_numeric_domain_type(self, row) -> eml.NumericDomainType:
         numeric_domain_type = eml.NumericDomainType()
-        data_type_code = self.workbook.get_data_type(row)
+        data_type_code = row.data_type_code
         if data_type_code.lower() == 'integer':
             numeric_domain_type.number_type = eml.NumberType.INTEGER
         else:
             numeric_domain_type.number_type = eml.NumberType.REAL
         return numeric_domain_type
 
-    def _set_bounds(self, row, numeric_domain_type: eml.NumericDomainType) -> None:
+    def _set_bounds(self, row: WorkbookRow, numeric_domain_type: eml.NumericDomainType) -> None:
         has_max = False
         has_min = False
         bounds = eml.BoundsGroupBounds()
-        term_name = self.workbook.get_field_name(row)
+        term_name = row.field_name
         if term_name is not None:
             for threshold in self.database.get_thresholds(term_name):
                 if threshold.location_name == self.metadata.path_elements.site \
@@ -115,7 +115,7 @@ class MeasurementScale:
             numeric_domain_type.bounds.append(bounds)
 
     def _get_unit_type(self, row) -> Optional[eml.UnitType]:
-        workbook_unit = self.workbook.get_unit(row)
+        workbook_unit = row.unit_name
         eml_unit_type: EmlUnitType = self.database.get_unit_eml_type(workbook_unit)
         unit_type = eml.UnitType()
         if eml_unit_type is None:
@@ -127,8 +127,8 @@ class MeasurementScale:
             unit_type.custom_unit = workbook_unit
         return unit_type
 
-    def _get_precision(self, row) -> Optional[float]:
-        publication_format = self.workbook.get_publication_format(row)
+    def _get_precision(self, row: WorkbookRow) -> Optional[float]:
+        publication_format = row.publication_format
         if '*.#' in publication_format and 'round' in publication_format:
             hash_count = publication_format.count('#')
             precision = float(1) / (10 ** hash_count)

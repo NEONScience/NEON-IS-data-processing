@@ -2,6 +2,7 @@ from typing import Tuple
 
 
 class Geometry:
+
     def __init__(self, *, geometry, srid):
         self.geometry_text = geometry
         self.srid = srid

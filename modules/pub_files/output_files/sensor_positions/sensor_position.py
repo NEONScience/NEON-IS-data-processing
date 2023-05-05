@@ -28,15 +28,21 @@ def get_position(g: GeoLocation, x_offset, y_offset) -> SensorPosition:
             x_azimuth = Decimal(0)
         if y_azimuth is None:
             y_azimuth = Decimal(0)
-    (east_offset, north_offset) = get_cardinal_offsets(x_azimuth, y_azimuth, x_offset, y_offset)
-    if north_offset == -0:
-        north_offset = abs(north_offset)
-    if east_offset == -0:
-        east_offset = abs(east_offset)
-    return SensorPosition(north_offset=north_offset,
-                          east_offset=east_offset,
-                          x_azimuth=x_azimuth,
-                          y_azimuth=y_azimuth)
+        (east_offset, north_offset) = get_cardinal_offsets(x_azimuth, y_azimuth, x_offset, y_offset)
+        if north_offset == -0:
+            north_offset = abs(north_offset)
+        if east_offset == -0:
+            east_offset = abs(east_offset)
+        # return calculated values
+        return SensorPosition(north_offset=north_offset,
+                              east_offset=east_offset,
+                              x_azimuth=x_azimuth,
+                              y_azimuth=y_azimuth)
+    # return defaults
+    return SensorPosition(north_offset=y_offset,
+                          east_offset=x_offset,
+                          x_azimuth=0,
+                          y_azimuth=0)
 
 
 def get_cardinal_offsets(x_azimuth, y_azimuth, x_offset, y_offset) -> Tuple[Decimal, Decimal]:
