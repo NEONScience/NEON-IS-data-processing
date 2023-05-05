@@ -1,28 +1,34 @@
 ---
 pipeline:
-  name: calibration_to_pachyderm
+  name: cval_to_pachyderm_loader
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-cval-loader:1.1
+  image: quay.io/battelleecology/neon-cval-loader:3.2
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m calval_loader.calval_loader
+  - python3 -m calval_loader.load_all_calval_files
   env:
     CVAL_INGEST_BUCKET: neon-cval
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
     name: IN_PATH
     repo: calibration_cron_daily
     glob: /*
     empty_files: true
-enable_stats: false
-standby: true
+parallelism_spec:
+  constant: 10
 resource_requests:
-  memory: 15M
-  cpu: 0.03
+  memory: 700M
+  cpu: 1.2
+autoscaling: true
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -44,7 +50,7 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"1G"
+      "value":"3G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
