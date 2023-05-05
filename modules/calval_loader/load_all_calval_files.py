@@ -13,82 +13,61 @@ import json
 import shutil
 import glob
 import sys
-import cProfile
-import pstats
-from put_calibration_to_pachyderm import put_calibration_to_pachyderm
-from get_avro_schema_name import get_avro_schema_name
-from get_calibration_stream_name import get_calibration_stream_name
-from google.cloud.storage import Client
+from calval_loader.get_avro_schema_name import get_avro_schema_name
+from calval_loader.get_calibration_stream_name import get_calibration_stream_name
+
+from google.cloud import storage
+import google.auth
 from typing import NamedTuple, List
 from typing import Dict
+from data_access.db_config_reader import read_from_mount
+from data_access.db_connector import DbConnector
 import datetime
-
-
-class File(NamedTuple):
-    source_url: str
-    destination_path: Path
-
-
-def get_db_url() -> str:
-    env = environs.Env()
-    return env('DATABASE_URL')
+import urllib.request
 
 
 def load() -> None:
     env = environs.Env()
-    ingest_bucket_name = env.str['CVAL_INGEST_BUCKET']
+    ingest_bucket_name = env.str('CVAL_INGEST_BUCKET')
     in_path: Path = env.path('IN_PATH')
+    db_config = read_from_mount(Path('/var/db_secret'))
+    storage_client = storage.Client()
+    ingest_bucket = storage_client.bucket(ingest_bucket_name)
+    print("Bucet name is : ", ingest_bucket)
+    output_directory: Path = env.path('OUT_PATH')
+    with closing(DbConnector(db_config)) as connector:
+        now = datetime.datetime.now()
+        try:
+            pathname, extension = os.path.splitext(in_path)
+            filename = pathname.split('/')
+            filename = filename[-1] + ".xml"
+            #print("FileName is: ", filename)
 
-    credentials = json.loads(os.environ['GCP_PACHY_WRITER_JSONKEY'])
-    gcp_client = Client.from_service_account_info(credentials)
-
-    ingest_bucket = gcp_client.bucket(ingest_bucket_name)
-   # path_names = gcp_client.list_blobs(ingest_bucket_name)
-    print(f'Number of files in the bucke are ', path_names.__sizeof__())
-   # repository_files: Dict[str, List[File]] = {}
-
-            with pachyderm_client.commit("calibration_li191r", "master") as commit:
-            with closing(psycopg2.connect(get_db_url())) as connection:
-                print(f'connection is: {connection}')
-                for key in path_names:
-                    if key.name.endswith('.xml'):
-                        print(f'key.name, {key.name}')
-                        print('Key Found!')
-                        filename = key.name
-                        temp_file_path = f'/tmp/{filename}'
-                        print('file path: ', temp_file_path)
-                        try:
-                            blob = ingest_bucket.get_blob(key.name)
-                            blob.download_to_filename(temp_file_path)
-                            tree = ET.parse(temp_file_path)
-                            root = tree.getroot()
-                            asset_id = root.find('SensorID').find('MxAssetID').text
-                            print('asset_id is:', asset_id)
-                            avro_schema_name = get_avro_schema_name(connection, asset_id)
-                            print('avro_schema_name: ', avro_schema_name)
-                            stream_id = root.find('StreamCalVal').find('StreamID').text
-                            stream_name = get_calibration_stream_name(connection, avro_schema_name, stream_id)
-                            print('Stream name is: ', stream_name)
-                            python_pachyderm.put_files(pachyderm_client, temp_file_path, commit,
-                                                       f'/{avro_schema_name}/{asset_id}/{stream_name}/{filename}')
-                            print(f'copying source file from ingest bucket to longterm bucket {filename}')
-                            ingest_bucket.copy_blob(blob, longterm_bucket, f'{filename}')
-                            # delete in old destination
-                            blob.delete()
-                            print('deleting source file from ingest bucket.')
-                            os.remove(temp_file_path)
-                        except Exception as e:
-                            print(f'Error is: {e.response["Error"]}')
-                            if e.response['Error']['Code'] == '404':
-                                log.error(f'File {filename} not found in object store.')
-                            else:
-                                log.error(f'Error from S3: {e.response["Error"]}')
-                                continue
-        pachyderm_client.finish_commit(("calibration_li191r", "master"))
-
-    print(f'Calibration upload to pachyderm is finished')
+            blob = ingest_bucket.get_blob(filename)
+            with blob.open("r") as f:
+                root = ET.fromstring(blob.download_as_string())
+                asset_id = root.find('SensorID').find('MxAssetID').text
+                avro_schema_name = get_avro_schema_name(connector.get_connection(), asset_id)
+                if (avro_schema_name != None):
+                    stream_id = root.find('StreamCalVal').find('StreamID').text
+                    stream_name = get_calibration_stream_name(connector.get_connection(), avro_schema_name, stream_id)
+                    print('repo name , asset_id, stream_name, filename are :', avro_schema_name, "  ", asset_id, "  ",
+                          stream_name, " ", filename)
+                    try:
+                        #file_url = f'https://storage.cloud.google.com/{ingest_bucket_name}/{filename}'
+                        output_path = Path(output_directory, avro_schema_name, asset_id, stream_name, filename)
+                        output_path.parent.mkdir(parents=True, exist_ok=True)
+                        #print('Output Path is:', output_path)
+                        with open(output_path, "wb") as output_file:
+                            output_file.write(blob.download_as_string())
+                    except Exception:
+                        exc_type, exc_obj, exc_tb = sys.exc_info()
+                        print("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
+        except Exception:
+            exception_type, exception_obj, exception_tb = sys.exc_info()
+            print("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
+    
 
 
 if __name__ == '__main__':
     load()
-
