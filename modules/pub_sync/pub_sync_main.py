@@ -56,6 +56,8 @@ import environs
 import structlog
 from contextlib import closing
 import os
+import datetime
+from dateutil.relativedelta import relativedelta
 import common.log_config as log_config
 from common.get_path_key import get_path_key
 from data_access.db_config_reader import read_from_mount
@@ -99,7 +101,13 @@ def main() -> None:
     for path in date_path_start.rglob('*'):
         if len(path.parts)-1 == date_path_max_index:
           date_key = get_path_key(path,date_path_indices) #YYYMM
-          pub_dates[date_key] = [date_key + '01T00:00:00Z', date_key + '01T00:00:01Z'] # Start date and cutoff date for monthly pub
+          year=int(date_key[0:4])
+          month=int(date_key[4:6])
+          data_interval_start = datetime.date(year, month, 1)
+          next_month = data_interval_start + relativedelta(days=+32)
+          data_interval_end = datetime.date(next_month.year, next_month.month, 1)
+          cutoff_date = data_interval_end.strftime('%Y%m')
+          pub_dates[date_key] = [date_key + '01T00:00:00Z', cutoff_date + '01T00:00:00Z'] # Start date and cutoff date for monthly pub
       
     log.info(f'Publication months to be evaluated: {",".join(pub_dates.keys())}')
     

@@ -26,7 +26,6 @@ def remove_pub(connector: DbConnector, pub_records: dict, change_by:str):
     timestamp = datetime.datetime.utcnow()
     hasData = 'N'
     status='NODATA'
-    release_status='U' # updated
 
     dp_pub_sql = f'''
         INSERT INTO {schema}.dp_pub
@@ -56,15 +55,15 @@ def remove_pub(connector: DbConnector, pub_records: dict, change_by:str):
             # Go through each set of pub records to check/adjust accessiblity
             # Each pub key is a product-site-month-package. Contents are a list of associated DpPub records
             # Delete any pub records with release_status != ‘T' (tagged). This will likely be any status = 'U' (updated) or 'P’ (provisional).
-            # If there are any release_status = 'T' records present (existing release), write a new pub record with release_status = ‘U' and status = 'NODATA’
+            # Write a new pub record with release_status = 'U' if there are release-tagged records or 'P' if there are no release-tagger records and status = 'NODATA’
             for pub_key in pub_records.keys():
 
-                existing_release = False
+                release_status = 'P' # provisional
                 # Remove any non-tagged pub records
                 for pub_record in pub_records[pub_key]:
                     
                     if pub_record.releaseStatus == 'T':
-                        existing_release = True
+                        release_status = 'U' # updated
                         log.debug(f'Retaining release-tagged pub record: {pub_record}')
                     else:
                         # Delete the pub record
@@ -72,24 +71,22 @@ def remove_pub(connector: DbConnector, pub_records: dict, change_by:str):
                         cursor.execute(delete_dp_pub_sql, [pub_record.id])
                         
                     
-                # Create 'updated' pub record with status=NODATA
-                if existing_release:
-                    # Take the common pub fields from the last pub record for this key
-                    pub_record_new = (pub_record.dataProductId, 
-                                      pub_record.site, 
-                                      pub_record.packageType, 
-                                      pub_record.dataIntervalStart, 
-                                      pub_record.dataIntervalEnd,
-                                      hasData,
-                                      status,
-                                      timestamp, 
-                                      timestamp,
-                                      release_status,
-                                      change_by)
-                    log.debug(f'Creating new pub record: {pub_record_new}')
-                    dp_pub_id = cursor.execute(dp_pub_sql, pub_record_new)
-                    log.info(f'Created pub record ID: {dp_pub_id}')
-            
+                # Create 'updated' or 'provisional' record, as appropriate, with status=NODATA
+                # Take the common pub fields from the last pub record for this key
+                pub_record_new = (pub_record.dataProductId, 
+                                  pub_record.site, 
+                                  pub_record.packageType, 
+                                  pub_record.dataIntervalStart, 
+                                  pub_record.dataIntervalEnd,
+                                  hasData,
+                                  status,
+                                  timestamp, 
+                                  timestamp,
+                                  release_status,
+                                  change_by)
+                log.debug(f'Creating new pub record: {pub_record_new}')
+                dp_pub_id = cursor.execute(dp_pub_sql, pub_record_new)
+
             connection.commit()
 
         except Exception as exc:
