@@ -30,6 +30,7 @@ def get_sae_science_review(connector: DbConnector) -> List[FileVariables]:
 
 
 def get_variables(connector: DbConnector, file_name: str) -> List[FileVariables]:
+    """Returns the defined variables for a publication file."""
     file_variables: List[FileVariables] = []
     connection = connector.get_connection()
     schema = connector.get_schema()
@@ -56,6 +57,8 @@ def get_variables(connector: DbConnector, file_name: str) -> List[FileVariables]
 	        {schema}.term t
         on
 	        pff.term_name = t.term_name
+	    order by
+	        pf.table_name
     '''
     with closing(connection.cursor(cursor_factory=DictCursor)) as cursor:
         cursor.execute(sql, [file_name])

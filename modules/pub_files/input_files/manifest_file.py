@@ -18,6 +18,13 @@ class ManifestFile:
     has_data = 'True'
 
     def __init__(self, manifest_file_path: Path, package_type: str, output_path: Path) -> None:
+        """
+        Constructor.
+
+        :param manifest_file_path: The manifest file.
+        :param package_type: The download package type for the manifest.
+        :param output_path: The root output path for the writing the manifest.
+        """
         self.manifest_file_path = manifest_file_path
         self.package_type = package_type
         self.output_path = output_path
@@ -63,10 +70,10 @@ class ManifestFile:
             for row in self.manifest:
                 writer.writerow(row)
 
-    def _add_row(self, file: str, has_data: str, visibility: str, size: str, checksum: str):
+    def _add_row(self, filename: str, has_data: str, visibility: str, size: str, checksum: str):
         """Add a new row to the manifest."""
         row = {
-            self.column_names[0]: file,
+            self.column_names[0]: filename,
             self.column_names[1]: has_data,
             self.column_names[2]: visibility,
             self.column_names[3]: size,
@@ -97,7 +104,7 @@ class ManifestFile:
 
     @staticmethod
     def _get_md5_hash(path: Path) -> str:
-        """Get the md5 hash of a file."""
+        """Create the md5 hash of a file."""
         with open(path) as f:
             data = f.read()
             return hashlib.md5(data.encode('utf-8')).hexdigest()

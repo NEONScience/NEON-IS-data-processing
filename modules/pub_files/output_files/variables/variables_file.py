@@ -10,6 +10,15 @@ from pub_files.output_files.variables.variables_file_database import VariablesDa
 
 def write_file(out_path: Path, elements: PathElements, workbook: PublicationWorkbook, database: VariablesDatabase,
                timestamp: datetime) -> Path:
+    """
+    Generate and write the variables file into the output path.
+
+    :param out_path: The output path for writing the file.
+    :param elements: The path elements used for generating the filename.
+    :param workbook: The publication workbook for the data product being published.
+    :param database: The functions for reading needed data from the database.
+    :param timestamp: The timestamp to include in the filename.
+    """
     column_names = ['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat']
     filename = get_filename(elements, timestamp=timestamp, file_type='variables', extension='csv')
     path = Path(out_path, filename)
@@ -32,6 +41,12 @@ def write_file(out_path: Path, elements: PathElements, workbook: PublicationWork
 
 
 def add_sensor_positions_variables(writer, database: VariablesDatabase) -> None:
+    """
+    Read the defined file variables from the database and add them to the file.
+
+    :param writer: The file writer.
+    :param database: The functions for reading from the database.
+    """
     for file_variable in database.get_sensor_positions():
         table_name = file_variable.table_name
         description = file_variable.description

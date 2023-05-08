@@ -9,6 +9,7 @@ from pub_files.output_files.eml.eml_database import EmlDatabase
 
 
 class EmlCoverage:
+    """Class to represent the EML geographic coverage section in the publication EML file."""
 
     def __init__(self, geometry: Geometry, metadata: FileMetadata, database: EmlDatabase):
         self.geometry = geometry
@@ -16,6 +17,7 @@ class EmlCoverage:
         self.database = database
 
     def get_coverage(self) -> GeographicCoverage:
+        """Returns the populated geographic coverage object."""
         domain = self.metadata.path_elements.domain
         site = self.metadata.path_elements.site
         geographic_coverage = GeographicCoverage()
@@ -25,6 +27,7 @@ class EmlCoverage:
         return geographic_coverage
 
     def get_bounding_coordinates(self):
+        """Returns the populated geographic bounding coordinates object."""
         bounding_coordinates = GeographicCoverageBoundingCoordinates()
         bounding_coordinates.east_bounding_coordinate = round(self.geometry.longitude, 6)
         bounding_coordinates.west_bounding_coordinate = round(self.geometry.longitude, 6)
@@ -34,6 +37,7 @@ class EmlCoverage:
         return bounding_coordinates
 
     def get_bounding_altitudes(self):
+        """Returns the populated geographic bounding altitudes object."""
         bounding_altitudes = GeographicCoverageBoundingCoordinatesBoundingAltitudes()
         bounding_altitudes.altitude_minimum = round(self.geometry.elevation, 6)
         bounding_altitudes.altitude_maximum = round(self.geometry.elevation, 6)
@@ -41,6 +45,7 @@ class EmlCoverage:
         return bounding_altitudes
 
     def get_unit(self, srid: int) -> Optional[LengthUnitType]:
+        """Returns the unit name for the given spatial reference identifier."""
         unit_name = self.database.get_spatial_unit(srid)
         if unit_name.lower() == 'metre' or unit_name.lower() == 'meter':
             return LengthUnitType.METER

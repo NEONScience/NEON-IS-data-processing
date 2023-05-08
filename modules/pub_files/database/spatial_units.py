@@ -4,6 +4,7 @@ from data_access.db_connector import DbConnector
 
 
 def get_spatial_unit(connector: DbConnector, srid: int) -> str:
+    """Get the spatial unit name for a particular spatial reference identifier."""
     schema = connector.get_schema()
     connection = connector.get_connection()
     sql = f'''

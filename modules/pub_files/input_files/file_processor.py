@@ -12,8 +12,8 @@ from pub_files.input_files.manifest_file import ManifestFile
 from pub_files.input_files.path_parser import parse_path, PathParts
 
 
-# TODO: merge with file_metadata and rename package_metadata
 class PublicationPackage(NamedTuple):
+    """Contains the publication workbook and the metadata for each package type from reading the input file list."""
     workbook: PublicationWorkbook
     package_metadata: Dict[str, FileMetadata]
 
@@ -22,6 +22,14 @@ def process_files(in_path: Path,
                   out_path: Path,
                   in_path_parse_index: int,
                   database: FileProcessorDatabase) -> PublicationPackage:
+    """
+    Loop over the input files and extract the needed metadata to product the publication metadata files.
+
+    :param in_path: The input file path.
+    :param out_path: The output path for writing files.
+    :param in_path_parse_index: The path element index to begin parsing the needed elements from the input path.
+    :param database: The database object for retrieving needed data.
+    """
     package_metadata: Dict[str, FileMetadata] = {}
     (package_data_files, manifest_path) = sort_files(in_path)
     workbook = None
@@ -74,16 +82,19 @@ def process_files(in_path: Path,
 
 
 def get_data_product_id(parts: FilenameParts) -> str:
+    """Return the data product ID in the form stored in the database."""
     return f'NEON.DOM.SITE.{parts.level}.{parts.data_product_number}.{parts.revision}'
 
 
 def link_file(package_output_path: Path, path: Path) -> None:
+    """Link a file into the output path for the package type."""
     link_path = Path(package_output_path, path.name)
     if not link_path.exists():
         link_path.symlink_to(path)
 
 
 def sort_files(in_path: Path) -> Tuple[Dict[str, List[Path]], Path]:
+    """Sort the input files by download package type."""
     package_data_files: Dict[str, List[Path]] = {}
     manifest_path = None
     for path in in_path.rglob('*.csv'):
@@ -100,6 +111,7 @@ def sort_files(in_path: Path) -> Tuple[Dict[str, List[Path]], Path]:
 
 
 def get_file_time_span(path: Path) -> Tuple[str, str]:
+    """Return the start and end time for a data file's data."""
     data_frame = pandas.read_csv(path)
     min_start = data_frame.loc[0][0]  # First row, first element is the earliest start date.
     max_end = data_frame.iloc[-1].tolist()[1]  # Last row, second element is the latest end date.

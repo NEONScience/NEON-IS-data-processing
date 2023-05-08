@@ -1,4 +1,5 @@
 class DataProduct:
+    """Class to consolidate data product data."""
 
     def __init__(self,
                  data_product_id: str,
@@ -33,10 +34,12 @@ class DataProduct:
         self.remarks = remarks
 
     def _remove_id_prefix(self):
+        """Remove the generic prefix from the data product identifier."""
         id_copy = self.data_product_id
         return id_copy.replace('NEON.DOM.SITE.', '')
 
     def _get_supplier_full_name(self) -> str:
+        """Return the supplier acronym definition."""
         if self.supplier == 'TIS':
             return 'Terrestrial Instrument System'
         if self.supplier == 'TOS':

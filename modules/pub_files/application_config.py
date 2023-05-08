@@ -4,6 +4,7 @@ import environs
 
 
 class ApplicationConfig:
+    """Class to read the configuration from the environment."""
 
     def __init__(self):
         env = environs.Env()

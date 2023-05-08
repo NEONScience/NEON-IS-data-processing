@@ -6,6 +6,7 @@ from pub_files.database.data_product_type_names import get_type_name
 
 
 def get_data_product(connector: DbConnector, data_product_id: str) -> DataProduct:
+    """Returns the data product matching the given identifier."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'''

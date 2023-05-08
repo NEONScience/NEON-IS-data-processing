@@ -5,7 +5,7 @@ from data_access.db_connector import DbConnector
 
 
 class EmlUnitType:
-
+    """Class to represent the options for an EML unit type."""
     standard = 'standard'
     custom = 'custom'
 
@@ -20,6 +20,7 @@ class EmlUnitType:
 
 
 def get_unit_eml_type(connector: DbConnector, unit_name: str) -> Optional[EmlUnitType]:
+    """Returns the EML unit type for the given unit name."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'select eml_attr from {schema}.unit where unit_name = %s'

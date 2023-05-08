@@ -2,6 +2,7 @@ from typing import NamedTuple
 
 
 class FilenameParts(NamedTuple):
+    """The required data from the filename."""
     domain: str
     site: str
     level: str
@@ -16,6 +17,7 @@ class FilenameParts(NamedTuple):
 
 
 def parse_filename(filename: str) -> FilenameParts:
+    """Parses the filename of a data file to extract the needed elements."""
     parts = filename.split('.')
     domain = parts[1]
     site = parts[2]

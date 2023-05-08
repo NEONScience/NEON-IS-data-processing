@@ -7,6 +7,7 @@ from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 class ExternalFiles:
 
     def __init__(self, config: ApplicationConfig):
+        """Class to read and store the external files read from Github."""
         github_config = GithubConfig(certificate_path=config.certificate_path,
                                      app_id=config.app_id,
                                      installation_id=config.installation_id,

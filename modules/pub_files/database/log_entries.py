@@ -6,6 +6,7 @@ from data_access.db_connector import DbConnector
 
 
 class LogEntry(NamedTuple):
+    """Class to consolidate the log entry data."""
     change_log_id: int
     data_product_id: str
     issue_date: datetime
@@ -18,6 +19,7 @@ class LogEntry(NamedTuple):
 
 
 def get_log_entries(connector: DbConnector, data_product_id: str) -> List[LogEntry]:
+    """Get the change log entries for the given data product identifier."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'''

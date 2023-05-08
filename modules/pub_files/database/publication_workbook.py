@@ -7,10 +7,12 @@ from data_access.db_connector import DbConnector
 
 
 def get_file_key(table_name: str, download_package: str) -> str:
+    """Create a key to associate a particular data file with its workbook description."""
     return f'{table_name}.{download_package}'
 
 
 class WorkbookRow(NamedTuple):
+    """Class to represent a single row in a workbook."""
     table_name: str
     field_name: str
     description: str
@@ -30,10 +32,15 @@ class PublicationWorkbook:
         self.file_descriptions = file_descriptions
 
     def get_file_description(self, table_name: str, download_package: str) -> str:
+        """
+        Returns a description for a file containing data for a particular workbook table name
+        and download package type.
+        """
         return self.file_descriptions[get_file_key(table_name, download_package)]
 
 
 def get_workbook(connector: DbConnector, data_product_id: str) -> PublicationWorkbook:
+    """Read a publication workbook from the database for the given data product identifier."""
     workbook_rows: List[WorkbookRow] = []
     file_descriptions: Dict[str, str] = {}
     schema = connector.get_schema()
@@ -57,7 +64,7 @@ def get_workbook(connector: DbConnector, data_product_id: str) -> PublicationWor
         and 
             ptd.dp_idq = %s
         order by
-            pfd.rank
+            table_name
     '''
     with closing(connection.cursor(cursor_factory=DictCursor)) as cursor:
         cursor.execute(sql, [data_product_id])

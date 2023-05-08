@@ -11,6 +11,7 @@ log = structlog.get_logger()
 
 
 class SensorPosition(NamedTuple):
+    """The calculated sensor position."""
     north_offset: Optional[Decimal]
     east_offset: Optional[Decimal]
     x_azimuth: Optional[float]
@@ -18,6 +19,13 @@ class SensorPosition(NamedTuple):
 
 
 def get_position(g: GeoLocation, x_offset, y_offset) -> SensorPosition:
+    """
+    Return the sensor position.
+
+    :param g: The reference geolocation data.
+    :param x_offset: The x offset of the sensor from the reference location.
+    :param y_offset: The y offset of the sensor from the reference location.
+    """
     x_azimuth = get_property(g.properties, 'x Azimuth Angle')
     y_azimuth = get_property(g.properties, 'y Azimuth Angle')
     azimuth_is_zero = False
@@ -46,6 +54,14 @@ def get_position(g: GeoLocation, x_offset, y_offset) -> SensorPosition:
 
 
 def get_cardinal_offsets(x_azimuth, y_azimuth, x_offset, y_offset) -> Tuple[Decimal, Decimal]:
+    """
+    Return the cardinal offset.
+
+    :param x_azimuth: The geolocation x azimuth.
+    :param y_azimuth: The geolocation y azimuth.
+    :param x_offset: The sensor x offset from the reference location.
+    :param y_offset: The sensor y offset from the reference location.
+    """
     diff = Decimal(0)
     delta = Decimal(0)
     corrected_y_azimuth = Decimal(y_azimuth)
@@ -83,6 +99,7 @@ def get_cardinal_offsets(x_azimuth, y_azimuth, x_offset, y_offset) -> Tuple[Deci
 
 
 def get_property(properties: List[Property], property_name: str) -> Optional[float]:
+    """Get a property by name from the property list."""
     for prop in properties:
         if prop.name == property_name:
             return float(prop.value)
@@ -90,6 +107,7 @@ def get_property(properties: List[Property], property_name: str) -> Optional[flo
 
 
 def round_up_two_places(value):
+    """Round up with two signification digits after the decimal."""
     return Decimal(value).quantize(Decimal('1e-2'), rounding=ROUND_UP)
 
 

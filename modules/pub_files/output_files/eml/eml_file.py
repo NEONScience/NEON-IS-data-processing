@@ -24,10 +24,21 @@ log = structlog.get_logger()
 
 
 class EmlFile:
+    """Class to generate a publication metadata Ecological Metadata Language (EML) file."""
 
     def __init__(self, out_path: Path, file_metadata: FileMetadata, eml_files: ExternalEmlFiles,
                  publication_workbook: PublicationWorkbook, package_type: str, timestamp: datetime,
                  database: EmlDatabase) -> None:
+        """
+        Constructor.
+
+        :param out_path: The root output path for writing the file.
+        :param file_metadata: The metadata from reading the input files to this application.
+        :param eml_files: The EML templates read from Github.
+        :param publication_workbook: The publication workbook for the data product being processed.
+        :param timestamp: The timestamp to include in the EML filename.
+        :param database: The object containing the functions to read the needed data from the database.
+        """
         self.out_path = out_path
         self.metadata: FileMetadata = file_metadata
         self.eml_files: ExternalEmlFiles = eml_files
@@ -39,6 +50,7 @@ class EmlFile:
         self.eml = self.xml_parser.from_string(eml_files.get_boilerplate(), eml.Eml)
 
     def write(self) -> Path:
+        """Write the EML file."""
         self._add_content()
         content = self._render_content()
         filename = self._get_filename()
@@ -47,11 +59,13 @@ class EmlFile:
         return path
 
     def _render_content(self) -> str:
+        """Render the EML file objects into an XML string."""
         config = SerializerConfig(pretty_print=True)
         serializer = XmlSerializer(config=config)
         return serializer.render(self.eml)
 
     def _add_content(self) -> None:
+        """Populate the needed EML data objects to create the file content."""
         self._set_dataset_id(self.metadata.path_elements.data_product_id)
         self._set_dataset_title()
         creator_without_id = self._set_creator()
@@ -70,11 +84,13 @@ class EmlFile:
         self._set_additional_metadata()
 
     def _set_dataset_id(self, product_id: str) -> None:
+        """Add the dataset identifier to the EML dataset."""
         dataset = self.eml.dataset
         dataset.id.append(product_id)
         dataset.short_name = f'NEON {self.metadata.path_elements.site} {self.metadata.data_product.name}'
 
     def _set_dataset_title(self) -> None:
+        """Add the title to the EML dataset."""
         site = self.metadata.path_elements.site
         domain = self.metadata.path_elements.domain
         data_product_name = self.metadata.data_product.name
@@ -85,6 +101,7 @@ class EmlFile:
         self.eml.dataset.title.append(non_empty_string_type)
 
     def _set_creator(self) -> eml.ResponsibleParty:
+        """Add the creator to the EML dataset."""
         contact_eml_file = self.eml_files.get_contact()
         creator = self.xml_parser.from_string(contact_eml_file, eml.ResponsibleParty)
         self.eml.dataset.creator.clear()
@@ -100,11 +117,13 @@ class EmlFile:
         return creator_without_id
 
     def _set_intellectual_rights(self):
+        """Add the intellectual rights to the EML dataset."""
         intellectual_rights_file = self.eml_files.get_intellectual_rights()
         text_type = self.xml_parser.from_string(intellectual_rights_file, eml.TextType)
         self.eml.dataset.intellectual_rights = text_type
 
     def _set_coverage(self) -> None:
+        """Add the geographic coverage to the EML dataset."""
         coverage = eml.Coverage()
         site_name = self.metadata.path_elements.site
         site_geometry: Geometry = self.database.get_geometry(site_name)
@@ -114,11 +133,13 @@ class EmlFile:
         self.eml.dataset.coverage = coverage
 
     def _set_citation(self, creator_without_id) -> None:
+        """Add the EML creator as the EML citation to the dataset."""
         citation = self.eml.dataset.project.study_area_description.citation[0]
         citation.creator = creator_without_id
         citation.report.publisher = creator_without_id
 
     def _set_dataset_id_title_dates(self) -> None:
+        """Add the title to the dataset."""
         formats = DateFormats(self.metadata)
         start_date = formats.start_date
         end_date = formats.end_date
@@ -134,6 +155,7 @@ class EmlFile:
         self._set_temporal_coverage(start_date_dashed, end_date_dashed)
 
     def _set_temporal_coverage(self, start_date_dashed, end_date_dashed) -> None:
+        """Add the EML temporal coverage to the dataset."""
         begin_date = eml.SingleDateTimeType()
         end_date = eml.SingleDateTimeType()
         begin_date.calendar_date = start_date_dashed
@@ -146,6 +168,7 @@ class EmlFile:
         self.eml.dataset.coverage.temporal_coverage.append(temporal_coverage)
 
     def _set_data_tables(self) -> None:
+        """Add the data tables to the EML dataset."""
         measurement_scale = MeasurementScale(self.publication_workbook, self.metadata, self.database)
         for file in self.metadata.data_files.files:
             data_table = eml.DataTableType()
@@ -169,6 +192,7 @@ class EmlFile:
             self.eml.dataset.data_table.append(data_table)
 
     def _set_additional_metadata(self):
+        """Add the additional metadata section to the EML document."""
         # get general NEON units metadata.
         unit_types_file = self.eml_files.get_unit_types()
         unit_types_metadata = self.xml_parser.from_string(unit_types_file, eml.EmlAdditionalMetadataMetadata)
@@ -185,6 +209,7 @@ class EmlFile:
             self.eml.additional_metadata = unit_types_additional_metadata
 
     def _get_custom_units(self) -> Optional[eml.EmlAdditionalMetadataMetadata]:
+        """Add the NEON custom units as EML additional metadata."""
         neon_units = NeonUnits(self.eml_files.get_units())
         unit_list = stmml.UnitList()
         unit_names = []
@@ -217,6 +242,7 @@ class EmlFile:
         return None
 
     def _get_filename(self) -> str:
+        """Return the EML filename."""
         elements = self.metadata.path_elements
         product_id = self.metadata.data_product.short_data_product_id
         domain = self.metadata.path_elements.domain
