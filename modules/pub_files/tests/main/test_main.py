@@ -27,7 +27,7 @@ def add_secrets(db_secrets_path) -> None:
     schema.write_text(os.environ[environment_keys.schema])
 
 
-# @unittest.skip('Integration test skipped.')
+@unittest.skip('Integration test skipped.')
 class MainTest(unittest.TestCase):
 
     def setUp(self) -> None:
