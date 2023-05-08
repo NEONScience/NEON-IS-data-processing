@@ -2,20 +2,20 @@
 pipeline:
   name: parQuantumLine_level1_pub_upload
 transform:
-  image: quay.io/battelleecology/pub_uploader:3
+  image: quay.io/battelleecology/pub_uploader:4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - export LOG_LEVEL=DEBUG
   - python3 -m pub_uploader.pub_uploader_main
   env:
     LOG_LEVEL: DEBUG
     OUT_PATH: "/pfs/out"
     VERSION: 'pipeline_test'
+    CHANGE_BY: pachyderm
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input: 
   pfs: 
