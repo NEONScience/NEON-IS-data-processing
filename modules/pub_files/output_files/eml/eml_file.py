@@ -187,7 +187,8 @@ class EmlFile:
                 attribute.attribute_name = field_name
                 attribute.attribute_definition = description
                 attribute.measurement_scale = measurement_scale.get_scale(row)
-                attribute_list.attribute.append(attribute)
+                if attribute not in attribute_list.attribute:
+                    attribute_list.attribute.append(attribute)
             data_table.attribute_list = attribute_list
             self.eml.dataset.data_table.append(data_table)
 
