@@ -26,7 +26,7 @@ input:
       repo: prt_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
-  constant: 1
+  constant: 8
 resource_requests:
   memory: 300M
   cpu: 1.2
