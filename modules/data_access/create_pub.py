@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 from data_access.db_connector import DbConnector
 
 
-def create_pub(connector: DbConnector, pub: DataFrame, version: str):
+def create_pub(connector: DbConnector, pub: DataFrame, version: str, change_by: str):
     connection = connector.get_connection()
     schema = connector.get_schema()
     domain_index = 1
@@ -28,9 +28,10 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
             status, 
             create_date, 
             update_date, 
-            release_status)
+            release_status,
+            change_by)
         VALUES 
-            (nextval('dp_pub_id_seq1'), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (nextval('dp_pub_id_seq1'), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING dp_pub_id
     '''
 
@@ -121,7 +122,7 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
                 # insert dp_pub and return ID
                 cursor.execute(dp_pub_sql, (dp_idq, site, package_type, data_interval_start, data_interval_end,
                                             has_data_by_package[package_type], status, create_date, update_date,
-                                            release_status))
+                                            release_status, change_by))
                 dp_pub_id = cursor.fetchone()[0]
 
                 # insert dp_pub_objects
