@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileThsh=$FILE_THRESHOLDS
-  - TermCtxt1=temp|aspirated-single
+  - TermCtxt1=temp|air
   - DirSubCopy=location|data|uncertainty_data|flags
   image: quay.io/battelleecology/neon-is-thsh-slct-r:v1.0.2
   image_pull_secrets:

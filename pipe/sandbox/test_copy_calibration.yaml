@@ -1,33 +1,24 @@
 ---
 pipeline:
-  name: pressureAir_threshold
+  name: test_copy_calibration
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/threshold_loader:104
-  cmd:
-  - /bin/bash
+  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
+  cmd: ["/bin/bash"]
   stdin:
-  - '#!/bin/bash'
-  - python3 -m threshold_loader.threshold_loader_main
-  env:
-    OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
-    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
-    TERM: barometricPressure
-    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
-    CTXT: air
-  secrets:
-  - name: db-pdr-secret
-    mount_path: /var/db_secret
+  - "#!/bin/bash"
+  - "# Recopy all calibration files for a source type into its calibration repo"
+  - "pachctl start commit test_calibration@master"
+  - "pachctl delete file -r test_calibration@master:/"
+  - "pachctl copy file cval_to_pachyderm_loader@master:/li191r test_calibration@master:/li191r"
+  - "pachctl finish commit test_calibration@master"
 input:
   pfs:
-    repo: ptb330a_cron_daily_and_date_control_tick
+    repo: li191r_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 resource_requests:
-  memory: 120M
-  cpu: 0.05
+  memory: 64M
+  cpu: 0.5
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -50,10 +41,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
+      "value":"100M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.05"
+      "value": "0.1"
     }
   ]

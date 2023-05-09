@@ -19,7 +19,7 @@ transform:
     DirOut=/usr/src/app/pfs/interimData
     DirErr=/pfs/out/errored_datums
     FileThsh=$FILE_THRESHOLDS
-    "TermCtxt1=barometricPressure|barometric-pressure"
+    "TermCtxt1=barometricPressure|air"
     "DirSubCopy=location|data"
   - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
   - cp -rL /usr/src/app/pfs/interimData /usr/src/app/pfs/interimDataCopy 
