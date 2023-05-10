@@ -24,6 +24,7 @@ from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 import datetime
 import urllib.request
+import python_pachyderm
 
 
 def load() -> None:
@@ -34,14 +35,15 @@ def load() -> None:
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
     print("Bucet name is : ", ingest_bucket)
-    output_directory: Path = env.path('OUT_PATH')
+      pachyderm_client = python_pachyderm.Client
+    print("Pachyderm client is: ", pachyderm_client)
     with closing(DbConnector(db_config)) as connector:
         now = datetime.datetime.now()
         try:
             pathname, extension = os.path.splitext(in_path)
             filename = pathname.split('/')
             filename = filename[-1] + ".xml"
-            #print("FileName is: ", filename)
+            # print("FileName is: ", filename)
 
             blob = ingest_bucket.get_blob(filename)
             with blob.open("r") as f:
@@ -54,10 +56,10 @@ def load() -> None:
                     print('repo name , asset_id, stream_name, filename are :', avro_schema_name, "  ", asset_id, "  ",
                           stream_name, " ", filename)
                     try:
-                        #file_url = f'https://storage.cloud.google.com/{ingest_bucket_name}/{filename}'
+                        # file_url = f'https://storage.cloud.google.com/{ingest_bucket_name}/{filename}'
                         output_path = Path(output_directory, avro_schema_name, asset_id, stream_name, filename)
                         output_path.parent.mkdir(parents=True, exist_ok=True)
-                        #print('Output Path is:', output_path)
+                        # print('Output Path is:', output_path)
                         with open(output_path, "wb") as output_file:
                             output_file.write(blob.download_as_string())
                     except Exception:
@@ -66,7 +68,6 @@ def load() -> None:
         except Exception:
             exception_type, exception_obj, exception_tb = sys.exc_info()
             print("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
-    
 
 
 if __name__ == '__main__':

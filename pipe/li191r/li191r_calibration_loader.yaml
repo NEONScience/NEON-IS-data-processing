@@ -1,0 +1,55 @@
+---
+pipeline:
+  name: li191r_calibration_loader
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-cval-loader:3.6
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m calval_loader.sensortype_caval_loader
+  env:
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    SOURCE_TYPE: li191r
+
+input:
+  pfs:
+    name: IN_PATH
+    repo: cval_to_pachyderm_loader
+    glob: /li191r/*
+    empty_files: true
+resource_requests:
+  memory: 100M
+  cpu: 0.05
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"400M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.4"
+    }
+  ]
