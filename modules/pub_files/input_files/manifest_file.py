@@ -15,7 +15,7 @@ class ManifestFile:
     """Class representing the manifest file."""
 
     filename = 'manifest.csv'
-    has_data = 'True'
+    has_data = 'False'
 
     def __init__(self, manifest_file_path: Path, package_type: str, output_path: Path) -> None:
         """
