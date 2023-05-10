@@ -1,38 +1,36 @@
 ---
 pipeline:
-  name: tempSoil_qaqc_plausibility
+  name: tempSoil_group_assignment
 transform:
   cmd:
   - Rscript
-  - ./flow.qaqc.plau.R
+  - ./flow.loc.grp.asgn.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
-  - FileSchmQf=$SCHEMA_FLAGS
-  - TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v1.0.6
+  - FileYear=$FILE_YEAR
+  - TypeFile=group
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
-    PARALLELIZATION_INTERNAL: '4' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: tempSoil_padded_timeseries_analyzer
-      glob: /*/*/*
+      repo: tempSoil_group_loader
+      glob: /temp-soil/*
   - pfs:
-      name: SCHEMA_FLAGS
-      repo: avro_schemas_tempSoil
-      glob: /tempSoil/flags_plausibility_tempSoil.avsc
+      name: FILE_YEAR
+      repo: prt_cron_daily_and_date_control
+      glob: /data_years.txt
 parallelism_spec:
-  constant: 4
+  constant: 8
 resource_requests:
-  memory: 1G
-  cpu: 4
+  memory: 300M
+  cpu: 1.2
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -54,10 +52,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
+      "value":"100M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "1"
+      "value": "0.1"
     }
   ]

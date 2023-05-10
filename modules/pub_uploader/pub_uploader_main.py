@@ -17,13 +17,14 @@ log = structlog.get_logger()
 def main() -> None:
     env = environs.Env()
     version = os.environ['VERSION']
+    change_by = env.str('CHANGE_BY')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
     manifest_path = os.path.join(os.environ['DATA_PATH'], 'manifest.csv')
     manifest = pd.read_csv(manifest_path)
     db_config = read_from_mount(Path('/var/db_secret'))
     with closing(DbConnector(db_config)) as connector:
-        create_pub(connector, manifest, version)
+        create_pub(connector, manifest, version, change_by)
 
 
 if __name__ == "__main__":

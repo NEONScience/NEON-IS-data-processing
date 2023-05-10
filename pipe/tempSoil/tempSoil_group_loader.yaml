@@ -1,24 +1,31 @@
----
 pipeline:
-  name: data_source_prt_list_years
+  name: tempSoil_group_loader
 transform:
-  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd:
-  - /bin/bash
+    - /bin/bash
+  env:
+    GROUP_PREFIX: temp-soil
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+  image: quay.io/battelleecology/group_loader:555
+  image_pull_secrets:
+    - battelleecology-quay-read-all-pull-secret
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
   stdin:
-  - '#!/bin/bash'
-  - ls $REPO_IN > /pfs/out/data_years.txt
+    - '#!/bin/bash'
+    - python3 -m group_loader.group_loader_main
 input:
   pfs:
-    name: REPO_IN
-    repo: data_source_prt_linkmerge
-    glob: /prt
+    branch: master
     empty_files: true
+    glob: /*
+    repo: prt_cron_daily_and_date_control_tick
 resource_requests:
-  memory: 1K
-  cpu: 0.01
+  cpu: 1.5
+  memory: 300M
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -40,10 +47,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
+      "value":"500M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "0.3"
     }
   ]

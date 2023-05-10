@@ -3,12 +3,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-from pub_files.tests.file_processor_data.file_processor_database import get_data_product
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import common.date_formatter
 from data_access.types.threshold import Threshold
 from pub_files.database.named_locations import NamedLocation
+from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.database.units import EmlUnitType
 from pub_files.database.value_list import Value
 from pub_files.geometry import Geometry
@@ -18,15 +18,16 @@ from pub_files.main import get_timestamp
 from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.output_files.eml.eml_file import EmlFile
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
-from pub_files.publication_workbook import PublicationWorkbook
+from pub_files.tests.input_file_processor_data.file_processor_database import FileProcessorDatabaseMock
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 
 
 class EmlTest(TestCase):
 
     def setUp(self) -> None:
-        self.workbook = PublicationWorkbook(get_workbook())
+        self.workbook: PublicationWorkbook = get_workbook('')
         self.setUpPyfakefs()
+        self.mock_database = FileProcessorDatabaseMock(self.fs)
         self.timestamp = get_timestamp()
         self.test_files_path = Path(os.path.dirname(__file__))
         self.domain = 'D10'
@@ -157,7 +158,7 @@ class EmlTest(TestCase):
                                 year=self.year,
                                 month=self.month,
                                 data_product_id=self.data_product_id)
-        data_product = get_data_product(self.fs, _data_product_id='unused')
+        data_product = self.mock_database.get_data_product(_data_product_id='unused')
         file_metadata = FileMetadata()
         file_metadata.path_elements = elements
         file_metadata.data_files = self.get_data_files()

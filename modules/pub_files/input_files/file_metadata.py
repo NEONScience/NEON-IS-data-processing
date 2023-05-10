@@ -7,18 +7,21 @@ from pub_files.input_files.manifest_file import ManifestFile
 
 
 class DataFile(NamedTuple):
+    """Data file descriptions needed for readme file."""
     filename: str
     description: str
     line_count: int
 
 
 class DataFiles(NamedTuple):
+    """Data file metadata for readme file."""
     files: List[DataFile]
     min_time: datetime
     max_time: datetime
 
 
 class PathElements(NamedTuple):
+    """Path components needed for writing metadata files."""
     domain: str
     site: str
     year: str
@@ -27,6 +30,7 @@ class PathElements(NamedTuple):
 
 
 class FileMetadata:
+    """Consolidates above classes in a single class."""
     path_elements: PathElements
     data_files: DataFiles
     data_product: DataProduct

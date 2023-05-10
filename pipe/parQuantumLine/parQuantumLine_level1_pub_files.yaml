@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/pub_files:0.0.56
+  image: quay.io/battelleecology/pub_files:0.0.59
   cmd:
     - /bin/bash
   stdin:
@@ -22,8 +22,6 @@ transform:
     GITHUB_REPO_OWNER: NEONScience
     GITHUB_README_REPO: neon-metadata-docs
     GITHUB_README_PATH: readme/template.j2
-    GITHUB_PUBLICATION_WORKBOOK_REPO: NEON-IS-definitional-data
-    GITHUB_PUBLICATION_WORKBOOK_PATH: publicationWBs/PublicationWorkbook_Photosynthetically%20active%20radiation%20(quantum%20line).txt
     GITHUB_EML_REPO: neon-metadata-docs
     GITHUB_EML_BOILERPLATE_PATH: eml/neon_components/NEON_EML_Boilerplate.xml
     GITHUB_EML_CONTACT_PATH: eml/neon_components/neon_contact.xml

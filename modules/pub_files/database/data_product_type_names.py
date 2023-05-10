@@ -4,6 +4,7 @@ from data_access.db_connector import DbConnector
 
 
 def get_type_name(connector: DbConnector, data_product_id: str) -> str:
+    """Returns the type name of a data product."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'''

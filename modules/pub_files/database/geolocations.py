@@ -8,6 +8,7 @@ from data_access.types.property import Property
 
 
 class GeoLocation(NamedTuple):
+    """Class to consolidate geolocation data."""
     location_id: int
     geometry: str
     start_date: datetime
@@ -25,6 +26,7 @@ class GeoLocation(NamedTuple):
 
 
 def get_geolocations(connector: DbConnector, named_location: str) -> List[GeoLocation]:
+    """Get the geolocation history for a named location."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'''
@@ -90,7 +92,7 @@ def get_geolocations(connector: DbConnector, named_location: str) -> List[GeoLoc
 
 
 def get_description(connector: DbConnector, named_location_id: str) -> Tuple[str, str]:
-    """Get a named location name and description using the named location ID."""
+    """Get a named location name and description for the named location matching the given identifier."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'select nam_locn_name, nam_locn_desc from {schema}.nam_locn where nam_locn_id = %s'
