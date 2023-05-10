@@ -28,7 +28,7 @@ transform:
     GITHUB_EML_INTELLECTUAL_RIGHTS_PATH: eml/neon_components/neon_intellectualRights.xml
     GITHUB_EML_UNIT_TYPES_PATH: eml/neon_components/neon_unitTypes.xml
     GITHUB_EML_UNITS_PATH: eml/neon_components/NEON_units.txt
-    GITHUB_BRANCH: NSE-9201
+    GITHUB_BRANCH: main
   secrets:
     - name: db-pdr-secret
       mount_path: /var/db_secret
