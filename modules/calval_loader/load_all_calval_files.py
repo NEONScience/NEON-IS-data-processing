@@ -1,30 +1,17 @@
 #!/usr/bin/env python3
 import os
 import logging
-import io
 from contextlib import closing
 from pathlib import Path
-
-import python_pachyderm
 import environs
-import psycopg2
 import xml.etree.ElementTree as ET
-import json
-import shutil
-import glob
 import sys
 from calval_loader.get_avro_schema_name import get_avro_schema_name
 from calval_loader.get_calibration_stream_name import get_calibration_stream_name
-
 from google.cloud import storage
-import google.auth
-from typing import NamedTuple, List
-from typing import Dict
 from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 import datetime
-import urllib.request
-import python_pachyderm
 
 
 def load() -> None:
