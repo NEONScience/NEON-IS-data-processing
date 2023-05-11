@@ -2,27 +2,32 @@
 pipeline:
   name: parQuantumLine_level1_pub_egress
 transform:
-  image: quay.io/battelleecology/pub_egress:v1.0.6
+  image: quay.io/battelleecology/pub_egress:v2.0.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - "python3 -m pub_egress.pub_egress.app"
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     OUT_PATH: "/pfs/out"
     EGRESS_URL: https://storage.googleapis.com/neon-int-publication/egress-test
+    STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
 input: 
-  join:
-  - pfs: 
-      name: DATA_PATH
-      repo: parQuantumLine_level1_pub_package
-      # Glob must be at each intended pub datum (i.e. each site/year/month)
-      glob: /*/(*/*)
-      joinOn: $1
-  - pfs: 
-      repo: parQuantumLine_cron_monthly_and_pub_control
-      glob: /(*/*)
-      joinOn: $1
+  # Group allows processing an entire year-month in one datum. Remove the group spec to process each year-month-site as a datum
+  group:
+  - join:
+    - pfs: 
+        name: DATA_PATH
+        repo: parQuantumLine_level1_pub_files
+        # Glob must be at each intended pub datum (i.e. each site/year/month)
+        glob: /*/(*/*)
+        joinOn: $1
+        group_by: $1
+    - pfs: 
+        repo: parQuantumLine_cron_monthly_and_pub_control
+        glob: /(*/*)
+        joinOn: $1
+        group_by: $1
 egress:
   URL: gs://neon-int-publication/egress-test
 resource_requests:
