@@ -1,17 +1,9 @@
 
 from google.cloud import storage
-from typing import Dict
 from pathlib import Path
-from contextlib import closing
 import environs
 import os
-import xml.etree.ElementTree as ET
-import json
-import shutil
-import glob
 import sys
-import datetime
-import json
 from google.cloud import storage
 
 
@@ -23,7 +15,6 @@ def calval_loader() -> None:
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
     path_names = storage_client.list_blobs(ingest_bucket)
-    files_to_be_uploaded = list()
     for blob in path_names:
         
         file_name = os.path.splitext(blob.name)[0]
