@@ -4,6 +4,7 @@ from pub_files.input_files.file_metadata import FileMetadata
 
 
 class DateFormats:
+    """Class to hold the different data formatting options for the EML file."""
 
     def __init__(self, metadata: FileMetadata):
         start_time = metadata.data_files.min_time

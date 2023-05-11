@@ -15,6 +15,7 @@ from pub_files.output_files.sensor_positions.sensor_positions_database import Se
 log = structlog.get_logger()
 
 
+# The sensor positions file header fields.
 COLUMNS = ['HOR.VER',
            'sensorLocationID', 'sensorLocationDescription',
            'positionStartDateTime', 'positionEndDateTime',
@@ -27,6 +28,7 @@ COLUMNS = ['HOR.VER',
            'xAzimuth', 'yAzimuth']
 
 def format_date(date: datetime) -> str:
+    """Return the given date in a string formatted for the sensor positions file."""
     if date is not None:
         return date_formatter.to_string(date)
     else:
@@ -34,9 +36,19 @@ def format_date(date: datetime) -> str:
 
 
 class SensorPositionsFile:
+    """Class to generate a sensor positions file for the publication metadata file collection."""
 
     def __init__(self, out_path: Path, location_path: Path, elements: PathElements, timestamp: datetime,
                  database: SensorPositionsDatabase):
+        """
+        Constructor.
+
+        :param out_path: The root path for writing the file.
+        :param location_path: The path containing location files.
+        :param elements: The path elements used when generating the filename.
+        :param timestamp: The timestamp to include in the filename.
+        :param database: The functions for reading needed data from the database.
+        """
         self.out_path = out_path
         self.location_path = location_path
         self.elements = elements
@@ -44,6 +56,7 @@ class SensorPositionsFile:
         self.database = database
 
     def write(self) -> Path:
+        """Generate and write the sensor positions file to the output path."""
         filename = get_filename(self.elements, timestamp=self.timestamp, file_type='sensor_positions', extension='csv')
         file_path = Path(self.out_path, filename)
         with open(file_path, 'w', encoding='UTF8', newline='') as file:
@@ -117,6 +130,7 @@ class SensorPositionsFile:
         return file_path
 
     def get_named_location_data(self, named_location_name: str) -> Tuple[str, str, str]:
+        """Get the needed named location data from the database matching the given named location name."""
         location = self.database.get_named_location(named_location_name)
         (horizontal_index, vertical_index) = location.get_indices()
         hor_ver = f'{horizontal_index}.{vertical_index}'

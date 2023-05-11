@@ -60,8 +60,6 @@ class MainTest(unittest.TestCase):
         os.environ['GITHUB_REPO_OWNER'] = 'NEONScience'
         os.environ['GITHUB_README_REPO'] = 'neon-metadata-docs'
         os.environ['GITHUB_README_PATH'] = 'readme/template.j2'
-        os.environ['GITHUB_PUBLICATION_WORKBOOK_REPO'] = 'NEON-IS-definitional-data'
-        os.environ['GITHUB_PUBLICATION_WORKBOOK_PATH'] = 'publicationWBs/PublicationWorkbook_Soil%20temperature.txt'
         os.environ['GITHUB_EML_REPO'] = 'neon-metadata-docs'
         os.environ['GITHUB_EML_BOILERPLATE_PATH'] = 'eml/neon_components/NEON_EML_Boilerplate.xml'
         os.environ['GITHUB_EML_CONTACT_PATH'] = 'eml/neon_components/neon_contact.xml'

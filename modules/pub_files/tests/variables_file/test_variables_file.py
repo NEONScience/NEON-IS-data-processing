@@ -5,19 +5,19 @@ from typing import List
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from pub_files.database.file_variables import FileVariables
+from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.variables.variables_file import write_file
 from pub_files.output_files.variables.variables_file_database import VariablesDatabase
-from pub_files.publication_workbook import PublicationWorkbook
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 
 
 class VariablesFileTest(TestCase):
 
     def test_write_file(self):
-        self.workbook = PublicationWorkbook(get_workbook())
+        self.workbook: PublicationWorkbook = get_workbook('')
         self.setUpPyfakefs()
         self.in_path = Path('/in')
         self.fs.create_dir(self.in_path)

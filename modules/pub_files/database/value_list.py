@@ -6,6 +6,7 @@ from data_access.db_connector import DbConnector
 
 
 class Value(NamedTuple):
+    """Class to hold the data for a single value."""
     id: int
     list_code: str
     name: str
@@ -18,6 +19,7 @@ class Value(NamedTuple):
 
 
 def get_value_list(connector: DbConnector, list_name: str) -> List[Value]:
+    """Returns the value list for the given list name."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'''

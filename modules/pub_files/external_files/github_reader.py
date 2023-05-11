@@ -10,6 +10,7 @@ from pub_files.external_files.github_config import GithubConfig
 
 
 class GithubReader:
+    """Class to read files from Github."""
 
     def __init__(self, config: GithubConfig):
         self.config = config
@@ -17,7 +18,7 @@ class GithubReader:
         self.access_token = self._get_app_installation_access_token(self.jwt_token)
 
     def read_file(self, repo: str, file_path: str) -> str:
-        """Read a file as a string from a git repo and path."""
+        """Read a file as a string from the given git repo and path."""
         headers = {
             'Authorization': f'token {self.access_token}',
             'Accept': 'application/vnd.github.v3.raw+json'

@@ -4,20 +4,18 @@ from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import pub_files.input_files.file_processor as file_processor
-import pub_files.tests.input_file_processor_data.file_processor_database as file_processor_data
 import pub_files.tests.readme_file.readme_database as file_database
+from pub_files.input_files.file_metadata import FileMetadata
+from pub_files.input_files.file_processor import process_files, get_file_time_span, PublicationPackage
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import format_timestamp
 from pub_files.output_files.readme.readme_file import write_file
-from pub_files.publication_workbook import PublicationWorkbook
-from pub_files.tests.publication_workbook.publication_workbook import get_workbook
+from pub_files.tests.input_file_processor_data.file_processor_database import FileProcessorDatabaseMock
 
 
 class ReadmeFileTest(TestCase):
 
     def setUp(self):
-        self.workbook = get_workbook()
         self.setUpPyfakefs()
         self.test_files_path = Path(os.path.dirname(__file__))
         self.in_path = Path('/in/CPER/2020/01')
@@ -26,6 +24,11 @@ class ReadmeFileTest(TestCase):
         self.fs.create_dir(self.out_path)
         self.add_template_file()
         self.add_data_files()
+        self.add_workbook()
+
+    def add_workbook(self) -> None:
+        path = Path(self.test_files_path, '../publication_workbook/soil_temperature_publication_workbook.txt')
+        self.fs.add_real_file(path, target_path=path)
 
     def add_template_file(self) -> None:
         real_path = Path(self.test_files_path, 'template.j2')
@@ -46,20 +49,19 @@ class ReadmeFileTest(TestCase):
 
     def test_get_time_span(self):
         path = Path(self.in_path, 'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.basic.csv')
-        start_time, end_time = file_processor.get_time_span(path)
+        start_time, end_time = get_file_time_span(path)
         assert start_time == '2020-01-02T00:00:00Z'
         assert end_time == '2020-01-03T00:00:00Z'
 
     def test_write_file(self):
         readme_template = self.template_path.read_text()
-        file_processor_database = file_processor_data.get_database(self.fs)
-        publication_workbook = PublicationWorkbook(self.workbook)
-        file_metadata = file_processor.process_files(in_path=self.in_path,
-                                                     out_path=Path('/out'),
-                                                     in_path_parse_index=1,
-                                                     package_type='basic',
-                                                     workbook=publication_workbook,
-                                                     database=file_processor_database)
+        mock_database = FileProcessorDatabaseMock(self.fs)
+        file_processor_database = mock_database.get_database()
+        publication_package: PublicationPackage = process_files(in_path=self.in_path,
+                                                                out_path=Path('/out'),
+                                                                in_path_parse_index=1,
+                                                                database=file_processor_database)
+        file_metadata: FileMetadata = publication_package.package_metadata.get('basic')
         timestamp = get_timestamp()
         formatted_timestamp = format_timestamp(timestamp)
         variables_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.variables.csv'

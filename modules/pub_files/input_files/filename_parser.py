@@ -2,6 +2,7 @@ from typing import NamedTuple
 
 
 class FilenameParts(NamedTuple):
+    """The required data from the filename."""
     domain: str
     site: str
     level: str
@@ -12,10 +13,11 @@ class FilenameParts(NamedTuple):
     temporal_index: str
     table_name: str
     date: str
-    download_package: str
+    package_type: str
 
 
 def parse_filename(filename: str) -> FilenameParts:
+    """Parses the filename of a data file to extract the needed elements."""
     parts = filename.split('.')
     domain = parts[1]
     site = parts[2]
@@ -27,17 +29,15 @@ def parse_filename(filename: str) -> FilenameParts:
     temporal_index = parts[8]
     table_name = parts[9]
     date = parts[10]
-    download_package = parts[11]
-    return FilenameParts(
-        domain=domain,
-        site=site,
-        level=level,
-        data_product_number=data_product_number,
-        revision=revision,
-        horizontal_index=horizontal_index,
-        vertical_index=vertical_index,
-        temporal_index=temporal_index,
-        table_name=table_name,
-        date=date,
-        download_package=download_package
-    )
+    package_type = parts[11]
+    return FilenameParts(domain=domain,
+                         site=site,
+                         level=level,
+                         data_product_number=data_product_number,
+                         revision=revision,
+                         horizontal_index=horizontal_index,
+                         vertical_index=vertical_index,
+                         temporal_index=temporal_index,
+                         table_name=table_name,
+                         date=date,
+                         package_type=package_type)

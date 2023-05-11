@@ -7,6 +7,7 @@ from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 class ExternalFiles:
 
     def __init__(self, config: ApplicationConfig):
+        """Class to read and store the external files read from Github."""
         github_config = GithubConfig(certificate_path=config.certificate_path,
                                      app_id=config.app_id,
                                      installation_id=config.installation_id,
@@ -15,7 +16,6 @@ class ExternalFiles:
                                      branch=config.branch)
         reader = GithubReader(github_config)
         self.readme_template = reader.read_file(config.readme_repo, config.readme_path)
-        self.publication_workbook = reader.read_file(config.workbook_repo, config.workbook_path)
         self.eml_boilerplate = reader.read_file(config.eml_repo, config.eml_boilerplate_path)
         self.eml_contact = reader.read_file(config.eml_repo, config.eml_contact_path)
         self.eml_intellectual_rights = reader.read_file(config.eml_repo, config.eml_intellectual_rights_path)
@@ -32,9 +32,6 @@ class ExternalFiles:
 
     def get_readme(self) -> str:
         return self.readme_template
-
-    def get_workbook(self) -> str:
-        return self.publication_workbook
 
     def _get_eml_boilerplate(self) -> str:
         return self.eml_boilerplate

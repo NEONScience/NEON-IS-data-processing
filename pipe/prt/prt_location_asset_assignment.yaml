@@ -19,19 +19,18 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_asset_prt
+      repo: prt_location_asset
       glob: /prt/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_prt_list_years
+      repo: prt_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
-  constant: 6
+  constant: 8
 resource_requests:
   memory: 500M
   cpu: 1.5
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

@@ -1,34 +1,34 @@
 ---
 pipeline:
-  name: tempSoil_timeseries_padder
+  name: tempSoil_threshold
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/timeseries_padder:36
+  image: quay.io/battelleecology/threshold_loader:104
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+  - python3 -m threshold_loader.threshold_loader_main
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    PAD_DIR: data
-    RELATIVE_PATH_INDEX: '3'
-output_branch: master
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: temp
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: soil
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
-    name: DATA_PATH
-    repo: tempSoil_threshold_select
-    branch: master
-    glob: /*/*/*
-parallelism_spec:
-  constant: 4
+    repo: prt_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
 resource_requests:
-  memory: 1G
-  cpu: 0.3
+  memory: 120M
+  cpu: 0.05
 autoscaling: true
-
 
 scheduling_spec:
   node_selector:
@@ -51,10 +51,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.6"
+      "value": "0.05"
     }
   ]

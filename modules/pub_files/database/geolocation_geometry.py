@@ -5,6 +5,7 @@ from pub_files.geometry import Geometry
 
 
 def get_geometry(connector: DbConnector, named_location_name: str) -> Geometry:
+    """Get the spatial geometry for a named location's geolocation."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'''

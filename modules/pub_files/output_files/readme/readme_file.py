@@ -24,6 +24,18 @@ def write_file(readme_template: str,
                positions_filename: str,
                eml_filename: str,
                database: ReadmeDatabase) -> Path:
+    """
+    Create and write to the output path a publication metadata readme file using the given template.
+
+    :param readme_template: The readme Jinja template.
+    :param out_path: The root path for writing the file.
+    :param file_metadata: The metadata derived by processing the input files into the application.
+    :param timestamp: The timestamp to include in the readme filename.
+    :param variables_filename: The variables filename to include in the readme file.
+    :param positions_filename: The sensor positions filename to include in the readme file.
+    :param eml_filename: The EML filename to include in the readme file.
+    :param database: The object for reading needed data from the database.
+    """
     elements: PathElements = file_metadata.path_elements
     data_files: DataFiles = file_metadata.data_files
     data_product_id = elements.data_product_id

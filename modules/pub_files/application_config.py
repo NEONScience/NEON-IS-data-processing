@@ -4,6 +4,7 @@ import environs
 
 
 class ApplicationConfig:
+    """Class to read the configuration from the environment."""
 
     def __init__(self):
         env = environs.Env()
@@ -21,8 +22,6 @@ class ApplicationConfig:
         self.branch: str = env.str('GITHUB_BRANCH')
         self.readme_repo: str = env.str('GITHUB_README_REPO')
         self.readme_path: str = env.str('GITHUB_README_PATH')
-        self.workbook_repo: str = env.str('GITHUB_PUBLICATION_WORKBOOK_REPO')
-        self.workbook_path: str = env.str('GITHUB_PUBLICATION_WORKBOOK_PATH')
         self.eml_repo: str = env.str('GITHUB_EML_REPO')
         self.eml_boilerplate_path: str = env.str('GITHUB_EML_BOILERPLATE_PATH')
         self.eml_contact_path: str = env.str('GITHUB_EML_CONTACT_PATH')
