@@ -1,10 +1,10 @@
 ---
 pipeline:
-  name: cval_to_pachyderm_loader
+  name: gascylinder_calibration_loader
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-cval-loader:3.2
+  image: quay.io/battelleecology/neon-cval-loader:2.3
   cmd:
   - /bin/bash
   stdin:
@@ -14,17 +14,18 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    SOURCE_TYPE: gascylinder
   secrets:
   - name: db-pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
     name: IN_PATH
-    repo: calibration_cron_daily
+    repo: gascylinder_calibration_cron_daily
     glob: /*
     empty_files: true
 parallelism_spec:
-  constant: 10
+  constant: 5
 resource_requests:
   memory: 700M
   cpu: 1.2

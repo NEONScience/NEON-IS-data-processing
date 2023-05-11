@@ -1,22 +1,21 @@
 ---
 pipeline:
-  name: calibration_cron_daily
+  name: gascylinder_calibration_cron_daily
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-cval-loader:2.2
+  image: quay.io/battelleecology/neon-cval-loader:2.3
   cmd: ["/bin/bash"]
   env:
+    CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
   stdin:
   - "#!/bin/bash"
   - python3 -m calval_loader.calval_loader
 input:
-  cross:
-  # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
-  - cron:
-      name: tick
-      spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
-      overwrite: true
+  pfs:
+    repo: gascylinder_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
 resource_requests:
   memory: 64M
   cpu: 0.5
