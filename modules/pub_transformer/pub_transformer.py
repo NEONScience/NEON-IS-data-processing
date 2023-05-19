@@ -158,13 +158,15 @@ def format_column(dataframe: DataFrame, column: str, column_format: str):
         dataframe[column] = dataframe[column].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
 
     if fnmatch.fnmatch(column_format, "*.*(round)"):
-        py_format = '{:.' + str(column_format.count('#')) + '}'
+        py_format = '{:.' + str(column_format.count('#')) + 'f}'
         dataframe[column] = dataframe[column].map(py_format.format)
 
     if fnmatch.fnmatch(column_format, "signif_*(round)"):
-        n_digits = column_format.count('#')
-        dataframe[column] = [format_sig(element, n_digits) for element in dataframe[column]]
-
+        # n_digits = column_format.count('#')
+        # dataframe[column] = [format_sig(element, n_digits) for element in dataframe[column]]
+        py_format = '{:.' + str(column_format.count('#')) + '}'
+        dataframe[column] = dataframe[column].map(py_format.format)
+        
     if column_format == 'integer':
         dataframe[column] = dataframe[column].round().map('{:.0f}'.format)
 

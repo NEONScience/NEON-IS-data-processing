@@ -39,7 +39,7 @@ Input parameters are specified in environment variables as follows:
         evaluate in existing publication records. This should include any and all 
         products that the current processing is expected to control 
         publication visibility for. 
-            Example: NEON.DOM.SITE.20016.001,NEON.DOM.SITE.20008.001
+            Example: NEON.DOM.SITE.DP1.20016.001,NEON.DOM.SITE.DP1.20008.001
     SITES: A comma-separated list (no spaces) of site-codes to evaluate in existing 
         publication records. This should include any and all sites that the current
         processing is expected to control publication visibility for. 
