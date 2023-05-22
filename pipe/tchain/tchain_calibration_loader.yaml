@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: li7200_calibration_loader
+  name: tchain_calibration_loader
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -14,7 +14,7 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: li7200
+    SOURCE_TYPE: tchain
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: db-pdr-secret
@@ -22,14 +22,14 @@ transform:
 input:
   pfs:
     name: IN_PATH
-    repo: li7200_calibration_list_files
+    repo: tchain_calibration_list_files
     glob: /*/*/*
     empty_files: true
 parallelism_spec:
   constant: 2
 resource_requests:
-  memory: 500M
-  cpu: 1
+  memory: 300M
+  cpu: 0.5
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -52,10 +52,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2.5G"
+      "value":"1G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "1"
+      "value": "0.5"
     }
   ]
