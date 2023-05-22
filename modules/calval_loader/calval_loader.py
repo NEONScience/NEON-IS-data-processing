@@ -18,8 +18,8 @@ def calval_loader() -> None:
     for blob in path_names:
         
         file_name = os.path.splitext(blob.name)[0]
-        file_path = os.path.join(output_directory, file_name+".txt")         
-
+        file_path = Path(output_directory, blob.updated.strftime("%Y"), blob.updated.strftime("%m"), blob.updated.strftime("%d"), file_name+".txt")         
+        file_path.parent.mkdir(parents=True, exist_ok=True)
         print("File name is:  ", file_path)
         cal_file= open(file_path, "w")
         cal_file.write(blob.updated.strftime("%Y-%m-%d %H:%M:%S"))

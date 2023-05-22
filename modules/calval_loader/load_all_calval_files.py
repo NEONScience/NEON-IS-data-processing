@@ -18,6 +18,7 @@ def load() -> None:
     env = environs.Env()
     ingest_bucket_name = env.str('CVAL_INGEST_BUCKET')
     in_path: Path = env.path('IN_PATH')
+    print("IN_PATH value is:", in_path)
     output_directory: Path = env.path('OUT_PATH')
     sensor_type = env.str('SOURCE_TYPE')
     db_config = read_from_mount(Path('/var/db_secret'))
@@ -30,8 +31,11 @@ def load() -> None:
             data_path_start = Path(*in_path.parts[0:starting_path_index+1]) # starting index
             print("Starting New Datum in the load_al_calval_files pipeline ")
             for path in data_path_start.rglob('*'):
+                print("Path value is: ", path)
                 pathname, extension = os.path.splitext(path)
+                
                 filename = pathname.split('/')
+        
                 filename = filename[-1] + ".xml"
                 print("FileName is: ", filename)
                 blob = ingest_bucket.get_blob(filename)

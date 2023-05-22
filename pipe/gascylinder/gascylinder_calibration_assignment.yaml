@@ -20,7 +20,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: gascylinder_calibration
+      repo: gascylinder_calibration_loader
       glob: /gascylinder/*
   - pfs:
       name: FILE_YEAR
