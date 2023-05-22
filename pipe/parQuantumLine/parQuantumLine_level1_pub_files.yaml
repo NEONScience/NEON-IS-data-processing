@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/pub_files:0.0.60
+  image: quay.io/battelleecology/pub_files:0.0.66
   cmd:
     - /bin/bash
   stdin:
@@ -39,16 +39,18 @@ input:
     - pfs:
         name: LOCATION_PATH
         repo: parQuantumLine_level1_pub_group
+        # repo structure: year/month/day/site
         glob: /(*)/(*)/*/(*)
         group_by: $1/$2/$3
         empty_files: true
     - pfs:
         name: IN_PATH
         repo: parQuantumLine_level1_pub_package
+        # repo structure: site/year/month
         glob: /(*)/(*)/(*)
         group_by: $2/$3/$1
         empty_files: false
-autoscaling: true
+autoscaling: false
 resource_requests:
   memory: 25M
   cpu: 0.01
