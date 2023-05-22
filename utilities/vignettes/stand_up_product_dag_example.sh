@@ -54,10 +54,10 @@ pachctl put file -r $product'_avro_schemas'@master:/$product -f $git_path_avro/a
 pachctl finish commit $product'_avro_schemas'@master
 
 # Create product-specific pub_workbooks
-pachctl create repo $product'_pub_workbooks'
-pachctl start commit $product'_pub_workbooks'@master
-pachctl put file -r $product'_pub_workbooks'@master:/$product -f $data_path/pub_workbooks/$product
-pachctl finish commit $product'_pub_workbooks'@master
+# pachctl create repo $product'_pub_workbooks'
+# pachctl start commit $product'_pub_workbooks'@master
+# pachctl put file -r $product'_pub_workbooks'@master:/$product -f $data_path/pub_workbooks/$product
+# pachctl finish commit $product'_pub_workbooks'@master
 
 # Set up source type pipeline
 # Read in the pipelines (in order) for this source type and stand them up
