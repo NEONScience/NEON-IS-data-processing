@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:v1.0.5
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:v2.0.1
   cmd:
   - "/bin/bash"
   stdin:
@@ -29,7 +29,9 @@ transform:
   - export OUT_PATH=$OUT_PATH_3
   - '# Run third module - level 1 consolidate (using environment variables below as input parameters)'
   - python3 -m level1_consolidate.level1_consolidate_main
-  - '# Run fourth and final module - create pub tables and apply science review flags (if any)'
+  - '# Run fourth module - pub workbook loader (using environment variables below as input parameters)'
+  - python3 -m pub_workbook_loader.pub_workbook_loader_main
+  - '# Run fifth and final module - create pub tables and apply science review flags (if any)'
   - Rscript ./flow.pub.tabl.srf.R
       DirIn=/data/pfs/interimC
       DirOut=/pfs/out
@@ -73,7 +75,7 @@ transform:
     OUT_PATH_1: /data/interimA # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
+    LOG_LEVEL: INFO # Shared among all modules
 
 # Below are the environment variables for 2nd filter-joiner bringing in the Science review flags 
 # Can't do this in first filter-joiner bc there are only data in the srf assignment
@@ -111,48 +113,53 @@ transform:
     DATA_TYPE_INDEX: "9"
     DATA_TYPE_NAMES: location,stats,quality_metrics
 
+# Environment variables for pub_workbook_loader
+    OUT_PATH_WORKBOOK: /data/pub_workbooks
+    PRODUCTS: NEON.DOM.SITE.DP1.00098.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
+  
 # Environment variables for pub table and srf module
+    PUB_WORKBOOKS: /data/pub_workbooks
     PARALLELIZATION_INTERNAL: '1'
+
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+    
 input:
-  cross:
-  - pfs: 
-      name: PUB_WORKBOOKS
-      repo: relHumidity_pub_workbooks
-      glob: /
-  - join:
-    - pfs:
-        name: QUALITY_METRICS_PATH
-        repo: relHumidity_qm_group_and_compute
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true # Need outer join to pull in with or without SRFs
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
-    - pfs:
-        name: STATISTICS_PATH
-        repo: relHumidity_stats_group_and_compute
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true # Need outer join to pull in with or without SRFs
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
-    - pfs:
-        name: GROUP_PATH
-        repo: relHumidity_group_path
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true # Need outer join to pull in with or without SRFs
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
-    - pfs:
-        name: SRF_PATH
-        repo: relHumidity_srf_assignment
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  join:
+  - pfs:
+      name: QUALITY_METRICS_PATH
+      repo: relHumidity_qm_group_and_compute
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      outer_join: true # Need outer join to pull in with or without SRFs
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: STATISTICS_PATH
+      repo: relHumidity_stats_group_and_compute
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      outer_join: true # Need outer join to pull in with or without SRFs
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: GROUP_PATH
+      repo: relHumidity_group_path
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      outer_join: true # Need outer join to pull in with or without SRFs
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+  - pfs:
+      name: SRF_PATH
+      repo: relHumidity_srf_assignment
+      glob: /(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 output_branch: master
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 200M
-  cpu: 0.1
+  memory: 400M
+  cpu: 1.5
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -175,11 +182,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
+      "value":"2G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
+      "value": "0.2"
     }
   ]
 
