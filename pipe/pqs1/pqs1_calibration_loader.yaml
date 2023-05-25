@@ -1,10 +1,10 @@
 ---
 pipeline:
-  name: li191r_calibration_loader
+  name: pqs1_calibration_loader
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-cval-loader:2.3
+  image: quay.io/battelleecology/neon-cval-loader:2.3.2
   cmd:
   - /bin/bash
   stdin:
@@ -14,20 +14,21 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: li191r
+    SOURCE_TYPE: pqs1
+    STARTING_PATH_INDEX: "5"
   secrets:
   - name: db-pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
     name: IN_PATH
-    repo: li191r_calibration_cron_daily
-    glob: /*
+    repo: pqs1_calibration_list_files
+    glob: /*/*/*
     empty_files: true
 parallelism_spec:
-  constant: 5
+  constant: 2
 resource_requests:
-  memory: 700M
+  memory: 500M
   cpu: 1.2
 autoscaling: true
 scheduling_spec:
@@ -51,10 +52,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"3G"
+      "value":"1.5G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "1"
     }
   ]
