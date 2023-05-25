@@ -20,7 +20,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: csat3_calibration
+      repo: csat3_calibration_loader
       glob: /csat3/*
   - pfs:
       name: FILE_YEAR

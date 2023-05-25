@@ -1,33 +1,34 @@
 ---
 pipeline:
-  name: li191r_calibration_assignment
+  name: prt_calibration_loader
 transform:
-  cmd:
-  - Rscript
-  - ./flow.cal.asgn.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.6
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-cval-loader:2.3.2
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m calval_loader.load_all_calval_files
   env:
+    CVAL_INGEST_BUCKET: neon-cval
+    OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    SOURCE_TYPE: prt
+    STARTING_PATH_INDEX: "5"
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: li191r_calibration_loader
-      glob: /li191r/*
-  - pfs:
-      name: FILE_YEAR
-      repo: li191r_cron_daily_and_date_control
-      glob: /data_years.txt
+  pfs:
+    name: IN_PATH
+    repo: prt_calibration_list_files
+    glob: /*/*/*
+    empty_files: true
 parallelism_spec:
-  constant: 1
+  constant: 2
 resource_requests:
-  memory: 200M
+  memory: 500M
   cpu: 0.8
 autoscaling: true
 scheduling_spec:
@@ -51,10 +52,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"4G"
+      "value":"1G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "1.5"
+      "value": "0.5"
     }
   ]

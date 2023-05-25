@@ -18,17 +18,17 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: hmp155_calibration
+      repo: hmp155_calibration_loader
       glob: /hmp155/*
   - pfs:
       name: FILE_YEAR
       repo: hmp155_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
-  constant: 4
+  constant: 1
 resource_requests:
   memory: 200M
-  cpu: 0.8
+  cpu: 1
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -51,7 +51,7 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"2.5G"
+      "value":"3G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",

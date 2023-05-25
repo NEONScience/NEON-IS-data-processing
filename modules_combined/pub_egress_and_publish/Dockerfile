@@ -1,18 +1,16 @@
 ####
 #
-# This dockerfile will build the combined pub_grouper, pub_transform, pub_workbook_loader, and pub_files modules.
+# This dockerfile will build the combined pub_egress, pub_uploader, and pub_sync modules.
 # Example command (must be run from project root directory to include modules and modules_combined path in Docker context):
-# docker build -t neon-is-pub-grp-pack -f ./modules_combined/pub_group_and_package/Dockerfile .
+# docker build -t neon-is-pub-egrs-publ -f ./modules_combined/pub_group_and_package/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
 ARG MODULE_DIR="modules"
-ARG APP_DIR_1="pub_grouper"
-ARG APP_DIR_2="pub_transformer"
-ARG APP_DIR_2a="pub_workbook_loader"
-ARG APP_DIR_3="pub_packager"
-ARG APP_DIR_4="pub_files"
+ARG APP_DIR_1="pub_egress"
+ARG APP_DIR_2="pub_uploader"
+ARG APP_DIR_3="pub_sync"
 ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
 ARG CONTAINER_APP_DIR="/usr/src/app"
@@ -23,9 +21,7 @@ WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR_1}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_1}/requirements.txt
 COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
-COPY ${MODULE_DIR}/${APP_DIR_2a}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2a}/requirements.txt
 COPY ${MODULE_DIR}/${APP_DIR_3}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_3}/requirements.txt
-COPY ${MODULE_DIR}/${APP_DIR_4}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_4}/requirements.txt
 COPY ${MODULE_DIR}/${COMMON_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${COMMON_DIR}/requirements.txt
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}/requirements.txt
 
@@ -43,9 +39,7 @@ RUN update-ca-trust && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_1}/requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2a}/requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_3}/requirements.txt && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_4}/requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${COMMON_DIR}/requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}/requirements.txt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
@@ -57,9 +51,7 @@ RUN update-ca-trust && \
 
 COPY ${MODULE_DIR}/${APP_DIR_1} ${CONTAINER_APP_DIR}/${APP_DIR_1}
 COPY ${MODULE_DIR}/${APP_DIR_2} ${CONTAINER_APP_DIR}/${APP_DIR_2}
-COPY ${MODULE_DIR}/${APP_DIR_2a} ${CONTAINER_APP_DIR}/${APP_DIR_2a}
 COPY ${MODULE_DIR}/${APP_DIR_3} ${CONTAINER_APP_DIR}/${APP_DIR_3}
-COPY ${MODULE_DIR}/${APP_DIR_4} ${CONTAINER_APP_DIR}/${APP_DIR_4}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 COPY ${MODULE_DIR}/${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
 

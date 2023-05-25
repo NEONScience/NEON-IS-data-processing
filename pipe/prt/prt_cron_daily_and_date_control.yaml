@@ -9,8 +9,8 @@ transform:
     # START_DATE must be set, format "YYYY-MM-DD"
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2023-03-01"
-    #END_DATE: "2023-03-04"
+    START_DATE: "2023-05-01"
+    END_DATE: "2023-05-10"
     SOURCE_TYPE: "prt"
   stdin:
   - "#!/bin/bash"
@@ -22,6 +22,7 @@ input:
       name: tick
       spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
       overwrite: true
+      start: "2023-05-19T00:00:00Z"
   - pfs:
       name: SITE_FILE
       repo: prt_site_list

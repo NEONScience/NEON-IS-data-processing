@@ -50,7 +50,7 @@ input:
         glob: /(*)/(*)/(*)
         group_by: $2/$3/$1
         empty_files: false
-autoscaling: false
+autoscaling: true
 resource_requests:
   memory: 25M
   cpu: 0.01
