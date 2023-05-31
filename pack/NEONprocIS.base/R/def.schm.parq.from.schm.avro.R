@@ -96,7 +96,7 @@ def.schm.parq.from.schm.avro <- function(FileSchm=NULL,
     } else if (base::any(typeData == 'int32')) {
       typeArrw <- arrow::int32()
       
-    } else if (base::any(typeData == 'int64')) {
+    } else if (base::any(typeData == 'int64') || base::any(typeData == 'long')) {
       typeArrw <- arrow::int64()
       
     } else if (base::any(base::grepl('uint', typeData))) {
@@ -122,6 +122,7 @@ def.schm.parq.from.schm.avro <- function(FileSchm=NULL,
       
     } else {
       typeArrw <- arrow::null()
+      log$warn(base::paste0('Data type(s) [',base::paste0(typeData,collapse=','),'] not recognized for field name [',nameField,']. Setting parquet schema type to null, which will likely result in NA data.'))
     }
     
     # Place in the list
