@@ -64,9 +64,10 @@ class ReadmeFileTest(TestCase):
         file_metadata: FileMetadata = publication_package.package_metadata.get('basic')
         timestamp = get_timestamp()
         formatted_timestamp = format_timestamp(timestamp)
-        variables_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.variables.csv'
-        positions_filename = f'NEON.D10.CPER.DP1.0041.{formatted_timestamp}.sensor_positions.csv'
-        eml_filename = f'NEON.D10.CPER.DP1.0041.EML.20200102-2020-0103.{formatted_timestamp}.xml'
+        variables_filename = f'NEON.D10.CPER.DP1.00041.{formatted_timestamp}.variables.csv'
+        positions_filename = f'NEON.D10.CPER.DP1.00041.{formatted_timestamp}.sensor_positions.csv'
+        eml_filename = f'NEON.D10.CPER.DP1.00041.EML.20200102-2020-0103.{formatted_timestamp}.xml'
+        science_review_filename = f'NEON.D10.CPER.DP1.00041.{formatted_timestamp}.science_review_flags.csv'
         write_file(out_path=self.out_path,
                    file_metadata=file_metadata,
                    readme_template=readme_template,
@@ -74,6 +75,7 @@ class ReadmeFileTest(TestCase):
                    variables_filename=variables_filename,
                    positions_filename=positions_filename,
                    eml_filename=eml_filename,
+                   science_review_filename=science_review_filename,
                    database=file_database.get_database(self.fs))
         readme_files = list(Path(self.out_path).glob('*.txt'))
         csv_files = list(Path(self.out_path).glob('*.csv'))
@@ -82,3 +84,7 @@ class ReadmeFileTest(TestCase):
             print(f'output file: {file}')
         assert len(readme_files) == 1
         assert len(csv_files) == 2
+        expected_filename = f'NEON.D10.CPER.DP1.00041.001.readme.{formatted_timestamp}.txt'
+        readme_file = readme_files[0]
+        assert readme_file.name == expected_filename
+        # print(f'\n\ncontent: \n\n{readme_file.read_text()}\n\n')

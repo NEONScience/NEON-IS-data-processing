@@ -66,7 +66,7 @@ class MainTest(unittest.TestCase):
         os.environ['GITHUB_EML_INTELLECTUAL_RIGHTS_PATH'] = 'eml/neon_components/neon_intellectualRights.xml'
         os.environ['GITHUB_EML_UNIT_TYPES_PATH'] = 'eml/neon_components/neon_unitTypes.xml'
         os.environ['GITHUB_EML_UNITS_PATH'] = 'eml/neon_components/NEON_units.txt'
-        os.environ['GITHUB_BRANCH'] = 'NSE-9201'
+        os.environ['GITHUB_BRANCH'] = ''
 
     def test_main(self) -> None:
         self.set_environment()
@@ -75,7 +75,7 @@ class MainTest(unittest.TestCase):
         csv_count = len(list(self.basic_path.glob('*.csv')))
         eml_count = len(list(self.basic_path.glob('*.xml')))
         assert readme_count == 1
-        assert csv_count == 5  # includes 2 data files, variables, manifest, and sensor positions.
+        assert csv_count == 6  # includes 2 data files, variables, manifest, sensor positions, and science review.
         assert eml_count == 1
 
     def tearDown(self) -> None:

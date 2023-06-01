@@ -16,7 +16,7 @@ class FileVariables(NamedTuple):
     data_type: str
     units: str
 
-# TODO: break into separate modules for a clear path between SAE and IS and configure what is output in the pipeline spec.
+# TODO: create separate modules for SAE and IS and configure what files are output in the pipeline spec.
 def get_sensor_positions(connector: DbConnector) -> List[FileVariables]:
     return get_variables(connector, 'Sensor Positions File')
 
