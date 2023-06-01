@@ -1,7 +1,9 @@
-# Dockerfile for NEON IS Data Processing - Calibration package
+# Dockerfile for NEON IS Data Processing - Statistics package
+# Example command (run from project parent directory to include pack/ path in Docker context):
+# docker build --no-cache -t neon-is-pack-stat-r ./pack/NEONprocIS.stat
 
 # Start with the neon-is-base-r image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.1.3
+FROM quay.io/battelleecology/neon-is-base-r:v1.1.4
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
