@@ -27,6 +27,7 @@ def write_file(file_metadata: FileMetadata,
     filename = get_filename(path_elements, timestamp, 'science_review_flags', 'csv')
     file_path = Path(file_metadata.package_output_path, filename)
     with open(file_path, 'w', encoding='UTF8', newline='') as file:
+        log.debug(f'data_product_id: {data_product.data_product_id} site: {path_elements.site}')
         flags = get_flags(data_product.data_product_id, path_elements.site)
         if not flags:
             log.debug('No science review flags found, writing message to file.')
