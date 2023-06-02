@@ -25,7 +25,7 @@ transform:
     DirErr=/pfs/out/errored_datums
     FileSchmQf=$SCHEMA_FLAGS
     "TermTest1=pressure:null|gap|range|step|spike|persistence"
-    "TermTest2=temperature:null|gap|range|step|spike"
+    "TermTest2=temperature:null|gap|range|step|spike|persistence"
     "TermTest3=conductivity:null|gap|range|step|spike|persistence"
     DirSubCopy=location
   env:
