@@ -1,3 +1,8 @@
+
+def get_data_product_number(data_product_id: str) -> str:
+    """Remove 'NEON.DOM.SITE.' from a data product ID to isolate the data product number."""
+    return data_product_id.replace('NEON.DOM.SITE.', '')
+
 class DataProduct:
     """Class to consolidate data product data."""
 
@@ -17,7 +22,7 @@ class DataProduct:
                  expanded_description: str,
                  remarks: str):
         self.data_product_id = data_product_id
-        self.short_data_product_id = self._remove_id_prefix()
+        self.short_data_product_id = get_data_product_number(self.data_product_id)
         self.name = name
         self.type_name = type_name
         self.description = description
@@ -32,11 +37,6 @@ class DataProduct:
         self.basic_description = basic_description
         self.expanded_description = expanded_description
         self.remarks = remarks
-
-    def _remove_id_prefix(self):
-        """Remove the generic prefix from the data product identifier."""
-        id_copy = self.data_product_id
-        return id_copy.replace('NEON.DOM.SITE.', '')
 
     def _get_supplier_full_name(self) -> str:
         """Return the supplier acronym definition."""

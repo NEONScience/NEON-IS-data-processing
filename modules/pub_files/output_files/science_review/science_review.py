@@ -5,6 +5,7 @@ from typing import List, Optional, Callable
 
 import structlog
 
+from pub_files.data_product import get_data_product_number
 from pub_files.database.file_variables import FileVariables
 from pub_files.database.science_review_flags import ScienceReviewFlag
 from pub_files.input_files.file_metadata import FileMetadata
@@ -27,11 +28,12 @@ def write_file(file_metadata: FileMetadata,
     filename = get_filename(path_elements, timestamp, 'science_review_flags', 'csv')
     file_path = Path(file_metadata.package_output_path, filename)
     with open(file_path, 'w', encoding='UTF8', newline='') as file:
-        log.debug(f'data_product_id: {data_product.data_product_id} site: {path_elements.site}')
-        flags = get_flags(data_product.data_product_id, path_elements.site)
+        data_product_number = get_data_product_number(data_product.data_product_id)
+        log.debug(f'data_product_number: {data_product_number} site: {path_elements.site}')
+        flags = get_flags(data_product_number, path_elements.site)
         if not flags:
             log.debug('No science review flags found, writing message to file.')
-            file.write('No science review flags are present for this data product.\n')
+            file.write('No science review flags exist for this data product.\n')
         else:
             log.debug('Writing science review file header.')
             column_names = get_column_names(variables_database, package_type)
