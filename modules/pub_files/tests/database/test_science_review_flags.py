@@ -15,9 +15,6 @@ class ScienceReviewFlagTest(DatabaseBackedTest):
         self.configure_mount()
         db_config = read_from_environment()
         connector = DbConnector(db_config)
-        data_product_id = 'DP1.00023.001'
-        site = 'OAES'
         get_flags: Callable[[str, str], List[ScienceReviewFlag]] = make_get_flags(connector)
-        flags = get_flags('DP1.00066.001', 'CPER')
-        # assert len(flags) == 18
-        print(f'flags: {flags}')
+        flags = get_flags('DP1.00023.001', 'OAES')
+        assert len(flags) == 18
