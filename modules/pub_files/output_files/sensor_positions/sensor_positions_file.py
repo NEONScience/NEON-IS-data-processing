@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, List
 
 import structlog
 
@@ -15,8 +15,8 @@ from pub_files.output_files.sensor_positions.sensor_positions_database import Se
 log = structlog.get_logger()
 
 
-# The sensor positions file header fields.
-COLUMNS = ['HOR.VER',
+def get_column_names() -> List[str]:
+    return ['HOR.VER',
            'sensorLocationID', 'sensorLocationDescription',
            'positionStartDateTime', 'positionEndDateTime',
            'referenceLocationID', 'referenceLocationIDDescription',
@@ -61,11 +61,12 @@ class SensorPositionsFile:
         file_path = Path(self.out_path, filename)
         with open(file_path, 'w', encoding='UTF8', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(COLUMNS)
+            writer.writerow(get_column_names())
             file_rows = []
             # Parse location file path for the datum elements. Assume we end at site (**/site/location/*/location_file.json)
             site = self.location_path.parts[-1]
-            for path in self.location_path.parent.parent.rglob(f'*/{site}/location/*/*.json'):
+            parent = self.location_path.parent.parent
+            for path in parent.rglob(f'*/{site}/location/*/*.json'):
                 if path.is_file() and path.name.startswith('CFGLOC'):
                     named_location_name = path.stem
                     (row_hor_ver, row_location_id, row_description) = self.get_named_location_data(named_location_name)

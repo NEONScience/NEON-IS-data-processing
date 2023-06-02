@@ -16,7 +16,7 @@ from pub_files.output_files.variables.variables_file_database import VariablesDa
 log = structlog.get_logger()
 
 
-# TODO: Indicate which type of product (IS, SAE) in application_config.py
+# TODO: Indicate which type of data product (IS, SAE, etc.) is being processed in application_config.py and pass it in.
 def write_file(file_metadata: FileMetadata, package_type: str, timestamp: datetime,
                variables_database: VariablesDatabase,
                get_flags: Callable[[str, str], List[ScienceReviewFlag]],
@@ -62,7 +62,7 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
 
 
 def get_column_names(variables_database: VariablesDatabase, package_type: str) -> List[str]:
-    # TODO: Only read file header values from the database once, and pass them into the write_file() function above.
+    # TODO: Only read file variables from the database once, and pass them into the write_file() function above.
     file_variables: List[FileVariables] = variables_database.get_is_science_review()
     file_variables.sort(key=lambda file_variable: file_variable.rank)
     column_names = [x.term_name for x in file_variables if x.download_package == package_type]
