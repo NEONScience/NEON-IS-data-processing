@@ -207,7 +207,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   for (idxDirLocName in dirLocName) {
     # Gather info about the input directory (including date)
     InfoDirLocName <-
-      NEONprocIS.base::def.dir.splt.pach.time(idxDirLocName)
+      NEONprocIS.base::def.dir.splt.pach.time(idxDirLocName,log=log)
     dirLocNameOut <-
       base::paste0(Para$DirOut, InfoDirLocName$dirRepo)
     

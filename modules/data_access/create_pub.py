@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from contextlib import closing
 from pandas import DataFrame
 import datetime
@@ -7,14 +6,16 @@ from dateutil.relativedelta import relativedelta
 from data_access.db_connector import DbConnector
 
 
-def create_pub(connector: DbConnector, pub: DataFrame, version: str):
+def create_pub(connector: DbConnector, pub: DataFrame, version: str, change_by: str):
     connection = connector.get_connection()
     schema = connector.get_schema()
     domain_index = 1
     site_index = 2
     package_index = 11
     date_index = 10
+    type_index = 6
     date_delimiter = "-"
+    delimited_data_length = 14 # length of dot-delimited filename for data files. Used to find the package and data date
     timestamp = datetime.datetime.utcnow()
 
     dp_pub_sql = f'''
@@ -29,9 +30,10 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
             status, 
             create_date, 
             update_date, 
-            release_status)
+            release_status,
+            change_by)
         VALUES 
-            (nextval('dp_pub_id_seq1'), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (nextval('dp_pub_id_seq1'), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING dp_pub_id
     '''
 
@@ -55,7 +57,7 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
         from 
             {schema}.dp_pub 
         where 
-            dp_idq = %s and site = %s and data_interval_start = %s and data_interval_end = %s 
+            dp_idq = %s and site = %s and data_interval_start = %s and data_interval_end = %s and package_type = %s
     '''
 
     delete_dp_pub_sql = f'''
@@ -67,14 +69,17 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
 
     with closing(connection.cursor()) as cursor:
         try:
+            # First run through the files in the manifest to find a data file
             for index, row in pub.iterrows():
                 dp_parts = row['file'].split('.')
-                if index == 0:
-                    # parse dp_pub fields common across packages
+                # Parse package info from a data filename
+                if len(dp_parts) == delimited_data_length:
+                    # parse dp_pub fields common across the package
                     site = dp_parts[site_index]
                     dp_parts[domain_index] = 'DOM'
                     dp_parts[site_index] = 'SITE'
                     dp_idq = '.'.join(dp_parts[:6])
+                    package_type = dp_parts[package_index]
                     date = dp_parts[date_index]
                     date_parts = date.split(date_delimiter)
                     year = int(date_parts[0])
@@ -85,7 +90,7 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
                     status = 'OK'
                     create_date = timestamp
                     update_date = timestamp
-                    cursor.execute(find_dp_pub_sql, (dp_idq, site, data_interval_start, data_interval_end))
+                    cursor.execute(find_dp_pub_sql, (dp_idq, site, data_interval_start, data_interval_end, package_type))
                     release_status = 'P'
                     existing_pubs = cursor.fetchall()
                     for existing_pub in existing_pubs:
@@ -94,10 +99,26 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
                         else:
                             release_status = existing_pub[1]
                             cursor.execute(delete_dp_pub_sql, [existing_pub[0]])
-
-                package_type = dp_parts[package_index]
+                    break
+                
+            # Now run through all the files to create the pub record 
+            for index, row in pub.iterrows():
+                dp_parts = row['file'].split('.')
                 has_data = 'Y' if row['hasData'] else 'N'
-                object_type = 'DATA'
+                
+                data_type=dp_parts[type_index]
+                object_type = 'DATA' # initialize
+                if data_type == 'EML':
+                    object_type = 'METADATA'
+                elif data_type == 'readme':
+                    object_type = 'README'
+                elif data_type == 'sensor_positions':
+                    object_type = 'SENSORLOCATIONS'
+                elif data_type == 'variables':
+                    object_type = 'VARIABLES'
+                elif data_type == 'science_review_flags':
+                    object_type = 'SCIENCEREVIEWFLAGS'
+                
                 object_id = row['objectId']
                 object_size = row['size']
                 checksum = row['checksum']
@@ -109,6 +130,7 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
                                                                 or has_data == 'Y') else 'N'
                 else:
                     has_data_by_package[package_type] = has_data
+                    
                 # store dp_pub_object tuple
                 object_tuple = (object_type, object_id, object_size, checksum, tran_date, version)
                 if package_type in objects_by_package.keys():
@@ -122,7 +144,7 @@ def create_pub(connector: DbConnector, pub: DataFrame, version: str):
                 # insert dp_pub and return ID
                 cursor.execute(dp_pub_sql, (dp_idq, site, package_type, data_interval_start, data_interval_end,
                                             has_data_by_package[package_type], status, create_date, update_date,
-                                            release_status))
+                                            release_status, change_by))
                 dp_pub_id = cursor.fetchone()[0]
 
                 # insert dp_pub_objects

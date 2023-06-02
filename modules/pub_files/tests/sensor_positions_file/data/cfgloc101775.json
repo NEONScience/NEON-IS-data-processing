@@ -1,0 +1,16 @@
+[
+	{
+		"locn_id" : 314930,
+		"point" : null,
+		"locn_nam_locn_strt_date" : "2010-01-01T07:00:00.000Z",
+		"locn_nam_locn_end_date" : null,
+		"locn_alph_ortn" : 2,
+		"locn_beta_ortn" : 0,
+		"locn_gama_ortn" : 300,
+		"locn_x_off" : 0.27,
+		"locn_y_off" : 2.5,
+		"locn_z_off" : -0.65,
+		"nam_locn_id_off" : 138753,
+		"nam_locn_name" : "CFGLOC101775"
+	}
+]

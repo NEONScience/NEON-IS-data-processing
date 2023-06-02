@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:v1.0.2
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:v1.0.3
   cmd:
   - /bin/bash
   stdin:
@@ -25,7 +25,7 @@ transform:
     DirErr=/pfs/out/errored_datums
     FileSchmQf=$SCHEMA_FLAGS
     "TermTest1=presAtm:range|persistence"
-    #VarAddFileQf=errorState
+    "DirSubCopy=threshold|location"
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /usr/src/app/pfs/interimData
@@ -39,7 +39,7 @@ input:
       glob: /presTrap/*/*/*
   - pfs:
       name: SCHEMA_FLAGS
-      repo: avro_schemas_presTrap
+      repo: presTrap_avro_schemas
       glob: /presTrap/flags_plausibility_presTrap.avsc
 parallelism_spec:
   constant: 1

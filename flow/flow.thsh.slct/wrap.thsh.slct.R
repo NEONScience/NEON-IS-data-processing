@@ -23,13 +23,10 @@
 #' the 4-digit year, 2-digit month, and' 2-digit day. The id is the unique identifier of the sensor or location. \cr
 #'
 #' Nested within this path are the folders:
-#'         /threshold
-#'         /location 
+#'         /location
 #' The location folder holds at least 1 json file with location data/properties specific to the location 
 #' identifier in the directory path. If there is more than one file in this directory, only the first will 
 #' be used, since the properties of the named location (i.e. site) should be the same across files. 
-#' The threshold folder contains a json file with available thresholds from which the threshold selection 
-#' order will be used to choose from.
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
@@ -74,7 +71,7 @@
 #' # Open and parse the thresholds file (with all available thresholds)
 #' FileThsh <- "~/pfs/tempSoil_threshold_filter/thresholds.json"
 #' thshRaw <- rjson::fromJSON(file=FileThsh,simplify=TRUE),silent=FALSE)
-#' thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh=thshRaw) # This turns dates to POSIXct, which is required
+#' thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh=thshRaw$thresholds) # This turns dates to POSIXct, which is required
 #' ParaThsh <- list(list(Term='temp',Ctxt='soil')) 
 #' wrap.thsh.slct(DirIn="~/pfs/tempSoil_locations/prt/2020/01/01/CFGLOC12345",
 #'                DirOutBase="~/pfs/out",
@@ -128,7 +125,7 @@ wrap.thsh.slct <- function(DirIn,
   }
   
   # Create the base output directories 
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   dirOutThsh <- base::paste0(dirOut,'/threshold')
   base::dir.create(dirOutThsh,recursive=TRUE)

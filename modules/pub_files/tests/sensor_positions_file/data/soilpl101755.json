@@ -1,0 +1,30 @@
+[
+	{
+		"locn_id" : 730088,
+		"point" : "POLYGON Z ((-104.746013 40.815892 1654.009392,-104.745973 40.815922 1654.052064,-104.746013 40.815952 1654.033776,-104.746053 40.815922 1654.018536,-104.746013 40.815892 1654.009392))",
+		"locn_nam_locn_strt_date" : "2015-02-01T07:00:00.000Z",
+		"locn_nam_locn_end_date" : null,
+		"locn_alph_ortn" : 0,
+		"locn_beta_ortn" : 0,
+		"locn_gama_ortn" : 0,
+		"locn_x_off" : 0,
+		"locn_y_off" : 0,
+		"locn_z_off" : 0,
+		"nam_locn_id_off" : 138753,
+		"nam_locn_name" : "SOILPL101755"
+	},
+	{
+		"locn_id" : 314910,
+		"point" : null,
+		"locn_nam_locn_strt_date" : "2010-01-01T07:00:00.000Z",
+		"locn_nam_locn_end_date" : "2015-02-01T06:59:59.999Z",
+		"locn_alph_ortn" : 0,
+		"locn_beta_ortn" : 0,
+		"locn_gama_ortn" : 0,
+		"locn_x_off" : 0,
+		"locn_y_off" : 0,
+		"locn_z_off" : 0,
+		"nam_locn_id_off" : 138753,
+		"nam_locn_name" : "SOILPL101755"
+	}
+]

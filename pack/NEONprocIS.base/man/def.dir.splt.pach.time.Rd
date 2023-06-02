@@ -4,13 +4,17 @@
 \alias{def.dir.splt.pach.time}
 \title{Split Pachyderm directory into component folders and interpret date embedded in directory structure}
 \usage{
-def.dir.splt.pach.time(dir)
+def.dir.splt.pach.time(dir, log = NULL)
 }
 \arguments{
 \item{dir}{String. Directory path (often found as an environment variable named as the input repository), structured as 
 follows: #/pfs/BASE_REPO/#/yyyy/mm/dd/#, where # indicates any number (including zero) of 
 parent and child directories of any name, so long as they are not 'pfs' or recognizable as the '/yyyy/mm/dd' structure which 
 indicates the 4-digit year, 2-digit month, and 2-digit day.}
+
+\item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
+output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
+created and used within the function.}
 }
 \value{
 A named list:\cr

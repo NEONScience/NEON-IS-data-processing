@@ -1,0 +1,73 @@
+# gascylinder for both irgaGasCyl(ECTE) and gasRefe(ECSE)
+# there is no data from gascylinder
+
+#@STEP 1
+/* fake an avro_schema name and sensor type into database */
+insert into is_sensor_type (sensor_type_name, avro_schema_name) values ('gascylinder', 'gascylinder');
+
+/* Update sensor type in asset definition */
+--select * from is_asset_definition iad  where dgd_number like '0353710000';
+update is_asset_definition set sensor_type_name = 'gascylinder' where dgd_number like '0353710000';
+
+/* Schema field names */
+update is_ingest_term set schema_field_name = 'rtioMoleDryCo2Refe' where term_name = 'fdMoleCO2' and asset_definition_uuid in ('12213c4e-940a-edec-9c32-2b4502292ec6', '25ea6661-0692-4fdf-bab8-f6026c4e9566');
+update is_ingest_term set schema_field_name = 'rtioMoleDry12CCo2Refe' where term_name = 'fdMole12CO2' and asset_definition_uuid in ('12213c4e-940a-edec-9c32-2b4502292ec6', '25ea6661-0692-4fdf-bab8-f6026c4e9566');
+update is_ingest_term set schema_field_name = 'rtioMoleDry13CCo2Refe' where term_name = 'fdMole13CO2' and asset_definition_uuid in ('12213c4e-940a-edec-9c32-2b4502292ec6', '25ea6661-0692-4fdf-bab8-f6026c4e9566');
+update is_ingest_term set schema_field_name = 'dlta13CCo2Refe' where term_name = 'd13CO2' and asset_definition_uuid in ('12213c4e-940a-edec-9c32-2b4502292ec6', '25ea6661-0692-4fdf-bab8-f6026c4e9566');
+update is_ingest_term set schema_field_name = 'rtioMoleDryCh4Refe' where term_name = 'fdMoleCH4' and asset_definition_uuid in ('25ea6661-0692-4fdf-bab8-f6026c4e9566');
+
+
+#@STEP 2
+#after above metadata ingested in database, run script on omnibus-tools to load calibrations onto pachyderm server
+# Visala is the contact person: omnibus-tools/pipelines/calibration-repo-loader
+
+
+#@STEP 3
+/* NOTHING was loaded at this step, looks like gascylinder is using presValiRegIn locations */
+
+/* add context in omnibus-tools/pdr/dp-contexts.csv, specified contexts already in DB, no need to load */
+DP0.00117.001,irgaGasCyl,gascylinder,,LEVEL,turbulent
+DP0.00118.001,gasRefe,gascylinder,,LEVEL,storage
+
+/* create file omnibus-tools/pdr/data-product-files/gascylinder.yaml */
+ - id: DP0.00117.001
+   dataRateHz:
+     default: 1
+ - id: DP0.00118.001
+   dataRateHz:
+     default: 1
+
+/* load named location context */
+/* use context "turbulent"/"storage" to separate irgaGasCyl and gasRefe in ECSE
+python load_named_location_properties.py --instance neon-nonprod-pdr:us-central1:int-pdr --db i_pdr --user lzhang@battelleecology.org --schema pdr --dpfile data-product-files/gascylinder.yaml --changeby SAE-Pachyderm --no-commit
+python load_named_location_contexts.py --instance neon-nonprod-pdr:us-central1:int-pdr --db i_pdr --user lzhang@battelleecology.org --schema pdr --contextfile dp-context.csv --dpfile data-product-files/gascylinder.yaml --changeby SAE-Pachyderm --no-commit
+
+
+#@STEP 4
+/* create daily cron job, specify start date for sensor, end date could be open. A new cron job can refer to li191r */
+pc create pipeline -f gascylinder_cron_daily_and_date_control.yaml 
+pc run cron gascylinder_cron_daily_and_date_control
+pc glob file gascylinder_cron_daily_and_date_control@master:/*
+pc glob file gascylinder_cron_daily_and_date_control_tick@master:/*
+pc stop pipeline gascylinder_cron_daily_and_date_control
+
+
+#@STEP 5
+/* create calibration assignment */
+pc create pipeline -f gascylinder_calibration_assignment.yaml
+
+#@STEP 6
+/* generate location asset and its assignment */
+pc create pipeline -f gascylinder_location_asset.yaml 
+pc create pipeline -f gascylinder_location_asset_assignment.yaml
+
+#@STEP 7
+/* from source_type repo to location repo */
+pc create pipeline -f gascylinder_location_group_and_restructure.yaml
+
+#@STEP 8
+/* generate data and metadata files */
+/* transition code flow/flow_sae_trst_dp0p/gascylinder.py
+docker build --no-cache -t quay.io/battelleecology/neon-sae-trst-dp0p:v2.0 -f flow_sae_trst_dp0p/Dockerfile .
+pc create pipeline -f gascylinder_l0p_data.yaml
+

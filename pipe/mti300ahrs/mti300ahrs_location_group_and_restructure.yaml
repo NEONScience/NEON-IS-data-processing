@@ -1,0 +1,107 @@
+---
+pipeline:
+  name: mti300ahrs_location_group_and_restructure
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:v1.0.4
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -r -f /usr/src/app/pfs/interimData1
+  - rm -r -f /usr/src/app/pfs/interimData2
+  - rm -r -f /usr/src/app/pfs/interimData2Copy
+  - mkdir -p /usr/src/app/pfs/interimData1
+  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
+  - python3 -m filter_joiner.filter_joiner_main
+  - '# Run second module - structure repo by location'
+  - Rscript ./flow.loc.repo.strc.R 
+    DirIn=/usr/src/app/pfs/interimData1
+    DirOut=/usr/src/app/pfs/interimData2 
+    DirErr=/pfs/out/errored_datums 
+    Comb=TRUE
+  - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
+  - cp -rL /usr/src/app/pfs/interimData2 /usr/src/app/pfs/interimData2Copy 
+  - rm -r -f /usr/src/app/pfs/interimData1 
+  - rm -r -f /usr/src/app/pfs/interimData2 
+  - '# Run third module - merge data by location'
+  - Rscript ./flow.loc.data.trnc.comb.R 
+    DirIn=/usr/src/app/pfs/interimData2Copy 
+    DirOut=/pfs/out 
+    DirErr=/pfs/out/errored_datums 
+    "DirSubCombData=data|flags"
+    DirSubCopy=location
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH/mti300ahrs/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/mti300ahrs/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    OUT_PATH: /usr/src/app/pfs/interimData1
+    LOG_LEVEL: DEBUG
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK
+input:
+  join:
+  - pfs:
+      name: DATA_PATH
+      repo: mti300ahrs_data_source_trino
+      glob: /mti300ahrs/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      outer_join: true
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - pfs:
+      name: LOCATION_PATH
+      repo: mti300ahrs_location_asset_assignment
+      glob: /mti300ahrs/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 1
+resource_requests:
+  memory: 500M
+  cpu: 1.2
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"500M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.3"
+    }
+  ]
+

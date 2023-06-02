@@ -77,7 +77,7 @@
 #   Cove Sturtevant (2023-02-10)
 #     Initial creation
 ##############################################################################################
-wrap.pub.tabl <- function(DirIn,
+wrap.pub.tabl.srf <- function(DirIn,
                           DirOutBase,
                           DirData=c('stats','quality_metrics'),
                           FilePubWb,
@@ -96,7 +96,7 @@ wrap.pub.tabl <- function(DirIn,
   } 
   
   # Gather info about the input directory and create the output directory.
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutData <- fs::path(dirOut,'data')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,
@@ -134,6 +134,17 @@ wrap.pub.tabl <- function(DirIn,
   ver <- metaGrp$VER[1]
   site <- metaGrp$site[1]
   domn <- metaGrp$domain[1]
+  idDpGrp <- metaGrp$data_product_ID[1]
+  
+  if(base::is.na(idDpGrp)){
+    log$error(base::paste0(
+      'No data products indicated for datum ',
+      DirIn,
+      '. Cannot proceed. Check that relevant data products have been assigned to this group.'
+    ))
+    stop()
+  }
+  idDpGrp <- base::strsplit(idDpGrp,'|',fixed=TRUE)[[1]]
   
   # Get listing of SRF directory. 
   fileSrf <- base::list.files(fs::path(DirIn, 'science_review_flags'), 
@@ -180,6 +191,43 @@ wrap.pub.tabl <- function(DirIn,
     TablPub <- base::unique(pubWb$table)
   }
   pubWb <- pubWb[pubWb$table %in% TablPub,]
+  
+  # Issue an error if no matching pub tables
+  if(base::nrow(pubWb) == 0){
+    log$error(base::paste0('The publication workbook(s) contain no matches to requested pub table(s). Datum:',
+                          DirIn,
+                          '. Pub Workbook file(s): ',
+                          base::paste0(FilePubWb,collapse=','),
+                          '. Requested pub table(s): ',
+                          base::paste0(TablPub,collapse=',')
+    ))
+    stop()
+  }
+
+  # Constrain pub wb to the data products of this group
+  idDpPubWb <- pubWb$dpID
+  idDpPubWb <- base::substr(idDpPubWb,start=15,stop=27) # Strip off NEON.DOM.SITE. for matching with DPs of group
+  pubWb <- pubWb[idDpPubWb %in% idDpGrp,]
+  
+  # Issue an error if no matching products
+  if(base::nrow(pubWb) == 0){
+    log$error(base::paste0('The publication workbook(s) contain no matches to the data product of the group. Datum:',
+                           DirIn,
+                           '. Pub Workbook file(s): ',
+                           base::paste0(FilePubWb,collapse=','),
+                           '. Data products in the pub workbook(s): ',
+                           base::paste0(base::unique(idDpPubWb),collapse=','),
+                           '. Data products of the group: ',
+                           base::paste0(idDpGrp,collapse=',')
+    ))
+    stop()
+  } else {
+    log$debug(base::paste0('The publication workbook(s) contain the following matches to the data product of the group: ',
+                           base::paste0(base::unique(base::substr(pubWb$dpID,start=15,stop=27)),collapse=','),
+                           ' for datum: ',
+                           DirIn
+    ))
+  }
   
   # Discern the timing index of each pub table
   tmiTablPub <- base::unlist(

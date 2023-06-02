@@ -87,7 +87,7 @@ wrap.loc.data.trnc.comb <- function(DirIn,
   } 
 
   # Gather info about the input directory and formulate the parent output directory
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   nameLoc <- utils::tail(InfoDirIn$dirSplt,1) # Location identifier
   dirOutPrnt <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   

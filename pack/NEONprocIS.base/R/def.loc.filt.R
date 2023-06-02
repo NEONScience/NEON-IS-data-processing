@@ -370,12 +370,12 @@ def.loc.filt <-
       
     } # End loop around named locations
     
-    log$info('Sensor location file filtered successfully.')
+    log$debug('Sensor location file filtered successfully.')
     
     # Write to file
     if (!base::is.null(NameFileOut)) {
       base::write(rjson::toJSON(loc, indent = 4), file = NameFileOut)
-      log$info(base::paste0('Filtered sensor location file written successfully to ',NameFileOut))
+      log$debug(base::paste0('Filtered sensor location file written successfully to ',NameFileOut))
     }
     
     return(loc)

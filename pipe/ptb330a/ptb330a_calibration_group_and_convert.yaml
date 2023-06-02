@@ -3,37 +3,57 @@ pipeline:
   name: ptb330a_calibration_group_and_convert
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-cal-grp-conv:v1.0.3
+  image: quay.io/battelleecology/neon-is-cal-grp-conv:v1.1.3
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /usr/src/app/pfs/interimData
-  - mkdir -p /usr/src/app/pfs/interimData
-  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
+  - rm -r -f /data/*
+  - mkdir -p /data/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+  - mkdir -p /data/pfs/filter_joined # R modules must have pfs in the repo structure
+  - '# Detect if we have data coming from Kafka or trino'
+  - if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
+  - '# Data from kafka. '
+  - '# Run kafka combiner'
+  - Rscript ./flow.kfka.comb.R
+        DirIn=$KAFKA_UNMERGED_DATA
+        DirOut=/data/kafka_merged
+        DirErr=/pfs/out/errored_datums
+        FileSchmL0=$FILE_SCHEMA_L0
+  - '# Set CONFIG for filter-joiner to the kafka version and run filter joiner'
+  - export CONFIG=$CONFIG_KAFKA
   - python3 -m filter_joiner.filter_joiner_main
-  - '# Run second module - calibration conversion'
+  - elif [ ${DATA_PATH_TRINO+x} ]; then 
+  - '# Data from trino. '
+  - '# Set CONFIG for filter-joiner to the trino version and run filter joiner'
+  - export CONFIG=$CONFIG_TRINO
+  - python3 -m filter_joiner.filter_joiner_main
+  - else echo "FATAL - Input repository names do not match expectations. Check pipeline specification."
+  - fi  
+  - '# Run calibration conversion module'
   - Rscript ./flow.cal.conv.R 
-    DirIn=/usr/src/app/pfs/interimData
-    DirOut=/pfs/out
-    DirErr=/pfs/out/errored_datums 
-    FileSchmData=$FILE_SCHEMA_DATA
-    FileSchmQf=$FILE_SCHEMA_FLAGS
-    "TermFuncConv=barometricPressure:def.cal.conv.poly"
-    "TermQf=barometricPressure"
-    "TermFuncUcrt=barometricPressure:def.ucrt.meas.cnst"
+      DirIn=/data/pfs/filter_joined
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums 
+      FileSchmData=$FILE_SCHEMA_DATA
+      FileSchmQf=$FILE_SCHEMA_FLAGS
+      "TermFuncConv=barometricPressure:def.cal.conv.poly"
+      "TermQf=barometricPressure"
+      "TermFuncUcrt=barometricPressure:def.ucrt.meas.cnst"
   env:
-    # Environment variables for filter-joiner
-    CONFIG: |
+    # Environment variables for filter-joiner.
+    # There are two configs here, CONFIG_KAFKA is when data comes from kafka, CONFIG_TRINO is when data comes from trino. 
+    # The engironment variable CONFIG is set to the appropriate one as detected in the bash script above
+    CONFIG_KAFKA: |
       ---
       # Configuration for filter-joiner module that will bring together the data and calibrations
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: DATA_PATH
+            name: DATA_PATH_KAFKA
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH/ptb330a/*/*/*/*/**
+            glob_pattern: /data/kafka_merged/ptb330a/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
@@ -43,14 +63,37 @@ transform:
             glob_pattern: /pfs/CALIBRATION_PATH/ptb330a/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
-    OUT_PATH: /usr/src/app/pfs/interimData
+    CONFIG_TRINO: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_TRINO
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_TRINO/ptb330a/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/CALIBRATION_PATH/ptb330a/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    OUT_PATH: /data/pfs/filter_joined
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: "3"
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '1' # Option for calibration conversion module
 input:
   cross:
+  - pfs:
+      name: FILE_SCHEMA_L0
+      repo: ptb330a_avro_schemas
+      glob: /ptb330a/ptb330a.avsc
   - pfs:
       name: FILE_SCHEMA_DATA
       repo: ptb330a_avro_schemas
@@ -59,20 +102,36 @@ input:
       name: FILE_SCHEMA_FLAGS
       repo: ptb330a_avro_schemas
       glob: /ptb330a/flags_calibration_ptb330a.avsc
-  - join:
-    - pfs:
-        name: DATA_PATH
-        repo: ptb330a_data_source_trino
-        glob: /ptb330a/(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    - pfs:
-        name: CALIBRATION_PATH
-        repo: ptb330a_calibration_assignment
-        glob: /ptb330a/(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  # Need to send in the joined calibrations first with the trino data then with the kafka data in order for the filter-joiner to correctly join the calibrations
+  - union:
+    - join:
+      - pfs:
+          name: DATA_PATH_TRINO
+          repo: ptb330a_data_source_trino
+          glob: /ptb330a/(*)/(*)/(*)
+          joinOn: $1/$2/$3
+          outer_join: true
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      - pfs:
+          name: CALIBRATION_PATH
+          repo: ptb330a_calibration_assignment
+          glob: /ptb330a/(*)/(*)/(*)
+          joinOn: $1/$2/$3
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - join:
+      - pfs:
+          name: KAFKA_UNMERGED_DATA
+          repo: ptb330a_data_source_kafka
+          glob: /ptb330a/(*)/(*)/(*)
+          joinOn: $1/$2/$3
+          outer_join: true
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      - pfs:
+          name: CALIBRATION_PATH
+          repo: ptb330a_calibration_assignment
+          glob: /ptb330a/(*)/(*)/(*)
+          joinOn: $1/$2/$3
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
   constant: 1
 resource_requests:
@@ -100,10 +159,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"300M"
+      "value":"2G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
+      "value": "0.3"
     }
   ]

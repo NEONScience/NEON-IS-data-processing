@@ -72,8 +72,16 @@
                         "start_date": null,
                         "end_date": null
                     }
+                ],
+                "data_product_ID": [
+                    "DP1.20008.001",
+                    "DP1.20016.001",
+                    "DP1.20054.001"
                 ]
             },
+            "site": "CUPE",
+            "domain": "D04",
+            "visibility_code": "public",
             "HOR": null,
             "VER": null
         }

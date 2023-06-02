@@ -3,7 +3,7 @@ pipeline:
   name: relHumidity_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:v1.0.2
+  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:v1.0.3
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -166,10 +166,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
+      "value":"2G"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
+      "value": "0.5"
     }
   ]

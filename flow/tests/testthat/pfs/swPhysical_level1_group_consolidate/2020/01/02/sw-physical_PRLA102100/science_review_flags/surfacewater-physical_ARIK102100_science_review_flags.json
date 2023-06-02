@@ -1,0 +1,100 @@
+{
+    "science_review_flags": [
+        {
+            "group_name": "surfacewater-physical_ARIK102100",
+            "id": 29053,
+            "start_date": "2022-01-01T00:00:00Z",
+            "end_date": "2022-10-13T23:00:00Z",
+            "measurement_stream_name": "NEON.D10.ARIK.DP1.20916.001.04114.102.100.005",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2022-11-03T01:50:55Z",
+            "last_update_date": "2022-11-03T01:50:55Z"
+        },
+        {
+            "group_name": "surfacewater-physical_ARIK102100",
+            "id": 29054,
+            "start_date": "2017-11-28T23:00:00Z",
+            "end_date": "2017-11-30T01:00:00Z",
+            "measurement_stream_name": "NEON.D10.ARIK.DP1.20916.001.04114.102.100.005",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2022-11-03T01:50:57Z",
+            "last_update_date": "2022-11-03T01:50:57Z"
+        },
+        {
+            "group_name": "surfacewater-physical_ARIK102100",
+            "id": 29055,
+            "start_date": "2019-01-03T16:00:00Z",
+            "end_date": "2019-09-30T23:59:00Z",
+            "measurement_stream_name": "NEON.D10.ARIK.DP1.20916.001.04114.102.100.005",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2022-11-03T01:50:59Z",
+            "last_update_date": "2022-11-03T01:50:59Z"
+        },
+        {
+            "group_name": "surfacewater-physical_ARIK102100",
+            "id": 29056,
+            "start_date": "2020-10-01T00:00:00Z",
+            "end_date": "2020-10-20T18:00:00Z",
+            "measurement_stream_name": "NEON.D10.ARIK.DP1.20916.001.04114.102.100.005",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2022-11-03T01:51:01Z",
+            "last_update_date": "2022-11-03T01:51:01Z"
+        },
+        {
+            "group_name": "surfacewater-physical_ARIK101100",
+            "id": 29120,
+            "start_date": "2016-10-01T00:00:00Z",
+            "end_date": "2016-10-13T23:00:00Z",
+            "measurement_stream_name": "NEON.D10.ARIK.DP1.20916.001.04114.102.100.030",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2022-11-03T02:02:12Z",
+            "last_update_date": "2022-11-03T02:02:12Z"
+        },
+        {
+            "group_name": "surfacewater-physical_ARIK101100",
+            "id": 29121,
+            "start_date": "2017-11-28T23:00:00Z",
+            "end_date": "2017-11-30T01:00:00Z",
+            "measurement_stream_name": "NEON.D10.ARIK.DP1.20916.001.04114.102.100.030",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2022-11-03T02:02:14Z",
+            "last_update_date": "2022-11-03T02:02:14Z"
+        },
+        {
+            "group_name": "surfacewater-physical_ARIK102100",
+            "id": 29122,
+            "start_date": "2019-01-03T16:00:00Z",
+            "end_date": "2019-09-30T23:59:00Z",
+            "measurement_stream_name": "NEON.D10.ARIK.DP1.20916.001.04114.102.100.030",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2022-11-03T02:02:16Z",
+            "last_update_date": "2022-11-03T02:02:16Z"
+        },
+        {
+            "group_name": "surfacewater-physical_ARIK102100",
+            "id": 29123,
+            "start_date": "2020-10-01T00:00:00Z",
+            "end_date": "2020-10-20T18:00:00Z",
+            "measurement_stream_name": "NEON.D10.ARIK.DP1.20916.001.04114.102.100.030",
+            "srf_term_name": "sWatElevFinalQFSciRvw",
+            "srf": 1,
+            "user_comment": "time period flagged following stage outlier review",
+            "create_date": "2022-11-03T02:02:18Z",
+            "last_update_date": "2022-11-03T02:02:18Z"
+        }
+    ]
+}

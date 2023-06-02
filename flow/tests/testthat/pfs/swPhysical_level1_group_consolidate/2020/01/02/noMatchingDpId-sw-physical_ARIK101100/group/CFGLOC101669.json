@@ -1,0 +1,29 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC101669",
+                "group": "surfacewater-physical_ARIK101100",
+                "active_periods": [
+                    {
+                        "start_date": "2020-01-02T00:00:00Z",
+                        "end_date": "2020-01-03T00:00:00Z"
+                    }
+                ],
+                "data_product_ID": [
+                    "DP1.90008.001",
+                    "DP1.90016.001",
+                    "DP1.90054.001"
+                ]
+            },
+            "site": "ARIK",
+            "domain": "D10",
+            "visibility_code": "public",
+            "HOR": "101",
+            "VER": "100"
+        }
+    ]
+}

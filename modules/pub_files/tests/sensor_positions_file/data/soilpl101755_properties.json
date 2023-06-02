@@ -1,0 +1,110 @@
+[
+	{
+		"attr_name" : "Required Asset Management Location Code",
+		"string_value" : "SOILPL101755",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "Required Asset Management Location ID",
+		"string_value" : null,
+		"number_value" : 3104,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "ElevSoilC1",
+		"string_value" : "1654.0",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "LonSoilC2",
+		"string_value" : "-104.746053",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "LatSoilC4",
+		"string_value" : "40.815922",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "RefeSoil",
+		"string_value" : "C1",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "LonSoilC1",
+		"string_value" : "-104.746013",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "LatSoilC3",
+		"string_value" : "40.815952",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "AngAzXaxsRefeSoil",
+		"string_value" : "C4",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "LatSoilC2",
+		"string_value" : "40.815922",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "ElevSoilC4",
+		"string_value" : "1654.1",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "AngAzYaxsRefeSoil",
+		"string_value" : "C2",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "ElevSoilC2",
+		"string_value" : "1654.0",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "LonSoilC3",
+		"string_value" : "-104.746013",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "LatSoilC1",
+		"string_value" : "40.815892",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "ElevSoilC3",
+		"string_value" : "1654.0",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "LonSoilC4",
+		"string_value" : "-104.745973",
+		"number_value" : null,
+		"date_value" : null
+	},
+	{
+		"attr_name" : "locDisturb",
+		"string_value" : "NA,NA,NA",
+		"number_value" : null,
+		"date_value" : null
+	}
+]

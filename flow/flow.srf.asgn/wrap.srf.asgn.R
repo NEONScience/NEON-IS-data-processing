@@ -146,7 +146,7 @@ wrap.srf.asgn <- function(DirIn,
     tsChar <- base::unique(format(ts,format='%Y/%m/%d')) # Format as year/month/day repo structure and get rid of duplicates
     
     # Create the output directory structure
-    InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
+    InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
     idGrp <- InfoDirIn$dirSplt[InfoDirIn$idxRepo+1]
     dirOut <- fs::path(DirOutBase,tsChar,idGrp,dirFinl)
     NEONprocIS.base::def.dir.crea(DirSub=dirOut,log=log)

@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=namedLocation
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.4
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -19,11 +19,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_loader_mcseries
+      repo: mcseries_location_loader
       glob: /mcseries/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_mcseries_list_years
+      repo: mcseries_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4

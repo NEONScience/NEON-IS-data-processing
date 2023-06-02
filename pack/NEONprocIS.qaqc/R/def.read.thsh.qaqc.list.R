@@ -26,7 +26,12 @@
 
 #' @keywords Currently none
 
-#' @examples Currently none
+#' @examples
+#' # Not run
+#' FileThsh <- "~/pfs/threshold/thresholds.json"
+#' thshRaw <- rjson::fromJSON(file=FileThsh,simplify=TRUE),silent=FALSE)
+#' thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.list(listThsh=thshRaw$thresholds) # This turns dates to POSIXct, which is required
+
 
 #' @seealso \link[NEONprocIS.qaqc]{def.read.thsh.qaqc.df}
 
@@ -64,6 +69,10 @@ def.read.thsh.qaqc.list <- function(NameFile=NULL,
       stop('One of NameFile, strJson, or listThsh must be supplied.')
     } else {
       thshRaw <- listThsh
+      # Account for the scenario in which the thresholds list has not been extracted
+      if(base::length(base::names(thshRaw) == 1) && base::names(thshRaw) == 'thresholds'){
+        thshRaw <- thshRaw$thresholds
+      }
     }
   }
   
