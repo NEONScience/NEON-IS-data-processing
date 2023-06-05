@@ -1,6 +1,6 @@
 Package: NEONprocIS.cal
 Title: Calibration functions for NEON IS data processing
-Version: 0.0.18
+Version: 1.1.0
 Authors@R: 
     person(given = "Cove",
            family = "Sturtevant",
