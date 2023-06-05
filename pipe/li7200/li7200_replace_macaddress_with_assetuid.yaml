@@ -3,7 +3,7 @@ pipeline:
   name: li7200_replace_macaddress_with_assetuid
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/replace_macaddress_with_assetuid:1.25
+  image: quay.io/battelleecology/replace_macaddress_with_assetuid:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

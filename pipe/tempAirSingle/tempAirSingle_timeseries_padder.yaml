@@ -4,7 +4,7 @@
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-image: quay.io/battelleecology/timeseries_padder:36
+image: quay.io/battelleecology/timeseries_padder:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
 cmd:
   - /bin/bash
 stdin:

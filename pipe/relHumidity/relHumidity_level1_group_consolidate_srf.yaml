@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:v2.0.1
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
   cmd:
   - "/bin/bash"
   stdin:
@@ -115,7 +115,7 @@ transform:
 
 # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /data/pub_workbooks
-    PRODUCTS: NEON.DOM.SITE.DP1.00098.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
+    PRODUCTS: NEON.DOM.SITE.DP1.00098.001,NEON.DOM.SITE.DP1.20271.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
   
 # Environment variables for pub table and srf module
     PUB_WORKBOOKS: /data/pub_workbooks

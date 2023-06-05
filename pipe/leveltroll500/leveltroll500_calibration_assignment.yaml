@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.6
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -18,7 +18,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: leveltroll500_calibration
+      repo: leveltroll500_calibration_loader
       glob: /leveltroll500/*
   - pfs:
       name: FILE_YEAR

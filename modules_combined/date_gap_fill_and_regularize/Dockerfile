@@ -1,5 +1,5 @@
 # Dockerfile for NEON IS Data Processing - Combined date gap filler and regularization
-# This image combines the two modules: date_gap_filler and flow.rgr
+# This image combines the two modules: date_gap_filler and flow.rglr
 # Build with the following command
 # docker build --no-cache -t neon-is-gf-rglr -f <path to this file> <path to parent directory of flow/ and modules/>
 

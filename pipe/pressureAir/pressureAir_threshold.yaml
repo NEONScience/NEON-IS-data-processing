@@ -1,31 +1,34 @@
 ---
 pipeline:
-  name: pressureAir_egress
+  name: pressureAir_threshold
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/egress:12
+  image: quay.io/battelleecology/threshold_loader:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m egress.egress.app --outputname pressureAir --dateindex 2 --locindex
-    1
+  - python3 -m threshold_loader.threshold_loader_main
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    EGRESS_URL: https://storage.googleapis.com/neon-int-publication/egress-test
-output_branch: master
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: barometricPressure
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: air
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
-    name: DATA_PATH
-    repo: pressureAir_level1_group
-    branch: master
-    glob: /ptb330a/*/*/*
-egress:
-  URL: gs://neon-int-publication/egress-test
-standby: true
-
+    repo: ptb330a_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
+resource_requests:
+  memory: 120M
+  cpu: 0.05
+autoscaling: true
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -47,10 +50,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"1G"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
+      "value": "0.05"
     }
   ]

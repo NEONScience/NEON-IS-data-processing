@@ -7,7 +7,7 @@ transform:
     GROUP_PREFIX: groundwater-physical_
     LOG_LEVEL: DEBUG
     OUT_PATH: /pfs/out
-  image: quay.io/battelleecology/neon-srf-loader:45
+  image: quay.io/battelleecology/neon-srf-loader:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
   secrets:

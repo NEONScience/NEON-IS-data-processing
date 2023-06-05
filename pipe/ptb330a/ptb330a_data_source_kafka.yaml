@@ -61,7 +61,7 @@ input:
     name: import_trigger
     repo: ptb330a_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/ptb330a/*/*/*/*"
+    glob: "/ptb330a/*/*/*"
 resource_requests:
   memory: 300M
   cpu: 1.3

@@ -3,7 +3,7 @@ pipeline:
   name: tempSurfacewater_qaqc_flags_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:10
+  image: quay.io/battelleecology/filter_joiner:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

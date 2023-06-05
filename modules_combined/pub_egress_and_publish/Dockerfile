@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the combined pub_egress, pub_uploader, and pub_sync modules.
 # Example command (must be run from project root directory to include modules and modules_combined path in Docker context):
-# docker build -t neon-is-pub-egrs-publ -f ./modules_combined/pub_group_and_package/Dockerfile .
+# docker build -t neon-is-pub-egrs-publ -f ./modules_combined/pub_egress_and_publish/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
