@@ -20,13 +20,15 @@ from pub_files.tests.file_date_converter import to_datetime
 
 
 def create_location_path(fs: FakeFilesystem) -> Path:
-    location_root = Path('/2020/01/02/CPER/soil-temp_CPER100200/location')
-    location_file_1 = Path(location_root, 'CFGLOC101775.json')
-    location_file_2 = Path(location_root, 'CFGLOC101777.json')
-    fs.create_dir(location_root)
+    in_path = Path('/locations')
+    location_path = Path(in_path, '2020/01/02/CPER')
+    root_file_path = Path(location_path, 'location/soil-temp_CPER100200/')
+    location_file_1 = Path(root_file_path, 'CFGLOC101775.json')
+    location_file_2 = Path(root_file_path, 'CFGLOC101777.json')
+    fs.create_dir(root_file_path)
     fs.create_file(location_file_1)
     fs.create_file(location_file_2)
-    return location_root
+    return location_path
 
 
 class PositionsFileTest(TestCase):
@@ -70,7 +72,8 @@ class PositionsFileTest(TestCase):
         self.fs.add_real_file(cfg101777_properties, target_path=self.cfgloc101777_properties_target)
 
     def test_write(self) -> None:
-        location_path = create_location_path(self.fs)
+        location_path = create_location_path(self.fs)  # create the path and add location file names.
+        print(f'location_path: {location_path}')
         timestamp = get_timestamp()
         elements = PathElements(domain=self.domain,
                                 site=self.site,

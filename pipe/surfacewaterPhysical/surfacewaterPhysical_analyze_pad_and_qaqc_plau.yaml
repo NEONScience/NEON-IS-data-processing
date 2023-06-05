@@ -40,7 +40,7 @@ transform:
         DirErr=/pfs/out/errored_datums
         FileSchmQf=$SCHEMA_FLAGS_AQUATROLL
         "TermTest1=pressure:null|gap|range|step|spike|persistence"
-        "TermTest2=temperature:null|gap|range|step|spike"
+        "TermTest2=temperature:null|gap|range|step|spike|persistence"
         "TermTest3=conductivity:null|gap|range|step|spike|persistence"
         DirSubCopy=location
   - elif [ $DATA_TYPE = 'leveltroll' ]
@@ -51,7 +51,7 @@ transform:
         DirErr=/pfs/out/errored_datums
         FileSchmQf=$SCHEMA_FLAGS_LEVELTROLL
         "TermTest1=pressure:null|gap|range|step|spike|persistence"
-        "TermTest2=temperature:null|gap|range|step|spike"
+        "TermTest2=temperature:null|gap|range|step|spike|persistence"
         DirSubCopy=location
   - else echo "FATAL - Cannot determine source_type as aquatroll or leveltroll. Aborting..."
   - fi

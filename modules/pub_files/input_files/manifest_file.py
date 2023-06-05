@@ -33,12 +33,18 @@ class ManifestFile:
         self._remove_files()
         self.visibility = self._get_visibility()
 
-    def add_metadata_files(self, variables_file: Path, positions_file: Path, eml_file: Path, readme_file: Path) -> None:
+    def add_metadata_files(self,
+                           variables_file: Path,
+                           positions_file: Path,
+                           eml_file: Path,
+                           readme_file: Path,
+                           science_review_file: Path) -> None:
         """Add the metadata files to the manifest."""
         variables_file_size = os.path.getsize(variables_file)
         positions_file_size = os.path.getsize(positions_file)
         eml_file_size = os.path.getsize(eml_file)
         readme_file_size = os.path.getsize(readme_file)
+        science_review_file_size = os.path.getsize(science_review_file)
         self._add_row(variables_file.name,
                       self.has_data,
                       self.visibility,
@@ -59,6 +65,11 @@ class ManifestFile:
                       self.visibility,
                       str(readme_file_size),
                       self._get_md5_hash(readme_file))
+        self._add_row(science_review_file.name,
+                      self.has_data,
+                      self.visibility,
+                      str(science_review_file_size),
+                      self._get_md5_hash(science_review_file))
 
     def write(self) -> None:
         """Write a new manifest file to the output path."""

@@ -23,6 +23,7 @@ def write_file(readme_template: str,
                variables_filename: str,
                positions_filename: str,
                eml_filename: str,
+               science_review_filename: str,
                database: ReadmeDatabase) -> Path:
     """
     Create and write to the output path a publication metadata readme file using the given template.
@@ -34,6 +35,7 @@ def write_file(readme_template: str,
     :param variables_filename: The variables filename to include in the readme file.
     :param positions_filename: The sensor positions filename to include in the readme file.
     :param eml_filename: The EML filename to include in the readme file.
+    :param science_review_filename: The science review flag filename to including in the readme file.
     :param database: The object for reading needed data from the database.
     """
     elements: PathElements = file_metadata.path_elements
@@ -57,7 +59,8 @@ def write_file(readme_template: str,
                        change_logs=change_log_entries,
                        variables_filename=variables_filename,
                        positions_filename=positions_filename,
-                       eml_filename=eml_filename)
+                       eml_filename=eml_filename,
+                       science_review_filename=science_review_filename)
     template = Template(readme_template, trim_blocks=True, lstrip_blocks=True)
     content = template.render(readme_data)
     filename = get_filename(elements, timestamp=timestamp, file_type='readme', extension='txt')

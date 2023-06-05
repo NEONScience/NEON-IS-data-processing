@@ -32,13 +32,13 @@ class VariablesFileTest(TestCase):
         elements = PathElements(domain=domain, site=site, year=year, month=month, data_product_id=data_product_id)
         expected_filename = get_filename(elements, file_type='variables', timestamp=timestamp, extension='csv')
         path = write_file(out_path=self.out_path, elements=elements, timestamp=timestamp, workbook=self.workbook,
-                          database=get_mock_database())
+                          database=get_variables_database())
         assert path.name == expected_filename
         path = Path(self.out_path, expected_filename)
         print(f'\nresult:\n{path.read_text()}\n')
 
 
-def get_mock_database() -> VariablesDatabase:
+def get_variables_database() -> VariablesDatabase:
     description = 'description'
     rank = 1
     download_package = 'basic'
@@ -48,7 +48,7 @@ def get_mock_database() -> VariablesDatabase:
 
     def get_sensor_positions() -> List[FileVariables]:
         return [FileVariables(table_name='sensor_positions',
-                              term_name='sensor_positions',
+                              term_name='termName',
                               description=description,
                               rank=rank,
                               download_package=download_package,
@@ -58,7 +58,7 @@ def get_mock_database() -> VariablesDatabase:
 
     def get_is_science_review() -> List[FileVariables]:
         return [FileVariables(table_name='is_science_review',
-                              term_name='is_science_review',
+                              term_name='termName',
                               description=description,
                               rank=rank,
                               download_package=download_package,
@@ -68,7 +68,7 @@ def get_mock_database() -> VariablesDatabase:
 
     def get_sae_science_review() -> List[FileVariables]:
         return [FileVariables(table_name='sae_science_review',
-                              term_name='sae_science_review',
+                              term_name='termName',
                               description=description,
                               rank=rank,
                               download_package=download_package,
