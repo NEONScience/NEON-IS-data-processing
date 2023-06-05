@@ -14,10 +14,10 @@ ImgBld <- TRUE # Build,tag, push downstream module images and update pipeline sp
 
 # Run interatively without command line arguments
 if(length(arg) == 0){
-  pathBgn <- '~/R/NEON-IS-data-processing-homeDir/'
+  pathBgn <- '~/R/NEON-IS-data-processing/'
   typeFile = 'Dockerfile' # also, e.g. ".yaml"
-  imgBase <- "quay.io/battelleecology/neon-is-base-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
-  tagNew <- "v1.1.4"
+  imgBase <- "quay.io/battelleecology/neon-is-troll-uncertainty-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
+  tagNew <- "v1.0.3"
 } else {
   pathBgn = arg[1]
   typeFile = arg[2]
