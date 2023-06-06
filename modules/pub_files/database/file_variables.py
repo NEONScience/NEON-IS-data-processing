@@ -16,7 +16,7 @@ class FileVariables(NamedTuple):
     data_type: str
     units: str
 
-# TODO: create separate modules for SAE and IS and configure what files are output in the pipeline spec.
+# TODO: create separate modules for SAE and IS and configure what files are output in the Pachyderm pipeline spec.
 def get_sensor_positions(connector: DbConnector) -> List[FileVariables]:
     return get_variables(connector, 'Sensor Positions File')
 
@@ -30,7 +30,7 @@ def get_sae_science_review(connector: DbConnector) -> List[FileVariables]:
 
 
 def get_variables(connector: DbConnector, file_name: str) -> List[FileVariables]:
-    """Returns the defined variables for a publication file."""
+    """Returns the variables for a publication file."""
     file_variables: List[FileVariables] = []
     connection = connector.get_connection()
     schema = connector.get_schema()
@@ -81,3 +81,8 @@ def get_variables(connector: DbConnector, file_name: str) -> List[FileVariables]
                                                 data_type=data_type,
                                                 units=units))
     return file_variables
+
+
+
+
+

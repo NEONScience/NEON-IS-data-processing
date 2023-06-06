@@ -39,18 +39,18 @@ class ScienceReviewFileTest(TestCase):
         file_metadata.data_product = get_data_product(path_elements.data_product_id)
         file_metadata.package_output_path = self.out_path
         timestamp = get_timestamp()
-        variables_database = VariablesDatabase(get_sensor_positions=None,
-                                               get_is_science_review=self.get_is_science_review,
-                                               get_sae_science_review=None)
+        db = VariablesDatabase(get_sensor_positions=None,
+                               get_is_science_review=self.get_is_science_review,
+                               get_sae_science_review=None)
         # write the file
-        file_path = write_file(file_metadata, 'basic', timestamp, variables_database, get_flags, get_term_name)
+        science_review_file = write_file(file_metadata, 'basic', timestamp, db, get_flags, get_term_name)
         # check the output
         expected_filename = get_filename(elements=path_elements,
                                          file_type='science_review_flags',
                                          timestamp=timestamp,
                                          extension='csv')
-        assert file_path.name == expected_filename
-        print(f'\n\nfile contents:\n\n{file_path.read_text()}\n')
+        assert science_review_file.path.name == expected_filename
+        print(f'\n\nfile contents:\n\n{science_review_file.path.read_text()}\n')
 
     def get_is_science_review(self) -> List[FileVariables]:
         """Returns test variables."""
@@ -80,7 +80,7 @@ class ScienceReviewFileTest(TestCase):
         return file_variables
 
 
-def get_flags(_data_product_id, _site) -> List[ScienceReviewFlag]:
+def get_flags(_data_product_id, _site, _start_date, _end_date) -> List[ScienceReviewFlag]:
     """Mock function to return the flags."""
     start_date = datetime.now()
     end_date = datetime.now()

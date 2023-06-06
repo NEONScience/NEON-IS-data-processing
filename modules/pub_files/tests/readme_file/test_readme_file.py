@@ -10,6 +10,7 @@ from pub_files.input_files.file_processor import process_files, get_file_time_sp
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import format_timestamp
 from pub_files.output_files.readme.readme_file import write_file
+from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
 from pub_files.tests.input_file_processor_data.file_processor_database import FileProcessorDatabaseMock
 
 
@@ -75,7 +76,7 @@ class ReadmeFileTest(TestCase):
                    variables_filename=variables_filename,
                    positions_filename=positions_filename,
                    eml_filename=eml_filename,
-                   science_review_filename=science_review_filename,
+                   science_review_file=ScienceReviewFile(Path(self.out_path, science_review_filename), ['overflowQF']),
                    database=file_database.get_database(self.fs))
         readme_files = list(Path(self.out_path).glob('*.txt'))
         csv_files = list(Path(self.out_path).glob('*.csv'))

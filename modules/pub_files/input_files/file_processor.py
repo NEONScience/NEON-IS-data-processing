@@ -41,7 +41,8 @@ def process_files(in_path: Path,
         max_package_time = None
         is_first_file = True
         for path in package_data_files[package_type]:
-            line_count = sum(1 for line in open(path)) - 1  # subtract header
+            with open(path) as file:
+                line_count = sum(1 for line in file) - 1 # subtract header
             path_parts: PathParts = parse_path(path, in_path_parse_index)
             filename_parts: FilenameParts = parse_filename(path.name)
             file_metadata.data_product_id = get_data_product_id(filename_parts)

@@ -12,6 +12,7 @@ from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 from pub_files.application_config import ApplicationConfig
 from pub_files.database.science_review_flags import make_get_flags
+from pub_files.database.term_variables import make_get_term_variables
 from pub_files.database.terms import make_get_term_name
 from pub_files.external_files.external_files import ExternalFiles
 from pub_files.input_files.file_metadata import FileMetadata
@@ -74,12 +75,6 @@ def main() -> None:
                 publication_workbook = publication_package.workbook
                 for package_type in publication_package.package_metadata:
                     file_metadata: FileMetadata = publication_package.package_metadata[package_type]
-                    # write variables file
-                    variables_path = variables_file.write_file(out_path=file_metadata.package_output_path,
-                                                               elements=file_metadata.path_elements,
-                                                               workbook=publication_workbook,
-                                                               database=variables_database,
-                                                               timestamp=timestamp)
                     # write sensor positions file
                     positions_path = SensorPositionsFile(location_path=location_datum_path,
                                                          out_path=file_metadata.package_output_path,
@@ -94,13 +89,22 @@ def main() -> None:
                                        package_type=package_type,
                                        timestamp=timestamp,
                                        database=eml_database).write()
-                    # write science review flag file
-                    science_review_path = write_science_review_file(file_metadata=file_metadata,
+                    # write science review file
+                    science_review_file = write_science_review_file(file_metadata=file_metadata,
                                                                     variables_database=variables_database,
                                                                     package_type=package_type,
                                                                     timestamp=timestamp,
                                                                     get_flags=make_get_flags(connector),
                                                                     get_term_name=make_get_term_name(connector))
+                    # write variables file
+                    variables_path = variables_file.write_file(out_path=file_metadata.package_output_path,
+                                                               elements=file_metadata.path_elements,
+                                                               package_type=package_type,
+                                                               workbook=publication_workbook,
+                                                               database=variables_database,
+                                                               timestamp=timestamp,
+                                                               science_review_file=science_review_file,
+                                                               get_term_variables=make_get_term_variables(connector))
                     # write readme file
                     readme_path = readme_file.write_file(out_path=file_metadata.package_output_path,
                                                          file_metadata=file_metadata,
@@ -109,14 +113,14 @@ def main() -> None:
                                                          variables_filename=variables_path.name,
                                                          positions_filename=positions_path.name,
                                                          eml_filename=eml_path.name,
-                                                         science_review_filename=science_review_path.name,
+                                                         science_review_file=science_review_file,
                                                          database=readme_database)
                     # write a new manifest
                     file_metadata.manifest_file.add_metadata_files(variables_file=variables_path,
                                                                    positions_file=positions_path,
                                                                    eml_file=eml_path,
                                                                    readme_file=readme_path,
-                                                                   science_review_file=science_review_path)
+                                                                   science_review_file=science_review_file)
                     file_metadata.manifest_file.write()
 
 
