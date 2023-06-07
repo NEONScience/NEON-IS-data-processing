@@ -18,9 +18,7 @@ class PublicationPackage(NamedTuple):
     package_metadata: Dict[str, FileMetadata]
 
 
-def process_files(in_path: Path,
-                  out_path: Path,
-                  in_path_parse_index: int,
+def process_files(in_path: Path, out_path: Path, in_path_parse_index: int,
                   database: FileProcessorDatabase) -> PublicationPackage:
     """
     Loop over the input files and extract the needed metadata to product the publication metadata files.
@@ -42,7 +40,7 @@ def process_files(in_path: Path,
         is_first_file = True
         for path in package_data_files[package_type]:
             with open(path) as file:
-                line_count = sum(1 for line in file) - 1 # subtract header
+                line_count = sum(1 for line in file) - 1  # subtract header
             path_parts: PathParts = parse_path(path, in_path_parse_index)
             filename_parts: FilenameParts = parse_filename(path.name)
             file_metadata.data_product_id = get_data_product_id(filename_parts)
@@ -50,8 +48,11 @@ def process_files(in_path: Path,
                 workbook = database.get_workbook(file_metadata.data_product_id)
                 is_first_package = False
             file_description = workbook.get_file_description(filename_parts.table_name, package_type)
-            data_files.append(DataFile(filename=path.name, description=file_description, line_count=line_count))
-            min_time, max_time = get_file_time_span(path)
+            data_files.append(DataFile(filename=path.name,
+                                       description=file_description,
+                                       line_count=line_count,
+                                       data_product_name=filename_parts.data_product_name))
+            min_time, max_time = get_data_time_span(path)
             file_min_time = date_formatter.to_datetime(min_time)
             file_max_time = date_formatter.to_datetime(max_time)
             if is_first_file:
@@ -83,12 +84,12 @@ def process_files(in_path: Path,
 
 
 def get_data_product_id(parts: FilenameParts) -> str:
-    """Return the data product ID in the form stored in the database."""
+    """Returns the data product ID in the form stored in the database."""
     return f'NEON.DOM.SITE.{parts.level}.{parts.data_product_number}.{parts.revision}'
 
 
 def link_file(package_output_path: Path, path: Path) -> None:
-    """Link a file into the output path for the package type."""
+    """Link a file into the package output path."""
     link_path = Path(package_output_path, path.name)
     if not link_path.exists():
         link_path.symlink_to(path)
@@ -111,9 +112,9 @@ def sort_files(in_path: Path) -> Tuple[Dict[str, List[Path]], Path]:
     return package_data_files, manifest_path
 
 
-def get_file_time_span(path: Path) -> Tuple[str, str]:
+def get_data_time_span(path: Path) -> Tuple[str, str]:
     """Return the start and end time for a data file's data."""
     data_frame = pandas.read_csv(path)
-    min_start = data_frame.loc[0][0]  # First row, first element is the earliest start date.
-    max_end = data_frame.iloc[-1].tolist()[1]  # Last row, second element is the latest end date.
+    min_start = data_frame.loc[0][0]  # First row, first element is the earliest start time.
+    max_end = data_frame.iloc[-1].tolist()[1]  # Last row, second element is the latest end time.
     return min_start, max_end

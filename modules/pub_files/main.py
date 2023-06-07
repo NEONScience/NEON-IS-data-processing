@@ -98,7 +98,7 @@ def main() -> None:
                                                                     get_term_name=make_get_term_name(connector))
                     # write variables file
                     variables_path = variables_file.write_file(out_path=file_metadata.package_output_path,
-                                                               elements=file_metadata.path_elements,
+                                                               file_metadata=file_metadata,
                                                                package_type=package_type,
                                                                workbook=publication_workbook,
                                                                database=variables_database,

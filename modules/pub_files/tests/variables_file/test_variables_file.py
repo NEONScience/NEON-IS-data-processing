@@ -7,7 +7,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from pub_files.database.file_variables import FileVariables
 from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.database.term_variables import TermVariables
-from pub_files.input_files.file_metadata import PathElements
+from pub_files.input_files.file_metadata import PathElements, DataFile, DataFiles, FileMetadata
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
@@ -34,6 +34,7 @@ class VariablesFileTest(TestCase):
                                      year=year,
                                      month=month,
                                      data_product_id='DP1.20288.001')
+        self.file_metadata = self.get_file_metadata()
 
     def test_write_file(self):
         expected_filename = get_filename(self.elements,
@@ -42,7 +43,7 @@ class VariablesFileTest(TestCase):
                                          extension='csv')
         science_review_file = self.get_science_review_file()
         path = write_file(out_path=self.out_path,
-                          elements=self.elements,
+                          file_metadata=self.file_metadata,
                           package_type='basic',
                           timestamp=self.timestamp,
                           workbook=self.workbook,
@@ -65,6 +66,20 @@ class VariablesFileTest(TestCase):
         return ScienceReviewFile(path,
                                  'NEON.DOM.SITE.DP1.20288.001.HOR.VER.030',
                                  ['term_name'])
+
+    def get_file_metadata(self) -> FileMetadata:
+        data_file = DataFile(data_product_name='NEON.D10.CPER.DP1.00041.001.002.506.030',
+                             description='File description.',
+                             line_count=20,
+                             filename='NEON.D10.CPER.DP1.00041.001.002.506.030.ST_30_minute.2020-01-02.basic.csv')
+        data_files = DataFiles(files=[data_file], min_time=get_timestamp(), max_time=get_timestamp())
+        file_metadata = FileMetadata()
+        file_metadata.path_elements = self.elements
+        file_metadata.data_files = data_files
+        file_metadata.data_product = None
+        file_metadata.manifest_file = None
+        file_metadata.package_output_path = Path(self.out_path)
+        return file_metadata
 
 
 def get_variables_database() -> VariablesDatabase:

@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 import pub_files.tests.readme_file.readme_database as file_database
 from pub_files.input_files.file_metadata import FileMetadata
-from pub_files.input_files.file_processor import process_files, get_file_time_span, PublicationPackage
+from pub_files.input_files.file_processor import process_files, get_data_time_span, PublicationPackage
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import format_timestamp
 from pub_files.output_files.readme.readme_file import write_file
@@ -50,7 +50,7 @@ class ReadmeFileTest(TestCase):
 
     def test_get_time_span(self):
         path = Path(self.in_path, 'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.basic.csv')
-        start_time, end_time = get_file_time_span(path)
+        start_time, end_time = get_data_time_span(path)
         assert start_time == '2020-01-02T00:00:00Z'
         assert end_time == '2020-01-03T00:00:00Z'
 
