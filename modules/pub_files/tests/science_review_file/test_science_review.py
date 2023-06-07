@@ -111,7 +111,7 @@ def get_data_file() -> DataFile:
     name = 'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.basic.csv'
     description = 'File description'
     line_count = 100
-    return DataFile(name, description, line_count)
+    return DataFile(name, description, line_count, 'NEON.D10.CPER.DP1.00041.001.002.506.001')
 
 
 def get_path_elements() -> PathElements:

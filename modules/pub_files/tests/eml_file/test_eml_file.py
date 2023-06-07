@@ -149,7 +149,10 @@ class EmlTest(TestCase):
     def get_data_files() -> DataFiles:
         now = datetime.now()
         name = 'NEON.D10.CPER.DP1.00041.001.210.000.000.prt.2020-03.expanded.20230405T190704Z.csv'
-        data_file = DataFile(filename=name, description='A data file with data.', line_count=15)
+        data_file = DataFile(filename=name,
+                             description='A data file with data.',
+                             line_count=15,
+                             data_product_name='NEON.D10.CPER.DP1.00041.001.210.000.000')
         return DataFiles(files=[data_file], min_time=now, max_time=now)
 
     def get_file_metadata(self) -> FileMetadata:

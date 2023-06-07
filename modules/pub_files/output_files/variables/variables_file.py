@@ -5,20 +5,20 @@ from typing import Callable
 
 from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.database.term_variables import TermVariables
-from pub_files.input_files.file_metadata import PathElements
+from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
 from pub_files.output_files.variables.variables_file_database import VariablesDatabase
 
 
-def write_file(out_path: Path, elements: PathElements, package_type: str, workbook: PublicationWorkbook,
+def write_file(out_path: Path, file_metadata: FileMetadata, package_type: str, workbook: PublicationWorkbook,
                database: VariablesDatabase, timestamp: datetime, science_review_file: ScienceReviewFile,
                get_term_variables: Callable[[str, str], TermVariables]) -> Path:
     """
     Generate and write the variables file into the output path.
 
     :param out_path: The output path for writing the file.
-    :param elements: The path elements used for generating the filename.
+    :param file_metadata: The metadata from processing the application input files.
     :param package_type: The download package type.
     :param workbook: The publication workbook for the data product being published.
     :param database: The functions for reading needed data from the database.
@@ -27,7 +27,7 @@ def write_file(out_path: Path, elements: PathElements, package_type: str, workbo
     :param get_term_variables: A function accepting a term name string and returning a list of term variables.
     """
     column_names = ['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat']
-    filename = get_filename(elements, timestamp=timestamp, file_type='variables', extension='csv')
+    filename = get_filename(file_metadata.path_elements, timestamp=timestamp, file_type='variables', extension='csv')
     path = Path(out_path, filename)
     with open(path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
@@ -44,7 +44,7 @@ def write_file(out_path: Path, elements: PathElements, package_type: str, workbo
                 values = [table_name, field_name, description, data_type, units, download_package, publication_format]
                 writer.writerow(values)
         add_sensor_positions_variables(writer, database)
-        add_science_review_variables(writer, science_review_file, package_type, get_term_variables)
+        add_science_review_variables(writer, file_metadata, science_review_file, package_type, get_term_variables)
     return path
 
 
@@ -66,18 +66,29 @@ def add_sensor_positions_variables(writer, database: VariablesDatabase) -> None:
         row = [table_name, term_name, description, data_type, units, download_package, publication_format]
         writer.writerow(row)
 
-def add_science_review_variables(writer, science_review_file: ScienceReviewFile, package_type: str,
-                                 get_term_variables: Callable[[str, str], TermVariables]):
+def add_science_review_variables(writer, file_metadata: FileMetadata, science_review_file: ScienceReviewFile,
+                                 package_type: str, get_term_variables: Callable[[str, str], TermVariables]):
     table_name = 'science_review_flags'
     if science_review_file.term_names:
         for term_name in science_review_file.term_names:
-            data_product_id = science_review_file.data_product_id
-            term_variables = get_term_variables(data_product_id, term_name)
-            description = term_variables.description
-            data_type = term_variables.data_type
-            units = term_variables.units
-            download_package = term_variables.download_package
-            publication_format = term_variables.publication_format
-            if download_package == package_type:
-                row = [table_name, term_name, description, data_type, units, download_package, publication_format]
-                writer.writerow(row)
+            for data_file in file_metadata.data_files.files:
+                data_product_name = format_data_product_name(data_file.data_product_name)
+                term_variables = get_term_variables(data_product_name, term_name)
+                description = term_variables.description
+                data_type = term_variables.data_type
+                units = term_variables.units
+                download_package = term_variables.download_package
+                publication_format = term_variables.publication_format
+                if download_package == package_type:
+                    row = [table_name, term_name, description, data_type, units, download_package, publication_format]
+                    writer.writerow(row)
+
+
+def format_data_product_name(data_product_name: str) -> str:
+    """Converts a specific data product name into the general format: NEON.DOM.SITE.DP1.00098.001.00762.HOR.VER.001"""
+    parts = data_product_name.split('.')
+    parts[1] = 'DOM'
+    parts[2] = 'SITE'
+    parts[7] = 'HOR'
+    parts[8] = 'VER'
+    return '.'.join(parts)

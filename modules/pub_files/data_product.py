@@ -3,14 +3,6 @@ def get_data_product_number(data_product_id: str) -> str:
     """Remove 'NEON.DOM.SITE.' from a data product ID to isolate the data product number."""
     return data_product_id.replace('NEON.DOM.SITE.', '')
 
-
-def get_term_data_product_number(data_product_id: str) -> str:
-    """Convert horizontal and vertical indices into wildcards."""
-    parts = data_product_id.split('.')
-    parts[7] = 'HOR'
-    parts[8] = 'VER'
-    return '.'.join(parts)
-
 class DataProduct:
     """Class to consolidate data product data."""
 

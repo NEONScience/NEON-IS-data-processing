@@ -5,8 +5,6 @@ from typing import Tuple
 import os
 from pathlib import Path
 
-import structlog
-
 import pub_files.output_files.readme.readme_file as readme_file
 import pub_files.output_files.variables.variables_file as variables_file
 from common import log_config
@@ -48,7 +46,6 @@ def main() -> None:
     """Generate the publication metadata files."""
     config = ApplicationConfig()
     log_config.configure(config.log_level)
-    log = structlog.get_logger()
     db_config = read_from_mount(config.db_secrets_path)
     timestamp = get_timestamp()
 
@@ -65,13 +62,10 @@ def main() -> None:
 
         for root, dirs, files in os.walk(config.in_path):
             datum_path = Path(root)
-            log.debug(f'datum_path: {datum_path}')
-
             if len(datum_path.parts) == (config.in_path_parse_index + 4):
                 # Get paths to this particular site-year-month datum
                 datum_parts: PathParts = parse_path(datum_path, config.in_path_parse_index)
                 location_datum_path = Path(*location_path_base,datum_parts.year,datum_parts.month,'01',datum_parts.site)
-                log.debug(f'location_datum_path: {location_datum_path}')
 
                 # get required metadata from the input files and link the files into the output path
                 publication_package: PublicationPackage = process_files(in_path=datum_path,
@@ -104,7 +98,7 @@ def main() -> None:
                                                                     get_term_name=make_get_term_name(connector))
                     # write variables file
                     variables_path = variables_file.write_file(out_path=file_metadata.package_output_path,
-                                                               elements=file_metadata.path_elements,
+                                                               file_metadata=file_metadata,
                                                                package_type=package_type,
                                                                workbook=publication_workbook,
                                                                database=variables_database,

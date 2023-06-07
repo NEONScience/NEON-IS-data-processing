@@ -14,6 +14,7 @@ class FilenameParts(NamedTuple):
     table_name: str
     date: str
     package_type: str
+    data_product_name: str
 
 
 def parse_filename(filename: str) -> FilenameParts:
@@ -30,6 +31,7 @@ def parse_filename(filename: str) -> FilenameParts:
     table_name = parts[9]
     date = parts[10]
     package_type = parts[11]
+    data_product_name = '.'.join(parts[0:9])
     return FilenameParts(domain=domain,
                          site=site,
                          level=level,
@@ -40,4 +42,5 @@ def parse_filename(filename: str) -> FilenameParts:
                          temporal_index=temporal_index,
                          table_name=table_name,
                          date=date,
-                         package_type=package_type)
+                         package_type=package_type,
+                         data_product_name=data_product_name)
