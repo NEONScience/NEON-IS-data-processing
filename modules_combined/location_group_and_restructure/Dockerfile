@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-loc-grp-strc-comb -f <path to this file> <path to parent directory of flow/ and modules/>
 
 # Start with the base R image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.1.4
+FROM quay.io/battelleecology/neon-is-base-r:v1.1.5
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
