@@ -3,7 +3,7 @@ pipeline:
   name: prt_calibration_group_and_convert
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-cal-grp-conv:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
+  image: quay.io/battelleecology/neon-is-cal-grp-conv:d8b7e78d98bc53f183c6c6cc0635da393dcd7810
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
