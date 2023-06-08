@@ -10,8 +10,8 @@ from pub_files.database.term_variables import TermVariables
 from pub_files.input_files.file_metadata import PathElements, DataFile, DataFiles, FileMetadata
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import get_filename
-from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
-from pub_files.output_files.variables.variables_file import write_file
+from pub_files.output_files.science_review.science_review_file import ScienceReviewFile, Term
+from pub_files.output_files.variables.variables_file import write_file, format_data_product_name
 from pub_files.output_files.variables.variables_file_database import VariablesDatabase
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 
@@ -35,6 +35,12 @@ class VariablesFileTest(TestCase):
                                      month=month,
                                      data_product_id='DP1.20288.001')
         self.file_metadata = self.get_file_metadata()
+
+    @staticmethod
+    def test_name_format():
+        dp_name = 'NEON.DOM.SITE.DP1.00041.01.001.002.030'
+        formatted = format_data_product_name(dp_name, '00461')
+        assert formatted == 'NEON.DOM.SITE.DP1.00041.01.00461.HOR.VER.030'
 
     def test_write_file(self):
         expected_filename = get_filename(self.elements,
@@ -65,7 +71,7 @@ class VariablesFileTest(TestCase):
         path = Path(self.out_path, filename)
         return ScienceReviewFile(path,
                                  'NEON.DOM.SITE.DP1.20288.001.HOR.VER.030',
-                                 ['term_name'])
+                                 [Term(name='term_name', number='000461')])
 
     def get_file_metadata(self) -> FileMetadata:
         data_file = DataFile(data_product_name='NEON.D10.CPER.DP1.00041.001.002.506.030',

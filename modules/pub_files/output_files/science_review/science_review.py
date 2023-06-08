@@ -26,20 +26,22 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
     flags = get_flags(data_product_number, path_elements.site, data_start_date, data_end_date)
     if not flags:
         return ScienceReviewFile(None, None, None)
-    date_format = '%Y-%m-%dT%h:M:sZ'
+    date_format = '%Y-%m-%dT%H:%M:%SZ'
     keys = []
     rows = []
     terms: List[Term] = []
     for flag in flags:
         parts = flag.stream_name.split('.')
+        print(f'parts: {parts}')
         term_number = parts[6]
         horizontal_position = parts[7]
         vertical_position = parts[8]
         term_name = get_term_name(term_number)
-        stream_name_no_temporal_index = '.'.join(parts.pop())
+        stream_name_without_temporal_index = flag.stream_name[:-4]
         start_date = flag.start_date.strftime(date_format)
         end_date = flag.end_date.strftime(date_format)
-        key = f'{stream_name_no_temporal_index}.{start_date}.{end_date}.{flag.flag}'
+        key = f'{stream_name_without_temporal_index}_{start_date}_{end_date}_{flag.flag}'
+        print(f'key: {key}')
         if key in keys:  # only add first flag for the stream, date range, and flag value
             continue
         else:

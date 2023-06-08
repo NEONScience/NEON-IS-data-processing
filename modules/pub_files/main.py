@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from contextlib import closing
 from datetime import datetime, timezone
+from functools import partial
 from typing import Tuple
 import os
 from pathlib import Path
@@ -12,7 +13,7 @@ from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 from pub_files.application_config import ApplicationConfig
 from pub_files.database.science_review_flags import make_get_flags
-from pub_files.database.term_variables import make_get_term_variables
+from pub_files.database.term_variables import get_term_variables
 from pub_files.database.terms import make_get_term_name
 from pub_files.external_files.external_files import ExternalFiles
 from pub_files.input_files.file_metadata import FileMetadata
@@ -104,7 +105,7 @@ def main() -> None:
                                                                database=variables_database,
                                                                timestamp=timestamp,
                                                                science_review_file=science_review_file,
-                                                               get_term_variables=make_get_term_variables(connector))
+                                                               get_term_variables=partial(get_term_variables, connector))
                     # write readme file
                     readme_path = readme_file.write_file(out_path=file_metadata.package_output_path,
                                                          file_metadata=file_metadata,

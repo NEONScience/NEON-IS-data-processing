@@ -11,6 +11,7 @@ from pub_files.output_files.science_review.science_review_file import ScienceRev
 from pub_files.output_files.variables.variables_file_database import VariablesDatabase
 
 
+
 def write_file(out_path: Path, file_metadata: FileMetadata, package_type: str, workbook: PublicationWorkbook,
                database: VariablesDatabase, timestamp: datetime, science_review_file: ScienceReviewFile,
                get_term_variables: Callable[[str, str], TermVariables]) -> Path:
@@ -66,13 +67,14 @@ def add_sensor_positions_variables(writer, database: VariablesDatabase) -> None:
         row = [table_name, term_name, description, data_type, units, download_package, publication_format]
         writer.writerow(row)
 
+
 def add_science_review_variables(writer, file_metadata: FileMetadata, science_review_file: ScienceReviewFile,
                                  package_type: str, get_term_variables: Callable[[str, str], TermVariables]):
+    """Add the science review terms to the file."""
     table_name = 'science_review_flags'
     if science_review_file.terms:
         for term in science_review_file.terms:
             for data_file in file_metadata.data_files.files:
-                # TODO: need to add term number to the name before HOR.VER.TMI.
                 data_product_name = format_data_product_name(data_file.data_product_name, term.number)
                 term_variables = get_term_variables(data_product_name, term.name)
                 description = term_variables.description
@@ -99,9 +101,3 @@ def format_data_product_name(data_product_name: str, term_number: str) -> str:
     parts[7] = 'VER'
     parts.insert(6, term_number)
     return '.'.join(parts)
-
-def test():
-    dp = 'NEON.DOM.SITE.DP1.00041.01.001.002.030'
-    new_dp = format_data_product_name(dp, '00461')
-    print(f'\n\ndp1: {dp}')
-    print(f'dp2: {new_dp}')
