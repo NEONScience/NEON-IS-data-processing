@@ -41,7 +41,7 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
         start_date = flag.start_date.strftime(date_format)
         end_date = flag.end_date.strftime(date_format)
         key = f'{stream_name_without_temporal_index}_{start_date}_{end_date}_{flag.flag}'
-        print(f'key: {key}')
+        print(f'key: {key}     package:{package_type}')
         if key in keys:  # only add first flag for the stream, date range, and flag value
             print(f'key is in keys')
             continue
