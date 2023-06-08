@@ -1,9 +1,13 @@
 from contextlib import closing
 from typing import NamedTuple, Callable
 
+import structlog
 from psycopg2.extras import DictCursor
 
 from data_access.db_connector import DbConnector
+
+
+log = structlog.get_logger()
 
 
 class TermVariables(NamedTuple):
@@ -40,6 +44,7 @@ def make_get_term_variables(connector: DbConnector) -> Callable[[str, str], Term
             and 
                 dp_number = '{data_product}'
         '''
+        log.debug(f'Term variables SQL: {sql}')
         with closing(connection.cursor(cursor_factory=DictCursor)) as cursor:
             cursor.execute(sql)
             row = cursor.fetchone()
