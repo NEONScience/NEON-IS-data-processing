@@ -1,11 +1,12 @@
 # Run either interactively, or from the command line
+# Files that match the typeFile argument and contain tagged references to the image in argument ImgBase will be updated with the new tag.
 
-# Update image references to a new tag throughout the repo
-# If a Dockerfile is found that references the image, and that dockerfile is in the /flow, /modules, or /modules_combined
-# directories, the build_tag_push_update.sh script found in the same directory will be run, which should include building 
-# the image for that module, tagging it with the SHA of the HEAD commit, pushing the new image to quay.io, and updating any 
-# yaml files in the repo that reference the image with the new image tag. Note that that docker images built from the 
-# /pack directory, and any dependents also in the /pack directory, must be built by hand.
+# If ImgBld == TRUE: The above action will be taken, PLUS If a Dockerfile is found that references the image, and that 
+# dockerfile is in the /flow, /modules, or /modules_combined directories, the build_tag_push_update.sh script found in the 
+# same directory will be run, which should include building the image for that module, tagging it with the SHA of the HEAD 
+# commit, pushing the new image to quay.io, and updating any yaml files in the repo that reference the image with the new 
+# image tag. Note that that docker images built from the /pack directory, and any dependents also in the /pack directory, 
+# must be built by hand.
 
 
 # Pull in command line arguments if available (parameters)
@@ -15,9 +16,9 @@ ImgBld <- TRUE # Build,tag, push downstream module images and update pipeline sp
 # Run interatively without command line arguments
 if(length(arg) == 0){
   pathBgn <- '~/R/NEON-IS-data-processing-homeDir/'
-  typeFile = 'Dockerfile' # also, e.g. ".yaml"
-  imgBase <- "quay.io/battelleecology/neon-is-base-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
-  tagNew <- "v1.1.4"
+  typeFile = 'Dockerfile' # also, e.g. ".yaml" # Update references to imgBase in this type of file. Note that if ImgBld is TRUE, downstream yaml files may also get updated when executing the build_tag_push_update.sh script 
+  imgBase <- "quay.io/battelleecology/neon-is-pack-stat-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
+  tagNew <- "v1.0.7"
 } else {
   pathBgn = arg[1]
   typeFile = arg[2]
