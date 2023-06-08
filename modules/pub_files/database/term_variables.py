@@ -44,7 +44,7 @@ def make_get_term_variables(connector: DbConnector) -> Callable[[str, str], Term
             and 
                 dp_number = '{data_product}'
         '''
-        log.error(f'SQL: {sql}')
+        log.debug(f'Term variables SQL: {sql}')
         with closing(connection.cursor(cursor_factory=DictCursor)) as cursor:
             cursor.execute(sql)
             row = cursor.fetchone()
