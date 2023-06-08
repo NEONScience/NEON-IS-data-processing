@@ -87,13 +87,21 @@ def add_science_review_variables(writer, file_metadata: FileMetadata, science_re
 
 def format_data_product_name(data_product_name: str, term_number: str) -> str:
     """
-    Converts a data product name from the data file format into the general
-    format: NEON.DOM.SITE.DP1.00098.001.00762.HOR.VER.001.
+    Converts a data product name from the example data filename format:
+    NEON.DOM.SITE.DP1.00041.01.001.002.030
+    into the more general format for querying the pub_field_def table:
+    NEON.DOM.SITE.DP1.00041.01.00461.HOR.VER.001.
     """
     parts = data_product_name.split('.')
     parts[1] = 'DOM'
     parts[2] = 'SITE'
-    parts[7] = 'HOR'
-    parts[8] = 'VER'
+    parts[6] = 'HOR'
+    parts[7] = 'VER'
     parts.insert(6, term_number)
     return '.'.join(parts)
+
+def test():
+    dp = 'NEON.DOM.SITE.DP1.00041.01.001.002.030'
+    new_dp = format_data_product_name(dp, '00461')
+    print(f'\n\ndp1: {dp}')
+    print(f'dp2: {new_dp}')
