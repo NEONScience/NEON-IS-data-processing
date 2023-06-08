@@ -8,7 +8,7 @@ from pub_files.database.file_variables import FileVariables
 from pub_files.database.science_review_flags import ScienceReviewFlag
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.filename_format import get_filename
-from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
+from pub_files.output_files.science_review.science_review_file import ScienceReviewFile, Term
 from pub_files.output_files.variables.variables_file_database import VariablesDatabase
 
 
@@ -29,7 +29,7 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
     date_format = '%Y-%m-%dT%h:M:sZ'
     keys = []
     rows = []
-    term_names = []
+    terms: List[Term] = []
     for flag in flags:
         parts = flag.stream_name.split('.')
         term_number = parts[6]
@@ -58,7 +58,7 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
                to_string(flag.create_date),
                to_string(flag.last_update)]
         rows.append(row)
-        term_names.append(term_name)
+        terms.append(Term(name=term_name, number=term_number))
     if rows:
         filename = get_filename(path_elements, timestamp, 'science_review_flags', 'csv')
         file_path = Path(file_metadata.package_output_path, filename)
@@ -67,7 +67,7 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
             writer = csv.writer(file)
             writer.writerow(column_names)
             writer.writerows(rows)
-        return ScienceReviewFile(file_path, data_product.data_product_id, term_names)
+        return ScienceReviewFile(file_path, data_product.data_product_id, terms)
 
 
 def get_column_names(variables_database: VariablesDatabase, package_type: str) -> List[str]:

@@ -69,26 +69,31 @@ def add_sensor_positions_variables(writer, database: VariablesDatabase) -> None:
 def add_science_review_variables(writer, file_metadata: FileMetadata, science_review_file: ScienceReviewFile,
                                  package_type: str, get_term_variables: Callable[[str, str], TermVariables]):
     table_name = 'science_review_flags'
-    if science_review_file.term_names:
-        for term_name in science_review_file.term_names:
+    if science_review_file.terms:
+        for term in science_review_file.terms:
             for data_file in file_metadata.data_files.files:
-                data_product_name = format_data_product_name(data_file.data_product_name)
-                term_variables = get_term_variables(data_product_name, term_name)
+                # TODO: need to add term number to the name before HOR.VER.TMI.
+                data_product_name = format_data_product_name(data_file.data_product_name, term.number)
+                term_variables = get_term_variables(data_product_name, term.name)
                 description = term_variables.description
                 data_type = term_variables.data_type
                 units = term_variables.units
                 download_package = term_variables.download_package
                 publication_format = term_variables.publication_format
                 if download_package == package_type:
-                    row = [table_name, term_name, description, data_type, units, download_package, publication_format]
+                    row = [table_name, term.name, description, data_type, units, download_package, publication_format]
                     writer.writerow(row)
 
 
-def format_data_product_name(data_product_name: str) -> str:
-    """Converts a specific data product name into the general format: NEON.DOM.SITE.DP1.00098.001.00762.HOR.VER.001"""
+def format_data_product_name(data_product_name: str, term_number: str) -> str:
+    """
+    Converts a data product name from the data file format into the general
+    format: NEON.DOM.SITE.DP1.00098.001.00762.HOR.VER.001.
+    """
     parts = data_product_name.split('.')
     parts[1] = 'DOM'
     parts[2] = 'SITE'
     parts[7] = 'HOR'
     parts[8] = 'VER'
+    parts.insert(6, term_number)
     return '.'.join(parts)
