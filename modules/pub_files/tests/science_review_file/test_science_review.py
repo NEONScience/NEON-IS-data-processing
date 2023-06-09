@@ -91,23 +91,23 @@ def get_flags(_data_product_id, _site, _start_date, _end_date) -> List[ScienceRe
     create_date = datetime.now()
     last_update = datetime.now()
     flag1 = ScienceReviewFlag(id=100,
-                             start_date=start_date,
-                             end_date=end_date,
-                             stream_name=stream_name,
-                             user_name=user_name,
-                             user_comment=user_comment,
-                             flag=1,
-                             create_date=create_date,
-                             last_update=last_update)
+                              start_date=start_date,
+                              end_date=end_date,
+                              stream_name=stream_name,
+                              user_name=user_name,
+                              user_comment=user_comment,
+                              flag=1,
+                              create_date=create_date,
+                              last_update=last_update)
     flag2 = ScienceReviewFlag(id=101,
-                             start_date=start_date,
-                             end_date=end_date,
-                             stream_name=stream_name,
-                             user_name=user_name,
-                             user_comment=user_comment,
-                             flag=1,
-                             create_date=create_date,
-                             last_update=last_update)
+                              start_date=start_date,
+                              end_date=end_date,
+                              stream_name=stream_name,
+                              user_name=user_name,
+                              user_comment=user_comment,
+                              flag=1,
+                              create_date=create_date,
+                              last_update=last_update)
     return [flag1, flag2]
 
 

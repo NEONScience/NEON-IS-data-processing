@@ -82,8 +82,12 @@ def add_science_review_variables(
 ) -> None:
     """Add the science review terms to the variables file."""
     table_name = 'science_review_flags'
+    print(f'Terms: {science_review_file.terms}')
+    i = 0
     for term in science_review_file.terms:
+        print(f'Processing term: {term.name}')
         for data_file in file_metadata.data_files.files:
+            print(f'Processing data_file: {data_file.filename}')
             data_product_name = format_data_product_name(data_file.data_product_name, term.number)
             term_variables = get_term_variables(data_product_name, term.name)
             description = term_variables.description
@@ -91,16 +95,20 @@ def add_science_review_variables(
             units = term_variables.units
             download_package = term_variables.download_package
             publication_format = term_variables.publication_format
+            print(f'Do they match? download_package: {download_package} package_type: {package_type}')
             if download_package == package_type:
                 row = [table_name, term.name, description, data_type, units, download_package, publication_format]
                 writer.writerow(row)
+                i += 1
+    print(f'Added {i} science review variables to variables file.')
 
 
 def format_data_product_name(data_product_name: str, term_number: str) -> str:
     """
-    Converts a data product name from the example data filename format:
-    NEON.DOM.SITE.DP1.00041.01.001.002.030
-    into the more general format for querying the pub_field_def table:
+    Converts a data product name from the data filename form:
+    NEON.D10.CPER.DP1.00041.01.001.002.030
+    to the more general form used with the term number specified in
+    the pub_field_def table:
     NEON.DOM.SITE.DP1.00041.01.00461.HOR.VER.001.
     """
     parts = data_product_name.split('.')
