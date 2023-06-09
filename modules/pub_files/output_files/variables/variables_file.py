@@ -1,20 +1,25 @@
 import csv
 from datetime import datetime
 from pathlib import Path
-from typing import Callable
+from typing import Callable, List
 
+from pub_files.database.file_variables import FileVariables
 from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.database.term_variables import TermVariables
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
-from pub_files.output_files.variables.variables_file_database import VariablesDatabase
 
 
-
-def write_file(out_path: Path, file_metadata: FileMetadata, package_type: str, workbook: PublicationWorkbook,
-               database: VariablesDatabase, timestamp: datetime, science_review_file: ScienceReviewFile,
-               get_term_variables: Callable[[str, str], TermVariables]) -> Path:
+def write_file(
+        out_path: Path,
+        file_metadata: FileMetadata,
+        package_type: str,
+        workbook: PublicationWorkbook,
+        timestamp: datetime, science_review_file: ScienceReviewFile,
+        get_sensor_position_variables: Callable[[], List[FileVariables]],
+        get_term_variables: Callable[[str, str], TermVariables]
+) -> Path:
     """
     Generate and write the variables file into the output path.
 
@@ -22,9 +27,9 @@ def write_file(out_path: Path, file_metadata: FileMetadata, package_type: str, w
     :param file_metadata: The metadata from processing the application input files.
     :param package_type: The download package type.
     :param workbook: The publication workbook for the data product being published.
-    :param database: The functions for reading needed data from the database.
     :param timestamp: The timestamp to include in the filename.
     :param science_review_file: An object containing the science review file Path and term names.
+    :param get_sensor_position_variables: A function returning a list of sensor position file variables.
     :param get_term_variables: A function accepting a term name string and returning a list of term variables.
     """
     column_names = ['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat']
@@ -44,19 +49,19 @@ def write_file(out_path: Path, file_metadata: FileMetadata, package_type: str, w
             if download_package != 'none':
                 values = [table_name, field_name, description, data_type, units, download_package, publication_format]
                 writer.writerow(values)
-        add_sensor_positions_variables(writer, database)
+        add_sensor_positions_variables(writer, get_sensor_position_variables)
         add_science_review_variables(writer, file_metadata, science_review_file, package_type, get_term_variables)
     return path
 
 
-def add_sensor_positions_variables(writer, database: VariablesDatabase) -> None:
+def add_sensor_positions_variables(writer, get_sensor_position_variables: Callable[[], List[FileVariables]]) -> None:
     """
-    Read the file variables from the database and add them to the file.
+    Read the variables and add them to the variables file.
 
     :param writer: The file writer.
-    :param database: The functions for reading from the database.
+    :param get_sensor_position_variables: Functions for reading the list of sensor position variables.
     """
-    for file_variable in database.get_sensor_positions():
+    for file_variable in get_sensor_position_variables():
         table_name = file_variable.table_name
         description = file_variable.description
         term_name = file_variable.term_name
@@ -68,23 +73,27 @@ def add_sensor_positions_variables(writer, database: VariablesDatabase) -> None:
         writer.writerow(row)
 
 
-def add_science_review_variables(writer, file_metadata: FileMetadata, science_review_file: ScienceReviewFile,
-                                 package_type: str, get_term_variables: Callable[[str, str], TermVariables]):
-    """Add the science review terms to the file."""
+def add_science_review_variables(
+        writer,
+        file_metadata: FileMetadata,
+        science_review_file: ScienceReviewFile,
+        package_type: str,
+        get_term_variables: Callable[[str, str], TermVariables]
+) -> None:
+    """Add the science review terms to the variables file."""
     table_name = 'science_review_flags'
-    if science_review_file.terms:
-        for term in science_review_file.terms:
-            for data_file in file_metadata.data_files.files:
-                data_product_name = format_data_product_name(data_file.data_product_name, term.number)
-                term_variables = get_term_variables(data_product_name, term.name)
-                description = term_variables.description
-                data_type = term_variables.data_type
-                units = term_variables.units
-                download_package = term_variables.download_package
-                publication_format = term_variables.publication_format
-                if download_package == package_type:
-                    row = [table_name, term.name, description, data_type, units, download_package, publication_format]
-                    writer.writerow(row)
+    for term in science_review_file.terms:
+        for data_file in file_metadata.data_files.files:
+            data_product_name = format_data_product_name(data_file.data_product_name, term.number)
+            term_variables = get_term_variables(data_product_name, term.name)
+            description = term_variables.description
+            data_type = term_variables.data_type
+            units = term_variables.units
+            download_package = term_variables.download_package
+            publication_format = term_variables.publication_format
+            if download_package == package_type:
+                row = [table_name, term.name, description, data_type, units, download_package, publication_format]
+                writer.writerow(row)
 
 
 def format_data_product_name(data_product_name: str, term_number: str) -> str:

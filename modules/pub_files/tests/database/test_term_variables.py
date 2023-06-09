@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import unittest
+from typing import Callable
 
 from data_access.db_config_reader import read_from_environment
 from data_access.db_connector import DbConnector
@@ -14,7 +15,7 @@ class TermVariablesTest(DatabaseBackedTest):
         self.configure_mount()
         db_config = read_from_environment()
         connector = DbConnector(db_config)
-        get_term_variables = make_get_term_variables(connector)
+        get_term_variables: Callable[[str, str], TermVariables] = make_get_term_variables(connector)
         data_product_id = 'NEON.DOM.SITE.DP1.00098.001.00672.HOR.VER.030'
         term_name = 'RHPersistenceFailQM'
         variables: TermVariables = get_term_variables(data_product_id, term_name)

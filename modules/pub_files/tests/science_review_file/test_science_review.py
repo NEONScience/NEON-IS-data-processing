@@ -16,7 +16,6 @@ from pub_files.input_files.file_metadata import FileMetadata, DataFile, PathElem
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.science_review.science_review import write_file
-from pub_files.output_files.variables.variables_file_database import VariablesDatabase
 
 
 class ScienceReviewFileTest(TestCase):
@@ -39,11 +38,13 @@ class ScienceReviewFileTest(TestCase):
         file_metadata.data_product = get_data_product(path_elements.data_product_id)
         file_metadata.package_output_path = self.out_path
         timestamp = get_timestamp()
-        db = VariablesDatabase(get_sensor_positions=None,
-                               get_is_science_review=self.get_is_science_review,
-                               get_sae_science_review=None)
         # write the file
-        science_review_file = write_file(file_metadata, 'basic', timestamp, db, get_flags, get_term_name)
+        science_review_file = write_file(file_metadata,
+                                         'basic',
+                                         timestamp,
+                                         self.get_is_file_variables,
+                                         get_flags,
+                                         get_term_name)
         # check the output
         expected_filename = get_filename(elements=path_elements,
                                          file_type='science_review_flags',
@@ -52,7 +53,7 @@ class ScienceReviewFileTest(TestCase):
         assert science_review_file.path.name == expected_filename
         print(f'\n\nfile contents:\n\n{science_review_file.path.read_text()}\n')
 
-    def get_is_science_review(self) -> List[FileVariables]:
+    def get_is_file_variables(self) -> List[FileVariables]:
         """Returns test variables."""
         return self.load_file_variables(self.fs)
 
@@ -86,7 +87,7 @@ def get_flags(_data_product_id, _site, _start_date, _end_date) -> List[ScienceRe
     end_date = datetime.now()
     stream_name = 'NEON.D10.CPER.DP1.00041.001.03937.000.040.030'
     user_name = 'username@battelleecology.org'
-    user_comment = 'Suspected mis-application of calibration: Issue resolved by reprocessing - flag removed.'
+    user_comment = 'Suspected mis-application of calibration: Issue resolved by reprocessing - flag removed'
     create_date = datetime.now()
     last_update = datetime.now()
     flag1 = ScienceReviewFlag(id=100,
@@ -112,7 +113,7 @@ def get_flags(_data_product_id, _site, _start_date, _end_date) -> List[ScienceRe
 
 def get_term_name(_term_number) -> str:
     """Mock function to return the term name."""
-    return 'termName'
+    return 'term_name'
 
 
 def get_data_file() -> DataFile:

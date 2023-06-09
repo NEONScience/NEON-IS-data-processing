@@ -39,7 +39,7 @@ class SensorPositionsFile:
     """Class to generate a sensor positions file for the publication metadata file collection."""
 
     def __init__(self, out_path: Path, location_path: Path, elements: PathElements, timestamp: datetime,
-                 database: SensorPositionsDatabase):
+                 database: SensorPositionsDatabase) -> None:
         """
         Constructor.
 

@@ -1,6 +1,6 @@
 from contextlib import closing
 from datetime import datetime
-from typing import NamedTuple, List, Callable
+from typing import NamedTuple, List
 
 from psycopg2.extras import DictCursor
 
@@ -19,7 +19,7 @@ class ScienceReviewFlag(NamedTuple):
     last_update: datetime
 
 
-def make_get_flags(connector: DbConnector) -> Callable[[str, str, datetime, datetime], List[ScienceReviewFlag]]:
+def make_get_flags(connector: DbConnector):
     """
     Returns a function accepting a data product ID and a site code and returning a list
     of science review flags.

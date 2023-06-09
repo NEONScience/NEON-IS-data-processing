@@ -10,4 +10,4 @@ class Term(NamedTuple):
 class ScienceReviewFile(NamedTuple):
     path: Optional[Path]
     data_product_id: Optional[str]
-    terms: Optional[List[Term]]
+    terms: List[Term]
