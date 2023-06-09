@@ -82,8 +82,8 @@ def add_science_review_variables(
 ) -> None:
     """Add the science review terms to the variables file."""
     table_name = 'science_review_flags'
-    print(f'Terms: {science_review_file.terms}')
     i = 0
+    rows = []
     for term in science_review_file.terms:
         print(f'Processing term: {term.name}')
         for data_file in file_metadata.data_files.files:
@@ -96,10 +96,12 @@ def add_science_review_variables(
             download_package = term_variables.download_package
             publication_format = term_variables.publication_format
             print(f'Do they match? download_package: {download_package} package_type: {package_type}')
-            # if download_package == package_type:
-            row = [table_name, term.name, description, data_type, units, download_package, publication_format]
-            writer.writerow(row)
-            i += 1
+            if download_package == package_type:
+                row = [table_name, term.name, description, data_type, units, download_package, publication_format]
+                if row not in rows:
+                    rows.append(row)
+                i += 1
+    writer.writerows(rows)
     print(f'Added {i} science review variables to variables file.')
 
 
