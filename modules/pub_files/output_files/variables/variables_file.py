@@ -96,10 +96,10 @@ def add_science_review_variables(
             download_package = term_variables.download_package
             publication_format = term_variables.publication_format
             print(f'Do they match? download_package: {download_package} package_type: {package_type}')
-            if download_package == package_type:
-                row = [table_name, term.name, description, data_type, units, download_package, publication_format]
-                writer.writerow(row)
-                i += 1
+            # if download_package == package_type:
+            row = [table_name, term.name, description, data_type, units, download_package, publication_format]
+            writer.writerow(row)
+            i += 1
     print(f'Added {i} science review variables to variables file.')
 
 
