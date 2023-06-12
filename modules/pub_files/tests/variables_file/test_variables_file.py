@@ -43,7 +43,6 @@ class VariablesFileTest(TestCase):
         science_review_file = self.get_science_review_file()
         path = write_file(out_path=self.out_path,
                           file_metadata=self.file_metadata,
-                          package_type='basic',
                           timestamp=self.timestamp,
                           workbook=self.workbook,
                           science_review_file=science_review_file,

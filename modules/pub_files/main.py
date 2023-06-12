@@ -25,7 +25,6 @@ from pub_files.output_files.eml.eml_file import EmlFile
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 from pub_files.output_files.readme.readme_database import get_readme_database
 from pub_files.output_files.science_review.science_review import write_file as write_science_review_file
-from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
 from pub_files.output_files.sensor_positions.sensor_positions_database import get_sensor_positions_database
 from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsFile
 
@@ -99,7 +98,7 @@ def main() -> None:
                         database=eml_database
                     ).write()
                     # write science review file
-                    science_review_file: ScienceReviewFile = write_science_review_file(
+                    science_review_file = write_science_review_file(
                         file_metadata=file_metadata,
                         package_type=package_type,
                         timestamp=timestamp,
@@ -111,7 +110,6 @@ def main() -> None:
                     variables_path = variables_file.write_file(
                         out_path=file_metadata.package_output_path,
                         file_metadata=file_metadata,
-                        package_type=package_type,
                         workbook=publication_package.workbook,
                         timestamp=timestamp,
                         science_review_file=science_review_file,

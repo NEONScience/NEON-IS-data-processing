@@ -3,6 +3,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, List
 
+import structlog
+
 from pub_files.database.file_variables import FileVariables
 from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.database.term_variables import TermVariables
@@ -11,10 +13,12 @@ from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
 
 
+log = structlog.get_logger()
+
+
 def write_file(
         out_path: Path,
         file_metadata: FileMetadata,
-        package_type: str,
         workbook: PublicationWorkbook,
         timestamp: datetime, science_review_file: ScienceReviewFile,
         get_sensor_position_variables: Callable[[], List[FileVariables]],
@@ -25,7 +29,6 @@ def write_file(
 
     :param out_path: The output path for writing the file.
     :param file_metadata: The metadata from processing the application input files.
-    :param package_type: The download package type.
     :param workbook: The publication workbook for the data product being published.
     :param timestamp: The timestamp to include in the filename.
     :param science_review_file: An object containing the science review file Path and term names.
@@ -50,7 +53,7 @@ def write_file(
                 values = [table_name, field_name, description, data_type, units, download_package, publication_format]
                 writer.writerow(values)
         add_sensor_positions_variables(writer, get_sensor_position_variables)
-        add_science_review_variables(writer, file_metadata, science_review_file, package_type, get_term_variables)
+        add_science_review_variables(writer, file_metadata, science_review_file, get_term_variables)
     return path
 
 
@@ -77,7 +80,6 @@ def add_science_review_variables(
         writer,
         file_metadata: FileMetadata,
         science_review_file: ScienceReviewFile,
-        package_type: str,
         get_term_variables: Callable[[str, str], TermVariables]
 ) -> None:
     """Add the science review terms to the variables file."""
@@ -85,24 +87,22 @@ def add_science_review_variables(
     i = 0
     rows = []
     for term in science_review_file.terms:
-        print(f'Processing term: {term.name}')
+        log.debug(f'Processing term: {term.name}')
         for data_file in file_metadata.data_files.files:
-            print(f'Processing data_file: {data_file.filename}')
+            log.debug(f'Processing data_file: {data_file.filename}')
             data_product_name = format_data_product_name(data_file.data_product_name, term.number)
             term_variables = get_term_variables(data_product_name, term.name)
             description = term_variables.description
             data_type = term_variables.data_type
             units = term_variables.units
-            download_package = term_variables.download_package
+            term_download_package = term_variables.download_package
             publication_format = term_variables.publication_format
-            print(f'Do they match? download_package: {download_package} package_type: {package_type}')
-            if download_package == package_type:
-                row = [table_name, term.name, description, data_type, units, download_package, publication_format]
-                if row not in rows:
-                    rows.append(row)
-                i += 1
+            row = [table_name, term.name, description, data_type, units, term_download_package, publication_format]
+            if row not in rows:
+                rows.append(row)
+            i += 1
     writer.writerows(rows)
-    print(f'Added {i} science review variables to variables file.')
+    log.debug(f'Added {i} science review variables to variables file.')
 
 
 def format_data_product_name(data_product_name: str, term_number: str) -> str:
