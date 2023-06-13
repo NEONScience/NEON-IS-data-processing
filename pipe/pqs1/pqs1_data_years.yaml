@@ -1,35 +1,22 @@
 ---
 pipeline:
-  name: pqs1_location_active_dates_assignment
+  name: pqs1_data_years
 transform:
+  image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd:
-  - Rscript
-  - ./flow.loc.grp.asgn.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - FileYear=$FILE_YEAR
-  - TypeFile=namedLocation
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.5
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  env:
-    LOG_LEVEL: INFO
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - ls $REPO_IN > /pfs/out/data_years.txt
 input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: pqs1_location_loader
-      glob: /pqs1/*
-  - pfs:
-      name: FILE_YEAR
-      repo: pqs1_cron_daily_and_date_control
-      glob: /data_years.txt
-parallelism_spec:
-  constant: 2
+  pfs:
+    name: REPO_IN
+    repo: pqs1_data_source_trino
+    glob: /pqs1
+    empty_files: true
 resource_requests:
-  memory: 300M
-  cpu: 2.0
+  memory: 1K
+  cpu: 0.01
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -52,10 +39,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"900M"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
+      "value": "0.5"
     }
   ]
+
