@@ -40,14 +40,14 @@ class EmlFile:
         :param database: The object containing the functions to read the needed data from the database.
         """
         self.out_path = out_path
-        self.metadata: FileMetadata = file_metadata
-        self.eml_files: ExternalEmlFiles = eml_files
+        self.metadata = file_metadata
+        self.eml_files = eml_files
         self.publication_workbook = publication_workbook
         self.package_type = package_type
-        self.timestamp: datetime = timestamp
-        self.database: EmlDatabase = database
+        self.timestamp = timestamp
+        self.database = database
         self.xml_parser = XmlParser()
-        self.eml = self.xml_parser.from_string(eml_files.get_boilerplate(), eml.Eml)
+        self.eml = self.xml_parser.from_string(eml_files.boilerplate, eml.Eml)
 
     def write(self) -> Path:
         """Write the EML file."""
@@ -58,14 +58,8 @@ class EmlFile:
         path.write_text(content)
         return path
 
-    def _render_content(self) -> str:
-        """Render the EML file objects into an XML string."""
-        config = SerializerConfig(pretty_print=True)
-        serializer = XmlSerializer(config=config)
-        return serializer.render(self.eml)
-
     def _add_content(self) -> None:
-        """Populate the needed EML data objects to create the file content."""
+        """Populate the Eml object representing the file content."""
         self._set_dataset_id(self.metadata.path_elements.data_product_id)
         self._set_dataset_title()
         creator_without_id = self._set_creator()
@@ -82,6 +76,12 @@ class EmlFile:
         self._set_dataset_id_title_dates()
         self._set_data_tables()
         self._set_additional_metadata()
+
+    def _render_content(self) -> str:
+        """Render the Eml object into an XML string."""
+        config = SerializerConfig(pretty_print=True)
+        serializer = XmlSerializer(config=config)
+        return serializer.render(self.eml)
 
     def _set_dataset_id(self, product_id: str) -> None:
         """Add the dataset identifier to the EML dataset."""
@@ -102,11 +102,11 @@ class EmlFile:
 
     def _set_creator(self) -> eml.ResponsibleParty:
         """Add the creator to the EML dataset."""
-        contact_eml_file = self.eml_files.get_contact()
+        contact_eml_file = self.eml_files.contact
         creator = self.xml_parser.from_string(contact_eml_file, eml.ResponsibleParty)
         self.eml.dataset.creator.clear()
         self.eml.dataset.creator.append(creator)
-        # Used by other elements.
+        # The 'creator_without_id' is needed by other elements.
         creator_without_id = eml.ResponsibleParty()
         creator_without_id.organization_name.append(creator.organization_name[0])
         creator_without_id.individual_name.extend(creator.individual_name)
@@ -118,7 +118,7 @@ class EmlFile:
 
     def _set_intellectual_rights(self):
         """Add the intellectual rights to the EML dataset."""
-        intellectual_rights_file = self.eml_files.get_intellectual_rights()
+        intellectual_rights_file = self.eml_files.intellectual_rights
         text_type = self.xml_parser.from_string(intellectual_rights_file, eml.TextType)
         self.eml.dataset.intellectual_rights = text_type
 
@@ -195,7 +195,7 @@ class EmlFile:
     def _set_additional_metadata(self):
         """Add the additional metadata section to the EML document."""
         # get general NEON units metadata.
-        unit_types_file = self.eml_files.get_unit_types()
+        unit_types_file = self.eml_files.unit_types
         unit_types_metadata = self.xml_parser.from_string(unit_types_file, eml.EmlAdditionalMetadataMetadata)
         unit_types_additional_metadata = eml.EmlAdditionalMetadata()
         unit_types_additional_metadata.metadata = unit_types_metadata
@@ -211,7 +211,7 @@ class EmlFile:
 
     def _get_custom_units(self) -> Optional[eml.EmlAdditionalMetadataMetadata]:
         """Add the NEON custom units as EML additional metadata."""
-        neon_units = NeonUnits(self.eml_files.get_units())
+        neon_units = NeonUnits(self.eml_files.units)
         unit_list = stmml.UnitList()
         unit_names = []
         for data_table_type in self.eml.dataset.data_table:

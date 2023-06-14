@@ -179,8 +179,8 @@ class EmlTest(TestCase):
                            get_value_list=self.get_value_list)
 
     def get_external_files(self) -> ExternalEmlFiles:
-        return ExternalEmlFiles(get_boilerplate=self.get_boilerplate,
-                                get_contact=self.get_contact,
-                                get_intellectual_rights=self.get_intellectual_rights,
-                                get_unit_types=self.get_unit_types,
-                                get_units=self.get_units)
+        return ExternalEmlFiles(boilerplate=self.get_boilerplate(),
+                                contact=self.get_contact(),
+                                intellectual_rights=self.get_intellectual_rights(),
+                                unit_types=self.get_unit_types(),
+                                units=self.get_units())

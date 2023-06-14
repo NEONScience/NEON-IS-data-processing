@@ -18,13 +18,13 @@ from pub_files.tests.publication_workbook.publication_workbook import get_workbo
 class VariablesFileTest(TestCase):
 
     def setUp(self) -> None:
+        site = 'CPER'
+        year = '2020'
+        month = '01'
         self.workbook: PublicationWorkbook = get_workbook('fake_value')
         self.setUpPyfakefs()
         self.in_path = Path('/in')
         self.fs.create_dir(self.in_path)
-        site = 'CPER'
-        year = '2020'
-        month = '01'
         self.out_path = Path('/out', site, year, month)
         self.fs.create_dir(self.out_path)
         self.timestamp = get_timestamp()

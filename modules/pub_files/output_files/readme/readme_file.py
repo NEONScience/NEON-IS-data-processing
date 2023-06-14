@@ -1,8 +1,7 @@
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
-import structlog
 from jinja2 import Template
 
 from pub_files.database.geolocation_geometry import Geometry
@@ -14,8 +13,6 @@ from pub_files.output_files.readme.change_log_processor import ChangeLog, get_ch
 from pub_files.output_files.readme.readme_database import ReadmeDatabase
 from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
 
-log = structlog.getLogger()
-
 
 def write_file(readme_template: str,
                out_path: Path,
@@ -24,7 +21,7 @@ def write_file(readme_template: str,
                variables_filename: str,
                positions_filename: str,
                eml_filename: str,
-               science_review_file: ScienceReviewFile,
+               science_review_file: Optional[ScienceReviewFile],
                database: ReadmeDatabase) -> Path:
     """
     Create and write to the output path a publication metadata readme file using the given template.
@@ -61,7 +58,7 @@ def write_file(readme_template: str,
                        variables_filename=variables_filename,
                        positions_filename=positions_filename,
                        eml_filename=eml_filename)
-    if science_review_file.path:
+    if science_review_file is not None:
         readme_data['science_review_filename'] = science_review_file.path.name
     else:
         readme_data['science_review_filename'] = None
