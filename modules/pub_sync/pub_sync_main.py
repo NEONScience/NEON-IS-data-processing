@@ -96,7 +96,7 @@ def main() -> None:
         get_srfs_partial = partial(get_srf_loaders, connector=connector)
         load_srfs(out_path=out_path, get_srfs=get_srfs_partial, group_prefix=group_prefix)
 
-    pub_sync(connector=connector,
+    pub_sync(connector = connector,
              data_path = data_path,
              date_path_year_index = date_path_year_index,
              date_path_month_index = date_path_month_index,
