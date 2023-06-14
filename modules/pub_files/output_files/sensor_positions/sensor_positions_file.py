@@ -12,8 +12,8 @@ from pub_files.output_files.sensor_positions.sensor_positions_database import Se
 
 
 def write_file(out_path: Path, location_path: Path, elements: PathElements, timestamp: datetime,
-          database: SensorPositionsDatabase) -> Path:
-    """Generate and write the sensor positions file to the output path."""
+               database: SensorPositionsDatabase) -> Path:
+    """Write the sensor positions file to the output path."""
     filename = get_filename(elements, timestamp=timestamp, file_type='sensor_positions', extension='csv')
     file_path = Path(out_path, filename)
     with open(file_path, 'w', encoding='UTF8', newline='') as file:
@@ -22,8 +22,7 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
         file_rows = []
         # Parse location file path for the datum elements. Assume we end at site (**/site/location/*/location_file.json)
         site = location_path.parts[-1]
-        parent = location_path.parent.parent
-        for path in parent.rglob(f'*/{site}/location/*/*.json'):
+        for path in location_path.parent.parent.rglob(f'*/{site}/location/*/*.json'):
             if path.is_file() and path.name.startswith('CFGLOC'):
                 named_location_name = path.stem
                 (row_hor_ver, row_location_id, row_description) = get_named_location_data(database, named_location_name)
@@ -87,6 +86,7 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                             file_rows.append(row)
         writer.writerows(file_rows)
     return file_path
+
 
 def get_column_names() -> List[str]:
     return ['HOR.VER',

@@ -9,13 +9,14 @@ from typing import List
 from pyfakefs.fake_filesystem import FakeFilesystem
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from pub_files.data_product import DataProduct
+from pub_files.data_product import DataProduct, build_data_product
 from pub_files.database.file_variables import FileVariables
 from pub_files.database.science_review_flags import ScienceReviewFlag
 from pub_files.input_files.file_metadata import FileMetadata, DataFile, PathElements, DataFiles
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.science_review.science_review import write_file
+from pub_files.output_files.science_review.science_review_database import ScienceReviewDatabase
 
 
 class ScienceReviewFileTest(TestCase):
@@ -38,13 +39,11 @@ class ScienceReviewFileTest(TestCase):
         file_metadata.data_product = get_data_product(path_elements.data_product_id)
         file_metadata.package_output_path = self.out_path
         timestamp = get_timestamp()
+        database = ScienceReviewDatabase(get_flags=get_flags,
+                                         get_term_name=get_term_name,
+                                         get_variables=self.get_is_file_variables)
         # write the file
-        science_review_file = write_file(file_metadata,
-                                         'basic',
-                                         timestamp,
-                                         self.get_is_file_variables,
-                                         get_flags,
-                                         get_term_name)
+        science_review_file = write_file(file_metadata, 'basic', timestamp, database)
         # check the output
         expected_filename = get_filename(elements=path_elements,
                                          file_type='science_review_flags',
@@ -136,20 +135,20 @@ def get_path_elements() -> PathElements:
 
 def get_data_product(data_product_id) -> DataProduct:
     """Create a test DataProduct object."""
-    return DataProduct(abstract='Abstract',
-                       basic_description='Basic description of data product.',
-                       category='Category',
-                       data_product_id=data_product_id,
-                       description='Data product description.',
-                       design_description='Design description.',
-                       expanded_description='Expanded description',
-                       name='Data product name.',
-                       remarks='Data product remarks',
-                       sensor='Sensor.',
-                       short_name='Short name.',
-                       study_description='Study description.',
-                       supplier='TIS',
-                       type_name='The type name.')
+    return build_data_product(abstract='Abstract',
+                              basic_description='Basic description of data product.',
+                              category='Category',
+                              data_product_id=data_product_id,
+                              description='Data product description.',
+                              design_description='Design description.',
+                              expanded_description='Expanded description',
+                              name='Data product name.',
+                              remarks='Data product remarks',
+                              sensor='Sensor.',
+                              short_name='Short name.',
+                              study_description='Study description.',
+                              supplier='TIS',
+                              type_name='The type name.')
 
 
 if __name__ == '__main__':

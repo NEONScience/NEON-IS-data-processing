@@ -46,10 +46,9 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
 
 def read_flags(metadata: FileMetadata, database: ScienceReviewDatabase) -> list[ScienceReviewFlag]:
     path_elements = metadata.path_elements
-    data_product_id = metadata.data_product.data_product_id
     data_start_date = metadata.data_files.min_time
     data_end_date = metadata.data_files.max_time
-    data_product_number = get_data_product_number(data_product_id)
+    data_product_number = get_data_product_number(metadata.data_product.data_product_id)
     return database.get_flags(data_product_number, path_elements.site, data_start_date, data_end_date)
 
 

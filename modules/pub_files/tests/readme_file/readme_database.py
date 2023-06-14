@@ -7,7 +7,7 @@ from typing import List
 
 from pyfakefs.fake_filesystem import FakeFilesystem
 
-from pub_files.data_product import DataProduct
+from pub_files.data_product import DataProduct, build_data_product
 from pub_files.database.geolocation_geometry import Geometry
 from pub_files.database.log_entries import LogEntry
 from pub_files.output_files.readme.readme_file import ReadmeDatabase
@@ -82,17 +82,17 @@ def get_data_product(fs: FakeFilesystem, _data_product_id: str) -> DataProduct:
         basic_description: str = data['basic_desc']
         expanded_desc: str = data['expanded_desc']
         remarks: str = data['remarks']
-    return DataProduct(data_product_id=data_product_id,
-                       name=dp_name,
-                       type_name='TIS Data Product Type',
-                       description=dp_description,
-                       category=category,
-                       supplier=supplier,
-                       short_name=dp_shortname,
-                       abstract=dp_abstract,
-                       design_description=design_description,
-                       study_description=study_description,
-                       sensor=sensor,
-                       basic_description=basic_description,
-                       expanded_description=expanded_desc,
-                       remarks=remarks)
+    return build_data_product(data_product_id=data_product_id,
+                              name=dp_name,
+                              type_name='TIS Data Product Type',
+                              description=dp_description,
+                              category=category,
+                              supplier=supplier,
+                              short_name=dp_shortname,
+                              abstract=dp_abstract,
+                              design_description=design_description,
+                              study_description=study_description,
+                              sensor=sensor,
+                              basic_description=basic_description,
+                              expanded_description=expanded_desc,
+                              remarks=remarks)
