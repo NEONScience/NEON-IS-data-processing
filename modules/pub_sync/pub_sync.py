@@ -25,8 +25,8 @@ def pub_sync(connector: DbConnector,
              data_path_site_index: str,
              data_path_date_index: str,
              data_path_package_index: str,
-             dp_ids: List(str),
-             sites: List(str),
+             dp_ids: List[str],
+             sites: List[str],
              change_by: str) -> None:
 
 # Get pub months to evaluate
