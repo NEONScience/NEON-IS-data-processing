@@ -91,7 +91,13 @@ def main() -> None:
     dp_ids = env.list('PRODUCTS')
     sites = env.list('SITES')
     change_by = env.str('CHANGE_BY')
-    pub_sync(data_path = data_path,
+
+    with closing(DbConnector(db_config)) as connector:
+        get_srfs_partial = partial(get_srf_loaders, connector=connector)
+        load_srfs(out_path=out_path, get_srfs=get_srfs_partial, group_prefix=group_prefix)
+
+    pub_sync(connector=connector,
+             data_path = data_path,
              date_path_year_index = date_path_year_index,
              date_path_month_index = date_path_month_index,
              data_path_product_index = data_path_product_index,

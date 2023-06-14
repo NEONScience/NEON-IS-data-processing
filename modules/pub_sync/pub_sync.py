@@ -17,7 +17,8 @@ from data_access.remove_pub import remove_pub
 log = structlog.get_logger()
 
 
-def pub_sync(data_path: Path,
+def pub_sync(connector: DbConnector,
+             data_path: Path,
              date_path_year_index: str,
              date_path_month_index: str,
              data_path_product_index: str,
