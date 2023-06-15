@@ -11,6 +11,7 @@ from pub_files.input_files.file_metadata import PathElements, DataFile, DataFile
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.science_review.science_review_file import ScienceReviewFile, Term
+from pub_files.output_files.variables.variables_database import VariablesDatabase
 from pub_files.output_files.variables.variables_file import write_file, format_data_product_name
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 
@@ -41,13 +42,14 @@ class VariablesFileTest(TestCase):
         expected_filename = get_filename(self.elements, file_type='variables', timestamp=self.timestamp,
                                          extension='csv')
         science_review_file = self.get_science_review_file()
+        database = VariablesDatabase(get_sensor_position_variables=get_sensor_position_variables,
+                                     get_term_variables=get_term_variables)
         path = write_file(out_path=self.out_path,
                           file_metadata=self.file_metadata,
                           timestamp=self.timestamp,
                           workbook=self.workbook,
                           science_review_file=science_review_file,
-                          get_sensor_position_variables=get_sensor_position_variables,
-                          get_term_variables=get_term_variables)
+                          database=database)
         assert path.name == expected_filename
         path = Path(self.out_path, expected_filename)
         with open(path) as file:

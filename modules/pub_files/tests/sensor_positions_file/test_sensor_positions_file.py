@@ -15,7 +15,7 @@ from pub_files.database.named_locations import NamedLocation
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.main import get_timestamp
 from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsDatabase
-from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsFile
+from pub_files.output_files.sensor_positions.sensor_positions_file import write_file
 from pub_files.tests.file_date_converter import to_datetime
 
 
@@ -83,11 +83,11 @@ class PositionsFileTest(TestCase):
         database = SensorPositionsDatabase(get_geolocations=self.get_geolocations,
                                            get_named_location=self.get_named_location,
                                            get_geometry=self.get_geometry)
-        file_path = SensorPositionsFile(location_path=location_path,
-                                        out_path=self.out_path,
-                                        elements=elements,
-                                        timestamp=timestamp,
-                                        database=database).write()
+        file_path = write_file(location_path=location_path,
+                               out_path=self.out_path,
+                               elements=elements,
+                               timestamp=timestamp,
+                               database=database)
         with open(file_path, 'r') as file:
             reader = csv.reader(file)
             i = 0
