@@ -177,7 +177,7 @@ class EmlFile:
             data_table.case_sensitive = eml.DataTableTypeCaseSensitive.YES
             data_table.number_of_records = str(file.line_count)
             attribute_list = eml.AttributeList()
-            for row in self.publication_workbook.workbook_rows:
+            for row in self.publication_workbook.rows:
                 package_type = row.download_package
                 if package_type != self.package_type:
                     continue

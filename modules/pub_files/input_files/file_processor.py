@@ -5,7 +5,7 @@ from typing import Tuple, List, Dict, NamedTuple
 import pandas
 
 import common.date_formatter as date_formatter
-from pub_files.database.publication_workbook import PublicationWorkbook
+from pub_files.database.publication_workbook import PublicationWorkbook, get_file_description
 from pub_files.input_files.file_metadata import DataFile, FileMetadata, PathElements, DataFiles
 from pub_files.input_files.file_processor_database import FileProcessorDatabase
 from pub_files.input_files.filename_parser import parse_filename, FilenameParts
@@ -46,7 +46,7 @@ def process_files(in_path: Path, out_path: Path, in_path_parse_index: int,
             if is_first_package and is_first_file:  # only read the publication workbook once
                 workbook = database.get_workbook(file_metadata.data_product_id)
                 is_first_package = False
-            file_description = workbook.get_file_description(filename_parts.table_name, package_type)
+            file_description = get_file_description(workbook, filename_parts.table_name, package_type)
             data_files.append(DataFile(filename=path.name,
                                        description=file_description,
                                        line_count=get_file_line_count(path),

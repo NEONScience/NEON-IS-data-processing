@@ -36,7 +36,7 @@ def write_file(out_path: Path,
     with open(path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat'])
-        write_rows(writer, workbook.workbook_rows)
+        write_rows(writer, workbook.rows)
         write_sensor_positions_variables(writer, database.get_sensor_position_variables())
         if science_review_file is not None:
             write_science_review_variables(writer, file_metadata.data_files.files, science_review_file.terms,
