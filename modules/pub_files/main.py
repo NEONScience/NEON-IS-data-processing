@@ -10,7 +10,7 @@ import pub_files.output_files.variables.variables_file as variables_file
 from common import log_config
 from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
-from pub_files.application_config import ApplicationConfig
+from pub_files.application_config import configure_from_environment, ApplicationConfig
 from pub_files.external_files.external_files import get_external_files
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.input_files.file_processor import process_files, PublicationPackage
@@ -28,7 +28,7 @@ from pub_files.output_files.variables.variables_database import get_variables_da
 
 def main() -> None:
     """Generate the publication metadata files."""
-    config = ApplicationConfig()
+    config: ApplicationConfig = configure_from_environment()
     log_config.configure(config.log_level)
     db_config = read_from_mount(config.db_secrets_path)
     timestamp = get_timestamp()
