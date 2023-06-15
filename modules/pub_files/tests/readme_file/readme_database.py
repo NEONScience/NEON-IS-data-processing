@@ -10,6 +10,7 @@ from pyfakefs.fake_filesystem import FakeFilesystem
 from pub_files.data_product import DataProduct, build_data_product
 from pub_files.database.geolocation_geometry import Geometry
 from pub_files.database.log_entries import LogEntry
+from pub_files.geometry import build_geometry
 from pub_files.output_files.readme.readme_file import ReadmeDatabase
 from pub_files.tests.file_date_converter import to_datetime
 
@@ -26,7 +27,7 @@ def root():
 
 
 def get_geometry(_location_name: str) -> Geometry:
-    return Geometry(geometry='POINT Z (-104.745591 40.815536 1653.9151)', srid=4979)
+    return build_geometry(geometry='POINT Z (-104.745591 40.815536 1653.9151)', srid=4979)
 
 
 def get_keywords(_data_product_id: str):

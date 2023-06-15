@@ -1,7 +1,7 @@
 from contextlib import closing
 
 from data_access.db_connector import DbConnector
-from pub_files.geometry import Geometry
+from pub_files.geometry import Geometry, build_geometry
 
 
 def get_geometry(connector: DbConnector, named_location_name: str) -> Geometry:
@@ -29,4 +29,4 @@ def get_geometry(connector: DbConnector, named_location_name: str) -> Geometry:
             exit(1)
         geometry: str = row[0]
         srid: int = row[1]
-    return Geometry(geometry=geometry, srid=srid)
+    return build_geometry(geometry=geometry, srid=srid)

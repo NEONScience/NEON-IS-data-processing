@@ -11,7 +11,7 @@ from pub_files.database.named_locations import NamedLocation
 from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.database.units import EmlUnitType
 from pub_files.database.value_list import Value
-from pub_files.geometry import Geometry
+from pub_files.geometry import Geometry, build_geometry
 from pub_files.input_files.file_metadata import PathElements, FileMetadata, DataFiles, DataFile
 from pub_files.input_files.manifest_file import ManifestFile
 from pub_files.main import get_timestamp
@@ -109,7 +109,7 @@ class EmlTest(TestCase):
 
     @staticmethod
     def get_geometry(_name) -> Geometry:
-        return Geometry(geometry='POINT Z (-104.745591 40.815536 1653.9151)', srid=4979)
+        return build_geometry(geometry='POINT Z (-104.745591 40.815536 1653.9151)', srid=4979)
 
     @staticmethod
     def get_unit_eml_type(_unit: str) -> EmlUnitType:

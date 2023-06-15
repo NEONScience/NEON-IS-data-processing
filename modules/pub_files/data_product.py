@@ -35,14 +35,16 @@ def build_data_product(*,
                        basic_description: str,
                        expanded_description: str,
                        remarks: str) -> DataProduct:
+    short_data_product_id = get_data_product_number(data_product_id)
+    supplier_full_name = get_supplier_full_name(supplier)
     return DataProduct(data_product_id=data_product_id,
-                       short_data_product_id=get_data_product_number(data_product_id),
+                       short_data_product_id=short_data_product_id,
                        name=name,
                        type_name=type_name,
                        description=description,
                        category=category,
                        supplier=supplier,
-                       supplier_full_name=get_supplier_full_name(supplier),
+                       supplier_full_name=supplier_full_name,
                        short_name=short_name,
                        abstract=abstract,
                        design_description=design_description,

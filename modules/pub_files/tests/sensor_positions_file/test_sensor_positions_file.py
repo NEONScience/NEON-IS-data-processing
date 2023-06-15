@@ -12,6 +12,7 @@ from data_access.types.property import Property
 from pub_files.database.geolocation_geometry import Geometry
 from pub_files.database.geolocations import GeoLocation
 from pub_files.database.named_locations import NamedLocation
+from pub_files.geometry import build_geometry
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.main import get_timestamp
 from pub_files.output_files.sensor_positions.sensor_positions_file import SensorPositionsDatabase
@@ -106,7 +107,7 @@ class PositionsFileTest(TestCase):
     def get_geometry(_named_location: str) -> Geometry:
         """Mock function to return the geometry for a location."""
         geometry = 'POLYGON Z ((-104.746013 40.815892 1654.009392,-104.745973 40.815922 1654.052064))'
-        return Geometry(geometry=geometry, srid=4979)
+        return build_geometry(geometry=geometry, srid=4979)
 
     def get_properties(self, location_name) -> List[Property]:
         """Read properties from a file."""

@@ -43,7 +43,7 @@ def write_file(readme_template: str,
     log_entries: List[LogEntry] = database.get_log_entries(data_product_id)
     change_log_entries: List[ChangeLog] = get_change_log(data_product_id, log_entries)
     geometry: Geometry = database.get_geometry(elements.site)
-    coordinates: str = geometry.format_coordinates()
+    coordinates: str = geometry.formatted_coordinates
     readme_data = dict(timestamp=timestamp,
                        site=elements.site,
                        domain=elements.domain,
