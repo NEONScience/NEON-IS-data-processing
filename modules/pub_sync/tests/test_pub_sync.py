@@ -43,16 +43,16 @@ class PubSyncTest(DatabaseBackedTest):
         change_by = "pachyderm"
 
         pub_sync(connector = connector,
-             data_path = self.data_path,
-             date_path_year_index = self.date_path_year_index,
-             date_path_month_index = self.date_path_month_index,
-             data_path_product_index = self.data_path_product_index,
-             data_path_site_index = self.data_path_site_index,
-             data_path_date_index = self.data_path_date_index,
-             data_path_package_index = self.data_path_package_index,
-             dp_ids = self.dp_ids,
-             sites = self.sites,
-             change_by = self.change_by)
+             data_path = data_path,
+             date_path_year_index = date_path_year_index,
+             date_path_month_index = date_path_month_index,
+             data_path_product_index = data_path_product_index,
+             data_path_site_index = data_path_site_index,
+             data_path_date_index = data_path_date_index,
+             data_path_package_index = data_path_package_index,
+             dp_ids = dp_ids,
+             sites = sites,
+             change_by = change_by)
         self.check_output()
 
 
