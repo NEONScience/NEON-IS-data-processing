@@ -16,7 +16,7 @@ from pub_files.input_files.file_metadata import PathElements, FileMetadata, Data
 from pub_files.input_files.manifest_file import ManifestFile
 from pub_files.main import get_timestamp
 from pub_files.output_files.eml.eml_database import EmlDatabase
-from pub_files.output_files.eml.eml_file import EmlFile
+from pub_files.output_files.eml.eml_file import EmlFileConfig, write_eml_file
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 from pub_files.tests.input_file_processor_data.file_processor_database import get_data_product
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
@@ -44,14 +44,17 @@ class EmlTest(TestCase):
         self.add_units_file()
 
     def test_write_file(self):
-        file_path = EmlFile(out_path=self.out_path,
-                           file_metadata=self.get_file_metadata(),
-                           eml_files=self.get_external_files(),
-                           timestamp=self.timestamp,
-                           database=self.get_database(),
-                           publication_workbook=self.workbook,
-                           package_type='basic').write()
-        # print(f'\ncontent:\n\n{file_path.read_text(encoding="utf-8")}\n\n')
+        eml_file_config = EmlFileConfig(
+            out_path=self.out_path,
+            metadata=self.get_file_metadata(),
+            eml_templates=self.get_external_files(),
+            timestamp=self.timestamp,
+            database=self.get_database(),
+            workbook=self.workbook,
+            package_type='basic'
+        )
+        file_path = write_eml_file(eml_file_config)
+        print(f'\ncontent:\n\n{file_path.read_text(encoding="utf-8")}\n\n')
         assert file_path.exists()
 
     def add_boilerplate_file(self) -> None:

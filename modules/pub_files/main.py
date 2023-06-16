@@ -17,7 +17,7 @@ from pub_files.input_files.file_processor import process_files, PublicationPacka
 from pub_files.input_files.file_processor_database import get_file_processor_database
 from pub_files.input_files.path_parser import parse_path, PathParts
 from pub_files.output_files.eml.eml_database import get_eml_database
-from pub_files.output_files.eml.eml_file import EmlFile
+from pub_files.output_files.eml.eml_file import EmlFileConfig, write_eml_file
 from pub_files.output_files.readme.readme_database import get_readme_database
 from pub_files.output_files.science_review.science_review import write_file as write_science_review_file
 from pub_files.output_files.science_review.science_review_database import get_science_review_database
@@ -62,13 +62,14 @@ def main() -> None:
                                                                  timestamp=timestamp,
                                                                  database=sensor_positions_database)
                     # write eml file
-                    eml_path = EmlFile(out_path=file_metadata.package_output_path,
-                                       file_metadata=file_metadata,
-                                       eml_files=external_files.eml_files,
-                                       publication_workbook=publication_package.workbook,
-                                       package_type=package_type,
-                                       timestamp=timestamp,
-                                       database=eml_database).write()
+                    eml_file_config = EmlFileConfig(out_path=file_metadata.package_output_path,
+                                                    metadata=file_metadata,
+                                                    eml_templates=external_files.eml_files,
+                                                    workbook=publication_package.workbook,
+                                                    package_type=package_type,
+                                                    timestamp=timestamp,
+                                                    database=eml_database)
+                    eml_path = write_eml_file(eml_file_config)
                     # write science review file
                     science_review_file = write_science_review_file(file_metadata=file_metadata,
                                                                     package_type=package_type,
