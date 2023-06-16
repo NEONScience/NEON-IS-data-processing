@@ -15,7 +15,7 @@ from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.eml.eml_coverage import EmlCoverage
 from pub_files.output_files.eml.eml_database import EmlDatabase
-from pub_files.output_files.eml.eml_measurement_scale import MeasurementScale
+from pub_files.output_files.eml.eml_measurement_scale import make_get_scale
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 from pub_files.output_files.eml.neon_units import NeonUnits
 from pub_files.output_files.filename_format import format_timestamp
@@ -168,7 +168,7 @@ class EmlFile:
 
     def _set_data_tables(self) -> None:
         """Add the data tables to the EML dataset."""
-        measurement_scale = MeasurementScale(self.publication_workbook, self.metadata, self.database)
+        get_scale = make_get_scale(self.metadata, self.database)
         for file in self.metadata.data_files.files:
             data_table = eml.DataTableType()
             entity_name = Path(file.filename).stem
@@ -185,7 +185,7 @@ class EmlFile:
                 attribute = eml.Attribute()
                 attribute.attribute_name = field_name
                 attribute.attribute_definition = description
-                attribute.measurement_scale = measurement_scale.get_scale(row)
+                attribute.measurement_scale = get_scale(row)
                 if attribute not in attribute_list.attribute:
                     attribute_list.attribute.append(attribute)
             data_table.attribute_list = attribute_list
