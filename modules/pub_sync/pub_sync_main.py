@@ -51,6 +51,7 @@ Input parameters are specified in environment variables as follows:
         'WARN','ERROR','FATAL'
 """ 
 # ---------------------------------------------------------------------------
+
 from pathlib import Path
 import environs
 import structlog
@@ -62,8 +63,7 @@ import common.log_config as log_config
 from common.get_path_key import get_path_key
 from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
-from data_access.get_dp_pub_records import get_dp_pub_records
-from data_access.remove_pub import remove_pub
+from data_access.get_sync_pubs import get_sync_pubs
 
 log = structlog.get_logger()
 
@@ -74,35 +74,38 @@ def main() -> None:
     log_config.configure(log_level)
     db_config = read_from_mount(Path('/var/db_secret'))
     connector = DbConnector(db_config)
-    
-    date_path: Path = Path(os.environ['DATE_PATH'])
-    if 'DATA_PATH' in os.environ:
-        data_path: Path = Path(os.environ['DATA_PATH'])
-    else:
-        # It is possible that data path will not exist if there are no current publications for the date range
-        data_path = None
+
     date_path_year_index = env.int('DATE_PATH_YEAR_INDEX')
     date_path_month_index = env.int('DATE_PATH_MONTH_INDEX')
     data_path_product_index = env.int('DATA_PATH_PRODUCT_INDEX')
     data_path_site_index = env.int('DATA_PATH_SITE_INDEX')
     data_path_date_index = env.int('DATA_PATH_DATE_INDEX')
     data_path_package_index = env.int('DATA_PATH_PACKAGE_INDEX')
-    
     dp_ids = env.list('PRODUCTS')
     sites = env.list('SITES')
     change_by = env.str('CHANGE_BY')
 
-    pub_sync(connector = connector,
-             data_path = data_path,
-             date_path_year_index = date_path_year_index,
-             date_path_month_index = date_path_month_index,
-             data_path_product_index = data_path_product_index,
-             data_path_site_index = data_path_site_index,
-             data_path_date_index = data_path_date_index,
-             data_path_package_index = data_path_package_index,
-             dp_ids = dp_ids,
-             sites = sites,
-             change_by = change_by)
+    date_path: Path = Path(os.environ['DATE_PATH'])
+    if 'DATA_PATH' in os.environ:
+        data_path: Path = Path(os.environ['DATA_PATH'])
+    else:
+        # It is possible that data path will not exist if there are no current publications for the date range
+        data_path = None
+
+    with closing(DbConnector(db_config)) as connector:
+        get_sync_pubs_partial = partial(get_sync_pubs, connector=connector)
+        sync_pubs(get_sync_pubs = get_sync_pubs_partial,
+                 data_path=data_path,
+                 date_path=date_path,
+                 date_path_year_index=date_path_year_index,
+                 date_path_month_index=date_path_month_index,
+                 data_path_product_index=data_path_product_index,
+                 data_path_site_index=data_path_site_index,
+                 data_path_date_index=data_path_date_index,
+                 data_path_package_index=data_path_package_index,
+                 dp_ids=dp_ids,
+                 sites=sites,
+                 change_by=change_by)
 
   
 if __name__ == "__main__":
