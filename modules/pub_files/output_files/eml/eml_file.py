@@ -9,10 +9,10 @@ from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
 
 import pub_files.output_files.eml.stmml.stmml_1_2 as stmml
+import pub_files.output_files.eml.date_formats as date_formats
 from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import FileMetadata
-from pub_files.output_files.eml.date_formats import DateFormats
 from pub_files.output_files.eml.eml_coverage import EmlCoverage
 from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.output_files.eml.eml_measurement_scale import MeasurementScale
@@ -65,7 +65,7 @@ class EmlFile:
         creator_without_id = self._set_creator()
         self.eml.dataset.metadata_provider.clear()
         self.eml.dataset.metadata_provider.append(creator_without_id)
-        self.eml.dataset.pub_date = DateFormats.format_dashed_date(self.timestamp)
+        self.eml.dataset.pub_date = date_formats.format_dashed_date(self.timestamp)
         self.eml.dataset.language = eml.I18NNonEmptyStringType().content = 'English'
         self.eml.dataset.purpose = self.metadata.data_product.description
         self.eml.dataset.contact = creator_without_id
@@ -140,11 +140,10 @@ class EmlFile:
 
     def _set_dataset_id_title_dates(self) -> None:
         """Add the title to the dataset."""
-        formats = DateFormats(self.metadata)
-        start_date = formats.start_date
-        end_date = formats.end_date
-        start_date_dashed = formats.start_date_dashed
-        end_date_dashed = formats.end_date_dashed
+        start_date = date_formats.format_date(self.metadata.data_files.min_time)
+        end_date = date_formats.format_date(self.metadata.data_files.max_time)
+        start_date_dashed = date_formats.format_dashed_date(self.metadata.data_files.min_time)
+        end_date_dashed = date_formats.format_dashed_date(self.metadata.data_files.max_time)
         dataset_id = f'{self.eml.dataset.id[0]} {start_date}-{end_date}'
         self.eml.dataset.id.clear()
         self.eml.dataset.id.append(dataset_id)
@@ -248,7 +247,7 @@ class EmlFile:
         product_id = self.metadata.data_product.short_data_product_id
         domain = self.metadata.path_elements.domain
         site = elements.site
-        start = DateFormats.format_date(self.metadata.data_files.min_time)
-        end = DateFormats.format_date(self.metadata.data_files.max_time)
+        start = date_formats.format_date(self.metadata.data_files.min_time)
+        end = date_formats.format_date(self.metadata.data_files.max_time)
         formatted_timestamp = format_timestamp(self.timestamp)
         return f'NEON.{domain}.{site}.{product_id}.EML.{start}-{end}.{formatted_timestamp}.xml'
