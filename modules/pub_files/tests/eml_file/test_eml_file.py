@@ -18,7 +18,7 @@ from pub_files.main import get_timestamp
 from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.output_files.eml.eml_file import EmlFile
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
-from pub_files.tests.input_file_processor_data.file_processor_database import FileProcessorDatabaseMock
+from pub_files.tests.input_file_processor_data.file_processor_database import get_data_product
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 
 
@@ -27,7 +27,6 @@ class EmlTest(TestCase):
     def setUp(self) -> None:
         self.workbook: PublicationWorkbook = get_workbook('')
         self.setUpPyfakefs()
-        self.mock_database = FileProcessorDatabaseMock(self.fs)
         self.timestamp = get_timestamp()
         self.test_files_path = Path(os.path.dirname(__file__))
         self.domain = 'D10'
@@ -52,7 +51,7 @@ class EmlTest(TestCase):
                            database=self.get_database(),
                            publication_workbook=self.workbook,
                            package_type='basic').write()
-        print(f'\ncontent:\n\n{file_path.read_text(encoding="utf-8")}\n\n')
+        # print(f'\ncontent:\n\n{file_path.read_text(encoding="utf-8")}\n\n')
         assert file_path.exists()
 
     def add_boilerplate_file(self) -> None:
@@ -161,7 +160,7 @@ class EmlTest(TestCase):
                                 year=self.year,
                                 month=self.month,
                                 data_product_id=self.data_product_id)
-        data_product = self.mock_database.get_data_product(_data_product_id='unused')
+        data_product = get_data_product(_data_product_id='unused')
         file_metadata = FileMetadata()
         file_metadata.path_elements = elements
         file_metadata.data_files = self.get_data_files()
