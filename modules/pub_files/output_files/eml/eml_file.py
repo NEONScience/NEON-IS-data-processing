@@ -3,24 +3,21 @@ from pathlib import Path
 from typing import Optional
 
 import eml.eml_2_2_0 as eml
-import structlog
 from xsdata.formats.dataclass.parsers import XmlParser
 from xsdata.formats.dataclass.serializers import XmlSerializer
 from xsdata.formats.dataclass.serializers.config import SerializerConfig
 
-import pub_files.output_files.eml.stmml.stmml_1_2 as stmml
 import pub_files.output_files.eml.date_formats as date_formats
+import pub_files.output_files.eml.stmml.stmml_1_2 as stmml
 from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import FileMetadata
-from pub_files.output_files.eml.eml_coverage import EmlCoverage
+from pub_files.output_files.eml.eml_coverage import get_geographic_coverage
 from pub_files.output_files.eml.eml_database import EmlDatabase
 from pub_files.output_files.eml.eml_measurement_scale import make_get_scale
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
 from pub_files.output_files.eml.neon_units import NeonUnits
 from pub_files.output_files.filename_format import format_timestamp
-
-log = structlog.get_logger()
 
 
 class EmlFile:
@@ -128,7 +125,8 @@ class EmlFile:
         site_name = self.metadata.path_elements.site
         site_geometry: Geometry = self.database.get_geometry(site_name)
         if site_geometry:
-            geographic_coverage = EmlCoverage(site_geometry, self.metadata, self.database).get_coverage()
+            unit_name = self.database.get_spatial_unit(site_geometry.srid)
+            geographic_coverage = get_geographic_coverage(site_geometry, self.metadata, unit_name)
             coverage.geographic_coverage = geographic_coverage
         self.eml.dataset.coverage = coverage
 
