@@ -32,7 +32,7 @@ def make_get_term_number(connector: DbConnector) -> Callable[[str], str]:
         with closing(connection.cursor()) as cursor:
             cursor.execute(sql, [term_name])
             row = cursor.fetchone()
-            term_name = row[0]
-        return term_name
+            term_number = row[0]
+        return str(term_number)
 
     return get_term_number
