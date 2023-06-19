@@ -20,7 +20,7 @@ from data_access.types.dp_pub import DpPub
 
 log = structlog.get_logger()
 
-def get_sync_pubs(connector: DbConnector, pub_dates: List[Dict], dp_ids: List[str], sites: List[str], psmp_pachy: List[Dict] ) -> None:
+def get_sync_pubs(connector: DbConnector, pub_dates: List[Dict], dp_ids: List[str], sites: List[str], psmp_pachy: List[Dict], change_by: str ) -> None:
 
 # Check existing pubs for relevant site-months against what current output. Generate a list of existing pub records
 # that should be inactive (i.e. not currently output). Delete/insert inactive pub records
@@ -63,4 +63,6 @@ def get_sync_pubs(connector: DbConnector, pub_dates: List[Dict], dp_ids: List[st
 
         # Check or set the relevant portal records to inactive
         log.info(f'Found {len(psmp_portal_remove.keys())} product-site-month-packages to check/set to inactive')
+        # remove the print line later
+        print('In get_sync_pubs psmp_portal removed are ::: ', '\n            ', psmp_portal_remove)
         remove_pub(connector,psmp_portal_remove,change_by)
