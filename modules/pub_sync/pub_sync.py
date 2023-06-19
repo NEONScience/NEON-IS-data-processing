@@ -74,4 +74,5 @@ def sync_pubs(get_sync_pubs: Callable[[str], Iterator[DpPub]],
     get_sync_pubs(pub_dates = pub_dates,
                   dp_ids = dp_ids,
                   sites = sites,
-                  psmp_pachy = psmp_pachy)
+                  psmp_pachy = psmp_pachy,
+                  change_by = change_by)
