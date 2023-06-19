@@ -64,6 +64,7 @@ from common.get_path_key import get_path_key
 from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 from data_access.get_sync_pubs import get_sync_pubs
+from functools import partial
 
 log = structlog.get_logger()
 
