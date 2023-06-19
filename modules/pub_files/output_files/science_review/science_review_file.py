@@ -1,5 +1,7 @@
 from pathlib import Path
-from typing import NamedTuple, Optional, List
+from typing import NamedTuple, Optional
+
+from pub_files.database.file_variables import FileVariables
 
 
 class Term(NamedTuple):
@@ -10,4 +12,4 @@ class Term(NamedTuple):
 class ScienceReviewFile(NamedTuple):
     path: Optional[Path]
     data_product_id: Optional[str]
-    terms: List[Term]
+    variables: list[FileVariables]

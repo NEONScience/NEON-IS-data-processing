@@ -7,9 +7,9 @@ import structlog
 
 from pub_files.database.file_variables import FileVariables
 from pub_files.database.publication_workbook import PublicationWorkbook, WorkbookRow
-from pub_files.input_files.file_metadata import FileMetadata, DataFile
+from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.output_files.filename_format import get_filename
-from pub_files.output_files.science_review.science_review_file import ScienceReviewFile, Term
+from pub_files.output_files.science_review.science_review_file import ScienceReviewFile
 from pub_files.output_files.variables.variables_database import VariablesDatabase
 
 log = structlog.get_logger()
@@ -39,8 +39,7 @@ def write_file(out_path: Path,
         write_rows(writer, workbook.rows)
         write_sensor_positions_variables(writer, database.get_sensor_position_variables())
         if science_review_file is not None:
-            write_science_review_variables(writer, file_metadata.data_files.files, science_review_file.terms,
-                                           database)
+            write_science_review_variables(writer, science_review_file.variables)
     return path
 
 
@@ -77,40 +76,15 @@ def write_sensor_positions_variables(writer, file_variables: List[FileVariables]
         writer.writerow(row)
 
 
-def write_science_review_variables(writer, data_files: List[DataFile], terms: List[Term],
-                                   database: VariablesDatabase) -> None:
+def write_science_review_variables(writer, variables: List[FileVariables]) -> None:
     """Add the science review terms to the variables file."""
-    table_name = 'science_review_flags'
-    rows = []
-    for term in terms:
-        log.debug(f'Processing term: {term.name}')
-        for data_file in data_files:
-            log.debug(f'Processing data_file: {data_file.filename}')
-            data_product_name = format_data_product_name(data_file.data_product_name, term.number)
-            print(f'data_product_name: {data_product_name} term_name: {term.name}')
-            term_variables = database.get_term_variables(data_product_name, term.name)
-            description = term_variables.description
-            data_type = term_variables.data_type
-            units = term_variables.units
-            term_download_package = term_variables.download_package
-            publication_format = term_variables.publication_format
-            row = [table_name, term.name, description, data_type, units, term_download_package, publication_format]
-            if row not in rows:
-                rows.append(row)
-    writer.writerows(rows)
-
-
-def format_data_product_name(data_product_name: str, term_number: str) -> str:
-    """
-    Converts a data product name from the data filename form:
-    NEON.D10.CPER.DP1.00041.01.001.002.030
-    to the more general form used with the term number specified in the pub_field_def table:
-    NEON.DOM.SITE.DP1.00041.01.00461.HOR.VER.001.
-    """
-    parts = data_product_name.split('.')
-    parts[1] = 'DOM'
-    parts[2] = 'SITE'
-    parts[6] = 'HOR'
-    parts[7] = 'VER'
-    parts.insert(6, term_number)
-    return '.'.join(parts)
+    for variable in variables:
+        table_name = variable.table_name
+        term_name = variable.term_name
+        description = variable.description
+        data_type = variable.data_type
+        units = variable.units
+        term_download_package = variable.download_package
+        publication_format = variable.publication_format
+        row = [table_name, term_name, description, data_type, units, term_download_package, publication_format]
+        writer.writerow(row)

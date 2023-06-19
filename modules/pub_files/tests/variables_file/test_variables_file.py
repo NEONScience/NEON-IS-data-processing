@@ -12,7 +12,7 @@ from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.science_review.science_review_file import ScienceReviewFile, Term
 from pub_files.output_files.variables.variables_database import VariablesDatabase
-from pub_files.output_files.variables.variables_file import write_file, format_data_product_name
+from pub_files.output_files.variables.variables_file import write_file
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 
 
@@ -31,12 +31,6 @@ class VariablesFileTest(TestCase):
         self.timestamp = get_timestamp()
         self.elements = PathElements(domain='D10', site=site, year=year, month=month, data_product_id='DP1.20288.001')
         self.file_metadata = self.get_file_metadata()
-
-    @staticmethod
-    def test_name_format():
-        dp_name = 'NEON.DOM.SITE.DP1.00041.01.001.002.030'
-        formatted = format_data_product_name(dp_name, '00461')
-        assert formatted == 'NEON.DOM.SITE.DP1.00041.01.00461.HOR.VER.030'
 
     def test_write_file(self):
         expected_filename = get_filename(self.elements, file_type='variables', timestamp=self.timestamp,
@@ -62,8 +56,15 @@ class VariablesFileTest(TestCase):
         filename = get_filename(self.elements, file_type='sensor_review_flags', timestamp=self.timestamp,
                                 extension='csv')
         path = Path(self.out_path, filename)
-        term = Term(name='term_name', number='000461')
-        return ScienceReviewFile(path, 'NEON.DOM.SITE.DP1.20288.001.HOR.VER.030', [term])
+        file_variable = FileVariables(table_name='science_review_flags',
+                                      term_name='term_name',
+                                      data_type='data_type',
+                                      description='description',
+                                      download_package='basic',
+                                      publication_format='*.##(round)',
+                                      rank=1,
+                                      units='meters')
+        return ScienceReviewFile(path, 'NEON.DOM.SITE.DP1.20288.001.HOR.VER.030', [file_variable])
 
     def get_file_metadata(self) -> FileMetadata:
         """Returns mock object."""
