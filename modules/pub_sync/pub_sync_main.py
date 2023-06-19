@@ -49,7 +49,7 @@ Input parameters are specified in environment variables as follows:
         added to any inserted publication records
     LOG_LEVEL: The logging level to report at. Options are: 'DEBUG','INFO',
         'WARN','ERROR','FATAL'
-""" 
+"""
 # ---------------------------------------------------------------------------
 
 from pathlib import Path
@@ -67,6 +67,7 @@ from data_access.get_sync_pubs import get_sync_pubs
 from functools import partial
 
 log = structlog.get_logger()
+
 
 def main() -> None:
     # Parse input parameters and initialize
@@ -94,20 +95,20 @@ def main() -> None:
         data_path = None
 
     with closing(DbConnector(db_config)) as connector:
-        get_sync_pubs_partial = partial(get_sync_pubs, connector=connector)
-        sync_pubs(get_sync_pubs = get_sync_pubs_partial,
-                 data_path=data_path,
-                 date_path=date_path,
-                 date_path_year_index=date_path_year_index,
-                 date_path_month_index=date_path_month_index,
-                 data_path_product_index=data_path_product_index,
-                 data_path_site_index=data_path_site_index,
-                 data_path_date_index=data_path_date_index,
-                 data_path_package_index=data_path_package_index,
-                 dp_ids=dp_ids,
-                 sites=sites,
-                 change_by=change_by)
+        get_sync_pubs_partial = partial(get_sync_pubs,connector=connector)
+        sync_pubs(get_sync_pubs=get_sync_pubs_partial,
+                  data_path=data_path,
+                  date_path=date_path,
+                  date_path_year_index=date_path_year_index,
+                  date_path_month_index=date_path_month_index,
+                  data_path_product_index=data_path_product_index,
+                  data_path_site_index=data_path_site_index,
+                  data_path_date_index=data_path_date_index,
+                  data_path_package_index=data_path_package_index,
+                  dp_ids=dp_ids,
+                  sites=sites,
+                  change_by=change_by)
 
-  
+
 if __name__ == "__main__":
     main()

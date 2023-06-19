@@ -44,17 +44,17 @@ class PubSyncTest(DatabaseBackedTest):
         change_by = "pachyderm"
         data_path = None
         date_path = Path('2023/04/01')
+        pub_dates = {}
 
         def get_sync_pubs(pub_dates: List[Dict], dp_ids: List[str], sites: List[str], psmp_pachy: List[Dict]) -> List[DpPub]:
             """Mock function to return groups."""
             psmp_portal_remove = {}
-            pub_dates = {}
             date_key = '202304'
             data_interval_end = 1
             cutoff_date = '202305'
             pub_dates[date_key] = [date_key + '01T00:00:00Z',
                                    cutoff_date + '01T00:00:00Z']
-
+            print('\n======= in test get_sync_pubs date_key:::', date_key, '\n======= in test get_sync_pubs cutoff_date:::', cutoff_date)
 
 
         pub_sync.sync_pubs(get_sync_pubs = get_sync_pubs,
