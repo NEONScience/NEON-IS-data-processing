@@ -87,6 +87,7 @@ def write_science_review_variables(writer, data_files: List[DataFile], terms: Li
         for data_file in data_files:
             log.debug(f'Processing data_file: {data_file.filename}')
             data_product_name = format_data_product_name(data_file.data_product_name, term.number)
+            print(f'data_product_name: {data_product_name} term_name: {term.name}')
             term_variables = database.get_term_variables(data_product_name, term.name)
             description = term_variables.description
             data_type = term_variables.data_type
