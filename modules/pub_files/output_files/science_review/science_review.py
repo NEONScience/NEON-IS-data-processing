@@ -22,9 +22,10 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
         return None
     terms: list[Term] = []
     file_path = get_file_path(file_metadata, timestamp)
+    header = get_header(database.get_variables(), package_type)
     with open(file_path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(get_header(database.get_variables(), package_type))
+        writer.writerow(header)
         keys = []
         for flag in flags:
             key = get_key(flag)
@@ -41,7 +42,9 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
                 terms.append(term)
                 row = get_row(flag, term, horizontal_position, vertical_position, file_metadata)
                 writer.writerow(row)
-    return ScienceReviewFile(path=file_path, data_product_id=file_metadata.data_product.data_product_id, terms=terms)
+    return ScienceReviewFile(path=file_path,
+                             data_product_id=file_metadata.data_product.data_product_id,
+                             terms=get_header_terms(header, database))
 
 
 def read_flags(metadata: FileMetadata, database: ScienceReviewDatabase) -> list[ScienceReviewFlag]:
@@ -92,3 +95,11 @@ def format_date(date: datetime) -> Optional[str]:
     if date is not None:
         return datetime.strftime(date, '%Y-%m-%dT%H:%M:%SZ')
     return None
+
+
+def get_header_terms(header: list[str], database: ScienceReviewDatabase) -> list[Term]:
+    terms = []
+    for name in header:
+        number = database.get_term_number(name)
+        terms.append(Term(name=name, number=number))
+    return terms

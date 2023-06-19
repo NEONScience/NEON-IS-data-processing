@@ -41,7 +41,8 @@ class ScienceReviewFileTest(TestCase):
         timestamp = get_timestamp()
         database = ScienceReviewDatabase(get_flags=get_flags,
                                          get_term_name=get_term_name,
-                                         get_variables=self.get_is_file_variables)
+                                         get_variables=self.get_is_file_variables,
+                                         get_term_number=get_term_number)
         # write the file
         science_review_file = write_file(file_metadata, 'basic', timestamp, database)
         # check the output
@@ -113,6 +114,11 @@ def get_flags(_data_product_id, _site, _start_date, _end_date) -> List[ScienceRe
 def get_term_name(_term_number) -> str:
     """Mock function to return the term name."""
     return 'term_name'
+
+
+def get_term_number(_term_name) -> str:
+    """Mock function to return the term number."""
+    return 'term_number'
 
 
 def get_data_file() -> DataFile:

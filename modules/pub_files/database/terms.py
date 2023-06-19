@@ -19,3 +19,20 @@ def make_get_term_name(connector: DbConnector) -> Callable[[str], str]:
         return term_name
 
     return get_term_name
+
+
+def make_get_term_number(connector: DbConnector) -> Callable[[str], str]:
+    """Closure to hide connector from clients."""
+
+    def get_term_number(term_name: str) -> str:
+        """Returns the term number for the given term name."""
+        connection = connector.get_connection()
+        schema = connector.get_schema()
+        sql = f'select term_number from {schema}.term where term_name = %s'
+        with closing(connection.cursor()) as cursor:
+            cursor.execute(sql, [term_name])
+            row = cursor.fetchone()
+            term_name = row[0]
+        return term_name
+
+    return get_term_number
