@@ -115,7 +115,7 @@ transform:
     
 # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /data/pub_workbooks
-    PRODUCTS: NEON.DOM.SITE.DP1.00066.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
+    PRODUCTS: NEON.DOM.SITE.DP1.20042.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
   
 # Environment variables for pub table and srf module
     PUB_WORKBOOKS: /data/pub_workbooks
