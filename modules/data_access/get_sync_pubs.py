@@ -63,6 +63,5 @@ def get_sync_pubs(connector: DbConnector, pub_dates: List[Dict], dp_ids: List[st
 
         # Check or set the relevant portal records to inactive
         log.info(f'Found {len(psmp_portal_remove.keys())} product-site-month-packages to check/set to inactive')
-        # remove the print line later
-        print('In get_sync_pubs psmp_portal removed are ::: ', '\n            ', psmp_portal_remove)
         remove_pub(connector,psmp_portal_remove,change_by)
+        
