@@ -41,34 +41,33 @@ class PubSyncTest(DatabaseBackedTest):
         data_path_package_index = "6"
         dp_ids: List[str] = ["NEON.DOM.SITE.DP1.00066.001"]
         sites: List[str] = ["CPER","HARV","ABBY"]
-        change_by = "pachyderm"
+        change_by = "pachyderm1"
         data_path = None
         date_path = Path('2023/04/01')
         pub_dates = {}
+        psmp_portal_remove = {}
 
-        def get_sync_pubs(pub_dates: List[Dict], dp_ids: List[str], sites: List[str], psmp_pachy: List[Dict]) -> List[DpPub]:
-            """Mock function to return groups."""
-            psmp_portal_remove = {}
-            date_key = '202304'
-            data_interval_end = 1
-            cutoff_date = '202305'
+        def get_sync_pubs(pub_dates: List[Dict], dp_ids: List[str], sites: List[str], psmp_pachy: List[Dict], change_by: str) -> List[DpPub]:
+            """Mock function"""
+
+            date_key = '202301'
+            cutoff_date = '202304'
+            change_by = "pachyderm2"
             pub_dates[date_key] = [date_key + '01T00:00:00Z',
                                    cutoff_date + '01T00:00:00Z']
-            print('\n======= in test get_sync_pubs date_key:::', date_key, '\n======= in test get_sync_pubs cutoff_date:::', cutoff_date)
-
 
         pub_sync.sync_pubs(get_sync_pubs = get_sync_pubs,
-                           data_path=data_path,
-                           date_path=date_path,
-                           date_path_year_index=date_path_year_index,
-                           date_path_month_index=date_path_month_index,
-                           data_path_product_index=data_path_product_index,
-                           data_path_site_index=data_path_site_index,
-                           data_path_date_index=data_path_date_index,
-                           data_path_package_index=data_path_package_index,
-                           dp_ids=dp_ids,
-                           sites=sites,
-                           change_by=change_by)
+                           data_path = data_path,
+                           date_path = date_path,
+                           date_path_year_index = date_path_year_index,
+                           date_path_month_index = date_path_month_index,
+                           data_path_product_index = data_path_product_index,
+                           data_path_site_index = data_path_site_index,
+                           data_path_date_index = data_path_date_index,
+                           data_path_package_index = data_path_package_index,
+                           dp_ids = dp_ids,
+                           sites = sites,
+                           change_by = change_by)
 
-        self.assertTrue(change_by == 'pachyderm')
+        self.assertTrue(change_by == 'pachyderm2')
 
