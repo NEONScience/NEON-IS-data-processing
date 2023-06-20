@@ -16,7 +16,7 @@ transform:
     DATA_PATH_DATE_INDEX: "5"
     DATA_PATH_PACKAGE_INDEX: "6"
     PRODUCTS: NEON.DOM.SITE.DP1.00066.001 # CAN BE MULTIPLE, COMMA-SEPARATED
-    SITES: CPER,HARV,ABBY  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
+    SITES: BART  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
     CHANGE_BY: pachyderm
   secrets:
   - name: pdr-secret
