@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 import os
+from datetime import datetime
 from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import pub_files.tests.readme_file.readme_database as file_database
+import pub_files.tests.readme_file.readme_database as readme_database
 from pub_files.input_files.file_metadata import FileMetadata
 from pub_files.input_files.file_processor import process_files, get_file_time_span, PublicationPackage
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import format_timestamp
 from pub_files.output_files.readme.readme_file import write_file
-from pub_files.tests.input_file_processor_data.file_processor_database import FileProcessorDatabaseMock
+from pub_files.output_files.science_review.science_review_file import ScienceReviewFile, Term
+from pub_files.tests.input_file_processor_data.file_processor_database import get_file_processor_database
 
 
 class ReadmeFileTest(TestCase):
@@ -50,13 +52,12 @@ class ReadmeFileTest(TestCase):
     def test_get_time_span(self):
         path = Path(self.in_path, 'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.basic.csv')
         start_time, end_time = get_file_time_span(path)
-        assert start_time == '2020-01-02T00:00:00Z'
-        assert end_time == '2020-01-03T00:00:00Z'
+        assert datetime.strftime(start_time, '%Y-%m-%dT%H:%M:%SZ') == '2020-01-02T00:00:00Z'
+        assert datetime.strftime(end_time, '%Y-%m-%dT%H:%M:%SZ') == '2020-01-03T00:00:00Z'
 
     def test_write_file(self):
         readme_template = self.template_path.read_text()
-        mock_database = FileProcessorDatabaseMock(self.fs)
-        file_processor_database = mock_database.get_database()
+        file_processor_database = get_file_processor_database()
         publication_package: PublicationPackage = process_files(in_path=self.in_path,
                                                                 out_path=Path('/out'),
                                                                 in_path_parse_index=1,
@@ -75,8 +76,9 @@ class ReadmeFileTest(TestCase):
                    variables_filename=variables_filename,
                    positions_filename=positions_filename,
                    eml_filename=eml_filename,
-                   science_review_filename=science_review_filename,
-                   database=file_database.get_database(self.fs))
+                   science_review_file=ScienceReviewFile(Path(self.out_path, science_review_filename), 'DP1.00041.01',
+                                                         [Term(name='overflowQF', number='00053')]),
+                   database=readme_database.get_database(self.fs))
         readme_files = list(Path(self.out_path).glob('*.txt'))
         csv_files = list(Path(self.out_path).glob('*.csv'))
         files = list(Path(self.out_path).rglob('*'))

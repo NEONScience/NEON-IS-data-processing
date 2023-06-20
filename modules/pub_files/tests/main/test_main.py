@@ -75,7 +75,7 @@ class MainTest(unittest.TestCase):
         csv_count = len(list(self.basic_path.glob('*.csv')))
         eml_count = len(list(self.basic_path.glob('*.xml')))
         assert readme_count == 1
-        assert csv_count == 6  # includes 2 data files, variables, manifest, sensor positions, and science review.
+        assert csv_count == 5  # includes 2 data files, variables, manifest, sensor positions, (no science review).
         assert eml_count == 1
 
     def tearDown(self) -> None:

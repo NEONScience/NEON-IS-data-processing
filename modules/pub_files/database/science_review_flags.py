@@ -1,6 +1,6 @@
 from contextlib import closing
 from datetime import datetime
-from typing import NamedTuple, List, Callable
+from typing import NamedTuple, List
 
 from psycopg2.extras import DictCursor
 
@@ -19,13 +19,13 @@ class ScienceReviewFlag(NamedTuple):
     last_update: datetime
 
 
-def make_get_flags(connector: DbConnector) -> Callable[[str, str], List[ScienceReviewFlag]]:
+def make_get_flags(connector: DbConnector):
     """
     Returns a function accepting a data product ID and a site code and returning a list
     of science review flags.
     """
 
-    def get_flags(data_product_id: str, site: str) -> List[ScienceReviewFlag]:
+    def get_flags(data_product_id: str, site: str, start_date: datetime, end_date: datetime) -> List[ScienceReviewFlag]:
         flags = []
         connection = connector.get_connection()
         schema = connector.get_schema()
@@ -43,14 +43,16 @@ def make_get_flags(connector: DbConnector) -> Callable[[str, str], List[ScienceR
             from 
                 {schema}.science_review 
             where 
-                meas_strm_name like '%{data_product_id}%'
+                meas_strm_name like '%%{data_product_id}%%'
             and 
-                meas_strm_name like '%{site}%'
+                meas_strm_name like '%%{site}%%'
+            and
+                start_date <= %(data_end_date)s and end_date >= %(data_start_date)s
             order by 
                 id desc
         '''
         with closing(connection.cursor(cursor_factory=DictCursor)) as cursor:
-            cursor.execute(sql)
+            cursor.execute(sql, dict(data_start_date=start_date, data_end_date=end_date))
             rows = cursor.fetchall()
             for row in rows:
                 flag_id = row['id']

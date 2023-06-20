@@ -15,4 +15,4 @@ class PublicationWorkbookTest(DatabaseBackedTest):
         dp_config = read_from_environment()
         data_product_id = 'NEON.DOM.SITE.DP1.00001.001'
         publication_workbook: PublicationWorkbook = get_workbook(DbConnector(dp_config), data_product_id)
-        assert publication_workbook.workbook_rows is not None
+        assert publication_workbook.rows is not None

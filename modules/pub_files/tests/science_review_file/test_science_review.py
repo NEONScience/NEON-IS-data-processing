@@ -9,14 +9,14 @@ from typing import List
 from pyfakefs.fake_filesystem import FakeFilesystem
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from pub_files.data_product import DataProduct
+from pub_files.data_product import DataProduct, build_data_product
 from pub_files.database.file_variables import FileVariables
 from pub_files.database.science_review_flags import ScienceReviewFlag
 from pub_files.input_files.file_metadata import FileMetadata, DataFile, PathElements, DataFiles
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.science_review.science_review import write_file
-from pub_files.output_files.variables.variables_file_database import VariablesDatabase
+from pub_files.output_files.science_review.science_review_database import ScienceReviewDatabase
 
 
 class ScienceReviewFileTest(TestCase):
@@ -39,20 +39,20 @@ class ScienceReviewFileTest(TestCase):
         file_metadata.data_product = get_data_product(path_elements.data_product_id)
         file_metadata.package_output_path = self.out_path
         timestamp = get_timestamp()
-        variables_database = VariablesDatabase(get_sensor_positions=None,
-                                               get_is_science_review=self.get_is_science_review,
-                                               get_sae_science_review=None)
+        database = ScienceReviewDatabase(get_flags=get_flags,
+                                         get_term_name=get_term_name,
+                                         get_variables=self.get_is_file_variables)
         # write the file
-        file_path = write_file(file_metadata, 'basic', timestamp, variables_database, get_flags, get_term_name)
+        science_review_file = write_file(file_metadata, 'basic', timestamp, database)
         # check the output
         expected_filename = get_filename(elements=path_elements,
                                          file_type='science_review_flags',
                                          timestamp=timestamp,
                                          extension='csv')
-        assert file_path.name == expected_filename
-        print(f'\n\nfile contents:\n\n{file_path.read_text()}\n')
+        assert science_review_file.path.name == expected_filename
+        print(f'\n\nfile contents:\n\n{science_review_file.path.read_text()}\n')
 
-    def get_is_science_review(self) -> List[FileVariables]:
+    def get_is_file_variables(self) -> List[FileVariables]:
         """Returns test variables."""
         return self.load_file_variables(self.fs)
 
@@ -80,38 +80,46 @@ class ScienceReviewFileTest(TestCase):
         return file_variables
 
 
-def get_flags(_data_product_id, _site) -> List[ScienceReviewFlag]:
+def get_flags(_data_product_id, _site, _start_date, _end_date) -> List[ScienceReviewFlag]:
     """Mock function to return the flags."""
     start_date = datetime.now()
     end_date = datetime.now()
     stream_name = 'NEON.D10.CPER.DP1.00041.001.03937.000.040.030'
     user_name = 'username@battelleecology.org'
-    user_comment = 'Suspected mis-application of calibration: Issue resolved by reprocessing - flag removed.'
+    user_comment = 'Suspected mis-application of calibration: Issue resolved by reprocessing - flag removed'
     create_date = datetime.now()
     last_update = datetime.now()
-    flag = ScienceReviewFlag(id=100,
-                             start_date=start_date,
-                             end_date=end_date,
-                             stream_name=stream_name,
-                             user_name=user_name,
-                             user_comment=user_comment,
-                             flag=1,
-                             create_date=create_date,
-                             last_update=last_update)
-    return [flag]
+    flag1 = ScienceReviewFlag(id=100,
+                              start_date=start_date,
+                              end_date=end_date,
+                              stream_name=stream_name,
+                              user_name=user_name,
+                              user_comment=user_comment,
+                              flag=1,
+                              create_date=create_date,
+                              last_update=last_update)
+    flag2 = ScienceReviewFlag(id=101,
+                              start_date=start_date,
+                              end_date=end_date,
+                              stream_name=stream_name,
+                              user_name=user_name,
+                              user_comment=user_comment,
+                              flag=1,
+                              create_date=create_date,
+                              last_update=last_update)
+    return [flag1, flag2]
 
 
 def get_term_name(_term_number) -> str:
     """Mock function to return the term name."""
-    return 'termName'
-
+    return 'term_name'
 
 def get_data_file() -> DataFile:
     """Create a test DataFile object."""
     name = 'NEON.D10.CPER.DP1.00041.001.002.506.001.ST_1_minute.2020-01-02.basic.csv'
     description = 'File description'
     line_count = 100
-    return DataFile(name, description, line_count)
+    return DataFile(name, description, line_count, 'NEON.D10.CPER.DP1.00041.001.002.506.001')
 
 
 def get_path_elements() -> PathElements:
@@ -126,20 +134,20 @@ def get_path_elements() -> PathElements:
 
 def get_data_product(data_product_id) -> DataProduct:
     """Create a test DataProduct object."""
-    return DataProduct(abstract='Abstract',
-                       basic_description='Basic description of data product.',
-                       category='Category',
-                       data_product_id=data_product_id,
-                       description='Data product description.',
-                       design_description='Design description.',
-                       expanded_description='Expanded description',
-                       name='Data product name.',
-                       remarks='Data product remarks',
-                       sensor='Sensor.',
-                       short_name='Short name.',
-                       study_description='Study description.',
-                       supplier='TIS',
-                       type_name='The type name.')
+    return build_data_product(abstract='Abstract',
+                              basic_description='Basic description of data product.',
+                              category='Category',
+                              data_product_id=data_product_id,
+                              description='Data product description.',
+                              design_description='Design description.',
+                              expanded_description='Expanded description',
+                              name='Data product name.',
+                              remarks='Data product remarks',
+                              sensor='Sensor.',
+                              short_name='Short name.',
+                              study_description='Study description.',
+                              supplier='TIS',
+                              type_name='The type name.')
 
 
 if __name__ == '__main__':

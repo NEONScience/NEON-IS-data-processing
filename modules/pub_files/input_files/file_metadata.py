@@ -11,6 +11,7 @@ class DataFile(NamedTuple):
     filename: str
     description: str
     line_count: int
+    data_product_name: str
 
 
 class DataFiles(NamedTuple):

@@ -55,6 +55,8 @@
 #   Cove Sturtevant (2023-03-08)
 #     Add support for writing object of class arrow_dplyr_query
 #     Support currently limited to auto-detecting schema
+#   Cove Sturtevant (2023-06-06)
+#     Refactor determination of dictionary encoding for performance
 ##############################################################################################
 def.wrte.parq <- function(data,
                           NameFile,
@@ -96,10 +98,8 @@ def.wrte.parq <- function(data,
       log$debug(base::paste0('Auto-creating schema for output file ',NameFile))
     }
   
+    # Converted to arrow table
     # Use schema attached as attribute to the data, or auto-construct it from the data frame.
-    # Note: only data frames will be converted to arrow table. This function also works to 
-    #       pass through data that is already in class arrow_table or arrow_dplyr_query with 
-    #       auto-create schema
     if("data.frame" %in% base::class(data)){
       
       if(!base::is.null(schmData)){
@@ -120,6 +120,9 @@ def.wrte.parq <- function(data,
       }
       
       data <- arrow::arrow_table(data, schema=schmData)
+      
+    } else if ("arrow_dplyr_query" %in% base::class(data)){
+      data <- arrow::as_arrow_table(data, schema=schmData)
     }
 
   } else {
@@ -142,7 +145,7 @@ def.wrte.parq <- function(data,
       typeVar <- NEONprocIS.base::def.schm.parq.pars(Schm,log=log)
       
     }
-      
+    
     # Rename the variables to match the schema
     if(numVar != base::length(typeVar$name)){
       log$error(base::paste0('Number of variables in the data do not match number of variables in the schema for output file ',NameFile))
@@ -159,20 +162,29 @@ def.wrte.parq <- function(data,
   }
   
   # Determine whether to use dictionary encoding for each variable
-  # Works for both arrow tables and class arrow_dplyr_query
    if (base::is.null(Dict)){
-    # NOTE: If upgrade to arrow 11, should be able do use n_distinct() without first collecting to save memory
-    library(dplyr)
-    varData <- base::names(data)
-    numUniq <- base::rep(FALSE,times=base::length(varData))
-    base::names(numUniq) <- varData
-    for (varIdx in varData){
-      numUniq[varIdx]  <- data %>%
-        dplyr::select(dplyr::all_of(varIdx)) %>%
-        dplyr::collect() %>%
-        dplyr::n_distinct() 
-    }
-    Dict <- numUniq < 0.7*numRow
+
+     varData <- base::names(data)
+     numUniq <- base::lapply(varData,FUN=function(varIdx){
+       base::length(base::unique(data$GetColumnByName(varIdx)))
+     })
+     base::names(numUniq) <- varData
+     Dict <- numUniq < 0.7*numRow
+
+     # This is slow, especially for a large number of columns. Replacement above after converting to arrow table.
+     # Works for both arrow tables and class arrow_dplyr_query
+     # NOTE: If upgrade to arrow 11, should be able do use n_distinct() without first collecting to save memory
+     # library(dplyr)
+     # varData <- base::names(data)
+     # numUniq <- base::rep(FALSE,times=base::length(varData))
+     # base::names(numUniq) <- varData
+     # for (varIdx in varData){
+     #    numUniq[varIdx]  <- data %>%
+     #    dplyr::select(dplyr::all_of(varIdx)) %>%
+     #    dplyr::collect() %>%
+     #    dplyr::n_distinct() 
+     # }
+     # Dict <- numUniq < 0.7*numRow
   }
   log$debug(base::paste0('Dictionary settings per variable: ',base::paste0(Dict,collapse=' '), ' for output file ',NameFile))
   

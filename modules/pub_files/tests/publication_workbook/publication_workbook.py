@@ -35,4 +35,4 @@ def get_workbook(_data_product_id) -> PublicationWorkbook:
                                        lov_code=lov_code,
                                        table_description=table_description)
             workbook_rows.append(workbook_row)
-    return PublicationWorkbook(workbook_rows=workbook_rows, file_descriptions=file_descriptions)
+    return PublicationWorkbook(rows=workbook_rows, file_descriptions=file_descriptions)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import unittest
+from datetime import datetime
 from typing import List, Callable
 
 from data_access.db_config_reader import read_from_environment
@@ -15,6 +16,9 @@ class ScienceReviewFlagTest(DatabaseBackedTest):
         self.configure_mount()
         db_config = read_from_environment()
         connector = DbConnector(db_config)
-        get_flags: Callable[[str, str], List[ScienceReviewFlag]] = make_get_flags(connector)
-        flags = get_flags('DP1.00023.001', 'OAES')
+        get_flags: Callable[[str, str, datetime, datetime], List[ScienceReviewFlag]] = make_get_flags(connector)
+        date_format = '%Y-%m-%d'
+        start_date = datetime.strptime('2000-01-01', date_format)
+        end_date = datetime.strptime('2025-06-01', date_format)
+        flags = get_flags('DP1.00023.001', 'OAES', start_date, end_date)
         assert len(flags) == 18
