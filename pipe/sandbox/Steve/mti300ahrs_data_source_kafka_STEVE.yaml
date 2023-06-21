@@ -63,9 +63,9 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/mti300ahrs/*/*/*"
 parallelism_spec:
-  constant: 5
+  constant: 10
 resource_requests:
-  memory: 1G
+  memory: 6G
   cpu: 1.3
 autoscaling: true
 scheduling_spec:
