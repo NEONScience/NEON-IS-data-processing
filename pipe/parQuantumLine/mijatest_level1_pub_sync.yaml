@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: parQuantumLine_level1_pub_sync
+  name: mijatest_level1_pub_sync
 transform:
-  image: quay.io/battelleecology/neon-is-pub-sync:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
+  image: quay.io/battelleecology/neon-is-pub-sync:19
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -16,7 +16,7 @@ transform:
     DATA_PATH_DATE_INDEX: "5"
     DATA_PATH_PACKAGE_INDEX: "6"
     PRODUCTS: NEON.DOM.SITE.DP1.00066.001 # CAN BE MULTIPLE, COMMA-SEPARATED
-    SITES: BART  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
+    SITES: YELL  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
     CHANGE_BY: pachyderm
   secrets:
   - name: pdr-secret
@@ -34,7 +34,7 @@ input:
   - pfs: 
       name: DATA_PATH
       repo: parQuantumLine_level1_pub_egress
-      glob: /*/*/(????)(??)??T*--* # /NEON.DOM.SITE.DP1.00066.001/HARV/20230201T000000--20230301T000000/
+      glob: /*/*/(????)(??)??T*--*  # /NEON.DOM.SITE.DP1.00066.001/HARV/20230201T000000--20230301T000000/
       group_by: $1$2
       empty_files: true
 resource_requests:
