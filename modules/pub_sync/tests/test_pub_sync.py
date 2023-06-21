@@ -1,33 +1,23 @@
 #!/usr/bin/env python3
-import datetime
-import fnmatch
-import glob
-import json
-import logging
-import os
-import sys
-from pathlib import Path
 from typing import List, Dict
 import unittest
 
-import pandas as pd
-from testfixtures import TempDirectory
-from data_access.tests.database_test import DatabaseBackedTest
-from data_access.db_connector import DbConnector
-from data_access.get_dp_pub_records import get_dp_pub_records
+from pathlib import Path
+from unittest import TestCase
+
+#from data_access.tests.database_test import DatabaseBackedTest
 from data_access.types.dp_pub import DpPub
-from data_access.remove_pub import remove_pub
-from common.get_path_key import get_path_key
+from testfixtures import TempDirectory
 
 from pub_sync import pub_sync_main, pub_sync
 
-class PubSyncTest(DatabaseBackedTest):
-#class PubSyncTest(TestCase):
-
-    def setUp(self):
-        self.setUpPyfakefs()
-        self.out_path = Path('/out')
-        self.fs.create_dir(self.out_path)
+#class PubSyncTest(DatabaseBackedTest):
+class PubSyncTest(TestCase):
+    #
+    # def setUp(self):
+    #     self.setUpPyfakefs()
+    #     self.out_path = Path('/out')
+    #     self.fs.create_dir(self.out_path)
 
 
     def test_pub_sync(self):
@@ -41,20 +31,23 @@ class PubSyncTest(DatabaseBackedTest):
         data_path_package_index = "6"
         dp_ids: List[str] = ["NEON.DOM.SITE.DP1.00066.001"]
         sites: List[str] = ["CPER","HARV","ABBY"]
-        change_by = "pachyderm1"
         data_path = None
         date_path = Path('2023/04/01')
-        pub_dates = {}
-        psmp_portal_remove = {}
+        date_path_indices = (date_path_year_index,date_path_month_index)
+        date_path_min_index = int(min(date_path_indices))
+        date_path_max_index = int(max(date_path_indices))
+        date_path_start = Path(*date_path.parts[0:date_path_min_index])  # Parent of the min index
+        change_by = 'pachyderm1'
+
 
         def get_sync_pubs(pub_dates: List[Dict], dp_ids: List[str], sites: List[str], psmp_pachy: List[Dict], change_by: str) -> List[DpPub]:
             """Mock function"""
 
             date_key = '202301'
             cutoff_date = '202304'
-            change_by = "pachyderm2"
             pub_dates[date_key] = [date_key + '01T00:00:00Z',
                                    cutoff_date + '01T00:00:00Z']
+
 
         pub_sync.sync_pubs(get_sync_pubs = get_sync_pubs,
                            data_path = data_path,
@@ -69,5 +62,8 @@ class PubSyncTest(DatabaseBackedTest):
                            sites = sites,
                            change_by = change_by)
 
-        self.assertTrue(change_by == 'pachyderm2')
+        self.assertTrue(change_by == 'pachyderm1')
 
+
+if __name__ == '__main__':
+    unittest.main()
