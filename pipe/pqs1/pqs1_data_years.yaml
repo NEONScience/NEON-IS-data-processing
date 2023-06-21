@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: data_source_pqs1_list_years
+  name: pqs1_data_years
 transform:
   image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
   cmd:
@@ -11,14 +11,13 @@ transform:
 input:
   pfs:
     name: REPO_IN
-    repo: data_source_pqs1_linkmerge
+    repo: pqs1_data_source_trino
     glob: /pqs1
     empty_files: true
 resource_requests:
   memory: 1K
   cpu: 0.01
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -47,3 +46,4 @@ pod_patch: |-
       "value": "0.5"
     }
   ]
+

@@ -9,6 +9,8 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
+  err_cmd:
+  - 'true'
   image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.6
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -18,19 +20,18 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: calibration_pqs1
+      repo: pqs1_calibration_loader
       glob: /pqs1/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_pqs1_list_years
+      repo: pqs1_data_years
       glob: /data_years.txt
 parallelism_spec:
   constant: 4
 resource_requests:
-  memory: 250M
-  cpu: 1
+  memory: 1.0G
+  cpu: 1.0
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -52,10 +53,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"3G"
+      "value":"500M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "1.5"
+      "value": "0.3"
     }
   ]
+

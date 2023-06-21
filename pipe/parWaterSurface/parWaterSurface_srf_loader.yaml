@@ -1,36 +1,31 @@
----
 pipeline:
-  name: parWaterSurface_regularized
+  name: parWaterSurface_srf_loader
 transform:
   cmd:
-  - Rscript
-  - ./flow.rglr.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - DirRglr=data|uncertainty_data|flags
-  - MethRglr=CybiEc
-  - WndwRglr=Trlg
-  - IdxWndw=IdxWndwMin
-  - RptTimeWndw=FALSE
-  - DropNotNumc=FALSE
-  - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-rglr-r:v1.0.5
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
+    - /bin/bash
   env:
+    GROUP_PREFIX: par-water-surface_
     LOG_LEVEL: DEBUG
-    PARALLELIZATION_INTERNAL: '1'
+    OUT_PATH: /pfs/out
+  image: quay.io/battelleecology/neon-srf-loader:45
+  image_pull_secrets:
+    - battelleecology-quay-read-all-pull-secret
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
+  stdin:
+    - '#!/bin/bash'
+    - python3 -m srf_loader.srf_loader_main
 input:
   pfs:
-    name: DIR_IN
-    repo: parWaterSurface_context_filter
-    glob: /pqs1/*/*/*
-parallelism_spec:
-  constant: 1
+    branch: master
+    empty_files: true
+    glob: /*
+    repo: pqs1_cron_daily_and_date_control_tick
+output_branch: master
 resource_requests:
-  memory: 800M
-  cpu: 1.1
+  cpu: 1
+  memory: 300M
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -57,7 +52,6 @@ pod_patch: |-
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": ".2"
+      "value": "0.3"
     }
   ]
-
