@@ -1,52 +1,43 @@
 from typing import Optional
 
-from eml.eml_2_2_0 import GeographicCoverageBoundingCoordinatesBoundingAltitudes, \
-    GeographicCoverageBoundingCoordinates, GeographicCoverage, LengthUnitType
+import eml.eml_2_2_0 as eml
 
 from pub_files.geometry import Geometry
 from pub_files.input_files.file_metadata import FileMetadata
-from pub_files.output_files.eml.eml_database import EmlDatabase
 
 
-class EmlCoverage:
-    """Class to represent the EML geographic coverage section in the publication EML file."""
+def get_geographic_coverage(geometry: Geometry, metadata: FileMetadata, unit_name: str) -> eml.GeographicCoverage:
+    """Returns the populated geographic coverage object."""
 
-    def __init__(self, geometry: Geometry, metadata: FileMetadata, database: EmlDatabase):
-        self.geometry = geometry
-        self.metadata = metadata
-        self.database = database
-
-    def get_coverage(self) -> GeographicCoverage:
-        """Returns the populated geographic coverage object."""
-        domain = self.metadata.path_elements.domain
-        site = self.metadata.path_elements.site
-        geographic_coverage = GeographicCoverage()
-        geographic_coverage.id.append(site)
-        geographic_coverage.geographic_description = f'{domain}, {site}'
-        geographic_coverage.bounding_coordinates = self.get_bounding_coordinates()
-        return geographic_coverage
-
-    def get_bounding_coordinates(self):
-        """Returns the populated geographic bounding coordinates object."""
-        bounding_coordinates = GeographicCoverageBoundingCoordinates()
-        bounding_coordinates.east_bounding_coordinate = round(self.geometry.longitude, 6)
-        bounding_coordinates.west_bounding_coordinate = round(self.geometry.longitude, 6)
-        bounding_coordinates.north_bounding_coordinate = round(self.geometry.latitude, 6)
-        bounding_coordinates.south_bounding_coordinate = round(self.geometry.latitude, 6)
-        bounding_coordinates.bounding_altitudes = self.get_bounding_altitudes()
+    def get_bounding_coordinates():
+        """Returns the geographic bounding coordinates."""
+        bounding_coordinates = eml.GeographicCoverageBoundingCoordinates()
+        bounding_coordinates.east_bounding_coordinate = round(geometry.longitude, 6)
+        bounding_coordinates.west_bounding_coordinate = round(geometry.longitude, 6)
+        bounding_coordinates.north_bounding_coordinate = round(geometry.latitude, 6)
+        bounding_coordinates.south_bounding_coordinate = round(geometry.latitude, 6)
+        bounding_coordinates.bounding_altitudes = get_bounding_altitudes()
         return bounding_coordinates
 
-    def get_bounding_altitudes(self):
-        """Returns the populated geographic bounding altitudes object."""
-        bounding_altitudes = GeographicCoverageBoundingCoordinatesBoundingAltitudes()
-        bounding_altitudes.altitude_minimum = round(self.geometry.elevation, 6)
-        bounding_altitudes.altitude_maximum = round(self.geometry.elevation, 6)
-        bounding_altitudes.altitude_units = self.get_unit(self.geometry.srid)
+    def get_bounding_altitudes():
+        """Returns the geographic bounding altitudes."""
+        bounding_altitudes = eml.GeographicCoverageBoundingCoordinatesBoundingAltitudes()
+        bounding_altitudes.altitude_minimum = round(geometry.elevation, 6)
+        bounding_altitudes.altitude_maximum = round(geometry.elevation, 6)
+        bounding_altitudes.altitude_units = get_unit(unit_name)
         return bounding_altitudes
 
-    def get_unit(self, srid: int) -> Optional[LengthUnitType]:
-        """Returns the unit name for the given spatial reference identifier."""
-        unit_name = self.database.get_spatial_unit(srid)
-        if unit_name.lower() == 'metre' or unit_name.lower() == 'meter':
-            return LengthUnitType.METER
-        return None
+    domain = metadata.path_elements.domain
+    site = metadata.path_elements.site
+    geographic_coverage = eml.GeographicCoverage()
+    geographic_coverage.id.append(site)
+    geographic_coverage.geographic_description = f'{domain}, {site}'
+    geographic_coverage.bounding_coordinates = get_bounding_coordinates()
+    return geographic_coverage
+
+
+def get_unit(unit_name: str) -> Optional[eml.LengthUnitType]:
+    """Returns the unit name for the given spatial reference identifier."""
+    if unit_name.lower() == 'metre' or unit_name.lower() == 'meter':
+        return eml.LengthUnitType.METER
+    return None
