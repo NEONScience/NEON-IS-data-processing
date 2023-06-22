@@ -31,7 +31,7 @@ transform:
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /usr/src/app/pfs/interimData
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: '3'
     PARALLELIZATION_INTERNAL: '4'
 input:

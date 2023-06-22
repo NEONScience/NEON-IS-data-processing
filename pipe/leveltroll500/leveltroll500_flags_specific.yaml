@@ -21,7 +21,7 @@ input:
       glob: /leveltroll500/*/*/*/
   - pfs:
       name: SCHEMA_FLAGS
-      repo: leveltroll500_avro_schemas
+      repo: troll_shared_avro_schemas
       glob: /troll_shared/flags_troll_specific.avsc
 resource_requests:
   memory: 500M

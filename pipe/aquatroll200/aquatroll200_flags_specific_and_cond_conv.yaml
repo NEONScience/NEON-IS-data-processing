@@ -37,7 +37,7 @@ input:
       glob: /aquatroll200/*/*/*/
   - pfs:
       name: SCHEMA_FLAGS_SPEC
-      repo: aquatroll200_avro_schemas
+      repo: troll_shared_avro_schemas
       glob: /troll_shared/flags_troll_specific.avsc
   - pfs:
       name: FILE_SCHEMA_DATA_COND_CONV
@@ -45,7 +45,7 @@ input:
       glob: /aquatroll200/aquatroll200_cond_corrected.avsc
   - pfs:
       name: SCHEMA_FLAGS_SPEC_TEMP
-      repo: aquatroll200_avro_schemas
+      repo: troll_shared_avro_schemas
       glob: /troll_shared/flags_troll_specific_temp.avsc
 resource_requests:
   memory: 500M
