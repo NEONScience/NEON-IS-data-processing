@@ -65,8 +65,17 @@ input:
 parallelism_spec:
   constant: 10
 resource_requests:
-  memory: 1.2G
-  cpu: 1.3
+  memory: 1.5G
+  cpu: 1.2
+resource_limits:
+  memory: 2.5G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 2.5G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 10G
+  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -85,14 +94,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"3G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]
