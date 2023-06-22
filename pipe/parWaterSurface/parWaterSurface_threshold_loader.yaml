@@ -1,30 +1,33 @@
 ---
 pipeline:
-  name: parWaterSurface_padded_timeseries_analyzer
+  name: parWaterSurface_threshold
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/padded_timeseries_analyzer:15
+  image: quay.io/battelleecology/threshold_loader:104
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+  - python3 -m threshold_loader.threshold_loader_main
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: '3'
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: par
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: upward-facing
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
 input:
   pfs:
-    name: DATA_PATH
-    repo: parWaterSurface_timeseries_padder
-    branch: master
-    glob: /pqs1/*/*/*
-parallelism_spec:
-  constant: 1
+    repo: pqs1_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
 resource_requests:
-  memory: 300M
-  cpu: 0.1
+  memory: 120M
+  cpu: 0.05
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -47,11 +50,11 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"400M"
+      "value":"64M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
+      "value": "0.1"
     }
   ]
 

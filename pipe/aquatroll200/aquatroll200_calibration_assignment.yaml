@@ -9,7 +9,11 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
+<<<<<<< HEAD
   image: quay.io/battelleecology/neon-is-cal-asgn-r:82a259b6056253a7effdb0d07d2c5c06c02e9ff0
+=======
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:d8b7e78d98bc53f183c6c6cc0635da393dcd7810
+>>>>>>> master
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

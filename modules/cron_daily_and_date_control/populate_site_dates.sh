@@ -63,7 +63,7 @@ jq -c '.[]' $SITE_FILE | while read i; do
     for d in $(seq $(date -u +%s -d $start_date_trino) +86400 $(date -u +%s -d $end_date_trino)) ; do
       date_path=$(date -u +%Y/%m/%d -d @$d);
       mkdir -p $OUT_PATH/$SOURCE_TYPE/$date_path;
-      touch $OUT_PATH/$SOURCE_TYPE/$date_path/$site;
+      echo $site > $OUT_PATH/$SOURCE_TYPE/$date_path/$site;
     done;
   fi
   
@@ -73,7 +73,7 @@ jq -c '.[]' $SITE_FILE | while read i; do
     for d in $(seq $(date -u +%s -d $start_date_kafka) +86400 $(date -u +%s -d $end_date_kafka)) ; do
     date_path=$(date -u +%Y/%m/%d -d @$d);
     mkdir -p $OUT_PATH/$SOURCE_TYPE/$date_path;
-    touch $OUT_PATH/$SOURCE_TYPE/$date_path/$site.kafka;
+    echo $site.kafka > $OUT_PATH/$SOURCE_TYPE/$date_path/$site.kafka;
     done;
   fi
   done

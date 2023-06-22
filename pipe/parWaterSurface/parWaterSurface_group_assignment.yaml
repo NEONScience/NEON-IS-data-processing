@@ -1,37 +1,35 @@
 ---
 pipeline:
-  name: parWaterSurface_qaqc_plausibility
+  name: parWaterSurface_group_assignment
 transform:
   cmd:
   - Rscript
-  - ./flow.qaqc.plau.R
+  - ./flow.loc.grp.asgn.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
-  - FileSchmQf=$SCHEMA_FLAGS
-  - TermTest1=par:null|gap|range(rmv)|step(rmv)|persistence
-  - DirSubCopy=uncertainty_data|flags|uncertainty_coef
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v1.0.6
+  - FileYear=$FILE_YEAR
+  - TypeFile=group
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
-    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: parWaterSurface_padded_timeseries_analyzer
-      glob: /pqs1/*/*/*
+      repo: parWaterSurface_group_loader
+      glob: /par-water-surface/*
   - pfs:
-      name: SCHEMA_FLAGS
-      repo: avro_schemas_parWaterSurface
-      glob: /parWaterSurface/flags_plausibility_parWaterSurface.avsc
+      name: FILE_YEAR
+      repo: pqs1_cron_daily_and_date_control
+      glob: /data_years.txt
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 500M
-  cpu: 1
+  memory: 300M
+  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -54,11 +52,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
+      "value":"100M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
+      "value": "0.1"
     }
   ]
-
