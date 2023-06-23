@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: prt_data_source_kafka_STEVE2
+  name: prt_data_source_kafka_STEVE
 transform:
   image: quay.io/battelleecology/kafka-loader:v1.0.9-kafka
   image_pull_secrets:
