@@ -2,10 +2,9 @@
 pipeline:
   name: mti300ahrs_data_source_kafka_STEVE
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.6-kafka
+  image: quay.io/battelleecology/kafka-loader:v1.0.9-kafka
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  cmd: ["/bin/bash"]
   env:
     OUT_PATH: /pfs/out
     SOURCE_TYPE: "mti300ahrs"
@@ -14,6 +13,7 @@ transform:
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
     KAFKA_RETENTION_DAYS: "30"
+    BUCKET_NAME: "neon-dev-l0-ingest"
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
@@ -24,38 +24,87 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
-  stdin:
-  - "#!/bin/bash"
-  - "# Get GCP zone"
-  - "meta=$(curl -sH 'Metadata-Flavor: Google' http://metadata/computeMetadata/v1/instance/zone)"
-  - zone=$(echo $meta | cut -d "/" -f 4)
-  - echo $zone
-  - "# Get today's date for evaluating kafka data retention period"
-  - date_today=$(date -u +%Y-%m-%d)
-  - kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
-  - "# Get date from input path. Terminal path structure must be /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE"
-  - "# Datum must be set at /SOURCE_TYPE/YYYY/MM/DD or /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE"
-  - date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
-  - echo $date_path
-  - date_str=$(date -u +%Y-%m-%d -d $date_path)
-  - "# Get each site to run"
-  - for site_kafka in $(dir ${import_trigger[*]}); do
-  - site_file=$(basename $site_kafka) # Strip off any path prefix
-  - site=$(echo $site_file | cut -f 1 -d "." --only-delimited) # Extract the site from site.kafka. Ignore site-only files (e.g. CPER vs. CPER.kafka)
-  - type=$(echo $site_file | cut -f 2 -d "." --only-delimited) # Extract the 'kafka' from site.kafka
-  - if [ "$type" != "kafka" ]
-  - then 
-      echo "$site_file is not indicated to be streaming from Kafka. Skipping...";
-  - elif [ $(date -u +%s -d $date_str) -lt $(date -u +%s -d $kafka_min_date) ]
-  - then
-      echo "Cannot extract $date_str Kafka data for $site. Today's date ($date_today) is beyond the Kafka retention period ($KAFKA_RETENTION_DAYS days). Skipping...";
-  - else
-      echo "Extracting $date_str kafka data for $site";
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D $OUT_PATH/$SOURCE_TYPE -d $date_str --only current --consumer client.rack=$zone;
-      date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day");
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D $OUT_PATH/$SOURCE_TYPE -d $date_str_1 --only noncurrent --consumer client.rack=$zone
-  - fi
-  - done
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Get GCP zone
+    set -euo pipefail
+    IFS=$'\n\t'
+    meta=$(curl -sH "Metadata-Flavor: Google" "http://metadata/computeMetadata/v1/instance/zone")
+    zone=$(echo $meta | cut -d "/" -f 4)
+    echo $zone
+    # Get today's date for evaluating kafka data retention period
+    date_today=$(date -u +%Y-%m-%d)
+    kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    # Get date from input path. Terminal path structure must be /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
+    # Datum must be set at /SOURCE_TYPE/YYYY/MM/DD or /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
+    date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
+    echo $date_path
+    date_str=$(date -u +%Y-%m-%d -d $date_path)
+    has_files="false"
+    # Get each site to run
+    if [[ -f ${import_trigger} ]]; then
+      import_trigger_glob="${import_trigger}"
+    else
+      import_trigger_glob="${import_trigger}/*"
+    fi
+    for site_kafka in $import_trigger_glob; do
+      site_file=$(basename $site_kafka) # Strip off any path prefix
+      site=$(echo $site_file | cut -f 1 -d "." --only-delimited) # Extract the site from site.kafka. Ignore site-only files (e.g. CPER vs. CPER.kafka)
+      type=$(echo $site_file | cut -f 2 -d "." --only-delimited) # Extract the 'kafka' from site.kafka
+      if [ "$type" != "kafka" ]
+      then
+        echo "$site_file is not indicated to be streaming from Kafka. Skipping..."
+        continue
+      elif [ "$(date -u +%s -d "$date_str")" -lt "$(date -u +%s -d "$kafka_min_date")" ]
+      then
+        echo -n "Cannot extract $date_str Kafka data for $site. "
+        echo -n "Today's date ($date_today) is beyond the Kafka retention period ($KAFKA_RETENTION_DAYS days). Skipping..."
+        continue
+      fi
+      has_files="true"
+      # We are ok to run
+      echo "Extracting $date_str kafka data for $site"
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
+      date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+    done
+    if ["$has_files" = "true" ]; then
+      linkdir=$(mktemp -d)
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH}/**/*.parquet"
+      # /pfs/out/prt/2023/01/01/12345/data/file.parquet
+      echo "Linking output files to ${linkdir}"
+      set -x
+      for f in $out_parquet_glob; do
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+        fsourcetype="${BASH_REMATCH[1]}"
+        fyear="${BASH_REMATCH[2]}"
+        fmonth="${BASH_REMATCH[3]}"
+        fday="${BASH_REMATCH[4]}"
+        fsourceid="${BASH_REMATCH[5]}"
+        fname="${BASH_REMATCH[6]}"
+        outdir="${linkdir}/v1/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname}"
+      done
+      set +x
+      echo "Syncing files to bucket"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        copy \
+        "${linkdir}" \
+        ":gcs://${BUCKET_NAME}"
+      echo "Removing temporary files"
+      rm -rf $linkdir
+    fi
+    EOF
 input:
   pfs:
     name: import_trigger
@@ -63,7 +112,7 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/mti300ahrs/*/*/*/*"
 parallelism_spec:
-  constant: 10
+  constant: 20
 resource_requests:
   memory: 1.5G
   cpu: 1.2
@@ -74,7 +123,7 @@ sidecar_resource_requests:
   memory: 2.5G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 10G
+  memory: 7Gi
   cpu: 1.2
 autoscaling: true
 scheduling_spec:
