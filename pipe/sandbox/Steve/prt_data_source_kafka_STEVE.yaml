@@ -43,7 +43,6 @@ transform:
     date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
     echo $date_path
     date_str=$(date -u +%Y-%m-%d -d $date_path)
-    has_files="false"
     # Get each site to run
     if [[ -f ${import_trigger} ]]; then
       import_trigger_glob="${import_trigger}"
@@ -64,14 +63,13 @@ transform:
         echo -n "Today's date ($date_today) is beyond the Kafka retention period ($KAFKA_RETENTION_DAYS days). Skipping..."
         continue
       fi
-      has_files="true"
       # We are ok to run
       echo "Extracting $date_str kafka data for $site"
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
     done
-    if ["$has_files" = "true" ]; then
+    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
@@ -110,7 +108,7 @@ input:
     name: import_trigger
     repo: prt_cron_daily_and_date_control_STEVE
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/prt/*/*/*"
+    glob: "/prt/*/*/*/*"
 resource_requests:
   memory: 500M
   cpu: 1.3
