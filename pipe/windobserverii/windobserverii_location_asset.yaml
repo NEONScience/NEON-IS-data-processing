@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: location_asset_windobserverii
+  name: windobserverii_location_asset
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -19,14 +19,13 @@ transform:
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: cron_daily_windobserverii_tick
+    repo: windobserverii_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 resource_requests:
   memory: 100M
   cpu: 0.05
 autoscaling: true
-
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

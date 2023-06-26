@@ -1,30 +1,36 @@
 ---
 pipeline:
-  name: windobserverii_structure_repo_by_location
+  name: windobserverii_calibration_assignment
 transform:
   cmd:
   - Rscript
-  - ./flow.loc.repo.strc.R
+  - ./flow.cal.asgn.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
-  - Comb=TRUE
-  image: quay.io/battelleecology/neon-is-loc-repo-strc-r:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
+  - FileYear=$FILE_YEAR
+  err_cmd:
+  - 'true'
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.6
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
-    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
-  pfs:
-    name: DIR_IN
-    repo: windobserverii_data_location_group
-    glob: /windobserverii/*/*/*
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: windobserverii_calibration_loader
+      glob: /windobserverii/*
+  - pfs:
+      name: FILE_YEAR
+      repo: windobserverii_data_years
+      glob: /data_years.txt
 parallelism_spec:
-  constant: 1
+  constant: 4
 resource_requests:
-  memory: 300M
-  cpu: 0.5
+  memory: 1.0G
+  cpu: 1.0
 autoscaling: true
 scheduling_spec:
   node_selector:

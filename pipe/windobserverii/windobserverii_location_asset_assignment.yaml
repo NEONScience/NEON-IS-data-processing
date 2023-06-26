@@ -19,14 +19,14 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_asset_windobserverii
+      repo: windobserverii_location_asset
       glob: /windobserverii/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_windobserverii_list_years
+      repo: windobserverii_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
-  constant: 4
+  constant: 2
 resource_requests:
   memory: 300M
   cpu: 1.3
