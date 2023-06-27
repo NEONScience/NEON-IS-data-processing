@@ -36,9 +36,7 @@ transform:
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums 
       FileSchmQf=$FILE_SCHEMA_FLAGS
-      "TermQf=u_axis_wind_speed|v_axis_wind_speed|speed_of_sound|temperature"
-      TermFuncUcrt=voltage:def.ucrt.meas.mult,def.ucrt.fdas.volt.poly
-      FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
+      "TermQf=u_axis_wind_speed|v_axis_wind_speed"
   env:
     # Environment variables for filter-joiner.
     # There are two configs here, CONFIG_KAFKA is when data comes from kafka, CONFIG_TRINO is when data comes from trino. 
@@ -52,14 +50,14 @@ transform:
         - path:
             name: DATA_PATH_KAFKA
             # Filter for data directory
-            glob_pattern: /data/kafka_merged/li191r/*/*/*/*/**
+            glob_pattern: /data/kafka_merged/windobserverii/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
         - path:
             name: CALIBRATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/li191r/*/*/*/*/**
+            glob_pattern: /pfs/CALIBRATION_PATH/windobserverii/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
     CONFIG_TRINO: |
@@ -71,14 +69,14 @@ transform:
         - path:
             name: DATA_PATH_TRINO
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_TRINO/li191r/*/*/*/*/**
+            glob_pattern: /pfs/DATA_PATH_TRINO/windobserverii/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
         - path:
             name: CALIBRATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/li191r/*/*/*/*/**
+            glob_pattern: /pfs/CALIBRATION_PATH/windobserverii/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH: /data/pfs/filter_joined
@@ -91,48 +89,40 @@ input:
   cross:
   - pfs:
       name: FILE_SCHEMA_L0
-      repo: li191r_avro_schemas
-      glob: /li191r/li191r.avsc
-  - pfs:
-      name: FILE_SCHEMA_DATA
-      repo: li191r_avro_schemas
-      glob: /li191r/li191r_calibrated.avsc
+      repo: windobserverii_avro_schemas
+      glob: /windobserverii/windobserverii.avsc
   - pfs:
       name: FILE_SCHEMA_FLAGS
-      repo: li191r_avro_schemas
-      glob: /li191r/flags_calibration_li191r.avsc
-  - pfs:
-      name: FILE_UNCERTAINTY_FDAS
-      repo: li191r_uncertainty_fdas
-      glob: /fdas_calibration_uncertainty_general.json
+      repo: windobserverii_avro_schemas
+      glob: /windobserverii/flags_calibration_windobserverii.avsc
   # Need to send in the joined calibrations first with the trino data then with the kafka data in order for the filter-joiner to correctly join the calibrations
   - union:
     - join:
       - pfs:
           name: DATA_PATH_TRINO
-          repo: li191r_data_source_trino
-          glob: /li191r/(*)/(*)/(*)
+          repo: windobserverii_data_source_trino
+          glob: /windobserverii/(*)/(*)/(*)
           joinOn: $1/$2/$3
           outer_join: true
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: CALIBRATION_PATH
-          repo: li191r_calibration_assignment
-          glob: /li191r/(*)/(*)/(*)
+          repo: windobserverii_calibration_assignment
+          glob: /windobserverii/(*)/(*)/(*)
           joinOn: $1/$2/$3
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
       - pfs:
           name: KAFKA_UNMERGED_DATA
-          repo: li191r_data_source_kafka
-          glob: /li191r/(*)/(*)/(*)
+          repo: windobserverii_data_source_kafka_TEST
+          glob: /windobserverii/(*)/(*)/(*)
           joinOn: $1/$2/$3
           outer_join: true
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: CALIBRATION_PATH
-          repo: li191r_calibration_assignment
-          glob: /li191r/(*)/(*)/(*)
+          repo: windobserverii_calibration_assignment
+          glob: /windobserverii/(*)/(*)/(*)
           joinOn: $1/$2/$3
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
