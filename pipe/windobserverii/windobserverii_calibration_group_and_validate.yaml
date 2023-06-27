@@ -84,7 +84,7 @@ transform:
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '1' # Option for calibration conversion module
+    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
 input:
   cross:
   - pfs:
@@ -128,8 +128,8 @@ input:
 parallelism_spec:
   constant: 2
 resource_requests:
-  memory: 500M
-  cpu: 1.2
+  memory: 1.5G
+  cpu: 3.3
 autoscaling: true
 scheduling_spec:
   node_selector:
