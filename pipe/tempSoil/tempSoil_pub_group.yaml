@@ -32,8 +32,8 @@ input:
   - pfs: 
       name: DATA_PATH
       repo: tempSoil_level1_group_consolidate_srf
-      # Glob must be monthly
-      glob: /(*/*)
+      # Glob should be daily or monthly, must be joined monthly with pub_control
+      glob: /(*/*)/*
       joinOn: $1
   - pfs: 
       repo: tempSoil_cron_monthly_and_pub_control
@@ -43,16 +43,16 @@ input:
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 3G
-  cpu: 1.3
+  memory: 2.5G
+  cpu: 0.8
 resource_limits:
-  memory: 5G
+  memory: 4G
   cpu: 2
 sidecar_resource_requests:
-  memory: 5G
-  cpu: 0.5
+  memory: 3G
+  cpu: 0.6
 sidecar_resource_limits:
-  memory: 8Gi
+  memory: 6Gi
   cpu: 1.2
 autoscaling: true
 scheduling_spec:

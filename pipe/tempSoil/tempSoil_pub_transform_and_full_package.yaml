@@ -3,7 +3,7 @@ pipeline:
   name: tempSoil_pub_transform_and_full_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:v2.0.3
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:v2.0.5
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -35,9 +35,10 @@ transform:
   env:
     # Environment variables for 1st module: pub_transformer. 
     LOG_LEVEL: INFO
-    YEAR_INDEX: '3' # Also shared with pub_transform
-    DATA_TYPE_INDEX: '7' # Also shared with pub_transform
-    GROUP_METADATA_DIR: group # Also shared with pub_transform
+    YEAR_INDEX: '3' 
+    DATA_TYPE_INDEX: '7' 
+    GROUP_METADATA_DIR: group 
+    DATA_PATH_PARSE_INDEX: '2'
     OUT_PATH_TRANSFORMER: "/tmp/pub_transformer"
     OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
     PRODUCTS: NEON.DOM.SITE.DP1.00041.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
@@ -80,23 +81,23 @@ input:
   - pfs: 
       name: GROUPED_PATH
       repo: tempSoil_pub_group
-      # Glob must be site-monthly
+      # Glob must be monthly or site-monthly (use group to do site-monthly)
       glob: /(*/*)/*/(*)
       group_by: $1$2
 parallelism_spec:
   constant: 10
 resource_requests:
-  memory: 300M
-  cpu: 0.5
+  memory: 800M
+  cpu: 1
 resource_limits:
-  memory: 1G
-  cpu: 1.2
+  memory: 2G
+  cpu: 1.5
 sidecar_resource_requests:
-  memory: 5G
-  cpu: 0.2
+  memory: 4G
+  cpu: 0.3
 sidecar_resource_limits:
   memory: 8Gi
-  cpu: 1
+  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:

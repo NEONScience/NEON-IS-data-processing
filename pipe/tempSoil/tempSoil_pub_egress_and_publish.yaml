@@ -47,13 +47,12 @@ transform:
     mount_path: /var/db_secret
 
 input: 
-  # Group allows processing an entire year-month in one datum. Remove the group spec to process each year-month-site as a datum
   group:
   - join:
     - pfs: 
         name: DATA_PATH
-        repo: tempSoil_pub_group_and_package
-        # Glob must be at each intended pub datum (i.e. each site/year/month), grouped by month
+        repo: tempSoil_pub_transform_and_full_package
+        # Glob must be grouped by month so that all sites are in the monthly datum
         glob: /*/(*/*)
         joinOn: $1
         group_by: $1
