@@ -114,7 +114,7 @@ input:
     - join:
       - pfs:
           name: KAFKA_UNMERGED_DATA
-          repo: windobserverii_data_source_kafka_TEST
+          repo: windobserverii_data_source_kafka
           glob: /windobserverii/(*)/(*)/(*)
           joinOn: $1/$2/$3
           outer_join: true
