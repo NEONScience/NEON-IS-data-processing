@@ -25,7 +25,7 @@ spec_path_product=$git_path_pipelines/$product
 # Make sure cron_daily_and_date_control pipeline uses the correct one
 pachctl create repo $source_type'_site_list'
 pachctl start commit $source_type'_site_list'@master
-pachctl put file $source_type'_site_list'@master:/site-list-test.json -f $data_path/site_list/site-list-test.json
+pachctl put file $source_type'_site_list'@master:/site-list-test.json -f $data_path/site_list/site-list.json
 pachctl finish commit $source_type'_site_list'@master
 
 # Create source-type-specific empty_files

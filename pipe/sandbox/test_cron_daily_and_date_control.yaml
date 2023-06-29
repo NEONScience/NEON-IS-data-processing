@@ -25,7 +25,7 @@ input:
   - pfs:
       name: SITE_FILE
       repo: test_site_list
-      glob: /site-list-test.json
+      glob: /site-list.json
 resource_requests:
   memory: 64M
   cpu: 0.5
