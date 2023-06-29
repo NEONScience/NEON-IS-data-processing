@@ -36,7 +36,8 @@ class PubTransformerTest(TestCase):
         self.year_index = self.data_path.parts.index("2019")
         self.data_type_index = self.data_file.parts.index("data")
         self.group_metadata_dir = "group"
-
+        self.data_path_parse_index = self.year_index
+        
         # generate_readme workbook dataframe
         workbook = pd.DataFrame()
         workbook['fieldName'] = ['startDateTime', 'endDateTime', 'mean']
@@ -98,7 +99,8 @@ class PubTransformerTest(TestCase):
                       workbook_file=self.workbook_path,
                       year_index=self.year_index,
                       data_type_index=self.data_type_index,
-                      group_metadata_dir=self.group_metadata_dir)
+                      group_metadata_dir=self.group_metadata_dir,
+                      data_path_parse_index=self.data_path_parse_index)
         self.check_output()
 
     def test_main(self):
@@ -109,6 +111,7 @@ class PubTransformerTest(TestCase):
         os.environ["YEAR_INDEX"] = str(self.year_index)
         os.environ["DATA_TYPE_INDEX"] = str(self.data_type_index)
         os.environ["GROUP_METADATA_DIR"] = str(self.group_metadata_dir)
+        os.environ["DATA_PATH_PARSE_INDEX"] = str(self.data_path_parse_index)
         pub_transformer_main.main()
         self.check_output()
 

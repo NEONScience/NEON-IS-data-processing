@@ -17,13 +17,15 @@ def main() -> None:
     year_index: int = env.int('YEAR_INDEX')
     data_type_index: int = env.int('DATA_TYPE_INDEX')
     group_metadata_dir: str = env.str('GROUP_METADATA_DIR')
+    data_path_parse_index: int = env.int('DATA_PATH_PARSE_INDEX')
     log_config.configure(log_level)
     pub_transform(data_path=data_path, 
                   out_path=out_path, 
                   workbook_file=workbook_file,
                   year_index=year_index,
                   data_type_index=data_type_index,
-                  group_metadata_dir=group_metadata_dir)
+                  group_metadata_dir=group_metadata_dir,
+                  data_path_parse_index=data_path_parse_index)
 
 
 if __name__ == '__main__':
