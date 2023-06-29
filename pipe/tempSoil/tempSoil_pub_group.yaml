@@ -14,10 +14,10 @@ transform:
     # Environment variables for 1st module: pub_grouper.
     LOG_LEVEL: DEBUG
     OUT_PATH: "/pfs/out"
-    YEAR_INDEX: '3' # Also shared with pub_transform
+    YEAR_INDEX: '3' 
     GROUP_INDEX: '6'
-    DATA_TYPE_INDEX: '7' # Also shared with pub_transform
-    GROUP_METADATA_DIR: group # Also shared with pub_transform
+    DATA_TYPE_INDEX: '7' 
+    GROUP_METADATA_DIR: group 
     PUBLOC_KEY: site
     LINK_TYPE: SYMLINK
     

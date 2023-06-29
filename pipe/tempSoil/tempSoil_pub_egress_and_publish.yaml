@@ -1,28 +1,45 @@
 ---
 pipeline:
-  name: tempSoil_egress_and_publish
+  name: tempSoil_pub_egress_and_publish
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-egrs-publ:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
-  cmd: ["/bin/bash"]
-  stdin:
-  - "#!/bin/bash"
-  - '# Run first module - pub_egress (using environment variables below as input parameters)'
-  - python3 -m pub_egress.pub_egress.app
-  - '# Set some environment variables for the second module'
-  - export DATA_PATH=$OUT_PATH
-  - '# Run second module - pub_upload (using environment variables below as input parameters)'
-  - python3 -m pub_uploader.pub_uploader_main
-  - '# Run third module - pub_sync (using environment variables below as input parameters)'
-  - python3 -m pub_sync.pub_sync_main
-  
+  image: quay.io/battelleecology/neon-is-pub-egrs-publ:v1.1.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Run first module - pub_egress (using environment variables below as input parameters)
+    python3 -m pub_egress.pub_egress.app
+    # If there is output, egress it
+    dirs=$(find $OUT_PATH/* -type d)
+    if [[ ${dirs} ]]; then
+      echo "Syncing files to bucket $BUCKET_NAME"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        copy \
+        "${OUT_PATH}" \
+        ":gcs://${BUCKET_NAME}"
+      echo "Done"
+    fi
+    # Set some environment variables for the second module
+    export DATA_PATH=$OUT_PATH
+    # Run second module - pub_upload (using environment variables below as input parameters)
+    python3 -m pub_uploader.pub_uploader_main
+    # Run third module - pub_sync (using environment variables below as input parameters)
+    python3 -m pub_sync.pub_sync_main
+    EOF
   env:
     LOG_LEVEL: INFO
     
     # Environment variables for 1st module: pub_egress.
     OUT_PATH: "/pfs/out"
-    EGRESS_URL: https://storage.googleapis.com/neon-int-publication
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
+    EGRESS_URL: https://storage.googleapis.com/neon-int-publication # Also include subfolder if included in BUCKET_NAME below
+    BUCKET_NAME: "neon-int-publication" # Can also include subfolder (e.g. "neon-int-publication/egress-test")
     
     # Environment variables for 2nd module: pub_upload.
     # DATA_PATH is set in the code above to the output from the egress module
@@ -51,7 +68,7 @@ input:
   - join:
     - pfs: 
         name: DATA_PATH
-        repo: tempSoil_pub_transform_and_full_package
+        repo: tempSoil_pub_format_and_package
         # Glob must be grouped by month so that all sites are in the monthly datum
         glob: /*/(*/*)
         joinOn: $1
@@ -63,11 +80,18 @@ input:
         joinOn: $1
         group_by: $1
         empty_files: true
-egress:
-  URL: gs://neon-int-publication
 resource_requests:
   memory: 300M
   cpu: 0.3
+resource_limits:
+  memory: 1G
+  cpu: 1.2
+sidecar_resource_requests:
+  memory: 2.5G
+  cpu: 2
+sidecar_resource_limits:
+  memory: 5Gi
+  cpu: 3
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -86,14 +110,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "1"
-    }
-  ]
