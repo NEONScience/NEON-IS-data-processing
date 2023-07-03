@@ -4,6 +4,7 @@ from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Tuple
+from structlog import get_logger
 
 import pub_files.output_files.readme.readme_file as readme_file
 import pub_files.output_files.variables.variables_file as variables_file
@@ -27,9 +28,11 @@ from pub_files.output_files.variables.variables_database import get_variables_da
 
 
 def main() -> None:
+
     """Generate the publication metadata files."""
     config: ApplicationConfig = configure_from_environment()
     log_config.configure(config.log_level)
+    log = get_logger()
     db_config = read_from_mount(config.db_secrets_path)
     timestamp = get_timestamp()
 
@@ -46,6 +49,8 @@ def main() -> None:
         location_base_path = config.location_path.parts[0:config.in_path_parse_index + 1]
         for root, dirs, files in os.walk(config.in_path):
             datum_path = Path(root)
+            log.info(f'Processing datum path {datum_path}')
+
             if len(datum_path.parts) == (config.in_path_parse_index + 4):
                 # get required metadata from the input files and link files into the output path
                 publication_package: PublicationPackage = process_files(in_path=datum_path,

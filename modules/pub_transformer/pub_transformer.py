@@ -13,26 +13,29 @@ from structlog import get_logger
 log = get_logger()
 
 
-def pub_transform(*, data_path: Path, out_path: Path, workbook_file: Path, year_index: int, data_type_index: int, group_metadata_dir: str) -> None:
+def pub_transform(*, data_path: Path, out_path: Path, workbook_file: Path, year_index: int, data_type_index: int, group_metadata_dir: str, data_path_parse_index: int) -> None:
     """
     :param year_index: index of year in data path
     :param data_type_index: index of data & metadata directories in data path. Group metadata directory must be at this index.
     :param group_metadata_dir: directory name with group metadata (e.g. "group")
+    :param data_path_parse_index: for the path given in data_path, recursively process all /year/month/day/group datums starting from this index (e.g. for the path just given, a data_path_parse_index of 2 would start at the day path)
     """
     #workbook_file = os.environ['WORKBOOK_PATH']
     #out_path = os.environ['OUT_PATH']
     #data_path = os.path.join(os.environ['DATA_PATH'])
 
     # import workbook
-    log.debug(f'Workbook file {workbook_file}')
+    log.info(f'Workbook file {workbook_file}')
     workbook = pd.read_csv(workbook_file, delimiter='\t', keep_default_na=False)
 
     # get table names by TMI
     tmi_table = set([e.split('.')[-1]+"tmitok" for e in workbook['DPNumber']] + workbook['table'])
     table_by_tmi = dict(zip([e.split('tmitok')[0] for e in tmi_table], [e.split('tmitok')[1] for e in tmi_table]))
 
-    # Each PUBLOC is a datum (/year/month/day/PUBLOC). Run through each PUBLOC
-    for path in data_path.rglob(group_metadata_dir+'/'):
+    # Each PUBLOC is a datum (/year/month/day/PUBLOC). Run through each PUBLOC, starting at the parse index
+    data_base_path_parts = data_path.parts[0:data_path_parse_index + 1]
+    data_base_path = Path(*data_base_path_parts)
+    for path in data_base_path.rglob(group_metadata_dir+'/'):
         parts = path.parts
         group_metadata_name = parts[data_type_index]
         publoc_path = path.parent
@@ -42,7 +45,7 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_file: Path, year_
             log.warn(f'Path {publoc_path} looks to be a datum, but the directory at the group metadata index ({group_metadata_name}) does not match the expected name ({group_metadata_dir}). Skipping...')
             continue
         else:
-            log.debug(f'Processing datum path {publoc_path}')
+            log.info(f'Processing datum path {publoc_path}')
 
         group_metadata_path = Path(publoc_path, group_metadata_dir)
         data_path = Path(publoc_path, 'data')

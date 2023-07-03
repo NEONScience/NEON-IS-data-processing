@@ -9,3 +9,8 @@ tempSoil_analyze_pad_and_qaqc_plau.yaml
 tempSoil_stats_group_and_compute.yaml
 tempSoil_qm_group_and_compute.yaml
 tempSoil_level1_group_consolidate_srf.yaml
+tempSoil_cron_monthly_and_pub_control.yaml
+tempSoil_pub_group.yaml
+tempSoil_pub_format_and_package.yaml
+tempSoil_pub_egress_and_publish.yaml
+
