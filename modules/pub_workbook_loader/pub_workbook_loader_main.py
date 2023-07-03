@@ -6,7 +6,7 @@ them to tab-delimited files.
 Input parameters are specified in environment variables as follows:
     OUT_PATH_WORKBOOK: The parent path to place the publication workbook files. This code
         will write the publication workbook to the file:
-            <OUT_PATH_WORKBOOK>/<PRODUCT>_publication_workbook.txt
+            <OUT_PATH_WORKBOOK>/publication_workbook_<PRODUCT>.txt
         where PRODUCT is an individual data product ID in input parameter PRODUCTS
     PRODUCTS: A comma-separated list (no spaces) of data product identifiers to 
         evaluate in existing publication records. This should include any and all 
