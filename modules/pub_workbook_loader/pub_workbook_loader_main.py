@@ -6,7 +6,7 @@ them to tab-delimited files.
 Input parameters are specified in environment variables as follows:
     OUT_PATH_WORKBOOK: The parent path to place the publication workbook files. This code
         will write the publication workbook to the file:
-            <OUT_PATH_WORKBOOK>/<PRODUCT>_publication_workbook.txt
+            <OUT_PATH_WORKBOOK>/publication_workbook_<PRODUCT>.txt
         where PRODUCT is an individual data product ID in input parameter PRODUCTS
     PRODUCTS: A comma-separated list (no spaces) of data product identifiers to 
         evaluate in existing publication records. This should include any and all 
@@ -22,11 +22,13 @@ import environs
 import structlog
 from pathlib import Path
 from contextlib import closing
+from functools import partial
 
 import common.log_config as log_config
 from data_access.db_connector import DbConnector
 from data_access.db_config_reader import read_from_mount
 from data_access.get_pub_workbook import get_pub_workbook
+from pub_workbook_loader.pub_workbook_loader import load_pub_workbook
 
 log = structlog.get_logger()
 
