@@ -1,30 +1,35 @@
 ---
 pipeline:
-  name: windobserverii_structure_repo_by_location
+  name: windobserverii_location_active_dates_assignment
 transform:
   cmd:
   - Rscript
-  - ./flow.loc.repo.strc.R
+  - ./flow.loc.grp.asgn.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
-  - Comb=TRUE
-  image: quay.io/battelleecology/neon-is-loc-repo-strc-r:d8b7e78d98bc53f183c6c6cc0635da393dcd7810
+  - FileYear=$FILE_YEAR
+  - TypeFile=namedLocation
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
-    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
-  pfs:
-    name: DIR_IN
-    repo: windobserverii_data_location_group
-    glob: /windobserverii/*/*/*
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: windobserverii_location_loader
+      glob: /windobserverii/*
+  - pfs:
+      name: FILE_YEAR
+      repo: windobserverii_cron_daily_and_date_control
+      glob: /data_years.txt
 parallelism_spec:
-  constant: 1
+  constant: 4
 resource_requests:
   memory: 300M
-  cpu: 0.5
+  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -47,10 +52,10 @@ pod_patch: |-
   [
     { "op": "replace",
       "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
+      "value":"100M"
     },
     { "op": "replace",
       "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
+      "value": "0.1"
     }
   ]
