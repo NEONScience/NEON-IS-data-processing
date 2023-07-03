@@ -20,7 +20,6 @@ RUN rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.
     rm -rf /var/cache/yum && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser && \
-    chown appuser:appuser -R ${CONTAINER_APP_DIR} && \
     chmod +x ${CONTAINER_APP_DIR}/${APP_DIR}/populate_site_dates.sh
 
 USER appuser
