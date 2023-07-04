@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 from pathlib import Path
-from typing import List, NamedTuple
+from typing import List,NamedTuple
 
 import unittest
 import geojson
@@ -39,7 +39,7 @@ class PubWorkbookLoaderTest(DatabaseBackedTest):
 
         # self.assertTrue(file_path.exists())
 
-        def get_pub_workbook(data_product_id = dp_id) -> List[PubWorkbookRow]:
+        def get_pub_workbook(data_product_id=dp_id) -> List[PubWorkbookRow]:
             # """Mock function """
             workbook_rows: List[PubWorkbookRow] = []
             for dp_id in dp_ids:
@@ -85,5 +85,6 @@ class PubWorkbookLoaderTest(DatabaseBackedTest):
             file_path = 'out/' + file_name
             self.assertTrue(os.path.exists(file_path))
 
+
 if __name__ == '__main__':
-   unittest.main()
+    unittest.main()
