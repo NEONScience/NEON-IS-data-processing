@@ -11,8 +11,8 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2022-06-30"
-    END_DATE: "2022-07-30"
+    START_DATE: "2022-06-30" # Inclusive
+    END_DATE: "2022-08-01" # Inclusive
     SOURCE_TYPE: "prt"
   stdin:
   - "#!/bin/bash"
@@ -30,7 +30,16 @@ input:
       glob: /site-list.json
 resource_requests:
   memory: 64M
-  cpu: 0.5
+  cpu: 0.2
+resource_limits:
+  memory: 128M
+  cpu: 1
+sidecar_resource_requests:
+  memory: 64M
+  cpu: 0.1
+sidecar_resource_limits:
+  memory: 128M
+  cpu: 1
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -49,14 +58,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]

@@ -25,11 +25,19 @@ input:
     repo: prt_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
-resource_requests:
-  memory: 120M
-  cpu: 0.05
 autoscaling: true
-
+resource_requests:
+  memory: 32M
+  cpu: 0.05
+resource_limits:
+  memory: 200M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 120M
+  cpu: 0.1
+sidecar_resource_limits:
+  memory: 500M
+  cpu: 0.5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -47,14 +55,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.05"
-    }
-  ]

@@ -27,10 +27,19 @@ input:
       glob: /data_years.txt
 parallelism_spec:
   constant: 8
-resource_requests:
-  memory: 300M
-  cpu: 1.2
 autoscaling: true
+resource_requests:
+  memory: 250M
+  cpu: 1
+resource_limits:
+  memory: 400M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.8
+sidecar_resource_limits:
+  memory: 5Gi
+  cpu: 1.2
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

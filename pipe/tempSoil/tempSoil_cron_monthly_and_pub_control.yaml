@@ -20,10 +20,19 @@ input:
     name: tick
     spec: "0 7 5 * *" # Run at 00:00 MST (07:00 GMT) on the 5th of the month 
     overwrite: true
+autoscaling: true
 resource_requests:
   memory: 64M
-  cpu: 0.5
-autoscaling: true
+  cpu: 0.1
+resource_limits:
+  memory: 200M
+  cpu: 1
+sidecar_resource_requests:
+  memory: 64M
+  cpu: 0.1
+sidecar_resource_limits:
+  memory: 200M
+  cpu: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -41,14 +50,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]

@@ -30,7 +30,7 @@ transform:
     OUT_PATH: /usr/src/app/pfs/interimData
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
-    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
+    PARALLELIZATION_INTERNAL: '5' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
@@ -42,9 +42,18 @@ input:
       repo: pressureAir_avro_schemas
       glob: /pressureAir/flags_plausibility_pressureAir.avsc
 parallelism_spec:
-  constant: 1
+  constant: 5
 resource_requests:
-  memory: 400M
+  memory: 2G
+  cpu: 5.5
+resource_limits:
+  memory: 3G
+  cpu: 6.5
+sidecar_resource_requests:
+  memory: 2.5G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 5Gi
   cpu: 1.2
 autoscaling: true
 scheduling_spec:
@@ -64,15 +73,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2.2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]
-  

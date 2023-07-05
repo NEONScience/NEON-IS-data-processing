@@ -27,10 +27,19 @@ input:
       glob: /data_years.txt
 parallelism_spec:
   constant: 8
+autoscaling: true
 resource_requests:
   memory: 500M
   cpu: 1.5
-autoscaling: true
+resource_limits:
+  memory: 1.2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 8Gi
+  cpu: 1.2
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -48,14 +57,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"3G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "1"
-    }
-  ]

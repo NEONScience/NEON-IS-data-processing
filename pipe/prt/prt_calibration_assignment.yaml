@@ -9,8 +9,6 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
-  err_cmd:
-  - 'true'
   image: quay.io/battelleecology/neon-is-cal-asgn-r:d8b7e78d98bc53f183c6c6cc0635da393dcd7810
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -27,12 +25,20 @@ input:
       repo: prt_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
-  constant: 4
+  constant: 5
+autoscaling: true
 resource_requests:
   memory: 300M
   cpu: 1.5
-autoscaling: true
-
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 8Gi
+  cpu: 1.2
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -50,14 +56,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"4G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "1"
-    }
-  ]
