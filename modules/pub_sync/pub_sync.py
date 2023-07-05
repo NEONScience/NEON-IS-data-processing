@@ -35,7 +35,7 @@ def sync_pubs(get_sync_pubs: Callable[[str], Iterator[DpPub]],
     pub_dates = {}
     date_path_indices = (date_path_year_index,date_path_month_index)
     date_path_min_index = int(min(date_path_indices))
-    date_path_max_index =int(max(date_path_indices))
+    date_path_max_index = int(max(date_path_indices))
     date_path_start = Path(*date_path.parts[0:date_path_min_index]) # Parent of the min index
     for path in date_path_start.rglob('*'):
         if len(path.parts) - 1 == date_path_max_index:
