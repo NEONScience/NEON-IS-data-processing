@@ -10,7 +10,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2023-05-01"
-    END_DATE: "2023-06-18"
+    #END_DATE: "2023-06-28"
     SOURCE_TYPE: "mti300ahrs"
   stdin:
   - "#!/bin/bash"

@@ -111,19 +111,21 @@ input:
     glob: "/mti300ahrs/*/*/*/*"
 parallelism_spec:
   constant: 20
+autoscaling: true
 resource_requests:
   memory: 1.5G
   cpu: 1.2
 resource_limits:
   memory: 2.5G
-  cpu: 1.5
+  cpu: 2
 sidecar_resource_requests:
-  memory: 2.5G
+  memory: 1.5G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 10Gi
+  memory: 4Gi
   cpu: 1.2
-autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
