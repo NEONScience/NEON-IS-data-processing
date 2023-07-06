@@ -31,7 +31,6 @@ class PubSyncTest(TestCase):
         date_path_indices = (date_path_year_index,date_path_month_index)
         date_path_min_index = int(min(date_path_indices))
         date_path_max_index = int(max(date_path_indices))
-        date_path_start = Path(*date_path.parts[0:date_path_min_index])  # Parent of the min index
         change_by = 'pachyderm1'
 
         def get_sync_pubs(pub_dates: List[Dict],dp_ids: List[str],sites: List[str],psmp_pachy: List[Dict],
@@ -44,18 +43,12 @@ class PubSyncTest(TestCase):
                                    cutoff_date + '01T00:00:00Z']
             pubs: List[DpPub] = []
             pubs = get_dp_pub_data()
-            psmp_portal_remove = {}
             #
             for pub in pubs:
                 #   Form the key for matching existing portal pubs to pachy pubs
                 dataIntervalStartKey = pub.dataIntervalStart.replace('Z','').replace(':','').replace('-','')
                 dataIntervalEndKey = pub.dataIntervalEnd.replace('Z','').replace(':','').replace('-','')
                 pub_key = pub.dataProductId + pub.site + dataIntervalStartKey + '--' + dataIntervalEndKey + pub.packageType
-
-        date_path_indices = (date_path_year_index,date_path_month_index)
-        date_path_min_index = int(min(date_path_indices))
-        date_path_max_index = int(max(date_path_indices))
-        date_path_start = Path(*date_path.parts[0:date_path_min_index])  # Parent of the min index
 
         pub_sync.sync_pubs(get_sync_pubs=get_sync_pubs,
                            data_path=data_path,
