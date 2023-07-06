@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
-from typing import List,Dict, NamedTuple
-import unittest
 
+import unittest
 from pathlib import Path
 from unittest import TestCase
 
-from data_access.types.dp_pub import DpPub
-from typing import Callable, Iterator, List, Dict
-
-from dateutil.relativedelta import relativedelta
-from common.get_path_key import get_path_key
-
+from typing import Callable,Iterator,List,Dict
 from data_access.types.dp_pub import DpPub
 
 from pub_sync.tests.dp_pub_data import get_dp_pub_data
@@ -53,30 +47,15 @@ class PubSyncTest(TestCase):
             psmp_portal_remove = {}
             #
             for pub in pubs:
-             #   Form the key for matching existing portal pubs to pachy pubs
+                #   Form the key for matching existing portal pubs to pachy pubs
                 dataIntervalStartKey = pub.dataIntervalStart.replace('Z','').replace(':','').replace('-','')
                 dataIntervalEndKey = pub.dataIntervalEnd.replace('Z','').replace(':','').replace('-','')
                 pub_key = pub.dataProductId + pub.site + dataIntervalStartKey + '--' + dataIntervalEndKey + pub.packageType
 
-            #    If an existing portal pub is not the list of current pubs, mark it for further investigation & possible removal
-                if pub_key not in psmp_pachy.keys():
-                    if pub_key in psmp_portal_remove.keys():
-                        pub_list = psmp_portal_remove[pub_key]
-                        pub_list.append(pub)
-                        psmp_portal_remove[pub_key] = pub_list
-                    else:
-                        psmp_portal_remove[pub_key] = [pub]
-                        # log.debug(
-                        #     f'Found pub records for package [{pub.dataProductId} {pub.site} {pub.dataIntervalStart} {pub.packageType}] not output by current processing. Marked for investigation.')
-
-        # Check or set the relevant portal records to inactive
-        #   log.info(f'Found {len(psmp_portal_remove.keys())} product-site-month-packages to check/set to inactive')
-        #    remove_pub(connector,psmp_portal_remove,change_by)
-            pub_dates = {}
-            date_path_indices = (date_path_year_index,date_path_month_index)
-            date_path_min_index = int(min(date_path_indices))
-            date_path_max_index = int(max(date_path_indices))
-            date_path_start = Path(*date_path.parts[0:date_path_min_index])  # Parent of the min index
+        date_path_indices = (date_path_year_index,date_path_month_index)
+        date_path_min_index = int(min(date_path_indices))
+        date_path_max_index = int(max(date_path_indices))
+        date_path_start = Path(*date_path.parts[0:date_path_min_index])  # Parent of the min index
 
         pub_sync.sync_pubs(get_sync_pubs=get_sync_pubs,
                            data_path=data_path,
