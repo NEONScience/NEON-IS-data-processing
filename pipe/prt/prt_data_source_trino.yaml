@@ -53,7 +53,7 @@ transform:
     LOG_LEVEL: info
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
-    IN_PATH: /usr/src/app/interimData
+    IN_PATH: /tmp/interimData
     OUT_PATH: /pfs/out
     SOURCE_TYPE_INDEX: '3'
     YEAR_INDEX: '4'
@@ -82,12 +82,12 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 500M
-  cpu: 0.7
+  cpu: 0.8
 resource_limits:
   memory: 1G
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 2.5G
+  memory: 4G
   cpu: 0.5
 sidecar_resource_limits:
   memory: 8Gi
