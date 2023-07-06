@@ -15,6 +15,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     PAD_DIR: data
+    COPY_DIR: none # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none' if none other are desired.
     RELATIVE_PATH_INDEX: '3'
 input:
   pfs:
