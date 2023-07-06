@@ -25,7 +25,7 @@ class PubSyncTest(TestCase):
         data_path_date_index = "5"
         data_path_package_index = "6"
         dp_ids: List[str] = ["NEON.DOM.SITE.DP1.00066.001"]
-        sites: List[str] = ["MOD1","YELL", "CPER"]
+        sites: List[str] = ["MOD1","YELL","CPER"]
         data_path = None
         date_path = Path('2023/04/01')
         date_path_indices = (date_path_year_index,date_path_month_index)
