@@ -75,7 +75,6 @@ transform:
       mount_path: /var/db_secret
     - name: github-neonscience-app-secret
       mount_path: /var/github_secret
-# Joining in the monthly cron holds pub packaging until the month is likely complete
 input: 
   group:
   - pfs: 

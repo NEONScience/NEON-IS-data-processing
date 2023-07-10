@@ -10,17 +10,17 @@ transform:
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /usr/src/app/pfs/interimData
-  - rm -r -f /usr/src/app/pfs/interimDataCopy
-  - mkdir -p /usr/src/app/pfs/interimData
+  - rm -rf /tmp/pfs/padded_analyzer
+  - rm -rf /tmp/pfs/padded_analyzerCopy
+  - mkdir -p /tmp/pfs/padded_analyzer
   - '# Run first module - padded_timeseries_analyzer'
   - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
   - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
-  - cp -rL /usr/src/app/pfs/interimData /usr/src/app/pfs/interimDataCopy 
-  - rm -r -f /usr/src/app/pfs/interimData 
+  - cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy 
+  - rm -r -f /tmp/pfs/padded_analyzer 
   - '# Run second module - qaqc plausibility'
   - Rscript ./flow.qaqc.plau.R
-    DirIn=/usr/src/app/pfs/interimDataCopy
+    DirIn=/tmp/pfs/padded_analyzerCopy
     DirOut=/pfs/out
     DirErr=/pfs/out/errored_datums
     FileSchmQf=$SCHEMA_FLAGS
@@ -31,9 +31,11 @@ transform:
     "DirSubCopy=threshold|location"
   env:
     # Environment variables for padded timeseries analyzer
-    OUT_PATH: /usr/src/app/pfs/interimData
+    OUT_PATH: /tmp/pfs/padded_analyzer
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
+    # Environment variables for qaqc plausibility
+    PARALLELIZATION_INTERNAL: '1'
 input:
   cross:
   - pfs:
@@ -46,10 +48,21 @@ input:
       glob: /mfcSampTurb/flags_plausibility_mfcSampTurb.avsc #mfcValiTurb share the same schema
 parallelism_spec:
   constant: 1
+autoscaling: true
 resource_requests:
   memory: 1G
-  cpu: 1.0
-autoscaling: true
+  cpu: 1.2
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.3
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -67,15 +80,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"1.2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]
-  

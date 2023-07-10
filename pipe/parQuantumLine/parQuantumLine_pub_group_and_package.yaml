@@ -8,7 +8,9 @@ transform:
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /data/*
+  - rm -rf $OUT_PATH_GROUPER
+  - rm -rf $OUT_PATH_TRANSFORMER
+  - rm -rf $OUT_PATH_PACKAGER
   - mkdir $OUT_PATH_GROUPER
   - mkdir $OUT_PATH_TRANSFORMER
   - mkdir $OUT_PATH_PACKAGER
@@ -27,6 +29,8 @@ transform:
   - export OUT_PATH=$OUT_PATH_PACKAGER
   - '# Run third module - pub_packager (using environment variables below as input parameters)'
   - python3 -m pub_packager.pub_packager_main
+    - '# Clean up after 2nd module'
+  - rm -rf $OUT_PATH_TRANSFORMER
   - '# Set some environment variables for the fourth module and do some cleanup'
   - export OUT_PATH=$OUT_PATH_PUBFILES
   - export IN_PATH=$OUT_PATH_PACKAGER
@@ -35,8 +39,8 @@ transform:
   - python3 -m pub_files.main
   env:
     # Environment variables for 1st module: pub_grouper.
-    LOG_LEVEL: DEBUG
-    OUT_PATH_GROUPER: "/data/pub_grouper"
+    LOG_LEVEL: INFO
+    OUT_PATH_GROUPER: "/tmp/pub_grouper"
     YEAR_INDEX: '3' # Also shared with pub_transform
     GROUP_INDEX: '6'
     DATA_TYPE_INDEX: '7' # Also shared with pub_transform
@@ -45,13 +49,13 @@ transform:
     LINK_TYPE: COPY
     
     # Environment variables for 2st module: pub_transformer. Also uses YEAR_INDEX, DATA_TYPE_INDEX, GROUP_METADATA_DIR from the grouper
-    OUT_PATH_TRANSFORMER: "/data/pub_transformer"
-    OUT_PATH_WORKBOOK: "/data/pub_workbooks"
+    OUT_PATH_TRANSFORMER: "/tmp/pub_transformer"
+    OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
     PRODUCTS: NEON.DOM.SITE.DP1.00066.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
-    WORKBOOK_PATH: "/data/pub_workbooks/publication_workbook_NEON.DOM.SITE.DP1.00066.001.txt"
+    WORKBOOK_PATH: "/tmp/pub_workbooks/publication_workbook_NEON.DOM.SITE.DP1.00066.001.txt"
 
     # Environment variables for 3rd module: pub_packager.
-    OUT_PATH_PACKAGER: "/data/pub_packager"
+    OUT_PATH_PACKAGER: "/tmp/pub_packager"
     PUBLOC_INDEX: '6'
     DATE_INDEX: '3' # Starting index of date in path (i.e. year index)
     DATE_INDEX_LENGTH: '2' # length of date index for pub package (should be 2 for monthly)
@@ -83,15 +87,32 @@ transform:
       mount_path: /var/github_secret
 
 input: 
-  pfs: 
-    name: DATA_PATH
-    repo: parQuantumLine_level1_group_consolidate_srf
-    # Glob must be monthly
-    glob: /*/*
+  join:
+  - pfs: 
+      name: DATA_PATH
+      repo: parQuantumLine_level1_group_consolidate_srf
+      # Glob should be monthly and joined with pub_control to hold pub until month is likely complete
+      glob: /(*/*)
+      joinOn: $1
+  - pfs: 
+      repo: parQuantumLine_cron_monthly_and_pub_control
+      glob: /(*/*)
+      joinOn: $1
+      empty_files: true
 resource_requests:
-  memory: 300M
+  memory: 500M
+  cpu: 1
+resource_limits:
+  memory: 1G
+  cpu: 1.8
+sidecar_resource_requests:
+  memory: 2G
   cpu: 0.3
-autoscaling: true
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -109,14 +130,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "1"
-    }
-  ]

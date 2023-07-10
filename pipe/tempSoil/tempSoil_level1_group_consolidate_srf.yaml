@@ -76,7 +76,7 @@ transform:
             join_indices: [3,4,5,6]
     OUT_PATH_1: /tmp/interimA # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
-    LINK_TYPE: COPY # options are COPY or SYMLINK. Also shared with 2nd & 3rd modules 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
     LOG_LEVEL: INFO # Shared among all modules
 
 # Below are the environment variables for 2nd filter-joiner bringing in the Science review flags 

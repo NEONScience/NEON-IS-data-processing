@@ -39,8 +39,8 @@ transform:
     
     # Environment variables for 1st module: pub_egress.
     OUT_PATH: "/pfs/out"
-    EGRESS_URL: https://storage.googleapis.com/neon-int-publication
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
+    EGRESS_URL: https://storage.googleapis.com/neon-int-publication # Also include subfolder if included in BUCKET_NAME below
     BUCKET_NAME: "neon-int-publication" # Can also include subfolder (e.g. "neon-int-publication/egress-test")
 
     # Environment variables for 2nd module: pub_upload.
@@ -83,10 +83,21 @@ input:
         outer_join: True # We want to run even if no data so pub_sync runs
         group_by: $1
         empty_files: true
-resource_requests:
-  memory: 300M
-  cpu: 0.3
 autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 1
+resource_limits:
+  memory: 1G
+  cpu: 1.8
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 2
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 3
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -104,14 +115,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "1"
-    }
-  ]

@@ -10,8 +10,8 @@ transform:
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /tmp/threshold_select
-  - rm -r -f /tmp/threshold_selectCopy
+  - rm -rf /tmp/threshold_select
+  - rm -rf /tmp/threshold_selectCopy
   - mkdir -p /tmp/threshold_select
   - '# Run first module - threshold_select'
   - Rscript ./flow.thsh.slct.R 
@@ -33,6 +33,7 @@ transform:
     PAD_DIR: data
     COPY_DIR: none # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none' if none other are desired.
     RELATIVE_PATH_INDEX: '3'
+    PARALLELIZATION_INTERNAL: '3' # For threshold select module
 output_branch: master
 input:
   cross:
@@ -45,11 +46,21 @@ input:
       repo: parQuantumLine_threshold
       glob: /thresholds.json
 parallelism_spec:
-  constant: 1
+  constant: 5
 resource_requests:
-  memory: 400M
-  cpu: 0.2
-autoscaling: true
+  memory: 1.2G
+  cpu: 3.3
+resource_limits:
+  memory: 2G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -67,14 +78,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2.5G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.8"
-    }
-  ]

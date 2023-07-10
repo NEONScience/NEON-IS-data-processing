@@ -32,7 +32,7 @@ input:
   - pfs: 
       name: DATA_PATH
       repo: tempSoil_level1_group_consolidate_srf
-      # Glob should be daily or monthly, must be joined monthly with pub_control
+      # Glob should be daily or monthly, must be joined monthly with pub_control to hold pub until month is likely complete
       glob: /(*/*)/*
       joinOn: $1
   - pfs: 

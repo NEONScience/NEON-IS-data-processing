@@ -8,13 +8,13 @@ transform:
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /usr/src/app/pfs/interimData
-  - mkdir -p /usr/src/app/pfs/interimData
+  - rm -r -f /tmp/pfs/filter_joined
+  - mkdir -p /tmp/pfs/filter_joined
   - '# Run first module - filter-joiner (using environment variables below as input parameters)'
   - python3 -m filter_joiner.filter_joiner_main
   - '# Run second module - basic stats'
   - Rscript ./flow.stat.basc.R 
-    DirIn=/usr/src/app/pfs/interimData
+    DirIn=/tmp/pfs/filter_joined
     DirOut=/pfs/out
     DirErr=/pfs/out/errored_datums
     FileSchmStat=$FILE_SCHEMA_STATS
@@ -40,10 +40,10 @@ transform:
             glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/*/*/uncertainty*/**
             # Join on named location (already joined below by day)
             join_indices: [6]
-    OUT_PATH: /usr/src/app/pfs/interimData
+    OUT_PATH: /tmp/pfs/filter_joined
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '2' # Option for stats module
 input:
@@ -70,6 +70,15 @@ parallelism_spec:
 resource_requests: 
   memory: 600M
   cpu: 2.2
+resource_limits:
+  memory: 1.5G
+  cpu: 4
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.2
+sidecar_resource_limits:
+  memory: 3Gi
+  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -88,14 +97,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2.2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]

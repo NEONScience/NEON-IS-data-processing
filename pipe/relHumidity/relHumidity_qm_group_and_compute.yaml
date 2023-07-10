@@ -8,8 +8,8 @@ transform:
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /usr/src/app/pfs/interimData
-  - mkdir -p /usr/src/app/pfs/interimData
+  - rm -rf /tmp/pfs/interimData
+  - mkdir -p /tmp/pfs/interimData
   - '# Determine which group type we have'
   - if [ ${FILE_SCHEMA_QM_MET+x} ]
   - then export GROUP_TYPE=met
@@ -22,11 +22,11 @@ transform:
   - '# Run first module - filter-joiner (using environment variables below as input parameters)'
   - python3 -m filter_joiner.filter_joiner_main
   - '# Run second module - quality metrics'
-  - '# If met...'
-  - if [ $GROUP_TYPE = 'met' ]
+  - '# If met... (make sure both paths are present - not true partial timeseries pads'
+  - if [ $GROUP_TYPE = 'met' ] && [ ${QAQC_PLAUSIBILITY_PATH+x} ]
   - then 
       Rscript ./flow.qaqc.qm.R 
-      DirIn=/usr/src/app/pfs/interimData
+      DirIn=/tmp/pfs/interimData
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums
       FileSchmQm=$FILE_SCHEMA_QM_MET
@@ -42,10 +42,10 @@ transform:
       "GrpQfAlph3=dewPoint:dewPointSuspectCalQF|dewPointNullQF|dewPointGapQF|dewPointRangeQF|dewPointStepQF|dewPointSpikeQF|dewPointPersistenceQF|errorStateQF"
       "GrpQfBeta3=dewPoint:dewPointNullQF|dewPointGapQF|dewPointRangeQF|dewPointStepQF|dewPointSpikeQF|dewPointPersistenceQF|errorStateQF"
       "GrpQfBetaIgnr3=dewPoint:dewPointNullQF|dewPointGapQF"
-  - elif [ $GROUP_TYPE = 'buoy' ]
-  - then 
+  - elif [ $GROUP_TYPE = 'buoy' ] && [ ${QAQC_PLAUSIBILITY_PATH+x} ]
+  - then
   -   Rscript ./flow.qaqc.qm.R 
-        DirIn=/usr/src/app/pfs/interimData
+        DirIn=/tmp/pfs/interimData
         DirOut=/pfs/out
         DirErr=/pfs/out/errored_datums
         FileSchmQm=$FILE_SCHEMA_QM_BUOY
@@ -63,7 +63,7 @@ transform:
         "GrpQfBetaIgnr3=dewPoint:dewPointNullQF|dewPointGapQF"
         VarIgnr=errorStateQF
   -   Rscript ./flow.qaqc.qm.dp0p.R
-        DirIn=/usr/src/app/pfs/interimData
+        DirIn=/tmp/pfs/interimData
         DirOut=/pfs/out
         DirErr=/pfs/out/errored_datums
         FileSchmQm=$FILE_SCHEMA_QM_BUOY_INST
@@ -102,10 +102,10 @@ transform:
             glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/hmp155/*/flags/**
             # Join on named location (already joined below by day
             join_indices: [3,4,5,6]
-    OUT_PATH: /usr/src/app/pfs/interimData
+    OUT_PATH: /tmp/pfs/interimData
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     PARALLELIZATION_INTERNAL: '4' # Option for quality metrics module
 input:
 # We're going to send in the buoy locations separately from the tower/soil/met-station locations
@@ -159,10 +159,21 @@ input:
           empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 2
+autoscaling: true
 resource_requests:
   memory: 2.5G
   cpu: 4.4
-autoscaling: true
+resource_limits:
+  memory: 4G
+  cpu: 6
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -180,14 +191,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
-    }
-  ]

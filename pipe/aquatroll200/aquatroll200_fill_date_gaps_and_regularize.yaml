@@ -10,13 +10,13 @@ transform:
   stdin:
   - '#!/bin/bash'
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /usr/src/app/pfs/interimData
-  - mkdir -p /usr/src/app/pfs/interimData
+  - rm -rf $OUT_PATH
+  - mkdir -p $OUT_PATH
   - '# Run first module - filter-joiner (using environment variables below as input parameters)'
   - python3 -m date_gap_filler.date_gap_filler_main
   - '# Run second module - regularize'
   - Rscript ./flow.rglr.R
-    DirIn=/usr/src/app/pfs/interimData
+    DirIn=/tmp/pfs/date_filled
     DirOut=/pfs/out
     DirErr=/pfs/out/errored_datums
     "DirRglr=data|uncertainty_data|flags"
@@ -29,7 +29,7 @@ transform:
   env:
     # Environment variables for date gap filler
     LOG_LEVEL: INFO
-    OUT_PATH: /usr/src/app/pfs/interimData
+    OUT_PATH: /tmp/pfs/date_filled
     OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
@@ -43,7 +43,7 @@ transform:
     LOCATION_DAY_INDEX: '6'
     LOCATION_INDEX: '7'
     EMPTY_FILE_TYPE_INDEX: '4'
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
     # Environment variables for regularizer
     PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
@@ -83,10 +83,21 @@ input:
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
   constant: 1
-resource_requests:
-  memory: 800M
-  cpu: 1.1
 autoscaling: true
+resource_requests:
+  memory: 300M
+  cpu: 1.1
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -104,14 +115,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]

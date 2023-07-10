@@ -55,7 +55,7 @@ transform:
     OUT_PATH: /tmp/pfs/filter_joined
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for R modules
     PARALLELIZATION_INTERNAL: '5' 
 input:
