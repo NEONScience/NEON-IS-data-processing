@@ -150,7 +150,7 @@ def.ucrt.dp01.fdas <- function(data,
   # Do some error checking
   if (base::is.na(coefUcrtFdas) || base::is.na(coefUcrtFdasOfst)){
     # At least one of the terms is not present (but should be). Set uncertainty to NA
-    log$error(base::paste0('At least one of the expected FDAS uncertainty coefficients is not present for the term and aggregation interval. Setting uncertainty to NA for term: ',VarUcrt))
+    log$debug(base::paste0('At least one of the expected FDAS uncertainty coefficients is not present for the term and aggregation interval. Setting uncertainty to NA for term: ',VarUcrt))
     return(base::as.numeric(NA))
   }
     
