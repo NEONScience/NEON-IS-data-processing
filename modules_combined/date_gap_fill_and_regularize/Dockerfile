@@ -56,5 +56,4 @@ COPY ./${MODULE_DIR}/flow.rglr/wrap.rglr.R .
 COPY ./${MODULE_DIR}/flow.rglr/flow.rglr.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

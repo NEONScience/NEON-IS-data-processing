@@ -23,6 +23,7 @@ class VariablePad:
         self.data_path = config.data_path
         self.out_path = config.out_path
         self.pad_dirs = config.pad_dirs
+        self.copy_dirs = config.copy_dirs
         self.data_file_path = DataPathParser(config)
         self.data_types = [config.data_dir]
         self.out_dir_parts = list(self.out_path.parts)
@@ -83,9 +84,10 @@ class VariablePad:
                                 file_writer.link_thresholds(config_location_path, link_path)
                                 manifest_path = Path(link_path.parent, Config.manifest_filename)
                                 file_writer.write_manifest(padded_dates, manifest_path)
-                    else:
+                    elif data_type in self.copy_dirs:
                         link_path = Path(self.out_path, *parts[self.relative_path_index:])
                         link_path.parent.mkdir(parents=True, exist_ok=True)
+                        log.debug(f'file: {path} link: {link_path}')
                         if not link_path.exists():
                             link_path.symlink_to(path)
         except Exception:

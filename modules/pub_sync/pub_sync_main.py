@@ -65,6 +65,7 @@ from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 from data_access.get_sync_pubs import get_sync_pubs
 from functools import partial
+from pub_sync import pub_sync
 
 log = structlog.get_logger()
 
@@ -96,18 +97,18 @@ def main() -> None:
 
     with closing(DbConnector(db_config)) as connector:
         get_sync_pubs_partial = partial(get_sync_pubs,connector=connector)
-        sync_pubs(get_sync_pubs = get_sync_pubs_partial,
-                  data_path = data_path,
-                  date_path = date_path,
-                  date_path_year_index = date_path_year_index,
-                  date_path_month_index = date_path_month_index,
-                  data_path_product_index = data_path_product_index,
-                  data_path_site_index = data_path_site_index,
-                  data_path_date_index = data_path_date_index,
-                  data_path_package_index = data_path_package_index,
-                  dp_ids = dp_ids,
-                  sites = sites,
-                  change_by = change_by)
+        pub_sync.sync_pubs(get_sync_pubs = get_sync_pubs_partial,
+                          data_path = data_path,
+                          date_path = date_path,
+                          date_path_year_index = date_path_year_index,
+                          date_path_month_index = date_path_month_index,
+                          data_path_product_index = data_path_product_index,
+                          data_path_site_index = data_path_site_index,
+                          data_path_date_index = data_path_date_index,
+                          data_path_package_index = data_path_package_index,
+                          dp_ids = dp_ids,
+                          sites = sites,
+                          change_by = change_by)
 
 
 if __name__ == "__main__":

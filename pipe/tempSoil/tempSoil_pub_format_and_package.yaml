@@ -1,62 +1,51 @@
 ---
 pipeline:
-  name: tempSoil_pub_group_and_package
+  name: tempSoil_pub_format_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:v2.0.5
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /data/*
-  - mkdir $OUT_PATH_GROUPER
+  - rm -rf $OUT_PATH_TRANSFORMER
+  - rm -rf $OUT_PATH_PACKAGER
   - mkdir $OUT_PATH_TRANSFORMER
   - mkdir $OUT_PATH_PACKAGER
-  - '# Set some environment variables for the first module'
-  - export OUT_PATH=$OUT_PATH_GROUPER
-  - '# Run first module - pub_grouper (using environment variables below as input parameters)'
-  - python3 -m pub_grouper.pub_grouper_main
   - '# Set some environment variables for the second module'
-  - export DATA_PATH=$OUT_PATH_GROUPER
+  - export DATA_PATH=$GROUPED_PATH
   - export OUT_PATH=$OUT_PATH_TRANSFORMER
   - '# Run second module - pub_transformer (using environment variables below as input parameters)'
   - python3 -m pub_workbook_loader.pub_workbook_loader_main
   - python3 -m pub_transformer.pub_transformer_main
-  - '# Clean up after 1st module'
-  - rm -r $OUT_PATH_GROUPER
   - '# Set some environment variables for the third module'
   - export DATA_PATH=$(ls -d $OUT_PATH_TRANSFORMER/*/*) # Packager needs to be run at monthly glob. Get that path.
   - export OUT_PATH=$OUT_PATH_PACKAGER
   - '# Run third module - pub_packager (using environment variables below as input parameters)'
   - python3 -m pub_packager.pub_packager_main
     - '# Clean up after 2nd module'
-  - rm -r $OUT_PATH_TRANSFORMER
+  - rm -rf $OUT_PATH_TRANSFORMER
   - '# Set some environment variables for the fourth module and do some cleanup'
   - export OUT_PATH=$OUT_PATH_PUBFILES
   - export IN_PATH=$OUT_PATH_PACKAGER
-  - export LOCATION_PATH=$OUT_PATH_GROUPER
+  - export LOCATION_PATH=$GROUPED_PATH
   - '# Run fourth module - pub_files (using environment variables below as input parameters)'
   - python3 -m pub_files.main
 
   env:
-    # Environment variables for 1st module: pub_grouper.
-    LOG_LEVEL: DEBUG
-    OUT_PATH_GROUPER: "/data/pub_grouper"
-    YEAR_INDEX: '3' # Also shared with pub_transform
-    GROUP_INDEX: '6'
-    DATA_TYPE_INDEX: '7' # Also shared with pub_transform
-    GROUP_METADATA_DIR: group # Also shared with pub_transform
-    PUBLOC_KEY: site
-    LINK_TYPE: COPY
-    
-    # Environment variables for 2st module: pub_transformer. Also uses YEAR_INDEX, DATA_TYPE_INDEX, GROUP_METADATA_DIR from the grouper
-    OUT_PATH_TRANSFORMER: "/data/pub_transformer"
-    OUT_PATH_WORKBOOK: "/data/pub_workbooks"
+    # Environment variables for 1st module: pub_transformer. 
+    LOG_LEVEL: INFO
+    YEAR_INDEX: '3' 
+    DATA_TYPE_INDEX: '7' 
+    GROUP_METADATA_DIR: group 
+    DATA_PATH_PARSE_INDEX: '2'
+    OUT_PATH_TRANSFORMER: "/tmp/pub_transformer"
+    OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
     PRODUCTS: NEON.DOM.SITE.DP1.00041.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
-    WORKBOOK_PATH: "/data/pub_workbooks/publication_workbook_NEON.DOM.SITE.DP1.00041.001.txt"
+    WORKBOOK_PATH: "/tmp/pub_workbooks/publication_workbook_NEON.DOM.SITE.DP1.00041.001.txt"
 
-    # Environment variables for 3rd module: pub_packager.
-    OUT_PATH_PACKAGER: "/data/pub_packager"
+    # Environment variables for 2nd module: pub_packager.
+    OUT_PATH_PACKAGER: "/tmp/pub_packager"
     PUBLOC_INDEX: '6'
     DATE_INDEX: '3' # Starting index of date in path (i.e. year index)
     DATE_INDEX_LENGTH: '2' # length of date index for pub package (should be 2 for monthly)
@@ -88,24 +77,30 @@ transform:
       mount_path: /var/github_secret
 # Joining in the monthly cron holds pub packaging until the month is likely complete
 input: 
-  join:
+  group:
   - pfs: 
-      name: DATA_PATH
-      repo: tempSoil_level1_group_consolidate_srf
-      # Glob must be monthly
-      glob: /(*/*)
-      joinOn: $1
-  - pfs: 
-      repo: tempSoil_cron_monthly_and_pub_control
-      glob: /(*/*)
-      joinOn: $1
-      empty_files: true
+      name: GROUPED_PATH
+      repo: tempSoil_pub_group
+      # Glob must be monthly or site-monthly (use group to do site-monthly)
+      glob: /(*/*)/*/(*)
+      group_by: $1$2
 parallelism_spec:
-  constant: 1
-resource_requests:
-  memory: 10G
-  cpu: 1.3
+  constant: 10
 autoscaling: true
+resource_requests:
+  memory: 800M
+  cpu: 1
+resource_limits:
+  memory: 2G
+  cpu: 1.8
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 0.3
+sidecar_resource_limits:
+  memory: 8Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -123,14 +118,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "1.5"
-    }
-  ]

@@ -2,18 +2,36 @@
 pipeline:
   name: parQuantumLine_level1_pub_egress
 transform:
-  image: quay.io/battelleecology/pub_egress:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
-  cmd: ["/bin/bash"]
-  stdin:
-  - "#!/bin/bash"
-  - "python3 -m pub_egress.pub_egress.app"
+  image: quay.io/battelleecology/pub_egress:v2.1.2
   env:
     LOG_LEVEL: INFO
     OUT_PATH: "/pfs/out"
-    EGRESS_URL: https://storage.googleapis.com/neon-int-publication/egress-test
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
+    BUCKET_NAME: "neon-int-publication/egress-test"
+    EGRESS_URL: https://storage.googleapis.com/neon-int-publication/egress-test
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Restructure for egress
+    python3 -m pub_egress.pub_egress.app
+    # If there is output, egress it
+    dirs=$(find $OUT_PATH/* -type d)
+    if [[ ${dirs} ]]; then
+      echo "Syncing files to bucket"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        copy \
+        "${OUT_PATH}" \
+        ":gcs://${BUCKET_NAME}"
+      echo "Done"
+    fi
+    EOF
 input: 
-  # Group allows processing an entire year-month in one datum. Remove the group spec to process each year-month-site as a datum
   group:
   - join:
     - pfs: 
@@ -28,8 +46,6 @@ input:
         glob: /(*/*)
         joinOn: $1
         group_by: $1
-egress:
-  URL: gs://neon-int-publication/egress-test
 resource_requests:
   memory: 300M
   cpu: 0.3

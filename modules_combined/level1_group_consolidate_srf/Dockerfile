@@ -18,7 +18,6 @@ ARG APP_DIR_3="pub_workbook_loader"
 ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
 ARG CONTAINER_APP_DIR="/usr/src/app"
-ARG DATA_DIR="/data"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
@@ -43,10 +42,7 @@ RUN apt update && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* && \
     groupadd -g 9999 appuser && \
-    useradd -r -u 9999 -g appuser appuser && \
-    mkdir ${DATA_DIR} && \
-    chown appuser:appuser -R ${CONTAINER_APP_DIR} && \
-    chown appuser:appuser -R ${DATA_DIR}
+    useradd -r -u 9999 -g appuser appuser 
 
 COPY ${MODULE_DIR}/${APP_DIR_1} ${CONTAINER_APP_DIR}/${APP_DIR_1}
 COPY ${MODULE_DIR}/${APP_DIR_2} ${CONTAINER_APP_DIR}/${APP_DIR_2}

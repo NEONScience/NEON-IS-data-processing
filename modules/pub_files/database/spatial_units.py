@@ -20,5 +20,7 @@ def get_spatial_unit(connector: DbConnector, srid: int) -> str:
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [srid])
         row = cursor.fetchone()
-        unit = row[0]
+        unit=None
+        if row is not None:
+            unit = row[0]
         return unit

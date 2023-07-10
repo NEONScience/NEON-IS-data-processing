@@ -3,25 +3,22 @@ pipeline:
   name: prt_calibration_group_and_convert
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-<<<<<<< HEAD
-  image: quay.io/battelleecology/neon-is-cal-grp-conv:82a259b6056253a7effdb0d07d2c5c06c02e9ff0
-=======
   image: quay.io/battelleecology/neon-is-cal-grp-conv:d8b7e78d98bc53f183c6c6cc0635da393dcd7810
->>>>>>> master
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /data/*
-  - mkdir -p /data/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
-  - mkdir -p /data/pfs/filter_joined # R modules must have pfs in the repo structure
+  - rm -rf /tmp/kafka_merged
+  - rm -rf $OUT_PATH
+  - mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+  - mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
   - '# Detect if we have data coming from Kafka or trino'
   - if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
   - '# Data from kafka. '
   - '# Run kafka combiner'
   - Rscript ./flow.kfka.comb.R
         DirIn=$KAFKA_UNMERGED_DATA
-        DirOut=/data/kafka_merged
+        DirOut=/tmp/kafka_merged
         DirErr=/pfs/out/errored_datums
         FileSchmL0=$FILE_SCHEMA_L0
   - '# Set CONFIG for filter-joiner to the kafka version and run filter joiner'
@@ -36,7 +33,7 @@ transform:
   - fi  
   - '# Run calibration conversion module'
   - Rscript ./flow.cal.conv.R 
-      DirIn=/data/pfs/filter_joined
+      DirIn=/tmp/pfs/filter_joined
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums 
       FileSchmData=$FILE_SCHEMA_DATA
@@ -58,7 +55,7 @@ transform:
         - path:
             name: DATA_PATH_KAFKA
             # Filter for data directory
-            glob_pattern: /data/kafka_merged/prt/*/*/*/*/**
+            glob_pattern: /tmp/kafka_merged/prt/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
@@ -87,14 +84,18 @@ transform:
             glob_pattern: /pfs/CALIBRATION_PATH/prt/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
-    OUT_PATH: /data/pfs/filter_joined
+    OUT_PATH: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
-    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE COPY IF USING COMBINED MODULE.
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+    PARALLELIZATION_INTERNAL: '5' # Option for calibration conversion module
 input:
   cross:
+  - pfs:
+      name: FILE_SCHEMA_L0
+      repo: prt_avro_schemas
+      glob: /prt/prt.avsc
   - pfs:
       name: FILE_SCHEMA_DATA
       repo: prt_avro_schemas
@@ -113,36 +114,47 @@ input:
       - pfs:
           name: DATA_PATH_TRINO
           repo: prt_data_source_trino
-          glob: /prt/(*)/(*)/(*)
-          joinOn: $1/$2/$3
+          glob: /prt/(*/*/*)
+          joinOn: $1
           outer_join: true
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: CALIBRATION_PATH
           repo: prt_calibration_assignment
-          glob: /prt/(*)/(*)/(*)
-          joinOn: $1/$2/$3
+          glob: /prt/(*/*/*)
+          joinOn: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
       - pfs:
           name: KAFKA_UNMERGED_DATA
           repo: prt_data_source_kafka
-          glob: /prt/(*)/(*)/(*)
-          joinOn: $1/$2/$3
+          glob: /prt/(*/*/*)
+          joinOn: $1
           outer_join: true
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: CALIBRATION_PATH
           repo: prt_calibration_assignment
-          glob: /prt/(*)/(*)/(*)
-          joinOn: $1/$2/$3
+          glob: /prt/(*/*/*)
+          joinOn: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 2
-resource_requests:
-  memory: 5G
-  cpu: 3.3
+  constant: 5
 autoscaling: true
+resource_requests:
+  memory: 2.5G
+  cpu: 5.5
+resource_limits:
+  memory: 4G
+  cpu: 7
+sidecar_resource_requests:
+  memory: 5G
+  cpu: 0.6
+sidecar_resource_limits:
+  memory: 10G
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -160,14 +172,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"3.5G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]

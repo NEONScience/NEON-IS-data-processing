@@ -7,6 +7,7 @@ class Config(NamedTuple):
     data_path: Path
     out_path: Path
     pad_dirs: list
+    copy_dirs: list
     window_size: int
     year_index: int
     month_index: int

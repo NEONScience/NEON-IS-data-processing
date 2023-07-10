@@ -2,7 +2,7 @@
 pipeline:
   name: prt_cron_daily_and_date_control_STEVE
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:v0.0.4
+  image: quay.io/battelleecology/neon-is-date-cntl:v0.0.5
   cmd: ["/bin/bash"]
   env:
     # START_DATE and END_DATE indicate the date range (inclusive) to create the /Y/M/D folder structure
@@ -10,7 +10,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2023-05-01"
-    END_DATE: "2023-06-18"
+    #END_DATE: "2023-06-18"
     SOURCE_TYPE: "prt"
   stdin:
   - "#!/bin/bash"

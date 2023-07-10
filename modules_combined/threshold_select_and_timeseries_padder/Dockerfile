@@ -54,5 +54,4 @@ COPY ./${MODULE_DIR}/${APP_DIR}/flow.thsh.slct.R .
 COPY ./${MODULE_DIR}/${APP_DIR}/wrap.thsh.slct.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

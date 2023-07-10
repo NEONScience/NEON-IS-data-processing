@@ -52,5 +52,4 @@ COPY ./${MODULE_DIR}/${APP_DIR}/wrap.qaqc.plau.R .
 COPY ./${MODULE_DIR}/${APP_DIR}/flow.qaqc.plau.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

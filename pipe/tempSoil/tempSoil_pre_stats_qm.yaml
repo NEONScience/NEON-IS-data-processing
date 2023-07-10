@@ -1,31 +1,43 @@
 ---
 pipeline:
-  name: tempAirSingle_egress
+  name: tempSoil_pre_stats_qm
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/egress:12
+  image: quay.io/battelleecology/neon-is-dir-filt:v1.0.2
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m egress.egress.app --outputname tempAirSingle --dateindex 2 --locindex
-    1
+  - python3 -m directory_filter.directory_filter_main
   env:
     OUT_PATH: /pfs/out
+    FILTER_DIR: data,uncertainty_data,uncertainty_coef,flags
+    FILTER_DIR_INDEX: '9'
     LOG_LEVEL: INFO
-    EGRESS_URL: https://storage.googleapis.com/neon-int-publication/egress-test
-output_branch: master
+    RELATIVE_PATH_INDEX: '3'
 input:
   pfs:
-    name: DATA_PATH
-    repo: tempAirSingle_level1_group
-    branch: master
+    name: IN_PATH
+    repo: tempSoil_group_path
     glob: /*/*/*
-egress:
-  URL: gs://neon-int-publication/egress-test
-standby: true
-
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.5
+resource_limits:
+  memory: 1.5G
+  cpu: 1.2
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 0.8
+sidecar_resource_limits:
+  memory: 8Gi
+  cpu: 1.5
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -43,14 +55,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"1G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]

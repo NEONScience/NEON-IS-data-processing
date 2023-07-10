@@ -19,6 +19,7 @@ class ConstantPad:
         self.data_path = config.data_path
         self.out_path = config.out_path
         self.pad_dirs = config.pad_dirs
+        self.copy_dirs = config.copy_dirs
         self.relative_path_index = config.relative_path_index
         self.window_size = config.window_size
         self.year_index = config.year_index
@@ -61,8 +62,9 @@ class ConstantPad:
                             manifest_path = Path(link_path.parent, Config.manifest_filename)
                             log.debug(f'writing manifest: {manifest_path}')
                             file_writer.write_manifest(padded_dates, manifest_path)
-                else:
+                elif data_type in self.copy_dirs:
                     link_path = Path(self.out_path, *parts[self.relative_path_index:])
                     link_path.parent.mkdir(parents=True, exist_ok=True)
+                    log.debug(f'file: {path} link: {link_path}')
                     if not link_path.exists():
                         link_path.symlink_to(path)

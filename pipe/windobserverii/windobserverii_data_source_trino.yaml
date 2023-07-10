@@ -1,16 +1,17 @@
 ---
 pipeline:
-  name: test_data_source_trino
+  name: windobserverii_data_source_trino
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/data_source_trino:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
+  image: quay.io/battelleecology/data_source_trino:v0.0.3
   cmd:
   - /bin/bash
   stdin:
   - "#!/usr/bin/env bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /usr/src/app/interimData
+  - interimDir="/tmp/interimData"
+  - rm -rf $interimDir
   - "# Get today's date for evaluating kafka data retention period"
   - date_today=$(date -u +%Y-%m-%d)
   - kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
@@ -38,27 +39,27 @@ transform:
   - '  echo "Extracting data from Trino for $year/$month/$day/$site"'
   - "  export GEN_DATE=$year-$month-$day"
   - "  export GEN_SITE_NAME=$site"
-  - "  export GEN_OUTPUT_DIR=/usr/src/app/interimData/li191r/$year/$month/$day"
+  - "  export GEN_OUTPUT_DIR=$interimDir/prt/$year/$month/$day"
   - "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem"
   - "  mkdir -p $GEN_OUTPUT_DIR"
-  - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip"
+  - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second"
   - done
   - '# Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day'
   - python3 -m parquet_linkmerge.parquet_linkmerge_main
   env:
     # Environment variables for data conversion step
-    GEN_YAML_CONF: "/usr/src/app/genscript/configs/li191r_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/li191r/li191r.avsc"
-    LOG_LEVEL: info
+    GEN_YAML_CONF: "/usr/src/app/genscript/configs/windobserverii_streams.yaml"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/windobserverii/windobserverii.avsc"
+    LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
-    IN_PATH: /usr/src/app/interimData
+    IN_PATH: /tmp/interimData
     OUT_PATH: /pfs/out
-    SOURCE_TYPE_INDEX: '5'
-    YEAR_INDEX: '6'
-    MONTH_INDEX: '7'
-    DAY_INDEX: '8'
-    SOURCE_ID_INDEX: '9'
+    SOURCE_TYPE_INDEX: '3'
+    YEAR_INDEX: '4'
+    MONTH_INDEX: '5'
+    DAY_INDEX: '6'
+    SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "30"
   secrets:
   - name: pachd-trino-secret
@@ -73,15 +74,26 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: test_cron_daily_and_date_control
-    glob: "/li191r/*/*/*"
+    repo: windobserverii_cron_daily_and_date_control
+    glob: "/windobserverii/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5
-resource_requests:
-  memory: 500M
-  cpu: 0.7
 autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: 0.7
+resource_limits:
+  memory: 800M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.2
+sidecar_resource_limits:
+  memory: 6G
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -99,14 +111,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"1G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
-    }
-  ]

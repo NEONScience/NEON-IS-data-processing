@@ -14,10 +14,9 @@ log = get_logger()
 
 def pub_package(*, data_path, out_path, publoc_index: int, date_index: int, date_index_length: int, sort_index: int) -> None:
     """
-    Bundles the required files into a package suitable for publication. Glob must be at the package aggregation level.
-    For example, monthly publication requires glob pattern to be at monthly level (e.g. SITE/YEAR/MONTH)
+    Bundles the required files into a package suitable for publication. 
 
-    :param data_path: The input data path.
+    :param data_path: The input data path. Should end at whatever aggregation interval is a publication package (i.e. monthly)
     :param out_path: The output path for writing the package files.
     :param publoc_index: input path index of the pub package location (typically the site)
     :param date_index: start input path index of publication date field (e.g. index of the year in the path)

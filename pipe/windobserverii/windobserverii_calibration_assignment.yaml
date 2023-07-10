@@ -1,31 +1,34 @@
+---
 pipeline:
-  name: srf_loader_test
+  name: windobserverii_calibration_assignment
 transform:
   cmd:
-    - /bin/bash
-  env:
-    GROUP_PREFIX: groundwater-physical_
-    LOG_LEVEL: DEBUG
-    OUT_PATH: /pfs/out
-  image: quay.io/battelleecology/neon-srf-loader:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
+  - Rscript
+  - ./flow.cal.asgn.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileYear=$FILE_YEAR
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.6
   image_pull_secrets:
-    - battelleecology-quay-read-all-pull-secret
-  secrets:
-  - name: db-pdr-secret
-    mount_path: /var/db_secret
-  stdin:
-    - '#!/bin/bash'
-    - python3 -m srf_loader.srf_loader_main
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
 input:
-  pfs:
-    branch: master
-    empty_files: true
-    glob: /*
-    repo: test_cron_daily_and_date_control_tick
-output_branch: master
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: windobserverii_calibration_loader
+      glob: /windobserverii/*
+  - pfs:
+      name: FILE_YEAR
+      repo: windobserverii_data_years
+      glob: /data_years.txt
+parallelism_spec:
+  constant: 4
 resource_requests:
-  cpu: 1
-  memory: 300M
+  memory: 1.0G
+  cpu: 1.0
 autoscaling: true
 scheduling_spec:
   node_selector:

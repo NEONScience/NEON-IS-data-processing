@@ -42,9 +42,15 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                     row_azimuth: float = round(geolocation.gamma, 2)
                     row_reference_location_id: str = (database.get_named_location(offset_name)).name
                     row_reference_location_description: str = geolocation.offset_description
-                    row_reference_location_latitude: float = round(offset_geometry.latitude, 6)
-                    row_reference_location_longitude: float = round(offset_geometry.longitude, 6)
-                    row_reference_location_elevation: float = round(offset_geometry.elevation, 2)
+                    row_reference_location_latitude = None
+                    row_reference_location_longitude = None
+                    row_reference_location_elevation = None
+                    if offset_geometry.latitude is not None:
+                        row_reference_location_latitude: float = round(offset_geometry.latitude, 6)
+                    if offset_geometry.longitude is not None:
+                        row_reference_location_longitude: float = round(offset_geometry.longitude, 6)
+                    if offset_geometry.elevation is not None:
+                        row_reference_location_elevation: float = round(offset_geometry.elevation, 2)
                     # reference location
                     for reference_geolocation in database.get_geolocations(offset_name):
                         reference_position = get_position(reference_geolocation, geolocation.x_offset,

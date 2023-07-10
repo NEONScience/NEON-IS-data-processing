@@ -2,7 +2,7 @@
 pipeline:
   name: mti300ahrs_data_source_kafka_STEVE
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.9-kafka
+  image: quay.io/battelleecology/kafka-loader:v1.0.13-kafka
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -43,7 +43,6 @@ transform:
     date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
     echo $date_path
     date_str=$(date -u +%Y-%m-%d -d $date_path)
-    has_files="false"
     # Get each site to run
     if [[ -f ${import_trigger} ]]; then
       import_trigger_glob="${import_trigger}"
@@ -64,18 +63,17 @@ transform:
         echo -n "Today's date ($date_today) is beyond the Kafka retention period ($KAFKA_RETENTION_DAYS days). Skipping..."
         continue
       fi
-      has_files="true"
       # We are ok to run
       echo "Extracting $date_str kafka data for $site"
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
     done
-    if [[ "$has_files" == "true" ]]; then
+    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/prt/2023/01/01/12345/data/file.parquet
+      # /pfs/out/mti300ahrs/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do
@@ -113,19 +111,21 @@ input:
     glob: "/mti300ahrs/*/*/*/*"
 parallelism_spec:
   constant: 20
+autoscaling: true
 resource_requests:
   memory: 1.5G
   cpu: 1.2
 resource_limits:
   memory: 2.5G
-  cpu: 1.5
+  cpu: 2
 sidecar_resource_requests:
-  memory: 2.5G
+  memory: 1.5G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 10Gi
+  memory: 4Gi
   cpu: 1.2
-autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

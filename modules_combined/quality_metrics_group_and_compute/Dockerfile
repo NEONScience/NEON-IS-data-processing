@@ -51,5 +51,4 @@ COPY ./${MODULE_DIR}/${APP_DIR}/wrap.qaqc.qm.R .
 COPY ./${MODULE_DIR}/${APP_DIR}/flow.qaqc.qm.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser
