@@ -4,38 +4,35 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:d8b7e78d98bc53f183c6c6cc0635da393dcd7810
+  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:v2.0.2
   cmd:
   - /bin/bash
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /tmp/pfs/threshold_select
-  - rm -r -f /tmp/pfs/threshold_selectCopy
-  - mkdir -p /tmp/pfs/threshold_select
+  - rm -rf /tmp/threshold_select
+  - rm -rf /tmp/threshold_selectCopy
+  - mkdir -p /tmp/threshold_select
   - '# Run first module - threshold_select'
   - Rscript ./flow.thsh.slct.R 
       DirIn=$REPO_LOCATIONS
-      DirOut=/tmp/pfs/threshold_select
+      DirOut=/tmp/threshold_select
       DirErr=/pfs/out/errored_datums
       FileThsh=$FILE_THRESHOLDS
       "TermCtxt1=temp|soil"
       "DirSubCopy=data|location"
   - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
-  - cp -rL /tmp/pfs/threshold_select /tmp/pfs/threshold_selectCopy 
-  - rm -r -f /tmp/pfs/threshold_select 
+  - cp -rL /tmp/threshold_select /tmp/threshold_selectCopy 
+  - rm -r -f /tmp/threshold_select 
   - '# Run second module - timeseries_padder'
-  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 6 --monthindex 7 --dayindex 8 --locindex 11 --subdirindex 12
-  - '# Final step - collapse the interim directory structure in /pfs/out'
-  - cp -rL /pfs/out/app/pfs/interimDataCopy/* /pfs/out
-  - rm -r /pfs/out/app
+  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
   env:
-    DATA_PATH: /tmp/pfs/threshold_selectCopy
+    DATA_PATH: /tmp/threshold_selectCopy
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     PAD_DIR: data
     COPY_DIR: none # Can be multiple, separated by commas without spaces. Directories other than the pad directory to copy to the output
-    RELATIVE_PATH_INDEX: '4'
+    RELATIVE_PATH_INDEX: '3'
     PARALLELIZATION_INTERNAL: '5'
 output_branch: master
 input:
@@ -58,11 +55,13 @@ resource_limits:
   memory: 3G
   cpu: 6.5
 sidecar_resource_requests:
-  memory: 2.5G
-  cpu: 0.5
+  memory: 4G
+  cpu: 0.3
 sidecar_resource_limits:
-  memory: 5Gi
-  cpu: 1.3
+  memory: 8Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

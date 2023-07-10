@@ -50,7 +50,7 @@ transform:
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/prt_streams.yaml"
     GEN_SCHEMA_FILE: "/usr/src/app/schemas/prt/prt.avsc"
-    LOG_LEVEL: info
+    LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
     IN_PATH: /tmp/interimData
@@ -81,17 +81,19 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.8
+  memory: 400M
+  cpu: 0.7
 resource_limits:
-  memory: 1G
+  memory: 800M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 4G
-  cpu: 0.5
+  memory: 2G
+  cpu: 0.2
 sidecar_resource_limits:
-  memory: 8Gi
+  memory: 6G
   cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

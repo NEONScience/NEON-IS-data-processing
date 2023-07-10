@@ -57,5 +57,4 @@ COPY ./${MODULE_DIR}/${APP_DIR_2}/wrap.data.comb.ts.R .
 COPY ./${MODULE_DIR}/${APP_DIR_2}/flow.data.comb.ts.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

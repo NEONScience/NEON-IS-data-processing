@@ -56,6 +56,8 @@ transform:
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK
+    # Environment variables for R modules
+    PARALLELIZATION_INTERNAL: '5' 
 input:
   join:
   - pfs:
@@ -75,17 +77,19 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 5G
-  cpu: 1.2
+  memory: 3G
+  cpu: 5.5
 resource_limits:
-  memory: 8G
-  cpu: 1.8
+  memory: 6G
+  cpu: 7
 sidecar_resource_requests:
   memory: 3G
   cpu: 0.5
 sidecar_resource_limits:
   memory: 8Gi
   cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

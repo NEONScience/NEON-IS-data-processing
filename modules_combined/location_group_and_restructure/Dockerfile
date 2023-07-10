@@ -14,7 +14,6 @@ ARG MODULE_DIR="modules"
 ARG APP_DIR="filter_joiner"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
-ARG DATA_DIR="/data"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
@@ -32,10 +31,7 @@ RUN apt update && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* && \
     groupadd -g 9999 appuser && \
-    useradd -r -u 9999 -g appuser appuser && \
-    mkdir ${DATA_DIR} && \
-    chown appuser:appuser -R ${CONTAINER_APP_DIR} && \
-    chown appuser:appuser -R ${DATA_DIR}
+    useradd -r -u 9999 -g appuser appuser 
 
 
 # Copy in python code

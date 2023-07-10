@@ -10,7 +10,9 @@ transform:
   - |-
     /bin/bash <<'EOF'
     # Run first module - pub_egress (using environment variables below as input parameters)
-    python3 -m pub_egress.pub_egress.app
+    if [[ $(echo $DATA_PATH) ]]; then
+      python3 -m pub_egress.pub_egress.app
+    fi
     # If there is output, egress it
     dirs=$(find $OUT_PATH/* -type d)
     if [[ ${dirs} ]]; then
@@ -78,21 +80,24 @@ input:
         repo: tempSoil_cron_monthly_and_pub_control
         glob: /(*/*)
         joinOn: $1
+        outer_join: True # We want to run even if no data so pub_sync runs
         group_by: $1
         empty_files: true
+autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 0.3
+  memory: 500M
+  cpu: 1
 resource_limits:
   memory: 1G
-  cpu: 1.2
+  cpu: 1.8
 sidecar_resource_requests:
-  memory: 2.5G
+  memory: 3G
   cpu: 2
 sidecar_resource_limits:
-  memory: 5Gi
+  memory: 6Gi
   cpu: 3
-autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

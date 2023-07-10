@@ -12,7 +12,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2022-06-30" # Inclusive
-    END_DATE: "2022-08-01" # Inclusive
+    END_DATE: "2022-11-01" # Inclusive
     SOURCE_TYPE: "prt"
   stdin:
   - "#!/bin/bash"
@@ -29,17 +29,17 @@ input:
       repo: prt_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 64M
+  memory: 100M
   cpu: 0.2
 resource_limits:
-  memory: 128M
+  memory: 500M
   cpu: 1
 sidecar_resource_requests:
-  memory: 64M
-  cpu: 0.1
+  memory: 100M
+  cpu: 0.5
 sidecar_resource_limits:
-  memory: 128M
-  cpu: 1
+  memory: 500M
+  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:

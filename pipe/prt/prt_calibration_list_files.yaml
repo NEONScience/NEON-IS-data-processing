@@ -18,16 +18,16 @@ input:
     empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 0.5
+  memory: 500M
+  cpu: 0.4
 resource_limits:
   memory: 1G
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 500M
+  memory: 800M
   cpu: 0.2
 sidecar_resource_limits:
-  memory: 3Gi
+  memory: 2Gi
   cpu: 1.2
 scheduling_spec:
   node_selector:

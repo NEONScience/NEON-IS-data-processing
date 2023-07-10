@@ -30,16 +30,18 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 500M
-  cpu: 0.8
+  cpu: 0.5
 resource_limits:
   memory: 1G
   cpu: 1.5
 sidecar_resource_requests:
   memory: 600M
-  cpu: 0.5
+  cpu: 0.2
 sidecar_resource_limits:
   memory: 3Gi
   cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

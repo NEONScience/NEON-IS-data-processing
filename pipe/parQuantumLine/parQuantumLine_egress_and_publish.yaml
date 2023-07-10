@@ -10,7 +10,9 @@ transform:
   - |-
     /bin/bash <<'EOF'
     # Run first module - pub_egress (using environment variables below as input parameters)
-    python3 -m pub_egress.pub_egress.app
+    if [[ $(echo $DATA_PATH) ]]; then
+      python3 -m pub_egress.pub_egress.app
+    fi
     # If there is output, egress it
     dirs=$(find $OUT_PATH/* -type d)
     if [[ ${dirs} ]]; then
@@ -39,7 +41,8 @@ transform:
     OUT_PATH: "/pfs/out"
     EGRESS_URL: https://storage.googleapis.com/neon-int-publication
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
-    
+    BUCKET_NAME: "neon-int-publication" # Can also include subfolder (e.g. "neon-int-publication/egress-test")
+
     # Environment variables for 2nd module: pub_upload.
     # DATA_PATH is set in the code above to the output from the egress module
     # Uses STARTING_PATH_INDEX above
@@ -56,7 +59,7 @@ transform:
     DATA_PATH_DATE_INDEX: "5"
     DATA_PATH_PACKAGE_INDEX: "6"
     PRODUCTS: NEON.DOM.SITE.DP1.00066.001 # CAN BE MULTIPLE, COMMA-SEPARATED
-    SITES: all  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
+    SITES: "CPER,HARV,ABBY"  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
 
   secrets:
   - name: pdr-secret
@@ -77,6 +80,7 @@ input:
         repo: parQuantumLine_cron_monthly_and_pub_control
         glob: /(*/*)
         joinOn: $1
+        outer_join: True # We want to run even if no data so pub_sync runs
         group_by: $1
         empty_files: true
 resource_requests:

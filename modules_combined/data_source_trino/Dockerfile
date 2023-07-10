@@ -38,6 +38,4 @@ RUN update-ca-trust && \
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
-
 USER appuser

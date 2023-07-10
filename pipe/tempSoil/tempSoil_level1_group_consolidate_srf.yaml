@@ -12,7 +12,7 @@ transform:
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
   - rm -rf /tmp/interimA
   - rm -rf /tmp/interimB
-  - rm -rf /tmp/interimC
+  - rm -rf /tmp/pfs/interimC
   - mkdir /tmp/interimA
   - mkdir /tmp/interimB
   - mkdir -p /tmp/pfs/interimC
@@ -159,6 +159,7 @@ input:
 output_branch: master
 parallelism_spec:
   constant: 5
+autoscaling: true
 resource_requests:
   memory: 2.5G
   cpu: 5.5
@@ -166,12 +167,13 @@ resource_limits:
   memory: 4G
   cpu: 7
 sidecar_resource_requests:
-  memory: 2.5G
+  memory: 3G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 5Gi
+  memory: 8Gi
   cpu: 1.3
-autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

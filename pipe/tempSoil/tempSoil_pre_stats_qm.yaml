@@ -23,19 +23,21 @@ input:
     glob: /*/*/*
 parallelism_spec:
   constant: 5
+autoscaling: true
 resource_requests:
-  memory: 300M
+  memory: 500M
   cpu: 0.5
 resource_limits:
-  memory: 1G
+  memory: 1.5G
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 4G
   cpu: 0.8
 sidecar_resource_limits:
   memory: 8Gi
   cpu: 1.5
-autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

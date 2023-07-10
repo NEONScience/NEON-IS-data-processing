@@ -51,5 +51,4 @@ COPY ./${MODULE_DIR}/${APP_DIR}/wrap.stat.basc.R .
 COPY ./${MODULE_DIR}/${APP_DIR}/flow.stat.basc.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

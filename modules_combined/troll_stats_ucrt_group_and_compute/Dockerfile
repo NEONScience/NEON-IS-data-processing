@@ -55,5 +55,4 @@ COPY ./${MODULE_DIR}/${APP_DIR_1}/flow.stat.basc.R .
 COPY ./${MODULE_DIR}/${APP_DIR_2}/flow.troll.uncertainty.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser
