@@ -176,7 +176,10 @@ def format_column(dataframe: DataFrame, column: str, column_format: str):
 
 def format_sig(element, n_digits):
     """Format a number to n_digits significant figures and at most 7 decimal places."""
-    rounded = round(element, -int(math.floor(math.log10(abs(element))-(n_digits-1))))
+    if pd.isna(element):
+        rounded = element
+    else:
+        rounded = round(element, -int(math.floor(math.log10(abs(element))-(n_digits-1))))
     # Format as decimal
     formatted = ("%.16f" % rounded).rstrip('0').rstrip('.')
     # Retain at most 7 decimal places
