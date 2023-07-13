@@ -3,7 +3,7 @@ pipeline:
   name: tchain_calibration_list_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-cval-loader:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
+  image: quay.io/battelleecology/neon-cval-loader:2ca4d49421c2c30b05e5f695c7fa832705cf4707
   cmd: ["/bin/bash"]
   env:
     CVAL_INGEST_BUCKET: neon-cval

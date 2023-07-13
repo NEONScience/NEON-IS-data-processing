@@ -2,7 +2,7 @@
 pipeline:
   name: ptb330a_cron_daily_and_date_control
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:v0.0.5
+  image: quay.io/battelleecology/neon-is-date-cntl:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd: ["/bin/bash"]
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure

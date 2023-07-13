@@ -119,10 +119,10 @@ resource_limits:
   memory: 2.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 1.5G
-  cpu: 0.5
+  memory: 10G
+  cpu: 0.2
 sidecar_resource_limits:
-  memory: 4Gi
+  memory: 15Gi
   cpu: 1.2
 datum_set_spec:
   number: 1

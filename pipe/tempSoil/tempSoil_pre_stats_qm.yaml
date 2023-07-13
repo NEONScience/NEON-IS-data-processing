@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-dir-filt:v1.0.2
+  image: quay.io/battelleecology/neon-is-dir-filt:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd:
   - /bin/bash
   stdin:

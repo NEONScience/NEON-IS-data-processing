@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:d8b7e78d98bc53f183c6c6cc0635da393dcd7810
+  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd:
   - /bin/bash
   stdin:
@@ -27,7 +27,7 @@ transform:
   - '# Run second module - timeseries_padder'
   - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
   env:
-    DATA_PATH: /usr/src/app/pfs/interimDataCopy
+    DATA_PATH: /tmp/threshold_selectCopy
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     PAD_DIR: data

@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-gf-rglr:d8b7e78d98bc53f183c6c6cc0635da393dcd7810
+  image: quay.io/battelleecology/neon-is-gf-rglr:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd:
   - /bin/bash
   stdin:
@@ -29,7 +29,7 @@ transform:
   env:
     # Environment variables for date gap filler
     LOG_LEVEL: INFO
-    OUT_PATH: /usr/src/app/pfs/interimData
+    OUT_PATH: /tmp/pfs/date_filled
     OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'

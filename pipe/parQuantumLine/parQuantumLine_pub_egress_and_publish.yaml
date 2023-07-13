@@ -1,9 +1,9 @@
 ---
 pipeline:
-  name: parQuantumLine_egress_and_publish
+  name: parQuantumLine_pub_egress_and_publish
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-egrs-publ:v1.1.1
+  image: quay.io/battelleecology/neon-is-pub-egrs-publ:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd:
   - sh
   - "-c"
@@ -59,7 +59,7 @@ transform:
     DATA_PATH_DATE_INDEX: "5"
     DATA_PATH_PACKAGE_INDEX: "6"
     PRODUCTS: NEON.DOM.SITE.DP1.00066.001 # CAN BE MULTIPLE, COMMA-SEPARATED
-    SITES: "CPER,HARV,ABBY"  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
+    SITES: "all"  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
 
   secrets:
   - name: pdr-secret
@@ -85,17 +85,17 @@ input:
         empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 1
+  memory: 400M
+  cpu: .5
 resource_limits:
-  memory: 1G
-  cpu: 1.8
+  memory: 800M
+  cpu: 1.3
 sidecar_resource_requests:
   memory: 2G
-  cpu: 2
+  cpu: 1
 sidecar_resource_limits:
   memory: 4Gi
-  cpu: 3
+  cpu: 2
 datum_set_spec:
   number: 1
 scheduling_spec:

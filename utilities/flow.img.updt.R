@@ -1,4 +1,7 @@
 # Run either interactively, or from the command line
+# Example run from command line:
+# Rscript ./flow.img.updt.R "~/R/NEON-IS-data-processing-homeDir/" "Dockerfile" "quay.io/battelleecology/neon-is-base-r" "v1.1.5" "TRUE"
+
 
 # Update image references to a new tag throughout the repo
 # If a Dockerfile is found that references the image, and that dockerfile is in the /flow, /modules, or /modules_combined
@@ -10,19 +13,21 @@
 
 # Pull in command line arguments if available (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
-ImgBld <- TRUE # Build,tag, push downstream module images and update pipeline specs?
 
 # Run interatively without command line arguments
 if(length(arg) == 0){
-  pathBgn <- '~/R/NEON-IS-data-processing/'
-  typeFile = 'Dockerfile' # also, e.g. ".yaml"
-  imgBase <- "quay.io/battelleecology/neon-is-troll-uncertainty-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
-  tagNew <- "v1.0.3"
+  pathBgn <- '~/R/NEON-IS-data-processing-homeDir/'
+  typeFile <- 'Dockerfile' # also, e.g. ".yaml"
+  imgBase <- "quay.io/battelleecology/neon-is-base-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
+  tagNew <- "v1.1.5"
+  ImgBld <- TRUE # Build,tag, push downstream module images and update pipeline specs?
 } else {
-  pathBgn = arg[1]
-  typeFile = arg[2]
-  imgBase = arg[3]
-  tagNew = arg[4]
+  pathBgn <- arg[1]
+  typeFile <- arg[2]
+  imgBase <- arg[3]
+  tagNew <- arg[4]
+  ImgBld <- as.logical(arg[5]) # Build,tag, push downstream module images and update pipeline specs?
+  
 }
 
 

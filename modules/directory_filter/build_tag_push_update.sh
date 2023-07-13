@@ -1,6 +1,6 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
-image_name=directory_filter
+image_name=neon-is-dir-filt
 tag=$(git rev-parse HEAD)
 cd ./modules
 docker build -t $image_name:latest -f ./directory_filter/Dockerfile .

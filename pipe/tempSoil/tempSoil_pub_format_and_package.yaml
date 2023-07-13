@@ -3,7 +3,7 @@ pipeline:
   name: tempSoil_pub_format_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:v2.0.5
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:2023dc96b0f10c949ac74773c8ab4390f5989d3b
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

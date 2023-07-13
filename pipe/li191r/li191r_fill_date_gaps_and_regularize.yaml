@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-gf-rglr:d8b7e78d98bc53f183c6c6cc0635da393dcd7810
+  image: quay.io/battelleecology/neon-is-gf-rglr:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd:
   - /bin/bash
   stdin:
@@ -29,7 +29,7 @@ transform:
   env:
     # Environment variables for date gap filler
     LOG_LEVEL: INFO
-    OUT_PATH: /usr/src/app/pfs/interimData
+    OUT_PATH: /tmp/pfs/date_filled
     OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
     DATA_SOURCE_TYPE_INDEX: '3'
     DATA_YEAR_INDEX: '4'
@@ -58,8 +58,8 @@ input:
         name: DATA_PATH
         repo: li191r_location_group_and_restructure
         # For full-scale daily processing, glob should be /li191r/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li191r/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
-        #glob: /li191r/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
         glob: /li191r/(*/*/*)
+        #glob: /li191r/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
@@ -67,11 +67,11 @@ input:
           name: LOCATION_PATH
           repo: li191r_location_active_dates_assignment
           # For full-scale daily processing, glob should be /li191r/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li191r/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
-          #glob: /li191r/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
           glob: /li191r/(*/*/*)
+          #glob: /li191r/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
+          joinOn: $1
           #joinOn: $2
-           joinOn: $1
           group_by: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:

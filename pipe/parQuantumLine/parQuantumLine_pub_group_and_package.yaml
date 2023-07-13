@@ -3,7 +3,7 @@ pipeline:
   name: parQuantumLine_pub_group_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:69a3c9d51327cbbc141e969aba3cb565ae6ae78f
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:2023dc96b0f10c949ac74773c8ab4390f5989d3b
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -51,6 +51,7 @@ transform:
     # Environment variables for 2st module: pub_transformer. Also uses YEAR_INDEX, DATA_TYPE_INDEX, GROUP_METADATA_DIR from the grouper
     OUT_PATH_TRANSFORMER: "/tmp/pub_transformer"
     OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
+    DATA_PATH_PARSE_INDEX: '2'
     PRODUCTS: NEON.DOM.SITE.DP1.00066.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
     WORKBOOK_PATH: "/tmp/pub_workbooks/publication_workbook_NEON.DOM.SITE.DP1.00066.001.txt"
 
@@ -99,11 +100,14 @@ input:
       glob: /(*/*)
       joinOn: $1
       empty_files: true
+parallelism_spec:
+  constant: 1
+autoscaling: true
 resource_requests:
-  memory: 500M
+  memory: 700M
   cpu: 1
 resource_limits:
-  memory: 1G
+  memory: 1.5G
   cpu: 1.8
 sidecar_resource_requests:
   memory: 2G
