@@ -3,7 +3,7 @@ pipeline:
   name: parQuantumLine_pub_egress_and_publish
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-egrs-publ:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-pub-egrs-publ:fa582505c72de6bfa221111bddb5cf9f019cf927
   cmd:
   - sh
   - "-c"
