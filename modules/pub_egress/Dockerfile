@@ -7,7 +7,7 @@
 ###
 FROM registry.access.redhat.com/ubi9/ubi-minimal
 
-ARG APP_DIR="pub_egress/pub_egress"
+ARG APP_DIR="pub_egress"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
