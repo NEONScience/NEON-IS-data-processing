@@ -29,7 +29,7 @@ class Pub_egress:
         self.site_index = 2
         self.date_index = 10
         self.package_index = 11
-        self.filename_delimiter = "pub_egress"
+        self.filename_delimiter = "."
         self.domain_generic = "DOM"
         self.site_generic = "SITE"
         self.date_delimiter = "-"
