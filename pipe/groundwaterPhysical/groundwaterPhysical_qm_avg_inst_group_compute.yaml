@@ -34,7 +34,7 @@ transform:
     "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
   - '# ---- Run third module - quality metrics (instantaneous) ---- '
   - Rscript ./flow.qaqc.qm.dp0p.R
-    DirIn=/tmp/interimData
+    DirIn=/tmp/pfs/interimData
     DirOut=/pfs/out
     DirErr=/pfs/out/errored_datums
     FileSchmQm=$FILE_SCHEMA_QM_INST
@@ -73,7 +73,7 @@ transform:
             # Join on named location (already joined below by day
             join_indices: [6]
     OUT_PATH: /tmp/pfs/interimData
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     PARALLELIZATION_INTERNAL: '2' # Option for quality metrics module
