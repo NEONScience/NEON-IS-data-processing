@@ -11,7 +11,7 @@ transform:
     /bin/bash <<'EOF'
     # Run first module - pub_egress (using environment variables below as input parameters)
     if [[ $(echo $DATA_PATH) ]]; then
-      python3 -m pub_egress.pub_egress.app
+      python3 -m pub_egress.pub_egress_main
     fi
     # If there is output, egress it
     dirs=$(find $OUT_PATH/* -type d)
