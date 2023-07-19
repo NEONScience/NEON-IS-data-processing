@@ -54,3 +54,6 @@ class PubEgressTest(TestCase):
         """Check manifest file is in the output directory."""
         output_manifest_path = Path(self.out_dir, self.target_manifest_name)
         self.assertTrue(output_manifest_path.exists())
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
