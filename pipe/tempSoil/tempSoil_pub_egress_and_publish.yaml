@@ -3,7 +3,7 @@ pipeline:
   name: tempSoil_pub_egress_and_publish
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-egrs-publ:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-pub-egrs-publ:85d8ae3c2b5c950a37e68d0144ee87e3dc1218a8
   cmd:
   - sh
   - "-c"
@@ -11,7 +11,7 @@ transform:
     /bin/bash <<'EOF'
     # Run first module - pub_egress (using environment variables below as input parameters)
     if [[ $(echo $DATA_PATH) ]]; then
-      python3 -m pub_egress.pub_egress.app
+      python3 -m pub_egress.pub_egress_main
     fi
     # If there is output, egress it
     dirs=$(find $OUT_PATH/* -type d)

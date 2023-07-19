@@ -4,7 +4,7 @@ from structlog import get_logger
 from pathlib import Path
 
 from common import log_config as log_config
-from pub_egress.pub_egress.pub_egress import Pub_egress
+from pub_egress.pub_egress import Pub_egress
 
 
 def main() -> None:
