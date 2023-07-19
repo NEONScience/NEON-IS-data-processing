@@ -7,7 +7,7 @@ from unittest import TestCase
 import sys
 
 from structlog import get_logger
-from pub_egress.pub_egress.pub_egress import Pub_egress
+from pub_egress.pub_egress_main import Pub_egress
 import common.log_config as log_config
 import logging
 
