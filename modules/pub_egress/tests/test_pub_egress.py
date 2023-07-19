@@ -39,7 +39,7 @@ class PubEgressTest(TestCase):
 
     # To test, switch ON developer mode in Windows,
     # settings(Settings -> Update & security -> For developers)
-    
+
     def test_egress(self):
         os.environ["CUSTOM_ENDPOINT"] = "endpoint"
         os.environ["AMAZON_BUCKET"] = "bucket"
