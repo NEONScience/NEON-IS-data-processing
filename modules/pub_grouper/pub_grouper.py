@@ -36,15 +36,25 @@ def pub_group(*, data_path: Path, out_path: Path,
             log.debug(f'Processing datum path {path.parent}')
         
         # Get the pub grouping location from the group metadata
+        publoc = None
+        products = None
         for group_metadata_path in path.rglob('*'):
             if group_metadata_path.is_file():
                 f = open(str(group_metadata_path))
                 group_data = json.load(f)
                 publoc = group_data["features"][0][publoc_key]
+                products = group_data["features"][0]["properties"]["data_product_ID"]
                 f.close()
                 break
-    
-        # Pass the group parents to the path iterator
+            
+        if publoc is None or products is None:
+            log.error(f'Cannot determine publication grouping property from the files in {path}. Skipping.')
+            continue
+        if products is None:
+            log.error(f'Cannot determine data products from the files in {path}. Skipping.')
+            continue
+        
+        # Pass the group parent to the path iterator
         path = Path(*parts[0:group_index+1])    
         
         for subpath in path.rglob('*'):
@@ -57,14 +67,15 @@ def pub_group(*, data_path: Path, out_path: Path,
                 data_type = parts[data_type_index]
                 data = parts[data_type_index+1:]
                 
-                new_path = out_path.joinpath(year,month,day,publoc,data_type,group,*data)
-                new_path.parent.mkdir(parents=True, exist_ok=True)
-                
-                if not new_path.exists():
-                    if symlink:
-                        log.debug(f'Linking path {new_path} to {subpath}.')
-                        new_path.symlink_to(subpath)
-                    else:
-                        log.debug(f'Copying {subpath} to {new_path}.')
-                        shutil.copy2(subpath,new_path)
-                                
+                for product in products:
+                    new_path = out_path.joinpath(product,year,month,day,publoc,data_type,group,*data)
+                    new_path.parent.mkdir(parents=True, exist_ok=True)
+                    
+                    if not new_path.exists():
+                        if symlink:
+                            log.debug(f'Linking path {new_path} to {subpath}.')
+                            new_path.symlink_to(subpath)
+                        else:
+                            log.debug(f'Copying {subpath} to {new_path}.')
+                            shutil.copy2(subpath,new_path)
+                                    

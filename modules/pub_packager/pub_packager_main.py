@@ -13,6 +13,7 @@ def main() -> None:
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     out_path = env.path('OUT_PATH')
     data_path = env.path('DATA_PATH')
+    product_index: int = env.int('PRODUCT_INDEX')
     publoc_index: int = env.int('PUBLOC_INDEX')
     date_index: int = env.int('DATE_INDEX')
     date_index_length: int = env.int('DATE_INDEX_LENGTH')
@@ -20,6 +21,7 @@ def main() -> None:
     log_config.configure(log_level)
     pub_package(data_path=data_path,
                 out_path=out_path,
+                product_index=product_index,
                 publoc_index=publoc_index,
                 date_index=date_index,
                 date_index_length=date_index_length,

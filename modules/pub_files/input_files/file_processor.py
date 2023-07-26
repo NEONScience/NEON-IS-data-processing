@@ -19,14 +19,14 @@ class PublicationPackage(NamedTuple):
     package_metadata: Dict[str, FileMetadata]
 
 
-def process_files(in_path: Path, out_path: Path, in_path_parse_index: int,
+def process_files(in_path: Path, out_path: Path, relative_path_index: int,
                   database: FileProcessorDatabase) -> PublicationPackage:
     """
     Loop over the input files and extract the needed metadata to product the publication metadata files.
 
     :param in_path: The input file path.
     :param out_path: The output path for writing files.
-    :param in_path_parse_index: The path element index to begin parsing the needed elements from the input path.
+    :param relative_path_index: The path element index to begin parsing the needed elements from the input path.
     :param database: The database object for retrieving needed data.
     """
     package_metadata: Dict[str, FileMetadata] = {}
@@ -40,7 +40,7 @@ def process_files(in_path: Path, out_path: Path, in_path_parse_index: int,
         max_package_time = None
         is_first_file = True
         for path in package_data_files[package_type]:
-            path_parts: PathParts = parse_path(path, in_path_parse_index)
+            path_parts: PathParts = parse_path(path, relative_path_index)
             filename_parts: FilenameParts = parse_filename(path.name)
             file_metadata.data_product_id = get_data_product_id(filename_parts)
             if is_first_package and is_first_file:  # only read the publication workbook once
@@ -56,6 +56,7 @@ def process_files(in_path: Path, out_path: Path, in_path_parse_index: int,
                 min_package_time = file_min_time
                 max_package_time = file_max_time
                 file_metadata.package_output_path = Path(out_path,
+                                                         path_parts.product,
                                                          path_parts.site,
                                                          path_parts.year,
                                                          path_parts.month,

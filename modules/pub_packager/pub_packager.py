@@ -12,19 +12,20 @@ from structlog import get_logger
 log = get_logger()
 
 
-def pub_package(*, data_path, out_path, publoc_index: int, date_index: int, date_index_length: int, sort_index: int) -> None:
+def pub_package(*, data_path, out_path, product_index: int, publoc_index: int, date_index: int, date_index_length: int, sort_index: int) -> None:
     """
     Bundles the required files into a package suitable for publication. 
 
     :param data_path: The input data path. Should end at whatever aggregation interval is a publication package (i.e. monthly)
     :param out_path: The output path for writing the package files.
+    :param product_index: input path index of the data product identifier
     :param publoc_index: input path index of the pub package location (typically the site)
     :param date_index: start input path index of publication date field (e.g. index of the year in the path)
     :param date_index_length: number of input path indices forming the pub date field. e.g. for monthly pub, this will be 2 (year-month)
     :param sort_index: index of filename field to sort on (e.g. the day)
     """
     
-    # Each PUBLOC at the glob level is a datum (e.g. /year/month/*/PUBLOC). Get all the PUBLOCS, assuming 
+    # Each PUBLOC at the glob level is a datum (e.g. /product/year/month/*/PUBLOC). Get all the PUBLOCS, assuming 
     # there is a manifest.csv embedded directly under each PUBLOC directory 
     publocs = set()
     for path in data_path.rglob('manifest.csv'):
@@ -49,7 +50,7 @@ def pub_package(*, data_path, out_path, publoc_index: int, date_index: int, date
             if path.is_file():
                 # Get one full path
                 break
-        (path_prefix, date_field) = get_package_prefix(path, publoc_index, date_index, date_index_length)
+        (path_prefix, date_field) = get_package_prefix(path, product_index, publoc_index, date_index, date_index_length)
 
         for path in data_path.rglob(publoc+'/*'):
             if path.is_file():
@@ -92,9 +93,9 @@ def get_package_filename(file, sort_index, date_field, timestamp):
     return package_file
 
 
-def get_package_prefix(data_path, publoc_index, date_index, date_index_length):
+def get_package_prefix(data_path, product_index, publoc_index, date_index, date_index_length):
     data_path_parts = data_path.parts
-    path_prefix = os.path.join(data_path_parts[publoc_index],*data_path_parts[date_index: date_index + date_index_length])
+    path_prefix = os.path.join(data_path_parts[product_index],data_path_parts[publoc_index],*data_path_parts[date_index: date_index + date_index_length])
     date_field = '-'.join(data_path_parts[date_index: date_index + date_index_length])
     return path_prefix, date_field
 

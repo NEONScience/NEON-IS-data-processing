@@ -38,7 +38,8 @@ class LocationGrouperTest(TestCase):
         self.in_data_path.touch()
         group_json = {'type': 'FeatureCollection', 'features': [{'type': 'Feature', 'geometry': None, 'properties': {'name': 'CFGLOC108605', 'group': 'par-quantum-line_CPER001000', 'active_periods': [{'start_date': '2017-07-20T00:00:00Z'}], 'data_product_ID': ['DP1.00066.001']}, 'site': 'CPER', 'domain': 'D10', 'visibility_code': 'public', 'HOR': '001', 'VER': '000'}]}
         self.in_group_path.write_text(json.dumps(group_json))
-
+        self.product = 'DP1.00066.001' # Make sure this matches the group_json
+        
     def test_pub_group(self):
         pub_group(
                    data_path=self.input_path,
@@ -65,7 +66,7 @@ class LocationGrouperTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        root_path = Path(self.output_path, *self.date_path.parts[0:3], self.site)
+        root_path = Path(self.output_path, self.product, *self.date_path.parts[0:3], self.site)
         out_data_path = Path(root_path, 'data', self.group, self.data_file)
         out_group_path = Path(root_path, 'group', self.group, self.group_file)
         self.assertTrue(out_data_path.exists())

@@ -60,7 +60,7 @@ class ReadmeFileTest(TestCase):
         file_processor_database = get_file_processor_database()
         publication_package: PublicationPackage = process_files(in_path=self.in_path,
                                                                 out_path=Path('/out'),
-                                                                in_path_parse_index=1,
+                                                                relative_path_index=2,
                                                                 database=file_processor_database)
         file_metadata: FileMetadata = publication_package.package_metadata.get('basic')
         timestamp = get_timestamp()

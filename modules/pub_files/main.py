@@ -46,21 +46,24 @@ def main() -> None:
         external_files = get_external_files(config)
 
         # Get to each site-year-month to send into the processor, starting at the parse index
-        location_base_path = config.location_path.parts[0:config.in_path_parse_index + 1]
+        location_base_path = config.location_path.parts[0:config.relative_path_index]
+        log.debug(f'Location base path {location_base_path}')
         for root, dirs, files in os.walk(config.in_path):
             datum_path = Path(root)
-            log.info(f'Processing datum path {datum_path}')
-
-            if len(datum_path.parts) == (config.in_path_parse_index + 4):
+            log.debug(f'Traversing path {datum_path}')
+            
+            if len(datum_path.parts) == (config.relative_path_index + 4):
+                log.info(f'Processing datum path {datum_path}')
+                
                 # get required metadata from the input files and link files into the output path
                 publication_package: PublicationPackage = process_files(in_path=datum_path,
                                                                         out_path=config.out_path,
-                                                                        in_path_parse_index=config.in_path_parse_index,
+                                                                        relative_path_index=config.relative_path_index,
                                                                         database=file_processor_database)
                 for package_type in publication_package.package_metadata:
                     file_metadata: FileMetadata = publication_package.package_metadata[package_type]
                     # write sensor positions file
-                    location_path = get_location_path(datum_path, location_base_path, config.in_path_parse_index)
+                    location_path = get_location_path(datum_path, location_base_path, config.relative_path_index)
                     positions_path = write_sensor_positions_file(location_path=location_path,
                                                                  out_path=file_metadata.package_output_path,
                                                                  elements=file_metadata.path_elements,
@@ -112,9 +115,11 @@ def get_timestamp() -> datetime:
 
 
 def get_location_path(datum_path: Path, location_base_path: Tuple[str], path_parse_index: int) -> Path:
-    """Returns a path to this particular site-year-month datum."""
+    """Returns a valid path to the directory with location information for this particular site-year-month datum."""
     datum_parts: PathParts = parse_path(datum_path, path_parse_index)
-    location_path = Path(*location_base_path, datum_parts.year, datum_parts.month, '01', datum_parts.site)
+    for location_path in Path(*location_base_path,datum_parts.product,datum_parts.year,datum_parts.month).rglob('*/'+datum_parts.site):
+        # One is all we need
+        break
     return location_path
 
 
