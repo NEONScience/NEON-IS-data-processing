@@ -26,7 +26,7 @@ input:
     glob: /*/*/*/*
     empty_files: true
 parallelism_spec:
-  constant: 1
+  constant: 10
 autoscaling: true
 resource_requests:
   memory: 500M

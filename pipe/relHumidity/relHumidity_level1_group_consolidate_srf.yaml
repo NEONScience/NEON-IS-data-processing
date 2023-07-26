@@ -132,29 +132,29 @@ input:
   - pfs:
       name: QUALITY_METRICS_PATH
       repo: relHumidity_qm_group_and_compute
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: relHumidity_stats_group_and_compute
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: GROUP_PATH
       repo: relHumidity_group_path
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: SRF_PATH
       repo: relHumidity_srf_assignment
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 output_branch: master
 parallelism_spec:
@@ -167,10 +167,10 @@ resource_limits:
   memory: 3G
   cpu: 4.5
 sidecar_resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 2Gi
+  memory: 4Gi
   cpu: 1.3
 datum_set_spec:
   number: 1

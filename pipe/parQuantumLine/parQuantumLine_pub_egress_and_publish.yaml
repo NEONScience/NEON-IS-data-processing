@@ -72,7 +72,7 @@ input:
         name: DATA_PATH
         repo: parQuantumLine_pub_group_and_package
         # Glob must be at each intended pub datum (i.e. each site/year/month), grouped by month
-        glob: /*/(*/*)
+        glob: /*/*/(*/*)
         joinOn: $1
         group_by: $1
     - pfs: 

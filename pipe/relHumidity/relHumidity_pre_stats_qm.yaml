@@ -1,41 +1,43 @@
 ---
 pipeline:
-  name: ptb330a_location_loader
+  name: relHumidity_pre_stats_qm
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_loader:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-dir-filt:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m location_loader.location_loader_main
+  - python3 -m directory_filter.directory_filter_main
   env:
-    LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: ptb330a
     OUT_PATH: /pfs/out
+    FILTER_DIR: data,uncertainty_data,uncertainty_coef,flags
+    FILTER_DIR_INDEX: '9'
     LOG_LEVEL: INFO
-  secrets:
-  - name: db-pdr-secret
-    mount_path: /var/db_secret
+    RELATIVE_PATH_INDEX: '3'
 input:
   pfs:
-    repo: ptb330a_cron_daily_and_date_control_tick
-    glob: /*
-    empty_files: true
+    name: IN_PATH
+    repo: relHumidity_group_path
+    glob: /*/*/*
+parallelism_spec:
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 100M
-  cpu: 0.1
-resource_limits:
-  memory: 300M
-  cpu: 0.5
-sidecar_resource_requests:
   memory: 500M
-  cpu: 0.1
-sidecar_resource_limits:
-  memory: 2Gi
+  cpu: 0.5
+resource_limits:
+  memory: 1.5G
   cpu: 1.2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.8
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.5
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

@@ -107,7 +107,7 @@ input:
           empty_files: false # Make sure this is false for LINK_TYPE=COPY
       - pfs:
           name: UNCERTAINTY_PATH
-          repo: relHumidity_group_path
+          repo: relHumidity_pre_stats_qm
           glob: /(*/*/*/rel-humidity_)*
           group_by: $1
           empty_files: false # Make sure this is false for LINK_TYPE=COPY
@@ -129,7 +129,7 @@ input:
           empty_files: false # Make sure this is false for LINK_TYPE=COPY
       - pfs:
           name: UNCERTAINTY_PATH
-          repo: relHumidity_group_path
+          repo: relHumidity_pre_stats_qm
           glob: /(*/*/*/rel-humidity-buoy_)*
           group_by: $1
           empty_files: false # Make sure this is false for LINK_TYPE=COPY

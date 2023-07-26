@@ -16,8 +16,6 @@ input:
     repo: prt_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
-parallelism_spec:
-  constant: 2
 autoscaling: true
 resource_requests:
   memory: 500M

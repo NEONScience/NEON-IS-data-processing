@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: tempSoil_pub_group
+  name: relHumidity_pub_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/pub_grouper:v2.0.1
@@ -31,17 +31,17 @@ input:
   join:
   - pfs: 
       name: DATA_PATH
-      repo: tempSoil_level1_group_consolidate_srf
+      repo: relHumidity_level1_group_consolidate_srf
       # Glob should be daily or monthly, must be joined monthly with pub_control to hold pub until month is likely complete
       glob: /(*/*)/*
       joinOn: $1
   - pfs: 
-      repo: tempSoil_cron_monthly_and_pub_control
+      repo: relHumidity_cron_monthly_and_pub_control
       glob: /(*/*)
       joinOn: $1
       empty_files: true
 parallelism_spec:
-  constant: 3
+  constant: 1
 autoscaling: true
 resource_requests:
   memory: 500M
@@ -50,10 +50,10 @@ resource_limits:
   memory: 2G
   cpu: 2
 sidecar_resource_requests:
-  memory: 4G
+  memory: 2G
   cpu: 0.6
 sidecar_resource_limits:
-  memory: 8Gi
+  memory: 4Gi
   cpu: 1.2
 datum_set_spec:
   number: 1

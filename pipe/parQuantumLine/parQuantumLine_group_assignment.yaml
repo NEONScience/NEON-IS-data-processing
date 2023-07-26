@@ -41,7 +41,7 @@ sidecar_resource_limits:
   memory: 5Gi
   cpu: 1.2
 datum_set_spec:
-  number: 10
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

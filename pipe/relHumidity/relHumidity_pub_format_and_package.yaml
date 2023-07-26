@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: parQuantumLine_pub_group_and_package
+  name: relHumidity_pub_format_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/neon-is-pub-grp-pack:v3.0.2
@@ -8,21 +8,13 @@ transform:
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -rf $OUT_PATH_GROUPER
   - rm -rf $OUT_PATH_TRANSFORMER
   - rm -rf $OUT_PATH_PACKAGER
-  - mkdir $OUT_PATH_GROUPER
   - mkdir $OUT_PATH_TRANSFORMER
   - mkdir $OUT_PATH_PACKAGER
-  - '# Set some environment variables for the first module'
-  - export OUT_PATH=$OUT_PATH_GROUPER
-  - '# Run first module - pub_grouper (using environment variables below as input parameters)'
-  - python3 -m pub_grouper.pub_grouper_main
   - '# Set some environment variables for the second module'
-  - export DATA_PATH=$OUT_PATH_GROUPER
+  - export DATA_PATH=$GROUPED_PATH
   - export OUT_PATH=$OUT_PATH_TRANSFORMER
-  - export YEAR_INDEX=$YEAR_INDEX_TRANSFORMER
-  - export DATA_TYPE_INDEX=$DATA_TYPE_INDEX_TRANSFORMER
   - '# Run second module - pub_transformer (using environment variables below as input parameters)'
   - python3 -m pub_workbook_loader.pub_workbook_loader_main
   - python3 -m pub_transformer.pub_transformer_main
@@ -41,33 +33,26 @@ transform:
   - '# Set some environment variables for the fourth module and do some cleanup'
   - export OUT_PATH=$OUT_PATH_PUBFILES
   - export IN_PATH=$OUT_PATH_PACKAGER
-  - export LOCATION_PATH=$OUT_PATH_GROUPER
+  - export LOCATION_PATH=$GROUPED_PATH
   - '# Run fourth module - pub_files (using environment variables below as input parameters)'
   - python3 -m pub_files.main
+  
   env:
-    # Environment variables for 1st module: pub_grouper.
-    LOG_LEVEL: INFO
-    OUT_PATH_GROUPER: "/tmp/pub_grouper"
-    YEAR_INDEX: '3' # Also shared with pub_transform
-    GROUP_INDEX: '6'
-    DATA_TYPE_INDEX: '7' # Also shared with pub_transform
-    GROUP_METADATA_DIR: group # Also shared with pub_transform
-    PUBLOC_KEY: site
-    LINK_TYPE: COPY
-    
     # Environment variables for 2nd (part A) module: pub_workbook_loader.
     OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
-    PRODUCTS: NEON.DOM.SITE.DP1.00066.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
+    PRODUCTS: NEON.DOM.SITE.DP1.00098.001,NEON.DOM.SITE.DP1.20271.001,NEON.DOM.SITE.DP1.20046.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
 
-    # Environment variables for 2st module (part B): pub_transformer. Also uses GROUP_METADATA_DIR from the grouper
+    # Environment variables for 2nd module (part B): pub_transformer. 
+    LOG_LEVEL: INFO
     PRODUCT_INDEX: '3' # input path index of the data product identifier
-    YEAR_INDEX_TRANSFORMER: '4' 
-    DATA_TYPE_INDEX_TRANSFORMER: '8' 
+    YEAR_INDEX: '4' 
+    DATA_TYPE_INDEX: '8' 
+    GROUP_METADATA_DIR: group # Also shared with pub_transform
     DATA_PATH_PARSE_INDEX: '2'
     OUT_PATH_TRANSFORMER: "/tmp/pub_transformer"
     WORKBOOK_PATH: "/tmp/pub_workbooks"
 
-    # Environment variables for 3rd module: pub_packager.
+    # Environment variables for 3rd module: pub_packager. Also uses PRODUCT_INDEX from pub_transformer.
     OUT_PATH_PACKAGER: "/tmp/pub_packager"
     PUBLOC_INDEX: '7' # input path index of the pub package location (typically the site)
     DATE_INDEX: '4' # Starting index of date in path (i.e. year index)
@@ -100,20 +85,15 @@ transform:
       mount_path: /var/github_secret
 
 input: 
-  join:
+  group:
   - pfs: 
-      name: DATA_PATH
-      repo: parQuantumLine_level1_group_consolidate_srf
-      # Glob should be monthly and joined with pub_control to hold pub until month is likely complete
-      glob: /(*/*)
-      joinOn: $1
-  - pfs: 
-      repo: parQuantumLine_cron_monthly_and_pub_control
-      glob: /(*/*)
-      joinOn: $1
-      empty_files: true
+      name: GROUPED_PATH
+      repo: relHumidity_pub_group
+      # Glob must be product-monthly or product-site-monthly (use group to do product-site-monthly)
+      glob: /(*/*/*)/*/(*)
+      group_by: $1$2
 parallelism_spec:
-  constant: 2
+  constant: 10
 autoscaling: true
 resource_requests:
   memory: 700M
@@ -122,10 +102,10 @@ resource_limits:
   memory: 1.5G
   cpu: 1.8
 sidecar_resource_requests:
-  memory: 3G
+  memory: 800M
   cpu: 0.3
 sidecar_resource_limits:
-  memory: 5Gi
+  memory: 1.5G
   cpu: 1.2
 datum_set_spec:
   number: 1
