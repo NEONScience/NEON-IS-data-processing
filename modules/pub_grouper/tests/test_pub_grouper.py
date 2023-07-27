@@ -5,13 +5,18 @@ from unittest import TestCase
 from pub_grouper.pub_grouper import pub_group
 import pub_grouper.pub_grouper_main as pub_grouper_main
 from testfixtures import TempDirectory
+import tempfile
 import json
 
-class LocationGrouperTest(TestCase):
+class PubGrouperTest(TestCase):
 
     def setUp(self):
-        self.temp_dir = TempDirectory()
-        self.temp_dir_name = self.temp_dir.path
+        # self.temp_dir = TempDirectory()
+        # self.temp_dir_name = self.temp_dir.path
+
+     # change temp_dir to cross-platform of temp directory
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.temp_dir_name = self.temp_dir.name
         self.input_path = Path(self.temp_dir_name, "repo/inputs")
         self.output_path = Path(self.temp_dir_name, "outputs")
         self.group = "par-quantum-line_CPER001000"
@@ -19,7 +24,9 @@ class LocationGrouperTest(TestCase):
         self.date_path = Path("2019/05/24")
         self.data_path = Path(self.input_path, self.date_path, self.group,'data')
         os.makedirs(self.data_path)
-        self.relative_path_index = 5
+# number of dorectories to reach Temp on Wondows 10 is 4, ('Users', 'user-id', 'AppData', 'Local')
+        offset = 4
+        self.relative_path_index = 5 + offset
         self.group_metadata_dir = 'group'
         self.group_path = Path(self.input_path, self.date_path, self.group, self.group_metadata_dir)
         os.makedirs(self.group_path)
@@ -74,3 +81,4 @@ class LocationGrouperTest(TestCase):
 
     def tearDown(self):
         self.temp_dir.cleanup()
+
