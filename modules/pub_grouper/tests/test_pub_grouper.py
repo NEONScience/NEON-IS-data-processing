@@ -15,14 +15,14 @@ class PubGrouperTest(TestCase):
         self.temp_dir_name = self.temp_dir.path
         self.temp_dir_path = Path(self.temp_dir_name)
         self.temp_dir_parts = self.temp_dir_path.parts
-    # offset is to ensure cross-platform Temp directory
-    # Temp on Windows10 tmp on Linux and Mac
-        cross_platform_offset = -1
+    # offset is added to resolve cross-platform temporary directory differences
+    # 'Temp' on Windows10 while 'tmp' on Linux and Mac
+        cross_platform_offset = 0
         for dirname in self.temp_dir_parts:
             if (dirname == 'Temp') or (dirname == 'tmp') :
+                cross_platform_offset = cross_platform_offset -1
                 break
             cross_platform_offset = cross_platform_offset + 1
-        print('cross_platform_offset', cross_platform_offset)
         self.input_path = Path(self.temp_dir_name, "repo/inputs")
         self.output_path = Path(self.temp_dir_name, "outputs")
         self.group = "par-quantum-line_CPER001000"
@@ -30,6 +30,7 @@ class PubGrouperTest(TestCase):
         self.date_path = Path("2019/05/24")
         self.data_path = Path(self.input_path, self.date_path, self.group,'data')
         os.makedirs(self.data_path)
+    # cross_platform_offset can be 0
         self.relative_path_index = 5 + cross_platform_offset
         self.group_metadata_dir = 'group'
         self.group_path = Path(self.input_path, self.date_path, self.group, self.group_metadata_dir)
