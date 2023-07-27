@@ -11,12 +11,18 @@ import json
 class PubGrouperTest(TestCase):
 
     def setUp(self):
-        # self.temp_dir = TempDirectory()
-        # self.temp_dir_name = self.temp_dir.path
-
-     # change temp_dir to cross-platform of temp directory
-        self.temp_dir = tempfile.TemporaryDirectory()
-        self.temp_dir_name = self.temp_dir.name
+        self.temp_dir = TempDirectory()
+        self.temp_dir_name = self.temp_dir.path
+        self.temp_dir_path = Path(self.temp_dir_name)
+        self.temp_dir_parts = self.temp_dir_path.parts
+    # offset is to ensure cross-platform Temp directory
+    # Temp on Windows10 tmp on Linux and Mac
+        cross_platform_offset = -1
+        for dirname in self.temp_dir_parts:
+            if (dirname == 'Temp') or (dirname == 'tmp') :
+                break
+            cross_platform_offset = cross_platform_offset + 1
+        print('cross_platform_offset', cross_platform_offset)
         self.input_path = Path(self.temp_dir_name, "repo/inputs")
         self.output_path = Path(self.temp_dir_name, "outputs")
         self.group = "par-quantum-line_CPER001000"
@@ -24,9 +30,7 @@ class PubGrouperTest(TestCase):
         self.date_path = Path("2019/05/24")
         self.data_path = Path(self.input_path, self.date_path, self.group,'data')
         os.makedirs(self.data_path)
-# number of dorectories to reach Temp on Wondows 10 is 4, ('Users', 'user-id', 'AppData', 'Local')
-        offset = 4
-        self.relative_path_index = 5 + offset
+        self.relative_path_index = 5 + cross_platform_offset
         self.group_metadata_dir = 'group'
         self.group_path = Path(self.input_path, self.date_path, self.group, self.group_metadata_dir)
         os.makedirs(self.group_path)
