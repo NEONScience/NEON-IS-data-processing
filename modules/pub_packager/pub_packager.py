@@ -2,6 +2,7 @@
 import os
 import pandas as pd
 from sortedcontainers import SortedSet
+import numpy as np
 import datetime
 import hashlib
 import csv
@@ -119,8 +120,10 @@ def write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, 
 
 
 def parse_manifest(manifest_file, has_data_by_file, visibility_by_file, sort_index, date_field, timestamp):
-    manifest_hasData = pd.read_csv(manifest_file, header=0, squeeze=True, index_col=0,usecols=['file','hasData']).to_dict()
-    manifest_visibility = pd.read_csv(manifest_file, header=0, squeeze=True, index_col=0,usecols=['file','visibility']).to_dict()
+    manifest_hasData = pd.read_csv(manifest_file, header=0, index_col=0,usecols=['file','hasData'])
+    manifest_hasData = manifest_hasData.squeeze("columns").to_dict()
+    manifest_visibility = pd.read_csv(manifest_file, header=0, index_col=0,usecols=['file','visibility'])
+    manifest_visibility = manifest_visibility.squeeze("columns").to_dict()
     for key in manifest_hasData.keys():
         package_file = get_package_filename(key, sort_index, date_field, timestamp)
         if package_file in has_data_by_file.keys():

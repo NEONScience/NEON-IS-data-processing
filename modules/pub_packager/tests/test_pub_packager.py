@@ -11,7 +11,7 @@ import fnmatch
 import logging
 
 
-class Pub_packager(TestCase):
+class PubPackagerTest(TestCase):
 
     def setUp(self):
         self.log = logging.getLogger('testlog')
@@ -76,8 +76,10 @@ class Pub_packager(TestCase):
         self.log.debug(f'NUMBER OF OUTPUT FILES {str(len(out_files))}')
         self.log.debug(f'OUTPUT FILES {str(out_files)}')
         basic_pattern = 'NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05.basic.*.csv'
+        manifest = 'manifest*.csv'
         self.assertTrue(len(out_files) == 2)
-        self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern))
+        self.assertTrue(fnmatch.fnmatch(out_files[0],manifest))
+        self.assertTrue(fnmatch.fnmatch(out_files[1], basic_pattern))
 
-    def tearDown(self):
-        self.temp_dir.cleanup()
+    # def tearDown(self):
+    #     self.temp_dir.cleanup()
