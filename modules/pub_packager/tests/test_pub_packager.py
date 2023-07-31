@@ -81,5 +81,5 @@ class PubPackagerTest(TestCase):
         self.assertTrue(fnmatch.fnmatch(out_files[0],manifest))
         self.assertTrue(fnmatch.fnmatch(out_files[1], basic_pattern))
 
-    # def tearDown(self):
-    #     self.temp_dir.cleanup()
+    def tearDown(self):
+        self.temp_dir.cleanup()
