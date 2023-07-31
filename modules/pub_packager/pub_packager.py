@@ -2,7 +2,6 @@
 import os
 import pandas as pd
 from sortedcontainers import SortedSet
-import numpy as np
 import datetime
 import hashlib
 import csv
