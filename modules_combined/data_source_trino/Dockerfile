@@ -5,7 +5,7 @@
 # docker build -t data_source_trino:latest -f ./modules_combined/data_source_trino/Dockerfile .
 #
 ###
-FROM quay.io/battelleecology/genavro:v1.0.74
+FROM quay.io/battelleecology/genavro:v1.1.1
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="parquet_linkmerge"
@@ -17,23 +17,7 @@ WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
-RUN update-ca-trust && \
-    microdnf update -y --disableplugin=subscription-manager && \
-    microdnf install -y --disableplugin=subscription-manager \
-            shadow-utils \
-            gcc \
-            libzstd  \
-            python38 \
-            python38-pip \
-            python38-wheel \
-            python38-devel \
-            python38-setuptools && \
-    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
-    microdnf clean all --disableplugin=subscription-manager && \
-    groupadd -g 9999 appuser && \
-    useradd -r -u 9999 -g appuser appuser
+RUN python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt 
 
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
