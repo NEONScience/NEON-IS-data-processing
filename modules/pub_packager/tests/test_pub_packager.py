@@ -31,9 +31,11 @@ class PubPackagerTest(TestCase):
         os.makedirs(Path(self.data_path, '24','CPER'))
         os.makedirs(Path(self.data_path, '25','CPER'))
         with open(self.data_file_1, 'w') as f:
-            f.write('2022-07-01T00:00:00Z,2022-07-01T00:01:00Z,27.32,27.316,27.324,9.7e-06,6,0.1483,0.001271,0')
+            f.write('2019-05-24T00:00:00Z,2019-05-24T00:01:00Z,27.32,27.316,27.324,9.7e-06,6,0.1483,0.001271,0')
+            f.write('2019-05-24T00:01:00Z,2019-05-24T00:02:00Z,24.245,24.239,24.249,1.25e-05,6,0.1469,0.001443,0')
         with open(self.data_file_2, 'w') as f:
-            f.write('2022-07-02T20:37:00Z,2022-07-02T20:38:00Z,27.006,27.001,27.011,1.07e-05,6,0.1481,0.001335,0')
+            f.write('2019-05-25T20:37:00Z,2019-05-25T20:38:00Z,27.006,27.001,27.011,1.07e-05,6,0.1481,0.001335,0')
+            f.write('2019-05-25T09:40:00Z,2019-05-25T09:41:00Z,20.477,20.474,20.482,1.03e-05,6,0.1452,0.001308,0')
         with open(self.manifest_file_1, 'w') as f:
             f.write('file,hasData,visibility\n')
             f.write('NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05-24.basic.csv,True,public')
