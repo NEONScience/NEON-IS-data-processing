@@ -67,6 +67,7 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
+autoscaling: true
 resource_requests: 
   memory: 600M
   cpu: 2.2
@@ -74,12 +75,13 @@ resource_limits:
   memory: 1.5G
   cpu: 4
 sidecar_resource_requests:
-  memory: 1G
+  memory: 1.5G
   cpu: 0.2
 sidecar_resource_limits:
-  memory: 2Gi
+  memory: 3Gi
   cpu: 1.2
-autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
