@@ -12,7 +12,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2022-06-29" # Inclusive
-    END_DATE: "2023-02-01" # Inclusive
+    #END_DATE: "2023-06-01" # Inclusive
     SOURCE_TYPE: "li191r"
   stdin:
   - "#!/bin/bash"
