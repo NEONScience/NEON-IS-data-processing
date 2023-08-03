@@ -7,6 +7,7 @@ from unittest import TestCase
 from pub_packager.pub_packager import pub_package
 import pub_packager.pub_packager_main as pub_packager_main
 from testfixtures import TempDirectory
+from sortedcontainers import SortedList
 import fnmatch
 import logging
 
@@ -85,8 +86,9 @@ class PubPackagerTest(TestCase):
         basic_pattern = 'NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05.basic.*.csv'
         manifest = 'manifest*.csv'
         self.assertTrue(len(out_files) == 2)
-        self.assertTrue(fnmatch.fnmatch(out_files[0],manifest))
-        self.assertTrue(fnmatch.fnmatch(out_files[1], basic_pattern))
+        s_out_files = SortedList(out_files)
+        self.assertTrue(fnmatch.fnmatch(s_out_files[1],manifest))
+        self.assertTrue(fnmatch.fnmatch(s_out_files[0], basic_pattern))
         #reset the director
         os.chdir('/')
 
