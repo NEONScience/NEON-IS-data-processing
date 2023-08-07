@@ -1,13 +1,13 @@
 ---
 pipeline:
-  name: ptb330a_data_source_kafka
+  name: mti300ahrs_data_source_kafka_memTest
 transform:
   image: quay.io/battelleecology/kafka-loader:v1.0.16-kafka
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "ptb330a"
+    SOURCE_TYPE: "mti300ahrs"
     LOGLEVEL: debug
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
@@ -73,7 +73,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/ptb330a/2023/01/01/12345/data/file.parquet
+      # /pfs/out/mti300ahrs/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do
@@ -106,23 +106,23 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: ptb330a_cron_daily_and_date_control
+    repo: mti300ahrs_cron_daily_and_date_control_memTest
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/ptb330a/*/*/*"
+    glob: "/mti300ahrs/*/*/*/*"
 parallelism_spec:
-  constant: 10
+  constant: 20
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 1.3
-resource_limits:
   memory: 1.5G
+  cpu: 1.2
+resource_limits:
+  memory: 2.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.5
+  memory: 10G
+  cpu: 0.2
 sidecar_resource_limits:
-  memory: 4Gi
+  memory: 15Gi
   cpu: 1.2
 datum_set_spec:
   number: 1

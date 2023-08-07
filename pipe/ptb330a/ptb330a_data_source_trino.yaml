@@ -78,7 +78,7 @@ input:
     glob: "/ptb330a/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 5
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 400M

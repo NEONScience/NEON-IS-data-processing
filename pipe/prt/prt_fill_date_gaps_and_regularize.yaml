@@ -91,10 +91,10 @@ resource_limits:
   memory: 7G
   cpu: 4.5
 sidecar_resource_requests:
-  memory: 4G
+  memory: 5G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 7Gi
+  memory: 8Gi
   cpu: 1.2
 datum_set_spec:
   number: 1

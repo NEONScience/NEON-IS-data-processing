@@ -73,7 +73,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/prt/2023/01/01/12345/data/file.parquet
+      # /pfs/out/li191r/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do
