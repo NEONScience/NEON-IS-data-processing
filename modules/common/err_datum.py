@@ -8,7 +8,7 @@ import structlog
 log = structlog.get_logger()
 
 
-def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool, DirOutBase=None) -> None:
+def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirOutBase=None) -> None:
     """
     Parse a datum path.
 
@@ -37,18 +37,16 @@ def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool, Dir
         DirOutBase = Path(DirErrBase).parents[0]
 
     # Write an empty file
-    DirErr_path = Path(DirErrBase, DirRepo_path)
-    DirOut_path = Path(DirOutBase, DirRepo_path)
+    DirErr_path = Path(DirErrBase,DirRepo_path)
+    DirOut_path = Path(DirOutBase,DirRepo_path)
     os.makedirs(DirErr_path,exist_ok=True)
     Err_file = os.path.join(DirErr_path,os.path.basename(DirErr_path).split('/')[-1])
     file1 = open(Err_file,"w")
     file1.close()
 
-    print('\n\t ====== RmvDatmOut', RmvDatmOut)
     # Remove any partial output for the datum
     if (RmvDatmOut == True):
         if os.path.exists(DirOut_path):
             removed = shutil.rmtree(DirOut_path)
             log.info(f'Removed partial output for errored datum:  {DirOut_path}')
             print('\n\t ====== removed: ',removed)
-
