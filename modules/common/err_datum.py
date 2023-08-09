@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import string
 from pathlib import Path
@@ -23,7 +24,7 @@ def err_datum_path(err: str, DirDatm: Path, DirErrBase: Path, DirOutBase: Path) 
     """
 
     log.debug(err)
-    caller = inspect.stack()[0].function
+    caller = inspect.stack()[1].function
     log.debug(f'Error resulted from call: {caller}')
     DirDatm_parts = Path(DirDatm).parts
     DirDatm_len = len(DirDatm_parts)
@@ -40,8 +41,3 @@ def err_datum_path(err: str, DirDatm: Path, DirErrBase: Path, DirOutBase: Path) 
     Err_file = os.path.join(DirErr_path, os.path.basename(DirErr_path).split('/')[-1])
     file1 = open(Err_file, "w")
     file1.close()
-
-
-err_datum_path(err = 'error message 1', DirDatm = 'pfs/proc_group/prt/2019/01/01/27134',
-                                   DirErrBase = 'pfs/proc_group_out/erred_datums',
-                                   DirOutBase = 'pfs/proc_group_out')
