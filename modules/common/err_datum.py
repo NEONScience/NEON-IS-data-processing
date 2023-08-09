@@ -36,11 +36,11 @@ def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirO
     if DirOutBase == None:
         DirOutBase = Path(DirErrBase).parents[0]
 
-    # Write an empty file
     DirErr_path = Path(DirErrBase,DirRepo_path)
     DirOut_path = Path(DirOutBase,DirRepo_path)
     os.makedirs(DirErr_path,exist_ok=True)
     Err_file = os.path.join(DirErr_path,os.path.basename(DirErr_path).split('/')[-1])
+    # Write an empty file
     file1 = open(Err_file,"w")
     file1.close()
 
