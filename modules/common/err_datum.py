@@ -25,7 +25,9 @@ def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirO
     log.info(f'Error resulted from call: {caller}')
 
     # Inform the user of the error routing
-    log.info(f'Re-routing failed datum path {DirDatm} to {DirErrBase}')
+    log.info(f'Re-routing failed datum .........')
+    log.info(f'      from: {DirDatm}')
+    log.info(f'      to: {DirErrBase}')
     DirDatm_parts = Path(DirDatm).parts
     DirDatm_len = len(DirDatm_parts)
     IdxRepo = DirDatm_parts.index("pfs") + 1
@@ -43,6 +45,7 @@ def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirO
     # Write an empty file
     file1 = open(Err_file,"w")
     file1.close()
+    log.info(f'An empty file is written in:  {DirErr_path}')
 
     # Remove any partial output for the datum
     if (RmvDatmOut == True):
