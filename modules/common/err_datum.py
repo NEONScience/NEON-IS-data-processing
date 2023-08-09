@@ -11,7 +11,7 @@ import structlog
 log = structlog.get_logger()
 
 
-def err_datum_path(err: str, DirDatm: Path, DirErrBase: Path, DirOutBase: Path) -> None:
+def err_datum_path(err: str, DirDatm: Path, DirErrBase: Path, DirOutBase = None) -> None:
     """
     Parse a datum path.
 
