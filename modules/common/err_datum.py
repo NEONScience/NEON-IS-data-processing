@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 import os
-import string
 from pathlib import Path
-from typing import List, Tuple
-from datetime import datetime
 import inspect
-from structlog import get_logger
 import structlog
 
 log = structlog.get_logger()
