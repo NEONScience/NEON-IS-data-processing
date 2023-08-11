@@ -41,10 +41,6 @@ def get_dir_info(DirIn: Path):
 
     # dirRepo = /prt/2019/01/01/27134  string[start:end:step]
         DirRepo = '/'.join(DirRepo_parts)
-        DirInInfo.append(parent_dir)
-        DirInInfo.append(IdxRepo)
-        DirInInfo.append(repo)
-        DirInInfo.append(DirRepo)
 
         if repo == None:
             log.error('Cannot determine repo name. Repository structure must conform to .../pfs/repoName/repoContents.... Check input repo.')
@@ -58,6 +54,11 @@ def get_dir_info(DirIn: Path):
             time =  idxTimeBgn.replace('/', '-')
         else:
             time = None
+    # DirInInfo index starts with 0, which will have parent_dir
+        DirInInfo.append(parent_dir)
+        DirInInfo.append(IdxRepo)
+        DirInInfo.append(repo)
+        DirInInfo.append(DirRepo)
         DirInInfo.append(time)
     # # DirInInfo will have the following directories
     # (parent_dir, repo, IdxRepo, dirRepo, time)
