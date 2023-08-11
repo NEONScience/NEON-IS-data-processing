@@ -13,9 +13,12 @@ def test_err_datum_path () -> None:
     try:
         x = 4/0
     except:
-        err_datum_path(err = 'This is error #1',DirDatm = 'pfs/proc_group/prt/2019/01/01/27134',
+        err_datum_path(err = 'error testing bad input path',DirDatm = 'qfs/proc_group/prt/2019/01/01/27134',
                                                      DirErrBase = 'pfs/proc_group_out/errored_datums',
                                                     RmvDatmOut = True, DirOutBase = 'pfs/proc_group_out')
+        err_datum_path(err='error testing correct input path',DirDatm='pfs/proc_group/prt/2019/01/01/27134',
+                       DirErrBase='pfs/proc_group_out/errored_datums',
+                       RmvDatmOut=True,DirOutBase='pfs/proc_group_out')
 
 if __name__ == '__main__':
     test_err_datum_path()

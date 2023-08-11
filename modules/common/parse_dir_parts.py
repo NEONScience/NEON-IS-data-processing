@@ -28,34 +28,37 @@ def get_dir_info(DirIn: Path):
 
     DirInInfo =[]
     DirIn_parts = Path(DirIn).parts
-    parent_dir = DirIn_parts[0]
-    DirInInfo.append(parent_dir)
-    repo = DirIn_parts[1]
-    DirInInfo.append(repo)
-    DirIn_len = len(DirIn_parts)
-    IdxRepo = DirIn_parts.index("pfs") + 1
-    DirInInfo.append(IdxRepo)
-    DirRepo_parts = DirIn_parts[IdxRepo + 1: DirIn_len]
+    if 'pfs' not in DirIn_parts:
+        log.error('\t\tpfs directory not found in input path structure. Check input repo.')
+    else:
+        IdxParentDir = DirIn_parts.index("pfs")
+        parent_dir = DirIn_parts[IdxParentDir]
+        IdxRepo = IdxParentDir + 1
+        repo = DirIn_parts[IdxRepo]
+
+        DirIn_len = len(DirIn_parts)
+        DirRepo_parts = DirIn_parts[IdxRepo + 1: DirIn_len]
 
     # dirRepo = /prt/2019/01/01/27134  string[start:end:step]
-    DirRepo = '/'.join(DirRepo_parts)
-    DirInInfo.append(DirRepo)
-    if IdxRepo == 0:
-        log.error('pfs directory not found in input path structure. Check input repo.')
+        DirRepo = '/'.join(DirRepo_parts)
+        DirInInfo.append(parent_dir)
+        DirInInfo.append(IdxRepo)
+        DirInInfo.append(repo)
+        DirInInfo.append(DirRepo)
 
-    if repo == None:
-        log.error('Cannot determine repo name. Repository structure must conform to .../pfs/repoName/repoContents.... Check input repo.')
+        if repo == None:
+            log.error('Cannot determine repo name. Repository structure must conform to .../pfs/repoName/repoContents.... Check input repo.')
 
     # Interpret (if possible) the date embedded within the directory structure
     # convert '2019/01/01' to 2019-01-01
 
-    idxTimeBgn = re.findall(r"[0-9]{4}/[0-9]{2}/[0-9]{2}", DirIn)
-    idxTimeBgn = ''.join(idxTimeBgn)
-    if idxTimeBgn != -1:
-        time =  idxTimeBgn.replace('/', '-')
-    else:
-        time = None
-    DirInInfo.append(time)
+        idxTimeBgn = re.findall(r"[0-9]{4}/[0-9]{2}/[0-9]{2}", DirIn)
+        idxTimeBgn = ''.join(idxTimeBgn)
+        if idxTimeBgn != -1:
+            time =  idxTimeBgn.replace('/', '-')
+        else:
+            time = None
+        DirInInfo.append(time)
     # # DirInInfo will have the following directories
     # (parent_dir, repo, IdxRepo, dirRepo, time)
     return DirInInfo
