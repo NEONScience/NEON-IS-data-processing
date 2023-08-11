@@ -17,8 +17,8 @@ def test_err_datum_path () -> None:
                                                      DirErrBase = 'pfs/proc_group_out/errored_datums',
                                                     RmvDatmOut = True, DirOutBase = 'pfs/proc_group_out')
         err_datum_path(err='error testing correct input path',DirDatm='pfs/proc_group/prt/2019/01/01/27134',
-                       DirErrBase='pfs/proc_group_out/errored_datums',
-                       RmvDatmOut=True,DirOutBase='pfs/proc_group_out')
+                       DirErrBase='pfs/out/errored_datums',
+                       RmvDatmOut=True)
 
 if __name__ == '__main__':
     test_err_datum_path()
