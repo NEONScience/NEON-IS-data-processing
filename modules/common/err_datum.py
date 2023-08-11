@@ -28,7 +28,7 @@ def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirO
     # call to parse input directory
     DirInInfo = get_dir_info(DirIn = DirDatm)
     # DirInInfo will have the following directories, DirInInfo[0] = parent_dir,
-    # DirInInfo[1] = repo, DirInInfo[2] = IdxRepo, DirInInfo[3] = dirRepo, DirInInfo[4] = time.
+    # DirInInfo[1] = repo, DirInInfo[2] = IdxRepo, DirInInfo[3] = DirRepo, DirInInfo[4] = time.
 
     if DirOutBase == None:
         DirOutBase = Path(DirErrBase).parents[0]
