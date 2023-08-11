@@ -6,11 +6,12 @@ import inspect
 import structlog
 
 log = structlog.get_logger()
+from common.parse_dir_parts import get_dir_info
 
 
 def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirOutBase=None) -> None:
     """
-    Parse a datum path.
+    Route datum errors to a specified location.
 
     :param err: The error condition returned from a function call.
     :param DirDatm: The file path, e.g., 'pfs/proc_group/prt/2019/01/01/27134'.
@@ -27,26 +28,25 @@ def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirO
     # Inform the user of the error routing
     log.info(f'Re-routing failed datum .........')
     log.info(f'      from: {DirDatm}')
-    log.info(f'      to: {DirErrBase}')
-    DirDatm_parts = Path(DirDatm).parts
-    DirDatm_len = len(DirDatm_parts)
-    IdxRepo = DirDatm_parts.index("pfs") + 1
-    DirRepo = DirDatm_parts[IdxRepo + 1: DirDatm_len]
 
-    # dirRepo_path = /prt/2019/01/01/27134  string[start:end:step]
-    DirRepo_path = '/'.join(DirRepo)
+    # call to parse input directory
+    DirInInfo = get_dir_info(DirIn = DirDatm)
+    # DirInInfo will have the following directories, DirInInfo[0] = parent_dir,
+    # DirInInfo[1] = repo, DirInInfo[2] = IdxRepo, DirInInfo[3] = dirRepo, DirInInfo[4] = time.
+
     if DirOutBase == None:
         DirOutBase = Path(DirErrBase).parents[0]
-
-    DirErr_path = Path(DirErrBase,DirRepo_path)
-    DirOut_path = Path(DirOutBase,DirRepo_path)
+    #
+    DirRepo = DirInInfo[3]
+    DirErr_path = Path(DirErrBase,DirRepo)
+    DirOut_path = Path(DirOutBase,DirRepo)
     os.makedirs(DirErr_path,exist_ok=True)
     Err_file = os.path.join(DirErr_path,os.path.basename(DirErr_path).split('/')[-1])
     # Write an empty file
     file1 = open(Err_file,"w")
     file1.close()
     log.info(f'An empty file is written in:  {DirErr_path}')
-
+    #
     # Remove any partial output for the datum
     if (RmvDatmOut == True):
         if os.path.exists(DirOut_path):
