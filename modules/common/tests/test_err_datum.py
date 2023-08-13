@@ -25,10 +25,15 @@ class ErrDatumTest(unittest.TestCase):
         try:
             x = 4/0
         except:
+            # DirDatm does not have 'pfs'
             err_datum_path(err = 'error testing bad input path #1',DirDatm = self.wrongDirDatm, DirErrBase = self.DirErrBase,
                            RmvDatmOut = self.RmvDatmOut, DirOutBase = self.DirOutBase)
+
+            # # DirDatm for Location focus or Sensor focus path
             err_datum_path(err='error testing correct input path #2',DirDatm = self.DirDatm,
                            DirErrBase ='pfs/out/errored_datums', RmvDatmOut = True)
+
+            # DirDatm for Group focus path
             err_datum_path(err='error testing correct input path GROUP focus #3',DirDatm = self.grpDirDatm,
                        DirErrBase = self.DirErrBase,
                        RmvDatmOut = True)
