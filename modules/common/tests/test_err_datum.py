@@ -27,8 +27,8 @@ class ErrDatumTest(unittest.TestCase):
         except:
             err_datum_path(err = 'error testing bad input path #1',DirDatm = self.wrongDirDatm, DirErrBase = self.DirErrBase,
                            RmvDatmOut = self.RmvDatmOut, DirOutBase = self.DirOutBase)
-            err_datum_path(err='error testing correct input path #2',DirDatm=self.DirDatm,
-                           DirErrBase='pfs/out/errored_datums', RmvDatmOut=True)
+            err_datum_path(err='error testing correct input path #2',DirDatm = self.DirDatm,
+                           DirErrBase ='pfs/out/errored_datums', RmvDatmOut = True)
             err_datum_path(err='error testing correct input path GROUP focus #3',DirDatm = self.grpDirDatm,
                        DirErrBase = self.DirErrBase,
-                       RmvDatmOut=True)
+                       RmvDatmOut = True)
