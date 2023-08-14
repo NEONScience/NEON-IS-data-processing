@@ -1,27 +1,13 @@
 #!usr/bin/env python3
-import os
-import logging
+
 from pathlib import Path
-from contextlib import closing
 from structlog import get_logger
-import environs
-import requests
-import json
-import argparse
-import common.log_config as log_config
 import os
 
 log = get_logger()
 
 
-def load() -> None:
-    data_path: Path = os.environ['DATA_PATH']
-    map_path: Path = os.environ['MAP_PATH']
-    out_path: Path = os.environ['OUT_PATH']
-    log_level: str = os.environ['LOG_LEVEL']
-    log_config.configure(log_level)
-    log.debug(f'out_path: {out_path}')
-    print(f'final output path is: {Path(out_path)}')
+def load_assetuid() -> None:
 
     for dpath in Path("/pfs/DATA_PATH/").rglob('*'):
         if Path(dpath).is_file():
@@ -48,6 +34,3 @@ def load() -> None:
                             log.debug(f'original path: {dpath} new_path: {new_file_path}')
                             new_file_path.symlink_to(new_dpath)
 
-
-if __name__ == '__main__':
-    load()
