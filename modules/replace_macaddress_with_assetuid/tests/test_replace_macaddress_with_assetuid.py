@@ -12,10 +12,10 @@ log = get_logger()
 class LoadAssetuidTest(TestCase):
 
     def setUp(self):
-        self.data_path = 'DATA_PATH'
-        self.map_path = 'MAP_PATH'
-        self.out_path = 'OUT_PATH'
-        log_level: str = 'LOG_LEVEL'
+        self.data_path = 'pfs/data_path'
+        self.map_path = 'pfs/map_path'
+        self.out_path = 'pfs/out_path'
+        log_level: str = 'debug'
         log_config.configure(log_level)
         log.debug(f'out_path: {self.out_path}')
         print(f'final output path is: {Path(self.out_path)}')
