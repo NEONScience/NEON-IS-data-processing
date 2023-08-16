@@ -2,8 +2,8 @@
 
 # Start with the neon-is-base-r image. 
 # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base
-#FROM quay.io/battelleecology/neon-is-base-r:v1.1.5 #as intermediate
-FROM quay.io/battelleecology/neon-is-base-r:v1.1.5
+#FROM quay.io/battelleecology/neon-is-base-r:v1.2.0 #as intermediate
+FROM quay.io/battelleecology/neon-is-base-r:v1.2.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -22,7 +22,7 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 #RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
 #
 # Now make the final build, which will leave behind our access token
-#FROM quay.io/battelleecology/neon-is-base-r:v1.1.5
+#FROM quay.io/battelleecology/neon-is-base-r:v1.2.0
 #
 # copy the eddy4R.base package from the previous image
 #COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
@@ -32,9 +32,9 @@ COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Install the eddy4R.base package, including dependencies (usually this is done through renv.lock file when pulling from public repo - comment this line)
-RUN git clone -b deve https://github.com/NEONScience/eddy4R.git 
+#RUN git clone -b deve https://github.com/NEONScience/eddy4R.git 
 #RUN R -e 'renv::install("/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
-RUN R -e 'renv::install("./eddy4R/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
+#RUN R -e 'renv::install("./eddy4R/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
 
 # Create app user
 RUN groupadd app && \
