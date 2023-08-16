@@ -57,12 +57,15 @@
 #     Support currently limited to auto-detecting schema
 #   Cove Sturtevant (2023-06-06)
 #     Refactor determination of dictionary encoding for performance
+#   Cove Sturtevant (2023-08-15)
+#     if no schema is input, create a parquet schema before writing (which allows e.g. defaulting to float vs. double)
+#     change default compression to zstd (similar compression ratio as gzip but much faster)
 ##############################################################################################
 def.wrte.parq <- function(data,
                           NameFile,
                           Schm=NULL,
                           NameFileSchm=NULL,
-                          CompType='gzip',
+                          CompType='zstd',
                           CompLvl=5,
                           Dict=NULL,
                           log=NULL
@@ -85,9 +88,8 @@ def.wrte.parq <- function(data,
     stop()
   }
   
-  # Convert data according to schema
+  # No schema was explicitly input.
   if(base::is.null(Schm) && base::is.null(NameFileSchm)){
-    # No schema was input.
     # Look for a schema attached as an attribute of the data (as produced by NEONprocIS.base::def.read.parq)
     schmData = base::attr(data,'schema')
     
@@ -98,7 +100,7 @@ def.wrte.parq <- function(data,
       log$debug(base::paste0('Auto-creating schema for output file ',NameFile))
     }
   
-    # Converted to arrow table
+    # Convert data frame to arrow table
     # Use schema attached as attribute to the data, or auto-construct it from the data frame.
     if("data.frame" %in% base::class(data)){
       
@@ -114,17 +116,24 @@ def.wrte.parq <- function(data,
           base::names(data) <- typeVar$name
         }
         
-        # In order to reliably apply the schema, we need to do some type conversion of the data first.
-        data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
-        
+      } else {
+        # Auto-detect schema from data frame
+        schmData <- NEONprocIS.base::def.schm.parq.from.df(data)
+        typeVar <- NEONprocIS.base::def.schm.parq.pars(schmData,log=log)
       }
       
+      # In order to reliably apply the schema, we need to do some type conversion of the data first.
+      data <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=typeVar,log=log)
+      
+      # Covert to arrow table
       data <- arrow::arrow_table(data, schema=schmData)
       
     } else if ("arrow_dplyr_query" %in% base::class(data)){
       data <- arrow::as_arrow_table(data, schema=schmData)
+      
     }
 
+    # Convert data according to input schema
   } else {
     
     if (!base::is.null(Schm) && 'ArrowObject' %in% base::class(Schm)){

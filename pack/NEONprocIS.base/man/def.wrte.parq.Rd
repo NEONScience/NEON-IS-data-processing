@@ -9,7 +9,7 @@ def.wrte.parq(
   NameFile,
   Schm = NULL,
   NameFileSchm = NULL,
-  CompType = "gzip",
+  CompType = "zstd",
   CompLvl = 5,
   Dict = NULL,
   log = NULL
