@@ -32,11 +32,11 @@ resource_requests:
   memory: 500M
   cpu: 1.5
 resource_limits:
-  memory: 1.2G
+  memory: 1G
   cpu: 2
 sidecar_resource_requests:
   memory: 2G
-  cpu: 0.5
+  cpu: 0.2
 sidecar_resource_limits:
   memory: 4Gi
   cpu: 1.2

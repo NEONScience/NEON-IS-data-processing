@@ -82,15 +82,15 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 400M
-  cpu: 1
+  cpu: 1.2
 resource_limits:
   memory: 800M
-  cpu: 1.5
+  cpu: 2
 sidecar_resource_requests:
-  memory: 5G
-  cpu: 0.4
+  memory: 6G
+  cpu: 0.5
 sidecar_resource_limits:
-  memory: 7G
+  memory: 8G
   cpu: 1.2
 datum_set_spec:
   number: 1

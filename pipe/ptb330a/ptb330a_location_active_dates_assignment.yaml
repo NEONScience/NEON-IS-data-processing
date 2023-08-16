@@ -35,10 +35,10 @@ resource_limits:
   memory: 1G
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 2G
+  memory: 1G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 4Gi
+  memory: 3Gi
   cpu: 1.2
 datum_set_spec:
   number: 5

@@ -35,7 +35,7 @@ resource_limits:
   memory: 1.2G
   cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 4G
   cpu: 0.5
 sidecar_resource_limits:
   memory: 8Gi

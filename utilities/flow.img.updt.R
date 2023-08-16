@@ -4,7 +4,7 @@
 
 
 # Update image references to a new tag throughout the repo
-# If a Dockerfile is found that references the image, and that dockerfile is in the /flow, /modules, or /modules_combined
+# If ImgBld = TRUE and a Dockerfile is found that references the image in the /flow, /modules, or /modules_combined
 # directories, the build_tag_push_update.sh script found in the same directory will be run, which should include building 
 # the image for that module, tagging it with the SHA of the HEAD commit, pushing the new image to quay.io, and updating any 
 # yaml files in the repo that reference the image with the new image tag. Note that that docker images built from the 
@@ -18,9 +18,9 @@ arg <- base::commandArgs(trailingOnly = TRUE)
 if(length(arg) == 0){
   pathBgn <- '~/R/NEON-IS-data-processing-homeDir/'
   typeFile <- 'Dockerfile' # also, e.g. ".yaml"
-  imgBase <- "quay.io/battelleecology/neon-is-base-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
-  tagNew <- "v1.1.5"
-  ImgBld <- TRUE # Build,tag, push downstream module images and update pipeline specs?
+  imgBase <- "quay.io/battelleecology/neon-is-pack-pub-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
+  tagNew <- "v1.1.0"
+  ImgBld <- FALSE # Build,tag, push downstream module images and update pipeline specs?
 } else {
   pathBgn <- arg[1]
   typeFile <- arg[2]

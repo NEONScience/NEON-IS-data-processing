@@ -35,10 +35,10 @@ resource_limits:
   memory: 400M
   cpu: 2
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.8
+  memory: 1G
+  cpu: 0.2
 sidecar_resource_limits:
-  memory: 5Gi
+  memory: 3Gi
   cpu: 1.2
 datum_set_spec:
   number: 10
@@ -59,14 +59,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"100M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]
