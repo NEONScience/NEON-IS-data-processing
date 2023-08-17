@@ -23,14 +23,8 @@ class LoadAssetuidTest(TestCase):
         if os.path.exists(self.out_path):
             shutil.rmtree(self.out_path)
         load_assetuid(data_path = self.data_path, map_path = self.map_path, out_path = self.out_path)
-
-        # asset_file_path = [f for f in listdir(self.map_path) if isfile(join(self.map_path,f))]
-        # os.chdir(Path(asset_file_path))
-        # asset_file_name = os.path.basename(__file__)
-        # print('==== asset_file_name: ', asset_file_name)
-        rootdir = 'pfs/OUT_PATH'
-        for path in glob.glob(f'{rootdir}/*/**/', recursive=True):
-            print(path)
+        for path in glob.glob(f'{self.out_path}/*/**/', recursive=True):
+            print('path : ', path)
             self.assertTrue(Path(path).exists())
 
 
