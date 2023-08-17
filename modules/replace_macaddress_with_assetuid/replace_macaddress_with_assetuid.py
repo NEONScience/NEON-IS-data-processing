@@ -13,10 +13,8 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path, source_type:s
 
     for dpath in Path(data_path).rglob('*'):
         if Path(dpath).is_file():
-            print(f'you are inside file and the file name is : {dpath}')
             mac_address = Path(dpath).stem.split("_")[1]
             new_dpath = os.path.normpath(dpath)
-            print(f'data path file name is: {new_dpath}')
             print(f'Mac_Address name is: {mac_address}')
             print(f'new_dpath is: {new_dpath}')
             path_list = new_dpath.split(os.sep)
