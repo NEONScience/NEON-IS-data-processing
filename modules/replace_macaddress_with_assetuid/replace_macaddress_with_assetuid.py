@@ -9,7 +9,7 @@ import os
 log = get_logger()
 
 
-def load_assetuid(data_path: Path, map_path: Path, out_path: Path) -> None:
+def load_assetuid(data_path: Path, map_path: Path, out_path: Path, source_type:str) -> None:
 
     for dpath in Path(data_path).rglob('*'):
         if Path(dpath).is_file():
@@ -20,12 +20,12 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path) -> None:
             print(f'Mac_Address name is: {mac_address}')
             print(f'new_dpath is: {new_dpath}')
             path_list = new_dpath.split(os.sep)
-            print(f'path_list is: {path_list}')
+            source_type = source_type.split("_")[0]
+            IdxSourceType = path_list.index(source_type)
             for mpath in Path(map_path).rglob('*'):
                 print('mpath0 = ', Path(mpath).stem.split("_")[0])
                 if Path(mpath).is_file():
-                    asset_uid = ''
-                    if (Path(mpath).stem.split("_")[2] == mac_address):
+                    if (Path(mpath).stem.split("_")[IdxSourceType] == mac_address):
                         with open(Path(mpath), 'r') as f:
                             asset_uid = f.read().split()[0]
                             print(f'Asset_UID name is: {asset_uid}')

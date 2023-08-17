@@ -16,13 +16,14 @@ class LoadAssetuidTest(TestCase):
         self.data_path = Path('pfs/DATA_PATH')
         self.map_path = Path('pfs/MAP_PATH')
         self.out_path = Path('pfs/OUT_PATH')
-        print(f'final output path is: {Path(self.out_path)}')
+        self.in_source_type = 'li7200_stcdd'
+        print(f'final oself.source_typeutput path is: {Path(self.out_path)}')
     #
     def test_load_assetuid(self):
         # clean up the output directory left from previous testing
         if os.path.exists(self.out_path):
             shutil.rmtree(self.out_path)
-        load_assetuid(data_path = self.data_path, map_path = self.map_path, out_path = self.out_path)
+        load_assetuid(data_path = self.data_path, map_path = self.map_path, out_path = self.out_path, source_type=self.in_source_type)
         for path in glob.glob(f'{self.out_path}/*/**/', recursive=True):
             print('path : ', path)
             self.assertTrue(Path(path).exists())
