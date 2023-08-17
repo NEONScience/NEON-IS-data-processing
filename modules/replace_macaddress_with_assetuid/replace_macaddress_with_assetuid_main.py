@@ -16,7 +16,7 @@ def main() -> None:
     log_config.configure(log_level)
     log.debug(f'out_path: {out_path}')
     print(f'final output path is: {Path(out_path)}')
-    load_assetuid()
+    load_assetuid(data_path = data_path, map_path = map_path, out_path = out_path)
 
 
 if __name__ == '__main__':
