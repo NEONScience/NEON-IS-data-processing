@@ -20,15 +20,15 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path, source_type:s
             path_list = new_dpath.split(os.sep)
             source_type = source_type.split("_")[0]
             IdxSourceType = path_list.index(source_type)
+            print(f'path_list is: {path_list}')
             for mpath in Path(map_path).rglob('*'):
-                print('mpath0 = ', Path(mpath).stem.split("_")[0])
                 if Path(mpath).is_file():
-                    if (Path(mpath).stem.split("_")[IdxSourceType] == mac_address):
+                    if (Path(mpath).stem.split("_")[2] == mac_address):
                         with open(Path(mpath), 'r') as f:
                             asset_uid = f.read().split()[0]
                             print(f'Asset_UID name is: {asset_uid}')
                         f.close()
-                        extended_path = os.sep.join(path_list[2:]).replace(str(mac_address), str(asset_uid))
+                        extended_path = os.sep.join(path_list[IdxSourceType:]).replace(str(mac_address), str(asset_uid))
                         print(f'Extended Path is: {extended_path}')
                         new_file_path = Path(os.path.join(Path(out_path), extended_path))
                         Path(new_file_path).parent.mkdir(parents=True, exist_ok=True)

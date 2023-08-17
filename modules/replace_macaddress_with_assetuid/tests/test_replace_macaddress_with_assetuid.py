@@ -23,7 +23,7 @@ class LoadAssetuidTest(TestCase):
         # clean up the output directory left from previous testing
         if os.path.exists(self.out_path):
             shutil.rmtree(self.out_path)
-        load_assetuid(data_path = self.data_path, map_path = self.map_path, out_path = self.out_path, source_type=self.in_source_type)
+        load_assetuid(data_path = self.data_path, map_path = self.map_path, out_path = self.out_path, source_type = self.in_source_type)
         for path in glob.glob(f'{self.out_path}/*/**/', recursive=True):
             print('path : ', path)
             self.assertTrue(Path(path).exists())
