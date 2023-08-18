@@ -5,8 +5,8 @@ from pathlib import Path
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import pub_grouper.pub_grouper_main as pub_grouper_main
+import pub_grouper.tests.group_json as group_json
 from pub_grouper.pub_grouper import pub_group
-from pub_grouper.tests.group_json import get_group_json
 
 
 class PubGrouperTest(TestCase):
@@ -34,23 +34,19 @@ class PubGrouperTest(TestCase):
         self.data_type_index = self.relative_path_index + 4
         self.publoc_key = 'site'
         self.symlink = True
-        os.environ["DATA_PATH"] = str(Path(self.data_path))
-
         self.in_data_path.touch()
-        self.in_group_path.write_text(get_group_json())
-        self.product = 'DP1.00066.001'  # Make sure this matches the group_json
+        self.in_group_path.write_text(group_json.get_group_json())
+        self.product = group_json.get_data_product()
 
     def test_pub_group(self):
-        pub_group(
-            data_path=self.input_path,
-            out_path=self.output_path,
-            year_index=self.year_index,
-            group_index=self.group_index,
-            data_type_index=self.data_type_index,
-            group_metadata_dir=self.group_metadata_dir,
-            publoc_key=self.publoc_key,
-            symlink=self.symlink
-        )
+        pub_group(data_path=self.input_path,
+                  out_path=self.output_path,
+                  year_index=self.year_index,
+                  group_index=self.group_index,
+                  data_type_index=self.data_type_index,
+                  group_metadata_dir=self.group_metadata_dir,
+                  publoc_key=self.publoc_key,
+                  symlink=self.symlink)
         self.check_output()
 
     def test_main(self):

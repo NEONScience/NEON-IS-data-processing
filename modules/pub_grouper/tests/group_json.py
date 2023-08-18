@@ -1,5 +1,8 @@
 import json
 
+def get_data_product():
+    return 'DP1.00066.001'
+
 def get_group_json() -> str:
     """Returns the group JSON to use when testing."""
     group_json = {
@@ -17,7 +20,7 @@ def get_group_json() -> str:
                         }
                     ],
                     'data_product_ID': [
-                        'DP1.00066.001'
+                        get_data_product()
                     ]
                 },
                 'site': 'CPER',
