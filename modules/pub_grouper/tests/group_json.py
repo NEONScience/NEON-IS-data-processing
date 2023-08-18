@@ -1,6 +1,6 @@
 import json
 
-def get_data_product():
+def get_data_product() -> str:
     return 'DP1.00066.001'
 
 def get_group_json() -> str:
