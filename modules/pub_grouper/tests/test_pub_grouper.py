@@ -1,41 +1,30 @@
 #!/usr/bin/env python3
 import os
 from pathlib import Path
-from unittest import TestCase
-from pub_grouper.pub_grouper import pub_group
+
+from pyfakefs.fake_filesystem_unittest import TestCase
+
 import pub_grouper.pub_grouper_main as pub_grouper_main
-from testfixtures import TempDirectory
-import tempfile
-import json
+import pub_grouper.tests.group_json as group_json
+from pub_grouper.pub_grouper import pub_group
+
 
 class PubGrouperTest(TestCase):
 
     def setUp(self):
-        self.temp_dir = TempDirectory()
-        self.temp_dir_name = self.temp_dir.path
-        self.temp_dir_path = Path(self.temp_dir_name)
-        self.temp_dir_parts = self.temp_dir_path.parts
-    # offset is added to resolve cross-platform temporary directory differences
-    # 'Temp' on Windows10 while 'tmp' on Linux and Mac
-        cross_platform_offset = 0
-        for dirname in self.temp_dir_parts:
-            if (dirname == 'Temp') or (dirname == 'tmp') :
-                cross_platform_offset = cross_platform_offset -1
-                break
-            cross_platform_offset = cross_platform_offset + 1
-        self.input_path = Path(self.temp_dir_name, "repo/inputs")
-        self.output_path = Path(self.temp_dir_name, "outputs")
+        self.setUpPyfakefs()
+        self.input_path = Path('/repo/inputs')
+        self.output_path = Path('/outputs')
         self.group = "par-quantum-line_CPER001000"
         self.site = "CPER"
         self.date_path = Path("2019/05/24")
-        self.data_path = Path(self.input_path, self.date_path, self.group,'data')
-        os.makedirs(self.data_path)
-    # cross_platform_offset can be 0
-        self.relative_path_index = 5 + cross_platform_offset
+        self.data_path = Path(self.input_path, self.date_path, self.group, 'data')
+        self.fs.create_dir(self.data_path)
+        self.relative_path_index = 3
         self.group_metadata_dir = 'group'
         self.group_path = Path(self.input_path, self.date_path, self.group, self.group_metadata_dir)
-        os.makedirs(self.group_path)
-        self.data_file = self.group+"_data.ext"
+        self.fs.create_dir(self.group_path)
+        self.data_file = self.group + "_data.ext"
         self.group_file = "CFGLOCXXXXXX.json"
         self.base_path = Path(self.input_path, self.date_path)
         self.in_data_path = Path(self.data_path, self.data_file)
@@ -44,24 +33,20 @@ class PubGrouperTest(TestCase):
         self.group_index = self.relative_path_index + 3
         self.data_type_index = self.relative_path_index + 4
         self.publoc_key = 'site'
-        self.symlink = True,
-        os.environ["DATA_PATH"] = str(Path(self.data_path))
-
+        self.symlink = True
         self.in_data_path.touch()
-        group_json = {'type': 'FeatureCollection', 'features': [{'type': 'Feature', 'geometry': None, 'properties': {'name': 'CFGLOC108605', 'group': 'par-quantum-line_CPER001000', 'active_periods': [{'start_date': '2017-07-20T00:00:00Z'}], 'data_product_ID': ['DP1.00066.001']}, 'site': 'CPER', 'domain': 'D10', 'visibility_code': 'public', 'HOR': '001', 'VER': '000'}]}
-        self.in_group_path.write_text(json.dumps(group_json))
-        self.product = 'DP1.00066.001' # Make sure this matches the group_json
-        
+        self.in_group_path.write_text(group_json.get_group_json())
+        self.product = group_json.get_data_product()
+
     def test_pub_group(self):
-        pub_group(
-                   data_path=self.input_path,
-                   out_path=self.output_path,
-                   year_index=self.year_index,
-                   group_index=self.group_index,
-                   data_type_index=self.data_type_index,
-                   group_metadata_dir=self.group_metadata_dir,
-                   publoc_key=self.publoc_key,
-                   symlink=self.symlink)
+        pub_group(data_path=self.input_path,
+                  out_path=self.output_path,
+                  year_index=self.year_index,
+                  group_index=self.group_index,
+                  data_type_index=self.data_type_index,
+                  group_metadata_dir=self.group_metadata_dir,
+                  publoc_key=self.publoc_key,
+                  symlink=self.symlink)
         self.check_output()
 
     def test_main(self):
@@ -83,7 +68,3 @@ class PubGrouperTest(TestCase):
         out_group_path = Path(root_path, 'group', self.group, self.group_file)
         self.assertTrue(out_data_path.exists())
         self.assertTrue(out_group_path.exists())
-
-    def tearDown(self):
-        self.temp_dir.cleanup()
-

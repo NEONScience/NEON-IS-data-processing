@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import os
 import json
 import shutil
 
@@ -11,7 +10,7 @@ log = get_logger()
 
 def pub_group(*, data_path: Path, out_path: Path, 
                  year_index: int, group_index: int, 
-                 data_type_index: str, group_metadata_dir: str,
+                 data_type_index: int, group_metadata_dir: str,
                  publoc_key: str, symlink: bool) -> None:
     """
     :param data_path: input data path
@@ -24,7 +23,7 @@ def pub_group(*, data_path: Path, out_path: Path,
     :param symlink: Use a symlink to place files in the output (True) or use a straight copy (False) 
     """
     # Each group is a datum. Run through each group
-    for path in data_path.rglob(group_metadata_dir+'/'):
+    for path in data_path.rglob(group_metadata_dir + '/'):
         parts = path.parts
         group_metadata_name = parts[data_type_index]
         
