@@ -3,7 +3,7 @@ pipeline:
   name: parWaterSurface_qm_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -59,14 +59,14 @@ input:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH
         repo: parWaterSurface_analyze_pad_and_qaqc_plau
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        glob: /(*/*/*)
+        joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: REGULARIZED_FLAGS_PATH
-        repo: parWaterSurface_group_path
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        repo: parWaterSurface_pre_stats_qm
+        glob: /(*/*/*)
+        joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 2
