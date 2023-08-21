@@ -16,11 +16,9 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path, source_type:s
             mac_address = Path(dpath).stem.split("_")[1]
             new_dpath = os.path.normpath(dpath)
             print(f'Mac_Address name is: {mac_address}')
-            print(f'new_dpath is: {new_dpath}')
             path_list = new_dpath.split(os.sep)
             source_type = source_type.split("_")[0]
             IdxSourceType = path_list.index(source_type)
-            print(f'path_list is: {path_list}')
             for mpath in Path(map_path).rglob('*'):
                 if Path(mpath).is_file():
                     if (Path(mpath).stem.split("_")[2] == mac_address):
