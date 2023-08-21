@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd:
   - /bin/bash
   stdin:
@@ -25,7 +25,6 @@ transform:
     DirErr=/pfs/out/errored_datums
     FileSchmQf=$SCHEMA_FLAGS
     "TermTest1=par:null|gap|range(rmv)|step(rmv)|persistence"
-    "DirSubCopy=uncertainty_data|flags|uncertainty_coef"
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /tmp/pfs/padded_analyzer
@@ -44,14 +43,14 @@ input:
       repo: parWaterSurface_avro_schemas
       glob: /parWaterSurface/flags_plausibility_parWaterSurface.avsc
 parallelism_spec:
-  constant: 5
+  constant: 1
 autoscaling: true
 resource_requests:
   memory: 2G
-  cpu: 5.5
+  cpu: 3.3
 resource_limits:
   memory: 4G
-  cpu: 7
+  cpu: 4.5
 sidecar_resource_requests:
   memory: 1G
   cpu: 0.3

@@ -73,7 +73,7 @@ class EmlTest(TestCase):
         self.fs.add_real_file(real_path, target_path=self.intellectual_rights_path)
 
     def add_manifest_file(self) -> None:
-        real_path = Path('../main/data/CPER/2020/01/manifest.csv')
+        real_path = Path(self.test_files_path, 'manifest.csv')
         self.manifest_path = Path('/manifest.csv')
         self.fs.add_real_file(real_path, target_path=self.manifest_path)
 

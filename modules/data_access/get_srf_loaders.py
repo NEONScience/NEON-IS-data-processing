@@ -43,7 +43,7 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
 
     group_prefix_1 = group_prefix + '%'
     if group_prefix[-1] == "_":
-        group_prefix_1 = group_prefix[:-1] + '\_%'
+        group_prefix_1 = group_prefix[:-1] + r'\_%'
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [group_prefix_1])
@@ -53,7 +53,7 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
             sr_id = row[1]
             start_date = row[2]
             end_date = row[3]
-            meas_strm_name = row[4]
+            stream_name = row[4]
             srf_term_name = row[5]
             srf = row[6]
             user_comment = row[7]
@@ -63,7 +63,7 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
                       id=sr_id,
                       start_date=date_formatter.to_string(start_date),
                       end_date=date_formatter.to_string(end_date),
-                      measurement_stream_name=meas_strm_name,
+                      measurement_stream_name=stream_name,
                       srf_term_name=srf_term_name,
                       srf=srf,
                       user_comment=user_comment,
