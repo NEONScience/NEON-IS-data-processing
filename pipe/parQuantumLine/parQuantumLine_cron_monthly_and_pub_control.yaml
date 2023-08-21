@@ -2,7 +2,7 @@
 pipeline:
   name: parQuantumLine_cron_monthly_and_pub_control
 transform:
-  image: quay.io/battelleecology/neon-is-pub-cntl:2ca4d49421c2c30b05e5f695c7fa832705cf4707
+  image: quay.io/battelleecology/neon-is-pub-cntl:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   env:
     # START_MONTH and END_MONTH indicate the date range (inclusive) to create the /Y/M folder structure

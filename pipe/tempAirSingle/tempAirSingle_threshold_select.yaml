@@ -11,7 +11,7 @@ transform:
   - FileThsh=$FILE_THRESHOLDS
   - TermCtxt1=temp|air
   - DirSubCopy=location|data|uncertainty_data|flags
-  image: quay.io/battelleecology/neon-is-thsh-slct-r:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-thsh-slct-r:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
