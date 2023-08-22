@@ -33,6 +33,7 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> List[List[Gr
              nlg.named_location_id in (select nl.nam_locn_id from nam_locn nl)
          and 
              g.group_name like %s
+         order by nlg.named_location_id
     '''
 
     sql_gm = '''
@@ -50,6 +51,7 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> List[List[Gr
              "group" g3)
          and 
              g.group_name like %s
+         order by gm.member_group_id
     '''
     group_name: str = ""
     group_prefix_1 = group_prefix + '%'

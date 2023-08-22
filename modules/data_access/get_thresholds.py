@@ -38,7 +38,7 @@ def get_thresholds(connector: DbConnector, term: str) -> Iterator[Threshold]:
          and 
              threshold.term_name = ANY (%s)
          order by
-             nam_locn.nam_locn_name
+             nam_locn.nam_locn_name, threshold.term_name, threshold.threshold_name
      '''
     with closing(connection.cursor()) as cursor:
         if term == 'none':
