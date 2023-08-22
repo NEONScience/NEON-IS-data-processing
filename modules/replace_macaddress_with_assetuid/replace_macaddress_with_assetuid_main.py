@@ -3,7 +3,7 @@ from pathlib import Path
 from structlog import get_logger
 import common.log_config as log_config
 import os
-from replace_macaddress_with_assetuid import load_assetuid
+from replace_macaddress_with_assetuid.replace_macaddress_with_assetuid import load_assetuid
 
 log = get_logger()
 
