@@ -39,6 +39,10 @@ def get_srf_loaders(connector: DbConnector, group_prefix: str) -> Iterator[Srf]:
             g.hor = substring (sr.meas_strm_name from 35 for 3)
         and 
             g.ver = substring (sr.meas_strm_name from 39 for 3)
+        order by 
+          g.group_name, t.term_name, sr.meas_strm_name , sr.id, sr.start_date, sr.end_date
+
+            
      '''
 
     group_prefix_1 = group_prefix + '%'
