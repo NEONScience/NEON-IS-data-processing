@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/data_source_trino:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/data_source_trino:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd:
   - /bin/bash
   stdin:
@@ -78,19 +78,19 @@ input:
     glob: "/ptb330a/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 5
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.7
+  memory: 300M
+  cpu: 0.8
 resource_limits:
-  memory: 2G
+  memory: 600M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 2.5G
+  memory: 1G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 5G
+  memory: 3G
   cpu: 1.2
 datum_set_spec:
   number: 1

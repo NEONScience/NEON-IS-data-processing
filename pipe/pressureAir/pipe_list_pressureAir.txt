@@ -4,6 +4,7 @@ pressureAir_group_path_ptb330a.yaml
 pressureAir_threshold.yaml
 pressureAir_thresh_select_ts_pad.yaml
 pressureAir_analyze_pad_and_qaqc_plau.yaml
+pressureAir_pre_stats_qm.yaml
 pressureAir_stats_group_and_compute.yaml
 pressureAir_qm_group_and_compute.yaml
 pressureAir_group_path_relHumidity.yaml

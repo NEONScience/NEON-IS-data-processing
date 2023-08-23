@@ -6,9 +6,7 @@ from testfixtures import TempDirectory
 from unittest import TestCase
 import sys
 
-from structlog import get_logger
-from pub_egress.pub_egress.pub_egress import Pub_egress
-import common.log_config as log_config
+from pub_egress.pub_egress_main import Pub_egress
 import logging
 
 
@@ -39,6 +37,8 @@ class PubEgressTest(TestCase):
             f.write('file,hasData,visibility,size,checksum\n')
             f.write('NEON.D10.CPER.DP1.00041.001.001.501.001.ST_1_minute.2019-01.basic.20210720T001022Z.csv,True,public,94064,9964c27c73a86313a24f573f59fc2d52')
 
+    # To test, switch ON developer mode in Windows,
+    # settings(Settings -> Update & security -> For developers)
 
     def test_egress(self):
         os.environ["CUSTOM_ENDPOINT"] = "endpoint"
@@ -54,3 +54,6 @@ class PubEgressTest(TestCase):
         """Check manifest file is in the output directory."""
         output_manifest_path = Path(self.out_dir, self.target_manifest_name)
         self.assertTrue(output_manifest_path.exists())
+
+    def tearDown(self):
+        self.temp_dir.cleanup()

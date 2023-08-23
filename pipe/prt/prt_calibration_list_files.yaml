@@ -3,7 +3,7 @@ pipeline:
   name: prt_calibration_list_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-cval-loader:2ca4d49421c2c30b05e5f695c7fa832705cf4707
+  image: quay.io/battelleecology/neon-cval-loader:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   env:
     CVAL_INGEST_BUCKET: neon-cval
@@ -16,8 +16,6 @@ input:
     repo: prt_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
-parallelism_spec:
-  constant: 2
 autoscaling: true
 resource_requests:
   memory: 500M

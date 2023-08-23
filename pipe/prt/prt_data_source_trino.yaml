@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/data_source_trino:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/data_source_trino:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd:
   - /bin/bash
   stdin:
@@ -82,15 +82,15 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 400M
-  cpu: 0.7
+  cpu: 1.2
 resource_limits:
   memory: 800M
-  cpu: 1.5
+  cpu: 2
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.2
-sidecar_resource_limits:
   memory: 6G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 8G
   cpu: 1.2
 datum_set_spec:
   number: 1

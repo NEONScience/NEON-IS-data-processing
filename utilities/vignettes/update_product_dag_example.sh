@@ -1,9 +1,12 @@
 #!/bin/bash
-# This can be run programmatically.
-# This is an end-to-end example of updating all the pipelines in a product DAG, without reprocessing
+# This can be run programmatically, but best to run interactively.
+# This is an end-to-end example of updating all the pipelines in a product DAG, with or without reprocessing.
 # Note that this is a simple scenario in which a single source type feeds into a product. If multiple
-# source types feed into the product, repeat the steps as necessary.
+# source types feed into the product, run/adjust/rerun the steps as necessary.
 
+# Select a reprocessing option by uncommenting whichever you want.
+reprocess_flag='' # No-op update to all pipelines (changes applied to next run so long as datum specifications are consistent)
+#reprocess_flag='--reprocess' # Reprocess all pipelines
 
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
@@ -24,8 +27,8 @@ pachctl start transaction
 unset pipelines
 pipelines=`cat $spec_path_source_type/pipe_list_$source_type.txt`
 for pipe in $(echo ${pipelines[*]}); do
-echo update update pipeline -f $spec_path_source_type/$pipe
-pachctl update pipeline -f $spec_path_source_type/$pipe
+echo pachctl update pipeline $reprocess_flag -f $spec_path_source_type/$pipe
+pachctl update pipeline $reprocess_flag -f $spec_path_source_type/$pipe
 done
 
 
@@ -36,8 +39,8 @@ done
 unset pipelines
 pipelines=`cat $spec_path_product/pipe_list_$product.txt`
 for pipe in $(echo ${pipelines[*]}); do
-echo pachctl update pipeline -f $spec_path_product/$pipe
-pachctl update pipeline -f $spec_path_product/$pipe
+echo pachctl update pipeline $reprocess_flag -f $spec_path_product/$pipe
+pachctl update pipeline $reprocess_flag -f $spec_path_product/$pipe
 done
 
 

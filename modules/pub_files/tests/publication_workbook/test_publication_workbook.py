@@ -10,5 +10,5 @@ class PublicationWorkbookTest(unittest.TestCase):
     def test():
         workbook: PublicationWorkbook = get_workbook('')
         assert workbook is not None
-        for row in workbook.workbook_rows:
+        for row in workbook.rows:
             print(f'workbook row:\n{row}\n')

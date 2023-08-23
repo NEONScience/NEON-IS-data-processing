@@ -3,7 +3,7 @@ pipeline:
   name: relHumidity_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -107,7 +107,7 @@ input:
           empty_files: false # Make sure this is false for LINK_TYPE=COPY
       - pfs:
           name: UNCERTAINTY_PATH
-          repo: relHumidity_group_path
+          repo: relHumidity_pre_stats_qm
           glob: /(*/*/*/rel-humidity_)*
           group_by: $1
           empty_files: false # Make sure this is false for LINK_TYPE=COPY
@@ -129,7 +129,7 @@ input:
           empty_files: false # Make sure this is false for LINK_TYPE=COPY
       - pfs:
           name: UNCERTAINTY_PATH
-          repo: relHumidity_group_path
+          repo: relHumidity_pre_stats_qm
           glob: /(*/*/*/rel-humidity-buoy_)*
           group_by: $1
           empty_files: false # Make sure this is false for LINK_TYPE=COPY

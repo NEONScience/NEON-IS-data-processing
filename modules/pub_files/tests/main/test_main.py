@@ -48,7 +48,7 @@ class MainTest(unittest.TestCase):
     def set_environment(self):
         pem_path = environs.Env().str('GITHUB_README_APP_PEM')
         os.environ['IN_PATH'] = str(self.data_path)
-        os.environ['IN_PATH_PARSE_INDEX'] = '9'
+        os.environ['RELATIVE_PATH_INDEX'] = '10'
         os.environ['LOCATION_PATH'] = str(self.location_path)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['DB_SECRETS_PATH'] = str(self.db_secrets_path)

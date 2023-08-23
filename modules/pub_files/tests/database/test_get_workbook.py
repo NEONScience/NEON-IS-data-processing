@@ -7,7 +7,7 @@ from data_access.tests.database_test import DatabaseBackedTest
 from pub_files.database.publication_workbook import get_workbook, PublicationWorkbook
 
 
-class PublicationWorkbookTest(DatabaseBackedTest):
+class GetWorkbookTest(DatabaseBackedTest):
 
     @unittest.skip('Integration test skipped.')
     def test_publication_workbook(self):

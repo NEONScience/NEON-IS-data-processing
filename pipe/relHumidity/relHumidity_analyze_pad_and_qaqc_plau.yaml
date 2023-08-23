@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd:
   - /bin/bash
   stdin:
@@ -53,12 +53,12 @@ resource_requests:
   cpu: 5.5
 resource_limits:
   memory: 5G
-  cpu: 6.5
+  cpu: 7
 sidecar_resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 0.3
 sidecar_resource_limits:
-  memory: 2Gi
+  memory: 5Gi
   cpu: 1.3
 datum_set_spec:
   number: 1

@@ -3,7 +3,7 @@ pipeline:
   name: pressureAir_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-basc-grp:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-stat-basc-grp:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -67,6 +67,7 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
+autoscaling: true
 resource_requests: 
   memory: 600M
   cpu: 2.2
@@ -74,12 +75,13 @@ resource_limits:
   memory: 1.5G
   cpu: 4
 sidecar_resource_requests:
-  memory: 1G
+  memory: 1.5G
   cpu: 0.2
 sidecar_resource_limits:
-  memory: 2Gi
+  memory: 3Gi
   cpu: 1.2
-autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

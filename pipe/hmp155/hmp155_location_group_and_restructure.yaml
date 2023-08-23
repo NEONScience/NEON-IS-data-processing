@@ -3,7 +3,7 @@ pipeline:
   name: hmp155_location_group_and_restructure
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -57,7 +57,7 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for R modules
-    PARALLELIZATION_INTERNAL: '1' 
+    PARALLELIZATION_INTERNAL: '3' 
 input:
   join:
   - pfs:
@@ -74,19 +74,19 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 5
+  constant: 3
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 1
+  memory: 1.5G
+  cpu: 3.3
 resource_limits:
-  memory: 1G
-  cpu: 1.8
+  memory: 2.5G
+  cpu: 4.5
 sidecar_resource_requests:
-  memory: 1G
+  memory: 5G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 2Gi
+  memory: 7Gi
   cpu: 1.2
 datum_set_spec:
   number: 1

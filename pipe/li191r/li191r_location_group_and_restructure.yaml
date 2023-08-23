@@ -3,7 +3,7 @@ pipeline:
   name: li191r_location_group_and_restructure
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -83,10 +83,10 @@ resource_limits:
   memory: 4G
   cpu: 4.5
 sidecar_resource_requests:
-  memory: 4G
+  memory: 5G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 6Gi
+  memory: 7Gi
   cpu: 1.2
 datum_set_spec:
   number: 1

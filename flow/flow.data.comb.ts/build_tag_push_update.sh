@@ -1,7 +1,7 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
 image_name=neon-is-data-comb-ts-r
-tag=$(git rev-parse HEAD)
+tag=$(git rev parse --short HEAD)
 cd ./flow/flow.data.comb.ts
 docker build -t $image_name:latest .
 docker tag $image_name quay.io/battelleecology/$image_name:$tag

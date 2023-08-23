@@ -2,7 +2,7 @@
 pipeline:
   name: pqs1_data_source_kafka
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.13-kafka
+  image: quay.io/battelleecology/kafka-loader:v1.0.16-kafka
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -73,7 +73,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/prt/2023/01/01/12345/data/file.parquet
+      # /pfs/out/pqs1/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do

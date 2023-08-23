@@ -3,7 +3,7 @@ pipeline:
   name: tempSoil_pub_format_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:2023dc96b0f10c949ac74773c8ab4390f5989d3b
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -19,11 +19,16 @@ transform:
   - python3 -m pub_workbook_loader.pub_workbook_loader_main
   - python3 -m pub_transformer.pub_transformer_main
   - '# Set some environment variables for the third module'
-  - export DATA_PATH=$(ls -d $OUT_PATH_TRANSFORMER/*/*) # Packager needs to be run at monthly glob. Get that path.
   - export OUT_PATH=$OUT_PATH_PACKAGER
-  - '# Run third module - pub_packager (using environment variables below as input parameters)'
-  - python3 -m pub_packager.pub_packager_main
-    - '# Clean up after 2nd module'
+  - '# Packager needs to be run at monthly glob. Get those paths.'
+  - product_month_paths="${OUT_PATH_TRANSFORMER}/*/*/*"
+  - for path in $product_month_paths; do
+  - '  echo "Processing product-month path $path"'
+  - '  export DATA_PATH=$path' 
+  - '  # Run third module - pub_packager (using environment variables below as input parameters)'
+  - '  python3 -m pub_packager.pub_packager_main'
+  - done
+  - '# Clean up after 2nd module'
   - rm -rf $OUT_PATH_TRANSFORMER
   - '# Set some environment variables for the fourth module and do some cleanup'
   - export OUT_PATH=$OUT_PATH_PUBFILES
@@ -33,27 +38,30 @@ transform:
   - python3 -m pub_files.main
 
   env:
-    # Environment variables for 1st module: pub_transformer. 
-    LOG_LEVEL: INFO
-    YEAR_INDEX: '3' 
-    DATA_TYPE_INDEX: '7' 
-    GROUP_METADATA_DIR: group 
-    DATA_PATH_PARSE_INDEX: '2'
-    OUT_PATH_TRANSFORMER: "/tmp/pub_transformer"
+    # Environment variables for 2nd (part A) module: pub_workbook_loader.
     OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
     PRODUCTS: NEON.DOM.SITE.DP1.00041.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
-    WORKBOOK_PATH: "/tmp/pub_workbooks/publication_workbook_NEON.DOM.SITE.DP1.00041.001.txt"
 
-    # Environment variables for 2nd module: pub_packager.
+    # Environment variables for 2nd module (part B): pub_transformer.
+    LOG_LEVEL: INFO
+    PRODUCT_INDEX: '3' # input path index of the data product identifier
+    YEAR_INDEX: '4' 
+    DATA_TYPE_INDEX: '8' 
+    GROUP_METADATA_DIR: group # Also shared with pub_transform
+    DATA_PATH_PARSE_INDEX: '2'
+    OUT_PATH_TRANSFORMER: "/tmp/pub_transformer"
+    WORKBOOK_PATH: "/tmp/pub_workbooks"
+
+    # Environment variables for 3rd module: pub_packager. Also uses PRODUCT_INDEX from pub_transformer.
     OUT_PATH_PACKAGER: "/tmp/pub_packager"
-    PUBLOC_INDEX: '6'
-    DATE_INDEX: '3' # Starting index of date in path (i.e. year index)
+    PUBLOC_INDEX: '7' # input path index of the pub package location (typically the site)
+    DATE_INDEX: '4' # Starting index of date in path (i.e. year index)
     DATE_INDEX_LENGTH: '2' # length of date index for pub package (should be 2 for monthly)
     SORT_INDEX: '10' # File name index corresponding to date field (delimiter = .)
     
     # Environment variables for 3rd module: pub_files.
     OUT_PATH_PUBFILES: "/pfs/out"
-    IN_PATH_PARSE_INDEX: '2'
+    RELATIVE_PATH_INDEX: '3'
     DB_SECRETS_PATH: /var/db_secret
     GITHUB_PEM_PATH: /var/github_secret/key
     GITHUB_APP_ID: '300002'
@@ -75,13 +83,14 @@ transform:
       mount_path: /var/db_secret
     - name: github-neonscience-app-secret
       mount_path: /var/github_secret
+
 input: 
   group:
   - pfs: 
       name: GROUPED_PATH
       repo: tempSoil_pub_group
-      # Glob must be monthly or site-monthly (use group to do site-monthly)
-      glob: /(*/*)/*/(*)
+      # Glob must be product-monthly or product-site-monthly (use group to do product-site-monthly)
+      glob: /(*/*/*)/*/(*)
       group_by: $1$2
 parallelism_spec:
   constant: 10
@@ -93,7 +102,7 @@ resource_limits:
   memory: 2G
   cpu: 1.8
 sidecar_resource_requests:
-  memory: 4G
+  memory: 5G
   cpu: 0.3
 sidecar_resource_limits:
   memory: 8Gi

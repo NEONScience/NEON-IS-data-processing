@@ -6,7 +6,7 @@ import environs
 
 class ApplicationConfig(NamedTuple):
     in_path: Path
-    in_path_parse_index: int
+    relative_path_index: int
     location_path: Path
     out_path: Path
     db_secrets_path: Path
@@ -30,7 +30,7 @@ class ApplicationConfig(NamedTuple):
 def configure_from_environment() -> ApplicationConfig:
     env = environs.Env()
     in_path: Path = env.path('IN_PATH')
-    in_path_parse_index: int = env.int('IN_PATH_PARSE_INDEX')
+    relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     location_path: Path = env.path('LOCATION_PATH')
     out_path: Path = env.path('OUT_PATH')
     db_secrets_path: Path = env.path('DB_SECRETS_PATH')
@@ -50,7 +50,7 @@ def configure_from_environment() -> ApplicationConfig:
     eml_unit_types_path: str = env.str('GITHUB_EML_UNIT_TYPES_PATH')
     eml_units_path: str = env.str('GITHUB_EML_UNITS_PATH')
     return ApplicationConfig(in_path=in_path,
-                             in_path_parse_index=in_path_parse_index,
+                             relative_path_index=relative_path_index,
                              location_path=location_path,
                              out_path=out_path,
                              db_secrets_path=db_secrets_path,

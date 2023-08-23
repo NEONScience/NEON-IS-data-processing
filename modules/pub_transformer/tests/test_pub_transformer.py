@@ -24,24 +24,27 @@ class PubTransformerTest(TestCase):
         self.temp_dir = TempDirectory()
         self.temp_dir_name = self.temp_dir.path
         self.input_path = Path(self.temp_dir_name, "repo/inputs")
-        self.data_path = Path(self.input_path, "2019/05/24/CPER")
+        self.data_path = Path(self.input_path, "DP1.00066.001/2019/05/24/CPER")
         self.out_path = Path(self.temp_dir_name, "outputs")
-        self.output_path = Path(self.out_path, "2019/05/24/CPER")
+        self.output_path = Path(self.out_path, "DP1.00066.001/2019/05/24/CPER")
         self.group = "par-quantum-line_CPER001000"
-        self.workbook_path = Path(self.input_path, 'workbook.csv')
+        self.workbook_path = Path(self.input_path, 'workbooks')
+        self.workbook_file_path = Path(self.workbook_path, 'workbook.csv')
         self.group_path = Path(self.data_path, 'group', self.group, 'group.json')
-        self.data_file = Path(self.data_path, 'data', self.group, 'data_001.parquet')
+        self.data_file = Path(self.data_path, 'data', self.group, 'data_table001.parquet')
+        os.makedirs(self.workbook_path)
         os.makedirs(Path(self.data_path, 'group', self.group))
         os.makedirs(Path(self.data_path, 'data', self.group))
+        self.product_index = self.data_file.parts.index("DP1.00066.001")
         self.year_index = self.data_path.parts.index("2019")
         self.data_type_index = self.data_file.parts.index("data")
         self.group_metadata_dir = "group"
-        self.data_path_parse_index = self.year_index
+        self.data_path_parse_index = self.product_index
         
         # generate_readme workbook dataframe
         workbook = pd.DataFrame()
         workbook['fieldName'] = ['startDateTime', 'endDateTime', 'mean']
-        workbook['DPNumber'] = 'dpnumber.001'
+        workbook['DPNumber'] = 'NEON.DOM.SITE.DP1.00066.001.TERMS.HOR.VER.001'
         workbook['downloadPkg'] = 'basic'
         workbook['rank'] = [1,2,3]
         workbook['table'] = 'table001'
@@ -49,7 +52,7 @@ class PubTransformerTest(TestCase):
         workbook['pubFormat'] = ["yyyy-MM-dd'T'HH:mm:ss'Z'(floor)", '*.###(round)', 'asIs']
         workbook['dataCategory'] = 'Y'
         # write workbook to csv
-        workbook.to_csv(self.workbook_path, sep ='\t', index=False)
+        workbook.to_csv(self.workbook_file_path, sep ='\t', index=False)
 
         # write group to json
         with open(self.group_path, 'w') as f:
@@ -96,7 +99,8 @@ class PubTransformerTest(TestCase):
     def test_transform(self):
         pub_transform(data_path=self.data_path,
                       out_path=self.out_path,
-                      workbook_file=self.workbook_path,
+                      workbook_path=self.workbook_path,
+                      product_index=self.product_index,
                       year_index=self.year_index,
                       data_type_index=self.data_type_index,
                       group_metadata_dir=self.group_metadata_dir,
@@ -108,6 +112,7 @@ class PubTransformerTest(TestCase):
         os.environ["WORKBOOK_PATH"] = str(self.workbook_path)
         os.environ["DATA_PATH"] = str(self.data_path)
         os.environ["OUT_PATH"] = str(self.out_path)
+        os.environ["PRODUCT_INDEX"] = str(self.product_index)
         os.environ["YEAR_INDEX"] = str(self.year_index)
         os.environ["DATA_TYPE_INDEX"] = str(self.data_type_index)
         os.environ["GROUP_METADATA_DIR"] = str(self.group_metadata_dir)
@@ -122,6 +127,8 @@ class PubTransformerTest(TestCase):
         basic_pattern = 'NEON.D10.CPER.DP1.00066.001.001.000.001.table001.2019-05-24.basic.csv'
         self.assertTrue(len(out_files) == 2)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern) | fnmatch.fnmatch(out_files[1], basic_pattern))
+        #reset the director
+        os.chdir('/')
 
     def tearDown(self):
         self.temp_dir.cleanup()

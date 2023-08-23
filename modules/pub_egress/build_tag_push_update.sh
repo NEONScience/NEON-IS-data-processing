@@ -1,7 +1,7 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
 image_name=pub_egress
-tag=$(git rev-parse HEAD)
+tag=$(git rev parse --short HEAD)
 cd ./modules
 docker build -t $image_name:latest -f ./pub_egress/Dockerfile .
 docker tag $image_name quay.io/battelleecology/$image_name:$tag

@@ -2,7 +2,7 @@
 pipeline:
   name: hmp155_cron_daily_and_date_control
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-date-cntl:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
@@ -11,8 +11,8 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2022-06-30"
-    END_DATE: "2022-07-30"
+    START_DATE: "2021-11-29" # Inclusive
+    #END_DATE: "2023-06-01"
     SOURCE_TYPE: "hmp155"
   stdin:
   - "#!/bin/bash"
@@ -29,8 +29,17 @@ input:
       repo: hmp155_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 64M
-  cpu: 0.5
+  memory: 100M
+  cpu: 1
+resource_limits:
+  memory: 300M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 200M
+  cpu: 0.2
+sidecar_resource_limits:
+  memory: 600M
+  cpu: 1
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -49,14 +58,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]

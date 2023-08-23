@@ -14,8 +14,8 @@ git_path_site_list='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/sit
 git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
 git_path_avro_l0='/home/NEON/csturtevant/R/avro-schemas'
 pipe_list_prefix='pipe_list_'
-source_type='li191r'
-product='parQuantumLine'
+source_type='ptb330a'
+product='pressureAir'
 
 # Define paths based on base paths and product information above 
 spec_path_source_type=$git_path_pipelines/$source_type
@@ -65,9 +65,6 @@ echo pachctl create pipeline -f $spec_path_source_type/$pipe
 pachctl create pipeline -f $spec_path_source_type/$pipe
 done
 
-# Now run the daily cron pipeline to initialize it. Note, you may want to set the cron trigger in the following pipeline to a longer interval than daily. 
-pachctl run cron $source_type'_cron_daily_and_date_control'
-
 # Set up product pipeline
 # Read in the pipelines (in order) for this product and stand them up
 # The (ordered) list of pipeline files should be located in the file pipe_list_PRODUCT.txt in the 
@@ -78,6 +75,9 @@ for pipe in $(echo ${pipelines[*]}); do
 echo pachctl create pipeline -f $spec_path_product/$pipe
 pachctl create pipeline -f $spec_path_product/$pipe
 done
+
+# Now run the daily cron pipeline to initialize it. q
+pachctl run cron $source_type'_cron_daily_and_date_control'
 
 # Before proceeding...
 # Check that everything has run properly for the few locations and days loaded. Verify the output.

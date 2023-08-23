@@ -360,6 +360,57 @@
         "vctrs"
       ]
     },
+    "eddy4R.base": {
+      "Package": "eddy4R.base",
+      "Version": "0.2.24",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "eddy4R",
+      "RemoteUsername": "NEONScience",
+      "RemoteRef": "deve",
+      "RemoteSha": "eaf4bd94702ccb3e84e29d2f9a17ac42ff23b0b2",
+      "RemoteSubdir": "pack/eddy4R.base",
+      "Hash": "824c88f37c420a4c49ee27304cc05e5a",
+      "Requirements": [
+        "BiocManager",
+        "DataCombine",
+        "EMD",
+        "deming",
+        "downloader",
+        "ff",
+        "ffbase",
+        "neonUtilities",
+        "polynom",
+        "rhdf5",
+        "robfilter",
+        "signal",
+        "zoo"
+      ]
+    },
+    "eddy4R.qaqc": {
+      "Package": "eddy4R.qaqc",
+      "Version": "0.2.16",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "eddy4R",
+      "RemoteUsername": "NEONScience",
+      "RemoteRef": "deve",
+      "RemoteSha": "eaf4bd94702ccb3e84e29d2f9a17ac42ff23b0b2",
+      "RemoteSubdir": "pack/eddy4R.qaqc",
+      "Hash": "91e38f45a9e51fcfb5f8c7c8b907ec58",
+      "Requirements": [
+        "RcppRoll",
+        "Rmisc",
+        "ggplot2",
+        "gridExtra",
+        "gtable",
+        "lattice",
+        "plyr",
+        "reshape2"
+      ]
+    },
     "ellipsis": {
       "Package": "ellipsis",
       "Version": "0.3.2",

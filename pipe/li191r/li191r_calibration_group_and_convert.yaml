@@ -3,7 +3,7 @@ pipeline:
   name: li191r_calibration_group_and_convert
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-cal-grp-conv:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-cal-grp-conv:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -13,6 +13,20 @@ transform:
   - mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
   - mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
   - '# Detect if we have data coming from Kafka or trino'
+  - '# Note that we run the filter-joiner in sequential if statements rather than an elif statement ...'
+  - '# ... so that if there is any overlap in sensor data coming from both Kafka and Trino on the same day, the ...'
+  - '# ... trino data wins (filter joiner will not copy a file if it is already in the destination). This scenario ...'
+  - '# ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka ...'
+  - '# ... retention period for data that have already been loaded from Trino. In normal operations this scenario ...'
+  - '# ... should not arise because the only data coming into Pachyderm will be coming from Kafka. ...'
+  - '# ... When a conflict does arise, the Trino data will take precedence, which is fine because the ...'
+  - '# ... conflict arose because data for the same sensor and day were in both locations.'
+  - if [ ${DATA_PATH_TRINO+x} ]; then 
+  - '# Data from trino. '
+  - '# Set CONFIG for filter-joiner to the trino version and run filter joiner'
+  - export CONFIG=$CONFIG_TRINO
+  - python3 -m filter_joiner.filter_joiner_main
+  - fi  
   - if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
   - '# Data from kafka. '
   - '# Run kafka combiner'
@@ -24,12 +38,6 @@ transform:
   - '# Set CONFIG for filter-joiner to the kafka version and run filter joiner'
   - export CONFIG=$CONFIG_KAFKA
   - python3 -m filter_joiner.filter_joiner_main
-  - elif [ ${DATA_PATH_TRINO+x} ]; then 
-  - '# Data from trino. '
-  - '# Set CONFIG for filter-joiner to the trino version and run filter joiner'
-  - export CONFIG=$CONFIG_TRINO
-  - python3 -m filter_joiner.filter_joiner_main
-  - else echo "FATAL - Input repository names do not match expectations. Check pipeline specification."
   - fi  
   - '# Run calibration conversion module'
   - Rscript ./flow.cal.conv.R 
@@ -46,25 +54,6 @@ transform:
     # Environment variables for filter-joiner.
     # There are two configs here, CONFIG_KAFKA is when data comes from kafka, CONFIG_TRINO is when data comes from trino. 
     # The engironment variable CONFIG is set to the appropriate one as detected in the bash script above
-    CONFIG_KAFKA: |
-      ---
-      # Configuration for filter-joiner module that will bring together the data and calibrations
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      input_paths:
-        - path:
-            name: DATA_PATH_KAFKA
-            # Filter for data directory
-            glob_pattern: /tmp/kafka_merged/li191r/*/*/*/*/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
-            outer_join: true
-        - path:
-            name: CALIBRATION_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/li191r/*/*/*/*/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
     CONFIG_TRINO: |
       ---
       # Configuration for filter-joiner module that will bring together the data and calibrations
@@ -75,6 +64,25 @@ transform:
             name: DATA_PATH_TRINO
             # Filter for data directory
             glob_pattern: /pfs/DATA_PATH_TRINO/li191r/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/CALIBRATION_PATH/li191r/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    CONFIG_KAFKA: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_KAFKA
+            # Filter for data directory
+            glob_pattern: /tmp/kafka_merged/li191r/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
@@ -108,36 +116,29 @@ input:
       name: FILE_UNCERTAINTY_FDAS
       repo: li191r_uncertainty_fdas
       glob: /fdas_calibration_uncertainty_general.json
-  # Need to send in the joined calibrations first with the trino data then with the kafka data in order for the filter-joiner to correctly join the calibrations
-  - union:
-    - join:
-      - pfs:
-          name: DATA_PATH_TRINO
-          repo: li191r_data_source_trino
-          glob: /li191r/(*)/(*)/(*)
-          joinOn: $1/$2/$3
-          outer_join: true
-          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-      - pfs:
-          name: CALIBRATION_PATH
-          repo: li191r_calibration_assignment
-          glob: /li191r/(*)/(*)/(*)
-          joinOn: $1/$2/$3
-          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    - join:
-      - pfs:
-          name: KAFKA_UNMERGED_DATA
-          repo: li191r_data_source_kafka
-          glob: /li191r/(*)/(*)/(*)
-          joinOn: $1/$2/$3
-          outer_join: true
-          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-      - pfs:
-          name: CALIBRATION_PATH
-          repo: li191r_calibration_assignment
-          glob: /li191r/(*)/(*)/(*)
-          joinOn: $1/$2/$3
-          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  # Outer join all days so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
+  - join:
+    - pfs:
+        name: CALIBRATION_PATH
+        repo: li191r_calibration_assignment
+        glob: /li191r/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH_TRINO
+        repo: li191r_data_source_trino
+        glob: /li191r/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: KAFKA_UNMERGED_DATA
+        repo: li191r_data_source_kafka
+        glob: /li191r/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
   constant: 5
 autoscaling: true

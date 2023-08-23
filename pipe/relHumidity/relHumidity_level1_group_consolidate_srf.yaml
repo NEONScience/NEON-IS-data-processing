@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd:
   - "/bin/bash"
   stdin:
@@ -132,29 +132,29 @@ input:
   - pfs:
       name: QUALITY_METRICS_PATH
       repo: relHumidity_qm_group_and_compute
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: relHumidity_stats_group_and_compute
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: GROUP_PATH
       repo: relHumidity_group_path
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: SRF_PATH
       repo: relHumidity_srf_assignment
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 output_branch: master
 parallelism_spec:
@@ -167,10 +167,10 @@ resource_limits:
   memory: 3G
   cpu: 4.5
 sidecar_resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 2Gi
+  memory: 4Gi
   cpu: 1.3
 datum_set_spec:
   number: 1
