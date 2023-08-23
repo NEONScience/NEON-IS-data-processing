@@ -1,0 +1,132 @@
+[
+	{
+		"id" : 1,
+		"term_name" : "srfID",
+		"rank" : 0,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "asIs",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 2,
+		"term_name" : "startDateTime",
+		"rank" : 1,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "yyyy-MM-dd'T'HH:mm:ss'Z'",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 3,
+		"term_name" : "endDateTime",
+		"rank" : 2,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "yyyy-MM-dd'T'HH:mm:ss'Z'",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 4,
+		"term_name" : "domainID",
+		"rank" : 3,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "asIs",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 5,
+		"term_name" : "siteID",
+		"rank" : 4,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "asIs",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 6,
+		"term_name" : "dpID",
+		"rank" : 5,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "asIs",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 7,
+		"term_name" : "fieldName",
+		"rank" : 6,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "asIs",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 8,
+		"term_name" : "horizontalPosition",
+		"rank" : 7,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "asIs",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 9,
+		"term_name" : "verticalPosition",
+		"rank" : 8,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "asIs",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 10,
+		"term_name" : "srfValue",
+		"rank" : 9,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "asIs",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 11,
+		"term_name" : "srfValueJustification",
+		"rank" : 10,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "asIs",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 12,
+		"term_name" : "createDateTime",
+		"rank" : 11,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "yyyy-MM-dd'T'HH:mm:ss'Z'",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	},
+	{
+		"id" : 13,
+		"term_name" : "lastUpdateDateTime",
+		"rank" : 12,
+		"file_id" : 1,
+		"download_package" : "basic",
+		"pub_format" : "yyyy-MM-dd'T'HH:mm:ss'Z'",
+		"change_by" : "creation",
+		"tran_date" : "2022-10-27T22:18:02.756Z"
+	}
+]

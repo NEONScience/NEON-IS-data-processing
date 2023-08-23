@@ -1,0 +1,313 @@
+[
+	{
+	"site" : "ABBY",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "ARIK"
+	},
+	{
+	"site" : "BARC"
+	},
+	{
+	"site" : "BARR",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "BART",
+	"kafka_start_date" : "2023-05-10"
+	},
+	{
+	"site" : "BIGC"
+	},
+	{
+	"site" : "BLAN",
+	"kafka_start_date" : "2023-03-03"
+	},
+	{
+	"site" : "BLDE"
+	},
+	{
+	"site" : "BLUE"
+	},
+	{
+	"site" : "BLWA"
+	},
+	{
+	"site" : "BONA",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "CARI"
+	},
+	{
+	"site" : "CLBJ",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "COMO"
+	},
+	{
+	"site" : "CPER",
+	"kafka_start_date" : "2022-12-30"
+	},
+	{
+	"site" : "CRAM"
+	},
+	{
+	"site" : "CUPE"
+	},
+	{
+	"site" : "DCFS",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "DEJU",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "DELA",
+	"kafka_start_date" : "2023-06-16"
+
+	},
+	{
+	"site" : "DSNY",
+	"kafka_start_date" : "2023-03-09"
+	},
+	{
+	"site" : "FLNT"
+	},
+	{
+	"site" : "GRSM",
+	"kafka_start_date" : "2023-05-10"
+	},
+	{
+	"site" : "GUAN",
+	"kafka_start_date" : "2023-03-09"
+	},
+	{
+	"site" : "GUIL"
+	},
+	{
+	"site" : "HARV",
+	"kafka_start_date" : "2023-03-03"
+	},
+	{
+	"site" : "HEAL",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "HOPB"
+	},
+	{
+	"site" : "JERC",
+	"kafka_start_date" : "2023-03-09"
+	},
+	{
+	"site" : "JORN",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "KING"
+	},
+	{
+	"site" : "KONA",
+	"kafka_start_date" : "2023-03-15"
+	},
+	{
+	"site" : "KONZ",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "LAJA",
+	"kafka_start_date" : "2023-05-10"
+	},
+	{
+	"site" : "LECO"
+	},
+	{
+	"site" : "LENO",
+	"kafka_start_date" : "2023-06-15"
+	},
+	{
+	"site" : "LEWI"
+	},
+	{
+	"site" : "LIRO"
+	},
+	{
+	"site" : "MART"
+	},
+	{
+	"site" : "MAYF"
+	},
+	{
+	"site" : "MCDI"
+	},
+	{
+	"site" : "MCRA"
+	},
+	{
+	"site" : "MD00",
+	"start_date" : "2017-07-18",
+	"end_date" : "2017-08-23"
+	},
+	{
+	"site" : "MD01",
+	"start_date" : "2021-07-23",
+	"end_date" : "2021-11-17"
+	},
+	{
+	"site" : "MD02",
+	"start_date" : "2021-08-23",
+	"end_date" : "2021-11-30"
+	},
+	{
+	"site" : "MD03",
+	"start_date" : "2022-04-08",
+	"end_date" : "2022-05-11"
+	},
+	{
+	"site" : "MLBS",
+	"kafka_start_date" : "2023-02-03"
+	},
+	{
+	"site" : "MOAB",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "NIWO",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "NOGP",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "OAES",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "OKSR"
+	},
+	{
+	"site" : "ONAQ",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "ORNL",
+	"kafka_start_date" : "2023-05-10"
+	},
+	{
+	"site" : "OSBS",
+	"kafka_start_date" : "2023-03-09"
+	},
+	{
+	"site" : "POSE"
+	},
+	{
+	"site" : "PRIN"
+	},
+	{
+	"site" : "PRLA"
+	},
+	{
+	"site" : "PRPO"
+	},
+	{
+	"site" : "PUUM",
+	"kafka_start_date" : "2023-02-03"
+	},
+	{
+	"site" : "REDB"
+	},
+	{
+	"site" : "RMNP",
+	"kafka_start_date" : "2023-01-19"
+	},
+	{
+	"site" : "SCBI",
+	"kafka_start_date" : "2023-03-03"
+	},
+	{
+	"site" : "SERC",
+	"kafka_start_date" : "2023-03-03"
+	},
+	{
+	"site" : "SJER",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "SOAP",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "SRER",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "STEI",
+	"kafka_start_date" : "2023-03-15"
+	},
+	{
+	"site" : "STER",
+	"kafka_start_date" : "2023-01-13"
+	},
+	{
+	"site" : "SUGG"
+	},
+	{
+	"site" : "SYCA"
+	},
+	{
+	"site" : "TALL",
+	"kafka_start_date" : "2023-05-10"
+	},
+	{
+	"site" : "TEAK",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "TECR"
+	},
+	{
+	"site" : "TOMB"
+	},
+	{
+	"site" : "TOOK"
+	},
+	{
+	"site" : "TOOL",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "TREE",
+	"kafka_start_date" : "2023-03-15"
+	},
+	{
+	"site" : "UKFS",
+	"kafka_start_date" : "2023-03-15"
+	},
+	{
+	"site" : "UNDE",
+	"kafka_start_date" : "2023-03-15"
+	},
+	{
+	"site" : "WALK"
+	},
+	{
+	"site" : "WLOU"
+	},
+	{
+	"site" : "WOOD",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "WREF",
+	"kafka_start_date" : "2023-02-03"
+	},
+	{
+	"site" : "YELL",
+	"kafka_start_date" : "2023-02-03"
+	}
+]

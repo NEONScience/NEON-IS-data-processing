@@ -6,76 +6,104 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from pub_files.database.file_variables import FileVariables
 from pub_files.database.publication_workbook import PublicationWorkbook
-from pub_files.input_files.file_metadata import PathElements
+from pub_files.database.term_variables import TermVariables
+from pub_files.input_files.file_metadata import PathElements, DataFile, DataFiles, FileMetadata
 from pub_files.main import get_timestamp
 from pub_files.output_files.filename_format import get_filename
+from pub_files.output_files.science_review.science_review_file import ScienceReviewFile, Term
+from pub_files.output_files.variables.variables_database import VariablesDatabase
 from pub_files.output_files.variables.variables_file import write_file
-from pub_files.output_files.variables.variables_file_database import VariablesDatabase
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 
 
 class VariablesFileTest(TestCase):
 
-    def test_write_file(self):
-        self.workbook: PublicationWorkbook = get_workbook('')
-        self.setUpPyfakefs()
-        self.in_path = Path('/in')
-        self.fs.create_dir(self.in_path)
-        domain = 'D10'
+    def setUp(self) -> None:
         site = 'CPER'
         year = '2020'
         month = '01'
+        self.workbook: PublicationWorkbook = get_workbook('fake_value')
+        self.setUpPyfakefs()
+        self.in_path = Path('/in')
+        self.fs.create_dir(self.in_path)
         self.out_path = Path('/out', site, year, month)
         self.fs.create_dir(self.out_path)
-        data_product_id = 'DP1.20288.001'
-        timestamp = get_timestamp()
-        elements = PathElements(domain=domain, site=site, year=year, month=month, data_product_id=data_product_id)
-        expected_filename = get_filename(elements, file_type='variables', timestamp=timestamp, extension='csv')
-        path = write_file(out_path=self.out_path, elements=elements, timestamp=timestamp, workbook=self.workbook,
-                          database=get_mock_database())
+        self.timestamp = get_timestamp()
+        self.elements = PathElements(domain='D10', site=site, year=year, month=month, data_product_id='DP1.20288.001')
+        self.file_metadata = self.get_file_metadata()
+
+    def test_write_file(self):
+        expected_filename = get_filename(self.elements, file_type='variables', timestamp=self.timestamp,
+                                         extension='csv')
+        science_review_file = self.get_science_review_file()
+        database = VariablesDatabase(get_sensor_position_variables=get_sensor_position_variables,
+                                     get_term_variables=get_term_variables)
+        path = write_file(out_path=self.out_path,
+                          file_metadata=self.file_metadata,
+                          timestamp=self.timestamp,
+                          workbook=self.workbook,
+                          science_review_file=science_review_file,
+                          database=database)
         assert path.name == expected_filename
         path = Path(self.out_path, expected_filename)
+        with open(path) as file:
+            row_count = sum(1 for row in file)
+        assert row_count == 71
         print(f'\nresult:\n{path.read_text()}\n')
 
+    def get_science_review_file(self) -> ScienceReviewFile:
+        """Returns mock object."""
+        filename = get_filename(self.elements, file_type='sensor_review_flags', timestamp=self.timestamp,
+                                extension='csv')
+        path = Path(self.out_path, filename)
+        file_variable = FileVariables(table_name='science_review_flags',
+                                      term_name='term_name',
+                                      data_type='data_type',
+                                      description='description',
+                                      download_package='basic',
+                                      publication_format='*.##(round)',
+                                      rank=1,
+                                      units='meters')
+        return ScienceReviewFile(path, 'NEON.DOM.SITE.DP1.20288.001.HOR.VER.030', [file_variable])
 
-def get_mock_database() -> VariablesDatabase:
+    def get_file_metadata(self) -> FileMetadata:
+        """Returns mock object."""
+        data_file = DataFile(data_product_name='NEON.D10.CPER.DP1.00041.001.002.506.030',
+                             description='File description.',
+                             line_count=20,
+                             filename='NEON.D10.CPER.DP1.00041.001.002.506.030.ST_30_minute.2020-01-02.basic.csv')
+        data_files = DataFiles(files=[data_file], min_time=get_timestamp(), max_time=get_timestamp())
+        file_metadata = FileMetadata()
+        file_metadata.path_elements = self.elements
+        file_metadata.data_files = data_files
+        file_metadata.data_product = None
+        file_metadata.manifest_file = None
+        file_metadata.package_output_path = Path(self.out_path)
+        return file_metadata
+
+
+def get_sensor_position_variables() -> List[FileVariables]:
+    """Mock function."""
     description = 'description'
     rank = 1
     download_package = 'basic'
     publication_format = '*.##(round)'
     data_type = 'data_type'
     units = 'units'
+    return [FileVariables(table_name='sensor_positions',
+                          term_name='termName',
+                          description=description,
+                          rank=rank,
+                          download_package=download_package,
+                          publication_format=publication_format,
+                          data_type=data_type,
+                          units=units)]
 
-    def get_sensor_positions() -> List[FileVariables]:
-        return [FileVariables(table_name='sensor_positions',
-                              term_name='sensor_positions',
-                              description=description,
-                              rank=rank,
-                              download_package=download_package,
-                              publication_format=publication_format,
-                              data_type=data_type,
-                              units=units)]
 
-    def get_is_science_review() -> List[FileVariables]:
-        return [FileVariables(table_name='is_science_review',
-                              term_name='is_science_review',
-                              description=description,
-                              rank=rank,
-                              download_package=download_package,
-                              publication_format=publication_format,
-                              data_type=data_type,
-                              units=units)]
-
-    def get_sae_science_review() -> List[FileVariables]:
-        return [FileVariables(table_name='sae_science_review',
-                              term_name='sae_science_review',
-                              description=description,
-                              rank=rank,
-                              download_package=download_package,
-                              publication_format=publication_format,
-                              data_type=data_type,
-                              units=units)]
-
-    return VariablesDatabase(get_sensor_positions=get_sensor_positions,
-                             get_is_science_review=get_is_science_review,
-                             get_sae_science_review=get_sae_science_review)
+def get_term_variables(_data_product_id, _term_name) -> TermVariables:
+    """Mock function."""
+    return TermVariables(description='description',
+                         download_package='basic',
+                         publication_format='format',
+                         data_type='data_type',
+                         units='units')

@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-cval-loader:2.3.2
+  image: quay.io/battelleecology/neon-cval-loader:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd:
   - /bin/bash
   stdin:
@@ -23,14 +23,25 @@ input:
   pfs:
     name: IN_PATH
     repo: csat3_calibration_list_files
-    glob: /*/*/*
+    glob: /*/*/*/*
     empty_files: true
 parallelism_spec:
-  constant: 4
+  constant: 10
+autoscaling: true
 resource_requests:
   memory: 500M
+  cpu: 0.5
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 600M
+  cpu: 0.2
+sidecar_resource_limits:
+  memory: 1.2Gi
   cpu: 1.2
-autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -48,14 +59,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"1.5G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "1"
-    }
-  ]

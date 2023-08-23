@@ -10,11 +10,12 @@
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
+git_path_site_list='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/site_list'
 git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
 git_path_avro_l0='/home/NEON/csturtevant/R/avro-schemas'
 pipe_list_prefix='pipe_list_'
-source_type='prt'
-product='tempSoil'
+source_type='ptb330a'
+product='pressureAir'
 
 # Define paths based on base paths and product information above 
 spec_path_source_type=$git_path_pipelines/$source_type
@@ -25,7 +26,7 @@ spec_path_product=$git_path_pipelines/$product
 # Make sure cron_daily_and_date_control pipeline uses the correct one
 pachctl create repo $source_type'_site_list'
 pachctl start commit $source_type'_site_list'@master
-pachctl put file $source_type'_site_list'@master:/site-list-test.json -f $data_path/site_list/site-list-test.json
+pachctl put file $source_type'_site_list'@master:/site-list.json -f $git_path_site_list/site-list.json
 pachctl finish commit $source_type'_site_list'@master
 
 # Create source-type-specific empty_files
@@ -53,12 +54,6 @@ pachctl start commit $product'_avro_schemas'@master
 pachctl put file -r $product'_avro_schemas'@master:/$product -f $git_path_avro/avro_schemas/$product
 pachctl finish commit $product'_avro_schemas'@master
 
-# Create product-specific pub_workbooks
-# pachctl create repo $product'_pub_workbooks'
-# pachctl start commit $product'_pub_workbooks'@master
-# pachctl put file -r $product'_pub_workbooks'@master:/$product -f $data_path/pub_workbooks/$product
-# pachctl finish commit $product'_pub_workbooks'@master
-
 # Set up source type pipeline
 # Read in the pipelines (in order) for this source type and stand them up
 # The (ordered) list of pipeline files should be located in the file pipe_list_SOURCETYPE.txt in the 
@@ -70,9 +65,6 @@ echo pachctl create pipeline -f $spec_path_source_type/$pipe
 pachctl create pipeline -f $spec_path_source_type/$pipe
 done
 
-# Now run the daily cron pipeline to initialize it. Note, you may want to set the cron trigger in the following pipeline to a longer interval than daily. 
-pachctl run cron $source_type'_cron_daily_and_date_control'
-
 # Set up product pipeline
 # Read in the pipelines (in order) for this product and stand them up
 # The (ordered) list of pipeline files should be located in the file pipe_list_PRODUCT.txt in the 
@@ -83,6 +75,9 @@ for pipe in $(echo ${pipelines[*]}); do
 echo pachctl create pipeline -f $spec_path_product/$pipe
 pachctl create pipeline -f $spec_path_product/$pipe
 done
+
+# Now run the daily cron pipeline to initialize it. q
+pachctl run cron $source_type'_cron_daily_and_date_control'
 
 # Before proceeding...
 # Check that everything has run properly for the few locations and days loaded. Verify the output.

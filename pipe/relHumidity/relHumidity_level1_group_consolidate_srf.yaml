@@ -4,16 +4,18 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:v2.0.1
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd:
   - "/bin/bash"
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /data/*
-  - mkdir /data/interimA
-  - mkdir /data/interimB
-  - mkdir -p /data/pfs/interimC
+  - rm -rf /tmp/interimA
+  - rm -rf /tmp/interimB
+  - rm -rf /tmp/pfs/interimC
+  - mkdir /tmp/interimA
+  - mkdir /tmp/interimB
+  - mkdir -p /tmp/pfs/interimC
   - '# Set some environment variables for the first module'
   - export OUT_PATH=$OUT_PATH_1
   - '# Run first module - filter-joiner (using environment variables below as input parameters)'
@@ -24,7 +26,7 @@ transform:
   - '# Run second module - filter-joiner to bring in SRF (using environment variables below as input parameters)'
   - python3 -m filter_joiner.filter_joiner_main
   - '# Clean up 1st interim directory (this is the only one we can clean up bc the rest use symlinks)'
-  - rm -rf /data/interimA  
+  - rm -rf /tmp/interimA  
   - '# Set some environment variables for the 3rd module'
   - export OUT_PATH=$OUT_PATH_3
   - '# Run third module - level 1 consolidate (using environment variables below as input parameters)'
@@ -33,7 +35,7 @@ transform:
   - python3 -m pub_workbook_loader.pub_workbook_loader_main
   - '# Run fifth and final module - create pub tables and apply science review flags (if any)'
   - Rscript ./flow.pub.tabl.srf.R
-      DirIn=/data/pfs/interimC
+      DirIn=/tmp/pfs/interimC
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums
       "DirData=stats|quality_metrics"
@@ -72,9 +74,9 @@ transform:
             glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/location/**
             # Join on Y/M/D/group ID 
             join_indices: [3,4,5,6]
-    OUT_PATH_1: /data/interimA # Transfered to OUT_PATH for the first module
+    OUT_PATH_1: /tmp/interimA # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
-    LINK_TYPE: COPY # options are COPY or SYMLINK. Also shared with 2nd & 3rd modules 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
     LOG_LEVEL: INFO # Shared among all modules
 
 # Below are the environment variables for 2nd filter-joiner bringing in the Science review flags 
@@ -90,7 +92,7 @@ transform:
         - path:
             name: CONSOLIDATED_PATH
             # Filter for data directory
-            glob_pattern: /data/interimA/*/*/*/*/**
+            glob_pattern: /tmp/interimA/*/*/*/*/**
             # Join on group ID (already joined below by day)
             join_indices: [6]
             outer_join: True
@@ -100,11 +102,11 @@ transform:
             glob_pattern: /pfs/SRF_PATH/*/*/*/*/**
             # Join on group ID(already joined below by day)
             join_indices: [6]
-    OUT_PATH_2: /data/interimB # This will be transfered to OUT_PATH for the this module
+    OUT_PATH_2: /tmp/interimB # This will be transfered to OUT_PATH for the this module
 
 # Environment variables for level 1 consolidation
-    IN_PATH: /data/interimB
-    OUT_PATH_3: /data/pfs/interimC # This will be transfered to OUT_PATH for the second module
+    IN_PATH: /tmp/interimB
+    OUT_PATH_3: /tmp/pfs/interimC # This will be transfered to OUT_PATH for the second module
     GROUP_INDEX: "6"
     # path index of names of group-level metadata to include in the output
     GROUP_METADATA_INDEX: "7"
@@ -114,12 +116,12 @@ transform:
     DATA_TYPE_NAMES: location,stats,quality_metrics
 
 # Environment variables for pub_workbook_loader
-    OUT_PATH_WORKBOOK: /data/pub_workbooks
-    PRODUCTS: NEON.DOM.SITE.DP1.00098.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
+    OUT_PATH_WORKBOOK: /tmp/pub_workbooks
+    PRODUCTS: NEON.DOM.SITE.DP1.00098.001,NEON.DOM.SITE.DP1.20271.001,NEON.DOM.SITE.DP1.20046.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
   
 # Environment variables for pub table and srf module
-    PUB_WORKBOOKS: /data/pub_workbooks
-    PARALLELIZATION_INTERNAL: '1'
+    PUB_WORKBOOKS: /tmp/pub_workbooks
+    PARALLELIZATION_INTERNAL: '3'
 
   secrets:
   - name: pdr-secret
@@ -130,37 +132,48 @@ input:
   - pfs:
       name: QUALITY_METRICS_PATH
       repo: relHumidity_qm_group_and_compute
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: relHumidity_stats_group_and_compute
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: GROUP_PATH
       repo: relHumidity_group_path
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: SRF_PATH
       repo: relHumidity_srf_assignment
-      glob: /(*)/(*)/(*)
-      joinOn: $1/$2/$3
+      glob: /(*/*/*)
+      joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 output_branch: master
 parallelism_spec:
-  constant: 1
-resource_requests:
-  memory: 400M
-  cpu: 1.5
+  constant: 5
 autoscaling: true
+resource_requests:
+  memory: 1.2G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.3
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -178,16 +191,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
-    }
-  ]
-
-

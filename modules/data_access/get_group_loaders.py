@@ -12,7 +12,7 @@ from data_access.get_group_loader_dp_ids import get_group_loader_dp_ids
 from data_access.get_group_loader_group_id import get_group_loader_group_id
 
 
-def get_group_loaders(connector: DbConnector, group_prefix: str) -> List[Group]:
+def get_group_loaders(connector: DbConnector, group_prefix: str) -> List[List[Group]]:
     """
     Get member groups for a group prefix, i.e., pressure-air_.
 
@@ -53,12 +53,10 @@ def get_group_loaders(connector: DbConnector, group_prefix: str) -> List[Group]:
              g.group_name like %s
          order by gm.member_group_id
     '''
-
-    groups: List[Group] = []
     group_name: str = ""
     group_prefix_1 = group_prefix + '%'
     if group_prefix[-1] == "_":
-        group_prefix_1 = group_prefix[:-1] + '\_%'
+        group_prefix_1 = group_prefix[:-1] + r'\_%'
     connection = connector.get_connection()
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql_nlg, [group_prefix_1])

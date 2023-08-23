@@ -6,7 +6,7 @@ them to tab-delimited files.
 Input parameters are specified in environment variables as follows:
     OUT_PATH_WORKBOOK: The parent path to place the publication workbook files. This code
         will write the publication workbook to the file:
-            <OUT_PATH_WORKBOOK>/<PRODUCT>_publication_workbook.txt
+            <OUT_PATH_WORKBOOK>/publication_workbook_<PRODUCT>.txt
         where PRODUCT is an individual data product ID in input parameter PRODUCTS
     PRODUCTS: A comma-separated list (no spaces) of data product identifiers to 
         evaluate in existing publication records. This should include any and all 
@@ -18,20 +18,17 @@ Input parameters are specified in environment variables as follows:
 """ 
 # ---------------------------------------------------------------------------
 import os
-import pandas as pd
-import csv
 import environs
 import structlog
 from pathlib import Path
 from contextlib import closing
+from functools import partial
 
 import common.log_config as log_config
-from data_access.get_dp_pub_records import get_dp_pub_records
-from data_access.types.dp_pub import DpPub
 from data_access.db_connector import DbConnector
-from data_access.db_connector import DbConfig
 from data_access.db_config_reader import read_from_mount
 from data_access.get_pub_workbook import get_pub_workbook
+from pub_workbook_loader.pub_workbook_loader import load_pub_workbook
 
 log = structlog.get_logger()
 
@@ -42,26 +39,16 @@ def main() -> None:
     log_level: str = os.environ['LOG_LEVEL']
     log_config.configure(log_level)
     db_config = read_from_mount(Path('/var/db_secret'))
-    connector = DbConnector(db_config)
 
     dp_ids = env.list('PRODUCTS')
     out_path: Path = Path(os.environ['OUT_PATH_WORKBOOK'])
     out_path.mkdir(parents=True, exist_ok=True)
 
-    for dp_id in dp_ids:
+    with closing(DbConnector(db_config)) as connector:
+        get_pub_workbook_partial = partial(get_pub_workbook,connector=connector)
+        load_pub_workbook(get_pub_workbook = get_pub_workbook_partial,
+                          out_path = out_path,
+                          dp_ids = dp_ids)
 
-      log.debug(f'Retrieving publication workbook for {dp_id}')
-
-      # Get the publication workbook from the database
-      connector=DbConnector(db_config)
-      publication_workbook = get_pub_workbook(connector, dp_id)
-      
-      # Write workbook to tab-delimited file
-      output_filepath = Path(out_path,'publication_workbook_' + dp_id + '.txt')
-      workbook_dataframe = pd.DataFrame(publication_workbook.workbook_rows)
-      workbook_dataframe.to_csv(output_filepath, sep ='\t', index=False)
-
-      log.info(f'Wrote publication workbook for {dp_id} to {output_filepath}')
-    
 if __name__ == "__main__":
     main()

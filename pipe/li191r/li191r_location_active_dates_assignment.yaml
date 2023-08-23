@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=namedLocation
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.5
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -27,10 +27,21 @@ input:
       glob: /data_years.txt
 parallelism_spec:
   constant: 4
-resource_requests:
-  memory: 300M
-  cpu: 1.2
 autoscaling: true
+resource_requests:
+  memory: 210M
+  cpu: 1.2
+resource_limits:
+  memory: 500M
+  cpu: 1.6
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -48,14 +59,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"100M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]

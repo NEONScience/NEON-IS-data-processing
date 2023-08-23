@@ -15,6 +15,7 @@ def main() -> None:
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')
     pad_dirs: list = env.list('PAD_DIR')
+    copy_dirs: list = env.list('COPY_DIR')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     window_size: int = env.int('WINDOW_SIZE')
     year_index: int = env.int('YEAR_INDEX')
@@ -27,6 +28,7 @@ def main() -> None:
     config = Config(data_path=data_path,
                     out_path=out_path,
                     pad_dirs=pad_dirs,
+                    copy_dirs=copy_dirs,
                     relative_path_index=relative_path_index,
                     year_index=year_index,
                     month_index=month_index,

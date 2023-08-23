@@ -6,7 +6,7 @@ fileSuffix <- '_uncertaintyData' # include any underscores (e.g. '_flagsCal' or 
   
 data <- NEONprocIS.base::def.read.parq(NameFile=paste0('~/pfs/',
                                                        sourceType,
-                                                       '_merge_data_by_location/',
+                                                       '_location_group_and_restructure/',
                                                        sourceType,'/',
                                                        datePath,'/',
                                                        locId,'/',

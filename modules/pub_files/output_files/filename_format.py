@@ -1,6 +1,7 @@
 """Functions to standardize output file names."""
 from datetime import datetime
 
+from pub_files.data_product import get_data_product_number
 from pub_files.input_files.file_metadata import PathElements
 
 
@@ -21,5 +22,5 @@ def get_filename(elements: PathElements, timestamp: datetime, file_type: str, ex
     formatted_timestamp = format_timestamp(timestamp)
     domain = elements.domain
     site = elements.site
-    data_product_id = elements.data_product_id.replace('NEON.DOM.SITE.', '')
-    return f'NEON.{domain}.{site}.{data_product_id}.{file_type}.{formatted_timestamp}.{extension}'
+    data_product_number = get_data_product_number(elements.data_product_id)
+    return f'NEON.{domain}.{site}.{data_product_number}.{file_type}.{formatted_timestamp}.{extension}'

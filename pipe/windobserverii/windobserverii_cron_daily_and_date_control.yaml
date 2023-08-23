@@ -2,15 +2,17 @@
 pipeline:
   name: windobserverii_cron_daily_and_date_control
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:v0.0.3
+  image: quay.io/battelleecology/neon-is-date-cntl:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   env:
-    # START_DATE and END_DATE indicate the date range (inclusive) to create the /Y/M/D folder structure
-    # START_DATE must be set, format "YYYY-MM-DD"
+    # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
+    # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
+    # start_date field in the site-list file is the earliest date to pull data from a site
+    # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2023-03-01"
-    #END_DATE: "2023-01-01"
+    START_DATE: "2023-06-01"
+    END_DATE: "2023-06-21"
     SOURCE_TYPE: "windobserverii"
   stdin:
   - "#!/bin/bash"
@@ -25,7 +27,7 @@ input:
   - pfs:
       name: SITE_FILE
       repo: windobserverii_site_list
-      glob: /site-list-test.json
+      glob: /site-list.json
 resource_requests:
   memory: 64M
   cpu: 0.5

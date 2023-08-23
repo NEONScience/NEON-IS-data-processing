@@ -1,10 +1,10 @@
 # Dockerfile for NEON IS Data Processing - Combined date gap filler and regularization
-# This image combines the two modules: date_gap_filler and flow.rgr
+# This image combines the two modules: date_gap_filler and flow.rglr
 # Build with the following command
 # docker build --no-cache -t neon-is-gf-rglr -f <path to this file> <path to parent directory of flow/ and modules/>
 
 # Start with the base R image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.1.3
+FROM quay.io/battelleecology/neon-is-base-r:v1.2.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -43,8 +43,8 @@ ARG MODULE_DIR="flow"
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
 COPY ./${MODULE_DIR}/flow.rglr/renv.lock ./renv.lock
 RUN R -e 'renv::restore(lockfile="./renv.lock")' 
-RUN git clone -b deve https://github.com/NEONScience/eddy4R.git 
-RUN R -e 'renv::install("./eddy4R/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
+#RUN git clone -b deve https://github.com/NEONScience/eddy4R.git 
+#RUN R -e 'renv::install("./eddy4R/pack/eddy4R.base",repos=c(remotes::bioc_install_repos(),"https://cran.rstudio.com/"))' 
 
 # Create app user
 RUN groupadd appuser && \
@@ -56,5 +56,4 @@ COPY ./${MODULE_DIR}/flow.rglr/wrap.rglr.R .
 COPY ./${MODULE_DIR}/flow.rglr/flow.rglr.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

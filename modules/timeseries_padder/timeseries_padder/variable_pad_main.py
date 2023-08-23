@@ -14,6 +14,7 @@ def main() -> None:
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')
     pad_dirs: list = env.list('PAD_DIR')
+    copy_dirs: list = env.list('COPY_DIR')
     log_level: str = env.log_level('LOG_LEVEL')
     relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
@@ -34,6 +35,7 @@ def main() -> None:
     config = Config(data_path=data_path,
                     out_path=out_path,
                     pad_dirs=pad_dirs,
+                    copy_dirs=copy_dirs,
                     year_index=year_index,
                     month_index=month_index,
                     day_index=day_index,

@@ -1,10 +1,10 @@
 prt_cron_daily_and_date_control.yaml
 prt_data_source_kafka.yaml
 prt_data_source_trino.yaml
-prt_location_asset.yaml
-prt_location_loader.yaml
 prt_calibration_list_files.yaml
 prt_calibration_loader.yaml
+prt_location_asset.yaml
+prt_location_loader.yaml
 prt_calibration_assignment.yaml
 prt_location_asset_assignment.yaml
 prt_location_active_dates_assignment.yaml

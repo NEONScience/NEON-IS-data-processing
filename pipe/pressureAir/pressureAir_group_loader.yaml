@@ -7,7 +7,7 @@ transform:
     GROUP_PREFIX: pressure-air_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
-  image: quay.io/battelleecology/group_loader:553
+  image: quay.io/battelleecology/group_loader:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
   secrets:
@@ -22,10 +22,19 @@ input:
     empty_files: true
     glob: /*
     repo: ptb330a_cron_daily_and_date_control_tick
-resource_requests:
-  cpu: 1.5
-  memory: 300M
 autoscaling: true
+resource_requests:
+  memory: 50M
+  cpu: 0.1
+resource_limits:
+  memory: 300M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 600M
+  cpu: 0.2
+sidecar_resource_limits:
+  memory: 2Gi
+  cpu: 1.2
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -43,14 +52,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
-    }
-  ]

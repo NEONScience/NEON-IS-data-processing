@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-cval-loader:2.3.2
+  image: quay.io/battelleecology/neon-cval-loader:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd:
   - /bin/bash
   stdin:
@@ -23,7 +23,7 @@ input:
   pfs:
     name: IN_PATH
     repo: tchain_calibration_list_files
-    glob: /*/*/*
+    glob: /*/*/*/*
     empty_files: true
 parallelism_spec:
   constant: 2

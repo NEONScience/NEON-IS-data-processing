@@ -3,13 +3,13 @@ pipeline:
   name: relHumidity_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:v1.0.3
+  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /usr/src/app/pfs/interimData
-  - mkdir -p /usr/src/app/pfs/interimData
+  - rm -rf /tmp/pfs/interimData
+  - mkdir -p /tmp/pfs/interimData
   - '# Determine which group type we have'
   - if [ ${FILE_SCHEMA_STATS_MET+x} ]
   - then export GROUP_TYPE=met
@@ -22,11 +22,11 @@ transform:
   - '# Run first module - filter-joiner (using environment variables below as input parameters)'
   - python3 -m filter_joiner.filter_joiner_main
   - '# Run second module - basic stats'
-  - '# If met...'
-  - if [ $GROUP_TYPE = 'met' ]
+  - '# If met... (make sure both paths are present - not true partial timeseries pads'
+  - if [ $GROUP_TYPE = 'met' ] && [ ${QAQC_PATH+x} ] && [ ${UNCERTAINTY_PATH+x} ]
   - then 
       Rscript ./flow.stat.basc.R 
-      DirIn=/usr/src/app/pfs/interimData
+      DirIn=/tmp/pfs/interimData
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums
       FileSchmStat=$FILE_SCHEMA_STATS_MET
@@ -34,10 +34,10 @@ transform:
       "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
       "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
       "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
-  - elif [ $GROUP_TYPE = 'buoy' ]
+  - elif [ $GROUP_TYPE = 'buoy' ] && [ ${QAQC_PATH+x} ] && [ ${UNCERTAINTY_PATH+x} ]
   - then 
   -   Rscript ./flow.stat.basc.R
-        DirIn=/usr/src/app/pfs/interimData
+      DirIn=/tmp/pfs/interimData
         DirOut=/pfs/out
         DirErr=/pfs/out/errored_datums
         FileSchmStat=$FILE_SCHEMA_STATS_BUOY
@@ -46,7 +46,7 @@ transform:
         "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
         "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
   -   Rscript ./flow.data.comb.ts.R
-        DirIn=/usr/src/app/pfs/interimData
+        DirIn=/tmp/pfs/interimData
         DirOut=/pfs/out
         DirErr=/pfs/out/errored_datums
         FileSchmComb=$FILE_SCHEMA_STATS_INST_BUOY
@@ -70,19 +70,19 @@ transform:
             # Filter for data & uncertainty_data directories
             glob_pattern: /pfs/QAQC_PATH/*/*/*/*/hmp155/*/data/**
             # Join on named location (already joined below by day)
-            join_indices: [6]
+            join_indices: [3,4,5,6]
         - path:
             name: UNCERTAINTY_PATH
             # Filter for data directory
             glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/hmp155/*/uncertainty*/**
             # Join on named location (already joined below by day)
-            join_indices: [6]
-    OUT_PATH: /usr/src/app/pfs/interimData
+            join_indices: [3,4,5,6]
+    OUT_PATH: /tmp/pfs/interimData
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
-    LINK_TYPE: COPY # options are COPY or SYMLINK
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '2' # Option for stats module
+    PARALLELIZATION_INTERNAL: '4' # Option for stats module
 input:
 # We're going to send in the buoy locations separately from the tower/soil/met-station locations
 # The 'separate' part is achieved by the union. Each datum in a union is sent in separately to the container. 
@@ -99,21 +99,18 @@ input:
         repo: relHumidity_avro_schemas
         glob: /relHumidity/relHumidity_dp01_stats.avsc
     - group:
-      - join:
-        - pfs:
-            name: QAQC_PATH
-            repo: relHumidity_analyze_pad_and_qaqc_plau
-            glob: /(*/*/*)/(rel-humidity_)*
-            joinOn: $1
-            group_by: $1$2
-            empty_files: false # Make sure this is false for LINK_TYPE=COPY
-        - pfs:
-            name: UNCERTAINTY_PATH
-            repo: relHumidity_group_path
-            glob: /(*/*/*)/(rel-humidity_)*
-            joinOn: $1
-            group_by: $1$2
-            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      - pfs:
+          name: QAQC_PATH
+          repo: relHumidity_analyze_pad_and_qaqc_plau
+          glob: /(*/*/*/rel-humidity_)*
+          group_by: $1
+          empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      - pfs:
+          name: UNCERTAINTY_PATH
+          repo: relHumidity_pre_stats_qm
+          glob: /(*/*/*/rel-humidity_)*
+          group_by: $1
+          empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - cross:
     - pfs:
         name: FILE_SCHEMA_STATS_BUOY
@@ -124,27 +121,35 @@ input:
         repo: relHumidity_avro_schemas
         glob: /relHumidityBuoy/relHumidityBuoy_dp01_stats_instantaneous.avsc
     - group:
-      - join:
-        - pfs:
-            name: QAQC_PATH
-            repo: relHumidity_analyze_pad_and_qaqc_plau
-            glob: /(*/*/*)/(rel-humidity-buoy_)*
-            joinOn: $1
-            group_by: $1$2
-            empty_files: false # Make sure this is false for LINK_TYPE=COPY
-        - pfs:
-            name: UNCERTAINTY_PATH
-            repo: relHumidity_group_path
-            glob: /(*/*/*)/(rel-humidity-buoy_)*
-            joinOn: $1
-            group_by: $1$2
-            empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      - pfs:
+          name: QAQC_PATH
+          repo: relHumidity_analyze_pad_and_qaqc_plau
+          glob: /(*/*/*/rel-humidity-buoy_)*
+          group_by: $1
+          empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      - pfs:
+          name: UNCERTAINTY_PATH
+          repo: relHumidity_pre_stats_qm
+          glob: /(*/*/*/rel-humidity-buoy_)*
+          group_by: $1
+          empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
-resource_requests: 
-  memory: 1G
-  cpu: 2.2
+  constant: 2
 autoscaling: true
+resource_requests:
+  memory: 2.5G
+  cpu: 4.4
+resource_limits:
+  memory: 4G
+  cpu: 6
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -162,14 +167,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]

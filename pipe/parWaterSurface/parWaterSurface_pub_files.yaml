@@ -1,0 +1,86 @@
+---
+pipeline:
+  name: parWaterSurface_pub_files
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/pub_files:9686d2f87c21c8e85718937a53150f518aea835e
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - '# Run fourth module - pub_files (using environment variables below as input parameters)'
+  - python3 -m pub_files.main
+  env:
+    LOG_LEVEL: INFO
+
+    # Environment variables for 3rd module: pub_files.
+    OUT_PATH: "/pfs/out"
+    RELATIVE_PATH_INDEX: '3'
+    DB_SECRETS_PATH: /var/db_secret
+    GITHUB_PEM_PATH: /var/github_secret/key
+    GITHUB_APP_ID: '300002'
+    GITHUB_INSTALLATION_ID: '34765458'
+    GITHUB_HOST: https://api.github.com
+    GITHUB_REPO_OWNER: NEONScience
+    GITHUB_README_REPO: neon-metadata-docs
+    GITHUB_README_PATH: readme/template.j2
+    GITHUB_EML_REPO: neon-metadata-docs
+    GITHUB_EML_BOILERPLATE_PATH: eml/neon_components/NEON_EML_Boilerplate.xml
+    GITHUB_EML_CONTACT_PATH: eml/neon_components/neon_contact.xml
+    GITHUB_EML_INTELLECTUAL_RIGHTS_PATH: eml/neon_components/neon_intellectualRights.xml
+    GITHUB_EML_UNIT_TYPES_PATH: eml/neon_components/neon_unitTypes.xml
+    GITHUB_EML_UNITS_PATH: eml/neon_components/NEON_units.txt
+    GITHUB_BRANCH: main
+    
+  secrets:
+    - name: db-pdr-secret
+      mount_path: /var/db_secret
+    - name: github-neonscience-app-secret
+      mount_path: /var/github_secret
+
+input: 
+  group:
+  - pfs: 
+      name: IN_PATH
+      repo: parWaterSurface_pub_packager
+      # Glob should be monthly and joined with pub_control to hold pub until month is likely complete
+      glob: /(*)/(*)/(*)/(*)
+      group_by: $1/$2/$3/$4
+  - pfs: 
+      name: LOCATION_PATH
+      repo: parWaterSurface_pub_group
+      glob: /(*)/(*)/(*)/*/(*)
+      group_by: $1/$4/$2/$3
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 700M
+  cpu: 1
+resource_limits:
+  memory: 1.5G
+  cpu: 1.8
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

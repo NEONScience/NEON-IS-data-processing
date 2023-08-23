@@ -1,5 +1,6 @@
 ##############################################################################################
 #' @title Workflow for Level Troll 500 and Aqua Troll 200 Science Computations
+#' flow.troll.uncertainty.R
 #' 
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org}
@@ -77,7 +78,7 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_qaqc_data_group')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2020/01/02')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -86,7 +87,8 @@
 #' changelog and author contributions / copyrights
 #'   Nora Catolico (2021-02-02)
 #'     original creation
-#'
+#'   Nora Catolico (2023-03-03)
+#'     updated for no troll data use case
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -255,7 +257,7 @@ for (idxDirIn in DirIn){
       stop()
     }
   }
-
+  
   
   ###### Compute water table elevation. Function of calibrated pressure, gravity, and density of water
   density <- 999  #m/s2 #future mod: temperature corrected density; conductivity correct density
@@ -266,50 +268,52 @@ for (idxDirIn in DirIn){
   CFGLOC<-tail(x=fileOutSplt,n=1)
   
   # Which location history matches each readout_time
-  troll_all<-NULL
-  if(length(LocationHist$CFGLOC)>0){
-    for(i in 1:length(LocationHist$CFGLOC)){
-      startDate<-LocationHist$CFGLOC[[i]]$start_date
-      endDate<-LocationHist$CFGLOC[[i]]$end_date
-      troll_sub<-trollData[trollData$readout_time>=startDate && trollData$readout_time<endDate,]
-      troll_sub$sensorElevation<- LocationHist$CFGLOC[[i]]$geometry$coordinates[3]
-      troll_sub$z_offset<- LocationHist$CFGLOC[[i]]$z_offset
-      troll_sub$survey_uncert <- LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty` #includes survey uncertainty and hand measurements
-      troll_sub$real_world_uncert <-LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`  
-      if(i==1){
-        troll_all<-troll_sub
-      }else{
-        troll_all<-rbind(troll_all,troll_sub)
+  if(length(trollData)>0){
+    troll_all<-NULL
+    if(length(LocationHist$CFGLOC)>0){
+      for(i in 1:length(LocationHist$CFGLOC)){
+        startDate<-LocationHist$CFGLOC[[i]]$start_date
+        endDate<-LocationHist$CFGLOC[[i]]$end_date
+        troll_sub<-trollData[trollData$readout_time>=startDate & trollData$readout_time<endDate,]
+        troll_sub$sensorElevation<- LocationHist$CFGLOC[[i]]$geometry$coordinates[3]
+        troll_sub$z_offset<- LocationHist$CFGLOC[[i]]$z_offset
+        troll_sub$survey_uncert <- LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty` #includes survey uncertainty and hand measurements
+        troll_sub$real_world_uncert <-LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`  
+        if(i==1){
+          troll_all<-troll_sub
+        }else{
+          troll_all<-rbind(troll_all,troll_sub)
+        }
       }
+      trollData<-troll_all
     }
-    troll_all$startDateTime<-as.POSIXct(troll_all$readout_time)
-    troll_all$endDateTime<-as.POSIXct(troll_all$readout_time)
-    trollData<-troll_all
-  }
-
-  #calculate water table elevation
-  trollData$elevation<-NA
-  if(length(LocationHist)>0){
-    trollData$elevation<-trollData$sensorElevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
+    trollData$startDateTime<-as.POSIXct(troll_all$readout_time)
+    trollData$endDateTime<-as.POSIXct(troll_all$readout_time)
+    
+    #calculate water table elevation
+    trollData$elevation<-NA
+    if(length(LocationHist)>0){
+      trollData$elevation<-trollData$sensorElevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
+    }
+    
+    #Define troll type
+    #include conductivity based on sensor type
+    if(grepl("aquatroll",idxDirIn)){
+      sensor<-"aquatroll200"
+    }else{
+      sensor<-"leveltroll500"
+    }
+    
+    #Create dataframe for output data
+    dataOut <- trollData
+    if(sensor=="aquatroll200"){
+      dataCol <- c("startDateTime","endDateTime","pressure","temperature","conductivity","elevation")
+    }else{
+      dataCol <- c("startDateTime","endDateTime","pressure","temperature","elevation") 
+    }
+    dataOut <- dataOut[,dataCol]
   }
   
-  #Define troll type
-  #include conductivity based on sensor type
-  if(grepl("aquatroll",idxDirIn)){
-    sensor<-"aquatroll200"
-  }else{
-    sensor<-"leveltroll500"
-  }
-  
-  
-  #Create dataframe for output data
-  dataOut <- trollData
-  if(sensor=="aquatroll200"){
-    dataCol <- c("startDateTime","endDateTime","pressure","temperature","conductivity","elevation")
-  }else{
-    dataCol <- c("startDateTime","endDateTime","pressure","temperature","elevation") 
-  }
-  dataOut <- dataOut[,dataCol]
   
   #Write out instantaneous data for groundwater only
   #dataOut[,-1] <-round(dataOut[,-1],2)
@@ -327,7 +331,7 @@ for (idxDirIn in DirIn){
   
   
   
-
+  
   ### Read in flags
   flags <- NULL
   dirFlags <- base::paste0(idxDirIn,'/flags')
@@ -617,15 +621,15 @@ for (idxDirIn in DirIn){
             #Specific Conductivity Uncertainty
             #grab U_CVALA3 values
             U_CVALA3_cond<-NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef=uncertaintyCoef,
-                                                    NameCoef='U_CVALA3',
-                                                    VarUcrt='conductivity',
-                                                    TimeAgrBgn=dataWndwTime$readout_time[1],
-                                                    TimeAgrEnd=dataWndwTime$readout_time[base::nrow(dataWndwTime)]+as.difftime(.001,units='secs'))
+                                                                   NameCoef='U_CVALA3',
+                                                                   VarUcrt='conductivity',
+                                                                   TimeAgrBgn=dataWndwTime$readout_time[1],
+                                                                   TimeAgrEnd=dataWndwTime$readout_time[base::nrow(dataWndwTime)]+as.difftime(.001,units='secs'))
             U_CVALA3_temp<-NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef=uncertaintyCoef,
-                                                                     NameCoef='U_CVALA3',
-                                                                     VarUcrt='temperature',
-                                                                     TimeAgrBgn=dataWndwTime$readout_time[1],
-                                                                     TimeAgrEnd=dataWndwTime$readout_time[base::nrow(dataWndwTime)]+as.difftime(.001,units='secs'))
+                                                                   NameCoef='U_CVALA3',
+                                                                   VarUcrt='temperature',
+                                                                   TimeAgrBgn=dataWndwTime$readout_time[1],
+                                                                   TimeAgrEnd=dataWndwTime$readout_time[base::nrow(dataWndwTime)]+as.difftime(.001,units='secs'))
             
             # Compute uncertainty of the mean due to natural variation, represented by the standard error of the mean
             #log$debug(base::paste0('Computing L1 uncertainty due to natural variation (standard error)'))
@@ -651,10 +655,10 @@ for (idxDirIn in DirIn){
         rptUcrt$pressure_ucrtExpn_L1[idxWndwTime] <- pressure_ucrtExpn_L1
         rptUcrt$elevation_ucrtExpn_L1[idxWndwTime] <- elevation_ucrtExpn_L1
         if(sensor=="aquatroll200"){
-        rptUcrt$conductivity_ucrtExpn_L1[idxWndwTime] <- conductivity_ucrtExpn_L1
+          rptUcrt$conductivity_ucrtExpn_L1[idxWndwTime] <- conductivity_ucrtExpn_L1
         }
       } # End loop through time windows
-
+      
       
       #standardize column names
       if(Context=="GW"){
@@ -687,9 +691,9 @@ for (idxDirIn in DirIn){
     }
   }
 }
-  
-  
-  
-  
-  
- 
+
+
+
+
+
+
