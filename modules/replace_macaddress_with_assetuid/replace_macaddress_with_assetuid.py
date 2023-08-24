@@ -9,7 +9,7 @@ import os
 log = get_logger()
 
 
-def load_assetuid(data_path: Path, map_path: Path, out_path: Path, source_type:str) -> None:
+def load_assetuid(data_path: Path, map_path: Path, out_path: Path, source_type: str) -> None:
 
     for dpath in Path("/pfs/DATA_PATH/").rglob('*'):
         if Path(dpath).is_file():

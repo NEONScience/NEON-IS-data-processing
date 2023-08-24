@@ -16,7 +16,6 @@ def main() -> None:
     log_level: str = os.environ['LOG_LEVEL']
     log_config.configure(log_level)
     log.debug(f'out_path: {out_path}')
-    print(f'final output path is: {Path(out_path)}')
     load_assetuid(data_path = data_path, map_path = map_path, out_path = out_path, source_type = source_type)
 
 
