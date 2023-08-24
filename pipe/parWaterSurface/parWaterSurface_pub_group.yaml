@@ -12,7 +12,7 @@ transform:
   env:
     # Environment variables for 1st module: pub_grouper.
     LOG_LEVEL: INFO
-    OUT_PATH_GROUPER: "/pfs/out"
+    OUT_PATH: "/pfs/out"
     YEAR_INDEX: '3' # Also shared with pub_transform
     GROUP_INDEX: '6'
     DATA_TYPE_INDEX: '7' # Also shared with pub_transform

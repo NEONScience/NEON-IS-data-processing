@@ -60,7 +60,7 @@ transform:
     PRODUCTS: NEON.DOM.SITE.DP1.20042.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
 
     # Environment variables for 2st module (part B): pub_transformer. Also uses GROUP_METADATA_DIR from the grouper
-    PRODUCT_INDEX: '3' # input path index of the data product identifier
+    PRODUCT_INDEX: '3' # input path index of the data product identifier. ALso used for packager.
     YEAR_INDEX_TRANSFORMER: '4' 
     DATA_TYPE_INDEX_TRANSFORMER: '8' 
     DATA_PATH_PARSE_INDEX: '2'
