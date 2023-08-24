@@ -10,6 +10,7 @@ transform:
   - "python3 -m replace_macaddress_with_assetuid.replace_macaddress_with_assetuid"
   env:
     OUT_PATH: /pfs/out
+    SOURCE_TYPE: li7200_stcdd
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: SYMLINK # options are COPY or SYMLINK
