@@ -11,7 +11,7 @@ log = get_logger()
 
 def load_assetuid(data_path: Path, map_path: Path, out_path: Path, source_type:str) -> None:
 
-    for dpath in Path(data_path).rglob('*'):
+    for dpath in Path("/pfs/DATA_PATH/").rglob('*'):
         if Path(dpath).is_file():
             mac_address = Path(dpath).stem.split("_")[1]
             new_dpath = os.path.normpath(dpath)
