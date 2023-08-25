@@ -41,7 +41,7 @@ def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollecti
         and
             type.type_id = nam_locn.type_id
         order by 
-         	nam_locn.nam_locn_name, is_asset_location.install_date;
+         	is_asset_location.install_date;
     '''
     features: List[Feature] = []
     with closing(connection.cursor()) as cursor:
