@@ -37,7 +37,7 @@ def write_file(*, asset: Asset, locations: FeatureCollection, out_path: Path) ->
     :param locations: The asset's location history.
     :param out_path: The path for writing files.
     """
-    geojson_data = dumps(locations, indent=4, sort_keys=False, default=str)
+    geojson_data = dumps(locations, indent=4, sort_keys=True, default=str)
     file_name = f'{asset.type}_{str(asset.id)}_locations.json'
     file_path = Path(out_path, asset.type, str(asset.id), file_name)
     file_path.parent.mkdir(parents=True, exist_ok=True)
