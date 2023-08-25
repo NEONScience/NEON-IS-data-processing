@@ -1,6 +1,8 @@
 li191r_cron_daily_and_date_control.yaml
 li191r_data_source_kafka.yaml
 li191r_data_source_trino.yaml
+li191r_calibration_list_files.yaml
+li191r_calibration_loader.yaml
 li191r_location_asset.yaml
 li191r_location_loader.yaml
 li191r_calibration_assignment.yaml

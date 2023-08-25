@@ -1,0 +1,117 @@
+---
+pipeline:
+  name: parQuantumLine_pub_egress_and_publish
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/neon-is-pub-egrs-publ:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Run first module - pub_egress (using environment variables below as input parameters)
+    if [[ $(echo $DATA_PATH) ]]; then
+      python3 -m pub_egress.pub_egress_main
+    fi
+    # If there is output, egress it
+    dirs=$(find $OUT_PATH/* -type d)
+    if [[ ${dirs} ]]; then
+      echo "Syncing files to bucket $BUCKET_NAME"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        copy \
+        "${OUT_PATH}" \
+        ":gcs://${BUCKET_NAME}"
+      echo "Done"
+    fi
+    # Set some environment variables for the second module
+    export DATA_PATH=$OUT_PATH
+    # Run second module - pub_upload (using environment variables below as input parameters)
+    python3 -m pub_uploader.pub_uploader_main
+    # Run third module - pub_sync (using environment variables below as input parameters)
+    python3 -m pub_sync.pub_sync_main
+    EOF
+  env:
+    LOG_LEVEL: INFO
+    
+    # Environment variables for 1st module: pub_egress.
+    OUT_PATH: "/pfs/out"
+    STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
+    EGRESS_URL: https://storage.googleapis.com/neon-int-publication # Also include subfolder if included in BUCKET_NAME below
+    BUCKET_NAME: "neon-int-publication" # Can also include subfolder (e.g. "neon-int-publication/egress-test")
+
+    # Environment variables for 2nd module: pub_upload.
+    # DATA_PATH is set in the code above to the output from the egress module
+    # Uses STARTING_PATH_INDEX above
+    VERSION: 'pipeline_test'
+    CHANGE_BY: pachyderm
+
+    # Environment variables for 3rd module: pub_sync.
+    # Uses DATE_PATH from input spec. DATA_PATH is set in the code above to the output from the egress module
+    # Uses CHANGE_BY above
+    DATE_PATH_YEAR_INDEX: "3"
+    DATE_PATH_MONTH_INDEX: "4"
+    DATA_PATH_PRODUCT_INDEX: "3"
+    DATA_PATH_SITE_INDEX: "4"
+    DATA_PATH_DATE_INDEX: "5"
+    DATA_PATH_PACKAGE_INDEX: "6"
+    PRODUCTS: NEON.DOM.SITE.DP1.00066.001 # CAN BE MULTIPLE, COMMA-SEPARATED
+    SITES: "all"  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
+
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+
+input: 
+  group:
+  - join:
+    - pfs: 
+        name: DATA_PATH
+        repo: parQuantumLine_pub_group_and_package
+        # Glob must be at each intended pub datum (i.e. each site/year/month), grouped by month
+        glob: /*/*/(*/*)
+        joinOn: $1
+        group_by: $1
+    - pfs: 
+        name: DATE_PATH
+        repo: parQuantumLine_cron_monthly_and_pub_control
+        glob: /(*/*)
+        joinOn: $1
+        outer_join: True # We want to run even if no data so pub_sync runs
+        group_by: $1
+        empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: .5
+resource_limits:
+  memory: 800M
+  cpu: 1.3
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 1
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

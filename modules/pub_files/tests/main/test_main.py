@@ -48,7 +48,7 @@ class MainTest(unittest.TestCase):
     def set_environment(self):
         pem_path = environs.Env().str('GITHUB_README_APP_PEM')
         os.environ['IN_PATH'] = str(self.data_path)
-        os.environ['IN_PATH_PARSE_INDEX'] = '9'
+        os.environ['RELATIVE_PATH_INDEX'] = '10'
         os.environ['LOCATION_PATH'] = str(self.location_path)
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['DB_SECRETS_PATH'] = str(self.db_secrets_path)
@@ -60,15 +60,13 @@ class MainTest(unittest.TestCase):
         os.environ['GITHUB_REPO_OWNER'] = 'NEONScience'
         os.environ['GITHUB_README_REPO'] = 'neon-metadata-docs'
         os.environ['GITHUB_README_PATH'] = 'readme/template.j2'
-        os.environ['GITHUB_PUBLICATION_WORKBOOK_REPO'] = 'NEON-IS-definitional-data'
-        os.environ['GITHUB_PUBLICATION_WORKBOOK_PATH'] = 'publicationWBs/PublicationWorkbook_Soil%20temperature.txt'
         os.environ['GITHUB_EML_REPO'] = 'neon-metadata-docs'
         os.environ['GITHUB_EML_BOILERPLATE_PATH'] = 'eml/neon_components/NEON_EML_Boilerplate.xml'
         os.environ['GITHUB_EML_CONTACT_PATH'] = 'eml/neon_components/neon_contact.xml'
         os.environ['GITHUB_EML_INTELLECTUAL_RIGHTS_PATH'] = 'eml/neon_components/neon_intellectualRights.xml'
         os.environ['GITHUB_EML_UNIT_TYPES_PATH'] = 'eml/neon_components/neon_unitTypes.xml'
         os.environ['GITHUB_EML_UNITS_PATH'] = 'eml/neon_components/NEON_units.txt'
-        os.environ['GITHUB_BRANCH'] = 'NSE-9201'
+        os.environ['GITHUB_BRANCH'] = ''
 
     def test_main(self) -> None:
         self.set_environment()
@@ -77,7 +75,7 @@ class MainTest(unittest.TestCase):
         csv_count = len(list(self.basic_path.glob('*.csv')))
         eml_count = len(list(self.basic_path.glob('*.xml')))
         assert readme_count == 1
-        assert csv_count == 5  # includes 2 data files, variables, manifest, and sensor positions.
+        assert csv_count == 5  # includes 2 data files, variables, manifest, sensor positions, (no science review).
         assert eml_count == 1
 
     def tearDown(self) -> None:

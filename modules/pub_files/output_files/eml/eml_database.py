@@ -16,6 +16,7 @@ from pub_files.geometry import Geometry
 
 
 class EmlDatabase(NamedTuple):
+    """Class to hold the functions to retrieve data needed for producing an EML file from the database."""
     get_named_location: Callable[[str], NamedLocation]
     get_geometry: Callable[[str], Geometry]
     get_spatial_unit: Callable[[int], str]

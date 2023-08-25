@@ -11,6 +11,7 @@ from pub_files.database.log_entries import LogEntry
 
 
 class DatesLocations(NamedTuple):
+    """The locations and their affected time span."""
     date_range_start: str
     date_range_end: str
     location_affected: List[str]
@@ -27,9 +28,11 @@ class ChangeLog(NamedTuple):
 
 
 def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[ChangeLog]:
-    """Process log entries in order to form the list of dates and locations affected
-    for each log entry. (NOTE: The logs are currently stored in a flat table. This logic
-    would be unnecessary with an improved data model.)"""
+    """
+    Process log entries in order to form the list of dates and locations affected
+    for each log entry. (TODO: The logs are currently stored in a flat table. This logic
+    would be unnecessary with an improved data model.)
+    """
     change_logs = []
 
     if log_entries:
@@ -105,6 +108,7 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
 
 
 def build_change_log(data_product_id, log_values, dates_and_locations) -> ChangeLog:
+    """Populate a change log object."""
     return ChangeLog(data_product_id=data_product_id,
                      issue=log_values['issue'],
                      issue_date=log_values['issue_date'],
@@ -114,6 +118,7 @@ def build_change_log(data_product_id, log_values, dates_and_locations) -> Change
 
 
 def format_date(date_time: Optional[datetime]) -> Optional[str]:
+    """Return the date in the correct format for including in the change log section of the readme file."""
     if date_time:
         return date_time.strftime('%Y-%m-%d')
     return None

@@ -1,0 +1,57 @@
+---
+pipeline:
+  name: relHumidity_pre_stats_qm
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-dir-filt:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m directory_filter.directory_filter_main
+  env:
+    OUT_PATH: /pfs/out
+    FILTER_DIR: data,uncertainty_data,uncertainty_coef,flags
+    FILTER_DIR_INDEX: '9'
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: '3'
+input:
+  pfs:
+    name: IN_PATH
+    repo: relHumidity_group_path
+    glob: /*/*/*
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.5
+resource_limits:
+  memory: 1.5G
+  cpu: 1.2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.8
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

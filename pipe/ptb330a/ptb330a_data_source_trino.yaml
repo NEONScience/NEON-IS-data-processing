@@ -4,13 +4,14 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/data_source_trino:v0.0.3
+  image: quay.io/battelleecology/data_source_trino:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   cmd:
   - /bin/bash
   stdin:
   - "#!/usr/bin/env bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /usr/src/app/interimData
+  - interimDir="/tmp/interimData"
+  - rm -rf $interimDir
   - "# Get today's date for evaluating kafka data retention period"
   - date_today=$(date -u +%Y-%m-%d)
   - kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
@@ -38,7 +39,7 @@ transform:
   - '  echo "Extracting data from Trino for $year/$month/$day/$site"'
   - "  export GEN_DATE=$year-$month-$day"
   - "  export GEN_SITE_NAME=$site"
-  - "  export GEN_OUTPUT_DIR=/usr/src/app/interimData/ptb330a/$year/$month/$day"
+  - "  export GEN_OUTPUT_DIR=$interimDir/ptb330a/$year/$month/$day"
   - "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem"
   - "  mkdir -p $GEN_OUTPUT_DIR"
   - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second"
@@ -49,16 +50,16 @@ transform:
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/ptb330a_streams.yaml"
     GEN_SCHEMA_FILE: "/usr/src/app/schemas/ptb330a/ptb330a.avsc"
-    LOG_LEVEL: info
+    LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
-    IN_PATH: /usr/src/app/interimData
+    IN_PATH: /tmp/interimData
     OUT_PATH: /pfs/out
-    SOURCE_TYPE_INDEX: '5'
-    YEAR_INDEX: '6'
-    MONTH_INDEX: '7'
-    DAY_INDEX: '8'
-    SOURCE_ID_INDEX: '9'
+    SOURCE_TYPE_INDEX: '3'
+    YEAR_INDEX: '4'
+    MONTH_INDEX: '5'
+    DAY_INDEX: '6'
+    SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "30"
   secrets:
   - name: pachd-trino-secret
@@ -78,10 +79,21 @@ input:
 output_branch: master
 parallelism_spec:
   constant: 2
-resource_requests:
-  memory: 500M
-  cpu: 0.7
 autoscaling: true
+resource_requests:
+  memory: 300M
+  cpu: 0.8
+resource_limits:
+  memory: 600M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 3G
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -99,14 +111,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"1G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
-    }
-  ]

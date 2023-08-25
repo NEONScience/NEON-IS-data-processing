@@ -3,7 +3,7 @@
 # docker build -t neon-is-srf-asgn-r .
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-pack-pub-r:v1.0.1
+FROM quay.io/battelleecology/neon-is-pack-pub-r:v1.1.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

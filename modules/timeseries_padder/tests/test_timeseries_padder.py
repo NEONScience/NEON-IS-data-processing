@@ -16,6 +16,8 @@ class TimeSeriesPadTest(TestCase):
         self.setUpPyfakefs()
         self.out_path = Path('/tmp/out')
         self.pad_dirs = ['tmp']
+        self.copy_dirs = ['copy_data1','copy_data2']
+        self.non_copy_dir = 'non_copy'
         location = 'CFGLOC112154'
         input_root = Path('/tmp/in')
         month_path = Path('prt/2018/01')
@@ -27,6 +29,12 @@ class TimeSeriesPadTest(TestCase):
         self.data_filename = f'prt_{location}_2018-01-{day}.ext'
         data_path = Path(input_root, self.metadata_path, Config.data_dir, self.data_filename)
         self.fs.create_file(data_path)
+        for i in self.copy_dirs:
+            other_data_path = Path(input_root, self.metadata_path, i, self.data_filename)
+            print(f'other_data_path: {other_data_path}')
+            self.fs.create_file(other_data_path)
+        non_copy_path = Path(input_root, self.metadata_path, self.non_copy_dir, self.data_filename)
+        self.fs.create_file(non_copy_path)
         # config file (real file for parsing)
         this_path = Path(os.path.dirname(__file__))
         config_path = Path(this_path.parent, 'config/windowSizeNames.yaml')
@@ -53,6 +61,7 @@ class TimeSeriesPadTest(TestCase):
         config = Config(data_path=self.input_path,
                         out_path=self.out_path,
                         pad_dirs=self.pad_dirs,
+                        copy_dirs=self.copy_dirs,
                         relative_path_index=self.relative_path_index,
                         year_index=self.year_index,
                         month_index=self.month_index,
@@ -68,7 +77,8 @@ class TimeSeriesPadTest(TestCase):
         config = Config(data_path=self.input_path,
                         out_path=self.out_path,
                         pad_dirs=self.pad_dirs,
-                        relative_path_index=0,
+                        copy_dirs=self.copy_dirs,
+                        relative_path_index=self.relative_path_index,
                         year_index=self.year_index,
                         month_index=self.month_index,
                         day_index=self.day_index,
@@ -97,5 +107,11 @@ class TimeSeriesPadTest(TestCase):
         self.assertTrue(previous_data_path.exists())
         self.assertTrue(next_data_path.exists())
         self.assertTrue(data_path.exists())
+        for i in self.copy_dirs:
+            other_data_path = Path(self.out_path, self.metadata_path, i, self.data_filename)
+            print(f'copy_path: {other_data_path}')
+            self.assertTrue(other_data_path.exists())
+        non_copy_path = Path(self.out_path, self.metadata_path, self.non_copy_dir, self.data_filename)
+        self.assertFalse(non_copy_path.exists())
         self.assertTrue(manifest_path.exists())
         self.assertTrue(threshold_path.exists())

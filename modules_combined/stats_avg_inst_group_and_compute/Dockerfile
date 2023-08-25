@@ -4,7 +4,7 @@
 # docker build -t neon-is-stat-avg-inst-grp -f ./modules_combined/stats_avg_inst_group_and_compute/Dockerfile .
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.0.5
+FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.1.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -57,5 +57,4 @@ COPY ./${MODULE_DIR}/${APP_DIR_2}/wrap.data.comb.ts.R .
 COPY ./${MODULE_DIR}/${APP_DIR_2}/flow.data.comb.ts.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

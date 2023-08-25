@@ -64,10 +64,26 @@ test_that("calculate the time on dataHeat State is always false",
             testthat::expect_equal(qm[2]$BetaQF[5], 1)
             testthat::expect_equal(qm[3]$FinalQF[4], 0)
             testthat::expect_equal(qm[3]$FinalQF[5], 1)
-
           }
+      )
 
-)
+test_that("calculate the time on dataHeat State is always false",
+          {
+            qf <- data.frame(KF1=c(1,-1,1,0,-1),KF2=c(-1,1,0,0,0),stringsAsFactors=FALSE)
+            Para <- list(qfAlph=c('QF1','QF2'),qfBeta=c('QF1','QF2'),qfBetaIgnr='QF2')
+            qm <- NEONprocIS.qaqc::def.qm.dp0p(qf=qf,Para=Para)
+            
+            testthat::expect_true(is.data.frame(qm))
+            expect_true(length(qm) == 3)
+            testthat::expect_equal(qm[1]$AlphaQF[1],0)
+            testthat::expect_equal(qm[1]$AlphaQF[5], 0)
+            testthat::expect_equal(qm[2]$BetaQF[3], 0)
+            testthat::expect_equal(qm[2]$BetaQF[5], 0)
+            testthat::expect_equal(qm[3]$FinalQF[4], 0)
+            testthat::expect_equal(qm[3]$FinalQF[5], 0)
+          }
+    )
+
 test_that("when qf dataframe is not valid, stop processing",
           {
             qf <- data.frame(QF1=c("A","B",1,0,-1),QF2=c(-1,1,0,0,0),stringsAsFactors=FALSE)
@@ -76,8 +92,8 @@ test_that("when qf dataframe is not valid, stop processing",
 
             testthat::expect_true((class(qm)[1] == "try-error"))
           }
+      )
 
-)
 test_that("when qfAlph is null in the Para",
           {
             qf <- data.frame(QF1=c(1,-1,1,0,-1),QF2=c(-1,1,0,0,0),stringsAsFactors=FALSE)
@@ -92,9 +108,9 @@ test_that("when qfAlph is null in the Para",
             testthat::expect_equal(qm[2]$BetaQF[5], 1)
             testthat::expect_equal(qm[3]$FinalQF[4], 0)
             testthat::expect_equal(qm[3]$FinalQF[5], 1)
-
           }
-)
+      )
+
 test_that("when qfBeta is null in the Para",
           {
             qf <- data.frame(QF1=c(1,-1,1,0,-1),QF2=c(-1,1,0,0,0),stringsAsFactors=FALSE)
@@ -109,9 +125,9 @@ test_that("when qfBeta is null in the Para",
             testthat::expect_equal(qm[2]$BetaQF[5], 1)
             testthat::expect_equal(qm[3]$FinalQF[4], 0)
             testthat::expect_equal(qm[3]$FinalQF[5], 1)
-            
           }
-)
+      )
+
 test_that("when not all parameter in the qfAlph and qfBeta are not in the qf data frame",
           {
             qf <- data.frame(QF1=c(1,-1,1,0,-1),QF2=c(-1,1,0,0,0),stringsAsFactors=FALSE)
@@ -140,6 +156,5 @@ test_that("Error check - ensure that the contributing flags are included in the 
           testthat::expect_equal(qm$AlphaQF[5],0)
           testthat::expect_equal(qm$BetaQF[5],1)
           testthat::expect_equal(sum(qm$FinalQF),4)
-          
           }
-)
+      )

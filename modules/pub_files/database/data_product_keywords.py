@@ -5,6 +5,7 @@ from data_access.db_connector import DbConnector
 
 
 def get_keywords(connector: DbConnector, data_product_id: str) -> List[str]:
+    """Returns the keywords associated with a data product."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'''

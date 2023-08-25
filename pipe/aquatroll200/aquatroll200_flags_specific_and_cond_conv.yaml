@@ -2,28 +2,28 @@
 pipeline:
   name: aquatroll200_flags_specific_and_cond_conv
 transform:
-  image: quay.io/battelleecology/neon-is-troll-flags-cond-conv-r:v0.0.3
+  image: quay.io/battelleecology/neon-is-troll-flags-cond-conv-r:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /usr/pfs/interimData
-  - rm -r -f /usr/pfs/interimDataCopy
-  - mkdir -p /usr/pfs/interimData
-  - mkdir -p /usr/pfs/interimDataCopy
+  - rm -r -f /tmp/pfs/interimData
+  - rm -r -f /tmp/pfs/interimDataCopy
+  - mkdir -p /tmp/pfs/interimData
+  - mkdir -p /tmp/pfs/interimDataCopy
   - '# Run first module - troll_flags_specific '
   - Rscript ./flow.troll.flags.R
     DirIn=$DIR_IN
-    DirOut=/usr/pfs/interimData
+    DirOut=/tmp/pfs/interimData
     FileSchmQf=$SCHEMA_FLAGS_SPEC
   - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
-  - cp -rL /usr/pfs/interimData/* /usr/pfs/interimDataCopy
-  - rm -r -f /usr/pfs/interimData/*
+  - cp -rL /tmp/pfs/interimData/* /tmp/pfs/interimDataCopy
+  - rm -r -f /tmp/pfs/interimData/*
   - '# Run second module - conductivity conversion'
   - Rscript ./flow.troll.cond.conv.R
-    DirIn=/usr/pfs/interimDataCopy
+    DirIn=/tmp/pfs/interimDataCopy
     DirOut=/pfs/out 
     FileSchmData=$FILE_SCHEMA_DATA_COND_CONV
     FileSchmQf=$SCHEMA_FLAGS_SPEC_TEMP
@@ -37,7 +37,7 @@ input:
       glob: /aquatroll200/*/*/*/
   - pfs:
       name: SCHEMA_FLAGS_SPEC
-      repo: aquatroll200_avro_schemas
+      repo: troll_shared_avro_schemas
       glob: /troll_shared/flags_troll_specific.avsc
   - pfs:
       name: FILE_SCHEMA_DATA_COND_CONV
@@ -45,12 +45,25 @@ input:
       glob: /aquatroll200/aquatroll200_cond_corrected.avsc
   - pfs:
       name: SCHEMA_FLAGS_SPEC_TEMP
-      repo: aquatroll200_avro_schemas
+      repo: troll_shared_avro_schemas
       glob: /troll_shared/flags_troll_specific_temp.avsc
+parallelism_spec:
+  constant: 1
+autoscaling: true
 resource_requests:
   memory: 500M
   cpu: 1.2
-autoscaling: true
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -68,16 +81,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"300M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
-    }
-  ]
-
-

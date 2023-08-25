@@ -1,0 +1,78 @@
+---
+pipeline:
+  name: parWaterSurface_analyze_pad_and_qaqc_plau
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  cmd:
+  - /bin/bash
+  stdin:
+  - "#!/bin/bash"
+  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
+  - rm -rf /tmp/pfs/padded_analyzer
+  - rm -rf /tmp/pfs/padded_analyzerCopy
+  - mkdir -p /tmp/pfs/padded_analyzer
+  - '# Run first module - padded_timeseries_analyzer'
+  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+  - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
+  - cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy 
+  - rm -r -f /tmp/pfs/padded_analyzer 
+  - '# Run second module - qaqc plausibility'
+  - Rscript ./flow.qaqc.plau.R
+    DirIn=/tmp/pfs/padded_analyzerCopy
+    DirOut=/pfs/out
+    DirErr=/pfs/out/errored_datums
+    FileSchmQf=$SCHEMA_FLAGS
+    "TermTest1=par:null|gap|range(rmv)|step(rmv)|persistence"
+  env:
+    # Environment variables for padded timeseries analyzer
+    OUT_PATH: /tmp/pfs/padded_analyzer
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: '3'
+    # Environment variables for qaqc plausibility
+    PARALLELIZATION_INTERNAL: '3'
+input:
+  cross:
+  - pfs:
+      name: DATA_PATH
+      repo: parWaterSurface_thresh_select_ts_pad
+      glob: /*/*/*
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: parWaterSurface_avro_schemas
+      glob: /parWaterSurface/flags_plausibility_parWaterSurface.avsc
+parallelism_spec:
+  constant: 1
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 3.3
+resource_limits:
+  memory: 4G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.3
+sidecar_resource_limits:
+  memory: 2Gi
+  cpu: 1.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-ts-pad-anls-qaqc-plau -f ./modules_combined/padded_timeseries_analyzer_and_qaqc_plausibility/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.8
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.1.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -52,5 +52,4 @@ COPY ./${MODULE_DIR}/${APP_DIR}/wrap.qaqc.plau.R .
 COPY ./${MODULE_DIR}/${APP_DIR}/flow.qaqc.plau.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

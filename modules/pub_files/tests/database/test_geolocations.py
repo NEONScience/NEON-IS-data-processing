@@ -15,10 +15,11 @@ class SensorLocationTest(DatabaseBackedTest):
         db_config = read_from_environment()
         named_location = 'CFGLOC101777'
         connector = DbConnector(db_config)
-        locations = get_geolocations(connector, named_location)
-        location = locations[0]
-        assert location.alpha == 2
-        assert location.beta == 0
-        assert location.gamma == 300
-        assert len(locations) == 1
-        assert location.offset_description == 'Central Plains Soil Plot, SP2'
+        geolocations = get_geolocations(connector, named_location)
+        geolocation = geolocations[0]
+        print(f'geolocation:\n\n{geolocation}')
+        assert geolocation.alpha == 2
+        assert geolocation.beta == 0
+        assert geolocation.gamma == 300
+        assert len(geolocations) == 1
+        assert geolocation.offset_description == 'Central Plains Soil Plot, SP2'

@@ -3,29 +3,29 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-from pub_files.tests.file_processor_data.file_processor_database import get_data_product
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import common.date_formatter
 from data_access.types.threshold import Threshold
 from pub_files.database.named_locations import NamedLocation
+from pub_files.database.publication_workbook import PublicationWorkbook
 from pub_files.database.units import EmlUnitType
 from pub_files.database.value_list import Value
-from pub_files.geometry import Geometry
+from pub_files.geometry import Geometry, build_geometry
 from pub_files.input_files.file_metadata import PathElements, FileMetadata, DataFiles, DataFile
 from pub_files.input_files.manifest_file import ManifestFile
 from pub_files.main import get_timestamp
 from pub_files.output_files.eml.eml_database import EmlDatabase
-from pub_files.output_files.eml.eml_file import EmlFile
+from pub_files.output_files.eml.eml_file import EmlFileConfig, write_eml_file
 from pub_files.output_files.eml.external_eml_files import ExternalEmlFiles
-from pub_files.publication_workbook import PublicationWorkbook
+from pub_files.tests.input_file_processor_data.file_processor_database import get_data_product
 from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 
 
 class EmlTest(TestCase):
 
     def setUp(self) -> None:
-        self.workbook = PublicationWorkbook(get_workbook())
+        self.workbook: PublicationWorkbook = get_workbook('')
         self.setUpPyfakefs()
         self.timestamp = get_timestamp()
         self.test_files_path = Path(os.path.dirname(__file__))
@@ -44,13 +44,16 @@ class EmlTest(TestCase):
         self.add_units_file()
 
     def test_write_file(self):
-        file_path = EmlFile(out_path=self.out_path,
-                           file_metadata=self.get_file_metadata(),
-                           eml_files=self.get_external_files(),
-                           timestamp=self.timestamp,
-                           database=self.get_database(),
-                           publication_workbook=self.workbook,
-                           package_type='basic').write()
+        eml_file_config = EmlFileConfig(
+            out_path=self.out_path,
+            metadata=self.get_file_metadata(),
+            eml_templates=self.get_external_files(),
+            timestamp=self.timestamp,
+            database=self.get_database(),
+            workbook=self.workbook,
+            package_type='basic'
+        )
+        file_path = write_eml_file(eml_file_config)
         print(f'\ncontent:\n\n{file_path.read_text(encoding="utf-8")}\n\n')
         assert file_path.exists()
 
@@ -70,7 +73,7 @@ class EmlTest(TestCase):
         self.fs.add_real_file(real_path, target_path=self.intellectual_rights_path)
 
     def add_manifest_file(self) -> None:
-        real_path = Path('../main/data/CPER/2020/01/manifest.csv')
+        real_path = Path(self.test_files_path, 'manifest.csv')
         self.manifest_path = Path('/manifest.csv')
         self.fs.add_real_file(real_path, target_path=self.manifest_path)
 
@@ -108,7 +111,7 @@ class EmlTest(TestCase):
 
     @staticmethod
     def get_geometry(_name) -> Geometry:
-        return Geometry(geometry='POINT Z (-104.745591 40.815536 1653.9151)', srid=4979)
+        return build_geometry(geometry='POINT Z (-104.745591 40.815536 1653.9151)', srid=4979)
 
     @staticmethod
     def get_unit_eml_type(_unit: str) -> EmlUnitType:
@@ -148,7 +151,10 @@ class EmlTest(TestCase):
     def get_data_files() -> DataFiles:
         now = datetime.now()
         name = 'NEON.D10.CPER.DP1.00041.001.210.000.000.prt.2020-03.expanded.20230405T190704Z.csv'
-        data_file = DataFile(filename=name, description='A data file with data.', line_count=15)
+        data_file = DataFile(filename=name,
+                             description='A data file with data.',
+                             line_count=15,
+                             data_product_name='NEON.D10.CPER.DP1.00041.001.210.000.000')
         return DataFiles(files=[data_file], min_time=now, max_time=now)
 
     def get_file_metadata(self) -> FileMetadata:
@@ -157,7 +163,7 @@ class EmlTest(TestCase):
                                 year=self.year,
                                 month=self.month,
                                 data_product_id=self.data_product_id)
-        data_product = get_data_product(self.fs, _data_product_id='unused')
+        data_product = get_data_product(_data_product_id='unused')
         file_metadata = FileMetadata()
         file_metadata.path_elements = elements
         file_metadata.data_files = self.get_data_files()
@@ -175,8 +181,8 @@ class EmlTest(TestCase):
                            get_value_list=self.get_value_list)
 
     def get_external_files(self) -> ExternalEmlFiles:
-        return ExternalEmlFiles(get_boilerplate=self.get_boilerplate,
-                                get_contact=self.get_contact,
-                                get_intellectual_rights=self.get_intellectual_rights,
-                                get_unit_types=self.get_unit_types,
-                                get_units=self.get_units)
+        return ExternalEmlFiles(boilerplate=self.get_boilerplate(),
+                                contact=self.get_contact(),
+                                intellectual_rights=self.get_intellectual_rights(),
+                                unit_types=self.get_unit_types(),
+                                units=self.get_units())

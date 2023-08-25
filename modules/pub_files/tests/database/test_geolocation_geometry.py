@@ -15,8 +15,8 @@ class LocationGeometryTest(DatabaseBackedTest):
         db_config = read_from_environment()
         site = 'CPER'
         geometry: Geometry = get_geometry(DbConnector(db_config), site)
-        coordinates = geometry.format_coordinates()
+        coordinates = geometry.formatted_coordinates
         srid = geometry.srid
-        assert geometry.geometry_text == 'POINT Z (-104.745591 40.815536 1653.9151)'
+        assert geometry.geometry == 'POINT Z (-104.745591 40.815536 1653.9151)'
         assert coordinates == '40.815536 -104.745591 WGS 84'
         assert srid == 4979

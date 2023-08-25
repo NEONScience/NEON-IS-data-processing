@@ -1,0 +1,69 @@
+---
+pipeline:
+  name: parWaterSurface_pub_transformer
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/pub_transformer:9686d2f87c21c8e85718937a53150f518aea835e
+  cmd: ["/bin/bash"]
+  stdin:
+  - '# Run second module - pub_transformer (using environment variables below as input parameters)'
+  - python3 -m pub_workbook_loader.pub_workbook_loader_main
+  - python3 -m pub_transformer.pub_transformer_main
+  env:
+    LOG_LEVEL: INFO
+    # Environment variables for 2nd (part A) module: pub_workbook_loader.
+    OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
+    PRODUCTS: NEON.DOM.SITE.DP1.20042.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
+
+    # Environment variables for 2st module (part B): pub_transformer. Also uses GROUP_METADATA_DIR from the grouper
+    PRODUCT_INDEX: '3' # input path index of the data product identifier
+    YEAR_INDEX: '4' 
+    DATA_TYPE_INDEX: '8' 
+    DATA_PATH_PARSE_INDEX: '2'
+    GROUP_METADATA_DIR: group # Also shared with pub_transform
+    OUT_PATH: "/pfs/out"
+    WORKBOOK_PATH: "/tmp/pub_workbooks"
+
+  secrets:
+    - name: db-pdr-secret
+      mount_path: /var/db_secret
+
+input:  
+  pfs: 
+    name: DATA_PATH
+    repo: parWaterSurface_pub_group
+    glob: /*/*/*/*
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 700M
+  cpu: 1
+resource_limits:
+  memory: 1.5G
+  cpu: 1.8
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

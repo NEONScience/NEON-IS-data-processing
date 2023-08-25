@@ -3,7 +3,7 @@
 # docker build -t neon-is-stat-basc-grp -f ./modules_combined/stats_group_and_compute/Dockerfile .
 
 # Start with the R stats package image. 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.0.5
+FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.1.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -51,5 +51,4 @@ COPY ./${MODULE_DIR}/${APP_DIR}/wrap.stat.basc.R .
 COPY ./${MODULE_DIR}/${APP_DIR}/flow.stat.basc.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

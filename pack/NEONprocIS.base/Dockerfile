@@ -1,4 +1,8 @@
 # Dockerfile for NEON IS Data Processing - Base image
+# Example command (run from project parent directory to include pack/ path in Docker context):
+# export GITHUB_PAT_BE=<github.battelleecology.org token>
+# docker build --build-arg auth_token_be=$GITHUB_PAT_BE --no-cache -t neon-is-base-r ./pack/NEONprocIS.base
+
 
 # Use a multi-stage build to obscure the value of GITHUB_PAT used to install private repos
 FROM rocker/rstudio as intermediate

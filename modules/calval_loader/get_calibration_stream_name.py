@@ -2,7 +2,6 @@
 import logging
 from typing import Optional
 
-import psycopg2
 from contextlib import closing
 
 

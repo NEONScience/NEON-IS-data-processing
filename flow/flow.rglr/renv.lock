@@ -261,6 +261,34 @@
         "vctrs"
       ]
     },
+    "eddy4R.base": {
+      "Package": "eddy4R.base",
+      "Version": "0.2.24",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "eddy4R",
+      "RemoteUsername": "NEONScience",
+      "RemoteRef": "deve",
+      "RemoteSha": "eaf4bd94702ccb3e84e29d2f9a17ac42ff23b0b2",
+      "RemoteSubdir": "pack/eddy4R.base",
+      "Hash": "824c88f37c420a4c49ee27304cc05e5a",
+      "Requirements": [
+        "BiocManager",
+        "DataCombine",
+        "EMD",
+        "deming",
+        "downloader",
+        "ff",
+        "ffbase",
+        "neonUtilities",
+        "polynom",
+        "rhdf5",
+        "robfilter",
+        "signal",
+        "zoo"
+      ]
+    },
     "ellipsis": {
       "Package": "ellipsis",
       "Version": "0.3.2",

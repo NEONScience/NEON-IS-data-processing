@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-thsh-slct-ts-pad -f ./modules_combined/threshold_select_and_timeseries_padder/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.0.8
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.1.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -54,5 +54,4 @@ COPY ./${MODULE_DIR}/${APP_DIR}/flow.thsh.slct.R .
 COPY ./${MODULE_DIR}/${APP_DIR}/wrap.thsh.slct.R .
 
 # Run as app user
-RUN chown appuser:appuser -R ${CONTAINER_APP_DIR}
 USER appuser

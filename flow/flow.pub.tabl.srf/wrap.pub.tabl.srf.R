@@ -140,7 +140,7 @@ wrap.pub.tabl.srf <- function(DirIn,
     log$error(base::paste0(
       'No data products indicated for datum ',
       DirIn,
-      '. Cannot proceed.'
+      '. Cannot proceed. Check that relevant data products have been assigned to this group.'
     ))
     stop()
   }

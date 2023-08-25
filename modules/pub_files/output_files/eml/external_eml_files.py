@@ -1,9 +1,10 @@
-from typing import NamedTuple, Callable
+from typing import NamedTuple
 
 
 class ExternalEmlFiles(NamedTuple):
-    get_boilerplate: Callable[[], str]
-    get_contact: Callable[[], str]
-    get_intellectual_rights: Callable[[], str]
-    get_unit_types: Callable[[], str]
-    get_units: Callable[[], str]
+    """Class holding functions to read templates to create an EML metadata file."""
+    boilerplate: str
+    contact: str
+    intellectual_rights: str
+    unit_types: str
+    units: str

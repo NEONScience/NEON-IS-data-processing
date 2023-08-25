@@ -9,6 +9,7 @@ from data_access.types.property import Property
 
 @dataclass(frozen=True)
 class NamedLocation:
+    """Class to represent a named location."""
     location_id: int
     name: str
     description: str
@@ -28,6 +29,7 @@ class NamedLocation:
 
 
 def get_named_location(connector: DbConnector, named_location_name: str) -> NamedLocation:
+    """Get the named location data for the given named location name."""
     connection = connector.get_connection()
     schema = connector.get_schema()
     sql = f'''

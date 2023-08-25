@@ -2,7 +2,7 @@
 #
 # This dockerfile will build an image to run the cron_monthly_and_pub_control module.
 # Example command (run from modules/ directory in Docker context):
-# docker build -t neon-is-pub-cntl ./cron_monthly_and_pub_control
+# docker build -t neon-is-pub-cntl -f ./cron_monthly_and_pub_control/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi:8.3
@@ -12,7 +12,7 @@ ARG CONTAINER_APP_DIR="/usr/src/app"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY populate_pub_months.sh ${CONTAINER_APP_DIR}/${APP_DIR}/populate_pub_months.sh
+COPY ${APP_DIR}/populate_pub_months.sh ${CONTAINER_APP_DIR}/${APP_DIR}/populate_pub_months.sh
 
 RUN rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm  && \
     yum -y install jq && \

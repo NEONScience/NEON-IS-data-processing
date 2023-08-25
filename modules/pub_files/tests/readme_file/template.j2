@@ -65,6 +65,9 @@ it at https://www.neonscience.org/about/faq.
 {% if data_product.supplier == 'TIS' or data_product.type_name == os_is_type %}
 - Sensor position information: {{positions_filename}}
 {% endif %}
+{% if science_review_filename is not none %}
+- Science review flags: {{science_review_filename}}
+{% endif %}
 - Other related documents are available such as engineering specifications, field protocols, and data processing 
 documentation. Please visit https://data.neonscience.org/data-products/{{data_product.short_data_product_id}} for more information.
 

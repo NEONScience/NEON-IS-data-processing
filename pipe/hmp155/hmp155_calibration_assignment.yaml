@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.6
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -18,18 +18,29 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: hmp155_calibration
+      repo: hmp155_calibration_loader
       glob: /hmp155/*
   - pfs:
       name: FILE_YEAR
       repo: hmp155_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
-  constant: 4
-resource_requests:
-  memory: 200M
-  cpu: 0.8
+  constant: 5
 autoscaling: true
+resource_requests:
+  memory: 300M
+  cpu: 1.5
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 6G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 8Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -47,14 +58,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2.5G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "1.5"
-    }
-  ]

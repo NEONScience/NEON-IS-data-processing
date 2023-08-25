@@ -210,7 +210,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.pub.tabl(
+      wrap.pub.tabl.srf(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
         DirData=Para$DirData,

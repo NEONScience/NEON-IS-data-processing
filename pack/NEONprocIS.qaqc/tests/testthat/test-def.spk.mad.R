@@ -8,6 +8,15 @@ test_that("method A, basic test",
             qfSpk <- def.spk.mad(data=data,Meth='A',ThshMad=7,Wndw=5)
             testthat::expect_equal(length(qfSpk), 20)
           })
+
+test_that("method A, basic test and  NumGrp is not NULL",
+          {
+            data <- c(1,2,3,4,3,2,1,2,3,4,50,3,2,1,2,3,4,3,2,1)
+            # Method A
+            qfSpk <- def.spk.mad(data=data,Meth='A',ThshMad=7,Wndw=5, NumGrp=1)
+            testthat::expect_equal(length(qfSpk), 20)
+          })
+
 test_that("when data vector is not valid, stop processing",
           {
             data <- c()

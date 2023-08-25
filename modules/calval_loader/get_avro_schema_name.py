@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from typing import Iterator
 from typing import Optional
 import logging
-import psycopg2
 
 
 def get_avro_schema_name(connection, asset_uid : int) -> Optional[str]:

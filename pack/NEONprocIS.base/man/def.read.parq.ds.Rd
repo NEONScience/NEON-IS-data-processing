@@ -17,9 +17,7 @@ to retain, ordered the same as Var. Only those present in the dataset will be ou
 \item{VarTime}{Optional. Character value of the time variable to order by. If NULL, no ordering
 is performed.}
 
-\item{Df}{Optional. Boolean. TRUE to return a data frame with the combined dataset. Note that this 
-the returned data frame has no time zone conversion applied to time variables.
-Defaults to FALSE.}
+\item{Df}{Optional. Boolean. TRUE to return a data frame with the combined dataset. Defaults to FALSE.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}

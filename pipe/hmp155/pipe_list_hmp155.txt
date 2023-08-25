@@ -1,6 +1,8 @@
 hmp155_cron_daily_and_date_control.yaml
 hmp155_data_source_kafka.yaml
 hmp155_data_source_trino.yaml
+hmp155_calibration_list_files.yaml
+hmp155_calibration_loader.yaml
 hmp155_location_asset.yaml
 hmp155_location_loader.yaml
 hmp155_calibration_assignment.yaml

@@ -10,6 +10,7 @@ from pub_files.geometry import Geometry
 
 
 class ReadmeDatabase(NamedTuple):
+    """Class to consolidate the functions to read the needed data for the readme file from the database."""
     get_geometry: Callable[[str], Geometry]
     get_keywords: Callable[[str], List[str]]
     get_log_entries: Callable[[str], List[LogEntry]]

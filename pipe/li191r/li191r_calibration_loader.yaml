@@ -1,0 +1,61 @@
+---
+pipeline:
+  name: li191r_calibration_loader
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-cval-loader:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m calval_loader.load_all_calval_files
+  env:
+    CVAL_INGEST_BUCKET: neon-cval
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    SOURCE_TYPE: li191r
+    STARTING_PATH_INDEX: "5"
+  secrets:
+  - name: db-pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    name: IN_PATH
+    repo: li191r_calibration_list_files
+    glob: /*/*/*/*
+    empty_files: true
+parallelism_spec:
+  constant: 10
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.5
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 600M
+  cpu: 0.2
+sidecar_resource_limits:
+  memory: 1.2Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

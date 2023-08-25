@@ -4,6 +4,7 @@ from data_access.db_connector import DbConnector
 
 
 def get_spatial_unit(connector: DbConnector, srid: int) -> str:
+    """Get the spatial unit name for a particular spatial reference identifier."""
     schema = connector.get_schema()
     connection = connector.get_connection()
     sql = f'''
@@ -19,5 +20,7 @@ def get_spatial_unit(connector: DbConnector, srid: int) -> str:
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [srid])
         row = cursor.fetchone()
-        unit = row[0]
+        unit=None
+        if row is not None:
+            unit = row[0]
         return unit

@@ -22,7 +22,7 @@ transform:
   - TermTest10=depth9WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - TermTest11=depth10WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - DirSubCopy=uncertainty_data|flags|uncertainty_coef
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:v1.0.6
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:08f4910889b9ef4daa1cca10b307059f98c9ff5d
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

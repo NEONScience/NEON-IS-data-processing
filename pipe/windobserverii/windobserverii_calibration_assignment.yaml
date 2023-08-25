@@ -1,0 +1,60 @@
+---
+pipeline:
+  name: windobserverii_calibration_assignment
+transform:
+  cmd:
+  - Rscript
+  - ./flow.cal.asgn.R
+  - DirIn=$DIR_IN
+  - DirOut=/pfs/out
+  - DirErr=/pfs/out/errored_datums
+  - FileYear=$FILE_YEAR
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: windobserverii_calibration_loader
+      glob: /windobserverii/*
+  - pfs:
+      name: FILE_YEAR
+      repo: windobserverii_cron_daily_and_date_control
+      glob: /data_years.txt
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 0.8
+resource_limits:
+  memory: 2G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 5G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 8Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

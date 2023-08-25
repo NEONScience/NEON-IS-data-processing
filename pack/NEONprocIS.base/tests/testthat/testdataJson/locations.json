@@ -1,37 +1,19 @@
 {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": null,
-      "properties": {
-        "name": "CFGLOC108440",
-        "site": "HARV",
-        "install_date": "2017-02-07T00:17:20Z",
-        "remove_date": "2017-02-07T00:18:28Z",
-        "context": [
-          "soil"
-        ],
-        "group": [
-        ],
-        "locations": {
-          "type": "FeatureCollection",
-          "features": [
-            {
-              "type": "Feature",
-              "geometry": null,
-              "properties": {
-                "start_date": "2010-01-01T00:00:00Z",
-                "end_date": null,
-                "z_offset": -0.02,
-                "reference_location": {
-                  "type": "Feature",
-                  "geometry": null,
-                  "properties": {
-                    "name": "SOILPL100441",
-                    "locations": {
-                      "type": "FeatureCollection",
-                      "features": [
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": null,
+            "properties": {
+                "name": "CFGLOC100029",
+                "domain": "D10",
+                "site": "STER",
+                "install_date": "2017-01-24T01:00:00Z",
+                "remove_date": "2017-04-25T01:00:00Z",
+                "context": [],
+                "locations": {
+                    "type": "FeatureCollection",
+                    "features": [
                         {
                           "type": "Feature",
                           "geometry": null,
@@ -49,19 +31,20 @@
                             }
                           }
                         }
-                      ]
-                    }
-                  }
+                    ]
                 }
-              }
-            }
-          ]
+            },
+            "HOR": "000",
+            "Required Asset Management Location Code": "CFGLOC100029",
+            "TMI": "000",
+            "Data Rate": "0.1",
+            "VER": "030",
+            "Required Asset Management Location ID": 330,
+            "FreqSamp": "0.1",
+            "Cal$PrdLab": "1",
+            "IdxLoca": "000_035"
         }
-      },
-      "Required Asset Management Location ID": 9915,
-      "Required Asset Management Location Code": "CFGLOC108440"
-    }
-  ],
-  "source_type": "prt",
-  "source_id": 19963
+    ],
+    "source_id": 1325,
+    "source_type": "ptb330a"
 }
