@@ -9,7 +9,7 @@ import os
 log = get_logger()
 
 
-def load_assetuid(data_path: Path, map_path: Path, out_path: Path, source_type: str, relative_path_index: int) -> None:
+def load_assetuid(data_path: Path, map_path: Path, out_path: Path, relative_path_index: int) -> None:
 
     mac_asset_map = {}
     for root, direcotories, files in os.walk(str(map_path)):
