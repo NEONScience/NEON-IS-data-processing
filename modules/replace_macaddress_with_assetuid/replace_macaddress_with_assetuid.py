@@ -12,7 +12,7 @@ log = get_logger()
 def load_assetuid(data_path: Path, map_path: Path, out_path: Path, relative_path_index: int) -> None:
 
     mac_asset_map = {}
-    for root, direcotories, files in os.walk(str(map_path)):
+    for root, directories, files in os.walk(str(map_path)):
         if files:
             for file in files:
                 mac = root.split(os.sep)[-1]
@@ -20,7 +20,7 @@ def load_assetuid(data_path: Path, map_path: Path, out_path: Path, relative_path
                     asset = f.read().split()[0]
                 mac_asset_map[mac] = asset
 
-    for root, direcotories, files in os.walk(str(data_path)):
+    for root, directories, files in os.walk(str(data_path)):
         if files:
             for file in files:
                 mac_address = file.split("_")[1]

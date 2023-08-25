@@ -4,7 +4,6 @@ from structlog import get_logger
 
 import common.log_config as log_config
 import environs
-import os
 
 from replace_macaddress_with_assetuid.replace_macaddress_with_assetuid import load_assetuid
 
