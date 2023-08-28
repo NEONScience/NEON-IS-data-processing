@@ -3,37 +3,31 @@ pipeline:
   name: li7200_replace_macaddress_with_assetuid
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/replace_macaddress_with_assetuid:13a29e7cccbad53dacd59820953b930b27c6ffd7
+  image: quay.io/battelleecology/replace_macaddress_with_assetuid:1.26
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - "python3 -m replace_macaddress_with_assetuid.replace_macaddress_with_assetuid"
+  - "python3 -m replace_macaddress_with_assetuid.replace_macaddress_with_assetuid_main"
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: li7200_stcdd
-    LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
+    LOG_LEVEL: DEBUG
     LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
-  group:
-  - join:
-    - pfs:
-        name: DATA_PATH
-        repo: li7200_data_source_trino
-        glob: /li7200/*/*/*/(*)
-        group_by: $1
-        join_on: $1
-    - pfs:
-        name: MAP_PATH
-        repo: li7200_assetuid_macaddress_map
-        glob: /li7200_stcdd/(*)
-        group_by: $1
-        join_on: $1
+  cross:
+  - pfs:
+      name: DATA_PATH
+      repo: li7200_data_source_trino
+      glob: /li7200/*/*/*
+  - pfs:
+      name: MAP_PATH
+      repo: li7200_assetuid_macaddress_map
+      glob: /li7200_stcdd
 parallelism_spec:
   constant: 1
 resource_requests:
-  memory: 200M
-  cpu: 0.1
+  memory: 1G
+  cpu: 1.0
 autoscaling: true
 scheduling_spec:
   node_selector:
