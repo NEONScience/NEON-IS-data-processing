@@ -28,7 +28,7 @@ def load_groups(out_path: Path, get_groups: Callable[[str], Iterator[Group]], gr
             path = Path(out_path, group_prefix_path, member_name, f'{member_name}.json')
             path.parent.mkdir(parents=True, exist_ok=True)
             geojson_data = geojson_converter.convert_group(group)
-            file_data = geojson.dumps(geojson_data, indent=4, sort_keys=False, default=str)
+            file_data = geojson.dumps(geojson_data, indent=4, sort_keys=True, default=str)
             with open(path, 'w') as file:
                 log.debug(f'writing file: {path}')
                 file.write(file_data)
