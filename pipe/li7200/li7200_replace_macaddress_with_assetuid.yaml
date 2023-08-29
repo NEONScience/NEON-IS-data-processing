@@ -14,15 +14,29 @@ transform:
     LOG_LEVEL: DEBUG
     LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
-  cross:
+  join:
   - pfs:
       name: DATA_PATH
       repo: li7200_data_source_trino
-      glob: /li7200/*/*/*
+      glob: /li7200/*/*/*/(*)
+      join_on: $1
+      empty_files: true
   - pfs:
       name: MAP_PATH
       repo: li7200_assetuid_macaddress_map
-      glob: /li7200_stcdd
+      glob: /li7200_stcdd/(*)
+      join_on: $1
+# another option to join      
+#  cross:
+#  - pfs:
+#      name: DATA_PATH
+#      repo: li7200_data_source_trino
+#      glob: /li7200/*/*/*
+#  - pfs:
+#      name: MAP_PATH
+#      repo: li7200_assetuid_macaddress_map
+#      glob: /li7200_stcdd
+#
 parallelism_spec:
   constant: 1
 resource_requests:
