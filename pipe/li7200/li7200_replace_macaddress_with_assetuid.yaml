@@ -12,7 +12,7 @@ transform:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "3"
     LOG_LEVEL: DEBUG
-    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
+#    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
   join:
   - pfs:
