@@ -99,9 +99,10 @@ class GasCylinder(L0toL0p):
         coeffs = calval.findall("CalibrationCoefficient")
         for coeff in coeffs:
             name = coeff.find("Name").text
-            value = coeff.find("Value").text
+            if name not in self.cal_term_map:
+                continue
             term = self.cal_term_map[name]
-            coeff_dict[term] = value
+            coeff_dict[term] = coeff.find("Value").text
 
     def get_data_filename(self, path: Path) -> str:
         loc = os.path.basename(path)
