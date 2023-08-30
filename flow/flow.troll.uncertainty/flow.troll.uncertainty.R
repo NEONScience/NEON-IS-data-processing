@@ -78,7 +78,8 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2020/01/02')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2020/01/02') 
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/surfacewaterPhysical_group_path/2020/01/02') #uncertainty data
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=surfacewater","WndwInst=TRUE","WndwAgr=005|030")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -89,6 +90,8 @@
 #'     original creation
 #'   Nora Catolico (2023-03-03)
 #'     updated for no troll data use case
+#'   Nora Catolico (2023-08-30)
+#'     updated for inst SW outputs for L4 discharge
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -173,7 +176,7 @@ if(base::is.null(Para$DirSubCopy) || Para$DirSubCopy == 'NA'){
 
 
 #what are the expected subdirectories of each input path
-nameDirSub <- c('data','flags','location')
+nameDirSub <- c('data','flags','location','uncertainty_coef','uncertainty_data')
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
   base::paste0(nameDirSub, collapse = ',')
@@ -203,7 +206,7 @@ if(length(WndwAgr)>0){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  #idxDirIn<-DirIn[3] #for testing
+  #idxDirIn<-DirIn[1] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -211,10 +214,8 @@ for (idxDirIn in DirIn){
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- timeBgn + base::as.difftime(1,units='days')
   idxDirOut <- base::paste0(DirOut,InfoDirIn$dirRepo)
-  if(Context=="GW"){
-    idxDirOutData <- base::paste0(idxDirOut,'/data')
-    base::dir.create(idxDirOutData,recursive=TRUE)
-  }
+  idxDirOutData <- base::paste0(idxDirOut,'/data')
+  base::dir.create(idxDirOutData,recursive=TRUE)
   idxDirOutSciStats <- base::paste0(idxDirOut,'/sci_stats')
   base::dir.create(idxDirOutSciStats,recursive=TRUE)
   idxDirOutUcrt <- base::paste0(idxDirOut,'/uncertainty_data')
@@ -290,10 +291,12 @@ for (idxDirIn in DirIn){
     trollData$startDateTime<-as.POSIXct(troll_all$readout_time)
     trollData$endDateTime<-as.POSIXct(troll_all$readout_time)
     
+    #calculate water column height
+    trollData$waterColumn<-1000*trollData$pressure/(density*gravity)
     #calculate water table elevation
     trollData$elevation<-NA
     if(length(LocationHist)>0){
-      trollData$elevation<-trollData$sensorElevation+trollData$z_offset+(1000*trollData$pressure/(density*gravity))
+      trollData$elevation<-trollData$sensorElevation+trollData$z_offset+trollData$waterColumn
     }
     
     #Define troll type
@@ -307,31 +310,32 @@ for (idxDirIn in DirIn){
     #Create dataframe for output data
     dataOut <- trollData
     if(sensor=="aquatroll200"){
-      dataCol <- c("startDateTime","endDateTime","pressure","temperature","conductivity","elevation")
+      dataCol <- c("startDateTime","endDateTime","pressure","temperature","conductivity","waterColumn","elevation")
     }else{
-      dataCol <- c("startDateTime","endDateTime","pressure","temperature","elevation") 
+      dataCol <- c("startDateTime","endDateTime","pressure","temperature","waterColumn","elevation") 
     }
     dataOut <- dataOut[,dataCol]
   }
   
   
-  #Write out instantaneous data for groundwater only
-  #dataOut[,-1] <-round(dataOut[,-1],2)
-  
+  #Write out instantaneous data
+  if(Context=='GW'){
     rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
                                                      NameFile = base::paste0(idxDirOutData,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_005.parquet"), 
                                                      Schm = SchmDataOut),silent=FALSE)
-    if(any(grepl('try-error',class(rptDataOut)))){
-      log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
-      stop()
-    } else {
-      log$info("Data written out.")
-    }
+  }else{
+    rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
+                                                     NameFile = base::paste0(idxDirOutData,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_001.parquet"), 
+                                                     Schm = SchmDataOut),silent=FALSE)
+  }
   
-  
-  
-  
-  
+  if(any(grepl('try-error',class(rptDataOut)))){
+    log$error(base::paste0('Writing the output data failed: ',attr(rptDataOut,"condition")))
+    stop()
+  } else {
+    log$info("Data written out.")
+  }
+
   ### Read in flags
   flags <- NULL
   dirFlags <- base::paste0(idxDirIn,'/flags')
@@ -347,7 +351,7 @@ for (idxDirIn in DirIn){
   flagDataCol<-c("readout_time","pressure","elevation","pressureSpikeQF")
   flagData<-trollData[,flagDataCol]
   
-  #####Calculate 30-min average troll data mean while excluding points that fail the spike test. Output in Sci_stats.
+  #####Calculate 5&30-min average troll data mean while excluding points that fail the spike test. Output in Sci_stats.
   if(length(WndwAgr)>0){
     #determine averaging window
     timeMeas <- base::as.POSIXlt(flagData$readout_time)# Pull out time variable
@@ -475,7 +479,6 @@ for (idxDirIn in DirIn){
   
   
   ######## Uncert for instantaneous 5-min groundwater aqua troll data #######
-  #surface water does not have instantaneous L1 output
   if(WndwInst==TRUE){
     if(sensor=="aquatroll200"){
       #temp and pressure uncert calculated earlier in pipeline
@@ -521,18 +524,33 @@ for (idxDirIn in DirIn){
     uncertaintyData$startDateTime<-uncertaintyData$readout_time
     timeDiff<-uncertaintyData$startDateTime[2]-uncertaintyData$startDateTime[1]
     uncertaintyData$endDateTime<-uncertaintyData$readout_time+timeDiff
-    ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn")
+    if(sensor=='aquatroll200'){
+      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn")
+    }else{
+      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn")
+    }
     ucrtOut_inst <- uncertaintyData[,ucrtCol_inst]
     #standardize naming
-    names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
-    
+    if(sensor=='aquatroll200'){
+      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
+    }else{
+      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert")
+    }
     #write out instantaneous uncertainty data
     #ucrtOut_inst[,-c(1:2)] <-round(ucrtOut_inst[,-c(1:2)],2)
     ucrtOut_inst$startDateTime<-as.POSIXct(ucrtOut_inst$startDateTime)
     ucrtOut_inst$endDateTime<-as.POSIXct(ucrtOut_inst$endDateTime)
-    rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
-                                                          NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"), 
-                                                          Schm = SchmUcrtOut),silent=FALSE)
+    #GW inst is 5-min, SW inst is 1-min
+    if(Context=='GW'){
+      rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
+                                                            NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"), 
+                                                            Schm = SchmUcrtOut),silent=FALSE)
+    }else{
+      rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
+                                                            NameFile = base::paste0(idxDirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_001.parquet"), 
+                                                            Schm = SchmUcrtOut),silent=FALSE)
+    }
+    
     
     if(any(grepl('try-error',class(ucrtOut_inst)))){
       log$error(base::paste0('Writing the output data failed: ',attr(ucrtOut_inst,"condition")))
