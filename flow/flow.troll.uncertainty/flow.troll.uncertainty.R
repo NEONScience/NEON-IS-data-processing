@@ -78,9 +78,9 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2020/01/02')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2020/01/02')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=surfacewater","WndwInst=TRUE","WndwAgr=005|030")
 #' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
@@ -173,7 +173,7 @@ if(base::is.null(Para$DirSubCopy) || Para$DirSubCopy == 'NA'){
 
 
 #what are the expected subdirectories of each input path
-nameDirSub <- c('data','flags','location','uncertainty_coef','uncertainty_data')
+nameDirSub <- c('data','flags','location')
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
   base::paste0(nameDirSub, collapse = ',')
@@ -203,7 +203,7 @@ if(length(WndwAgr)>0){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  #idxDirIn<-DirIn[1] #for testing
+  #idxDirIn<-DirIn[3] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -317,7 +317,7 @@ for (idxDirIn in DirIn){
   
   #Write out instantaneous data for groundwater only
   #dataOut[,-1] <-round(dataOut[,-1],2)
-  if(Context == "GW"){
+  
     rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
                                                      NameFile = base::paste0(idxDirOutData,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_005.parquet"), 
                                                      Schm = SchmDataOut),silent=FALSE)
@@ -327,7 +327,7 @@ for (idxDirIn in DirIn){
     } else {
       log$info("Data written out.")
     }
-  }
+  
   
   
   
