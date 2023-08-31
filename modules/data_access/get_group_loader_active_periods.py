@@ -21,6 +21,7 @@ def get_group_loader_active_periods(connector: DbConnector, group_id: int) -> Li
             group_active_period 
         where 
             group_id = %s
+        order by start_date
     '''
     periods: List[ActivePeriod] = []
     connection = connector.get_connection()

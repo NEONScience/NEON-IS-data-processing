@@ -53,6 +53,7 @@ def get_named_locations(connector: DbConnector, location_type: str, source_type:
              type.type_name = %s
          and
              is_sensor_type.avro_schema_name = %s
+         order by nam_locn.nam_locn_id
     '''
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, (location_type, source_type))

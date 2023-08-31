@@ -47,7 +47,7 @@ def load_srfs(out_path: Path, get_srfs: Callable[[str], Iterator[Srf]], group_pr
                     path.parent.mkdir(parents=True, exist_ok=True)
                     srf_data = {}
                     srf_data.update({'science_review_flags': srfs_group})
-                    json_data = json.dumps(srf_data, indent=4, sort_keys=False, default=str)
+                    json_data = json.dumps(srf_data, indent=4, sort_keys=True, default=str)
                     with open(path, 'w') as file:
                         file.write(json_data)
         

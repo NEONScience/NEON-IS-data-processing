@@ -23,6 +23,7 @@ def get_active_periods(connector: DbConnector, named_location_id: int) -> List[A
             {schema}.active_period 
         where 
             named_location_id = %s
+        order by start_date
     '''
     periods: List[ActivePeriod] = []
     with closing(connection.cursor()) as cursor:
