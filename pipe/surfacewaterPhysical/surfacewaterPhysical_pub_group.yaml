@@ -1,0 +1,69 @@
+---
+pipeline:
+  name: surfacewaterPhysical_pub_group
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/pub_grouper:v2.0.1
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - '# Run first module - pub_grouper (using environment variables below as input parameters)'
+  - python3 -m pub_grouper.pub_grouper_main
+  env:
+    # Environment variables for 1st module: pub_grouper.
+    LOG_LEVEL: INFO
+    OUT_PATH: "/pfs/out"
+    YEAR_INDEX: '3' # Also shared with pub_transform
+    GROUP_INDEX: '6'
+    DATA_TYPE_INDEX: '7' # Also shared with pub_transform
+    GROUP_METADATA_DIR: group 
+    PUBLOC_KEY: site
+    LINK_TYPE: SYMLINK
+    
+input: 
+  join:
+  - pfs: 
+      name: DATA_PATH
+      repo: surfacewaterPhysical_level1_group_consolidate_srf
+      # Glob should be monthly and joined with pub_control to hold pub until month is likely complete
+      glob: /(*/*)
+      joinOn: $1
+  - pfs: 
+      repo: surfacewaterPhysical_cron_monthly_and_pub_control
+      glob: /(*/*)
+      joinOn: $1
+      empty_files: true
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 700M
+  cpu: 1
+resource_limits:
+  memory: 1.5G
+  cpu: 1.8
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
