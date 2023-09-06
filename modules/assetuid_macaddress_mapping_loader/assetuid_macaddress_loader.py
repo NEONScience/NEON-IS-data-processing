@@ -12,19 +12,28 @@ log = get_logger()
 def load() -> None:
     out_path: str = os.environ['OUTPUT_PATH']
     region: str = os.environ['REGION']
+    cdsWebappURL: str = os.environ['CDSWEBAPP_URL']
     log_level: str = os.environ['LOG_LEVEL']
     log_config.configure(log_level)
     source_type: str = os.environ['SOURCE_TYPE']
     log.debug(f'out_path: {out_path}')
+    cdsWebappurl: str = os.environ['CDSWEBAPP_URL']
+    
+    
+    db_config = read_from_mount(Path('/var/db_secret'))
+    with closing(DbConnector(db_config)) as connector:
+        get_thresholds_partial = partial(get_thresholds, connector=connector)
+        load_thresholds(get_thresholds_partial, out_path, term=term, context=context)
+    url_path = f"{cdsWebappURL}?sensor-type-name={source_type}"
 
-    if region == "int":
-        url_path = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    elif region == "cert":
-        url_path = f"http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    elif region == "prod":
-        url_path = f"http://den-prodcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    else:
-        url_path = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
+    #if region == "int":
+        #url_path = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
+    #elif region == "cert":
+        #url_path = f"http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
+    #elif region == "prod":
+     #   url_path = f"http://den-prodcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
+    #else:
+        #url_path = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
     log.debug(f"url_path is {url_path}")
     response = requests.get(url_path, headers={'Accept': 'application/json'})
     if response.status_code == 200:
