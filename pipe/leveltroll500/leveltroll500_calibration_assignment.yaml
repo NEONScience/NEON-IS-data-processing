@@ -22,14 +22,25 @@ input:
       glob: /leveltroll500/*
   - pfs:
       name: FILE_YEAR
-      repo: leveltroll500_data_years
+      repo: leveltroll500_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
-  constant: 4
+  constant: 5
+autoscaling: true
 resource_requests:
   memory: 200M
   cpu: 0.8
-autoscaling: true
+resource_limits:
+  memory: 600M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 5G
+  cpu: 0.5
+sidecar_resource_limits:
+  memory: 8Gi
+  cpu: 1.2
+datum_set_spec:
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -47,15 +58,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"3G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "2"
-    }
-  ]
-

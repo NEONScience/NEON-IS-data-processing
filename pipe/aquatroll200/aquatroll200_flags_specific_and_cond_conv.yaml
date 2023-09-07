@@ -15,9 +15,9 @@ transform:
   - mkdir -p /tmp/pfs/interimDataCopy
   - '# Run first module - troll_flags_specific '
   - Rscript ./flow.troll.flags.R
-    DirIn=$DIR_IN
-    DirOut=/tmp/pfs/interimData
-    FileSchmQf=$SCHEMA_FLAGS_SPEC
+      DirIn=$DIR_IN
+      DirOut=/tmp/pfs/interimData
+      FileSchmQf=$SCHEMA_FLAGS_SPEC
   - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
   - cp -rL /tmp/pfs/interimData/* /tmp/pfs/interimDataCopy
   - rm -r -f /tmp/pfs/interimData/*
@@ -48,7 +48,7 @@ input:
       repo: troll_shared_avro_schemas
       glob: /troll_shared/flags_troll_specific_temp.avsc
 parallelism_spec:
-  constant: 1
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 500M

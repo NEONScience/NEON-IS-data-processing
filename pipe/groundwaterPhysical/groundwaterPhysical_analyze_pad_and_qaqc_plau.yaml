@@ -20,14 +20,14 @@ transform:
   - rm -r -f /tmp/pfs/padded_analyzer 
   - '# Run second module - qaqc plausibility'
   - Rscript ./flow.qaqc.plau.R
-    DirIn=/tmp/pfs/padded_analyzerCopy
-    DirOut=/pfs/out
-    DirErr=/pfs/out/errored_datums
-    FileSchmQf=$SCHEMA_FLAGS
-    "TermTest1=pressure:null|gap|range|step|spike|persistence"
-    "TermTest2=temperature:null|gap|range|step|spike|persistence"
-    "TermTest3=conductivity:null|gap|range|step|spike|persistence"
-    DirSubCopy=location
+      DirIn=/tmp/pfs/padded_analyzerCopy
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      FileSchmQf=$SCHEMA_FLAGS
+      "TermTest1=pressure:null|gap|range|step|spike|persistence"
+      "TermTest2=temperature:null|gap|range|step|spike|persistence"
+      "TermTest3=conductivity:null|gap|range|step|spike|persistence"
+      DirSubCopy=location
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /tmp/pfs/padded_analyzer

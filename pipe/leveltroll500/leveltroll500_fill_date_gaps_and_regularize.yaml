@@ -45,7 +45,7 @@ transform:
     EMPTY_FILE_TYPE_INDEX: '4'
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
     # Environment variables for regularizer
-    PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
+    PARALLELIZATION_INTERNAL: '3' # Parallelization within R. If increased, adjust resource requests appropriately.
 input:
   cross:
   - pfs:
@@ -68,6 +68,7 @@ input:
           repo: leveltroll500_location_active_dates_assignment
           # For full-scale daily processing, glob should be /leveltroll500/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /leveltroll500/((*/*/*)/(CFGLOC101669|CFGLOC101671))
           glob: /leveltroll500/((*/*/*)/(CFGLOC101669|CFGLOC101671))
+          # glob: /leveltroll500/(*/*/*)
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           joinOn: $2
           # joinOn: $1
@@ -81,19 +82,19 @@ input:
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
-  constant: 1
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 800M
-  cpu: 1.1
-resource_limits:
   memory: 2G
-  cpu: 2
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
 sidecar_resource_requests:
-  memory: 1G
+  memory: 3G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 4Gi
+  memory: 6Gi
   cpu: 1.2
 datum_set_spec:
   number: 1

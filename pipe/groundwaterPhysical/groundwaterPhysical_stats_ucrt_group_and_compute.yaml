@@ -4,6 +4,7 @@ pipeline:
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:v1.0.3
+  #image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -14,24 +15,24 @@ transform:
   - python3 -m filter_joiner.filter_joiner_main
   - '# Run second module - basic stats'
   - Rscript ./flow.stat.basc.R 
-    DirIn=/tmp/pfs/filter_joined
-    DirOut=/pfs/out
-    DirErr=/pfs/out/errored_datums
-    FileSchmStat=$FILE_SCHEMA_STATS
-    "WndwAgr=030"
-    "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr"
-    "TermStat2=conductivity:mean|minimum|maximum|variance|numPts|stdEr"
-    DirSubCopy=location
+      DirIn=/tmp/pfs/filter_joined
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      FileSchmStat=$FILE_SCHEMA_STATS
+      "WndwAgr=030"
+      "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr"
+      "TermStat2=conductivity:mean|minimum|maximum|variance|numPts|stdEr"
+      DirSubCopy=location
   - '# Run third module - troll-specific uncertainty comps'
   - Rscript ./flow.troll.uncertainty.R
-    DirIn=/tmp/pfs/filter_joined
-    DirOut=/pfs/out
-    Context=groundwater
-    WndwInst=TRUE
-    WndwAgr=030
-    FileSchmData=$SCHEMA_DATA_TROLL
-    FileSchmUcrt=$SCHEMA_UCRT_TROLL
-    FileSchmSciStats=$SCHEMA_SCI_TROLL
+      DirIn=/tmp/pfs/filter_joined
+      DirOut=/pfs/out
+      Context=groundwater
+      WndwInst=TRUE
+      WndwAgr=030
+      FileSchmData=$SCHEMA_DATA_TROLL
+      FileSchmUcrt=$SCHEMA_UCRT_TROLL
+      FileSchmSciStats=$SCHEMA_SCI_TROLL
   env:
     # Environment variables for filter-joiner
     CONFIG: |
@@ -89,7 +90,7 @@ input:
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 2
+  constant: 5
 resource_requests: 
   memory: 800M
   cpu: 2.2

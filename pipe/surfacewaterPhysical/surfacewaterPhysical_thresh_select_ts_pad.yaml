@@ -15,14 +15,14 @@ transform:
   - mkdir -p /tmp/threshold_select
   - '# Run first module - threshold_select'
   - Rscript ./flow.thsh.slct.R 
-    DirIn=$REPO_LOCATIONS
-    DirOut=/tmp/threshold_select
-    DirErr=/pfs/out/errored_datums
-    FileThsh=$FILE_THRESHOLDS
-    "TermCtxt1=pressure|surfacewater"
-    "TermCtxt2=temperature|surfacewater"
-    "TermCtxt3=conductivity|surfacewater"
-    "DirSubCopy=location|data"
+      DirIn=$REPO_LOCATIONS
+      DirOut=/tmp/threshold_select
+      DirErr=/pfs/out/errored_datums
+      FileThsh=$FILE_THRESHOLDS
+      "TermCtxt1=pressure|surfacewater"
+      "TermCtxt2=temperature|surfacewater"
+      "TermCtxt3=conductivity|surfacewater"
+      "DirSubCopy=location|data"
   - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
   - cp -rL /tmp/threshold_select /tmp/threshold_selectCopy 
   - rm -r -f /tmp/threshold_select 
@@ -57,10 +57,10 @@ resource_limits:
   memory: 2G
   cpu: 5
 sidecar_resource_requests:
-  memory: 2G
+  memory: 4G
   cpu: 0.3
 sidecar_resource_limits:
-  memory: 4Gi
+  memory: 6Gi
   cpu: 1.2
 datum_set_spec:
   number: 1

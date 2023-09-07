@@ -74,19 +74,19 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 1
+  constant: 3
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 1
+  memory: 2.2G
+  cpu: 3.3
 resource_limits:
-  memory: 1G
-  cpu: 1.8
+  memory: 4G
+  cpu: 4.5
 sidecar_resource_requests:
-  memory: 1G
+  memory: 5G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 2Gi
+  memory: 7Gi
   cpu: 1.2
 datum_set_spec:
   number: 1
