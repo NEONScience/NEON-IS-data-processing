@@ -11,7 +11,7 @@ transform:
   - '#!/bin/bash'
   - python3 -m group_path.group_path_main
   env:
-    GROUP: par-quantum-line
+    GROUP: par-quantum-line_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
     GROUP_ASSIGNMENT_YEAR_INDEX: '4'
