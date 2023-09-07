@@ -11,7 +11,7 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2021-11-29" # Inclusive
+    START_DATE: "2021-07-29" # Inclusive
     #END_DATE: "2023-06-01"
     SOURCE_TYPE: "hmp155"
   stdin:
@@ -35,10 +35,10 @@ resource_limits:
   memory: 300M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 200M
+  memory: 500M
   cpu: 0.2
 sidecar_resource_limits:
-  memory: 600M
+  memory: 1G
   cpu: 1
 autoscaling: true
 scheduling_spec:

@@ -35,10 +35,10 @@ resource_limits:
   memory: 300M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 200M
+  memory: 500M
   cpu: 0.2
 sidecar_resource_limits:
-  memory: 600M
+  memory: 1G
   cpu: 1
 autoscaling: true
 scheduling_spec:
