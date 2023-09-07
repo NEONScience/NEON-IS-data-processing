@@ -4,7 +4,7 @@ transform:
   cmd:
     - /bin/bash
   env:
-    GROUP_PREFIX: par-quantum-line
+    GROUP_PREFIX: par-quantum-line_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
   image: quay.io/battelleecology/group_loader:08f4910889b9ef4daa1cca10b307059f98c9ff5d
