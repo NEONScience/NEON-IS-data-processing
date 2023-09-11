@@ -9,8 +9,8 @@ on:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 jobs:
   update-pipelines:
-    runs-on: 
-      group: gcp-org-runners
+    runs-on: self-hosted
+    # group: gcp-org-runners
     # runs-on: ubuntu-latest 
     env:
       PACHD_ADDRESS: grpcs://pachd.nonprod.gcp.neoninternal.org:443
