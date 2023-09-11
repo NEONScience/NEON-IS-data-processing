@@ -33,6 +33,7 @@ def get_assets(connector: DbConnector, source_type: str) -> Iterator[Asset]:
              is_asset_definition.sensor_type_name = is_sensor_type.sensor_type_name
          and 
              is_sensor_type.avro_schema_name = %s
+         order by asset_uid 
     '''
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [source_type])

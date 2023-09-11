@@ -8,12 +8,14 @@ from flow_sae_trst_dp0p.pressuretransducer import PressureTransducer
 class PressureTransducerCylinder(PressureTransducer):
 
     """
-    specific class for ECSE presValiRegInStor which includes cylinder pressure flag
+    specific class for ECSE presValiRegInStor (cylinder pressure 00111)
+    which includes cylinder pressure flag
+    output terms include presDiff and qfPresDiff
     """
     gas_threshold = 2757903
 
     def data_conversion(self, filename) -> pd.DataFrame:
-        outputdf = super.data_conversion(filename)
+        outputdf = super().data_conversion(filename)
         outputdf['qfPresDiff'] = outputdf['presDiff'].apply(lambda x: -1 if math.isnan(x) else self.get_qf_pressure(x))
 
         return outputdf
@@ -28,8 +30,8 @@ class PressureTransducerCylinder(PressureTransducer):
 def main() -> None:
 
     """
-    output terms include presDiff and qfPresDiff, applicable for data products
-    of ECSE: presValiRegInStor (cylinder pressure 00111)
+    , applicable for data products
+    of ECSE: presValiRegInStor
     """
     data_columns = {'pressure': 'presDiff'}
     presTrans = PressureTransducerCylinder(data_columns)

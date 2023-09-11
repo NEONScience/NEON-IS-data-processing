@@ -84,11 +84,13 @@ pachctl run cron $source_type'_cron_daily_and_date_control'
 
 
 # Bump to full scale for a few days
-# *** First - edits the date_gap_filler pipeline spec to remove restriction on particular CFGLOCs. ***
-# *** Also make any desired edits to the cron_daily_and_date_control pipeline spec to adjust date range 
+# *** First - edit the date_gap_filler pipeline spec to remove restriction on particular CFGLOCs. ***
+# *** Also make any desired edits to the cron_daily_and_date_control pipeline and cron_monthly_and_pub_control
+# pipeline specs to adjust date ranges 
 pachctl start transaction
 pachctl update pipeline --reprocess -f $spec_path_source_type/$source_type'_cron_daily_and_date_control.yaml'
 pachctl update pipeline -f $spec_path_source_type/$source_type'_fill_date_gaps_and_regularize.yaml'
+pachctl update pipeline --reprocess -f $spec_path_product/$product'_cron_monthly_and_pub_control.yaml'
 pachctl finish transaction
 
 # Add 1 day at full scale to evaluate resource requests in normal operations

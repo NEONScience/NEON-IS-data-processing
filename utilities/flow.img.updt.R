@@ -16,10 +16,10 @@ arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Run interatively without command line arguments
 if(length(arg) == 0){
-  pathBgn <- '~/R/NEON-IS-data-processing-homeDir/'
-  typeFile <- 'Dockerfile' # also, e.g. ".yaml"
-  imgBase <- "quay.io/battelleecology/neon-is-pack-pub-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
-  tagNew <- "v1.1.0"
+  pathBgn <- '~/git/NEON-IS-data-processing/'
+  typeFile <- '.yaml' # also, e.g. ".yaml"
+  imgBase <- "quay.io/battelleecology/location_loader" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
+  tagNew <- "NSE-9876.2"
   ImgBld <- FALSE # Build,tag, push downstream module images and update pipeline specs?
 } else {
   pathBgn <- arg[1]
