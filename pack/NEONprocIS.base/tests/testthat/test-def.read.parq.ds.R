@@ -13,7 +13,7 @@ test_that("Read parquet dataset",
                                                     Df=TRUE)
             testthat::expect_true ("data.frame" %in% class(ds))
             testthat::expect_true(names(ds)[3]=='readout_time')
-            testthat::expect_true(utils::tail(ds$readout_time,1) < ds$readout_time[1])
+            testthat::expect_true(as.POSIXct(utils::tail(ds$readout_time,1)) < as.POSIXct(ds$readout_time[1]))
             
             # Successful: read in dataset as data frame and sort time
             ds <- NEONprocIS.base::def.read.parq.ds(fileIn = inputPath,
