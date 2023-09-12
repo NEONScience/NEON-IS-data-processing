@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/assetuid_macaddress_loader:NSE-9908.1
+  image: quay.io/battelleecology/assetuid_macaddress_loader:NSE-9908
   cmd:
   - /bin/bash
   stdin:
@@ -14,11 +14,13 @@ transform:
     OUTPUT_PATH: /pfs/out
     REGION: cert
     SOURCE_TYPE: li7200_stcdd
-    CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/assets
+    CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/
     LOG_LEVEL: DEBUG
   secrets:
   - name: db-pdr-secret
     mount_path: /var/db_secret
+  - name: cds-secret
+    mount_path: /var/cds_secret
 input:
   pfs:
     repo: li7200_cron_daily_and_date_control_tick

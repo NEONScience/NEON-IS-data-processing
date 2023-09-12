@@ -15,9 +15,13 @@ def load() -> None:
     log_level: str = os.environ['LOG_LEVEL']
     log_config.configure(log_level)
     source_type: str = os.environ['SOURCE_TYPE']
-    cdsWebapp_url: str = os.environ['CDSWEBAPP_URL']
     log.debug(f'out_path: {out_path}')
-    url_path = f"{cdsWebapp_url}?sensor-type-name={source_type}"
+    
+
+    mount_path= Path('/var/cds_secret')
+    cds_hostname_file = Path(mount_path, "hostname")
+    cds_url_path = cds_hostname_file.read_text()
+    url_path = f"{cds_url_path}/assets?sensor-type-name={source_type}"
 
     log.debug(f"url_path is {url_path}")
     response = requests.get(url_path, headers={'Accept': 'application/json'})
