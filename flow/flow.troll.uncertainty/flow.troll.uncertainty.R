@@ -78,10 +78,10 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2020/01/02') 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/surfacewaterPhysical_group_path/2020/01/02') #uncertainty data
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2020/01/05') 
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_group_path/2020/01/05') #uncertainty data
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=surfacewater","WndwInst=TRUE","WndwAgr=005|030")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030")
 #' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
@@ -206,7 +206,7 @@ if(length(WndwAgr)>0){
 # Process each datum
 for (idxDirIn in DirIn){
   ##### Logging and initializing #####
-  #idxDirIn<-DirIn[1] #for testing
+  #idxDirIn<-DirIn[15] #for testing
   log$info(base::paste0('Processing path to datum: ',idxDirIn))
   
   # Gather info about the input directory (including date), and create base output directory
@@ -287,12 +287,21 @@ for (idxDirIn in DirIn){
         }
       }
       trollData<-troll_all
+      trollData$startDateTime<-as.POSIXct(troll_all$readout_time)
+      trollData$endDateTime<-as.POSIXct(troll_all$readout_time)
+      #calculate water column height
+      trollData$waterColumn<-1000*trollData$pressure/(density*gravity)
+    }else{
+      trollData$startDateTime<-as.POSIXct(trollData$readout_time)
+      trollData$endDateTime<-as.POSIXct(trollData$readout_time)
+      trollData$sensorElevation<-NA
+      trollData$z_offset<-NA
+      trollData$survey_uncert<-NA
+      trollData$real_world_uncert<-NA
+      trollData$waterColumn<-NA
     }
-    trollData$startDateTime<-as.POSIXct(troll_all$readout_time)
-    trollData$endDateTime<-as.POSIXct(troll_all$readout_time)
     
-    #calculate water column height
-    trollData$waterColumn<-1000*trollData$pressure/(density*gravity)
+    
     #calculate water table elevation
     trollData$elevation<-NA
     if(length(LocationHist)>0){
