@@ -36,6 +36,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-01-26)
 #     original creation
+#   Cove Sturtevant (2023-09-14)
+#     bug fix - location date-times were previously truncated to the day
 ##############################################################################################
 def.loc.geo.hist <- function(NameFile,log=NULL){
 
@@ -93,12 +95,12 @@ def.loc.geo.hist <- function(NameFile,log=NULL){
       if(base::is.null(locHistIdx$properties$start_date)){
         timeBgnIdx <- NA
       } else {
-        timeBgnIdx <- base::as.POSIXct(locHistIdx$properties$start_date,tz='GMT')
+        timeBgnIdx <- base::as.POSIXct(locHistIdx$properties$start_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
       }
       if(base::is.null(locHistIdx$properties$end_date)){
         timeEndIdx <- NA
       } else {
-        timeEndIdx <- base::as.POSIXct(locHistIdx$properties$end_date,tz='GMT')
+        timeEndIdx <- base::as.POSIXct(locHistIdx$properties$end_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
       }
       
       # Combine with other location properties in a different list
@@ -275,12 +277,12 @@ def.loc.geo.hist <- function(NameFile,log=NULL){
         if(base::is.null(locRef$properties$start_date)){
           timeBgnRef <- NA
         } else {
-          timeBgnRef <- base::as.POSIXct(locRef$properties$start_date,tz='GMT')
+          timeBgnRef <- base::as.POSIXct(locRef$properties$start_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
         }
         if(base::is.null(locRef$properties$end_date)){
           timeEndRef <- NA
         } else {
-          timeEndRef <- base::as.POSIXct(locRef$properties$end_date,tz='GMT')
+          timeEndRef <- base::as.POSIXct(locRef$properties$end_date,format='%Y-%m-%dT%H:%M:%SZ',tz='GMT')
         }
         
         # Combine with other location properties in a different list
