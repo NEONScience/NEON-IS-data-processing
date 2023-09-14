@@ -11,8 +11,8 @@
 # Define paths
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
 pipe_list_prefix='pipe_list_' # The prefix to the file name in each pipe folder that lists the pipelines in the DAG
-source_type='prt'
-product='tempSoil'
+source_type='aquatroll200'
+product='groundwaterPhysical'
 reprocess_flag="" # Use "--reprocess" to reprocess the pipelines, or use "" to update without reprocessing
 
 # Define paths based on base paths and product information above 

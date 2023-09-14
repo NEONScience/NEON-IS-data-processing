@@ -1,0 +1,28 @@
+name: update-pipelines-pqs1-parWaterSurface
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'pipe/pqs1/**'
+      - 'pipe/parWaterSurface/**'
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
+jobs:
+  update-pipelines:
+    runs-on: arc-neon-gke
+    # runs-on: ubuntu-latest 
+    env:
+      PACHD_ADDRESS: grpcs://pachd.nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.PipelineRobotToken }}
+      PATHS: 'pipe/pqs1,pipe/parWaterSurface' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
+      TRANSACTION: True
+    steps:
+      - uses: actions/checkout@v4
+      - run: ls -la
+      
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          cache: 'pip'
+      - run: pip install -r .github/workflow_scripts/update_dag_pipelines/requirements.txt
+      - run: python3 -u .github/workflow_scripts/update_dag_pipelines/update_dag_pipelines.py

@@ -29,8 +29,17 @@ input:
       repo: pqs1_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 64M
-  cpu: 0.5
+  memory: 100M
+  cpu: 1
+resource_limits:
+  memory: 300M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 500M
+  cpu: 0.2
+sidecar_resource_limits:
+  memory: 1G
+  cpu: 1
 autoscaling: true
 scheduling_spec:
   node_selector:
@@ -49,14 +58,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]

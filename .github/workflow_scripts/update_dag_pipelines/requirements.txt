@@ -1,0 +1,5 @@
+# Python 3.10
+python-pachyderm
+certifi
+PyYAML
+environs
