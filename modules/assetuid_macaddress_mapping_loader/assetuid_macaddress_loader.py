@@ -16,15 +16,13 @@ def load() -> None:
     log_config.configure(log_level)
     source_type: str = os.environ['SOURCE_TYPE']
     log.debug(f'out_path: {out_path}')
+    
 
-    if region == "int":
-        url_path = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    elif region == "cert":
-        url_path = f"http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    elif region == "prod":
-        url_path = f"http://den-prodcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
-    else:
-        url_path = f"http://den-intcdsllb-1.ci.neoninternal.org/cdsWebApp/assets?sensor-type-name={source_type}"
+    mount_path= Path('/var/cds_secret')
+    cds_hostname_file = Path(mount_path, "hostname")
+    cds_url_path = cds_hostname_file.read_text()
+    url_path = f"{cds_url_path}/assets?sensor-type-name={source_type}"
+
     log.debug(f"url_path is {url_path}")
     response = requests.get(url_path, headers={'Accept': 'application/json'})
     if response.status_code == 200:
