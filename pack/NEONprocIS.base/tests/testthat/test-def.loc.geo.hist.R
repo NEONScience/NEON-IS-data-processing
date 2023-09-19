@@ -81,6 +81,8 @@ test_that("   Read sensor locations json file and return the geolocation history
   locGeoHist <- NEONprocIS.base::def.loc.geo.hist(NameFile=NameFileIn)
   testthat::expect_true (is.list(locGeoHist))
   testthat::expect_match(names(locGeoHist), locMeta$name) 
+  testthat::expect_true(locGeoHist$CFGLOC108440[[1]]$start_date == as.POSIXct("2010-01-01 13:49:00",tz="GMT"))
+  testthat::expect_true(locGeoHist$CFGLOC108440[[1]]$reference_location[[1]]$end_date == as.POSIXct("2010-01-02 15:16:12",tz="GMT"))
   
   # Happy path #4: a location json with #level= 2
   cat("\n       |== a location json with #level= 2                  ==|\n")
