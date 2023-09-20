@@ -127,7 +127,7 @@ class PubTransformerTest(TestCase):
         basic_pattern = 'NEON.D10.CPER.DP1.00066.001.001.000.001.table001.2019-05-24.basic.csv'
         self.assertTrue(len(out_files) == 2)
         self.assertTrue(fnmatch.fnmatch(out_files[0], basic_pattern) | fnmatch.fnmatch(out_files[1], basic_pattern))
-        #reset the director
+        #reset the directory
         os.chdir('/')
 
     def tearDown(self):
