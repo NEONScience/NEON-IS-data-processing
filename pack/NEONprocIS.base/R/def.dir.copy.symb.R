@@ -78,6 +78,8 @@ def.dir.copy.symb <- function(DirSrc,
     }
   }
   
+  if(base::length(DirSrc) == 0){return()}
+  
   # Check for relative paths
   rltvDirSrc <- base::substr(x=DirSrc,start=1,stop=1) != '/'
   rltvDirDest <- base::substr(x=DirDest,start=1,stop=1) != '/'
