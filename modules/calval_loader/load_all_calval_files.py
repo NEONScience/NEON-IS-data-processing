@@ -63,7 +63,11 @@ def load() -> None:
                                 print("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
                                 # route datum to pfs/errored on ERROR
                                 err_msg = sys.exc_info()
-                                err_datum_path(err=err_msg,DirDatm=path,DirErrBase='pfs/errored',RmvDatmOut=TRUE,
+                                DirDatm = path
+                                # 
+                                # DirDatm = re.findall(r"[A-Za-z0-9]*/[A-Za-z0-9]*/[0-9]{4}/[0-9]{2}",path)
+                                # DirDatm = ''.join(DirDatm)
+                                err_datum_path(err=err_msg,DirDatm=DirDatm,DirErrBase='pfs/errored',RmvDatmOut=TRUE,
                                                DirOutBase=output_path)
 
 
