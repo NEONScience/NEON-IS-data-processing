@@ -65,7 +65,7 @@ def load() -> None:
                                 err_msg = sys.exc_info()
                                 DirDatm = path
                                 # 
-                                # DirDatm = re.findall(r"[A-Za-z0-9]*/[A-Za-z0-9]*/[0-9]{4}/[0-9]{2}",path)
+                                # DirDatm = re.findall(r"[A-Za-z0-9]*/[A-Za-z0-9]*/[0-9]{4}/[0-9]{2}", DirDatm)
                                 # DirDatm = ''.join(DirDatm)
                                 err_datum_path(err=err_msg,DirDatm=DirDatm,DirErrBase='pfs/errored',RmvDatmOut=TRUE,
                                                DirOutBase=output_path)
