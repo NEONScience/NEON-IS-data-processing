@@ -69,7 +69,7 @@ def load() -> None:
                                 # 'pfs/in_path/2023/01/07/8/1234567_456_435.txt
                                 # DirDatm = re.findall(r"[A-Za-z0-9]*/[0-9]{4}/[0-9]{2}/[0-9]{1}", DirDatm)
                                 # DirDatm = ''.join(DirDatm)
-                                err_datum_path(err=err_msg,DirDatm=DirDatm,DirErrBase='pfs/errored',RmvDatmOut=TRUE,
+                                err_datum_path(err=err_msg,DirDatm=DirDatm,DirErrBase='pfs/errored',RmvDatmOut=True,
                                                DirOutBase=output_path)
 
 
