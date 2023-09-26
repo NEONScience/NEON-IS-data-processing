@@ -64,8 +64,10 @@ def load() -> None:
                                 # route datum to pfs/errored on ERROR
                                 err_msg = sys.exc_info()
                                 DirDatm = path
-                                # 
-                                # DirDatm = re.findall(r"[A-Za-z0-9]*/[A-Za-z0-9]*/[0-9]{4}/[0-9]{2}", DirDatm)
+                                # an example of in_path file is,
+                                # 'pfs/pqs1_calibration_list_files/2023/01/07/8/1234567_456_435.txt or
+                                # 'pfs/in_path/2023/01/07/8/1234567_456_435.txt
+                                # DirDatm = re.findall(r"[A-Za-z0-9]*/[0-9]{4}/[0-9]{2}/[0-9]{1}", DirDatm)
                                 # DirDatm = ''.join(DirDatm)
                                 err_datum_path(err=err_msg,DirDatm=DirDatm,DirErrBase='pfs/errored',RmvDatmOut=TRUE,
                                                DirOutBase=output_path)
