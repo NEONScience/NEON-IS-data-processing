@@ -78,8 +78,8 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2020/01/05') 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_group_path/2020/01/05') #uncertainty data
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2020/01/10') 
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/groundwaterPhysical_group_path/2020/01/10') #uncertainty data
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","Context=groundwater","WndwInst=TRUE","WndwAgr=030")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -92,6 +92,8 @@
 #'     updated for no troll data use case
 #'   Nora Catolico (2023-08-30)
 #'     updated for inst SW outputs for L4 discharge
+#'   Nora Catolico (2023-09-26)
+#'     updated for multiple sensors in one day 
 ##############################################################################################
 # Start logging
 log <- NEONprocIS.base::def.log.init()
@@ -176,7 +178,7 @@ if(base::is.null(Para$DirSubCopy) || Para$DirSubCopy == 'NA'){
 
 
 #what are the expected subdirectories of each input path
-nameDirSub <- c('data','flags','location','uncertainty_coef','uncertainty_data')
+nameDirSub <- c('data','flags','location')
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
   base::paste0(nameDirSub, collapse = ',')
@@ -233,98 +235,112 @@ for (idxDirIn in DirIn){
     log$debug(base::paste0("Reading in: ",dirLocTroll))
   }
   
+  #add incolumns that will be calculated
+  trollData$startDateTime<-as.POSIXct(trollData$readout_time)
+  trollData$endDateTime<-as.POSIXct(trollData$readout_time)
+  trollData$sensorElevation<-NA
+  trollData$z_offset<-NA
+  trollData$survey_uncert<-NA
+  trollData$real_world_uncert<-NA
+  trollData$waterColumn<-NA
+  trollData$elevation<-NA
+  ###### values for computing water table elevation. Function of calibrated pressure, gravity, and density of water
+  density <- 999  #m/s2 #future mod: temperature corrected density; conductivity correct density
+  gravity <- 9.81  #kg/m3 #future mod: site specific gravity
+  #incorporate location data
+  fileOutSplt <- base::strsplit(idxDirIn,'[/]')[[1]] # Separate underscore-delimited components of the file name
+  CFGLOC<-tail(x=fileOutSplt,n=1)
+  
   ##### Read in location data #####
   LocationData <- NULL
   dirLocation <- base::paste0(idxDirIn,'/location')
   dirLocLocation <- base::dir(dirLocation,full.names=TRUE)
   
-  #####if no "_locations" file then check that the data file is all NA's. If there is data, STOP. If NA's, move on.
-  if(base::length(dirLocLocation)<1){
-    #case where there are no files
-    log$debug(base::paste0('No troll location data files in ',dirLocation))
-  } else if(any(grepl("locations",dirLocLocation))){
-    # Choose the _locations.json file
-    LocationData <- base::paste0(dirLocLocation[grep("locations",dirLocLocation)])
-    log$debug(base::paste0("One datum found, reading in: ",LocationData))
-    LocationHist <- NEONprocIS.base::def.loc.geo.hist(LocationData, log = NULL)
-  } else { 
-    #case where there is only a CFGLOC file
-    if(length(unique(trollData$pressure))<=1 & is.na(unique(trollData$pressure)[1])){
-      #check that the data file is indeed empty then move on to next datum
-      log$debug(base::paste0('Troll data file is empty in',dirTroll, '. Moving on to next datum.'))
-      LocationHist <-NULL
-    }else{
-      log$debug(base::paste0('Data exists in troll data file. Location file is missing for ',dirTroll))
-      stop()
-    }
-  }
   
+  #Could be multiple source IDs in a day
+  sources<-unique(trollData$source_id[!is.na(trollData$source_id)])
   
-  ###### Compute water table elevation. Function of calibrated pressure, gravity, and density of water
-  density <- 999  #m/s2 #future mod: temperature corrected density; conductivity correct density
-  gravity <- 9.81  #kg/m3 #future mod: site specific gravity
-  
-  #incorporate location data
-  fileOutSplt <- base::strsplit(idxDirIn,'[/]')[[1]] # Separate underscore-delimited components of the file name
-  CFGLOC<-tail(x=fileOutSplt,n=1)
-  
-  # Which location history matches each readout_time
-  if(length(trollData)>0){
-    troll_all<-NULL
-    if(length(LocationHist$CFGLOC)>0){
-      for(i in 1:length(LocationHist$CFGLOC)){
-        startDate<-LocationHist$CFGLOC[[i]]$start_date
-        endDate<-LocationHist$CFGLOC[[i]]$end_date
-        troll_sub<-trollData[trollData$readout_time>=startDate & trollData$readout_time<endDate,]
-        troll_sub$sensorElevation<- LocationHist$CFGLOC[[i]]$geometry$coordinates[3]
-        troll_sub$z_offset<- LocationHist$CFGLOC[[i]]$z_offset
-        troll_sub$survey_uncert <- LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty` #includes survey uncertainty and hand measurements
-        troll_sub$real_world_uncert <-LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`  
-        if(i==1){
-          troll_all<-troll_sub
+  if(length(sources)>0){
+    for(n in 1:length(sources)){
+      source_n<-sources[n]
+      trollData_n<-trollData[!is.na(trollData$source_id) & trollData$source_id==source_n,]
+      #####if no "_locations" file then check that the data file is all NA's. If there is data, STOP. If NA's, move on.
+      if(base::length(dirLocLocation)<1){
+        #case where there are no files
+        log$debug(base::paste0('No troll location data files in ',dirLocation, 'for source id ',source_n))
+      } else if(any(grepl(source_n,dirLocLocation))){
+        # Choose the _locations.json file
+        LocationData <- base::paste0(dirLocLocation[grep(source_n,dirLocLocation)])
+        log$debug(base::paste0("location datum(s) found, reading in: ",LocationData))
+        LocationHist <- NEONprocIS.base::def.loc.geo.hist(LocationData, log = NULL)
+      } else { 
+        #case where there is only a CFGLOC file
+        LocationHist <-NULL
+        if(length(unique(trollData$pressure))<=1 & is.na(unique(trollData$pressure)[1])){
+          #check that the data file is indeed empty then move on to next datum
+          log$debug(base::paste0('Troll data file is empty in',dirTroll, '. Moving on to next datum.'))
         }else{
-          troll_all<-rbind(troll_all,troll_sub)
+          log$debug(base::paste0('Data exists in troll data file. Location file is missing for ',dirTroll))
+          stop()
         }
       }
-      trollData<-troll_all
-      trollData$startDateTime<-as.POSIXct(troll_all$readout_time)
-      trollData$endDateTime<-as.POSIXct(troll_all$readout_time)
-      #calculate water column height
-      trollData$waterColumn<-1000*trollData$pressure/(density*gravity)
-    }else{
-      trollData$startDateTime<-as.POSIXct(trollData$readout_time)
-      trollData$endDateTime<-as.POSIXct(trollData$readout_time)
-      trollData$sensorElevation<-NA
-      trollData$z_offset<-NA
-      trollData$survey_uncert<-NA
-      trollData$real_world_uncert<-NA
-      trollData$waterColumn<-NA
+      
+      # Which location history matches each readout_time
+      if(length(trollData_n$readout_time)>0){
+        trollData_all_n<-NULL
+        if(length(LocationHist$CFGLOC)>0){
+          for(i in 1:length(LocationHist$CFGLOC)){
+            startDate<-LocationHist$CFGLOC[[i]]$start_date
+            endDate<-LocationHist$CFGLOC[[i]]$end_date
+            trollData_subset<-trollData_n[trollData_n$readout_time>=startDate & trollData_n$readout_time<endDate,]
+            trollData_subset$sensorElevation<- LocationHist$CFGLOC[[i]]$geometry$coordinates[3]
+            trollData_subset$z_offset<- LocationHist$CFGLOC[[i]]$z_offset
+            trollData_subset$survey_uncert <- LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty` #includes survey uncertainty and hand measurements
+            trollData_subset$real_world_uncert <-LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`  
+            if(i==1){
+              trollData_all_n<-trollData_subset
+            }else{
+              trollData_all_n<-rbind(trollData_all_n,trollData_subset)
+            }
+          }
+          trollData_n<-trollData_all_n
+          #calculate water column height
+          trollData_n$waterColumn<-1000*trollData_n$pressure/(density*gravity)
+          #calculate water table elevation
+          trollData_n$elevation<-trollData_n$sensorElevation+trollData_n$z_offset+trollData_n$waterColumn
+        }
+      }
+      
+      if(n==1){
+        trollData_all<-trollData_n
+      }else{
+        trollData_all<-rbind(trollData_all,trollData_n)
+      }
     }
     
-    
-    #calculate water table elevation
-    trollData$elevation<-NA
-    if(length(LocationHist)>0){
-      trollData$elevation<-trollData$sensorElevation+trollData$z_offset+trollData$waterColumn
-    }
-    
-    #Define troll type
-    #include conductivity based on sensor type
-    if(grepl("aquatroll",idxDirIn)){
-      sensor<-"aquatroll200"
-    }else{
-      sensor<-"leveltroll500"
-    }
-    
-    #Create dataframe for output data
-    dataOut <- trollData
-    if(sensor=="aquatroll200"){
-      dataCol <- c("startDateTime","endDateTime","pressure","temperature","conductivity","waterColumn","elevation")
-    }else{
-      dataCol <- c("startDateTime","endDateTime","pressure","temperature","waterColumn","elevation") 
-    }
-    dataOut <- dataOut[,dataCol]
+    #add back in NA data
+    trollNA<-trollData[is.na(trollData$source_id),]
+    trollData<-rbind(trollData_all,trollNA)
+    trollData<-trollData[order(trollData$readout_time),]
   }
+  
+    
+  #Define troll type
+  #include conductivity based on sensor type
+  if(grepl("aquatroll",idxDirIn)){
+    sensor<-"aquatroll200"
+  }else{
+    sensor<-"leveltroll500"
+  }
+    
+  #Create dataframe for output data
+  dataOut <- trollData
+  if(sensor=="aquatroll200"){
+    dataCol <- c("startDateTime","endDateTime","pressure","temperature","conductivity","waterColumn","elevation")
+  }else{
+    dataCol <- c("startDateTime","endDateTime","pressure","temperature","waterColumn","elevation") 
+  }
+  dataOut <- dataOut[,dataCol]
   
   
   #Write out instantaneous data
