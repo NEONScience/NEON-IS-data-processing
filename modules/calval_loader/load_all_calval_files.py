@@ -11,6 +11,7 @@ from google.cloud import storage
 from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 import datetime
+from common.err_datum import err_datum_path
 
 
 def load() -> None:
@@ -60,6 +61,19 @@ def load() -> None:
                             except Exception:
                                 exc_type, exc_obj, exc_tb = sys.exc_info()
                                 print("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
+                                # route datum to pfs/errored on ERROR
+                                err_msg = sys.exc_info()
+                                DirDatm = path
+                                # an example of in_path file is,
+                                # 'pfs/pqs1_calibration_list_files/2023/01/07/8/1234567_456_435.txt or
+                                # 'pfs/in_path/2023/01/07/8/1234567_456_435.txt
+                                # DirDatm = re.findall(r"[A-Za-z0-9]*/[0-9]{4}/[0-9]{2}/[0-9]{1}", DirDatm)
+                                # DirDatm = ''.join(DirDatm)
+                                # Remove any partial output for the datum if RmvDatmOut=True
+                                err_datum_path(err=err_msg,DirDatm=DirDatm,DirErrBase='pfs/errored',RmvDatmOut=True,
+                                               DirOutBase=output_path)
+
+
         except Exception:
             exception_type, exception_obj, exception_tb = sys.exc_info()
             print("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
