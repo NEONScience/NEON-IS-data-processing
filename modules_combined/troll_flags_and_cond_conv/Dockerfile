@@ -20,6 +20,7 @@ RUN groupadd -g 9999 appuser && \
 # Copy in application code
 COPY ./${MODULE_DIR}/flow.troll.flags/flow.troll.flags.R .
 COPY ./${MODULE_DIR}/flow.troll.cond.conv/flow.troll.cond.conv.R .
+COPY ./${MODULE_DIR}/flow.troll.cond.conv/wrap.troll.cond.conv.R .
 
 # Run as app user
 USER appuser

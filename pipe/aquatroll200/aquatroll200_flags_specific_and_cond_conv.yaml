@@ -2,7 +2,7 @@
 pipeline:
   name: aquatroll200_flags_specific_and_cond_conv
 transform:
-  image: quay.io/battelleecology/neon-is-troll-flags-cond-conv-r:v0.0.4
+  image: quay.io/battelleecology/neon-is-troll-flags-cond-conv-r:v0.0.5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
@@ -24,7 +24,8 @@ transform:
   - '# Run second module - conductivity conversion'
   - Rscript ./flow.troll.cond.conv.R
     DirIn=/tmp/pfs/interimDataCopy
-    DirOut=/pfs/out 
+    DirOut=/pfs/out
+    DirErr=/pfs/out/errored_datums
     FileSchmData=$FILE_SCHEMA_DATA_COND_CONV
     FileSchmQf=$SCHEMA_FLAGS_SPEC_TEMP
   env:
