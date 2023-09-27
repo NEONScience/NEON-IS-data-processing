@@ -37,7 +37,6 @@ transform:
     "TermTest11=angYaxs:range|step|persistence"
     "TermTest12=angZaxs:range|step|persistence"
     "DirSubCopy=threshold|location"
-    #VarAddFileQf=errorState
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /tmp/pfs/padded_analyzer
@@ -56,13 +55,13 @@ input:
       repo: mti300ahrs_avro_schemas
       glob: /mti300ahrs/flags_plausibility_mti300ahrs.avsc
 parallelism_spec:
-  constant: 5
+  constant: 4
 autoscaling: true
 resource_requests:
-  memory: 15G
+  memory: 20G
   cpu: 1.5
 resource_limits:
-  memory: 18G
+  memory: 25G
   cpu: 2.5
 sidecar_resource_requests:
   memory: 4G
