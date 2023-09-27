@@ -67,3 +67,13 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
+pod_patch: |-
+  [
+    { "op": "add",
+      "path": "/containers/1/env/-",
+      "value": {
+        "name": "GOMEMLIMIT",
+        "value": "2000000000"
+      }
+    }
+  ]
