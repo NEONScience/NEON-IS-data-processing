@@ -52,6 +52,7 @@ RUN groupadd appuser && \
 # Copy in application code
 COPY ./${MODULE_DIR}/${APP_DIR_1}/wrap.stat.basc.R .
 COPY ./${MODULE_DIR}/${APP_DIR_1}/flow.stat.basc.R .
+COPY ./${MODULE_DIR}/${APP_DIR_2}/wrap.troll.uncertainty.R .
 COPY ./${MODULE_DIR}/${APP_DIR_2}/flow.troll.uncertainty.R .
 
 # Run as app user

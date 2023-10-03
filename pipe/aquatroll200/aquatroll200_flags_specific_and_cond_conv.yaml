@@ -2,7 +2,7 @@
 pipeline:
   name: aquatroll200_flags_specific_and_cond_conv
 transform:
-  image: quay.io/battelleecology/neon-is-troll-flags-cond-conv-r:v0.0.5
+  image: quay.io/battelleecology/neon-is-troll-flags-cond-conv-r:v0.0.9
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
@@ -17,6 +17,7 @@ transform:
   - Rscript ./flow.troll.flags.R
       DirIn=$DIR_IN
       DirOut=/tmp/pfs/interimData
+      DirErr=/pfs/out/errored_datums
       FileSchmQf=$SCHEMA_FLAGS_SPEC
   - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
   - cp -rL /tmp/pfs/interimData/* /tmp/pfs/interimDataCopy

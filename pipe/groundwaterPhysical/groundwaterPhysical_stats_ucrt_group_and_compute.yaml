@@ -3,7 +3,7 @@ pipeline:
   name: groundwaterPhysical_stats_ucrt_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:v1.1.0
+  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:v1.1.5
   #image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd: ["/bin/bash"]
   stdin:
@@ -27,6 +27,7 @@ transform:
   - Rscript ./flow.troll.uncertainty.R
       DirIn=/tmp/pfs/filter_joined
       DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
       Context=groundwater
       WndwInst=TRUE
       WndwAgr=030

@@ -1,18 +1,17 @@
 ##############################################################################################
-#' @title Wrapper for Missing Temp Flag and Conductivity Conversion
+#' @title Wrapper for Below Zero Pressure Flag
 
 #' @author
 #' Nora Catolico \email{ncatolico@battelleecology.org}
 
-#' @description Wrapper function. Flags conductivity for the Aqua Troll 200 when temperature stream is missing. 
-#' Calculates specific conductance when temperature stream is available.
+#' @description Wrapper function. Flags all sensor streams for the Level Troll 500 and Aqua Troll 200 when pressure is below zero.
+#' when pressure is below zero.
 #'
 #'
 #' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/source-id, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
-#' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor. \cr
-#'
+#' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor. \cr#'
 #' 
 #' Nested within this path are the folders:
 #'         /data
@@ -32,7 +31,8 @@
 #' @param SchmDataOut (optional), where values is the full path to the avro schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA.
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
 #'
 #' @param SchmQf (optional) A json-formatted character string containing the schema for the flags output
 #' by this function. If this input is not provided, the output schema for the data will be the same as the input data
@@ -47,7 +47,7 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #' 
-#' @return Corrected conductivity data and associated flags for missing temperature data.
+#' @return Corrected conductivity data and associated flags for Below Zero Pressure data.
 #' Filtered data and quality flags output in Parquet format in DirOut, where the terminal directory 
 #' of DirOut replaces BASE_REPO but otherwise retains the child directory structure of the input path. 
 #' Directories 'data' and 'flags' are automatically populated in the output directory, where the files 
@@ -62,10 +62,10 @@
 #' @examples
 #' # Not run
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.troll.cond.conv <- function(DirIn="~/pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/01/23681",
+#' wrap.troll.flags <- function(DirIn="~/pfs/leveltroll500_calibration_group_and_convert/leveltroll500/2020/01/22/43705",
 #'                               DirOutBase="~/pfs/out",
-#'                               SchmDataOut="~/R/NEON-IS-avro-schemas/dp0p/aquatroll200_cond_corrected.avsc",
-#'                               SchmQf="~/R/NEON-IS-avro-schemas/dp0p/flags_troll_specific_temp.avsc",
+#'                               SchmDataOut=NULL,
+#'                               SchmQf="~/R/NEON-IS-avro-schemas/troll_shared/flags_troll_specific.avsc",
 #'                               DirSubCopy=NULL,
 #'                               log=log)
 #'                               
@@ -73,7 +73,7 @@
 #' @seealso None currently
 #' 
 ##############################################################################################
-wrap.troll.cond.conv <- function(DirIn,
+wrap.troll.flags <- function(DirIn,
                                DirOutBase,
                                SchmDataOut=NULL,
                                SchmQf=NULL,
@@ -106,7 +106,7 @@ wrap.troll.cond.conv <- function(DirIn,
                                        DirDest=DirOut,
                                        LnkSubObj=FALSE,
                                        log=log)
-  }    
+  }
   
   # The flags folder is already populated from the calibration module. Copy over any existing files.
   fileCopy <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
@@ -132,53 +132,60 @@ wrap.troll.cond.conv <- function(DirIn,
     base::stop()
   }
   
-  #create missing temperature flag; default all flags to -1 then change them as the test can be performed
-  trollData$missingTempQF <- -1
-  trollData$missingTempQF[!is.na(trollData$temperature) && trollData$temperature!="NA" && trollData$temperature!="NaN"]<-0
-  trollData$missingTempQF[is.na(trollData$temperature)|trollData$temperature=="NA"|trollData$temperature=="NaN"]<-1
+  #create zero pressure flag; default all flags to -1 then change them as the test can be performed
+  trollData$zeroPressureQF <- -1
+  trollData$zeroPressureQF[trollData$pressure>0]<-0
+  trollData$zeroPressureQF[trollData$pressure<=0]<-1
+  trollData$pressure[trollData$zeroPressureQF==1]<-NA
   source_id<-trollData$source_id[1]
   
-  #convert actual conductivity to specific conductance
-  trollData$specCond <- NA
-  trollData$specCond <- trollData$conductivity/(1+0.0191*(trollData$temperature-25))
-  trollData$specCond[trollData$missingTempQF>0]<-NA #If no temp stream, then do not output specific conductance. Could potentially report acutal conductivity in future. 
+  #Define troll type
+  #include conductivity based on sensor type
+  if(grepl("aquatroll",DirIn)){
+    sensor<-"aquatroll200"
+  }else{
+    sensor<-"leveltroll500"
+  }
   
   #Create dataframe for output data
   dataOut <- trollData
-  dataOut$raw_conductivity <- dataOut$conductivity #need to keep for later calculations
-  dataOut$conductivity <- dataOut$specCond #replace actual conductivity with specific conductance
-  dataCol <- c("source_id","site_id","readout_time","pressure","pressure_data_quality","temperature","temperature_data_quality","raw_conductivity","conductivity_data_quality","conductivity","internal_battery")
+  if(sensor=="aquatroll200"){
+    dataCol <- c("source_id","site_id","readout_time","pressure","pressure_data_quality","temperature","temperature_data_quality","conductivity","conductivity_data_quality","internal_battery")
+  }else{
+    dataCol <- c("source_id","site_id","readout_time","pressure","pressure_data_quality","temperature","temperature_data_quality","internal_battery") 
+  }
   dataOut <- dataOut[,dataCol]
   
   #Create dataframe for just flags
-  QFCol <- c("readout_time", "missingTempQF")
-  flagsOut <- trollData[,QFCol]
+  QF <- c("readout_time", "zeroPressureQF")
+  flagsOut <- trollData[,QF]
   
   #Turn necessary outputs to integer
-  colInt <- c("missingTempQF") 
+  colInt <- c("zeroPressureQF") 
   flagsOut[colInt] <- base::lapply(flagsOut[colInt],base::as.integer) # Turn flags to integer
   
-
-  # Write out data
-  NameFileOutData <- base::paste0(DirOutData,"/aquatroll200_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet")
+  
+  #Write out data
+  NameFileOutData <- base::paste0(DirOutData,"/",sensor,"_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet")
   rptDataOut <-
     base::try(NEONprocIS.base::def.wrte.parq(data = dataOut,NameFile = NameFileOutData,Schm = SchmDataOut),
-    silent = FALSE)
+              silent = FALSE)
   if (base::any(base::class(rptDataOut) == 'try-error')) {
-    log$error(base::paste0('Cannot write Calibrated data to ',NameFileOutData,'. ',attr(rptDataOut, "condition")))
+    log$error(base::paste0('Cannot write data to ',NameFileOutData,'. ',attr(rptDataOut, "condition")))
     stop()
   } else {
-    log$info(base::paste0('Calibrated data written successfully in ', NameFileOutData))
+    log$info(base::paste0('Data written successfully in ', NameFileOutData))
   }
+
   
   #Write out flags
-  NameFileOutFlags <- base::paste0(DirOutFlags,"/aquatroll200_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc_Temp.parquet")
+  NameFileOutFlags <- base::paste0(DirOutFlags,"/troll_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc.parquet")
   rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQfOut),silent=FALSE)
   if(class(rptQfOut) == 'try-error'){
-    log$error(base::paste0('Cannot write flags to ',NameFileOutFlags,'. ',attr(rptQfOut, "condition")))
+    log$error(base::paste0('Cannot write Below Zero Pressure flags to ',NameFileOutFlags,'. ',attr(rptQfOut, "condition")))
     stop()
   } else {
-    log$info(base::paste0('Flags written successfully in ', NameFileOutFlags))
+    log$info(base::paste0('Below Zero Pressure flags written successfully in ', NameFileOutFlags))
   }
   
 } # End loop around datum paths
