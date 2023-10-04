@@ -23,7 +23,7 @@ def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirO
 
     caller = inspect.stack()[1].function
     log.info(f'The error, "{err}", resulted from call: {caller}. ')
-    log.info(f'Rerouting starts..... ')
+    log.info(f'Rerouting to {DirErrBase} starts..... ')
 
     # call to parse input directory
     DirInInfo = get_dir_info(DirIn = DirDatm)
@@ -34,7 +34,7 @@ def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirO
         DirOutBase = Path(DirErrBase).parents[0]
     #
     if DirInInfo == []:
-        log.info(f'Re-routing stopped due to the input path structure not compliant.........\n')
+        log.info(f'Re-routing to {DirErrBase} stopped due to the input path structure not compliant.........\n')
 
     else:
         # Inform the user of the error routing
