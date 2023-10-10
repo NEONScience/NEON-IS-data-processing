@@ -6,6 +6,7 @@ from pathlib import Path
 from structlog import get_logger
 
 from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer_config import AnalyzerConfig
+from common.err_datum import err_datum_path
 
 log = get_logger()
 
@@ -16,19 +17,24 @@ class PaddedTimeSeriesAnalyzer:
         """
         Constructor.
 
-        :param data_path: The data directory.
-        :param out_path: The output directory.
+        :param data_path: The data directory, i.e., /tmp/in/prt/2018/01/03.
+        :param out_path: The output directory, i.e., /tmp/out.
         :param relative_path_index: Trim input file paths to this index.
         """
         self.data_path = data_path
         self.out_path = out_path
         self.relative_path_index = relative_path_index
+        # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
+        self.DirErrBase = Path(self.out_path, 'errored')
 
     def analyze(self) -> None:
         """Verify all necessary data files are present in the input."""
         manifest_file = AnalyzerConfig.manifest_filename
         try:
             for root, directories, files in os.walk(str(self.data_path)):
+                if (manifest_file not in files):
+                    log.fatal(f'No manifest_file found in directory {self.data_path}')
+                    sys.exit("No manifest_file found in data_path directory")
                 for filename in files:
                     if filename == manifest_file:
                         # read manifest
@@ -60,9 +66,12 @@ class PaddedTimeSeriesAnalyzer:
                                     self.link_thresholds(file_path, link_path)
                             # go up one directory to find any ancillary files to link
                             self.link_ancillary_files(Path(root))
-        except Exception:
+        except:
             exception_type, exception_obj, exception_tb = sys.exc_info()
+            err_msg = sys.exc_info()
             log.error("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
+            err_datum_path(err=err_msg,DirDatm=str(self.data_path),DirErrBase=self.DirErrBase,RmvDatmOut=True,
+                           DirOutBase=self.out_path)
 
     @staticmethod
     def link_thresholds(data_file_path: Path, data_file_link_path: Path) -> None:
