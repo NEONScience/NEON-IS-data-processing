@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 from structlog import get_logger
+from common.err_datum import err_datum_path
 
 log = get_logger()
 
@@ -178,15 +179,8 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
             
         # Write manifest for each product
         for product in visibility_by_file.keys():
-            try:
-                output_path = os.path.join(out_path, product, day_path, site)
-                write_manifest(output_path, has_data_by_file[product], visibility_by_file[product])
-            except Exception:
-                err_msg = sys.exc_info()
-                # route datum to pfs/errored on ERROR
-                # Remove any partial output for the datum
-                err_datum_path(err=err_msg,DirDatm=path,DirErrBase='pfs/errored',RmvDatmOut=True,
-                           DirOutBase=output_path)
+            output_path = os.path.join(out_path, product, day_path, site)
+            write_manifest(output_path, has_data_by_file[product], visibility_by_file[product])
 
 
 def write_manifest(output_path: str, has_data_by_file: dict, visibility_by_file: dict):

@@ -6,10 +6,33 @@ transform:
   - battelleecology-quay-read-all-pull-secret
   image: quay.io/battelleecology/group_path:13a29e7cccbad53dacd59820953b930b27c6ffd7
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m group_path.group_path_main
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Handle duplicate group path
+    rm -r /tmp/LOCATION_FOCUS_PATH
+    rm -r /tmp/LOCATION_FOCUS_PATH_part2
+    if [[ $(echo $LOCATION_FOCUS_PATH_1) ]]; then
+      mkdir /tmp/LOCATION_FOCUS_PATH
+      cp -r /pfs/LOCATION_FOCUS_PATH_1/* /tmp/LOCATION_FOCUS_PATH
+      cp -r /pfs/LOCATION_FOCUS_PATH_2/* /tmp/LOCATION_FOCUS_PATH
+      export LOCATION_FOCUS_PATH=/tmp/LOCATION_FOCUS_PATH
+      python3 -m group_path.group_path_main
+    elif [[ $(echo $LOCATION_FOCUS_PATH_3) ]]; then
+      mkdir /tmp/LOCATION_FOCUS_PATH_part2
+      cp -r /pfs/LOCATION_FOCUS_PATH_3/* /tmp/LOCATION_FOCUS_PATH_part2
+      cp -r /pfs/LOCATION_FOCUS_PATH_4/* /tmp/LOCATION_FOCUS_PATH_part2
+      cp -r /pfs/LOCATION_FOCUS_PATH_5/* /tmp/LOCATION_FOCUS_PATH_part2
+      cp -r /pfs/LOCATION_FOCUS_PATH_6/* /tmp/LOCATION_FOCUS_PATH_part2
+      cp -r /pfs/LOCATION_FOCUS_PATH_7/* /tmp/LOCATION_FOCUS_PATH_part2
+      cp -r /pfs/LOCATION_FOCUS_PATH_8/* /tmp/LOCATION_FOCUS_PATH_part2
+      cp -r /pfs/LOCATION_FOCUS_PATH_9/* /tmp/LOCATION_FOCUS_PATH_part2
+      cp -r /pfs/LOCATION_FOCUS_PATH_10/* /tmp/LOCATION_FOCUS_PATH_part2
+      export LOCATION_FOCUS_PATH=/tmp/LOCATION_FOCUS_PATH_part2
+      python3 -m group_path.group_path_main
+    fi
+    EOF
   env:
     GROUP: turbulent
     LOG_LEVEL: DEBUG
@@ -25,75 +48,84 @@ transform:
     LOCATION_FOCUS_DAY_INDEX: '6'
     LOCATION_FOCUS_LOCATION_INDEX: '7'
     LOCATION_FOCUS_DATA_TYPE_INDEX: '8'
-    GROUP_FOCUS_YEAR_INDEX: '3'
-    GROUP_FOCUS_MONTH_INDEX: '4'
-    GROUP_FOCUS_DAY_INDEX: '5'
-    GROUP_FOCUS_GROUP_INDEX: '6'
 input:
 # The input to the group_path module must be a join between the group_assignment module and the union of any/all 
 #   data repos that are currently in a location focus structure or a (different/L1+ dependency) group focus structure
-  join:
-  - pfs:
-      # name must be GROUP_ASSIGNMENT_PATH
-      name: GROUP_ASSIGNMENT_PATH
-      repo: turbulent_group_assignment
-      glob: /turbulent/(*/*/*)
-      joinOn: $1
-  - union: 
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: mfcSampTurb_analyze_pad_and_qaqc_plau
-        glob: /mfcSampTurb/(*/*/*)
-        joinOn: $1
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: gascylinder_l0p_data
-        glob: /gasRefe/(*/*/*)
-        joinOn: $1
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: csat3_analyze_pad_and_qaqc_plau
-        glob: /soni/(*/*/*)
-        joinOn: $1
-#    - pfs:
-#        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-#        name: LOCATION_FOCUS_PATH
-#        repo: li7200_analyze_pad_and_qaqc_plau
-#        glob: /irgaTurb/(*/*/*)
-#        joinOn: $1
-#    - pfs:
-#        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-#        name: LOCATION_FOCUS_PATH
-#        repo: mti300ahrs_analyze_pad_and_qaqc_plau
-#        glob: /amrs/(*/*/*)
-#        joinOn: $1
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: presTrap_analyze_pad_and_qaqc_plau
-        glob: /presTrap/(*/*/*)
-        joinOn: $1
-#    - pfs:
-#        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-#        name: LOCATION_FOCUS_PATH
-#        repo: presValiLine_analyze_pad_and_qaqc_plau
-#        glob: /presValiLine/(*/*/*)
-#        joinOn: $1
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: presValiRegInTurb_analyze_pad_and_qaqc_plau
-        glob: /presValiRegInTurb/(*/*/*)
-        joinOn: $1
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: presValiRegOutTurb_analyze_pad_and_qaqc_plau
-        glob: /presValiRegOutTurb/(*/*/*)
-        joinOn: $1
+  union:
+  - join:
+      - pfs:
+          # name must be GROUP_ASSIGNMENT_PATH
+          name: GROUP_ASSIGNMENT_PATH
+          repo: turbulent_group_assignment
+          glob: /turbulent/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_1
+          repo: gascylinder_l0p_data
+          glob: /gasRefe/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_2
+          repo: presValiRegInTurb_analyze_pad_and_qaqc_plau
+          glob: /presValiRegInTurb/(*/*/*)
+          joinOn: $1
+  - join:
+      - pfs:
+          # name must be GROUP_ASSIGNMENT_PATH
+          name: GROUP_ASSIGNMENT_PATH
+          repo: turbulent_group_assignment
+          glob: /turbulent/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_3
+          repo: mfcSampTurb_analyze_pad_and_qaqc_plau
+          glob: /mfcSampTurb/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_4
+          repo: mfcValiTurb_analyze_pad_and_qaqc_plau
+          glob: /mfcValiTurb/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_5
+          repo: csat3_analyze_pad_and_qaqc_plau
+          glob: /soni/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_6
+          repo: li7200_analyze_pad_and_qaqc_plau
+          glob: /irgaTurb/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_7
+          repo: mti300ahrs_analyze_pad_and_qaqc_plau
+          glob: /amrs/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_8
+          repo: presTrap_analyze_pad_and_qaqc_plau
+          glob: /presTrap/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_9
+          repo: presValiLine_analyze_pad_and_qaqc_plau
+          glob: /presValiLine/(*/*/*)
+          joinOn: $1
+      - pfs:
+          # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+          name: LOCATION_FOCUS_PATH_10
+          repo: presValiRegOutTurb_analyze_pad_and_qaqc_plau
+          glob: /presValiRegOutTurb/(*/*/*)
+          joinOn: $1
 #    - pfs:
 #        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
 #        name: GROUP_FOCUS_PATH
@@ -102,10 +134,21 @@ input:
 #        joinOn: $1
 parallelism_spec:
   constant: 1
-resource_requests:
-  memory: 4G
-  cpu: 2.0
 autoscaling: true
+resource_requests:
+  memory: 15G
+  cpu: 2.0
+resource_limits:
+  memory: 25G
+  cpu: 2.5
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 0.3
+sidecar_resource_limits:
+  memory: 8Gi
+  cpu: 1.3
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -123,14 +166,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]
