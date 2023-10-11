@@ -2,7 +2,7 @@
 pipeline:
   name: leveltroll500_cron_daily_and_date_control
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  image: quay.io/battelleecology/neon-is-date-cntl:fe1512ea
   cmd: ["/bin/bash"]
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure

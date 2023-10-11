@@ -3,7 +3,7 @@ pipeline:
   name: leveltroll500_calibration_list_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-cval-loader:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  image: quay.io/battelleecology/neon-cval-loader:fe1512ea
   cmd: ["/bin/bash"]
   env:
     CVAL_INGEST_BUCKET: neon-cval
