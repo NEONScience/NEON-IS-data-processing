@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Water Quality Sensor NA test 
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.2.0
+FROM quay.io/battelleecology/neon-is-base-r:v1.2.1
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

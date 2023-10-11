@@ -1,7 +1,7 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
 image_name=joiner
-tag=$(git rev parse --short HEAD)
+tag=$(git rev-parse --short HEAD)
 cd ./modules
 docker build -t $image_name:latest -f ./joiner/Dockerfile .
 docker tag $image_name quay.io/battelleecology/$image_name:$tag

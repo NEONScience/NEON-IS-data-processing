@@ -1,7 +1,7 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
 image_name=neon-is-qaqc-plau-r
-tag=$(git rev parse --short HEAD)
+tag=$(git rev-parse --short HEAD)
 cd ./flow/flow.qaqc.plau
 docker build -t $image_name:latest .
 docker tag $image_name quay.io/battelleecology/$image_name:$tag
