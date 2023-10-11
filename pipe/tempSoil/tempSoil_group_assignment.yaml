@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=group
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:fe1512ea
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
