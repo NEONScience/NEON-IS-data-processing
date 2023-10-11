@@ -78,7 +78,7 @@
 #' @examples 
 #' # NOT RUN
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.troll.flags <- function(DirIn="~/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2020/01/05",
+#' wrap.troll.flags <- function(DirIn="~/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2020/02/02",
 #'                               DirOutBase="~/pfs/out",
 #'                               Context='GW',
 #'                               WndwInst=TRUE,
@@ -171,10 +171,10 @@ wrap.troll.uncertainty <- function(DirIn,
       source_n<-sources[n]
       trollData_n<-trollData[!is.na(trollData$source_id) & trollData$source_id==source_n,]
       #####if no "_locations" file then check that the data file is all NA's. If there is data, STOP. If NA's, move on.
-      if(base::length(dirLocLocation)<1){
+      if(!is.null(dirLocLocation) & base::length(dirLocLocation)<1){
         #case where there are no files
         log$debug(base::paste0('No troll location data files in ',dirLocation, 'for source id ',source_n))
-      } else if(any(grepl(source_n,dirLocLocation))){
+      } else if(!is.null(dirLocLocation) & any(grepl(source_n,dirLocLocation))){
         # Choose the _locations.json file
         LocationData <- base::paste0(dirLocLocation[grep(source_n,dirLocLocation)])
         log$debug(base::paste0("location datum(s) found, reading in: ",LocationData))
@@ -194,7 +194,7 @@ wrap.troll.uncertainty <- function(DirIn,
       # Which location history matches each readout_time
       if(length(trollData_n$readout_time)>0){
         trollData_all_n<-NULL
-        if(length(LocationHist$CFGLOC)>0){
+        if(!is.null(LocationHist) & length(LocationHist$CFGLOC)>0){
           for(i in 1:length(LocationHist$CFGLOC)){
             startDate<-LocationHist$CFGLOC[[i]]$start_date
             endDate<-LocationHist$CFGLOC[[i]]$end_date
@@ -272,6 +272,7 @@ wrap.troll.uncertainty <- function(DirIn,
   flags <- NULL
   dirFlags <- base::paste0(DirIn,'/flags')
   dirFlagsLocation <- base::dir(dirFlags,full.names=TRUE)
+  dirFlagsLocation<-dirFlagsLocation[grepl('flagsPlausibility',dirFlagsLocation)]
   if(base::length(dirFlagsLocation)<1){
     log$debug(base::paste0('No flag data file in ',dirFlags))
   } else{
@@ -373,267 +374,269 @@ wrap.troll.uncertainty <- function(DirIn,
     }
   }
   
-  ##### Read in uncertainty data #####
-  uncertaintyData <- NULL
-  dirUncertainty <- base::paste0(DirIn,'/uncertainty_data')
-  dirUncertaintyLocation <- base::dir(dirUncertainty,full.names=TRUE)
-  if(base::length(dirUncertaintyLocation)<1){
-    log$debug(base::paste0('No troll uncertainty data file in ',dirUncertainty))
-  } else{
-    uncertaintyData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(dirUncertaintyLocation),log = log), silent = FALSE)
-    log$debug(base::paste0("Reading in: ",dirUncertaintyLocation))
-  }
-  
-  ##### Read in uncertainty coef #####
-  uncertaintyCoef <- NULL
-  dirUncertaintyCoef <- base::paste0(DirIn,'/uncertainty_coef')
-  dirUncertaintyCoefLocation <- base::dir(dirUncertaintyCoef,full.names=TRUE)
-  if(base::length(dirUncertaintyCoefLocation)<1){
-    log$debug(base::paste0('No troll uncertainty data file in ',dirUncertaintyCoef))
-  } else{
-    uncertaintyCoef <- base::try(rjson::fromJSON(file=dirUncertaintyCoefLocation,simplify=TRUE),silent=FALSE)
-    if(base::class(uncertaintyCoef) == 'try-error'){
-      # Generate error and stop execution
-      log$error(base::paste0('File: ', dirUncertaintyCoefLocation, ' is unreadable.')) 
-      stop()
-    }
-    # Turn times to POSIX
-    uncertaintyCoef <- base::lapply(uncertaintyCoef,FUN=function(Ucrt){
-      Ucrt$start_date <- base::strptime(Ucrt$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
-      Ucrt$end_date <- base::strptime(Ucrt$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
-      return(Ucrt)
-    })
-    log$debug(base::paste0("Reading in: ",dirUncertaintyCoefLocation))
-  }
-  
-  ######## Uncert for instantaneous 5-min groundwater aqua troll data #######
-  if(WndwInst==TRUE){
-    if(sensor=="aquatroll200"){
-      #temp and pressure uncert calculated earlier in pipeline
-      #existing conductivity uncertainty is for raw values, need additional columns for specific conductivity
-      uncertaintyData$rawConductivity_ucrtMeas<-uncertaintyData$conductivity_ucrtMeas
-      uncertaintyData$conductivity_ucrtMeas<-NA
-      uncertaintyData$rawConductivity_ucrtComb<-uncertaintyData$conductivity_ucrtComb
-      uncertaintyData$conductivity_ucrtComb<-NA
-      uncertaintyData$rawConductivity_ucrtExpn<-uncertaintyData$conductivity_ucrtExpn
-      uncertaintyData$conductivity_ucrtExpn<-NA
-      #check that data frames are equal length
-      if(length(uncertaintyData$conductivity_ucrtMeas)!=length(trollData$raw_conductivity)){
-        log$warn("Conductivity data and uncertainty data frames are not of equal length")
-        stop()
-      }
-      if(length(uncertaintyData$temperature_ucrtMeas)!=length(trollData$temperature)){
-        log$warn("Temperature data and uncertainty data frames are not of equal length")
-        stop()
-      }
-      #calculate uncertainty for specific conductivity
-      for(i in 1:length(uncertaintyData$rawConductivity_ucrtMeas)){
-        U_CVALA1_cond<-uncertaintyData$rawConductivity_ucrtMeas[i]
-        U_CVALA1_temp<-uncertaintyData$temperature_ucrtMeas[i]
-        uncertaintyData$conductivity_ucrtMeas[i]<-((((1/(1+0.0191*(trollData$temperature[i]-25)))^2)*U_CVALA1_cond^2)+((((0.0191*trollData$raw_conductivity[i])/((1+0.0191*(trollData$temperature[i]-25))^2))^2)*U_CVALA1_temp^2))^0.5
-      }
-      uncertaintyData$conductivity_ucrtComb<-uncertaintyData$conductivity_ucrtMeas
-      uncertaintyData$conductivity_ucrtExpn<-2*uncertaintyData$conductivity_ucrtMeas
-    }
-    #calculate instantaneous elevation uncert
-    uncertaintyData$elevation_ucrtMeas<-NA
-    if(length(LocationHist)>0){
-      for(i in 1:length(uncertaintyData$pressure_ucrtMeas)){
-        U_CVALA1_pressure<-uncertaintyData$pressure_ucrtMeas[i]
-        uncertaintyData$elevation_ucrtMeas[i]<-(1*trollData$survey_uncert[i]^2+((1000/(density*gravity))^2)*U_CVALA1_pressure^2)^0.5
-      }
-    }else{
-      uncertaintyData$elevation_ucrtMeas<-NA
-    }
-    uncertaintyData$elevation_ucrtComb<-uncertaintyData$elevation_ucrtMeas
-    uncertaintyData$elevation_ucrtExpn<-2*uncertaintyData$elevation_ucrtMeas
-    
-    #Create dataframes for output uncertainties
-    uncertaintyData$startDateTime<-uncertaintyData$readout_time
-    timeDiff<-uncertaintyData$startDateTime[2]-uncertaintyData$startDateTime[1]
-    uncertaintyData$endDateTime<-uncertaintyData$readout_time+timeDiff
-    if(sensor=='aquatroll200'){
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn")
-    }else{
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn")
-    }
-    ucrtOut_inst <- uncertaintyData[,ucrtCol_inst]
-    #standardize naming
-    if(sensor=='aquatroll200'){
-      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
-    }else{
-      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert")
-    }
-    #write out instantaneous uncertainty data
-    #ucrtOut_inst[,-c(1:2)] <-round(ucrtOut_inst[,-c(1:2)],2)
-    ucrtOut_inst$startDateTime<-as.POSIXct(ucrtOut_inst$startDateTime)
-    ucrtOut_inst$endDateTime<-as.POSIXct(ucrtOut_inst$endDateTime)
-    #GW inst is 5-min, SW inst is 1-min
-    if(Context=='GW'){
-      rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
-                                                            NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"), 
-                                                            Schm = SchmUcrtOut),silent=FALSE)
-    }else{
-      rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
-                                                            NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_001.parquet"), 
-                                                            Schm = SchmUcrtOut),silent=FALSE)
-    }
-    
-    
-    if(any(grepl('try-error',class(ucrtOut_inst)))){
-      log$error(base::paste0('Writing the output data failed: ',attr(ucrtOut_inst,"condition")))
-      stop()
-    } else {
-      log$info("Instantaneous uncertainty data written out.")
-    }
-  }
-  
-  
-  ######## Uncertainty for L1 mean 5 and 30 minute outputs ########
-  #the repeatability and reproducibility of the sensor and  uncertainty of the calibration procedures and coefficients including uncertainty in the standard
-  if(length(WndwAgr)>0){
-    #determine averaging window
-    timeMeas <- base::as.POSIXlt(uncertaintyData$readout_time)# Pull out time variable
-    # Run through each aggregation interval, creating the daily time series of windows
-    for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
-      #WndwAgr<-1 #for testing
-      log$debug(base::paste0('Computing uncertainty for aggregation interval: ',WndwAgr[idxWndwAgr], ' minute(s)'))
-      
-      # Create start and end time sequences
-      timeAgrBgn <- timeBgn + timeBgnDiff[[idxWndwAgr]]
-      timeAgrEnd <- timeBgn + timeEndDiff[[idxWndwAgr]]
-      timeBrk <- c(base::as.numeric(timeAgrBgn),base::as.numeric(utils::tail(timeAgrEnd,n=1))) # break points for .bincode
-      
-      # Allocate data points to aggregation windows
-      setTime <- base::.bincode(base::as.numeric(timeMeas),timeBrk,right=FALSE,include.lowest=FALSE) # Which time bin does each measured value fall within?
-      
-      # Allocate uncertainty data points to aggregation windows
-      if(!base::is.null(uncertaintyData)){
-        setTimeUcrt <- base::.bincode(base::as.numeric(base::as.POSIXlt(uncertaintyData$readout_time)),timeBrk,right=FALSE,include.lowest=FALSE) # Which time bin does each measured value fall within?
-      } else {
-        setTimeUcrt <- base::numeric(0)
-      }
-      
-      # Intialize the output
-      rptUcrt <- base::data.frame(startDateTime=timeAgrBgn,endDateTime=timeAgrEnd)
-      if(sensor=="aquatroll200"){
-        #Conductivity included for aqua troll.
-        nameTerm <- c("temperature_ucrtExpn_L1","pressure_ucrtExpn_L1","elevation_ucrtExpn_L1","conductivity_ucrtExpn_L1")
-      }else{
-        #Conductivity not included for level troll.
-        nameTerm <- c("temperature_ucrtExpn_L1","pressure_ucrtExpn_L1","elevation_ucrtExpn_L1")
-      }
-      rptUcrt[,3:(base::length(nameTerm)+2)] <- base::as.numeric(NA)
-      base::names(rptUcrt)[3:(base::length(nameTerm)+2)] <- nameTerm
-      
-      # Run through the time bins
-      for(WndwTime in base::unique(setTime)){
-        # Rows to pull
-        dataWndwTime <- base::subset(trollData,subset=setTime==WndwTime) 
-        ucrtDataWndwTime <- base::subset(uncertaintyData,subset=setTime==WndwTime)  
-        
-        # Compute L1 uncertainty 
-        if(length(uncertaintyCoef)>0){
-          #Temperature Uncertainty
-          #combined uncertainty of temperature is equal to the standard uncertainty values provided by CVAL
-          #numPts <- base::sum(x=!base::is.na(dataWndwTime$temperature),na.rm=FALSE)
-          #se <- stats::sd(dataWndwTime$temperature,na.rm=TRUE)/base::sqrt(numPts)
-          #TemperatureExpUncert<-2*(se^2+U_CVALA3_temp^2)^0.5
-          temperature_ucrtExpn_L1<-NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(data=dataWndwTime,VarUcrt='temperature',ucrtCoef=uncertaintyCoef)
-          
-          #Pressure Uncertainty
-          #combined uncertainty of pressure is equal to the standard uncertainty values provided by CVAL
-          #numPts <- base::sum(x=!base::is.na(dataWndwTime$pressure),na.rm=FALSE)
-          #se <- stats::sd(dataWndwTime$pressure,na.rm=TRUE)/base::sqrt(numPts)
-          #pressure_ucrtExpn_L1<-2*(se^2+U_CVALA3_pressure^2)^0.5
-          pressure_ucrtExpn_L1<-NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(data=dataWndwTime,VarUcrt='pressure',ucrtCoef=uncertaintyCoef)
-          pressure_ucrtComb_L1<-pressure_ucrtExpn_L1/2
-          
-          #Elevation Uncertainty
-          #survey_uncert is the uncertainty of the sensor elevation relative to other aquatic instruments at the NEON site. 
-          #survey_uncert includes the total station survey uncertainty and the uncertainty of hand measurements between the sensor and survey point.
-          survey_uncert<-mean(dataWndwTime$survey_uncert)
-          elevation_ucrtExpn_L1<-2*((1*survey_uncert^2+((1000/(density*gravity))^2)*pressure_ucrtComb_L1^2)^0.5)
-          
-          if(sensor=='aquatroll200'){
-            #Raw Conductivity Uncertainty
-            #combined uncertainty of actual conductivity (not published) is equal to the standard uncertainty values provided by CVAL
-            #numPts <- base::sum(x=!base::is.na(dataWndwTime$raw_conductivity),na.rm=FALSE)
-            #se <- stats::sd(dataWndwTime$raw_conductivity,na.rm=TRUE)/base::sqrt(numPts)
-            #rawConductivity_ucrtExpn_L1<-2*(se^2+U_CVALA3_cond^2)^0.5
-            rawConductivity_ucrtExpn_L1<-NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(data=dataWndwTime,VarUcrt='conductivity',ucrtCoef=uncertaintyCoef)
-            
-            #Specific Conductivity Uncertainty
-            #grab U_CVALA3 values
-            U_CVALA3_cond<-NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef=uncertaintyCoef,
-                                                                   NameCoef='U_CVALA3',
-                                                                   VarUcrt='conductivity',
-                                                                   TimeAgrBgn=dataWndwTime$readout_time[1],
-                                                                   TimeAgrEnd=dataWndwTime$readout_time[base::nrow(dataWndwTime)]+as.difftime(.001,units='secs'))
-            U_CVALA3_temp<-NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef=uncertaintyCoef,
-                                                                   NameCoef='U_CVALA3',
-                                                                   VarUcrt='temperature',
-                                                                   TimeAgrBgn=dataWndwTime$readout_time[1],
-                                                                   TimeAgrEnd=dataWndwTime$readout_time[base::nrow(dataWndwTime)]+as.difftime(.001,units='secs'))
-            
-            # Compute uncertainty of the mean due to natural variation, represented by the standard error of the mean
-            #log$debug(base::paste0('Computing L1 uncertainty due to natural variation (standard error)'))
-            dataComp<-dataWndwTime$conductivity
-            conductivity_ucrtComb_L1<-NA
-            numPts <- base::sum(x=!base::is.na(dataComp),na.rm=FALSE)
-            se <- stats::sd(dataComp,na.rm=TRUE)/base::sqrt(numPts)
-            # Compute combined uncertainty for L1 specific conductivity
-            for(i in 1:length(dataWndwTime$conductivity_ucrtMeas)){
-              dataWndwTime$conductivity_ucrtComb_L1[i]<-((se^2)*(((1/(1+0.0191*(dataWndwTime$temperature[i]-25)))^2)*U_CVALA3_cond^2)+((((0.0191*dataWndwTime$raw_conductivity[i])/((1+0.0191*(dataWndwTime$temperature[i]-25))^2))^2)*U_CVALA3_temp^2))^0.5
-            }
-            # Compute expanded uncertainty for L1 specific conductivity
-            conductivity_ucrtExpn_L1<-2*mean(dataWndwTime$conductivity_ucrtComb_L1)
-          }
-        }else{
-          temperature_ucrtExpn_L1<-NA
-          pressure_ucrtExpn_L1<-NA
-          elevation_ucrtExpn_L1<-NA
-          conductivity_ucrtExpn_L1<-NA
-        }
-        #copy info to output dataframe
-        rptUcrt$temperature_ucrtExpn_L1[WndwTime] <- temperature_ucrtExpn_L1
-        rptUcrt$pressure_ucrtExpn_L1[WndwTime] <- pressure_ucrtExpn_L1
-        rptUcrt$elevation_ucrtExpn_L1[WndwTime] <- elevation_ucrtExpn_L1
-        if(sensor=="aquatroll200"){
-          rptUcrt$conductivity_ucrtExpn_L1[WndwTime] <- conductivity_ucrtExpn_L1
-        }
-      } # End loop through time windows
-      
-      
-      #standardize column names
-      if(Context=="GW"){
-        names(rptUcrt)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
-      }else if(sensor=="aquatroll200"){
-        names(rptUcrt)<- c("startDateTime","endDateTime","surfacewaterTempExpUncert","surfacewaterPressureExpUncert","surfacewaterElevExpUncert","surfacewaterCondExpUncert")
-      }else{
-        names(rptUcrt)<- c("startDateTime","endDateTime","surfacewaterTempExpUncert","surfacewaterPressureExpUncert","surfacewaterElevExpUncert")
-      }
-      
-      #Write out aggregate uncertainty data
-      if(WndwAgr[idxWndwAgr]==5){
-        window<-"005"
-      }else if(WndwAgr[idxWndwAgr]==30){
-        window<-"030"
-      }else{
-        window<-NA
-      }
-      rptUcrtOut_Agr <- try(NEONprocIS.base::def.wrte.parq(data = rptUcrt, 
-                                                           NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_","ucrt_",window,".parquet"), 
-                                                           Schm = SchmUcrtOut),silent=FALSE)
-      
-      if(any(grepl('try-error',class(rptUcrtOut_Agr)))){
-        log$error(base::paste0('Writing the output data failed: ',attr(rptUcrtOut_Agr,"condition")))
-        stop()
-      } else {
-        log$info("Averaged uncertainty data written out.")
-      }
-    }
-  }
+  # ##### Read in uncertainty data #####
+  # uncertaintyData <- NULL
+  # dirUncertainty <- base::paste0(DirIn,'/uncertainty_data')
+  # dirUncertaintyLocation <- base::dir(dirUncertainty,full.names=TRUE)
+  # if(base::length(dirUncertaintyLocation)<1){
+  #   log$debug(base::paste0('No troll uncertainty data file in ',dirUncertainty))
+  # } else{
+  #   uncertaintyData <- base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(dirUncertaintyLocation),log = log), silent = FALSE)
+  #   log$debug(base::paste0("Reading in: ",dirUncertaintyLocation))
+  # }
+  # 
+  # ##### Read in uncertainty coef #####
+  # uncertaintyCoef <- NULL
+  # dirUncertaintyCoef <- base::paste0(DirIn,'/uncertainty_coef')
+  # dirUncertaintyCoefLocation <- base::dir(dirUncertaintyCoef,full.names=TRUE)
+  # if(base::length(dirUncertaintyCoefLocation)<1){
+  #   log$debug(base::paste0('No troll uncertainty data file in ',dirUncertaintyCoef))
+  # } else{
+  #   uncertaintyCoef <- base::try(rjson::fromJSON(file=dirUncertaintyCoefLocation,simplify=TRUE),silent=FALSE)
+  #   if(base::class(uncertaintyCoef) == 'try-error'){
+  #     # Generate error and stop execution
+  #     log$error(base::paste0('File: ', dirUncertaintyCoefLocation, ' is unreadable.')) 
+  #     stop()
+  #   }
+  #   if(base::length(uncertaintyCoef)>0){
+  #     # Turn times to POSIX
+  #     uncertaintyCoef <- base::lapply(uncertaintyCoef,FUN=function(Ucrt){
+  #       Ucrt$start_date <- base::strptime(Ucrt$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+  #       Ucrt$end_date <- base::strptime(Ucrt$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+  #       return(Ucrt)
+  #     })
+  #     log$debug(base::paste0("Reading in: ",dirUncertaintyCoefLocation))
+  #   }
+  # }
+  # 
+  # ######## Uncert for instantaneous 5-min groundwater aqua troll data #######
+  # if(WndwInst==TRUE){
+  #   if(sensor=="aquatroll200"){
+  #     #temp and pressure uncert calculated earlier in pipeline
+  #     #existing conductivity uncertainty is for raw values, need additional columns for specific conductivity
+  #     uncertaintyData$rawConductivity_ucrtMeas<-uncertaintyData$conductivity_ucrtMeas
+  #     uncertaintyData$conductivity_ucrtMeas<-NA
+  #     uncertaintyData$rawConductivity_ucrtComb<-uncertaintyData$conductivity_ucrtComb
+  #     uncertaintyData$conductivity_ucrtComb<-NA
+  #     uncertaintyData$rawConductivity_ucrtExpn<-uncertaintyData$conductivity_ucrtExpn
+  #     uncertaintyData$conductivity_ucrtExpn<-NA
+  #     #check that data frames are equal length
+  #     if(length(uncertaintyData$conductivity_ucrtMeas)!=length(trollData$raw_conductivity)){
+  #       log$warn("Conductivity data and uncertainty data frames are not of equal length")
+  #       stop()
+  #     }
+  #     if(length(uncertaintyData$temperature_ucrtMeas)!=length(trollData$temperature)){
+  #       log$warn("Temperature data and uncertainty data frames are not of equal length")
+  #       stop()
+  #     }
+  #     #calculate uncertainty for specific conductivity
+  #     for(i in 1:length(uncertaintyData$rawConductivity_ucrtMeas)){
+  #       U_CVALA1_cond<-uncertaintyData$rawConductivity_ucrtMeas[i]
+  #       U_CVALA1_temp<-uncertaintyData$temperature_ucrtMeas[i]
+  #       uncertaintyData$conductivity_ucrtMeas[i]<-((((1/(1+0.0191*(trollData$temperature[i]-25)))^2)*U_CVALA1_cond^2)+((((0.0191*trollData$raw_conductivity[i])/((1+0.0191*(trollData$temperature[i]-25))^2))^2)*U_CVALA1_temp^2))^0.5
+  #     }
+  #     uncertaintyData$conductivity_ucrtComb<-uncertaintyData$conductivity_ucrtMeas
+  #     uncertaintyData$conductivity_ucrtExpn<-2*uncertaintyData$conductivity_ucrtMeas
+  #   }
+  #   #calculate instantaneous elevation uncert
+  #   uncertaintyData$elevation_ucrtMeas<-NA
+  #   if(!is.null(LocationHist) & length(LocationHist)>0){
+  #     for(i in 1:length(uncertaintyData$pressure_ucrtMeas)){
+  #       U_CVALA1_pressure<-uncertaintyData$pressure_ucrtMeas[i]
+  #       uncertaintyData$elevation_ucrtMeas[i]<-(1*trollData$survey_uncert[i]^2+((1000/(density*gravity))^2)*U_CVALA1_pressure^2)^0.5
+  #     }
+  #   }else{
+  #     uncertaintyData$elevation_ucrtMeas<-NA
+  #   }
+  #   uncertaintyData$elevation_ucrtComb<-uncertaintyData$elevation_ucrtMeas
+  #   uncertaintyData$elevation_ucrtExpn<-2*uncertaintyData$elevation_ucrtMeas
+  #   
+  #   #Create dataframes for output uncertainties
+  #   uncertaintyData$startDateTime<-uncertaintyData$readout_time
+  #   timeDiff<-uncertaintyData$startDateTime[2]-uncertaintyData$startDateTime[1]
+  #   uncertaintyData$endDateTime<-uncertaintyData$readout_time+timeDiff
+  #   if(sensor=='aquatroll200'){
+  #     ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn")
+  #   }else{
+  #     ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn")
+  #   }
+  #   ucrtOut_inst <- uncertaintyData[,ucrtCol_inst]
+  #   #standardize naming
+  #   if(sensor=='aquatroll200'){
+  #     names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
+  #   }else{
+  #     names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert")
+  #   }
+  #   #write out instantaneous uncertainty data
+  #   #ucrtOut_inst[,-c(1:2)] <-round(ucrtOut_inst[,-c(1:2)],2)
+  #   ucrtOut_inst$startDateTime<-as.POSIXct(ucrtOut_inst$startDateTime)
+  #   ucrtOut_inst$endDateTime<-as.POSIXct(ucrtOut_inst$endDateTime)
+  #   #GW inst is 5-min, SW inst is 1-min
+  #   if(Context=='GW'){
+  #     rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
+  #                                                           NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"), 
+  #                                                           Schm = SchmUcrtOut),silent=FALSE)
+  #   }else{
+  #     rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst, 
+  #                                                           NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_001.parquet"), 
+  #                                                           Schm = SchmUcrtOut),silent=FALSE)
+  #   }
+  #   
+  #   
+  #   if(any(grepl('try-error',class(ucrtOut_inst)))){
+  #     log$error(base::paste0('Writing the output data failed: ',attr(ucrtOut_inst,"condition")))
+  #     stop()
+  #   } else {
+  #     log$info("Instantaneous uncertainty data written out.")
+  #   }
+  # }
+  # 
+  # 
+  # ######## Uncertainty for L1 mean 5 and 30 minute outputs ########
+  # #the repeatability and reproducibility of the sensor and  uncertainty of the calibration procedures and coefficients including uncertainty in the standard
+  # if(length(WndwAgr)>0){
+  #   #determine averaging window
+  #   timeMeas <- base::as.POSIXlt(uncertaintyData$readout_time)# Pull out time variable
+  #   # Run through each aggregation interval, creating the daily time series of windows
+  #   for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
+  #     #WndwAgr<-1 #for testing
+  #     log$debug(base::paste0('Computing uncertainty for aggregation interval: ',WndwAgr[idxWndwAgr], ' minute(s)'))
+  #     
+  #     # Create start and end time sequences
+  #     timeAgrBgn <- timeBgn + timeBgnDiff[[idxWndwAgr]]
+  #     timeAgrEnd <- timeBgn + timeEndDiff[[idxWndwAgr]]
+  #     timeBrk <- c(base::as.numeric(timeAgrBgn),base::as.numeric(utils::tail(timeAgrEnd,n=1))) # break points for .bincode
+  #     
+  #     # Allocate data points to aggregation windows
+  #     setTime <- base::.bincode(base::as.numeric(timeMeas),timeBrk,right=FALSE,include.lowest=FALSE) # Which time bin does each measured value fall within?
+  #     
+  #     # Allocate uncertainty data points to aggregation windows
+  #     if(!base::is.null(uncertaintyData)){
+  #       setTimeUcrt <- base::.bincode(base::as.numeric(base::as.POSIXlt(uncertaintyData$readout_time)),timeBrk,right=FALSE,include.lowest=FALSE) # Which time bin does each measured value fall within?
+  #     } else {
+  #       setTimeUcrt <- base::numeric(0)
+  #     }
+  #     
+  #     # Intialize the output
+  #     rptUcrt <- base::data.frame(startDateTime=timeAgrBgn,endDateTime=timeAgrEnd)
+  #     if(sensor=="aquatroll200"){
+  #       #Conductivity included for aqua troll.
+  #       nameTerm <- c("temperature_ucrtExpn_L1","pressure_ucrtExpn_L1","elevation_ucrtExpn_L1","conductivity_ucrtExpn_L1")
+  #     }else{
+  #       #Conductivity not included for level troll.
+  #       nameTerm <- c("temperature_ucrtExpn_L1","pressure_ucrtExpn_L1","elevation_ucrtExpn_L1")
+  #     }
+  #     rptUcrt[,3:(base::length(nameTerm)+2)] <- base::as.numeric(NA)
+  #     base::names(rptUcrt)[3:(base::length(nameTerm)+2)] <- nameTerm
+  #     
+  #     # Run through the time bins
+  #     for(WndwTime in base::unique(setTime)){
+  #       # Rows to pull
+  #       dataWndwTime <- base::subset(trollData,subset=setTime==WndwTime) 
+  #       ucrtDataWndwTime <- base::subset(uncertaintyData,subset=setTime==WndwTime)  
+  #       
+  #       # Compute L1 uncertainty 
+  #       if(length(uncertaintyCoef)>0){
+  #         #Temperature Uncertainty
+  #         #combined uncertainty of temperature is equal to the standard uncertainty values provided by CVAL
+  #         #numPts <- base::sum(x=!base::is.na(dataWndwTime$temperature),na.rm=FALSE)
+  #         #se <- stats::sd(dataWndwTime$temperature,na.rm=TRUE)/base::sqrt(numPts)
+  #         #TemperatureExpUncert<-2*(se^2+U_CVALA3_temp^2)^0.5
+  #         temperature_ucrtExpn_L1<-NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(data=dataWndwTime,VarUcrt='temperature',ucrtCoef=uncertaintyCoef)
+  #         
+  #         #Pressure Uncertainty
+  #         #combined uncertainty of pressure is equal to the standard uncertainty values provided by CVAL
+  #         #numPts <- base::sum(x=!base::is.na(dataWndwTime$pressure),na.rm=FALSE)
+  #         #se <- stats::sd(dataWndwTime$pressure,na.rm=TRUE)/base::sqrt(numPts)
+  #         #pressure_ucrtExpn_L1<-2*(se^2+U_CVALA3_pressure^2)^0.5
+  #         pressure_ucrtExpn_L1<-NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(data=dataWndwTime,VarUcrt='pressure',ucrtCoef=uncertaintyCoef)
+  #         pressure_ucrtComb_L1<-pressure_ucrtExpn_L1/2
+  #         
+  #         #Elevation Uncertainty
+  #         #survey_uncert is the uncertainty of the sensor elevation relative to other aquatic instruments at the NEON site. 
+  #         #survey_uncert includes the total station survey uncertainty and the uncertainty of hand measurements between the sensor and survey point.
+  #         survey_uncert<-mean(dataWndwTime$survey_uncert)
+  #         elevation_ucrtExpn_L1<-2*((1*survey_uncert^2+((1000/(density*gravity))^2)*pressure_ucrtComb_L1^2)^0.5)
+  #         
+  #         if(sensor=='aquatroll200'){
+  #           #Raw Conductivity Uncertainty
+  #           #combined uncertainty of actual conductivity (not published) is equal to the standard uncertainty values provided by CVAL
+  #           #numPts <- base::sum(x=!base::is.na(dataWndwTime$raw_conductivity),na.rm=FALSE)
+  #           #se <- stats::sd(dataWndwTime$raw_conductivity,na.rm=TRUE)/base::sqrt(numPts)
+  #           #rawConductivity_ucrtExpn_L1<-2*(se^2+U_CVALA3_cond^2)^0.5
+  #           rawConductivity_ucrtExpn_L1<-NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(data=dataWndwTime,VarUcrt='conductivity',ucrtCoef=uncertaintyCoef)
+  #           
+  #           #Specific Conductivity Uncertainty
+  #           #grab U_CVALA3 values
+  #           U_CVALA3_cond<-NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef=uncertaintyCoef,
+  #                                                                  NameCoef='U_CVALA3',
+  #                                                                  VarUcrt='conductivity',
+  #                                                                  TimeAgrBgn=dataWndwTime$readout_time[1],
+  #                                                                  TimeAgrEnd=dataWndwTime$readout_time[base::nrow(dataWndwTime)]+as.difftime(.001,units='secs'))
+  #           U_CVALA3_temp<-NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef=uncertaintyCoef,
+  #                                                                  NameCoef='U_CVALA3',
+  #                                                                  VarUcrt='temperature',
+  #                                                                  TimeAgrBgn=dataWndwTime$readout_time[1],
+  #                                                                  TimeAgrEnd=dataWndwTime$readout_time[base::nrow(dataWndwTime)]+as.difftime(.001,units='secs'))
+  #           
+  #           # Compute uncertainty of the mean due to natural variation, represented by the standard error of the mean
+  #           #log$debug(base::paste0('Computing L1 uncertainty due to natural variation (standard error)'))
+  #           dataComp<-dataWndwTime$conductivity
+  #           conductivity_ucrtComb_L1<-NA
+  #           numPts <- base::sum(x=!base::is.na(dataComp),na.rm=FALSE)
+  #           se <- stats::sd(dataComp,na.rm=TRUE)/base::sqrt(numPts)
+  #           # Compute combined uncertainty for L1 specific conductivity
+  #           for(i in 1:length(dataWndwTime$conductivity_ucrtMeas)){
+  #             dataWndwTime$conductivity_ucrtComb_L1[i]<-((se^2)*(((1/(1+0.0191*(dataWndwTime$temperature[i]-25)))^2)*U_CVALA3_cond^2)+((((0.0191*dataWndwTime$raw_conductivity[i])/((1+0.0191*(dataWndwTime$temperature[i]-25))^2))^2)*U_CVALA3_temp^2))^0.5
+  #           }
+  #           # Compute expanded uncertainty for L1 specific conductivity
+  #           conductivity_ucrtExpn_L1<-2*mean(dataWndwTime$conductivity_ucrtComb_L1)
+  #         }
+  #       }else{
+  #         temperature_ucrtExpn_L1<-NA
+  #         pressure_ucrtExpn_L1<-NA
+  #         elevation_ucrtExpn_L1<-NA
+  #         conductivity_ucrtExpn_L1<-NA
+  #       }
+  #       #copy info to output dataframe
+  #       rptUcrt$temperature_ucrtExpn_L1[WndwTime] <- temperature_ucrtExpn_L1
+  #       rptUcrt$pressure_ucrtExpn_L1[WndwTime] <- pressure_ucrtExpn_L1
+  #       rptUcrt$elevation_ucrtExpn_L1[WndwTime] <- elevation_ucrtExpn_L1
+  #       if(sensor=="aquatroll200"){
+  #         rptUcrt$conductivity_ucrtExpn_L1[WndwTime] <- conductivity_ucrtExpn_L1
+  #       }
+  #     } # End loop through time windows
+  #     
+  #     
+  #     #standardize column names
+  #     if(Context=="GW"){
+  #       names(rptUcrt)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
+  #     }else if(sensor=="aquatroll200"){
+  #       names(rptUcrt)<- c("startDateTime","endDateTime","surfacewaterTempExpUncert","surfacewaterPressureExpUncert","surfacewaterElevExpUncert","surfacewaterCondExpUncert")
+  #     }else{
+  #       names(rptUcrt)<- c("startDateTime","endDateTime","surfacewaterTempExpUncert","surfacewaterPressureExpUncert","surfacewaterElevExpUncert")
+  #     }
+  #     
+  #     #Write out aggregate uncertainty data
+  #     if(WndwAgr[idxWndwAgr]==5){
+  #       window<-"005"
+  #     }else if(WndwAgr[idxWndwAgr]==30){
+  #       window<-"030"
+  #     }else{
+  #       window<-NA
+  #     }
+  #     rptUcrtOut_Agr <- try(NEONprocIS.base::def.wrte.parq(data = rptUcrt, 
+  #                                                          NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_","ucrt_",window,".parquet"), 
+  #                                                          Schm = SchmUcrtOut),silent=FALSE)
+  #     
+  #     if(any(grepl('try-error',class(rptUcrtOut_Agr)))){
+  #       log$error(base::paste0('Writing the output data failed: ',attr(rptUcrtOut_Agr,"condition")))
+  #       stop()
+  #     } else {
+  #       log$info("Averaged uncertainty data written out.")
+  #     }
+  #   }
+  # }
 
   return()
 } 
