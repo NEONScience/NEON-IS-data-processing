@@ -38,7 +38,7 @@ class PaddedTimeSeriesAnalyzer:
                         log.info(f'data path dir:::::: {datadir}')
                         try:
                             if (manifest_file not in datadir):
-                                sys.audit("No manifest_file found in data_path directory")
+                                log.info("No manifest_file found in data_path directory")
                         except:
                             err_msg = "No manifest_file found in data path directory"
                             err_datum_path(err=err_msg,DirDatm=str(datadir),DirErrBase=self.DirErrBase,
