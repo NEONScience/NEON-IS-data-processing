@@ -34,7 +34,7 @@ class PaddedTimeSeriesAnalyzer:
             for root, directories, files in os.walk(str(self.data_path)):
                 for dir in directories:
                     if dir == "data":
-                        datadir = Path(root,dir)
+                        datadir = Path(Path(root,dir).parent)
                         log.info(f'data path dir:::::: {datadir}')
                         try:
                             if (manifest_file not in datadir):
