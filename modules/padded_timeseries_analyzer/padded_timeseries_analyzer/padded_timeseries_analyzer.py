@@ -32,9 +32,17 @@ class PaddedTimeSeriesAnalyzer:
         manifest_file = AnalyzerConfig.manifest_filename
         try:
             for root, directories, files in os.walk(str(self.data_path)):
-                if (manifest_file not in files):
-                    log.fatal(f'No manifest_file found in directory {self.data_path}')
-                    sys.exit("No manifest_file found in data_path directory")
+                for dir in directories:
+                    if dir == "data":
+                        datadir = Path(root,dir)
+                        log.info(f'data path dir:::::: {datadir}')
+                        try:
+                            if (manifest_file not in datadir):
+                                sys.audit("No manifest_file found in data_path directory")
+                        except:
+                            err_msg = "No manifest_file found in data path directory"
+                            err_datum_path(err=err_msg,DirDatm=str(datadir),DirErrBase=self.DirErrBase,
+                                    RmvDatmOut=True, DirOutBase=self.out_path)
                 for filename in files:
                     if filename == manifest_file:
                         # read manifest
@@ -68,10 +76,7 @@ class PaddedTimeSeriesAnalyzer:
                             self.link_ancillary_files(Path(root))
         except:
             exception_type, exception_obj, exception_tb = sys.exc_info()
-            err_msg = sys.exc_info()
             log.error("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
-            err_datum_path(err=err_msg,DirDatm=str(self.data_path),DirErrBase=self.DirErrBase,RmvDatmOut=True,
-                           DirOutBase=self.out_path)
 
     @staticmethod
     def link_thresholds(data_file_path: Path, data_file_link_path: Path) -> None:
