@@ -34,14 +34,13 @@ class PaddedTimeSeriesAnalyzer:
             for root, directories, files in os.walk(str(self.data_path)):
                 for dir in directories:
                     if dir == "data":
-                        datadir = Path(Path(root,dir).parent)
-                        log.info(f'data path dir:::::: {datadir}')
+                        dataDir = Path(root, dir)
                         try:
-                            if (manifest_file not in datadir):
-                                log.info("No manifest_file found in data_path directory")
+                            if (manifest_file not in dataDir):
+                                log.info(f'No manifest_file found in data_path directory {dataDir}')
                         except:
                             err_msg = "No manifest_file found in data path directory"
-                            err_datum_path(err=err_msg,DirDatm=str(datadir),DirErrBase=self.DirErrBase,
+                            err_datum_path(err=err_msg,DirDatm=str(Path(dataDir.parent)),DirErrBase=self.DirErrBase,
                                     RmvDatmOut=True, DirOutBase=self.out_path)
                 for filename in files:
                     if filename == manifest_file:
