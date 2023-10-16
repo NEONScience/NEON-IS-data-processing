@@ -13,19 +13,20 @@ log = get_logger()
 
 class PaddedTimeSeriesAnalyzer:
 
-    def __init__(self, data_path: Path, out_path: Path, relative_path_index: int) -> None:
+    def __init__(self, data_path: Path, out_path: Path, err_path: Path, relative_path_index: int) -> None:
         """
         Constructor.
 
         :param data_path: The data directory, i.e., /tmp/in/prt/2018/01/03.
         :param out_path: The output directory, i.e., /tmp/out.
+        :param err_path: The error directory, i.e., errored.
         :param relative_path_index: Trim input file paths to this index.
         """
         self.data_path = data_path
         self.out_path = out_path
-        self.relative_path_index = relative_path_index
+        self.DirErrBase = Path(self.out_path, err_path)
         # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
-        self.DirErrBase = Path(self.out_path, 'errored')
+        self.relative_path_index = relative_path_index
 
     def analyze(self) -> None:
         """Verify all necessary data files are present in the input."""
