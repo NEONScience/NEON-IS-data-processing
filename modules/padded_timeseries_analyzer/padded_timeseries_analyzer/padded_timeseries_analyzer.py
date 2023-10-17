@@ -39,7 +39,8 @@ class PaddedTimeSeriesAnalyzer:
                 for dir in directories:
                     if dir == 'data':
                         try:
-                            os.path.isfile(Path(root, dir,manifest_file))
+                            dataDir = Path(root,dir)
+                            open(Path(dataDir,manifest_file))
                         except:
                             dataDir_routed = Path(root, dir).parent
                             err_msg = "No manifest_file found in data path directory"
