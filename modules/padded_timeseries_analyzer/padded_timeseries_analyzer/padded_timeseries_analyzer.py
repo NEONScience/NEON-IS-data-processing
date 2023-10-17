@@ -3,12 +3,14 @@ import os
 import sys
 from pathlib import Path
 
-from structlog import get_logger
+#from structlog import get_logger
+import structlog
 
 from padded_timeseries_analyzer.padded_timeseries_analyzer.analyzer_config import AnalyzerConfig
 from common.err_datum import err_datum_path
 
-log = get_logger()
+#log = get_logger()
+log = structlog.get_logger()
 
 
 class PaddedTimeSeriesAnalyzer:
