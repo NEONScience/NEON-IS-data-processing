@@ -44,6 +44,8 @@ class PaddedTimeSeriesAnalyzer:
                         except:
                             dataDir_routed = Path(root, dir).parent
                             err_msg = "No manifest_file found in data path directory"
+                            exception_type,exception_obj,exception_tb = sys.exc_info()
+                            log.error("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()) + "directory " + str(dataDir_routed))
                             err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=self.DirErrBase,
                                            RmvDatmOut=True,DirOutBase=self.out_path)
                 for filename in files:
