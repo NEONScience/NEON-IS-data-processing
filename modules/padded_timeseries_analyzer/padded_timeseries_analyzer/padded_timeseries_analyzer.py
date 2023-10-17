@@ -26,56 +26,59 @@ class PaddedTimeSeriesAnalyzer:
         """
         self.data_path = data_path
         self.out_path = out_path
-        self.DirErrBase = Path(self.out_path, err_path)
         # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
+        self.DirErrBase = Path(self.out_path, err_path)
         self.relative_path_index = relative_path_index
 
     def analyze(self) -> None:
         """Verify all necessary data files are present in the input."""
         dataDir_routed = Path("")
         manifest_file = AnalyzerConfig.manifest_filename
-        for root,directories,files in os.walk(str(self.data_path)):
-            for filename in files:
-                if filename != manifest_file:
-                    try:
-                        if (Path(root,filename).parent) == 'data':
-                            dataDir_routed = Path(root,filename).parent
-                            log.info(f'Inside inner try, data_path directory {dataDir_routed}')
-                            log.info(f'No manifest_file found in data_path directory {dataDir_routed}')
-                    except:
-                        err_msg = "No manifest_file found in data path directory"
-                        err_datum_path(err=err_msg,DirDatm=str(Path(dataDir_routed)),DirErrBase=self.DirErrBase,
-                                       RmvDatmOut=True,DirOutBase=self.out_path)
-                else:
-                    # read manifest
-                    dates = [date.rstrip() for date in open(Path(root,filename))]
-                    # check for existence of complete manifest
-                    dates_not_found = []
-                    for date in dates:
-                        dates_not_found.append(date)
-                    for date in dates:
-                        for data_file in os.listdir(root):
-                            log.debug(f'data_file: {data_file}')
-                            if data_file != manifest_file:
-                                data_file_date = self.get_data_file_date(data_file)
-                                log.debug(f'checking data file date: {data_file_date} and '
-                                          f'manifest date {date} in {dates_not_found}')
-                                if date in data_file_date and date in dates_not_found:
-                                    log.debug(f'found data for: {date}')
-                                    dates_not_found.remove(date)
-                    # if complete link to output
-                    if not dates_not_found:
-                        for data_file in os.listdir(root):
-                            if data_file != manifest_file:
-                                file_path = Path(root,data_file)
-                                link_path = Path(self.out_path,*file_path.parts[self.relative_path_index:])
-                                log.debug(f'linking {file_path} to {link_path}')
-                                link_path.parent.mkdir(parents=True,exist_ok=True)
-                                if not link_path.exists():
-                                    link_path.symlink_to(file_path)
-                                self.link_thresholds(file_path,link_path)
-                        # go up one directory to find any ancillary files to link
-                        self.link_ancillary_files(Path(root))
+        try:
+            for root, directories, files in os.walk(str(self.data_path)):
+                for dir in directories:
+                    if dir == 'data':
+                        try:
+                            os.path.isfile(Path(root, dir,manifest_file))
+                        except:
+                            dataDir_routed = Path(root, dir).parent
+                            err_msg = "No manifest_file found in data path directory"
+                            err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=self.DirErrBase,
+                                           RmvDatmOut=True,DirOutBase=self.out_path)
+                for filename in files:
+                    if filename == manifest_file:
+                        # read manifest
+                        dates = [date.rstrip() for date in open(Path(root, filename))]
+                        # check for existence of complete manifest
+                        dates_not_found = []
+                        for date in dates:
+                            dates_not_found.append(date)
+                        for date in dates:
+                            for data_file in os.listdir(root):
+                                log.debug(f'data_file: {data_file}')
+                                if data_file != manifest_file:
+                                    data_file_date = self.get_data_file_date(data_file)
+                                    log.debug(f'checking data file date: {data_file_date} and '
+                                              f'manifest date {date} in {dates_not_found}')
+                                    if date in data_file_date and date in dates_not_found:
+                                        log.debug(f'found data for: {date}')
+                                        dates_not_found.remove(date)
+                        # if complete link to output
+                        if not dates_not_found:
+                            for data_file in os.listdir(root):
+                                if data_file != manifest_file:
+                                    file_path = Path(root, data_file)
+                                    link_path = Path(self.out_path, *file_path.parts[self.relative_path_index:])
+                                    log.debug(f'linking {file_path} to {link_path}')
+                                    link_path.parent.mkdir(parents=True, exist_ok=True)
+                                    if not link_path.exists():
+                                        link_path.symlink_to(file_path)
+                                    self.link_thresholds(file_path, link_path)
+                            # go up one directory to find any ancillary files to link
+                            self.link_ancillary_files(Path(root))
+        except Exception:
+            exception_type, exception_obj, exception_tb = sys.exc_info()
+            log.error("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
 
     @staticmethod
     def link_thresholds(data_file_path: Path, data_file_link_path: Path) -> None:
