@@ -36,8 +36,11 @@ class PaddedTimeSeriesAnalyzer:
                 for dir in directories:
                     if dir == "data":
                         dataDir = Path(root, dir)
+                        log.info(f'Before inner try, data_path directory {dataDir}')
                         try:
                             if (manifest_file not in dataDir):
+                                dataDir = dataDir
+                                log.info(f'Inside inner try, data_path directory {dataDir}')
                                 log.info(f'No manifest_file found in data_path directory {dataDir}')
                         except:
                             err_msg = "No manifest_file found in data path directory"
