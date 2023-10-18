@@ -57,4 +57,3 @@ def err_datum_path(err: str,DirDatm: Path,DirErrBase: Path,RmvDatmOut: bool,DirO
             if os.path.exists(DirOut_path):
                 removed = shutil.rmtree(DirOut_path)
                 log.info(f'Removed partial output for errored datum:  {DirOut_path}')
-                
