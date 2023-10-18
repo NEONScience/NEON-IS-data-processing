@@ -58,7 +58,7 @@ class PaddedTimeSeriesAnalyzer:
                                 if data_file != manifest_file:
                                     data_file_date = self.get_data_file_date(data_file)
                                     log.debug(f'checking data file date: {data_file_date} and '
-                                        f'manifest date {date} in {dates_not_found}')
+                                              f'manifest date {date} in {dates_not_found}')
                                     if date in data_file_date and date in dates_not_found:
                                         log.debug(f'found data for: {date}')
                                         dates_not_found.remove(date)
