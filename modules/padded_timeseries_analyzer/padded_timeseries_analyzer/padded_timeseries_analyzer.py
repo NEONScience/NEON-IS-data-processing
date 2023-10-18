@@ -78,7 +78,7 @@ class PaddedTimeSeriesAnalyzer:
                 except Exception:
                     exception_type,exception_obj,exception_tb = sys.exc_info()
                     log.error("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
-                    dataDir_routed = Path(root, filename).parent
+                    dataDir_routed = Path(root, filename).parent.parent
                     err_msg  = sys.exc_info()
                     err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=self.DirErrBase,
                                        RmvDatmOut=True,DirOutBase=self.out_path)
