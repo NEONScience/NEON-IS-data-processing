@@ -49,7 +49,7 @@ class PaddedTimeSeriesAnalyzer:
                 try:
                     if filename == manifest_file:
                         # read manifest
-                        dates = [date.rstrip() for date in open(Path(root,filename))]
+                        dates = [date.rstrip() for date in open(Path(root, filename))]
                         # check for existence of complete manifest
                         dates_not_found = []
                         for date in dates:
@@ -68,13 +68,13 @@ class PaddedTimeSeriesAnalyzer:
                         if not dates_not_found:
                             for data_file in os.listdir(root):
                                 if data_file != manifest_file:
-                                    file_path = Path(root,data_file)
+                                    file_path = Path(root, data_file)
                                     link_path = Path(self.out_path,*file_path.parts[self.relative_path_index:])
                                     log.debug(f'linking {file_path} to {link_path}')
-                                    link_path.parent.mkdir(parents=True,exist_ok=True)
+                                    link_path.parent.mkdir(parents=True, exist_ok=True)
                                     if not link_path.exists():
                                         link_path.symlink_to(file_path)
-                                    self.link_thresholds(file_path,link_path)
+                                    self.link_thresholds(file_path, link_path)
                             # go up one directory to find any ancillary files to link
                             self.link_ancillary_files(Path(root))
                 except Exception:
