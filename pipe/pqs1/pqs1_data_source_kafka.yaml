@@ -2,7 +2,7 @@
 pipeline:
   name: pqs1_data_source_kafka
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.16-kafka
+  image: quay.io/battelleecology/kafka-loader:v1.0.17-kafka
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

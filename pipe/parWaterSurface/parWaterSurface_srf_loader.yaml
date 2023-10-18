@@ -7,7 +7,7 @@ transform:
     GROUP_PREFIX: par-water-surface_
     LOG_LEVEL: DEBUG
     OUT_PATH: /pfs/out
-  image: quay.io/battelleecology/neon-srf-loader:NSE-9876.2
+  image: quay.io/battelleecology/neon-srf-loader:fe1512ea
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
   secrets:

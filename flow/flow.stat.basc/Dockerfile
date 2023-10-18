@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Basic statistics module
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.1.0
+FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.1.1
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

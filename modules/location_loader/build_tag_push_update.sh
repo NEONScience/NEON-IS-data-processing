@@ -1,7 +1,7 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
 image_name=location_loader
-tag=$(git rev parse --short HEAD)
+tag=$(git rev-parse --short HEAD)
 cd ./modules
 docker build -t $image_name:latest -f ./location_loader/Dockerfile .
 docker tag $image_name quay.io/battelleecology/$image_name:$tag

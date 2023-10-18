@@ -1,7 +1,7 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
 image_name=parquet_linkmerge
-tag=$(git rev parse --short HEAD)
+tag=$(git rev-parse --short HEAD)
 cd ./modules
 docker build -t $image_name:latest -f ./parquet_linkmerge/Dockerfile .
 docker tag $image_name quay.io/battelleecology/$image_name:$tag
