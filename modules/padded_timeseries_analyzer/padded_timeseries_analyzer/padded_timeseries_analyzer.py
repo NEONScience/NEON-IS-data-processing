@@ -58,7 +58,7 @@ class PaddedTimeSeriesAnalyzer:
                                 if data_file != manifest_file:
                                     data_file_date = self.get_data_file_date(data_file)
                                     log.debug(f'checking data file date: {data_file_date} and '
-                                          f'manifest date {date} in {dates_not_found}')
+                                        f'manifest date {date} in {dates_not_found}')
                                     if date in data_file_date and date in dates_not_found:
                                         log.debug(f'found data for: {date}')
                                         dates_not_found.remove(date)
@@ -67,7 +67,7 @@ class PaddedTimeSeriesAnalyzer:
                             for data_file in os.listdir(root):
                                 if data_file != manifest_file:
                                     file_path = Path(root, data_file)
-                                    link_path = Path(self.out_path,*file_path.parts[self.relative_path_index:])
+                                    link_path = Path(self.out_path, *file_path.parts[self.relative_path_index:])
                                     log.debug(f'linking {file_path} to {link_path}')
                                     link_path.parent.mkdir(parents=True, exist_ok=True)
                                     if not link_path.exists():
