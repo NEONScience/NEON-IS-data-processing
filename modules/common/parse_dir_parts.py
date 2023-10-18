@@ -29,7 +29,7 @@ def get_dir_info(DirIn: Path):
     DirInInfo =[]
     DirIn_parts = Path(DirIn).parts
     if 'pfs' not in DirIn_parts:
-        log.error('pfs directory not found in input path structure. Check input repo.')
+        log.error('\t\tpfs directory not found in input path structure. Check input repo.')
     else:
         IdxParentDir = DirIn_parts.index("pfs")
         parent_dir = DirIn_parts[IdxParentDir]
