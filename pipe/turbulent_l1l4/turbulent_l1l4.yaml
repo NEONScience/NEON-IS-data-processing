@@ -1,0 +1,53 @@
+---
+pipeline:
+  name: turbulent_l1l4
+transform:
+  cmd:
+  - Rscript ./flow.sae.ecte.l1l4.R
+    #DirIn=/pfs/turbulent_l0p
+    #DirOut=/pfs/out
+    #DirTmp=/tmp/pfs
+    #DirErr=/pfs/out/errored_datums
+    #LOG=DEBUG    
+  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:ecte-8
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+input:
+  pfs:
+    name: DIR_IN
+    repo: turbulent_l0p
+    glob: /*/*/*/*
+parallelism_spec:
+  constant: 1
+autoscaling: true
+resource_requests:
+  memory: 15G
+  cpu: 2.0
+resource_limits:
+  memory: 30G
+  cpu: 6
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 2.3
+sidecar_resource_limits:
+  memory: 8Gi
+  cpu: 4.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
