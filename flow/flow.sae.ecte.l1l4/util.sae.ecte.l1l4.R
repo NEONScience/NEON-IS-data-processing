@@ -13,7 +13,6 @@ get.all.days.path <- function(original_directory, currdate, offDays, log=NULL) {
   
   # Convert the path into a character vector by splitting it using '/'
   path_elements <- unlist(strsplit(original_directory, '/'))
-
   # Find the date element in the path
   date_index <- which(path_elements %in% substr(currdate, 1, 4))
   
@@ -35,6 +34,22 @@ get.all.days.path <- function(original_directory, currdate, offDays, log=NULL) {
     paste(path_elements, collapse = '/')
   })
   base::names(new_paths) <- new_dates
-    
+  
   return(new_paths)
+}
+
+
+###############################
+get.all.days.tmp.path <- function(original_name, currdate, planar_window) {
+  
+  new_dates <- seq(date-planar_window+1, as.Date(currdate), by='days')
+
+  idx <- unlist(gregexpr(pattern=currdate, original_name))
+  
+  # Create the new paths by replacing the original date with the new dates
+  new_paths <- lapply(new_dates, function(date) {
+    paste0(substr(original_name,1,idx-1),date,".h5")
+  })
+
+  return(unlist(new_paths))
 }

@@ -45,14 +45,12 @@ class ConstantPad:
                     log.debug(f'{path} padded dates {padded_dates}')
                     # link data file into each date in the padded range
                     link_parts = list(parts)
-                    for index in range(1, len(self.out_path_parts)):
-                        link_parts[index] = self.out_path_parts[index]
                     for date in padded_dates:
                         if any(pad_dir in str(path) for pad_dir in self.pad_dirs):
                             link_parts[self.year_index] = str(date.year)
                             link_parts[self.month_index] = str(date.month).zfill(2)
                             link_parts[self.day_index] = str(date.day).zfill(2)
-                            link_path = Path(*link_parts)
+                            link_path = Path(self.out_path, *link_parts[self.relative_path_index:])
                             log.debug(f'file: {path} link: {link_path}')
                             link_path.parent.mkdir(parents=True, exist_ok=True)
                             if not link_path.exists():

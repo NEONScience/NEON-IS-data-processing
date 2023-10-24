@@ -9,7 +9,6 @@
 # turbulent_l0p/2020/01/01/ABBY/abby.l0p.h5.gz
 # location_site/2020/01/01/ABBY/abby.json
 #######################################################
-options(digits.secs = 3)
 library(foreach)
 library(doParallel)
 

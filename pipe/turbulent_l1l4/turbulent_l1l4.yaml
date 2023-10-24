@@ -3,13 +3,17 @@ pipeline:
   name: turbulent_l1l4
 transform:
   cmd:
-  - Rscript ./flow.sae.ecte.l1l4.R
-    #DirIn=/pfs/turbulent_l0p
-    #DirOut=/pfs/out
-    #DirTmp=/tmp/pfs
-    #DirErr=/pfs/out/errored_datums
-    #LOG=DEBUG    
-  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:ecte-8
+  - /bin/bash
+  stdin:
+  - "#!/bin/bash"
+  - Rscript 
+    ./flow.sae.ecte.l1l4.R
+    DirIn=$DIR_IN
+    DirOut=/pfs/out
+    DirTmp=/tmp/pfs/turbulent_l0p
+    DirErr=/pfs/out/errored_datums
+    LOG=DEBUG    
+  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:ecte-30
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
 input:

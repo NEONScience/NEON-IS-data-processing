@@ -36,6 +36,7 @@
 # changelog and author contributions / copyrights
 #     original creation
 ##############################################################################################
+
 wrap.sae.ecte.l1l4 <- function(DirIn,
                                DirOutBase,
                                DirTmp,
@@ -48,13 +49,11 @@ wrap.sae.ecte.l1l4 <- function(DirIn,
   }
 
   # Gather info about the input directory and formulate the parent output directory
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log) 
   idSrc <- utils::tail(InfoDirIn$dirSplt,1)
-  dirOutPrnt <- base::paste0(c(DirOutBase,InfoDirIn$dirSplt[(InfoDirIn$idxRepo+1):(base::length(InfoDirIn$dirSplt)-1)]),collapse='/')
-  
+
   log$debug(InfoDirIn$time)  # '2020/01/04 GMT'
   log$debug(idSrc)  # 'ABBY'
-  log$debug(dirOutPrnt)
 
   # Get site location file
   fsite <- list.files(path=DirIn, pattern="\\.json")
@@ -63,62 +62,84 @@ wrap.sae.ecte.l1l4 <- function(DirIn,
   nameProp <- c('DistZaxsCnpy', 'DistZaxsDisp', 'PrdIncrCalc', 'PrdIncrPf', 'PrdWndwCalc', 'PrdWndwPf',
                 'PresAtmSite', 'TypeEco', 'UTM Zone')
   # Load in the location json
+  # TODO: modify def.loc.meta.R function in NEONprocIS.base, or create a new function in package?
   source("./def.loc.meta.R")
   meta <- def.loc.meta(NameFile=base::paste0(DirIn,'/',fsite), nameProp=nameProp, log=log)
   planarWindow <- as.numeric(meta$PrdWndwPf)
   offDays <- planarWindow %/% 2
   
-  # retrieve all data path for planar fit window files
-  source("./util.sae.ecte.l1l4.R")
-  allPaths <- get.all.days.path(DirIn, InfoDirIn$time, offDays)
-
   # get current date
   currDate <- format(as.POSIXct(InfoDirIn$time, format="%Y-%m-%d %Z"), format="%Y-%m-%d")
   
-  # get input files and copy to DirTmp (/tmp/pfs/)
+  # copy data file to tmp directory and rename as eddy4r requested
   dir.create(DirTmp, showWarnings = FALSE, recursive=TRUE)
-  for (i in seq_along(allPaths)) {
-    date <- names(allPaths)[i]
-    path <- allPaths[[i]]
-    fdata <- list.files(path=path, pattern="\\.h5.gz", full.names=TRUE)
-    if (length(fdata) == 0) {
-      log.warn(paste0("ECTE L0p file not available for date ", date))
-      return()
-    }
-    
-    file.copy(fdata, DirTmp)
-    R.utils::gunzip(file.path(DirTmp, basename(fdata)))
-    
-    # Rename the files
-    target_name <- file.path(DirTmp, paste0("ECTE_dp0p_", idSrc, "_", date, ".h5"))
-    file.rename(file.path(DirTmp, tools::file_path_sans_ext(basename(fdata))), target_name)
-  }
-  log$debug(list.files(path=DirTmp))
-  fileBase <- gsub("^(.*?\\.ecte).*", "\\1", basename(fdata))
-  fileoutBase <- gsub("IP0", "IP4", fileBase)
+  file_in <- list.files(path=DirIn, pattern=".\\.h5.gz", full.names=TRUE)
+  if (length(file_in) > 0) {
+    file.copy(file_in, DirTmp)
+    R.utils::gunzip(file.path(DirTmp, basename(file_in)))
 
-  library(lgr)
+    # Rename the files # TODO: check if rename is really necessary?
+    target_name <- file.path(DirTmp, paste0("ECTE_dp0p_", idSrc, "_", currDate, ".h5"))
+    file.rename(file.path(DirTmp, tools::file_path_sans_ext(basename(file_in))), target_name)
+  }
+  log$debug(paste0("files under ", DirTmp, ":"))
+  log$debug(list.files(path=DirTmp,pattern="*",full.names=TRUE))
+  
+  # get data files from last 9(planar-window) days
+  all_dates <- seq(as.Date(currDate)-planarWindow+1, as.Date(currDate), by='days')
+  idx <- unlist(gregexpr(pattern=currDate, target_name))
+  all_files <- paste0(substr(target_name, 1, idx-1), all_dates, ".h5")
+  
+  # check if all files are available
+  DirTmpCopy = paste0(DirTmp, "/", currDate)
+  dir.create(DirTmpCopy, showWarnings = FALSE)
+  for (file_name in all_files) {
+    if (!file.exists(file_name)) {
+      unlink(DirTmpCopy, recursive=TRUE)
+      log$debug(paste0(file_name, " is not available"))
+      log$error("one or more l0p files are missing")
+      stop()
+    } else {
+      file.copy(file_name, DirTmpCopy)
+    }
+  }
+  log$debug(paste0("files under ", DirTmpCopy, ":"))
+  log$debug(list.files(path=DirTmpCopy,pattern="*",full.names=TRUE))
+  
+    # if yes, call eddy4r workflow and calculate L1L4 for date currDate-4 
+  process_date <- as.character(as.Date(currDate)-4)
+  log$info(paste0("Process L1L4 against date ", process_date))
+  log$info(paste0("data files input from: ", DirTmpCopy))
+  
+  dirOutPrnt <- paste0(DirOutBase, "/", format(process_date, format='%Y/%m/%d'))
+  log$debug(paste("output dir: ", dirOutPrnt)) # /pfs/out/2020-01-05
+
+  fileBase <- gsub("^(.*?\\.ecte).*", "\\1", basename(file_in))
+  fileoutBase <- gsub("IP0", "IP4", fileBase)
+  log_level = names(lgr::get_log_levels()[lgr::get_log_levels() == log$threshold])
+  log$debug(paste("output file base: ", fileoutBase))
+
   Sys.setenv(
     "PRDWNDWPF" = planarWindow,
     "PRDWNDWCALC" = as.numeric(meta$PrdWndwCalc),
     "PRDINCRPF" = as.numeric(meta$PrdIncrPf),
     "PRDINCRCALC" = as.numeric(meta$PrdIncrCalc),
-    "DIRINP" = DirTmp,
+    "DIRINP" = DirTmpCopy,
     "DIROUT" = dirOutPrnt,
-    "DIRMNT" = DirTmp,
+    "DIRMNT" = DirTmpCopy,
     "DIRTMP" = "NA",
     "DIRWRK" = "NA",
     "VERSDP" = "001",
     "READ" = "hdf5",
     "FILEOUTBASE" = fileoutBase,
-    "DATEOUT" = currDate,
+    "DATEOUT" = process_date,
     "METH" = "host",
     "NAMEDATAEXT" = "NA",
     "OUTMETH" = "NA",
     "OUTSUB" = "NA",
     "FILEINP" = "NA",
     "VERSEDDY" = "dp04",
-    "LOG_LEVEL" = names(lgr::get_log_levels()[lgr::get_log_levels() == log$threshold])
+    "LOG_LEVEL" = log_level
   )
   
   # call ECTE workflow
