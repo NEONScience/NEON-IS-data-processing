@@ -106,8 +106,8 @@ def get_package_filename(file, sort_index, date_field, timestamp):
 
 def get_package_prefix(data_path, product_index, publoc_index, date_index, date_index_length):
     data_path_parts = data_path.parts
-    path_prefix = os.path.join(data_path_parts[product_index], data_path_parts[publoc_index],
-                               *data_path_parts[date_index: date_index + date_index_length])
+    path_prefix = os.path.join(data_path_parts[product_index],data_path_parts[publoc_index],
+                            *data_path_parts[date_index: date_index + date_index_length])
     date_field = '-'.join(data_path_parts[date_index: date_index + date_index_length])
     return path_prefix, date_field
 
