@@ -62,19 +62,19 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
                 file = os.path.basename(path)
                 log.debug(f'{file}')
                 if 'manifest' in file:
-                    parse_manifest(path,has_data_by_file,visibility_by_file,sort_index,date_field,timestamp)
+                    parse_manifest(path, has_data_by_file, visibility_by_file, sort_index, date_field, timestamp)
                     continue
                 # get the package filename
-                package_file = get_package_filename(file,sort_index,date_field,timestamp)
+                package_file = get_package_filename(file, sort_index, date_field, timestamp)
                 if package_file in package_files.keys():
                     package_files[package_file].add(path)
                 else:
                     package_files[package_file] = SortedSet({path})
 
         for package_file in package_files.keys():
-            output_file = os.path.join(out_path,path_prefix,package_file)
+            output_file = os.path.join(out_path, path_prefix, package_file)
             package_path_by_file[package_file] = output_file
-            os.makedirs(os.path.join(out_path,path_prefix),exist_ok=True)
+            os.makedirs(os.path.join(out_path, path_prefix), exist_ok=True)
             is_first_file = True
             for file in package_files[package_file]:
                 data = pd.read_csv(file)
@@ -84,59 +84,59 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
                     mode = 'w'
                     write_header = True
                     is_first_file = False
-                data.to_csv(output_file,mode=mode,header=write_header,index=False)
+                data.to_csv(output_file, mode=mode,header=write_header, index=False)
                 log.debug(f'Wrote data file {output_file}')
 
         try:
-            write_manifest(out_path,path_prefix,has_data_by_file,visibility_by_file,package_path_by_file)
+            write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file)
         except:
             dataDir_routed = data_path
             err_msg = sys.exc_info()
-            err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=err_path,
+            err_datum_path(err=err_msg, DirDatm=str(dataDir_routed),DirErrBase=err_path,
                            RmvDatmOut=True,DirOutBase=out_path)
 
 
-def get_package_filename(file,sort_index,date_field,timestamp):
+def get_package_filename(file, sort_index, date_field, timestamp):
     filename_fields = file.split('.')[:-1]
     filename_fields[sort_index] = date_field
-    filename_fields.extend([timestamp,'csv'])
+    filename_fields.extend([timestamp, 'csv'])
     package_file = '.'.join(filename_fields)
     return package_file
 
 
-def get_package_prefix(data_path,product_index,publoc_index,date_index,date_index_length):
+def get_package_prefix(data_path, product_index, publoc_index, date_index, date_index_length):
     data_path_parts = data_path.parts
-    path_prefix = os.path.join(data_path_parts[product_index],data_path_parts[publoc_index],
+    path_prefix = os.path.join(data_path_parts[product_index], data_path_parts[publoc_index],
                                *data_path_parts[date_index: date_index + date_index_length])
     date_field = '-'.join(data_path_parts[date_index: date_index + date_index_length])
-    return path_prefix,date_field
+    return path_prefix, date_field
 
 
-def write_manifest(out_path,path_prefix,has_data_by_file,visibility_by_file,package_path_by_file):
-    manifest_filepath = os.path.join(out_path,path_prefix,'manifest.csv')
+def write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file):
+    manifest_filepath = os.path.join(out_path, path_prefix, 'manifest.csv')
     with open(manifest_filepath,'w') as manifest_csv:
         writer = csv.writer(manifest_csv)
-        writer.writerow(['file','hasData','visibility','size','checksum'])
+        writer.writerow(['file', 'hasData', 'visibility', 'size', 'checksum'])
         for key in has_data_by_file.keys():
             # get file size and checksum
             package_path = package_path_by_file[key]
             file_size = os.stat(package_path).st_size
             md5_hash = hashlib.md5()
             with open(package_path,"rb") as f:
-                for byte_block in iter(lambda: f.read(4096),b""):
+                for byte_block in iter(lambda: f.read(4096), b""):
                     md5_hash.update(byte_block)
             checksum = md5_hash.hexdigest()
-            writer.writerow([key,has_data_by_file[key],visibility_by_file[key],file_size,checksum])
+            writer.writerow([key, has_data_by_file[key], visibility_by_file[key], file_size,checksum])
     log.debug(f'Wrote manifest {manifest_filepath}')
 
 
-def parse_manifest(manifest_file,has_data_by_file,visibility_by_file,sort_index,date_field,timestamp):
-    manifest_hasData = pd.read_csv(manifest_file,header=0,index_col=0,usecols=['file','hasData'])
+def parse_manifest(manifest_file, has_data_by_file, visibility_by_file,sort_index, date_field,timestamp):
+    manifest_hasData = pd.read_csv(manifest_file,header=0, index_col=0, usecols=['file','hasData'])
     manifest_hasData = manifest_hasData.squeeze("columns").to_dict()
-    manifest_visibility = pd.read_csv(manifest_file,header=0,index_col=0,usecols=['file','visibility'])
+    manifest_visibility = pd.read_csv(manifest_file, header=0, index_col=0, usecols=['file', 'visibility'])
     manifest_visibility = manifest_visibility.squeeze("columns").to_dict()
     for key in manifest_hasData.keys():
-        package_file = get_package_filename(key,sort_index,date_field,timestamp)
+        package_file = get_package_filename(key, sort_index, date_field, timestamp)
         if package_file in has_data_by_file.keys():
             has_data_by_file[package_file] = has_data_by_file[package_file] | manifest_hasData[key]
             visibility_by_file[package_file] = visibility_by_file[package_file]
