@@ -45,7 +45,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
         package_files = {}  # the set of files to be collated into each package file
         has_data_by_file = {}  # has_data by package file
         package_path_by_file = {}  # package path by package file
-        visibility_by_file = {}  # visibility by package file
+        visibility_by_file = {} # visibility by package file
 
         # processing timestamp
         timestamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
@@ -130,10 +130,10 @@ def write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, 
     log.debug(f'Wrote manifest {manifest_filepath}')
 
 
-def parse_manifest(manifest_file, has_data_by_file, visibility_by_file,sort_index, date_field, timestamp):
-    manifest_hasData = pd.read_csv(manifest_file, header=0, index_col=0, usecols=['file', 'hasData'])
+def parse_manifest(manifest_file, has_data_by_file, visibility_by_file, sort_index, date_field, timestamp):
+    manifest_hasData = pd.read_csv(manifest_file, header=0, index_col=0,usecols=['file','hasData'])
     manifest_hasData = manifest_hasData.squeeze("columns").to_dict()
-    manifest_visibility = pd.read_csv(manifest_file, header=0, index_col=0, usecols=['file', 'visibility'])
+    manifest_visibility = pd.read_csv(manifest_file, header=0, index_col=0,usecols=['file','visibility'])
     manifest_visibility = manifest_visibility.squeeze("columns").to_dict()
     for key in manifest_hasData.keys():
         package_file = get_package_filename(key, sort_index, date_field, timestamp)
