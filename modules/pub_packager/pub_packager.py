@@ -15,8 +15,7 @@ from common.err_datum import err_datum_path
 log = get_logger()
 
 
-def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_index: int, date_index: int,
-                date_index_length: int, sort_index: int) -> None:
+def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_index: int, date_index: int, date_index_length: int, sort_index: int) -> None:
     """
     Bundles the required files into a package suitable for publication.
 
@@ -31,7 +30,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
     """
 
     # Each PUBLOC at the glob level is a datum (e.g. /product/year/month/*/PUBLOC). Get all the PUBLOCS, assuming
-    # there is a manifest.csv embedded directly under each PUBLOC directory
+    # there is a manifest.csv embedded directly under each PUBLOC directory 
     publocs = set()
     dataDir_routed = Path("")
     for path in data_path.rglob('manifest.csv'):
