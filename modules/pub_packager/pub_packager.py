@@ -51,13 +51,13 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
         timestamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
 
         # get the package path prefix and date field
-        for path in data_path.rglob(publoc + '/*'):
+        for path in data_path.rglob(publoc+'/*'):
             if path.is_file():
                 # Get one full path
                 break
         (path_prefix, date_field) = get_package_prefix(path, product_index, publoc_index, date_index, date_index_length)
 
-        for path in data_path.rglob(publoc + '/*'):
+        for path in data_path.rglob(publoc+'/*'):
             if path.is_file():
                 file = os.path.basename(path)
                 log.debug(f'{file}')
@@ -84,7 +84,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
                     mode = 'w'
                     write_header = True
                     is_first_file = False
-                data.to_csv(output_file, mode=mode,header=write_header, index=False)
+                data.to_csv(output_file, mode=mode, header=write_header, index=False)
                 log.debug(f'Wrote data file {output_file}')
 
         try:
@@ -114,7 +114,7 @@ def get_package_prefix(data_path, product_index, publoc_index, date_index, date_
 
 def write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file):
     manifest_filepath = os.path.join(out_path, path_prefix, 'manifest.csv')
-    with open(manifest_filepath,'w') as manifest_csv:
+    with open(manifest_filepath, 'w') as manifest_csv:
         writer = csv.writer(manifest_csv)
         writer.writerow(['file', 'hasData', 'visibility', 'size', 'checksum'])
         for key in has_data_by_file.keys():
@@ -122,16 +122,16 @@ def write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, 
             package_path = package_path_by_file[key]
             file_size = os.stat(package_path).st_size
             md5_hash = hashlib.md5()
-            with open(package_path,"rb") as f:
+            with open(package_path, "rb") as f:
                 for byte_block in iter(lambda: f.read(4096), b""):
                     md5_hash.update(byte_block)
             checksum = md5_hash.hexdigest()
-            writer.writerow([key, has_data_by_file[key], visibility_by_file[key], file_size,checksum])
+            writer.writerow([key, has_data_by_file[key], visibility_by_file[key], file_size, checksum])
     log.debug(f'Wrote manifest {manifest_filepath}')
 
 
-def parse_manifest(manifest_file, has_data_by_file, visibility_by_file,sort_index, date_field,timestamp):
-    manifest_hasData = pd.read_csv(manifest_file,header=0, index_col=0, usecols=['file','hasData'])
+def parse_manifest(manifest_file, has_data_by_file, visibility_by_file,sort_index, date_field, timestamp):
+    manifest_hasData = pd.read_csv(manifest_file, header=0, index_col=0, usecols=['file', 'hasData'])
     manifest_hasData = manifest_hasData.squeeze("columns").to_dict()
     manifest_visibility = pd.read_csv(manifest_file, header=0, index_col=0, usecols=['file', 'visibility'])
     manifest_visibility = manifest_visibility.squeeze("columns").to_dict()
