@@ -29,8 +29,8 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
     :param sort_index: index of filename field to sort on (e.g. the day)
     """
 
-    # Each PUBLOC at the glob level is a datum (e.g. /product/year/month/*/PUBLOC). Get all the PUBLOCS, assuming
-    # there is a manifest.csv embedded directly under each PUBLOC directory 
+    # Each PUBLOC at the glob level is a datum (e.g. /product/year/month/*/PUBLOC). Get all the PUBLOCS, assuming 
+    # there is a manifest.csv embedded directly under each PUBLOC directory
     publocs = set()
     dataDir_routed = Path("")
     for path in data_path.rglob('manifest.csv'):
