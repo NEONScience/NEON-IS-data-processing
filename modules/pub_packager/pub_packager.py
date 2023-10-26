@@ -17,7 +17,7 @@ log = get_logger()
 
 def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_index: int, date_index: int, date_index_length: int, sort_index: int) -> None:
     """
-    Bundles the required files into a package suitable for publication. 
+    Bundles the required files into a package suitable for publication.
 
     :param data_path: The input data path. Should end at whatever aggregation interval is a publication package (i.e. monthly).
     :param err_path: The error directory, i.e., errored.
