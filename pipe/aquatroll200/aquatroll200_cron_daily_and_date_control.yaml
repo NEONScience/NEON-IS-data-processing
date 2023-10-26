@@ -12,7 +12,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2020-01-01"
-    END_DATE: "2020-03-31"
+    END_DATE: "2022-01-01"
     SOURCE_TYPE: "aquatroll200"
   stdin:
   - "#!/bin/bash"
