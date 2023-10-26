@@ -93,8 +93,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
         try:
             write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file)
         except:
-            dataDir_routed = Path(data_path, publoc)
-            log.debug(f'dataDir_routed::::::: {dataDir_routed}')
+            dataDir_routed = Path(data_path, publoc_date, publoc)
             err_msg = sys.exc_info()
             err_datum_path(err=err_msg, DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
                            RmvDatmOut=True,DirOutBase=out_path)
