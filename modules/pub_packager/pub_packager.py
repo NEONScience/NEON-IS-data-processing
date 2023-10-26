@@ -32,6 +32,8 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
     # Each PUBLOC at the glob level is a datum (e.g. /product/year/month/*/PUBLOC). Get all the PUBLOCS, assuming
     # there is a manifest.csv embedded directly under each PUBLOC directory
     publocs = set()
+    # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
+    DirErrBase = Path(out_path, err_path)
     dataDir_routed = Path("")
     for path in data_path.rglob('manifest.csv'):
         parts = path.parts
@@ -89,9 +91,10 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
         try:
             write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file)
         except:
-            dataDir_routed = Path(data_path)
+            dataDir_routed = Path(data_path, publoc)
+            log.debug(f'dataDir_routed::::::: {dataDir_routed}')
             err_msg = sys.exc_info()
-            err_datum_path(err=err_msg, DirDatm=str(dataDir_routed),DirErrBase=err_path,
+            err_datum_path(err=err_msg, DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
                            RmvDatmOut=True,DirOutBase=out_path)
 
 
