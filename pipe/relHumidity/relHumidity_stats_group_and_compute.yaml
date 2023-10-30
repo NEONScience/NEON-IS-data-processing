@@ -3,7 +3,7 @@ pipeline:
   name: relHumidity_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:fe1512ea
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -146,7 +146,7 @@ sidecar_resource_requests:
   memory: 2G
   cpu: 0.5
 sidecar_resource_limits:
-  memory: 4Gi
+  memory: 3Gi
   cpu: 1.2
 datum_set_spec:
   number: 1
@@ -167,3 +167,13 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
+pod_patch: |-
+  [
+    { "op": "add",
+      "path": "/containers/1/env/-",
+      "value": {
+        "name": "GOMEMLIMIT",
+        "value": "2000000000"
+      }
+    }
+  ]
