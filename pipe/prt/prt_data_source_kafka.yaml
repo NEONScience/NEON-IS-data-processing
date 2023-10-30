@@ -119,11 +119,8 @@ resource_limits:
   memory: 1.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 2.5G
+  memory: 4G
   cpu: 0.5
-sidecar_resource_limits:
-  memory: 10Gi
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

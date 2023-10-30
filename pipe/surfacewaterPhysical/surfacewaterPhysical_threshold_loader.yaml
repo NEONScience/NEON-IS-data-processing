@@ -18,7 +18,7 @@ transform:
     # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: surfacewater
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:

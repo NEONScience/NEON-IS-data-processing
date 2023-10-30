@@ -18,7 +18,7 @@ transform:
     # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: upward-facing
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
@@ -33,10 +33,7 @@ resource_limits:
   memory: 200M
   cpu: 0.5
 sidecar_resource_requests:
-  memory: 120M
-  cpu: 0.1
-sidecar_resource_limits:
-  memory: 500M
+  memory: 200M
   cpu: 0.5
 scheduling_spec:
   node_selector:

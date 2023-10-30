@@ -15,7 +15,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:

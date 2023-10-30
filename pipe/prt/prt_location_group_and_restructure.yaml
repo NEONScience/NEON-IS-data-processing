@@ -83,11 +83,8 @@ resource_limits:
   memory: 6G
   cpu: 7
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.5
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.2
+  memory: 4G
+  cpu: 0.6
 datum_set_spec:
   number: 1
 scheduling_spec:
@@ -107,13 +104,13 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "add",
-      "path": "/containers/1/env/-",
-      "value": {
-        "name": "GOMEMLIMIT",
-        "value": "2000000000"
-      }
-    }
-  ]
+# pod_patch: |-
+#   [
+#     { "op": "add",
+#       "path": "/containers/1/env/-",
+#       "value": {
+#         "name": "GOMEMLIMIT",
+#         "value": "2000000000"
+#       }
+#     }
+#   ]

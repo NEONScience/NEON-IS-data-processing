@@ -17,7 +17,7 @@ transform:
     SOURCE_TYPE: tchain
     STARTING_PATH_INDEX: "5"
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:

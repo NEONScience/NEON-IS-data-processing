@@ -22,7 +22,7 @@ transform:
     LINK_TYPE: SYMLINK
     
   secrets:
-    - name: db-pdr-secret
+    - name: pdr-secret
       mount_path: /var/db_secret
     - name: github-neonscience-app-secret
       mount_path: /var/github_secret

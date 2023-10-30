@@ -22,7 +22,7 @@ transform:
     SORT_INDEX: '10' # File name index corresponding to date field (delimiter = .)
     
   secrets:
-    - name: db-pdr-secret
+    - name: pdr-secret
       mount_path: /var/db_secret
 
 input: 

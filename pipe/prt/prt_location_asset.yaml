@@ -15,7 +15,7 @@ transform:
     LOG_LEVEL: INFO
     SOURCE_TYPE: prt
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
@@ -33,7 +33,7 @@ sidecar_resource_requests:
   memory: 500M
   cpu: 0.2
 sidecar_resource_limits:
-  memory: 2Gi
+  memory: 2G
   cpu: 1.2
 scheduling_spec:
   node_selector:
