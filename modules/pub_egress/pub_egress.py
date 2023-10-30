@@ -57,7 +57,7 @@ class Pub_egress:
 
                 # Reset each package
                 idq = None
-                site = None
+                site = None 
                 date_range = None
                 package = None
 
@@ -84,7 +84,7 @@ class Pub_egress:
                             month = int(date_parts[1])
                             start_date = datetime.date(year, month, 1)
                             next_month = start_date + relativedelta(days=+32)
-                            end_date = datetime.date(next_month.year,next_month.month,1)
+                            end_date = datetime.date(next_month.year, next_month.month, 1)
                             date_range = start_date.strftime(
                                 self.date_format) + self.date_range_delimiter + end_date.strftime(self.date_format)
                             package = filename_parts[self.package_index]
@@ -92,13 +92,13 @@ class Pub_egress:
                             break
 
                     # Now run through all the files, writing to output
-                    for root,dirs,files in os.walk(str(package_path)):
+                    for root, dirs, files in os.walk(str(package_path)):
                         for filename in files:
                             # ignore the manifest file
                             if 'manifest.csv' in filename:
                                 continue
                             # Get portal visibility. Skip egress if private
-                            visibility=manifest.loc[manifest['file'] == filename,'visibility']
+                            visibility=manifest.loc[manifest['file'] == filename, 'visibility']
                             log.debug(f'Visibility for {filename}: {visibility.iloc[0]}')
                             if visibility.iloc[0] != 'public':
                                 continue
