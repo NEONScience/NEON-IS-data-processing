@@ -46,7 +46,7 @@ class PubEgressTest(TestCase):
         os.environ["AMAZON_BUCKET"] = "bucket"
         egress = Pub_egress(self.input_dir, self.starting_path_index, self.out_dir, self.err_dir, 'egressurl')
         egress.upload()
-      #  self.check_output()
+        self.check_output()
 
     def check_output(self):
         """Check data files are in the output directory."""
