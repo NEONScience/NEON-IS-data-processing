@@ -57,7 +57,7 @@ class Pub_egress:
 
                 # Reset each package
                 idq = None
-                site = None 
+                site = None
                 date_range = None
                 package = None
 
@@ -99,7 +99,7 @@ class Pub_egress:
                                 continue
                             # Get portal visibility. Skip egress if private
                             visibility=manifest.loc[manifest['file'] == filename, 'visibility']
-                            log.debug(f'Visibility for {filename}: {visibility.iloc[0]}')
+                            log.debug(f'Visibility for {filename}: {visibility.iloc[0]}') 
                             if visibility.iloc[0] != 'public':
                                 continue
 
