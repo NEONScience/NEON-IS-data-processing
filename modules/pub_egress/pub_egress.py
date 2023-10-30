@@ -50,7 +50,7 @@ class Pub_egress:
             # When we reach a manifest file, we have found a pub package to process
             if path.parts[-1] == 'manifest.csv':
                 package_path = path.parent
-                log.info(f'Processing pub package {package_path}') 
+                log.info(f'Processing pub package {package_path}')
 
                 # object IDs by file
                 objectIdByFile = {}
