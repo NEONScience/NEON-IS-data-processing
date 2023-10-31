@@ -4,17 +4,19 @@ import json
 import shutil
 
 from structlog import get_logger
+from common.err_datum import err_datum_path
 
 log = get_logger()
 
 
-def pub_group(*, data_path: Path, out_path: Path, 
+def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
                  year_index: int, group_index: int, 
                  data_type_index: int, group_metadata_dir: str,
                  publoc_key: str, symlink: bool) -> None:
     """
     :param data_path: input data path
     :param out_path: output path
+    :param err_path: The error directory, i.e., errored
     :param year_index: index of year in data path
     :param group_index: index of group ID in data path. Each group ID is a datum.
     :param data_type_index: index of data & metadata directories in data path. Group metadata directory must be at this index.
@@ -23,6 +25,9 @@ def pub_group(*, data_path: Path, out_path: Path,
     :param symlink: Use a symlink to place files in the output (True) or use a straight copy (False) 
     """
     # Each group is a datum. Run through each group
+    # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
+    DirErrBase = Path(out_path, err_path)
+    dataDir_routed = Path("")
     for path in data_path.rglob(group_metadata_dir + '/'):
         parts = path.parts
         group_metadata_name = parts[data_type_index]
