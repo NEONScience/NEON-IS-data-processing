@@ -32,13 +32,15 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
     for path in data_path.rglob(group_metadata_dir + '/'):
         parts = path.parts
         group_metadata_name = parts[data_type_index]
+
+        dataDir_routed = path
         # Double check that the directory at the group metadata index matches the group directory name
         if group_metadata_name != group_metadata_dir:
             log.warn(f'Path {path.parent} looks to be a datum, but the directory at the group metadata index ({group_metadata_name}) does not match the expected name ({group_metadata_dir}). Skipping...')
             continue
         else:
             log.debug(f'Processing datum path {path.parent}')
-        
+
         # Get the pub grouping location from the group metadata
         publoc = None
         products = None
@@ -51,31 +53,17 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
                 f.close()
                 break
 
-        try:
-            if publoc is None:
-               log.error(f'Cannot determine publication grouping property from the files in {path}. Skipping.')
-        except:
-            #      continue
-            dataDir_routed = path
-            err_msg = sys.exc_info()
-            err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
-                           RmvDatmOut=True,DirOutBase=out_path)
-        try:
-            if products is None:
-                log.error(f'Cannot determine data products from the files in {path}. Skipping.')
-        except:
-            dataDir_routed = path
-            err_msg = sys.exc_info()
-            err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
-                           RmvDatmOut=True,DirOutBase=out_path)
+        if publoc is None or products is None:
+            log.error(f'Cannot determine publication grouping property from the files in {path}. Skipping.')
+            continue
+        if products is None:
+            log.error(f'Cannot determine data products from the files in {path}. Skipping.')
+            continue
 
-        print('path of the group parent:::::::::::::: ', path)
         # Pass the group parent to the path iterator
         path = Path(*parts[0:group_index+1])
-        print('path before subpath for loop:::::::::::::: ', path)
 
         for subpath in path.rglob('*'):
-            print('subpath:::::::::::::: ', subpath)
             if subpath.is_file():
                 parts = subpath.parts
                 year = parts[year_index]
@@ -84,16 +72,22 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
                 group = parts[group_index]
                 data_type = parts[data_type_index]
                 data = parts[data_type_index+1:]
-                
-                for product in products:
-                    new_path = out_path.joinpath(product,year,month,day,publoc,data_type,group,*data)
-                    new_path.parent.mkdir(parents=True, exist_ok=True)
-                    
-                    if not new_path.exists():
-                        if symlink:
-                            log.debug(f'Linking path {new_path} to {subpath}.')
-                            new_path.symlink_to(subpath)
-                        else:
-                            log.debug(f'Copying {subpath} to {new_path}.')
-                            shutil.copy2(subpath,new_path)
-                                    
+
+                try:
+                    for product in products:
+                        new_path = out_path.joinpath(product,year,month,day,publoc,data_type,group,*data)
+                        new_path.parent.mkdir(parents=True, exist_ok=True)
+                        x=4/0
+
+                        if not new_path.exists():
+                            x=4/0
+                            if symlink:
+                                log.debug(f'Linking path {new_path} to {subpath}.')
+                                new_path.symlink_to(subpath)
+                            else:
+                                log.debug(f'Copying {subpath} to {new_path}.')
+                                shutil.copy2(subpath,new_path)
+                except:
+                    err_msg = sys.exc_info()
+                    err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
+                                   RmvDatmOut=True,DirOutBase=out_path)
