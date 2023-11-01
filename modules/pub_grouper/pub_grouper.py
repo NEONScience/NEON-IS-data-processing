@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import shutil
+import sys
 
 from structlog import get_logger
 from common.err_datum import err_datum_path
@@ -31,7 +32,6 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
     for path in data_path.rglob(group_metadata_dir + '/'):
         parts = path.parts
         group_metadata_name = parts[data_type_index]
-        
         # Double check that the directory at the group metadata index matches the group directory name
         if group_metadata_name != group_metadata_dir:
             log.warn(f'Path {path.parent} looks to be a datum, but the directory at the group metadata index ({group_metadata_name}) does not match the expected name ({group_metadata_dir}). Skipping...')
@@ -40,8 +40,8 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
             log.debug(f'Processing datum path {path.parent}')
         
         # Get the pub grouping location from the group metadata
-        publoc = None
-        products = None
+        # publoc = None
+        # products = None
         for group_metadata_path in path.rglob('*'):
             if group_metadata_path.is_file():
                 f = open(str(group_metadata_path))
@@ -50,16 +50,31 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
                 products = group_data["features"][0]["properties"]["data_product_ID"]
                 f.close()
                 break
-            
-        if publoc is None or products is None:
-            log.error(f'Cannot determine publication grouping property from the files in {path}. Skipping.')
-            continue
-        if products is None:
-            log.error(f'Cannot determine data products from the files in {path}. Skipping.')
-            continue
+
+        try:
+            print('path in try1:::::::: ', path)
+            if publoc is None:
+               log.error(f'Cannot determine publication grouping property from the files in {path}. Skipping.')
+        except:
+            #      continue
+            dataDir_routed = path
+            print('dataDir_routed in try1:::::::: ', dataDir_routed)
+            err_msg = sys.exc_info()
+            err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
+                           RmvDatmOut=True,DirOutBase=out_path)
+        try:
+            x = 4/0
+            if products is None:
+                log.error(f'Cannot determine data products from the files in {path}. Skipping.')
+        except:
+            dataDir_routed = path
+            print('path in try2:::::::: ', path)
+            err_msg = sys.exc_info()
+            err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
+                           RmvDatmOut=True,DirOutBase=out_path)
         
         # Pass the group parent to the path iterator
-        path = Path(*parts[0:group_index+1])    
+        path = Path(*parts[0:group_index+1])
         
         for subpath in path.rglob('*'):
             if subpath.is_file():
