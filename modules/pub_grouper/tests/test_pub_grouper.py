@@ -15,6 +15,7 @@ class PubGrouperTest(TestCase):
         self.setUpPyfakefs()
         self.input_path = Path('/repo/inputs')
         self.output_path = Path('/outputs')
+        self.err_path = Path('errored')
         self.group = "par-quantum-line_CPER001000"
         self.site = "CPER"
         self.date_path = Path("2019/05/24")
@@ -41,6 +42,7 @@ class PubGrouperTest(TestCase):
     def test_pub_group(self):
         pub_group(data_path=self.input_path,
                   out_path=self.output_path,
+                  err_path = self.err_path,
                   year_index=self.year_index,
                   group_index=self.group_index,
                   data_type_index=self.data_type_index,
@@ -52,6 +54,7 @@ class PubGrouperTest(TestCase):
     def test_main(self):
         os.environ["DATA_PATH"] = str(self.input_path)
         os.environ["OUT_PATH"] = str(self.output_path)
+        os.environ["ERR_PATH"] = str(self.err_path)
         os.environ["LOG_LEVEL"] = "DEBUG"
         os.environ["YEAR_INDEX"] = str(self.year_index)
         os.environ["GROUP_INDEX"] = str(self.group_index)
@@ -65,6 +68,8 @@ class PubGrouperTest(TestCase):
     def check_output(self):
         root_path = Path(self.output_path, self.product, *self.date_path.parts[0:3], self.site)
         out_data_path = Path(root_path, 'data', self.group, self.data_file)
+        print('out_data_path:::::::::::::: ', out_data_path)
         out_group_path = Path(root_path, 'group', self.group, self.group_file)
+        print('out_group_path::::::::::::: ', out_group_path)
         self.assertTrue(out_data_path.exists())
         self.assertTrue(out_group_path.exists())

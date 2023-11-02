@@ -82,9 +82,9 @@ class Pub_egress:
                             date_parts = date.split(self.date_delimiter)
                             year = int(date_parts[0])
                             month = int(date_parts[1])
-                            start_date = datetime.date(year,month,1)
+                            start_date = datetime.date(year, month, 1)
                             next_month = start_date + relativedelta(days=+32)
-                            end_date = datetime.date(next_month.year,next_month.month,1)
+                            end_date = datetime.date(next_month.year, next_month.month, 1)
                             date_range = start_date.strftime(
                                 self.date_format) + self.date_range_delimiter + end_date.strftime(self.date_format)
                             package = filename_parts[self.package_index]
@@ -92,24 +92,24 @@ class Pub_egress:
                             break
 
                     # Now run through all the files, writing to output
-                    for root,dirs,files in os.walk(str(package_path)):
+                    for root, dirs, files in os.walk(str(package_path)):
                         for filename in files:
                             # ignore the manifest file
                             if 'manifest.csv' in filename:
                                 continue
                             # Get portal visibility. Skip egress if private
-                            visibility = manifest.loc[manifest['file'] == filename,'visibility']
+                            visibility=manifest.loc[manifest['file'] == filename, 'visibility']
                             log.debug(f'Visibility for {filename}: {visibility.iloc[0]}')
                             if visibility.iloc[0] != 'public':
                                 continue
 
-                            file_path = Path(root,filename)
+                            file_path = Path(root, filename)
 
                             # construct link filename
-                            base_path = os.path.join(idq,site,date_range,package,filename)
-                            link_path = Path(self.out_path,base_path)
+                            base_path = os.path.join(idq, site, date_range, package, filename)
+                            link_path = Path(self.out_path, base_path)
                             log.debug(f'source_path: {file_path} link_path: {link_path}')
-                            link_path.parent.mkdir(parents=True,exist_ok=True)
+                            link_path.parent.mkdir(parents=True, exist_ok=True)
 
                             # construct object ID
                             key = self.filename_delimiter.join(filename.split(self.filename_delimiter))
@@ -121,14 +121,14 @@ class Pub_egress:
 
                     # Populate the object id
                     for key in objectIdByFile:
-                        manifest.loc[manifest['file'] == key,'objectId'] = objectIdByFile[key]
+                        manifest.loc[manifest['file'] == key, 'objectId'] = objectIdByFile[key]
 
                     # Restrict manifest to public files only and write to the output
                     manifest = manifest.loc[manifest['visibility'] == 'public',]
-                    manifest.to_csv(os.path.join(self.out_path,idq,site,date_range,package,'manifest.csv'),index=False)
+                    manifest.to_csv(os.path.join(self.out_path, idq, site, date_range, package, 'manifest.csv'), index=False)
 
                 except Exception:
-                    exc_type,exc_obj,exc_tb = sys.exc_info()
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
                     log.error("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
                     dataDir_routed = path.parent
                     err_msg = sys.exc_info()
