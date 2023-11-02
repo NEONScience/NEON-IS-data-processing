@@ -14,7 +14,9 @@ transform:
     LOG_LEVEL: INFO
 
     # Environment variables for 3rd module: pub_packager.
-    OUT_PATH: "/pfs/out"
+    OUT_PATH: "/pfs/out"    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: errored_datums
     PRODUCT_INDEX: '3' # input path index of the data product identifier. ALso used for packager.
     PUBLOC_INDEX: '7' # input path index of the pub package location (typically the site)
     DATE_INDEX: '4' # Starting index of date in path (i.e. year index)

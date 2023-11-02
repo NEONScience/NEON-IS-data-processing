@@ -1,22 +1,26 @@
 #!/usr/bin/env python3
 import os
+import sys
 import pandas as pd
 from sortedcontainers import SortedSet
 import datetime
 import hashlib
 import csv
-from typing import List, Iterator, Tuple
+from pathlib import Path
+from typing import List,Iterator,Tuple
 
 from structlog import get_logger
+from common.err_datum import err_datum_path
 
 log = get_logger()
 
 
-def pub_package(*, data_path, out_path, product_index: int, publoc_index: int, date_index: int, date_index_length: int, sort_index: int) -> None:
+def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_index: int, date_index: int, date_index_length: int, sort_index: int) -> None:
     """
-    Bundles the required files into a package suitable for publication. 
+    Bundles the required files into a package suitable for publication.
 
-    :param data_path: The input data path. Should end at whatever aggregation interval is a publication package (i.e. monthly)
+    :param data_path: The input data path. Should end at whatever aggregation interval is a publication package (i.e. monthly).
+    :param err_path: The error directory, i.e., errored.
     :param out_path: The output path for writing the package files.
     :param product_index: input path index of the data product identifier
     :param publoc_index: input path index of the pub package location (typically the site)
@@ -24,27 +28,31 @@ def pub_package(*, data_path, out_path, product_index: int, publoc_index: int, d
     :param date_index_length: number of input path indices forming the pub date field. e.g. for monthly pub, this will be 2 (year-month)
     :param sort_index: index of filename field to sort on (e.g. the day)
     """
-    
-    # Each PUBLOC at the glob level is a datum (e.g. /product/year/month/*/PUBLOC). Get all the PUBLOCS, assuming 
-    # there is a manifest.csv embedded directly under each PUBLOC directory 
+
+    # Each PUBLOC at the glob level is a datum (e.g. /product/year/month/*/PUBLOC). Get all the PUBLOCS, assuming
+    # there is a manifest.csv embedded directly under each PUBLOC directory
     publocs = set()
+    # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
+    DirErrBase = Path(out_path, err_path)
+    dataDir_routed = Path("")
+    publoc_date = 0
     for path in data_path.rglob('manifest.csv'):
         parts = path.parts
         publoc = parts[publoc_index]
+        publoc_date = parts[publoc_index-1]
         publocs.add(publoc)
-        
+
     for publoc in publocs:
         log.debug(f'Processing datum {data_path} and {publoc}')
-        
+
         package_files = {}  # the set of files to be collated into each package file
         has_data_by_file = {}  # has_data by package file
         package_path_by_file = {}  # package path by package file
         visibility_by_file = {} # visibility by package file
 
-    
         # processing timestamp
         timestamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
-    
+
         # get the package path prefix and date field
         for path in data_path.rglob(publoc+'/*'):
             if path.is_file():
@@ -81,8 +89,14 @@ def pub_package(*, data_path, out_path, product_index: int, publoc_index: int, d
                     is_first_file = False
                 data.to_csv(output_file, mode=mode, header=write_header, index=False)
                 log.debug(f'Wrote data file {output_file}')
-    
-        write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file)
+
+        try:
+            write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file)
+        except:
+            dataDir_routed = Path(data_path, publoc_date, publoc)
+            err_msg = sys.exc_info()
+            err_datum_path(err=err_msg, DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
+                           RmvDatmOut=True,DirOutBase=out_path)
 
 
 def get_package_filename(file, sort_index, date_field, timestamp):
