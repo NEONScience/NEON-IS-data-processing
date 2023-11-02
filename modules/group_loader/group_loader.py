@@ -12,7 +12,7 @@ from common.err_datum import err_datum_path
 log = structlog.get_logger()
 
 
-def load_groups(out_path: Path, err_path, get_groups: Callable[[str], Iterator[Group]], group_prefix: str) -> None:
+def load_groups(out_path: Path, err_path:Path, get_groups: Callable[[str], Iterator[Group]], group_prefix: str) -> None:
     """
     Write group loader jsons into the output path.
 
@@ -33,9 +33,15 @@ def load_groups(out_path: Path, err_path, get_groups: Callable[[str], Iterator[G
             member_name: str = group[0].name
             path = Path(out_path, group_prefix_path, member_name, f'{member_name}.json')
             path.parent.mkdir(parents=True, exist_ok=True)
-            print('path::::::::::::::::: ', path)
-            geojson_data = geojson_converter.convert_group(group)
-            file_data = geojson.dumps(geojson_data, indent=4, sort_keys=True, default=str)
-            with open(path, 'w') as file:
-                log.debug(f'writing file: {path}')
-                file.write(file_data)
+            dataDir_routed = path.parent
+            try:
+                geojson_data = geojson_converter.convert_group(group)
+                file_data = geojson.dumps(geojson_data, indent=4, sort_keys=True, default=str)
+                with open(path, 'w') as file:
+                    log.debug(f'writing file: {path}')
+                    x = 4/0
+                    file.write(file_data)
+            except:
+                err_msg = sys.exc_info()
+                err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
+                               RmvDatmOut=True,DirOutBase=out_path)
