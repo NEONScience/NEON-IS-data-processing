@@ -5,14 +5,14 @@
 # Note that this is a simple scenario in which a single source type feeds into a product. If multiple
 # source types feed into the product, repeat the steps that load in L0 data, metadata, and pipeline specifications
 # for each relevant source type.
-# Also note that if this script errors without finishing, you may need to finish the transaction manually (pachctl finish transaction)
+# Also note that if this script errors without finishing, you may need to finish the transaction manually (pc finish transaction)
 
 
 # Define paths
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
 pipe_list_prefix='pipe_list_' # The prefix to the file name in each pipe folder that lists the pipelines in the DAG
-source_type='aquatroll200'
-product='groundwaterPhysical'
+source_type='li191r'
+product='parQuantumLine'
 reprocess_flag="" # Use "--reprocess" to reprocess the pipelines, or use "" to update without reprocessing
 
 # Define paths based on base paths and product information above 
@@ -20,7 +20,7 @@ spec_path_source_type=$git_path_pipelines/$source_type
 spec_path_product=$git_path_pipelines/$product
 
 # Do all this in one transaction
-pachctl start transaction
+pc start transaction
 
 # Set up source type pipeline
 # Read in the pipelines (in order) for this source type and update them up
@@ -29,8 +29,8 @@ pachctl start transaction
 unset pipelines
 pipelines=`cat $spec_path_source_type/$pipe_list_prefix$source_type.txt`
 for pipe in $(echo ${pipelines[*]}); do
-echo pachctl update pipeline $reprocess_flag -f $spec_path_source_type/$pipe
-pachctl update pipeline $reprocess_flag -f $spec_path_source_type/$pipe
+echo pc update pipeline $reprocess_flag -f $spec_path_source_type/$pipe
+pc update pipeline $reprocess_flag -f $spec_path_source_type/$pipe
 done
 
 # Set up product pipeline
@@ -40,9 +40,9 @@ done
 unset pipelines
 pipelines=`cat $spec_path_product/$pipe_list_prefix$product.txt`
 for pipe in $(echo ${pipelines[*]}); do
-echo pachctl update pipeline $reprocess_flag -f $spec_path_product/$pipe
-pachctl update pipeline $reprocess_flag -f $spec_path_product/$pipe
+echo pc update pipeline $reprocess_flag -f $spec_path_product/$pipe
+pc update pipeline $reprocess_flag -f $spec_path_product/$pipe
 done
 
-pachctl finish transaction
+pc finish transaction
 

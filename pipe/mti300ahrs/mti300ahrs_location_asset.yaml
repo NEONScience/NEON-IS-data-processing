@@ -15,7 +15,7 @@ transform:
     LOG_LEVEL: INFO
     SOURCE_TYPE: mti300ahrs
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:

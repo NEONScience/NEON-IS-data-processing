@@ -22,7 +22,7 @@ transform:
     LINK_TYPE: SYMLINK
     
   secrets:
-    - name: db-pdr-secret
+    - name: pdr-secret
       mount_path: /var/db_secret
     - name: github-neonscience-app-secret
       mount_path: /var/github_secret
@@ -50,11 +50,8 @@ resource_limits:
   memory: 2G
   cpu: 2
 sidecar_resource_requests:
-  memory: 4G
+  memory: 5G
   cpu: 0.6
-sidecar_resource_limits:
-  memory: 8Gi
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
