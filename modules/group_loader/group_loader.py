@@ -4,6 +4,7 @@ from typing import Callable, Iterator
 
 import geojson
 import structlog
+import sys
 
 from data_access.types.group import Group
 import data_access.types.geojson_converter as geojson_converter
@@ -12,7 +13,7 @@ from common.err_datum import err_datum_path
 log = structlog.get_logger()
 
 
-def load_groups(out_path: Path, err_path:Path, get_groups: Callable[[str], Iterator[Group]], group_prefix: str) -> None:
+def load_groups(out_path: Path, err_path: Path, get_groups: Callable[[str], Iterator[Group]], group_prefix: str) -> None:
     """
     Write group loader jsons into the output path.
 
@@ -39,7 +40,6 @@ def load_groups(out_path: Path, err_path:Path, get_groups: Callable[[str], Itera
                 file_data = geojson.dumps(geojson_data, indent=4, sort_keys=True, default=str)
                 with open(path, 'w') as file:
                     log.debug(f'writing file: {path}')
-                    x = 4/0
                     file.write(file_data)
             except:
                 err_msg = sys.exc_info()
