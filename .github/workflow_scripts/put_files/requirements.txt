@@ -1,0 +1,4 @@
+# Python 3.10
+pachyderm_sdk
+certifi
+environs
