@@ -13,7 +13,9 @@ transform:
   env:
     LOCATION_TYPE: CONFIG
     SOURCE_TYPE: tchain
-    OUT_PATH: /pfs/out
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: errored_datums
     LOG_LEVEL: INFO
   secrets:
   - name: pdr-secret
