@@ -5,7 +5,7 @@
 # docker build -t data_source_trino:latest -f ./modules_combined/data_source_trino/Dockerfile .
 #
 ###
-FROM quay.io/battelleecology/genavro:v1.1.1
+FROM quay.io/battelleecology/genavro:v1.2.1
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="parquet_linkmerge"
