@@ -1,5 +1,7 @@
 # Python 3.10
-python-pachyderm
+pachyderm_sdk
 certifi
 PyYAML
 environs
+google
+dataclasses
