@@ -1,8 +1,8 @@
-name: update-site-list-li191r
+name: CERT-li191r-update-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'cert'
     paths:
       - 'pipe/li191r/site_list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
@@ -11,8 +11,8 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
+      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
       REPO: li191r_site_list # Pachyderm repo
       BRANCH: master 
       IN_PATH: 'pipe/li191r/site-list.json' # Single path to local file or directory. If directory, all files in directory will be place in pachyderm at OUT_PATH. 
