@@ -1,4 +1,4 @@
-name: update-pipelines-li191r-parQuantumLine
+name: li191r-parQuantumLine-update-dag
 on:
   push:
     branches:

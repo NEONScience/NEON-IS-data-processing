@@ -1,4 +1,4 @@
-name: update-site-list-li191r
+name: li191r- update-site-list
 on:
   push:
     branches:

@@ -1,16 +1,18 @@
-name: update-pipelines-pqs1-parWaterSurface
+name: pqs1-parWaterSurface-update-dag
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'pipe/pqs1/**'
-      - 'pipe/parWaterSurface/**'
+      - 'pipe/pqs1/*.yaml'
+      - 'pipe/pqs1/pipe_list_pqs1.txt'
+      - 'pipe/parWaterSurface/*.yaml'
+      - 'pipe/parWaterSurface/pipe_list_parWaterSurface.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 jobs:
   update-pipelines:
     runs-on: arc-neon-gke
-    # runs-on: ubuntu-latest 
+    #runs-on: ubuntu-latest 
     env:
       PACHD_ADDRESS: grpcs://pachd.nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.PipelineRobotToken }}
