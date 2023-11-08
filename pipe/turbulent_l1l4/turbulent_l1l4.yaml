@@ -6,20 +6,20 @@ transform:
   - /bin/bash
   stdin:
   - "#!/bin/bash"
+  - rm -rf /tmp/pfs/turbulent_l0p
   - Rscript 
     ./flow.sae.ecte.l1l4.R
     DirIn=$DIR_IN
     DirOut=/pfs/out
-    DirTmp=/tmp/pfs/turbulent_l0p
     DirErr=/pfs/out/errored_datums
     LOG=DEBUG    
-  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:ecte-30
+  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:ecte-50
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
 input:
   pfs:
     name: DIR_IN
-    repo: turbulent_l0p
+    repo: turbulent_ts_pad
     glob: /*/*/*/*
 parallelism_spec:
   constant: 1

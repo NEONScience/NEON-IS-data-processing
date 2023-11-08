@@ -30,6 +30,7 @@ input:
     glob: /*/*/*
 parallelism_spec:
   constant: 4
+autoscaling: true
 resource_requests:
   memory: 10G
   cpu: 2
