@@ -3,5 +3,5 @@ pachyderm_sdk
 certifi
 PyYAML
 environs
-google
 dataclasses
+protobuf
