@@ -13,7 +13,7 @@ transform:
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
     KAFKA_RETENTION_DAYS: "30"
-    BUCKET_NAME: "neon-dev-l0-ingest"
+    BUCKET_NAME: "neon-cert-l0-ingest"
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
