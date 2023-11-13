@@ -83,7 +83,7 @@ input:
 output_branch: master
 parallelism_spec:
   constant: 1
-autoscaling: false
+autoscaling: true
 resource_requests:
   memory: 400M
   cpu: 1.2
