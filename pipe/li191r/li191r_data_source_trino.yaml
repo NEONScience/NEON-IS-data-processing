@@ -64,7 +64,7 @@ transform:
     MONTH_INDEX: '5'
     DAY_INDEX: '6'
     SOURCE_ID_INDEX: '7'
-    KAFKA_RETENTION_DAYS: "30"
+    KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
