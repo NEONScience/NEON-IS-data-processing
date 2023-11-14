@@ -6,7 +6,7 @@
 #
 ###
 # Start with the base R image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.2.1
+FROM quay.io/battelleecology/neon-is-base-r:v1.3.0
 
 ARG MODULE_DIR="flow"
 ARG CONTAINER_APP_DIR="/usr/src/app"
