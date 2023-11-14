@@ -4,7 +4,14 @@
 \alias{def.read.parq.ds}
 \title{Read in a parquet dataset}
 \usage{
-def.read.parq.ds(fileIn, Var = NULL, VarTime = NULL, Df = FALSE, log = NULL)
+def.read.parq.ds(
+  fileIn,
+  Var = NULL,
+  VarTime = NULL,
+  RmvDupl = FALSE,
+  Df = FALSE,
+  log = NULL
+)
 }
 \arguments{
 \item{fileIn}{Character vector. Names (including relative or absolute path) of parquet files. 
@@ -16,6 +23,8 @@ to retain, ordered the same as Var. Only those present in the dataset will be ou
 
 \item{VarTime}{Optional. Character value of the time variable to order by. If NULL, no ordering
 is performed.}
+
+\item{RmvDupl}{Optional. Boolean. TRUE to remove duplicated rows in the data (as defined by the Var columns). Defaults to FALSE.}
 
 \item{Df}{Optional. Boolean. TRUE to return a data frame with the combined dataset. Defaults to FALSE.}
 
