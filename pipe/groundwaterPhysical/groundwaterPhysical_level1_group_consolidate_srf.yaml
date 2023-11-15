@@ -149,7 +149,6 @@ input:
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
-output_branch: master
 parallelism_spec:
   constant: 1
 autoscaling: true
@@ -160,11 +159,8 @@ resource_limits:
   memory: 1G
   cpu: 2
 sidecar_resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 0.5
-sidecar_resource_limits:
-  memory: 2Gi
-  cpu: 1.3
 datum_set_spec:
   number: 1
 scheduling_spec:
