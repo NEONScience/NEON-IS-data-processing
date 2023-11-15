@@ -12,6 +12,7 @@ def main() -> None:
     data_path: Path = env.path('DATA_PATH')
     starting_path_index: int = env.int('STARTING_PATH_INDEX')
     out_path: Path = env.path('OUT_PATH')
+    err_path: Path = env.path('ERR_PATH')
     log_level: str = env.log_level('LOG_LEVEL')
     egress_url: str = env.str('EGRESS_URL')
     log_config.configure(log_level)
@@ -19,7 +20,7 @@ def main() -> None:
     log.debug(f'data_dir: {data_path}')
     log.debug(f'out_dir: {out_path}')
 
-    egress = Pub_egress(data_path, starting_path_index, out_path, egress_url)
+    egress = Pub_egress(data_path, starting_path_index, out_path, err_path, egress_url)
     egress.upload()
 
 

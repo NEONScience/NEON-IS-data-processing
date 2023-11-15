@@ -3,7 +3,7 @@ pipeline:
   name: parQuantumLine_pub_egress_and_publish
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-egrs-publ:fe1512ea
+  image: quay.io/battelleecology/neon-is-pub-egrs-publ:25809d18
   cmd:
   - sh
   - "-c"
@@ -39,6 +39,8 @@ transform:
     
     # Environment variables for 1st module: pub_egress.
     OUT_PATH: "/pfs/out"
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: errored_datums
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
     EGRESS_URL: https://storage.googleapis.com/neon-int-publication # Also include subfolder if included in BUCKET_NAME below
     BUCKET_NAME: "neon-int-publication" # Can also include subfolder (e.g. "neon-int-publication/egress-test")
