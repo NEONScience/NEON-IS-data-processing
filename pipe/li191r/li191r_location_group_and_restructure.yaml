@@ -37,6 +37,7 @@ transform:
       "DirSubCombData=data|flags|uncertainty_data" \
       DirSubCombUcrt=uncertainty_coef \
       DirSubCopy=location 
+    EOF
   env:
     # Environment variables for filter-joiner
     CONFIG: |

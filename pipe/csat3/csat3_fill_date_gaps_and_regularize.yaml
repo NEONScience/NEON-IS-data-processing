@@ -30,6 +30,7 @@ transform:
       RptTimeWndw=FALSE \
       DropNotNumc=FALSE \
       DirSubCopy=location
+    EOF
   env:
     LOG_LEVEL: INFO
     OUT_PATH: /tmp/pfs/date_filled

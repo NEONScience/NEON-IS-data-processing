@@ -30,6 +30,7 @@ transform:
       RptTimeWndw=FALSE \
       DropNotNumc=FALSE \
       "DirSubCopy=location"
+    EOF
   env:
     # Environment variables for date gap filler
     LOG_LEVEL: DEBUG

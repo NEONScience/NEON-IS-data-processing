@@ -36,6 +36,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       "DirSubCombData=data|flags" \
       DirSubCopy=location
+    EOF
   stdin:
   - "#!/bin/bash"
   - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'

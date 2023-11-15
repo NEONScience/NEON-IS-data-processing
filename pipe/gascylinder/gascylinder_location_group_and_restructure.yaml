@@ -23,6 +23,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       Comb=TRUE
+    EOF
   env:
     # Environment variables for filter-joiner
     CONFIG: |
