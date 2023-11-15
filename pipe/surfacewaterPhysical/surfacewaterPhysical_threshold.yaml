@@ -35,9 +35,6 @@ resource_limits:
 sidecar_resource_requests:
   memory: 120M
   cpu: 0.1
-sidecar_resource_limits:
-  memory: 500M
-  cpu: 0.5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
