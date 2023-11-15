@@ -1,6 +1,6 @@
 leveltroll500_cron_daily_and_date_control.yaml
 leveltroll500_data_source_trino.yaml
-leveltroll500_data_years.yaml
+leveltroll500_data_source_kafka.yaml
 leveltroll500_calibration_list_files.yaml
 leveltroll500_calibration_loader.yaml
 leveltroll500_location_asset.yaml

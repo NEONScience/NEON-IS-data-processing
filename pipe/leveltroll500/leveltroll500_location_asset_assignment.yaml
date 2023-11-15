@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - FileYear=$FILE_YEAR
   - TypeFile=asset
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:fe1512ea
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:ad2b0628
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -23,14 +23,22 @@ input:
       glob: /leveltroll500/*
   - pfs:
       name: FILE_YEAR
-      repo: leveltroll500_data_years
+      repo: leveltroll500_cron_daily_and_date_control
       glob: /data_years.txt
 parallelism_spec:
-  constant: 2
-resource_requests:
-  memory: 300M
-  cpu: 1.3
+  constant: 5
 autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: 1.5
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -48,15 +56,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
-    }
-  ]
-

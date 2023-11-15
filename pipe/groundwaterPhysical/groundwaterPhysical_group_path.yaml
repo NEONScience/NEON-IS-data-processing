@@ -54,10 +54,18 @@ input:
 #        joinOn: $1
 parallelism_spec:
   constant: 1
-resource_requests:
-  memory: 300M
-  cpu: 0.3
 autoscaling: true
+resource_requests:
+  memory: 600M
+  cpu: 0.4
+resource_limits:
+  memory: 2G
+  cpu: 1.2
+sidecar_resource_requests:
+  memory: 4G
+  cpu: 0.8
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -75,14 +83,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]
