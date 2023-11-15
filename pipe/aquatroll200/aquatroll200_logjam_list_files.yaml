@@ -1,23 +1,16 @@
 ---
 pipeline:
-  name: aquatroll200_location_loader
+  name: aquatroll200_logjam_list_files
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_loader:fe1512ea
-  cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m location_loader.location_loader_main
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/neon-logjam-loader:v0.0.1
+  cmd: ["/bin/bash"]
   env:
-    LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: aquatroll200
+    LOGJAM_INGEST_BUCKET: neon-logjam
     OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
-  secrets:
-  - name: db-pdr-secret
-    mount_path: /var/db_secret
+  stdin:
+  - "#!/bin/bash"
+  - python3 -m logjam_loader.logjam_loader
 input:
   pfs:
     repo: aquatroll200_cron_daily_and_date_control_tick
@@ -25,14 +18,14 @@ input:
     empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 100M
-  cpu: 0.1
-resource_limits:
-  memory: 300M
-  cpu: 0.5
-sidecar_resource_requests:
   memory: 500M
-  cpu: 0.1
+  cpu: 0.4
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 800M
+  cpu: 0.2
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
