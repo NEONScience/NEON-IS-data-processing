@@ -14,7 +14,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG 
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input:
    cron:

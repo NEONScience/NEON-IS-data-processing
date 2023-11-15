@@ -32,6 +32,14 @@ test_that("Read parquet dataset",
             testthat::expect_true(ncol(ds)==2)
             testthat::expect_true(names(ds)[1]=='readout_time')
             testthat::expect_true(names(ds)[2]=='voltage')
+            testthat::expect_true(anyDuplicated(ds) > 0)
             testthat::expect_true(utils::tail(ds$readout_time,1) > ds$readout_time[1])
             
+            # Successful: read in dataset and remove duplicate rows
+            ds <- NEONprocIS.base::def.read.parq.ds(fileIn = inputPath,
+                                                    Var=c('readout_time','voltage'),
+                                                    VarTime='readout_time',
+                                                    RmvDupl=TRUE,
+                                                    Df=TRUE)
+            testthat::expect_true(anyDuplicated(ds) == 0)
           })

@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Missing Temp Flag and Conductivity Conversion
 
-# Start with the neon-is-base-r image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.2.1
+# Start with the neon-is-base-r image.
+FROM quay.io/battelleecology/neon-is-base-r:v1.3.0
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org

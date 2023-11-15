@@ -12,8 +12,7 @@ transform:
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
-    KAFKA_RETENTION_DAYS: "30"
-    BUCKET_NAME: "neon-dev-l0-ingest"
+    KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
@@ -24,6 +23,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
   cmd:
   - sh
   - "-c"
@@ -119,11 +121,8 @@ resource_limits:
   memory: 1.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 0.5
-sidecar_resource_limits:
-  memory: 6Gi
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

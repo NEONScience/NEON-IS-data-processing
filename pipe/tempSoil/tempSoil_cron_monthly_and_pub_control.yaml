@@ -9,7 +9,7 @@ transform:
     # START_DATE must be set, format "YYYY-MM"
     # END_DATE can be set or unset (comment or remove line to unset). If unset, end month will be last month. 
     OUT_PATH: /pfs/out
-    START_MONTH: "2022-02"
+    START_MONTH: "2023-09"
     #END_MONTH: "2023-11" # Inclusive. Run the pipeline with END_MONTH set to initialize, then comment out and update pipeline (no reprocess) to let the cron take over
   stdin:
   - "#!/bin/bash"
@@ -29,10 +29,7 @@ resource_limits:
   cpu: 1
 sidecar_resource_requests:
   memory: 64M
-  cpu: 0.1
-sidecar_resource_limits:
-  memory: 200M
-  cpu: 1
+  cpu: 0.2
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

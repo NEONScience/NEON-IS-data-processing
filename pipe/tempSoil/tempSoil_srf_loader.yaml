@@ -11,7 +11,7 @@ transform:
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
   stdin:
     - '#!/bin/bash'
@@ -31,11 +31,8 @@ resource_limits:
   memory: 300M
   cpu: 1
 sidecar_resource_requests:
-  memory: 200M
-  cpu: 0.1
-sidecar_resource_limits:
-  memory: 1Gi
-  cpu: 1.2
+  memory: 500M
+  cpu: 0.5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

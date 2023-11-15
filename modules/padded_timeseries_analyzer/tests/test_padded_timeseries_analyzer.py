@@ -17,6 +17,7 @@ class PaddedTimeSeriesAnalyzerTest(TestCase):
         self.setUpPyfakefs()
         self.out_dir = Path('/tmp/out')
         self.input_root = Path('/tmp/in')
+        self.err_dir = Path('/tmp/out/errored')
         source_root = Path('prt/2018/01')
         self.input_data_dir = Path(self.input_root, source_root, '03')
         location = 'CFGLOC112154'
@@ -55,13 +56,14 @@ class PaddedTimeSeriesAnalyzerTest(TestCase):
         self.relative_path_index = 3
 
     def test_analyzer(self):
-        analyzer = PaddedTimeSeriesAnalyzer(self.input_data_dir, self.out_dir, self.relative_path_index)
+        analyzer = PaddedTimeSeriesAnalyzer(self.input_data_dir, self.out_dir, self.err_dir, self.relative_path_index)
         analyzer.analyze()
         self.check_output()
 
     def test_main(self):
         os.environ['DATA_PATH'] = str(self.input_data_dir)
         os.environ['OUT_PATH'] = str(self.out_dir)
+        os.environ['ERR_PATH'] = str(self.err_dir)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['RELATIVE_PATH_INDEX'] = str(self.relative_path_index)
         padded_timeseries_analyzer_main.main()

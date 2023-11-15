@@ -17,7 +17,7 @@ transform:
     CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/
     LOG_LEVEL: DEBUG
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
   - name: cds-secret
     mount_path: /var/cds_secret

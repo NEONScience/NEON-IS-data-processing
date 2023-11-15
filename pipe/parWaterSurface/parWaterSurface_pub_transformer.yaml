@@ -25,7 +25,7 @@ transform:
     WORKBOOK_PATH: "/tmp/pub_workbooks"
 
   secrets:
-    - name: db-pdr-secret
+    - name: pdr-secret
       mount_path: /var/db_secret
 
 input:  

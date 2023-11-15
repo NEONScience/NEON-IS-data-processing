@@ -15,7 +15,7 @@ transform:
     LOG_LEVEL: INFO
     SOURCE_TYPE: li191r
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
@@ -30,11 +30,8 @@ resource_limits:
   memory: 300M
   cpu: 0.5
 sidecar_resource_requests:
-  memory: 500M
-  cpu: 0.2
-sidecar_resource_limits:
-  memory: 2Gi
-  cpu: 1.2
+  memory: 250M
+  cpu: 0.3
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

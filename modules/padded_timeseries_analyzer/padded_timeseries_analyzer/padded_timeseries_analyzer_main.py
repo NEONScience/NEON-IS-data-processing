@@ -13,12 +13,13 @@ def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')
+    err_path: Path = env.path('ERR_PATH')
     log_level: str = env.log_level('LOG_LEVEL')
     relative_path_index: int = env.int('RELATIVE_PATH_INDEX')
     log_config.configure(log_level)
     log = get_logger()
     log.debug(f'data_path: {data_path} out_path: {out_path}')
-    analyzer = PaddedTimeSeriesAnalyzer(data_path, out_path, relative_path_index)
+    analyzer = PaddedTimeSeriesAnalyzer(data_path, out_path, err_path, relative_path_index)
     analyzer.analyze()
 
 

@@ -60,7 +60,7 @@ transform:
     MONTH_INDEX: '5'
     DAY_INDEX: '6'
     SOURCE_ID_INDEX: '7'
-    KAFKA_RETENTION_DAYS: "30"
+    KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -87,11 +87,8 @@ resource_limits:
   memory: 800M
   cpu: 2
 sidecar_resource_requests:
-  memory: 6G
+  memory: 4G
   cpu: 0.5
-sidecar_resource_limits:
-  memory: 8G
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

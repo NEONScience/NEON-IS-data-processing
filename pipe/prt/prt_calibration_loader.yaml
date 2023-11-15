@@ -17,7 +17,7 @@ transform:
     SOURCE_TYPE: prt
     STARTING_PATH_INDEX: "5"
   secrets:
-  - name: db-pdr-secret
+  - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
@@ -38,7 +38,7 @@ sidecar_resource_requests:
   memory: 600M
   cpu: 0.2
 sidecar_resource_limits:
-  memory: 3Gi
+  memory: 2G
   cpu: 1.2
 datum_set_spec:
   number: 1

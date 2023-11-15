@@ -74,11 +74,8 @@ resource_limits:
   memory: 2G
   cpu: 5
 sidecar_resource_requests:
-  memory: 2.5G
-  cpu: 0.2
-sidecar_resource_limits:
-  memory: 5G
-  cpu: 1.2
+  memory: 2G
+  cpu: 0.5
 autoscaling: true
 datum_set_spec:
   number: 1
