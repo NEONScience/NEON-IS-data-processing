@@ -26,7 +26,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       Comb=TRUE
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
-    cp -rL /tmp/pfs/structured /tmp/pfs/structuredCopy 
+    cp -rL /tmp/pfs/structured /tmp/pfs/structuredCopy || : # Allow to fail without exit code (happens if step above produced no output)
     rm -rf /tmp/pfs/filter_joined 
     rm -rf /tmp/pfs/structured 
     # Run third module - merge data by location

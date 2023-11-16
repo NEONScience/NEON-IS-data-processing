@@ -4,64 +4,70 @@ pipeline:
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:v1.2.0
-  cmd: ["/bin/bash"]
-  stdin:
-  - "#!/bin/bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /tmp/pfs/filter_joined_aquatroll
-  - mkdir -p /tmp/pfs/filter_joined_aquatroll
-  - rm -r -f /tmp/pfs/filter_joined_leveltroll
-  - mkdir -p /tmp/pfs/filter_joined_leveltroll
-  - '# Run filter-joiner for Aquatroll data (using environment variables below as input parameters)'
-  - export CONFIG=$CONFIG_AQUATROLL
-  - export OUT_PATH=$OUT_PATH_AQUATROLL
-  - python3 -m filter_joiner.filter_joiner_main
-  - '# Run basic stats for Aquatroll data'
-  - Rscript ./flow.stat.basc.R 
-      DirIn=/tmp/pfs/filter_joined_aquatroll
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      FileSchmStat=$FILE_SCHEMA_STATS_AQUATROLL
-      "WndwAgr=005|030"
-      "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr"
-      "TermStat2=conductivity:mean|minimum|maximum|variance|numPts|stdEr"
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined_aquatroll
+    mkdir -p /tmp/pfs/filter_joined_aquatroll
+    rm -r -f /tmp/pfs/filter_joined_leveltroll
+    mkdir -p /tmp/pfs/filter_joined_leveltroll
+    # Run filter-joiner for Aquatroll data (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_AQUATROLL
+    export OUT_PATH=$OUT_PATH_AQUATROLL
+    python3 -m filter_joiner.filter_joiner_main
+    # Run basic stats for Aquatroll data
+    Rscript ./flow.stat.basc.R \
+      DirIn=/tmp/pfs/filter_joined_aquatroll \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmStat=$FILE_SCHEMA_STATS_AQUATROLL \
+      "WndwAgr=005|030" \
+      "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr" \
+      "TermStat2=conductivity:mean|minimum|maximum|variance|numPts|stdEr" \
       DirSubCopy=location
-  - '# Run third module - troll-specific uncertainty comps for aquatroll data'
-  - Rscript ./flow.troll.uncertainty.R
-      DirIn=/tmp/pfs/filter_joined_aquatroll
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      Context=surfacewater
-      WndwInst=TRUE
-      "WndwAgr=005|030"
-      FileSchmData=$SCHEMA_DATA_TROLL_AQUATROLL
-      FileSchmUcrt=$SCHEMA_UCRT_TROLL_AQUATROLL
+    # Run third module - troll-specific uncertainty comps for aquatroll data
+    Rscript ./flow.troll.uncertainty.R \
+      DirIn=/tmp/pfs/filter_joined_aquatroll \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      Context=surfacewater \
+      WndwInst=TRUE \
+      "WndwAgr=005|030" \
+      FileSchmData=$SCHEMA_DATA_TROLL_AQUATROLL \
+      FileSchmUcrt=$SCHEMA_UCRT_TROLL_AQUATROLL \
       FileSchmSciStats=$SCHEMA_SCI_TROLL
-  - '# Now do the same for Leveltroll: repeat above but with different options...'
-  - '# Run filter-joiner for Leveltroll data (using environment variables below as input parameters)'
-  - export CONFIG=$CONFIG_LEVELTROLL
-  - export OUT_PATH=$OUT_PATH_LEVELTROLL
-  - python3 -m filter_joiner.filter_joiner_main
-  - '# Run basic stats for Leveltroll'
-  - Rscript ./flow.stat.basc.R 
-      DirIn=/tmp/pfs/filter_joined_leveltroll
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      FileSchmStat=$FILE_SCHEMA_STATS_LEVELTROLL
-      "WndwAgr=005|030"
-      "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr"
+    # Now do the same for Leveltroll: repeat above but with different options...
+    # Run filter-joiner for Leveltroll data (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_LEVELTROLL
+    export OUT_PATH=$OUT_PATH_LEVELTROLL
+    python3 -m filter_joiner.filter_joiner_main
+    # Run basic stats for Leveltroll
+    Rscript ./flow.stat.basc.R \
+      DirIn=/tmp/pfs/filter_joined_leveltroll \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmStat=$FILE_SCHEMA_STATS_LEVELTROLL \
+      "WndwAgr=005|030" \
+      "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr" \
       DirSubCopy=location
-  - '# Run third module - troll-specific uncertainty comps  for leveltroll data'
-  - Rscript ./flow.troll.uncertainty.R
-      DirIn=/tmp/pfs/filter_joined_leveltroll
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      Context=surfacewater
-      WndwInst=TRUE
-      "WndwAgr=005|030"
-      FileSchmData=$SCHEMA_DATA_TROLL_LEVELTROLL
-      FileSchmUcrt=$SCHEMA_UCRT_TROLL_LEVELTROLL
+    # Run third module - troll-specific uncertainty comps  for leveltroll data
+    Rscript ./flow.troll.uncertainty.R \
+      DirIn=/tmp/pfs/filter_joined_leveltroll \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      Context=surfacewater \
+      WndwInst=TRUE \
+      "WndwAgr=005|030" \
+      FileSchmData=$SCHEMA_DATA_TROLL_LEVELTROLL \
+      FileSchmUcrt=$SCHEMA_UCRT_TROLL_LEVELTROLL \
       FileSchmSciStats=$SCHEMA_SCI_TROLL
+    EOF
   env:
     # Environment variables for filter-joiner
     CONFIG_AQUATROLL: |

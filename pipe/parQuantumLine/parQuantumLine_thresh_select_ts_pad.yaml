@@ -26,7 +26,7 @@ transform:
       "TermCtxt1=par|upward-facing" \
       "DirSubCopy=location|data"
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
-    cp -rL /tmp/threshold_select /tmp/threshold_selectCopy 
+    cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output)  || : # Allow to fail without exit code (happens if step above produced no output)
     rm -r -f /tmp/threshold_select 
     # Run second module - timeseries_padder
     python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
