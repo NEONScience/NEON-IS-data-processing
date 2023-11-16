@@ -10,7 +10,6 @@
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
-git_path_site_list='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/site_list'
 git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
 git_path_avro_l0='/home/NEON/csturtevant/R/avro-schemas'
 pipe_list_prefix='pipe_list_'
@@ -21,12 +20,12 @@ product='tempSoil'
 spec_path_source_type=$git_path_pipelines/$source_type
 spec_path_product=$git_path_pipelines/$product
 
-# Create site list (controls sites to run and indicates kafka start dates)
-# This puts in the site list with only a few sites for testing. Full one is also in the $data_path/site_list/
-# Make sure cron_daily_and_date_control pipeline uses the correct one
+# Create site list (controls sites to run and indicates kafka start dates). The site-list.json should be located
+# along with the pipeline specs for the source type.
+# Make sure cron_daily_and_date_control pipeline uses the correct file name
 pc create repo $source_type'_site_list'
 pc start commit $source_type'_site_list'@master
-pc put file $source_type'_site_list'@master:/site-list.json -f $git_path_site_list/site-list.json
+pc put file $source_type'_site_list'@master:/site-list.json -f $spec_path_source_type/site-list.json
 pc finish commit $source_type'_site_list'@master
 
 # Create source-type-specific empty_files
