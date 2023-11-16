@@ -4,58 +4,64 @@ pipeline:
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/neon-is-qaqc-qm-grp:fe1512ea
-  cmd: ["/bin/bash"]
-  stdin:
-  - "#!/bin/bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /tmp/pfs/filter_joined
-  - mkdir -p /tmp/pfs/filter_joined
-  - '# Run filter-joiner for Aquatroll data (using environment variables below as input parameters)'
-  - export CONFIG=$CONFIG_AQUATROLL
-  - python3 -m filter_joiner.filter_joiner_main
-  - '# Run quality metrics for aquatroll'
-  - Rscript ./flow.qaqc.qm.R 
-      DirIn=/tmp/pfs/filter_joined
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      FileSchmQm=$FILE_SCHEMA_QM_AQUATROLL
-      "WndwAgr=005|030"
-      "WghtAlphBeta=2|1"
-      Thsh=0.2
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
-      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF"
-      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
-      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
-      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF"
-      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
-      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
-      "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF"
-      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    # Run filter-joiner for Aquatroll data (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_AQUATROLL
+    python3 -m filter_joiner.filter_joiner_main
+    # Run quality metrics for aquatroll
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_AQUATROLL \
+      "WndwAgr=005|030" \
+      "WghtAlphBeta=2|1" \
+      Thsh=0.2 \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
+      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
+      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF" \
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
       "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
-  - '# We are done with aquatroll. Clean up interim directories before doing leveltroll'
-  - rm -r -f /tmp/pfs/filter_joined
-  - mkdir -p /tmp/pfs/filter_joined
-  - '# Now do the same for Leveltroll: repeat above but with different options...'
-  - '# Run filter-joiner for Leveltroll data (using environment variables below as input parameters)'
-  - export CONFIG=$CONFIG_LEVELTROLL
-  - python3 -m filter_joiner.filter_joiner_main
-  - '# Run quality metrics for leveltroll'
-  - Rscript ./flow.qaqc.qm.R 
-      DirIn=/tmp/pfs/filter_joined
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      FileSchmQm=$FILE_SCHEMA_QM_LEVELTROLL
-      "WndwAgr=005|030"
-      "WghtAlphBeta=2|1"
-      Thsh=0.2
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
-      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF"
-      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
-      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
-      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF"
+    # We are done with aquatroll. Clean up interim directories before doing leveltroll
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    # Now do the same for Leveltroll: repeat above but with different options...
+    # Run filter-joiner for Leveltroll data (using environment variables below as input parameters)
+    export CONFIG=$CONFIG_LEVELTROLL
+    python3 -m filter_joiner.filter_joiner_main
+    # Run quality metrics for leveltroll
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_LEVELTROLL \
+      "WndwAgr=005|030" \
+      "WghtAlphBeta=2|1" \
+      Thsh=0.2 \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
+      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF:-1"
+    EOF
   env:
     # Environment variables for filter-joiner
     CONFIG_AQUATROLL: |

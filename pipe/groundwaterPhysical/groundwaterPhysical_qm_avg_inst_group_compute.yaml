@@ -4,54 +4,60 @@ pipeline:
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/neon-is-qm-avg-inst-grp:fe1512ea
-  cmd: ["/bin/bash"]
-  stdin:
-  - "#!/bin/bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /tmp/pfs/interimData
-  - mkdir -p /tmp/pfs/interimData
-  - '# ---- Run first module - filter-joiner (using environment variables below as input parameters) ----'
-  - python3 -m filter_joiner.filter_joiner_main
-  - '# ---- Run second module - quality metrics (averaged) ----' 
-  - Rscript ./flow.qaqc.qm.R 
-      DirIn=/tmp/pfs/interimData
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      FileSchmQm=$FILE_SCHEMA_QM
-      WndwAgr=030
-      "WghtAlphBeta=2|1"
-      Thsh=0.2
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF"
-      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF"
-      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
-      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
-      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF"
-      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
-      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
-      "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF"
-      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/interimData
+    mkdir -p /tmp/pfs/interimData
+    # ---- Run first module - filter-joiner (using environment variables below as input parameters) ----
+    python3 -m filter_joiner.filter_joiner_main
+    # ---- Run second module - quality metrics (averaged) ----
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=/tmp/pfs/interimData \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM \
+      WndwAgr=030 \
+      "WghtAlphBeta=2|1" \
+      Thsh=0.2 \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
+      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
+      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF" \
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
       "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
-  - '# ---- Run third module - quality metrics (instantaneous) ---- '
-  - Rscript ./flow.qaqc.qm.dp0p.R
-      DirIn=/tmp/pfs/interimData
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      FileSchmQm=$FILE_SCHEMA_QM_INST
-      Tmi=005
-      VarTimeBgn=readout_time
-      VarTimeEnd=readout_time
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF"
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF"
-      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF"
-      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
-      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF"
-      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF"
-      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
-      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF"
-      "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF"
-      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
+    # ---- Run third module - quality metrics (instantaneous) ---- 
+    Rscript ./flow.qaqc.qm.dp0p.R \
+      DirIn=/tmp/pfs/interimData \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_INST \
+      Tmi=005 \
+      VarTimeBgn=readout_time \
+      VarTimeEnd=readout_time \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
+      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
+      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF" \
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
       "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
+    EOF
   env:
     # Environment variables for filter-joiner
     CONFIG: |
