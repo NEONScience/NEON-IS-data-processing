@@ -3,35 +3,42 @@ pipeline:
   name: groundwaterPhysical_stats_ucrt_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:08f4910889b9ef4daa1cca10b307059f98c9ff5d
-  cmd: ["/bin/bash"]
-  stdin:
-  - "#!/bin/bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -r -f /tmp/pfs/filter_joined
-  - mkdir -p /tmp/pfs/filter_joined
-  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
-  - python3 -m filter_joiner.filter_joiner_main
-  - '# Run second module - basic stats'
-  - Rscript ./flow.stat.basc.R 
-    DirIn=/tmp/pfs/filter_joined
-    DirOut=/pfs/out
-    DirErr=/pfs/out/errored_datums
-    FileSchmStat=$FILE_SCHEMA_STATS
-    "WndwAgr=030"
-    "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr"
-    "TermStat2=conductivity:mean|minimum|maximum|variance|numPts|stdEr"
-    DirSubCopy=location
-  - '# Run third module - troll-specific uncertainty comps'
-  - Rscript ./flow.troll.uncertainty.R
-    DirIn=/tmp/pfs/filter_joined
-    DirOut=/pfs/out
-    Context=groundwater
-    WndwInst=TRUE
-    WndwAgr=030
-    FileSchmData=$SCHEMA_DATA_TROLL
-    FileSchmUcrt=$SCHEMA_UCRT_TROLL
-    FileSchmSciStats=$SCHEMA_SCI_TROLL
+  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:v1.2.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    # Run second module - basic stats
+    Rscript ./flow.stat.basc.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmStat=$FILE_SCHEMA_STATS \
+      "WndwAgr=030" \
+      "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr" \
+      "TermStat2=conductivity:mean|minimum|maximum|variance|numPts|stdEr" \
+      DirSubCopy=location
+    # Run third module - troll-specific uncertainty comps
+    Rscript ./flow.troll.uncertainty.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      Context=groundwater \
+      WndwInst=TRUE \
+      WndwAgr=030 \
+      FileSchmData=$SCHEMA_DATA_TROLL \
+      FileSchmUcrt=$SCHEMA_UCRT_TROLL \
+      FileSchmSciStats=$SCHEMA_SCI_TROLL
+    EOF
   env:
     # Environment variables for filter-joiner
     CONFIG: |
@@ -89,7 +96,7 @@ input:
         joinOn: $1/$2/$3
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 2
+  constant: 5
 resource_requests: 
   memory: 800M
   cpu: 2.2
@@ -99,9 +106,6 @@ resource_limits:
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.2
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.2
 autoscaling: true
 scheduling_spec:
   node_selector:

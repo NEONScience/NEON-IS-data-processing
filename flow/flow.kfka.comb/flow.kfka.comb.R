@@ -7,7 +7,8 @@
 #' @description Workflow. Merge multiple L0 data files generated for a single day. This is very 
 #' common for kafka-extracted output because kafka data is pulled by received day rather than
 #' data day, thus typically creating at least 2 files for a data day due to short time lag of
-#' data tranmission spanning midnight UTC. 
+#' data transmission spanning midnight UTC. Also remove any duplicate data -- it is common
+#' for Kafka to restream data with new kafka offsets when kafka does a hard restart.
 #' In addition to merging output for each data day, removes kafka-generated columns so that
 #' the data conform to the expected L0 schema.
 #'
@@ -56,7 +57,10 @@
 #' 4. "FileSchmL0=value", where value is the full path to the avro schema for the L0 data for the source type.
 #' This schema will be used to constrain the columns that are output and ensure proper column ordering.
 #' 
-#' 5. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 5. "RmvDupl=value" (optional), where value is TRUE or FALSE indicating whether to remove duplicated 
+#' rows in the data (as defined by the L0 schema columns). Defaults to TRUE.
+#' 
+#' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the data folder that are to be copied with a
 #' symbolic link to the output path. May NOT include 'data'. 
 #'
@@ -86,6 +90,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2023-03-08)
 #     original creation
+#   Cove Sturtevant (2023-11-13)
+#     add option to remove duplicated rows
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -121,8 +127,12 @@ Para <-
                      "FileSchmL0" 
                      ),
     NameParaOptn = c(
-                     "DirSubCopy"
+                     "DirSubCopy",
+                     "RmvDupl"
                      ),
+    ValuParaOptn = list(
+                    RmvDupl=TRUE
+                    ),
     log = log
   )
 
@@ -131,6 +141,8 @@ Para <-
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
+log$debug(base::paste0('Remove duplicate rows in the data?: ', Para$RmvDupl))
+
 
 # Retrieve L0 data schema
 FileSchmL0 <- Para$FileSchmL0
@@ -177,6 +189,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
         SchmL0=SchmL0,
+        RmvDupl=Para$RmvDupl,
         DirSubCopy=DirSubCopy,
         log=log
         ),

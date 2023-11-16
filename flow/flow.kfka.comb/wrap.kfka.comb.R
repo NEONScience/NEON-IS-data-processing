@@ -35,6 +35,8 @@
 #' @param SchmL0 String. Optional. Json formatted string of the AVRO L0 file schema. One of FileSchmL0 or SchmL0 must 
 #' be provided. If both SchmL0 and FileSchmL0 are provided, SchmL0 will be ignored.
 #' 
+#' @param RmvDupl Optional. Boolean. TRUE to remove duplicated rows in the data (as defined by the L0 schema columns). Defaults to FALSE.
+#' 
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
@@ -66,11 +68,14 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2023-03-07)
 #     Initial creation
+#   Cove Sturtevant (2023-11-13)
+#     add option to remove duplicated rows
 ##############################################################################################
 wrap.kfka.comb <- function(DirIn,
                            DirOutBase,
                            FileSchmL0=NULL,
                            SchmL0=NULL,
+                           RmvDupl=FALSE,
                            DirSubCopy=NULL,
                            log=NULL
 ){
@@ -120,6 +125,7 @@ wrap.kfka.comb <- function(DirIn,
   data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
                                             Var=varSchmL0$name,
                                             VarTime='readout_time',
+                                            RmvDupl=RmvDupl,
                                             Df=FALSE, # Retain as arrow_dplyr_query
                                             log=log)
   

@@ -15,6 +15,7 @@
 #' to retain, ordered the same as Var. Only those present in the dataset will be output.
 #' @param VarTime Optional. Character value of the time variable to order by. If NULL, no ordering
 #' is performed.
+#' @param RmvDupl Optional. Boolean. TRUE to remove duplicated rows in the data (as defined by the Var columns). Defaults to FALSE.
 #' @param Df Optional. Boolean. TRUE to return a data frame with the combined dataset. Defaults to FALSE.
 #' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -42,10 +43,13 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2023-03-07)
 #     original creation
+#   Cove Sturtevant (2023-11-13)
+#     add option to remove duplicated rows
 ##############################################################################################
 def.read.parq.ds <- function(fileIn,
                              Var=NULL,
                              VarTime=NULL,
+                             RmvDupl=FALSE,
                              Df=FALSE,
                              log=NULL
 ){
@@ -61,18 +65,24 @@ def.read.parq.ds <- function(fileIn,
   data <- arrow::open_dataset(fileIn,unify_schemas = TRUE)
   varData <- base::names(data$schema)
   
-  # Pull the columns matching the L0 schema, sort by readout_time
+  # Pull the columns matching Var, sort by readout_time
   if(base::length(Var) == 0){
     Var <- varData
   } 
   varMtch <- Var[Var %in% varData]
   dataMtch <- data %>% 
-    dplyr::select(dplyr::all_of(varMtch)) 
-  
+    dplyr::select(dplyr::all_of(varMtch))
+ 
   # Order by time, if selected
   if(!base::is.null(VarTime)){
     dataMtch <- dataMtch %>%
       dplyr::arrange(!! rlang::sym(VarTime))
+  }
+  
+  # Get rid of duplicates if selected
+  if(RmvDupl == TRUE){
+    dataMtch <- dataMtch %>%
+      dplyr::distinct()
   }
   
   # Return a data frame, if selected. Otherwise return arrow table.
