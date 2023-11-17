@@ -19,10 +19,10 @@
     },
     "arrow": {
       "Package": "arrow",
-      "Version": "13.0.0.1",
+      "Version": "14.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "5f5124b727a451be32d23dcd2c41ebe8",
+      "Hash": "daa5319da4e6fa5595647054dcbe7e8d",
       "Requirements": [
         "R6",
         "assertthat",

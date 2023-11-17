@@ -205,10 +205,12 @@ def.loc.meta <- function(NameFile,
     
     # format multiple values for context
     ctxt <- locProp$context[idxLoc]
-    ctxt <- base::gsub(pattern='[\\[\\"]',replacement="",x=ctxt)
-    ctxt <- base::gsub(pattern='\\]',replacement="",x=ctxt)
-    ctxt <- base::strsplit(ctxt,',')[[1]]
-    ctxt <- base::paste0(base::unique(ctxt),collapse='|')
+    if(base::length(ctxt) > 0){
+      ctxt <- base::gsub(pattern='[\\[\\"]',replacement="",x=ctxt)
+      ctxt <- base::gsub(pattern='\\]',replacement="",x=ctxt)
+      ctxt <- base::strsplit(ctxt,',')[[1]]
+      ctxt <- base::paste0(base::unique(ctxt),collapse='|')
+    }
     
     if(base::length(ctxt) == 0 || base::nchar(ctxt) == 0) {
       ctxt <- NA
