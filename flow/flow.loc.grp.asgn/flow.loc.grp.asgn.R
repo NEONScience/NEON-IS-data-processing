@@ -93,6 +93,8 @@
 #     Add datum error routing
 #   Cove Sturtevant (2022-11-22)
 #     Add option for group files
+#   Cove Sturtevant (2023-11-16)
+#     Add option for retaining only particular properties
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -134,6 +136,7 @@ Para <-
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
+log$debug(base::paste0('Properties to retain: ', base::paste0(Para$Prop,collapse=',')))
 
 # Parse the file containing the years to populate
 log$debug(base::paste0('File containing data years to populate: ', Para$FileYear))
@@ -171,6 +174,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                     TimeBgn=timeBgn,
                     TimeEnd=timeEnd,
                     TypeFile=Para$TypeFile,
+                    Prop=Para$Prop,
                     log=log
       ),
       error = function(err) {
