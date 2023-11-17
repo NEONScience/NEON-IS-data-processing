@@ -40,7 +40,7 @@ transform:
     # Environment variables for 1st module: pub_egress.
     OUT_PATH: "/pfs/out"
     # ERR_PATH can be changed, it is user specified
-    ERR_PATH: errored_datums
+    ERR_PATH: "/pfs/out/errored_datums"
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
     EGRESS_URL: https://storage.googleapis.com/neon-int-publication # Also include subfolder if included in BUCKET_NAME below
     BUCKET_NAME: "neon-int-publication" # Can also include subfolder (e.g. "neon-int-publication/egress-test")
