@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: relHumidity_pub_egress_and_publish
+  name: testprod_pub_egress_and_publish
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/neon-is-pub-egrs-publ:497ad386
@@ -40,7 +40,7 @@ transform:
     # Environment variables for 1st module: pub_egress.
     OUT_PATH: "/pfs/out"
     # ERR_PATH can be changed, it is user specified
-    ERR_PATH: errored_datums
+    ERR_PATH: "/pfs/out/errored_newDir"
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
     EGRESS_URL: https://storage.googleapis.com/neon-int-publication # Also include subfolder if included in BUCKET_NAME below
     BUCKET_NAME: "neon-int-publication" # Can also include subfolder (e.g. "neon-int-publication/egress-test")
@@ -60,7 +60,7 @@ transform:
     DATA_PATH_SITE_INDEX: "4"
     DATA_PATH_DATE_INDEX: "5"
     DATA_PATH_PACKAGE_INDEX: "6"
-    PRODUCTS: NEON.DOM.SITE.DP1.00098.001,NEON.DOM.SITE.DP1.20046.001,NEON.DOM.SITE.DP1.20271.001 # CAN BE MULTIPLE, COMMA-SEPARATED
+    PRODUCTS: NEON.DOM.SITE.DP1.20042.001 # CAN BE MULTIPLE, COMMA-SEPARATED
     SITES: "all"  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
 
   secrets:
@@ -72,14 +72,14 @@ input:
   - join:
     - pfs: 
         name: DATA_PATH
-        repo: relHumidity_pub_format_and_package
-        # Glob must be at each intended pub datum (i.e. each product/site/year/month), grouped by month
+        repo: testprod_pub_group_and_package
+        # Glob must be at each intended pub datum (i.e. each site/year/month), grouped by month
         glob: /*/*/(*/*)
         joinOn: $1
         group_by: $1
     - pfs: 
         name: DATE_PATH
-        repo: relHumidity_cron_monthly_and_pub_control
+        repo: parWaterSurface_cron_monthly_and_pub_control
         glob: /(*/*)
         joinOn: $1
         outer_join: True # We want to run even if no data so pub_sync runs
@@ -96,7 +96,7 @@ sidecar_resource_requests:
   memory: 2G
   cpu: 1
 sidecar_resource_limits:
-  memory: 3Gi
+  memory: 4Gi
   cpu: 2
 datum_set_spec:
   number: 1
@@ -117,13 +117,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "add",
-      "path": "/containers/1/env/-",
-      "value": {
-        "name": "GOMEMLIMIT",
-        "value": "2000000000"
-      }
-    }
-  ]
