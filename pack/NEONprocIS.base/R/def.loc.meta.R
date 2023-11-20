@@ -94,8 +94,7 @@ def.loc.meta <- function(NameFile,
  # There are two types of location files, asset-based and location-based. The schema must match one of these to be valid.
   # First, validate the syntax of input json to see if it is valid. This checks either type.
   #
-  validateJson <-
-    NEONprocIS.base::def.validate.json (NameFile,log)
+  validateJson <- NEONprocIS.base::def.validate.json (NameFile,log)
   #
   # Second, validate the json against the schema only if the syntax is valid.
   # Otherwise, validateJsonSchema errors out due to the syntax error

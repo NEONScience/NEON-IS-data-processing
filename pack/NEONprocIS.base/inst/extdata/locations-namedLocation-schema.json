@@ -37,10 +37,6 @@
             },
             "properties": {
               "required": [
-                "name",
-                "type",
-                "site",
-                "context",
                 "active_periods"
               ],
               "properties": {

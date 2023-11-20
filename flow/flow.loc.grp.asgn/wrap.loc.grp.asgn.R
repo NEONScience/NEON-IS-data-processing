@@ -33,7 +33,7 @@
 #' file specific to a group member, including what groups the member is in and properties of the group.
 #' @param Prop character vector of the properties in the file to retain. The meaning of this input changes
 #' according to TypeFile. See the filtering functions for each type for details. Defaults to 'all'. Currently
-#' only relevant for TypeFile='asset'.
+#' relevant for TypeFile='asset' and TypeFile='namedLocation'.
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 #' 
@@ -253,6 +253,7 @@ wrap.loc.grp.asgn <- function(DirIn,
                                                        NameFileOut=nameFileOut,
                                                        TimeBgn=ts[idxDay],
                                                        TimeEnd=ts[idxDay]+timeDiffDay,
+                                                       Prop=Prop,
                                                        log=log
         )
       } else if (TypeFile == 'group'){
