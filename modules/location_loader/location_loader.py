@@ -22,7 +22,7 @@ def load_locations(out_path: Path, err_path: Path, get_locations: Callable[[str]
     :param source_type: sensor type.
     """
     # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
-    DirErrBase = Path(out_path, err_path)
+    DirErrBase = Path(err_path)
     dataDir_routed = Path("")
     for named_location in get_locations(source_type=source_type):
         schema_names: Set = named_location.schema_names

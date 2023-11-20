@@ -21,7 +21,7 @@ class LocationLoaderTest(DatabaseBackedTest):
     def setUp(self):
         self.setUpPyfakefs()
         self.out_path = Path('/pfs/out')
-        self.err_path = Path('/pfs/errored')
+        self.err_path = Path('/pfs/out/errored')
         self.fs.create_dir(self.out_path)
 
     @unittest.skip('Integration test skipped due to long process time.')
@@ -40,7 +40,7 @@ class LocationLoaderTest(DatabaseBackedTest):
         site = 'CPER'
         domain = 'D10'
         location = 'CFGLOC123'
-        schema_names = set('prt')
+        schema_names = ['prt']
         description = 'A test location.'
         expected_type = 'CONFIG'
         group = ['group']
