@@ -26,8 +26,8 @@ class Pub_egress:
         self.data_path = data_path
         self.starting_path_index = starting_path_index
         self.out_path = out_path
-        # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
-        self.DirErrBase = Path(self.out_path, err_path)
+        # DirErrBase: the user specified error directory, i.e., /errored
+        self.DirErrBase = Path(err_path)
         self.idq_length = 6
         self.domain_index = 1
         self.site_index = 2

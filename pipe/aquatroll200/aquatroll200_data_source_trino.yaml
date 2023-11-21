@@ -6,46 +6,50 @@ transform:
   - battelleecology-quay-read-all-pull-secret
   image: quay.io/battelleecology/data_source_trino:fe1512ea
   cmd:
-  - /bin/bash
-  stdin:
-  - "#!/usr/bin/env bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - interimDir="/tmp/interimData"
-  - rm -rf $interimDir
-  - "# Get today's date for evaluating kafka data retention period"
-  - date_today=$(date -u +%Y-%m-%d)
-  - kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
-  - '# Run first module - data_source_site (pull data from database by site)'
-  - "# Split data source path"
-  - echo "Checking $presto_data_source files"
-  - for path in $(find -L $import_trigger -type f); do
-  - '  echo "Processing $path"'
-  - "  p=${path#/pfs}"
-  - '  IFS="/"; arr=($p); unset IFS;'
-  - "  year=${arr[3]}"
-  - "  month=${arr[4]}"
-  - "  day=${arr[5]}"
-  - "  site=${arr[6]}"
-  - '  type=$(echo $site | cut -f 2 -d "." --only-delimited); # Extract the "kafka" from site.kafka if present'
-  - '  if [ "$type" = "kafka" ] && [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]'
-  - "  then "
-  - '    site=$(echo $site | cut -f 1 -d "." --only-delimited); # Extract the site from site.kafka.'
-  - '    echo "$year/$month/$day for $site is indicated to be streaming from Kafka but has passed the Kafka retention period ($KAFKA_RETENTION_DAYS days)."'
-  - '  elif [ "$type" = "kafka" ]'
-  - "  then "
-  - '    echo "$year/$month/$day/$site is indicated to be streaming from Kafka. Skipping..."'
-  - '    continue'
-  - '  fi'
-  - '  echo "Extracting data from Trino for $year/$month/$day/$site"'
-  - "  export GEN_DATE=$year-$month-$day"
-  - "  export GEN_SITE_NAME=$site"
-  - "  export GEN_OUTPUT_DIR=$interimDir/aquatroll200/$year/$month/$day"
-  - "  export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem"
-  - "  mkdir -p $GEN_OUTPUT_DIR"
-  - "  /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second"
-  - done
-  - '# Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day'
-  - python3 -m parquet_linkmerge.parquet_linkmerge_main
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    interimDir="/tmp/interimData"
+    rm -rf $interimDir
+    # Get today's date for evaluating kafka data retention period
+    date_today=$(date -u +%Y-%m-%d)
+    kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    # Run first module - data_source_site (pull data from database by site)
+    # Split data source path
+    for path in $(find -L $import_trigger -type f); do
+      echo "Processing $path"
+      p=${path#/pfs}
+      IFS="/"; arr=($p); unset IFS;
+      year=${arr[3]}
+      month=${arr[4]}
+      day=${arr[5]}
+      site=${arr[6]}
+      type=$(echo $site | cut -f 2 -d "." --only-delimited); # Extract the "kafka" from site.kafka if present
+      if [ "$type" = "kafka" ] && [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]
+      then
+        site=$(echo $site | cut -f 1 -d "." --only-delimited); # Extract the site from site.kafka.
+        echo "$year/$month/$day for $site is indicated to be streaming from Kafka but has passed the Kafka retention period ($KAFKA_RETENTION_DAYS days)."
+      elif [ "$type" = "kafka" ]
+      then
+        echo "$year/$month/$day/$site is indicated to be streaming from Kafka. Skipping..."
+        continue
+      fi
+      echo "Extracting data from Trino for $year/$month/$day/$site"
+      export GEN_DATE=$year-$month-$day
+      export GEN_SITE_NAME=$site
+      export GEN_OUTPUT_DIR=$interimDir/aquatroll200/$year/$month/$day
+      export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
+      mkdir -p $GEN_OUTPUT_DIR
+      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second
+    done
+    # Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day
+    python3 -m parquet_linkmerge.parquet_linkmerge_main
+    EOF
   env:
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/aquatroll200_streams.yaml"

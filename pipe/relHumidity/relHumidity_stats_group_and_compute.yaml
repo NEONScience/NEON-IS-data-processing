@@ -4,59 +4,65 @@ pipeline:
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:fe1512ea
-  cmd: ["/bin/bash"]
-  stdin:
-  - "#!/bin/bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -rf /tmp/pfs/interimData
-  - mkdir -p /tmp/pfs/interimData
-  - '# Determine which group type we have'
-  - if [ ${FILE_SCHEMA_STATS_MET+x} ]
-  - then export GROUP_TYPE=met
-  - elif [ ${FILE_SCHEMA_STATS_BUOY+x} ]
-  - then export GROUP_TYPE=buoy
-  - else echo "FATAL - Input repository names do not match expectations. Check pipeline specification."
-  - fi
-  - echo "Group type detected = $GROUP_TYPE"
-  - '# '
-  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
-  - python3 -m filter_joiner.filter_joiner_main
-  - '# Run second module - basic stats'
-  - '# If met... (make sure both paths are present - not true partial timeseries pads'
-  - if [ $GROUP_TYPE = 'met' ] && [ ${QAQC_PATH+x} ] && [ ${UNCERTAINTY_PATH+x} ]
-  - then 
-      Rscript ./flow.stat.basc.R 
-      DirIn=/tmp/pfs/interimData
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      FileSchmStat=$FILE_SCHEMA_STATS_MET
-      "WndwAgr=001|030"
-      "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
-      "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
-      "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
-  - elif [ $GROUP_TYPE = 'buoy' ] && [ ${QAQC_PATH+x} ] && [ ${UNCERTAINTY_PATH+x} ]
-  - then 
-  -   Rscript ./flow.stat.basc.R
-      DirIn=/tmp/pfs/interimData
-        DirOut=/pfs/out
-        DirErr=/pfs/out/errored_datums
-        FileSchmStat=$FILE_SCHEMA_STATS_BUOY
-        WndwAgr=030
-        "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
-        "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)"
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/interimData
+    mkdir -p /tmp/pfs/interimData
+    # Determine which group type we have
+    if [ ${FILE_SCHEMA_STATS_MET+x} ]
+    then export GROUP_TYPE=met
+    elif [ ${FILE_SCHEMA_STATS_BUOY+x} ]
+    then export GROUP_TYPE=buoy
+    else echo "FATAL - Input repository names do not match expectations. Check pipeline specification."
+    fi
+    echo "Group type detected = $GROUP_TYPE"
+    # 
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    # Run second module - basic stats
+    # If met... (make sure both paths are present - not true partial timeseries pads
+    if [ $GROUP_TYPE = 'met' ] && [ ${QAQC_PATH+x} ] && [ ${UNCERTAINTY_PATH+x} ]
+    then 
+      Rscript ./flow.stat.basc.R \
+        DirIn=/tmp/pfs/interimData \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmStat=$FILE_SCHEMA_STATS_MET \
+        "WndwAgr=001|030" \
+        "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+        "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
         "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
-  -   Rscript ./flow.data.comb.ts.R
-        DirIn=/tmp/pfs/interimData
-        DirOut=/pfs/out
-        DirErr=/pfs/out/errored_datums
-        FileSchmComb=$FILE_SCHEMA_STATS_INST_BUOY
-        "DirComb=data|uncertainty_data"
-        NameDirCombOut=stats
-        NameVarTime=readout_time
-        "ColKeep=readout_time|readout_time|relativeHumidity|relativeHumidity_ucrtExpn|temperature|temperature_ucrtExpn|dewPoint|dewPoint_ucrtExpn"
+    elif [ $GROUP_TYPE = 'buoy' ] && [ ${QAQC_PATH+x} ] && [ ${UNCERTAINTY_PATH+x} ]
+    then 
+      Rscript ./flow.stat.basc.R \
+        DirIn=/tmp/pfs/interimData \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmStat=$FILE_SCHEMA_STATS_BUOY \
+        WndwAgr=030 \
+        "TermStat1=relativeHumidity:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+        "TermStat2=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+        "TermStat3=dewPoint:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.rh.dew.frst.pt)"
+      Rscript ./flow.data.comb.ts.R \
+        DirIn=/tmp/pfs/interimData \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmComb=$FILE_SCHEMA_STATS_INST_BUOY \
+        "DirComb=data|uncertainty_data" \
+        NameDirCombOut=stats \
+        NameVarTime=readout_time \
+        "ColKeep=readout_time|readout_time|relativeHumidity|relativeHumidity_ucrtExpn|temperature|temperature_ucrtExpn|dewPoint|dewPoint_ucrtExpn" \
         NameFileSufx=_basicStats_001
-  - else echo "FATAL - Cannot determine group_type as met or buoy. Aborting..."
-  - fi
+    else echo "FATAL - Cannot determine group_type as met or buoy. Aborting..."
+    fi
+    EOF
   env:
     # Environment variables for filter-joiner
     CONFIG: |

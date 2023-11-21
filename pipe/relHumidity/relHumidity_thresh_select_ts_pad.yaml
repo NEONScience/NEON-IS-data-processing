@@ -6,28 +6,33 @@ transform:
   - battelleecology-quay-read-all-pull-secret
   image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:fe1512ea
   cmd:
-  - /bin/bash
-  stdin:
-  - "#!/bin/bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -rf /tmp/threshold_select
-  - rm -rf /tmp/threshold_selectCopy
-  - mkdir -p /tmp/threshold_select
-  - '# Run first module - threshold_select'
-  - Rscript ./flow.thsh.slct.R 
-      DirIn=$REPO_LOCATIONS
-      DirOut=/tmp/threshold_select
-      DirErr=/pfs/out/errored_datums
-      FileThsh=$FILE_THRESHOLDS
-      "TermCtxt1=relativeHumidity|relative-humidity"
-      "TermCtxt2=temperature|relative-humidity"
-      "TermCtxt3=dewPoint|relative-humidity"
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/threshold_select
+    rm -rf /tmp/threshold_selectCopy
+    mkdir -p /tmp/threshold_select
+    # Run first module - threshold_select
+    Rscript ./flow.thsh.slct.R \
+      DirIn=$REPO_LOCATIONS \
+      DirOut=/tmp/threshold_select \
+      DirErr=/pfs/out/errored_datums \
+      FileThsh=$FILE_THRESHOLDS \
+      "TermCtxt1=relativeHumidity|relative-humidity" \
+      "TermCtxt2=temperature|relative-humidity" \
+      "TermCtxt3=dewPoint|relative-humidity" \
       "DirSubCopy=location|data"
-  - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
-  - cp -rL /tmp/threshold_select /tmp/threshold_selectCopy 
-  - rm -r -f /tmp/threshold_select 
-  - '# Run second module - timeseries_padder'
-  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/threshold_select 
+    # Run second module - timeseries_padder
+    python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+    EOF
   env:
     DATA_PATH: /tmp/threshold_selectCopy
     OUT_PATH: /pfs/out
