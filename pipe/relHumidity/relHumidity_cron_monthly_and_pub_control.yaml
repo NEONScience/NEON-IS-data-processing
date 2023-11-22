@@ -2,7 +2,7 @@
 pipeline:
   name: relHumidity_cron_monthly_and_pub_control
 transform:
-  image: quay.io/battelleecology/neon-is-pub-cntl:fe1512ea
+  image: quay.io/battelleecology/neon-is-pub-cntl:c0ce8112
   cmd: ["/bin/bash"]
   env:
     # START_MONTH and END_MONTH indicate the date range (inclusive) to create the /Y/M folder structure

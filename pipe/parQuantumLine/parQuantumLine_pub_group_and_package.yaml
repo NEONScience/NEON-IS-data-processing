@@ -3,7 +3,7 @@ pipeline:
   name: parQuantumLine_pub_group_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:fe1512ea
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:4178f7b8
   cmd:
   - sh
   - "-c"
@@ -128,7 +128,7 @@ resource_limits:
   memory: 1.5G
   cpu: 1.8
 sidecar_resource_requests:
-  memory: 2G
+  memory: 3G
   cpu: 0.3
 datum_set_spec:
   number: 1
