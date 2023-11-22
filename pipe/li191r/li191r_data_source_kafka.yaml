@@ -12,7 +12,7 @@ transform:
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
-    KAFKA_RETENTION_DAYS: "30"
+    KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
@@ -121,7 +121,7 @@ resource_limits:
   memory: 1.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 0.5
 datum_set_spec:
   number: 1

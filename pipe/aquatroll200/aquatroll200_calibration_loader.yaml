@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-cval-loader:fe1512ea
+  image: quay.io/battelleecology/neon-cval-loader:c0ce8112
   cmd:
   - /bin/bash
   stdin:
@@ -37,9 +37,6 @@ resource_limits:
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.2
-sidecar_resource_limits:
-  memory: 4G
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

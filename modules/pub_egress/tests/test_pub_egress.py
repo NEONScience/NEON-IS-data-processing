@@ -19,6 +19,7 @@ class PubEgressTest(TestCase):
         self.temp_dir_name = self.temp_dir.path
         self.input_root = Path(self.temp_dir_name, 'repo/inputs')
         self.out_dir = Path(self.temp_dir_name, 'out')
+        self.err_dir = Path('/tmp/out/errored')
         site_month = Path('CPER/2019/01')
         self.input_dir = Path(self.input_root, site_month)
         self.starting_path_index = len(Path(self.input_root).parts)-1
@@ -43,7 +44,7 @@ class PubEgressTest(TestCase):
     def test_egress(self):
         os.environ["CUSTOM_ENDPOINT"] = "endpoint"
         os.environ["AMAZON_BUCKET"] = "bucket"
-        egress = Pub_egress(self.input_dir, self.starting_path_index, self.out_dir, 'egressurl')
+        egress = Pub_egress(self.input_dir, self.starting_path_index, self.out_dir, self.err_dir, 'egressurl')
         egress.upload()
         self.check_output()
 

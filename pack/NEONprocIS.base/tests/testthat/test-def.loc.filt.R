@@ -227,6 +227,27 @@ test_that("   Testing Filter named location information by date-time range", {
   
   cat("\n       |------                   Will have features returned in the time range                     |\n")
   cat("\n       |===========================================================================================|\n")
+
+  # Happy path test 7: will have features in the time range
+  
+  cat("\n       |------ Positive test 7:: Input JSON is valid and conforms to the schema                    |\n")
+  cat("\n       |------                   locations json is filtered to remove the geolocation history      |\n\n")
+  
+  testFile = 'locations-0lvl-ref-locs.json'
+  NameFileIn <- paste0(testDir, testFile)
+  
+  TimeBgn <- base::as.POSIXct('2019-05-01 00:10:20', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2020-03-09 00:18:28', tz = 'GMT')
+  PropKeep <- c("HOR","VER","install_date","remove_date","name","site","Data Rate")
+  locReturned <-NEONprocIS.base::def.loc.filt (NameFileIn, NameFileOut, TimeBgn, TimeEnd,PropKeep)
+  expect_true(all(names(locReturned$features[[1]]) %in% c(PropKeep,'properties','geometry')))
+  expect_true(all(names(locReturned$features[[1]]$properties) %in% c(PropKeep)))
+  
+  cat("\n       |------                   Will have features returned in the time range                     |\n")
+  cat("\n       |===========================================================================================|\n")
+  
+  
+  
   #
   # Sad path test 1:  A blank json is passed on to def.loc.filt
   

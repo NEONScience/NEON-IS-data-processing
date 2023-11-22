@@ -9,6 +9,7 @@ def.loc.trnc.actv(
   NameFileOut = NULL,
   TimeBgn,
   TimeEnd = NULL,
+  Prop = "all",
   log = NULL
 )
 }
@@ -22,6 +23,14 @@ NULL, in which case only the filtered json will be returned in list format}
 
 \item{TimeEnd}{POSIX timestamp of the end time (non-inclusive). Defaults to NULL, in which case the
 location information will be filtered for the exact time of TimeBgn}
+
+\item{Prop}{character vector of the properties in the location file to retain. Defaults to 'all', 
+in which all properties of the original file are retained. Include here the names of properties embedded
+at the top level of each location install entry (e.g. "HOR","VER","Data Rate") as well as within the 
+"properties" list of each location install entry (e.g. "context","IS Default Processing Start Date",
+"name","site","domain"). Note that 'active_periods' are always retained. Also note that omission of
+some properties may limit the downstream modules that are able to be run (such as regularization if 
+'Data Rate' is not retained)}
 }
 \value{
 A list of location information with truncated active dates. If NameFileOut is specified, 

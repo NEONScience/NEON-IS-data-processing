@@ -4,43 +4,48 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:fe1512ea
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:4178f7b8
   cmd:
-  - "/bin/bash"
-  stdin:
-  - "#!/bin/bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -rf /tmp/interimA
-  - rm -rf /tmp/interimB
-  - rm -rf /tmp/pfs/interimC
-  - mkdir /tmp/interimA
-  - mkdir /tmp/interimB
-  - mkdir -p /tmp/pfs/interimC
-  - '# Set some environment variables for the first module'
-  - export OUT_PATH=$OUT_PATH_1
-  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
-  - python3 -m filter_joiner.filter_joiner_main
-  - '# Set some environment variables for the second module'
-  - export OUT_PATH=$OUT_PATH_2
-  - export CONFIG=$CONFIG2
-  - '# Run second module - filter-joiner to bring in SRF (using environment variables below as input parameters)'
-  - python3 -m filter_joiner.filter_joiner_main
-  - '# Clean up 1st interim directory (this is the only one we can clean up bc the rest use symlinks)'
-  - rm -rf /tmp/interimA  
-  - '# Set some environment variables for the 3rd module'
-  - export OUT_PATH=$OUT_PATH_3
-  - '# Run third module - level 1 consolidate (using environment variables below as input parameters)'
-  - python3 -m level1_consolidate.level1_consolidate_main
-  - '# Run fourth module - pub workbook loader (using environment variables below as input parameters)'
-  - python3 -m pub_workbook_loader.pub_workbook_loader_main
-  - '# Run fifth and final module - create pub tables and apply science review flags (if any)'
-  - Rscript ./flow.pub.tabl.srf.R
-      DirIn=/tmp/pfs/interimC
-      DirOut=/pfs/out
-      DirErr=/pfs/out/errored_datums
-      "DirData=data|sci_stats|uncertainty_data|stats|quality_metrics"
-      PathPubWb=$PUB_WORKBOOKS
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/interimA
+    rm -rf /tmp/interimB
+    rm -rf /tmp/pfs/interimC
+    mkdir /tmp/interimA
+    mkdir /tmp/interimB
+    mkdir -p /tmp/pfs/interimC
+    # Set some environment variables for the first module
+    export OUT_PATH=$OUT_PATH_1
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    # Set some environment variables for the second module
+    export OUT_PATH=$OUT_PATH_2
+    export CONFIG=$CONFIG2
+    # Run second module - filter-joiner to bring in SRF (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    # Clean up 1st interim directory (this is the only one we can clean up bc the rest use symlinks)
+    rm -rf /tmp/interimA  
+    # Set some environment variables for the 3rd module
+    export OUT_PATH=$OUT_PATH_3
+    # Run third module - level 1 consolidate (using environment variables below as input parameters)
+    python3 -m level1_consolidate.level1_consolidate_main
+    # Run fourth module - pub workbook loader (using environment variables below as input parameters)
+    python3 -m pub_workbook_loader.pub_workbook_loader_main
+    # Run fifth and final module - create pub tables and apply science review flags (if any)
+    Rscript ./flow.pub.tabl.srf.R \
+      DirIn=/tmp/pfs/interimC \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirData=data|sci_stats|uncertainty_data|stats|quality_metrics" \
+      PathPubWb=$PUB_WORKBOOKS \
       "DirSubCopy=science_review_flags|location|group"
+    EOF
   env:
     # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
     # these repos in order to pull them in with or without the SRF
@@ -149,7 +154,6 @@ input:
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
-output_branch: master
 parallelism_spec:
   constant: 1
 autoscaling: true
@@ -160,11 +164,8 @@ resource_limits:
   memory: 1G
   cpu: 2
 sidecar_resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 0.5
-sidecar_resource_limits:
-  memory: 2Gi
-  cpu: 1.3
 datum_set_spec:
   number: 1
 scheduling_spec:

@@ -1,10 +1,10 @@
 ---
 pipeline:
-  name: surfacewaterPhysical_threshold
+  name: groundwaterPhysical_threshold
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/threshold_loader:fe1512ea
+  image: quay.io/battelleecology/threshold_loader:c0ce8112
   cmd:
   - /bin/bash
   stdin:
@@ -16,19 +16,25 @@ transform:
     # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
     TERM: pressure|temperature|conductivity
     # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
-    CTXT: surfacewater
+    CTXT: groundwater
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: leveltroll500_cron_daily_and_date_control_tick
+    repo: aquatroll200_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
-resource_requests:
-  memory: 120M
-  cpu: 0.05
 autoscaling: true
+resource_requests:
+  memory: 32M
+  cpu: 0.05
+resource_limits:
+  memory: 200M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 120M
+  cpu: 0.1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -46,15 +52,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]
-

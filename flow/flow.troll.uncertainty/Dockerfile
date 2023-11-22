@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Troll Elevation Conversion and Uncertainty Calculations
 
 # Start with the NEON IS stats package image 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.1.0
+FROM quay.io/battelleecology/neon-is-pack-stat-r:v1.1.5
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
@@ -12,4 +12,6 @@ COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in troll flag workflow
-COPY ./flow.troll.uncertainty.R /flow.troll.uncertainty.R
+COPY ./flow.troll.uncertainty.R .
+COPY ./wrap.troll.uncertainty.R .
+
