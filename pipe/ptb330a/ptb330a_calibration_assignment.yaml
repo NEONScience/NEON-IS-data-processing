@@ -23,7 +23,7 @@ input:
   - pfs:
       name: FILE_YEAR
       repo: ptb330a_cron_daily_and_date_control
-      glob: /data_years.txt
+      glob: /data_year*.txt
 parallelism_spec:
   constant: 5
 autoscaling: true
@@ -35,7 +35,7 @@ resource_limits:
   cpu: 2
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.5
+  cpu: 1
 sidecar_resource_limits:
   memory: 5Gi
   cpu: 1.2

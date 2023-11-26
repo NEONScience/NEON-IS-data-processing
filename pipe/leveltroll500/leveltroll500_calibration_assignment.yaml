@@ -23,7 +23,7 @@ input:
   - pfs:
       name: FILE_YEAR
       repo: leveltroll500_cron_daily_and_date_control
-      glob: /data_years.txt
+      glob: /data_year*.txt
 parallelism_spec:
   constant: 5
 autoscaling: true
@@ -35,7 +35,7 @@ resource_limits:
   cpu: 1.5
 sidecar_resource_requests:
   memory: 5G
-  cpu: 0.5
+  cpu: 1
 datum_set_spec:
   number: 5
 scheduling_spec:

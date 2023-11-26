@@ -24,7 +24,7 @@ input:
   - pfs:
       name: FILE_YEAR
       repo: data_source_tchain_list_years
-      glob: /data_years.txt
+      glob: /data_year*.txt
 parallelism_spec:
   constant: 1
 resource_requests:
