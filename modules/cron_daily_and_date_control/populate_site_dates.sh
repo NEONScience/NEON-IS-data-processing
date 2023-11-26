@@ -114,5 +114,5 @@ jq -c '.[]' $SITE_FILE | while read i; do
   # Finally, create a file listing the data years (for the metadata assignment pipelines)
   years=$(ls $OUT_PATH/$SOURCE_TYPE)
   for year in $years; do
-    echo $year > $OUT_PATH/data_years_$year.txt
+    echo $year > $OUT_PATH/data_year_$year.txt
   done
