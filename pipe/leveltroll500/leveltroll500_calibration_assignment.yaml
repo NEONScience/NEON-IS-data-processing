@@ -35,7 +35,7 @@ resource_limits:
   cpu: 1.5
 sidecar_resource_requests:
   memory: 5G
-  cpu: 0.5
+  cpu: 1
 datum_set_spec:
   number: 5
 scheduling_spec:
