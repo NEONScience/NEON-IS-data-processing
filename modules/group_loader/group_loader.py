@@ -24,7 +24,7 @@ def load_groups(out_path: Path, err_path: Path, get_groups: Callable[[str], Iter
     """
     # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
 
-    DirErrBase = Path(out_path, err_path)
+    DirErrBase = Path(err_path)
     dataDir_routed = Path("")
     group_prefix_path = group_prefix
     if group_prefix[-1] == "_":
