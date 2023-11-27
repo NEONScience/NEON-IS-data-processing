@@ -1,4 +1,3 @@
----
 pipeline:
   name: prt_location_loader
 transform:

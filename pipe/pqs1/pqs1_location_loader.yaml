@@ -1,4 +1,3 @@
----
 pipeline:
   name: pqs1_location_loader
 transform:

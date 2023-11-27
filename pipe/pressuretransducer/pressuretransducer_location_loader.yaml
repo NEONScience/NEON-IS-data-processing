@@ -1,4 +1,3 @@
----
 pipeline:
   name: pressuretransducer_location_loader
 transform:

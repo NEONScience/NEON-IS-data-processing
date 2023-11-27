@@ -71,5 +71,26 @@ test_that("active period start & end date is inside timeBgn and timeEnd, get the
             if (file.exists(nameFileOut)) { file.remove(nameFileOut)}
             
           }
+
+)         
+test_that("filter for a subset of properties to include in the output",
+          {
+            nameFileIn = 'def.loc.trnc.actv/CFGLOC101255_2.json'
+            nameFileOut = 'def.loc.trnc.actv/output.txt'
+            timeBgn <- base::as.POSIXct('2015-03-05T00:00:00Z', tz = 'GMT')
+            timeEnd <- base::as.POSIXct('2018-03-05T00:00:00Z', tz = 'GMT')
+            expectedTimeBgn <- base::as.POSIXct('2015-03-06T00:00:00Z', tz = 'GMT')
+            expectedTimeEnd <- base::as.POSIXct('2017-03-05T00:00:00Z', tz = 'GMT')
+            PropKeep <- c("HOR","VER","name","description","site","Data Rate","active_periods")
+            
+            loc <- NEONprocIS.base::def.loc.trnc.actv(NameFileIn = nameFileIn, NameFileOut = nameFileOut, TimeBgn = timeBgn, TimeEnd = timeEnd,Prop=PropKeep)
+            testthat::expect_true(is.list(loc))
+            testthat::expect_true(all(names(loc$features[[1]]) %in% c(PropKeep,'properties','geometry')))
+            testthat::expect_true(all(names(loc$features[[1]]$properties) %in% c(PropKeep)))
+            
+            if (file.exists(nameFileOut)) { file.remove(nameFileOut)}
+            
+          }
+          
 )
 

@@ -1,4 +1,3 @@
----
 pipeline:
   name: hmp155_location_loader
 transform:

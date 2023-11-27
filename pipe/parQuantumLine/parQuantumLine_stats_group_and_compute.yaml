@@ -3,7 +3,7 @@ pipeline:
   name: parQuantumLine_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-basc-grp:fe1512ea
+  image: quay.io/battelleecology/neon-is-stat-basc-grp:4178f7b8
   cmd:
   - sh
   - "-c"
@@ -80,7 +80,7 @@ resource_limits:
   memory: 2G
   cpu: 5
 sidecar_resource_requests:
-  memory: 2G
+  memory: 3G
   cpu: 0.5
 autoscaling: true
 datum_set_spec:

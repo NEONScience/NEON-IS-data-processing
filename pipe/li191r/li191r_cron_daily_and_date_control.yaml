@@ -2,7 +2,7 @@
 pipeline:
   name: li191r_cron_daily_and_date_control
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:fe1512ea
+  image: quay.io/battelleecology/neon-is-date-cntl:72752fa7
   cmd: ["/bin/bash"]
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
@@ -11,8 +11,8 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2023-09-28" # Inclusive
-    #END_DATE: "2023-06-01" # Inclusive
+    START_DATE: "2023-09-30" # Inclusive
+    #END_DATE: "2023-09-30" # Inclusive
     SOURCE_TYPE: "li191r"
   stdin:
   - "#!/bin/bash"
@@ -36,7 +36,7 @@ resource_limits:
   cpu: 1.5
 sidecar_resource_requests:
   memory: 500M
-  cpu: 0.2
+  cpu: 0.5
 autoscaling: true
 scheduling_spec:
   node_selector:

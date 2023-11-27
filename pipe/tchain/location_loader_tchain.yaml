@@ -1,4 +1,3 @@
----
 pipeline:
   name: location_loader_tchain
 transform:

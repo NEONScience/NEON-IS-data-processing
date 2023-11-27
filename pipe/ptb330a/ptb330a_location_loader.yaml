@@ -1,4 +1,3 @@
----
 pipeline:
   name: ptb330a_location_loader
 transform:

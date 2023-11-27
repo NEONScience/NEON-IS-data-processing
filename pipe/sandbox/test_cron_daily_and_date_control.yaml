@@ -2,7 +2,7 @@
 pipeline:
   name: test_cron_daily_and_date_control
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  image: quay.io/battelleecology/neon-is-date-cntl:72752fa7
   cmd: ["/bin/bash"]
   env:
     # START_DATE and END_DATE indicate the date range (inclusive) to create the /Y/M/D folder structure

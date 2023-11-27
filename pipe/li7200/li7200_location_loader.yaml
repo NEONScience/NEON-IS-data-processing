@@ -1,4 +1,3 @@
----
 pipeline:
   name: li7200_location_loader
 transform:

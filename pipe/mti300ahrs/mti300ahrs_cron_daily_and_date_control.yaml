@@ -24,7 +24,10 @@ transform:
   - touch $OUT_PATH/$SOURCE_TYPE/$date_path/empty
   - done
   - "# Finally, create a file listing the data years (for the metadata assignment pipelines)"
-  - ls $OUT_PATH/$SOURCE_TYPE > $OUT_PATH/data_years.txt
+  - years=$(ls $OUT_PATH/$SOURCE_TYPE)
+  - for year in $years; do
+  - echo $year > $OUT_PATH/data_year_$year.txt
+  - done
 input:
   # This cron should be the central driver for daily scheduled updates, such as data ingest and metadata loaders.
   cron:

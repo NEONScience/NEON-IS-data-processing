@@ -1,4 +1,3 @@
----
 pipeline:
   name: mcseries_location_loader
 transform:

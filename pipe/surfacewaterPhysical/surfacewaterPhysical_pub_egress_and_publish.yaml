@@ -3,12 +3,15 @@ pipeline:
   name: surfacewaterPhysical_pub_egress_and_publish
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-egrs-publ:497ad386
+  image: quay.io/battelleecology/neon-is-pub-egrs-publ:4178f7b8
   cmd:
   - sh
   - "-c"
   - |-
     /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
     # Run first module - pub_egress (using environment variables below as input parameters)
     if [[ $(echo $DATA_PATH) ]]; then
       python3 -m pub_egress.pub_egress_main
@@ -37,13 +40,11 @@ transform:
   env:
     LOG_LEVEL: INFO
     
-    # Environment variables for 1st module: pub_egress.
+    # Environment variables for 1st module: pub_egress. The pub bucket and egress url are specified via secrets below.
     OUT_PATH: "/pfs/out"
     # ERR_PATH can be changed, it is user specified
-    ERR_PATH: "/pfs/out/errored_datums"
+    ERR_PATH: /pfs/out/errored_datums
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
-    EGRESS_URL: https://storage.googleapis.com/neon-int-publication # Also include subfolder if included in BUCKET_NAME below
-    BUCKET_NAME: "neon-int-publication" # Can also include subfolder (e.g. "neon-int-publication/egress-test")
 
     # Environment variables for 2nd module: pub_upload.
     # DATA_PATH is set in the code above to the output from the egress module
@@ -66,6 +67,12 @@ transform:
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
+  - name: pub-bucket
+    env_var: BUCKET_NAME
+    key: BUCKET_NAME
+  - name: pub-bucket
+    env_var: EGRESS_URL
+    key: EGRESS_URL
 
 input: 
   group:
