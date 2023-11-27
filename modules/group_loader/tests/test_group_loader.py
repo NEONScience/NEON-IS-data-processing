@@ -20,7 +20,7 @@ class GroupLoaderTest(DatabaseBackedTest):
     def setUp(self):
         self.setUpPyfakefs()
         self.out_path = Path('/out')
-        self.err_path = Path('/tmp/out/errored')
+        self.err_path = Path('/pfs/out/errored')
         self.fs.create_dir(self.out_path)
 
     @unittest.skip('Integration test skipped due to long process time.')
