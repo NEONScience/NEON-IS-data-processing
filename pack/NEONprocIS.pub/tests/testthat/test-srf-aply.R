@@ -57,7 +57,7 @@
 #   Mija Choi (2023-03-21)
 #      Original Creation
 ##############################################################################################
-test_that("   Testing def.read.srf.R, definition function. Read science review file",
+test_that("   Testing def.srf.aply.R, definition function. Apply science review flag",
           {
             wk_dir <- getwd()
             
@@ -78,10 +78,9 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
             FileData <-
               c('pfs/pubWb/par-quantum-line_CPER001000_2023-02-03_PARQL_1min_001.parquet') 
             # Files must have same # of rows
-            data <- base::lapply(FileData, arrow::open_dataset)
             dataTabl <- NEONprocIS.base::def.read.parq(NameFile = FileData)
             
-            TimeBgn = 'startDTime'
+            TimeBgn = 'startDateTime'
             TimeEnd = 'endDateTime'
             
             returnedDataTabl = NEONprocIS.pub::def.srf.aply(
@@ -98,7 +97,12 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
             testthat::expect_true((ncol(returnedDataTabl) >= ncol(dataTabl)) == TRUE)
             # A data frame with applicable SRF actions applied.
             testthat::expect_true(any(srf$qfFinl %in% colnames(returnedDataTabl)))
-            # srf$srf[2] = 2
+            # Data are appropriately flagged
+            testthat::expect_true(sum(returnedDataTabl$finalQFSciRvw == 0,na.rm=TRUE) == 90)
+            testthat::expect_true(sum(returnedDataTabl$finalQFSciRvw == 1,na.rm=TRUE) == 270)
+            
+
+            # Test redaction
             srf$srf[3] = 2
             returnedDataTabl = NEONprocIS.pub::def.srf.aply(
               srf = srf,
@@ -107,6 +111,11 @@ test_that("   Testing def.read.srf.R, definition function. Read science review f
               NameVarTimeBgn = TimeBgn,
               NameVarTimeEnd = TimeEnd
             )
+            redacted=which(returnedDataTabl$finalQFSciRvw == 2)
+            notRedacted = which(returnedDataTabl$finalQFSciRvw == 1)
+            testthat::expect_true(all(is.na(returnedDataTabl$linePARNumPts[redacted])))
+            testthat::expect_true(sum(returnedDataTabl$finalQFSciRvw == 1,na.rm=TRUE) == 270)
+            testthat::expect_true(all(!is.na(returnedDataTabl$linePARNumPts[notRedacted])))
             
             
           })

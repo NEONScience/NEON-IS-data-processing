@@ -89,4 +89,17 @@ test_that("   Testing def.srf.filt.R, Filter Science Review Flag file ", {
   srfFilt <-NEONprocIS.pub::def.srf.filt(srf = srf,TimeBgn = TimeBgn,TimeEnd = TimeEnd)
   testthat::expect_true(is.data.frame(srfFilt) == TRUE)
   testthat::expect_true(nrow(srfFilt) == 0)
+  
+  #4. no row in the output srf (both data and srf end dates are exclusive)
+  
+  if (file.exists(NameFileOut)) {
+    file.remove(NameFileOut)
+  }
+  
+  TimeBgn <- base::as.POSIXct('2020-01-03', tz = 'GMT')
+  TimeEnd <- base::as.POSIXct('2020-01-10 10:00:00', tz = 'GMT')
+  srfFilt <-NEONprocIS.pub::def.srf.filt(srf = srf,TimeBgn = TimeBgn,TimeEnd = TimeEnd)
+  testthat::expect_true(is.data.frame(srfFilt) == TRUE)
+  testthat::expect_true(nrow(srfFilt) == 0)
+  
 })
