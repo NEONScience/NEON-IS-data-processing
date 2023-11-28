@@ -27,7 +27,7 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
     """
     # Each group is a datum. Run through each group
     # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
-    DirErrBase = Path(out_path, err_path)
+    DirErrBase = Path(err_path)
     dataDir_routed = Path("")
     for path in data_path.rglob(group_metadata_dir + '/'):
         parts = path.parts
