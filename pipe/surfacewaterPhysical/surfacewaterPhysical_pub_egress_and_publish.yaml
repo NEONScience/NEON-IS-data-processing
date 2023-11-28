@@ -17,17 +17,23 @@ transform:
       python3 -m pub_egress.pub_egress_main
     fi
     # If there is output, egress it
-    dirs=$(find $OUT_PATH/* -type d)
+    dirs=$(find $OUT_PATH/NEON.DOM.SITE* -maxdepth 0 -type d)
     if [[ ${dirs} ]]; then
       echo "Syncing files to bucket $BUCKET_NAME"
-      rclone \
-        --no-check-dest \
-        --copy-links \
-        --gcs-bucket-policy-only \
-        --gcs-no-check-bucket \
-        copy \
-        "${OUT_PATH}" \
-        ":gcs://${BUCKET_NAME}"
+      for DIR in $dirs; do
+        echo "Syncing $DIR to bucket $BUCKET_NAME"
+        # Parse the product
+        [[ "$DIR" =~ ^$OUT_PATH/(.*)$ ]]
+        PRODUCT="${BASH_REMATCH[1]}"
+        rclone \
+          --no-check-dest \
+          --copy-links \
+          --gcs-bucket-policy-only \
+          --gcs-no-check-bucket \
+          copy \
+          "${OUT_PATH}/${PRODUCT}" \
+          ":gcs://${BUCKET_NAME}/${PRODUCT}"
+      done
       echo "Done"
     fi
     # Set some environment variables for the second module
