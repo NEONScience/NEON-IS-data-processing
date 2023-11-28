@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: li191r_data_source_kafka
+  name: li191r_data_source_kafka_TEST
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.17-kafka
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v2.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -108,7 +108,7 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: li191r_cron_daily_and_date_control
+    repo: li191r_cron_daily_and_date_control_TEST
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/li191r/*/*/*"
 parallelism_spec:
