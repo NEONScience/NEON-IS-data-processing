@@ -33,7 +33,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
     # there is a manifest.csv embedded directly under each PUBLOC directory
     publocs = set()
     # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
-    DirErrBase = Path(out_path, err_path)
+    DirErrBase = Path(err_path)
     dataDir_routed = Path("")
     publoc_date = 0
     for path in data_path.rglob('manifest.csv'):
