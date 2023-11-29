@@ -3,7 +3,7 @@ pipeline:
   name: tempSoil_pub_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/pub_grouper:139f6794
+  image: quay.io/battelleecology/pub_grouper:c7b1459c
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

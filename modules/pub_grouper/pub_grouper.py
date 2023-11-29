@@ -33,7 +33,7 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
         parts = path.parts
         group_metadata_name = parts[data_type_index]
 
-        dataDir_routed = path
+        dataDir_routed = path.parent
         # Double check that the directory at the group metadata index matches the group directory name
         if group_metadata_name != group_metadata_dir:
             log.warn(f'Path {path.parent} looks to be a datum, but the directory at the group metadata index ({group_metadata_name}) does not match the expected name ({group_metadata_dir}). Skipping...')
@@ -77,7 +77,6 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
                     for product in products:
                         new_path = out_path.joinpath(product,year,month,day,publoc,data_type,group,*data)
                         new_path.parent.mkdir(parents=True, exist_ok=True)
-
                         if not new_path.exists():
                             if symlink:
                                 log.debug(f'Linking path {new_path} to {subpath}.')
