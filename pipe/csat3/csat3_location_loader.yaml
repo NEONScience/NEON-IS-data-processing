@@ -1,3 +1,4 @@
+---
 pipeline:
   name: csat3_location_loader
 transform:

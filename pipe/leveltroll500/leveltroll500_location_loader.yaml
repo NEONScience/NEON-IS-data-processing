@@ -1,3 +1,4 @@
+---
 pipeline:
   name: leveltroll500_location_loader
 transform:

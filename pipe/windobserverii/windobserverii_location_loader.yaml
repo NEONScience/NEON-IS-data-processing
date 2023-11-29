@@ -1,3 +1,4 @@
+---
 pipeline:
   name: windobserverii_location_loader
 transform:

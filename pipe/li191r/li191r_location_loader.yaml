@@ -1,3 +1,4 @@
+---
 pipeline:
   name: li191r_location_loader
 transform:

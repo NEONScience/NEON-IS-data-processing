@@ -1,3 +1,4 @@
+---
 pipeline:
   name: group_loader_test
 input:

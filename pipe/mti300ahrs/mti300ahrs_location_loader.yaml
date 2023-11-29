@@ -1,3 +1,4 @@
+---
 pipeline:
   name: mti300ahrs_location_loader
 transform:
