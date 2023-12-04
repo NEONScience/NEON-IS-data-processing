@@ -55,7 +55,7 @@ transform:
     # Environment variables for 2nd module: pub_upload.
     # DATA_PATH is set in the code above to the output from the egress module
     # Uses STARTING_PATH_INDEX above
-    VERSION: 'pipeline_test'
+    VERSION: 'pachyderm_v1'
     CHANGE_BY: pachyderm
 
     # Environment variables for 3rd module: pub_sync.
