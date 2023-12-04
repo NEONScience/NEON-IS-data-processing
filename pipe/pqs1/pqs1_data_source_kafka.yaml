@@ -2,7 +2,7 @@
 pipeline:
   name: pqs1_data_source_kafka
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.17-kafka
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v2.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

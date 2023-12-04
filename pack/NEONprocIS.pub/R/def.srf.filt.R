@@ -72,7 +72,7 @@ def.srf.filt <- function(srf,
     }
     
     # Filter for relevant records based on date range
-    srf <- srf[srf$end_date > TimeBgn & srf$start_date <= TimeEnd,]
+    srf <- srf[srf$end_date > TimeBgn & srf$start_date < TimeEnd,]
     
     # End early if no remaining srfs
     if(base::nrow(srf) == 0){

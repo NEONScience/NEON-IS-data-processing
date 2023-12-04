@@ -2,7 +2,7 @@
 pipeline:
   name: aquatroll200_cron_daily_and_date_control
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:fe1512ea
+  image: quay.io/battelleecology/neon-is-date-cntl:72752fa7
   cmd: ["/bin/bash"]
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
@@ -12,7 +12,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2020-01-01"
-    END_DATE: "2020-01-09"
+    END_DATE: "2020-01-10"
     SOURCE_TYPE: "aquatroll200"
   stdin:
   - "#!/bin/bash"

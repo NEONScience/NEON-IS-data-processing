@@ -9,6 +9,7 @@ def.loc.filt(
   NameFileOut = NULL,
   TimeBgn,
   TimeEnd = NULL,
+  Prop = "all",
   log = NULL
 )
 }
@@ -22,6 +23,13 @@ NULL, in which case only the filtered json will be returned in list format}
 
 \item{TimeEnd}{POSIX timestamp of the end time (non-inclusive). Defaults to NULL, in which case the
 location information will be filtered for the exact time of TimeBgn}
+
+\item{Prop}{character vector of the properties in the location file to retain. Defaults to 'all', 
+in which all properties of the original file are retained. Include here the names of properties embedded
+at the top level of each location install entry (e.g. "HOR","VER","Data Rate") as well as within the 
+"properties" list of each location install entry (e.g. "context","locations","install_date","remove_date",
+"name","site"). Currently there is no option to filter for particular geolocation properties (within the
+properties:locations:features list)}
 }
 \value{
 A list of filtered location information. If NameFileOut is specified, the filtered location
@@ -32,11 +40,15 @@ Definition function. Read named location information (including geolocation hist
 for NEON instrumented systems sensor and filter it for a date-time range
 }
 \examples{
-TimeBgn <- base::as.POSIXct('2018-01-01',tz='GMT)
-TimeEnd <- base::as.POSIXct('2018-01-02',tz='GMT)
+TimeBgn <- base::as.POSIXct('2018-01-01',tz='GMT')
+TimeEnd <- base::as.POSIXct('2018-01-02',tz='GMT')
 NameFileIn <- 'locations.json'
 NameFileOut <- 'filtered_locations.json'
 loc <- def.loc.filt(NameFileIn,NameFileOut,TimeBgn,TimeEnd)
+
+Filtering for some basics only, and excluding geolocation history
+Prop <- c("HOR","VER","install_date","remove_date","name","site","Data Rate")
+loc <- def.loc.filt(NameFileIn,NameFileOut,TimeBgn,TimeEnd,Prop)
 }
 \references{
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007

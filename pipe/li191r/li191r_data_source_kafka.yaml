@@ -2,7 +2,7 @@
 pipeline:
   name: li191r_data_source_kafka
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.17-kafka
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v2.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -121,7 +121,7 @@ resource_limits:
   memory: 1.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 0.5
 datum_set_spec:
   number: 1

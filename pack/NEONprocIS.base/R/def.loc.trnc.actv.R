@@ -17,6 +17,13 @@
 #' @param TimeBgn POSIX timestamp of the start time (inclusive)
 #' @param TimeEnd POSIX timestamp of the end time (non-inclusive). Defaults to NULL, in which case the
 #' location information will be filtered for the exact time of TimeBgn
+#' @param Prop character vector of the properties in the location file to retain. Defaults to 'all', 
+#' in which all properties of the original file are retained. Include here the names of properties embedded
+#' at the top level of each location install entry (e.g. "HOR","VER","Data Rate") as well as within the 
+#' "properties" list of each location install entry (e.g. "context","IS Default Processing Start Date",
+#' "name","site","domain"). Note that 'active_periods' are always retained. Also note that omission of
+#' some properties may limit the downstream modules that are able to be run (such as regularization if 
+#' 'Data Rate' is not retained)
 
 #' @return A list of location information with truncated active dates. If NameFileOut is specified, 
 #' the truncated location information will also be writted to file in the same json format of NameFileIn
@@ -45,12 +52,15 @@
 #     accommodate new format of active periods (always a start and end date if there is 
 #        an active period, even if they are null)
 #     remove error checking (see Description for rationale)
+#   Cove Sturtevant (2023-11-16)
+#      add option to filter for select properties
 ##############################################################################################
 def.loc.trnc.actv <-
   function(NameFileIn,
            NameFileOut = NULL,
            TimeBgn,
            TimeEnd = NULL,
+           Prop = 'all',
            log = NULL) {
     # Initialize log if not input
     if (is.null(log)) {
@@ -111,12 +121,31 @@ def.loc.trnc.actv <-
       loc$features[[1]]$properties$active_periods <- timeActv[setKeep]
     }
     
-    log$info('Named location file filtered successfully.')
+    # Filter for particular properties
+    if(!('all' %in% Prop)){
+      for (idxLoc in base::seq_len(base::length(loc$features))) {
+        # Traverse top level
+        locIdx <- loc$features[[idxLoc]]
+        nameProp <- base::names(locIdx)
+        setKeep <- nameProp %in% c('properties','geometry',Prop)
+        locIdx <- locIdx[sort(nameProp[setKeep])] # Also sort to ensure a change in ordering of properties in file results in the same output
+        
+        # Descend into "properties"
+        locIdxProp <- locIdx$properties
+        nameProp <- base::names(locIdxProp)
+        setKeep <- nameProp %in% c(Prop)
+        locIdxProp <- locIdxProp[sort(nameProp[setKeep])] # Also sort to ensure a change in ordering of properties in file results in the same output
+        
+        # Put filtered set back into master list
+        locIdx$properties <- locIdxProp
+        loc$features[[idxLoc]] <- locIdx
+      }
+    }
     
     # Write to file
     if (!base::is.null(NameFileOut)) {
       base::write(rjson::toJSON(loc, indent = 4), file = NameFileOut)
-      log$info(base::paste0('Filtered named location file written successfully to ',NameFileOut))
+      log$debug(base::paste0('Filtered named location file written successfully to ',NameFileOut))
     }
   
   return(loc)

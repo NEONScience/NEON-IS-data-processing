@@ -2,14 +2,17 @@
 pipeline:
   name: test_srf_assignment
 transform:
-  cmd:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
   - Rscript
-  - ./flow.srf.asgn.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-srf-asgn-r:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+      ./flow.srf.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+  image: quay.io/battelleecology/neon-is-srf-asgn-r:a2479ff3
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -23,7 +26,7 @@ input:
   - pfs:
       name: FILE_YEAR
       repo: test_cron_daily_and_date_control
-      glob: /data_years.txt
+      glob: /data_year*.txt
 parallelism_spec:
   constant: 4
 resource_requests:

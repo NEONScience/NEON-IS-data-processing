@@ -5,7 +5,7 @@
 # docker build -t data_source_trino:latest -f ./modules_combined/data_source_trino/Dockerfile .
 #
 ###
-FROM quay.io/battelleecology/genavro:v1.1.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:v2.0.1
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="parquet_linkmerge"
@@ -21,5 +21,7 @@ RUN python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requ
 
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+
+
 
 USER appuser
