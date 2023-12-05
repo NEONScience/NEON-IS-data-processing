@@ -6,7 +6,7 @@
 #
 ###
 # Start with the base R image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.2.1
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.2
 
 ARG MODULE_DIR="flow"
 ARG CONTAINER_APP_DIR="/usr/src/app"
@@ -19,7 +19,9 @@ RUN groupadd -g 9999 appuser && \
     
 # Copy in application code
 COPY ./${MODULE_DIR}/flow.troll.flags/flow.troll.flags.R .
+COPY ./${MODULE_DIR}/flow.troll.flags/wrap.troll.flags.R .
 COPY ./${MODULE_DIR}/flow.troll.cond.conv/flow.troll.cond.conv.R .
+COPY ./${MODULE_DIR}/flow.troll.cond.conv/wrap.troll.cond.conv.R .
 
 # Run as app user
 USER appuser

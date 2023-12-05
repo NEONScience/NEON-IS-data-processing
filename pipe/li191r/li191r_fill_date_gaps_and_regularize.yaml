@@ -4,28 +4,33 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-gf-rglr:fe1512ea
+  image: quay.io/battelleecology/neon-is-gf-rglr:4178f7b8
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -rf $OUT_PATH
-  - mkdir -p $OUT_PATH
-  - '# Run first module - filter-joiner (using environment variables below as input parameters)'
-  - python3 -m date_gap_filler.date_gap_filler_main
-  - '# Run second module - regularize'
-  - Rscript ./flow.rglr.R
-    DirIn=/tmp/pfs/date_filled
-    DirOut=/pfs/out
-    DirErr=/pfs/out/errored_datums
-    "DirRglr=data|uncertainty_data|flags"
-    MethRglr=CybiEc
-    WndwRglr=Trlg
-    IdxWndw=IdxWndwMin
-    RptTimeWndw=FALSE
-    DropNotNumc=FALSE
-    "DirSubCopy=location|uncertainty_coef"
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH
+    mkdir -p $OUT_PATH
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m date_gap_filler.date_gap_filler_main
+    # Run second module - regularize
+    Rscript ./flow.rglr.R \
+      DirIn=/tmp/pfs/date_filled \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirRglr=data|uncertainty_data|flags" \
+      MethRglr=CybiEc \
+      WndwRglr=Trlg \
+      IdxWndw=IdxWndwMin \
+      RptTimeWndw=FALSE \
+      DropNotNumc=FALSE \
+      "DirSubCopy=location|uncertainty_coef"
+    EOF
   env:
     # Environment variables for date gap filler
     LOG_LEVEL: INFO
@@ -91,7 +96,7 @@ resource_limits:
   memory: 3G
   cpu: 4.5
 sidecar_resource_requests:
-  memory: 2.3G
+  memory: 3G
   cpu: 0.5
 datum_set_spec:
   number: 1

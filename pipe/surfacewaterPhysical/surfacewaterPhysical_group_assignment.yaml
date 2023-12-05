@@ -2,15 +2,18 @@
 pipeline:
   name: surfacewaterPhysical_group_assignment
 transform:
-  cmd:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
   - Rscript
-  - ./flow.loc.grp.asgn.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - FileYear=$FILE_YEAR
-  - TypeFile=group
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:fe1512ea
+      ./flow.loc.grp.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+      TypeFile=group
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:4178f7b8
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -24,13 +27,21 @@ input:
   - pfs:
       name: FILE_YEAR
       repo: leveltroll500_cron_daily_and_date_control
-      glob: /data_years.txt
+      glob: /data_year*.txt
 parallelism_spec:
-  constant: 1
-resource_requests:
-  memory: 300M
-  cpu: 1.2
+  constant: 5
 autoscaling: true
+resource_requests:
+  memory: 250M
+  cpu: 1
+resource_limits:
+  memory: 400M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.8
+datum_set_spec:
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -48,14 +59,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"100M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]

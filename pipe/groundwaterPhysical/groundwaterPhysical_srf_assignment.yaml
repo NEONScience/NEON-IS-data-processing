@@ -2,14 +2,17 @@
 pipeline:
   name: groundwaterPhysical_srf_assignment
 transform:
-  cmd:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
   - Rscript
-  - ./flow.srf.asgn.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-srf-asgn-r:fe1512ea
+      ./flow.srf.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+  image: quay.io/battelleecology/neon-is-srf-asgn-r:a2479ff3
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -23,13 +26,21 @@ input:
   - pfs:
       name: FILE_YEAR
       repo: aquatroll200_cron_daily_and_date_control
-      glob: /data_years.txt
+      glob: /data_year*.txt
 parallelism_spec:
   constant: 4
+autoscaling: true
 resource_requests:
   memory: 200M
   cpu: 0.8
-autoscaling: true
+resource_limits:
+  memory: 800M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.2
+datum_set_spec:
+  number: 10
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -47,15 +58,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"2G"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]
-

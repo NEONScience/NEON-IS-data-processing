@@ -2,7 +2,7 @@
 pipeline:
   name: ptb330a_data_source_kafka
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.17-kafka
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v2.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -12,8 +12,7 @@ transform:
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
-    KAFKA_RETENTION_DAYS: "30"
-    BUCKET_NAME: "neon-dev-l0-ingest"
+    KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
@@ -24,6 +23,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
   cmd:
   - sh
   - "-c"

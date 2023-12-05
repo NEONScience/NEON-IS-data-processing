@@ -61,6 +61,11 @@
 #' the dates over which it was active (should have been producing data). 'group' corresponds to a group
 #' file specific to a group member, including what groups the member is in and properties of the group.
 #' 
+#' 5. "Prop=value" (optional), where value contains any number of properties in the location or group 
+#' file to retain, separated by pipes (|). The meaning of this input changes according to TypeFile. 
+#' See the filtering functions for each type for details. Defaults to 'all', which results in no filtering.
+#'  Currently only relevant for 'TypeFile=asset', with filtering function NEONprocIS.base::def.loc.filt.
+
 #' Note: This script implements optional parallelization as well as logging (described in 
 #' \code{\link[NEONprocIS.base]{def.log.init}}), both of which use system environment variables if available. 
 
@@ -79,6 +84,7 @@
 #' Rscript flow.loc.grp.asgn.R "DirIn=/pfs/proc_group/2019/01/01/prt/27134" "DirOut=/pfs/out" "TypeFile=asset"
 
 #' @seealso \code{\link[NEONprocIS.base]{def.log.init}}
+#' @seealso \code{\link[NEONprocIS.base]{def.loc.filt}}
 
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-03-15)
@@ -87,6 +93,8 @@
 #     Add datum error routing
 #   Cove Sturtevant (2022-11-22)
 #     Add option for group files
+#   Cove Sturtevant (2023-11-16)
+#     Add option for retaining only particular properties
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -119,6 +127,8 @@ Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
     NameParaReqd = c("DirIn", "DirOut","DirErr","FileYear","TypeFile"),
+    NameParaOpt = c('Prop'),
+    ValuParaOpt = list(Prop = 'all'),
     log = log
   )
 
@@ -126,6 +136,7 @@ Para <-
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
+log$debug(base::paste0('Properties to retain: ', base::paste0(Para$Prop,collapse=',')))
 
 # Parse the file containing the years to populate
 log$debug(base::paste0('File containing data years to populate: ', Para$FileYear))
@@ -163,6 +174,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                     TimeBgn=timeBgn,
                     TimeEnd=timeEnd,
                     TypeFile=Para$TypeFile,
+                    Prop=Para$Prop,
                     log=log
       ),
       error = function(err) {

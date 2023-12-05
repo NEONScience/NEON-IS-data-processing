@@ -4,33 +4,39 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:fe1512ea
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:4178f7b8
   cmd:
-  - /bin/bash
-  stdin:
-  - "#!/bin/bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -rf /tmp/pfs/padded_analyzer
-  - rm -rf /tmp/pfs/padded_analyzerCopy
-  - mkdir -p /tmp/pfs/padded_analyzer
-  - '# Run first module - padded_timeseries_analyzer'
-  - python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
-  - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
-  - cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy 
-  - rm -r -f /tmp/pfs/padded_analyzer 
-  - '# Run second module - qaqc plausibility'
-  - Rscript ./flow.qaqc.plau.R
-    DirIn=/tmp/pfs/padded_analyzerCopy
-    DirOut=/pfs/out
-    DirErr=/pfs/out/errored_datums
-    FileSchmQf=$SCHEMA_FLAGS
-    "TermTest1=presDiff:range|step|persistence"
-    "DirSubCopy=threshold|location"
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/padded_analyzer
+    rm -rf /tmp/pfs/padded_analyzerCopy
+    mkdir -p /tmp/pfs/padded_analyzer
+    # Run first module - padded_timeseries_analyzer
+    python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/pfs/padded_analyzer 
+    # Run second module - qaqc plausibility
+    Rscript ./flow.qaqc.plau.R \
+      DirIn=/tmp/pfs/padded_analyzerCopy \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQf=$SCHEMA_FLAGS \
+      "TermTest1=presDiff:range|step|persistence" \
+      "DirSubCopy=threshold|location" \
+    EOF
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /tmp/pfs/padded_analyzer
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
+    ERR_PATH: /pfs/out/errored_datums
     # Environment variables for qaqc plausibility
     PARALLELIZATION_INTERNAL: '1'
 input:

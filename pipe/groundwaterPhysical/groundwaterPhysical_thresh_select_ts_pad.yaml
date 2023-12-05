@@ -4,30 +4,35 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:fe1512ea
+  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:4178f7b8
   cmd:
-  - /bin/bash
-  stdin:
-  - "#!/bin/bash"
-  - '# Refresh interim directories with each datum (otherwise they persist and cause probs)'
-  - rm -rf /tmp/threshold_select
-  - rm -rf /tmp/threshold_selectCopy
-  - mkdir -p /tmp/threshold_select
-  - '# Run first module - threshold_select'
-  - Rscript ./flow.thsh.slct.R 
-    DirIn=$REPO_LOCATIONS
-    DirOut=/tmp/threshold_select
-    DirErr=/pfs/out/errored_datums
-    FileThsh=$FILE_THRESHOLDS
-    "TermCtxt1=pressure|groundwater"
-    "TermCtxt2=temperature|groundwater"
-    "TermCtxt3=conductivity|groundwater"
-    "DirSubCopy=location|data"
-  - '# Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)'
-  - cp -rL /tmp/threshold_select /tmp/threshold_selectCopy 
-  - rm -r -f /tmp/threshold_select 
-  - '# Run second module - timeseries_padder'
-  - python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/threshold_select
+    rm -rf /tmp/threshold_selectCopy
+    mkdir -p /tmp/threshold_select
+    # Run first module - threshold_select
+    Rscript ./flow.thsh.slct.R \
+      DirIn=$REPO_LOCATIONS \
+      DirOut=/tmp/threshold_select \
+      DirErr=/pfs/out/errored_datums \
+      FileThsh=$FILE_THRESHOLDS \
+      "TermCtxt1=pressure|groundwater" \
+      "TermCtxt2=temperature|groundwater" \
+      "TermCtxt3=conductivity|groundwater" \
+      "DirSubCopy=location|data"
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 
+    rm -r -f /tmp/threshold_select 
+    # Run second module - timeseries_padder
+    python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+    EOF
   env:
     DATA_PATH: /tmp/threshold_selectCopy
     OUT_PATH: /pfs/out
@@ -35,7 +40,7 @@ transform:
     PAD_DIR: data
     COPY_DIR: location # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none' if none other are desired.
     RELATIVE_PATH_INDEX: '3'
-    PARALLELIZATION_INTERNAL: '1' # For threshold select module
+    PARALLELIZATION_INTERNAL: '3' # For threshold select module
 output_branch: master
 input:
   cross:
@@ -48,19 +53,17 @@ input:
       repo: groundwaterPhysical_threshold
       glob: /thresholds.json
 parallelism_spec:
-  constant: 1
+  constant: 5
+autoscaling: true
 resource_requests:
-  memory: 400M
-  cpu: 1.2
+  memory: 800M
+  cpu: 3.3
 resource_limits:
-  memory: 1G
-  cpu: 2
-sidecar_resource_requests:
   memory: 2G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 4G
   cpu: 0.3
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

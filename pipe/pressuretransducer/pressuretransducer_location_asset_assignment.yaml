@@ -2,15 +2,18 @@
 pipeline:
   name: pressuretransducer_location_asset_assignment
 transform:
-  cmd:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
   - Rscript
-  - ./flow.loc.grp.asgn.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - FileYear=$FILE_YEAR
-  - TypeFile=asset
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:fe1512ea
+      ./flow.loc.grp.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+      TypeFile=asset
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:4178f7b8
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -24,7 +27,7 @@ input:
   - pfs:
       name: FILE_YEAR
       repo: pressuretransducer_data_years
-      glob: /data_years.txt
+      glob: /data_year*.txt
 parallelism_spec:
   constant: 4
 resource_requests:

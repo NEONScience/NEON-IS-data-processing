@@ -2,15 +2,17 @@
 pipeline:
   name: leveltroll500_flags_specific
 transform:
-  cmd:
-  - Rscript
-  - /flow.troll.flags.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - FileSchmQf=$SCHEMA_FLAGS
-  image: quay.io/battelleecology/neon-is-troll-flags-r:08f4910889b9ef4daa1cca10b307059f98c9ff5d
+  image: quay.io/battelleecology/neon-is-troll-flags-r:4178f7b8
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - Rscript ./flow.troll.flags.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=/pfs/out/errored_datums
+      FileSchmQf=$SCHEMA_FLAGS
   env:
     LOG_LEVEL: DEBUG
 input:
@@ -23,10 +25,20 @@ input:
       name: SCHEMA_FLAGS
       repo: troll_shared_avro_schemas
       glob: /troll_shared/flags_troll_specific.avsc
+parallelism_spec:
+  constant: 3
+autoscaling: true
 resource_requests:
   memory: 500M
   cpu: 1.2
-autoscaling: true
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -44,15 +56,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"300M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
-    }
-  ]
-

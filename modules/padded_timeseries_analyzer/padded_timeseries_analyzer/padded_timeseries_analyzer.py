@@ -25,7 +25,7 @@ class PaddedTimeSeriesAnalyzer:
         self.data_path = data_path
         self.out_path = out_path
         # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
-        self.DirErrBase = Path(self.out_path, err_path)
+        self.DirErrBase = Path(err_path)
         self.relative_path_index = relative_path_index
 
     def analyze(self) -> None:

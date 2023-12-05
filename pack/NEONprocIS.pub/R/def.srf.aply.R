@@ -90,7 +90,7 @@ def.srf.aply <- function(srf,
     
     # Populate the SRF for the applicable time period
     nameVarSrf <- pubWbTabl$fieldName[pubWbTabl$DPNumber == idDp[idxSrf]] # SRF term name
-    setQf <- dataTabl[[NameVarTimeEnd]] >= srf$start_date[idxSrf] & dataTabl[[NameVarTimeBgn]] < srf$end_date[idxSrf] # Rows to flag
+    setQf <- dataTabl[[NameVarTimeEnd]] > srf$start_date[idxSrf] & dataTabl[[NameVarTimeBgn]] < srf$end_date[idxSrf] # Rows to flag
     numRcd <- base::sum(setQf)
     dataTabl[setQf,nameVarSrf] <- srf$srf[idxSrf] # Populate flag
     log$debug(base::paste0('Populated ',numRcd, ' timestamps for SRF term ',nameVarSrf, ' with SRF value ', srf$srf[idxSrf]))

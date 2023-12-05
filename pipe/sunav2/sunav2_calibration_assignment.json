@@ -33,7 +33,7 @@
         "pfs": {
           "name": "FILE_YEAR",
           "repo": "data_source_sunav2_list_years",
-          "glob": "/data_years.txt"
+          "glob": "/data_year*.txt"
         }
       }
     ]
