@@ -11,7 +11,7 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be 2 days previous. 
     OUT_PATH: /pfs/out
-    START_DATE: "2023-11-30" # Inclusive
+    START_DATE: "2023-11-29" # Inclusive
     #END_DATE: "2023-09-30" # Inclusive
     SOURCE_TYPE: "l2130i_raw"
   stdin:
