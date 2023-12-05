@@ -17,10 +17,8 @@ transform:
       python3 -m pub_egress.pub_egress_main
     fi
     # If there is output, egress it
-    dirs=$(find $OUT_PATH/NEON.DOM.SITE* -maxdepth 0 -type d)
-    if [[ ${dirs} ]]; then
-      echo "Syncing files to bucket $BUCKET_NAME"
-      for DIR in $dirs; do
+    if ls $OUT_PATH/NEON.DOM.SITE* 1> /dev/null 2>&1; then
+      for DIR in $OUT_PATH/NEON.DOM.SITE*; do
         echo "Syncing $DIR to bucket $BUCKET_NAME"
         # Parse the product
         [[ "$DIR" =~ ^$OUT_PATH/(.*)$ ]]
@@ -35,6 +33,8 @@ transform:
           ":gcs://${BUCKET_NAME}/${PRODUCT}"
       done
       echo "Done"
+    else
+      echo "No pub output to egress"
     fi
     # Set some environment variables for the second module
     export DATA_PATH=$OUT_PATH
