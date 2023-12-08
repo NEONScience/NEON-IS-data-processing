@@ -112,7 +112,7 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/li191r/*/*/*"
 parallelism_spec:
-  constant: 10
+  constant: 1
 autoscaling: true
 resource_requests:
   memory: 300M
