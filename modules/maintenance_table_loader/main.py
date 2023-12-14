@@ -15,7 +15,6 @@ def get_source_key():
     return 'DB_CONFIG_SOURCE'
 
 
-
 def main() -> None:
     env = environs.Env()
     out_path: Path = env.path('OUT_PATH')
