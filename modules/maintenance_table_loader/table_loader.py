@@ -1,5 +1,5 @@
 from contextlib import closing
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import psycopg2.extras
 
@@ -15,7 +15,7 @@ class Table(NamedTuple):
     usage: str
     table_type: str
     ingest_table_id: int
-    filter_sample_class: str | None
+    filter_sample_class: Optional[str]
 
 
 def get_tables(connector: DbConnector) -> list[Table]:

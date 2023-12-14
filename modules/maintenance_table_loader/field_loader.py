@@ -1,5 +1,5 @@
 from contextlib import closing
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import psycopg2.extras
 
@@ -11,27 +11,27 @@ class Field(NamedTuple):
     field_id: int
     table_id: int
     rank: int
-    data_product_number: str | None
+    data_product_number: Optional[str]
     field_name: str
     description: str
     data_type_code: str
     meas_scale: str
-    ontology_mapping: str | None
+    ontology_mapping: Optional[str]
     pub_format: str
-    example_entry: str | None
+    example_entry: Optional[str]
     field_type: str
-    inputs: str | None
+    inputs: Optional[str]
     ingest_source_type: str
-    ingest_source_type_param: str | None
-    time_index: int | None
-    time_description: str | None
+    ingest_source_type_param: Optional[str]
+    time_index: Optional[int]
+    time_description: Optional[str]
     download_package: str
-    data_category: str | None
-    sample_info: str | None
-    lov_code: str | None
+    data_category: Optional[str]
+    sample_info: Optional[str]
+    lov_code: Optional[str]
     primary_key: str
     unit_name: str
-    redaction_flag: str | None
+    redaction_flag: Optional[str]
 
 
 def get_fields(connector: DbConnector, table: Table) -> list[Field]:

@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 from maintenance_table_loader.field_loader import Field
 from maintenance_table_loader.result_loader import Result
@@ -8,7 +8,7 @@ from maintenance_table_loader.table_loader import Table
 
 class FieldValue(NamedTuple):
     field: Field
-    value: ResultValue | None
+    value: Optional[ResultValue]
 
 
 class ResultValues(NamedTuple):

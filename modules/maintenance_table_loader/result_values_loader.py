@@ -1,6 +1,6 @@
 from contextlib import closing
 from datetime import datetime
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import psycopg2.extras
 
@@ -12,10 +12,10 @@ class ResultValue(NamedTuple):
     result_uuid: str
     field_name: str
     rank: int
-    string_value: str | None
-    number_value: float | None
-    date_value: datetime | None
-    uri_value: str | None
+    string_value: Optional[str]
+    number_value: Optional[float]
+    date_value: Optional[datetime]
+    uri_value: Optional[str]
 
 
 def get_result_values(connector: DbConnector, result: Result) -> dict[int, ResultValue]:
