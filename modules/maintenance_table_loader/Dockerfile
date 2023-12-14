@@ -5,15 +5,16 @@
 # docker build -t maintenance_table_loader:latest -f maintenance_table_loader/Dockerfile .
 #
 ###
-FROM registry.access.redhat.com/ubi8/ubi
+FROM registry.access.redhat.com/ubi8/ubi-minimal
 
 ARG APP_DIR="maintenance_table_loader"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
+
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY maintenance_table_loader/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
