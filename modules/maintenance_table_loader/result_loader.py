@@ -35,7 +35,6 @@ def get_results(connector: DbConnector, table: Table) -> list[Result]:
             pub_table_def.pub_table_def_id = os_result.pub_table_def_id
         and 
             nam_locn.nam_locn_id = os_result.nam_locn_id
-        limit 1
     '''
     with closing(connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)) as cursor:
         cursor.execute(sql, dict(table_id=table.id))
