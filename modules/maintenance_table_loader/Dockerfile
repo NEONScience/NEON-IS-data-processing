@@ -9,6 +9,7 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal
 
 ARG APP_DIR="maintenance_table_loader"
 ARG COMMON_DIR="common"
+ARG DATA_ACCESS_DIR="data_access"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
@@ -36,5 +37,6 @@ RUN update-ca-trust && \
 
 COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
 
 USER appuser
