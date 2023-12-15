@@ -21,6 +21,7 @@ class GroupPathTest(TestCase):
         self.location_focus_path = Path('/pfs/location_focus')
         self.group_focus_path = Path('/pfs/group_focus')
         self.out_path = Path('/pfs/out')
+        self.err_path = Path('/pfs/out/errored')
         self.location_focus_source_type = 'ptb330a'
         self.date_path_1 = Path('2020/01/01')
         inputs_group_assignment = Path(self.group_assignment_path, self.group, self.date_path_1)
@@ -86,6 +87,7 @@ class GroupPathTest(TestCase):
         os.environ['LOCATION_FOCUS_PATH'] = str(self.location_focus_path)
         os.environ['GROUP_FOCUS_PATH'] = str(self.group_focus_path)
         os.environ['OUT_PATH'] = str(self.out_path)
+        os.environ['ERR_PATH'] = str(self.err_path)
         os.environ['GROUP'] = self.group
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['GROUP_ASSIGNMENT_YEAR_INDEX'] = str(self.group_assignment_year_index)

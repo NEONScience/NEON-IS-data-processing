@@ -48,12 +48,14 @@ placed in the output for the group at the following location:
 from structlog import get_logger
 import environs
 import os
+import sys
 from pathlib import Path
 
 import common.log_config as log_config
 
 from group_path.group_path_config import Config
 from group_path.group_path import GroupPath
+from common.err_datum import err_datum_path
 
 log = get_logger()
 
@@ -74,6 +76,9 @@ def main() -> None:
         
     group: str = env.str('GROUP')
     out_path: Path = env.path('OUT_PATH')
+    # DirErrBase: the user specified error directory, i.e., /errored
+    err_path: Path = env.path('ERR_PATH')
+    DirErrBase = Path(err_path)
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     group_assignment_year_index: int = env.int('GROUP_ASSIGNMENT_YEAR_INDEX')
     group_assignment_month_index: int = env.int('GROUP_ASSIGNMENT_MONTH_INDEX')
@@ -125,7 +130,20 @@ def main() -> None:
                     group_focus_month_index=group_focus_month_index,
                     group_focus_day_index=group_focus_day_index,
                     group_focus_group_index=group_focus_group_index)
-    group_path = GroupPath(config)
+
+    g_path = Path('/pfs', group_assignment_path, group)
+    dataDir_routed = Path("")
+    for subpath in g_path.rglob('*'):
+        if subpath.is_file():
+            dataDir_routed = subpath.parent
+            print('dataDir_routed::::::::::::::::::; ', dataDir_routed)
+    try:
+        group_path = GroupPath(config)
+        x = 4/0
+    except Exception:
+        err_msg = sys.exc_info()
+        err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
+                       RmvDatmOut=True,DirOutBase=out_path)
     group_path.add_groups_to_paths()
 
 
