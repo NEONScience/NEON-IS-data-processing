@@ -1,7 +1,12 @@
 from pathlib import Path
 
+import structlog
+
 from maintenance_table_loader.table_data import FieldValue
 from maintenance_table_loader.table_loader import Table
+
+
+log = structlog.get_logger()
 
 
 def get_filename(table: Table, extension: str) -> str:
@@ -11,8 +16,7 @@ def get_filename(table: Table, extension: str) -> str:
     # parts[2] = site
     # full_data_product_name = '.'.join(parts)
     file_name = f'{table.data_product}.{table.name}.{extension}'
-    print()
-    print(f'file_name: {file_name}')
+    log.debug(f'file_name: {file_name}')
     return file_name
 
 
