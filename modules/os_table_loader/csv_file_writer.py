@@ -5,9 +5,9 @@ import csv
 from typing import Any
 
 from common.date_formatter import to_string
-from maintenance_table_loader.field_loader import Field
-from maintenance_table_loader.file_writer import get_filename, get_filepath
-from maintenance_table_loader.table_data import TableData, ResultValues
+from os_table_loader.field_loader import Field
+from os_table_loader.file_writer import get_filename, get_filepath
+from os_table_loader.table_data import TableData, ResultValues
 
 
 class CsvTextBuilder:

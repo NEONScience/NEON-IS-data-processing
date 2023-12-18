@@ -5,10 +5,10 @@ from io import StringIO
 import pandas
 import pyarrow
 
-from maintenance_table_loader.csv_file_writer import get_csv_text
-from maintenance_table_loader.field_loader import Field
-from maintenance_table_loader.file_writer import get_filepath, get_filename
-from maintenance_table_loader.table_data import TableData
+from os_table_loader.csv_file_writer import get_csv_text
+from os_table_loader.field_loader import Field
+from os_table_loader.file_writer import get_filepath, get_filename
+from os_table_loader.table_data import TableData
 
 
 def write_file(out_path: Path, table_data: TableData) -> None:
@@ -30,7 +30,7 @@ def write_file(out_path: Path, table_data: TableData) -> None:
 def get_avro_schema(fields: list[Field]) -> str:
     """Generate an Avro schema from the fields of the maintenance table."""
     schema_structure = {
-        "namespace": "org.neonscience.Avro",
+        "namespace": "org.neonscience.avro",
         "type": "record",
         "fields": []
     }

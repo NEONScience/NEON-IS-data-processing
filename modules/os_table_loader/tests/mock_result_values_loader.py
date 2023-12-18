@@ -1,5 +1,5 @@
-from maintenance_table_loader.result_values_loader import ResultValue
-from maintenance_table_loader.result_loader import Result
+from os_table_loader.result_values_loader import ResultValue
+from os_table_loader.result_loader import Result
 
 
 def get_result_values(_result: Result) -> dict[int, ResultValue]:

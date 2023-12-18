@@ -2,8 +2,8 @@ from pathlib import Path
 
 import structlog
 
-from maintenance_table_loader.table_data import FieldValue
-from maintenance_table_loader.table_loader import Table
+from os_table_loader.table_data import FieldValue
+from os_table_loader.table_loader import Table
 
 
 log = structlog.get_logger()

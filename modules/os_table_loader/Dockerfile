@@ -1,13 +1,13 @@
 ####
 #
-# This dockerfile will build the maintenance table loader module.
+# This dockerfile will build the OS table loader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t maintenance_table_loader:latest -f maintenance_table_loader/Dockerfile .
+# docker build -t os_table_loader:latest -f os_table_loader/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="maintenance_table_loader"
+ARG APP_DIR="os_table_loader"
 ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
 ARG CONTAINER_APP_DIR="/usr/src/app"

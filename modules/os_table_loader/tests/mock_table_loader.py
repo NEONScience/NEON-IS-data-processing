@@ -1,7 +1,7 @@
-from maintenance_table_loader.table_loader import Table
+from os_table_loader.table_loader import Table
 
 
-def get_tables() -> list[Table]:
+def get_tables(_partial_table_name) -> list[Table]:
     """Mock function to return a maintenance table."""
     return [Table(id=1550,
                   data_product='NEON.DOM.SITE.DP1.00026.001',

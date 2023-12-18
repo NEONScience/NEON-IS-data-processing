@@ -18,7 +18,7 @@ class Table(NamedTuple):
     filter_sample_class: Optional[str]
 
 
-def get_tables(connector: DbConnector) -> list[Table]:
+def get_tables(connector: DbConnector, partial_name) -> list[Table]:
     tables = []
     connection = connector.get_connection()
     schema = connector.get_schema()
@@ -36,7 +36,7 @@ def get_tables(connector: DbConnector) -> list[Table]:
         from 
             {schema}.pub_table_def 
         where 
-            name like '%maintenance%'
+            name like '%{partial_name}%'
         and 
             (usage = 'publication' or usage = 'both')
     '''

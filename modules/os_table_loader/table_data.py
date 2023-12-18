@@ -1,9 +1,9 @@
 from typing import NamedTuple, Optional
 
-from maintenance_table_loader.field_loader import Field
-from maintenance_table_loader.result_loader import Result
-from maintenance_table_loader.result_values_loader import ResultValue
-from maintenance_table_loader.table_loader import Table
+from os_table_loader.field_loader import Field
+from os_table_loader.result_loader import Result
+from os_table_loader.result_values_loader import ResultValue
+from os_table_loader.table_loader import Table
 
 
 class FieldValue(NamedTuple):

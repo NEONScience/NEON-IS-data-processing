@@ -1,15 +1,21 @@
 from pathlib import Path
 
-from maintenance_table_loader.field_loader import Field
-from maintenance_table_loader.parquet_file_writer import write_file as write_parquet
-from maintenance_table_loader.csv_file_writer import write_file as write_csv
-from maintenance_table_loader.result_values_loader import ResultValue
-from maintenance_table_loader.result_loader import Result
-from maintenance_table_loader.table_data import ResultValues, FieldValue, TableData
+import structlog
+
+from os_table_loader.data_reader import DataReader
+from os_table_loader.field_loader import Field
+from os_table_loader.parquet_file_writer import write_file as write_parquet
+from os_table_loader.csv_file_writer import write_file as write_csv
+from os_table_loader.result_values_loader import ResultValue
+from os_table_loader.result_loader import Result
+from os_table_loader.table_data import ResultValues, FieldValue, TableData
 
 
-def load_files(out_path: Path, data_reader, file_type) -> None:
-    for table in data_reader.get_tables():
+log = structlog.get_logger()
+
+
+def load_files(out_path: Path, data_reader: DataReader, file_type: str, partial_table_name: str) -> None:
+    for table in data_reader.get_tables(partial_table_name):
         fields: list[Field] = data_reader.get_fields(table)
         results: list[Result] = data_reader.get_results(table)
         table_results: list[ResultValues] = []
@@ -27,5 +33,8 @@ def load_files(out_path: Path, data_reader, file_type) -> None:
         if results:
             if file_type == 'csv':
                 write_csv(out_path, table_data)
-            if file_type == 'parquet':
+            elif file_type == 'parquet':
                 write_parquet(out_path, table_data)
+            else:
+                log.error('Output file type not recognized.')
+                raise SystemExit(1)

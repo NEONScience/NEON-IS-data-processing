@@ -7,8 +7,8 @@ import environs
 from common import log_config
 from data_access.db_config_reader import read_from_mount, read_from_environment
 from data_access.db_connector import DbConnector
-from maintenance_table_loader.data_reader import get_data_reader
-from maintenance_table_loader.loader import load_files
+from os_table_loader.data_reader import get_data_reader
+from os_table_loader.loader import load_files
 
 
 def get_source_key():
@@ -19,6 +19,7 @@ def main() -> None:
     env = environs.Env()
     out_path: Path = env.path('OUT_PATH')
     file_type: str = env.str('FILE_TYPE')
+    partial_table_name: str = env.str('PARTIAL_TABLE_NAME')
     db_config_source = env.str(get_source_key())
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
@@ -31,7 +32,7 @@ def main() -> None:
         raise SystemExit(msg)
     with closing(DbConnector(db_config)) as connector:
         data_reader = get_data_reader(connector)
-        load_files(out_path, data_reader, file_type)
+        load_files(out_path, data_reader, file_type, partial_table_name)
 
 
 if __name__ == '__main__':

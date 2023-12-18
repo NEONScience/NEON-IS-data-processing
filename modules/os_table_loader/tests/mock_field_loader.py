@@ -1,5 +1,5 @@
-from maintenance_table_loader.field_loader import Field
-from maintenance_table_loader.table_loader import Table
+from os_table_loader.field_loader import Field
+from os_table_loader.table_loader import Table
 
 
 def get_fields(_table: Table) -> list[Field]:

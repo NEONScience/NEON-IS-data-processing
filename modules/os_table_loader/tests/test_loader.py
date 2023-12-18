@@ -8,13 +8,13 @@ from pathlib import Path
 from pyarrow import parquet as pq
 
 from data_access.tests.database_test import DatabaseBackedTest
-from maintenance_table_loader.data_reader import DataReader
-from maintenance_table_loader.loader import load_files
-from maintenance_table_loader.main import main
-from maintenance_table_loader.tests.mock_field_loader import get_fields
-from maintenance_table_loader.tests.mock_result_values_loader import get_result_values
-from maintenance_table_loader.tests.mock_result_loader import get_results
-from maintenance_table_loader.tests.mock_table_loader import get_tables
+from os_table_loader.data_reader import DataReader
+from os_table_loader.loader import load_files
+from os_table_loader.main import main
+from os_table_loader.tests.mock_field_loader import get_fields
+from os_table_loader.tests.mock_result_values_loader import get_result_values
+from os_table_loader.tests.mock_result_loader import get_results
+from os_table_loader.tests.mock_table_loader import get_tables
 
 
 class LoaderTest(DatabaseBackedTest):
@@ -32,6 +32,7 @@ class LoaderTest(DatabaseBackedTest):
         self.assertTrue(self.out_path.exists())
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['FILE_TYPE'] = self.file_type
+        os.environ['PARTIAL_TABLE_NAME'] = 'maintenance'
         os.environ['DB_CONFIG_SOURCE'] = 'environment'
         os.environ['LOG_LEVEL'] = 'DEBUG'
         main()
@@ -55,7 +56,7 @@ class LoaderTest(DatabaseBackedTest):
                                  get_fields=get_fields,
                                  get_results=get_results,
                                  get_result_values=get_result_values)
-        load_files(self.out_path, data_reader, self.file_type)
+        load_files(self.out_path, data_reader, self.file_type, 'maintenance')
         file_name = f'NEON.DOM.SITE.DP1.00026.001.ais_maintenanceGroundwater_pub.{self.file_type}'
         file_path = Path(self.out_path, file_name)
         self.assertTrue(file_path.exists())
