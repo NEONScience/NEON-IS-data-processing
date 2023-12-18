@@ -1,0 +1,53 @@
+---
+pipeline:
+  name: ais_maintenance_table_loader
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/os_table_loader:0.001
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m os_table_loader.main
+  env:
+    FILE_TYPE: csv 
+    OUT_PATH: /pfs/out/ais_maintenance
+    PARTIAL_TABLE_NAME: maintenance
+    DB_CONFIG_SOURCE: mount
+    LOG_LEVEL: DEBUG 
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  cron:
+    name: ais_maintenance_table_loader_tick
+    spec: "@daily"  
+    overwrite: true
+autoscaling: true
+resource_requests:
+  memory: 100M
+  cpu: 0.1
+resource_limits:
+  memory: 300M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 500M
+  cpu: 0.1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
