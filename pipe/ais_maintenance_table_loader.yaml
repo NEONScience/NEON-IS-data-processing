@@ -13,6 +13,7 @@ transform:
   env:
     FILE_TYPE: csv 
     OUT_PATH: /pfs/out/ais_maintenance
+    PARTIAL_TABLE_NAME: maintenance
     DB_CONFIG_SOURCE: mount
     LOG_LEVEL: DEBUG 
   secrets:
