@@ -2,12 +2,7 @@
 
 ##  NOTE: The processing algorithms in this repository are in development and not currently used to produce data on the NEON portal. 
 
-##  High-level organization
-
-- /flow: contains workflow templates/executables for processing modules (e.g. calibration). Dockerfiles included.
-- /pack: contains packages/libraries (for reusable function calls, like reading/writing data files). Dockerfiles included. 
-- /pipe: contains Pachyderm pipeline specifications. 
-
+Please see the Wiki for details on the structure of this repository and implementation of the processing pipeline.
 
 ## Credits & Acknowledgements
 
