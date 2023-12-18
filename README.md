@@ -10,7 +10,7 @@ Please see the Wiki for details on the structure of this repository and implemen
 <!-- HTML tags to produce image, resize, add hyperlink. -->
 <!-- ONLY WORKS WITH HTML or GITHUB documents -->
 <a href="http://www.neonscience.org/">
-<img src="logo.jpg" width="300px" />
+<img src="wiki/logo.jpg" width="300px" />
 </a>
 
 <!-- Acknowledgements text -->
