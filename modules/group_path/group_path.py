@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------------------------------
 from pathlib import Path
+import sys
 from typing import NamedTuple, List, Iterator, Tuple
+
 
 from structlog import get_logger
 
@@ -9,6 +11,7 @@ import common.group_file_parser as group_file_parser
 from group_path.group_path_config import Config
 from group_path.path_parser import PathParser
 from group_path.dictionary_list import DictionaryList
+from common.err_datum import err_datum_path
 
 log = get_logger()
 
@@ -26,6 +29,7 @@ class GroupPath:
         self.location_focus_path = config.location_focus_path
         self.group_focus_path = config.group_focus_path
         self.out_path = config.out_path
+        self.err_path = config.err_path
         self.group = config.group
         self.path_parser = PathParser(config)
         self.group_data_type = 'group'
@@ -50,33 +54,53 @@ class GroupPath:
         group_assignment_keys: List[set] = self.get_keys(self.group_assignment_path, self.group_assignment_key_indices, group_assignment_key_paths)
         log.debug(f'Group_assignment keys: {group_assignment_keys}')
 
+        DirErrBase = Path(self.err_path)
+
         """Process the location_focus paths """ 
         # just need one instance of location_focus here since each location_focus repo will be sent i individually as a union joined with the group_assignment_focus
-        if self.location_focus_path is not None:
-            # Process the location_focus paths to form keys and associated paths
-            location_focus_key_paths = DictionaryList()
-            location_focus_keys: List[set] = self.get_keys(self.location_focus_path, self.location_focus_key_indices, location_focus_key_paths)
-            log.debug(f'Location focus keys: {location_focus_keys}')
-            # Get the intersection of the group_assignment keys and location_focus keys
-            location_focus_joined_keys: set = location_focus_keys.intersection(group_assignment_keys)
-            # Get the group file paths and associated groups for the location focus paths
-            location_focus_path_groups: List[PathGroup] = self.get_path_groups(location_focus_joined_keys,group_assignment_key_paths,location_focus_key_paths)
-        else: 
-            location_focus_path_groups: List[PathGroup] = None
-        
+        loc_path = Path(self.location_focus_path)
+        loc_dataDir_routed = Path("")
+        for l_path in loc_path.rglob('*'):
+            if l_path.is_file():
+                loc_dataDir_routed = l_path.parent
+        try:
+            if self.location_focus_path is not None:
+                # Process the location_focus paths to form keys and associated paths
+                location_focus_key_paths = DictionaryList()
+                location_focus_keys: List[set] = self.get_keys(self.location_focus_path, self.location_focus_key_indices, location_focus_key_paths)
+                log.debug(f'Location focus keys: {location_focus_keys}')
+                # Get the intersection of the group_assignment keys and location_focus keys
+                location_focus_joined_keys: set = location_focus_keys.intersection(group_assignment_keys)
+                # Get the group file paths and associated groups for the location focus paths
+                location_focus_path_groups: List[PathGroup] = self.get_path_groups(location_focus_joined_keys,group_assignment_key_paths,location_focus_key_paths)
+            else:
+                location_focus_path_groups: List[PathGroup] = None
+        except Exception:
+            err_msg = sys.exc_info()
+            err_datum_path(err=err_msg,DirDatm=str(loc_dataDir_routed),DirErrBase=DirErrBase,
+                           RmvDatmOut=True,DirOutBase=self.out_path)
         """Process the group_focus paths """ 
         # just need one instance of group_focus here since each group_focus repo will be sent i individually as a union joined with the group_assignment_focus
-        if self.group_focus_path is not None:
-            group_focus_key_paths = DictionaryList()
-            group_focus_keys: List[set] = self.get_keys(self.group_focus_path, self.group_focus_key_indices, group_focus_key_paths)
-            log.debug(f'Group focus keys: {group_focus_keys}')
-            # Get the intersection of the group_assignment keys and location_focus keys
-            group_focus_joined_keys: set = group_focus_keys.intersection(group_assignment_keys)
-            # Get the group file paths and associated groups for the group focus paths
-            group_focus_path_groups: List[PathGroup] = self.get_path_groups(group_focus_joined_keys,group_assignment_key_paths,group_focus_key_paths)
-        else: 
-            group_focus_path_groups: List[PathGroup] = None
-   
+        grp_path = Path(self.group_assignment_path)
+        grp_dataDir_routed = Path("")
+        for g_path in grp_path.rglob('*'):
+            if g_path.is_file():
+                grp_dataDir_routed = g_path.parent
+        try:
+            if self.group_focus_path is not None:
+                group_focus_key_paths = DictionaryList()
+                group_focus_keys: List[set] = self.get_keys(self.group_focus_path, self.group_focus_key_indices, group_focus_key_paths)
+                log.debug(f'Group focus keys: {group_focus_keys}')
+                # Get the intersection of the group_assignment keys and location_focus keys
+                group_focus_joined_keys: set = group_focus_keys.intersection(group_assignment_keys)
+                # Get the group file paths and associated groups for the group focus paths
+                group_focus_path_groups: List[PathGroup] = self.get_path_groups(group_focus_joined_keys,group_assignment_key_paths,group_focus_key_paths)
+            else:
+                group_focus_path_groups: List[PathGroup] = None
+        except Exception:
+            err_msg = sys.exc_info()
+            err_datum_path(err=err_msg,DirDatm=str(grp_dataDir_routed),DirErrBase=DirErrBase,
+                           RmvDatmOut=True,DirOutBase=self.out_path)
         return location_focus_path_groups, group_focus_path_groups
 
     def get_path_groups(self, joined_keys: set, group_assignment_key_paths: DictionaryList, data_key_paths: DictionaryList) -> List[PathGroup]:
