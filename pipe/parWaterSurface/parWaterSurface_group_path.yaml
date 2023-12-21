@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/group_path:c0ce8112
+  image: quay.io/battelleecology/group_path:a57b6aa4
   cmd:
   - /bin/bash
   stdin:
@@ -13,7 +13,9 @@ transform:
   env:
     GROUP: par-water-surface
     LOG_LEVEL: INFO
-    OUT_PATH: /pfs/out
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
     GROUP_ASSIGNMENT_YEAR_INDEX: '4'
     GROUP_ASSIGNMENT_MONTH_INDEX: '5'
     GROUP_ASSIGNMENT_DAY_INDEX: '6'
