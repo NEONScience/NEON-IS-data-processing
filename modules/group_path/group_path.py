@@ -2,6 +2,7 @@
 # ---------------------------------------------------------------------------
 from pathlib import Path
 import sys
+import os
 from typing import NamedTuple, List, Iterator, Tuple
 
 
@@ -53,16 +54,15 @@ class GroupPath:
         group_assignment_key_paths = DictionaryList()
         group_assignment_keys: List[set] = self.get_keys(self.group_assignment_path, self.group_assignment_key_indices, group_assignment_key_paths)
         log.debug(f'Group_assignment keys: {group_assignment_keys}')
-
         DirErrBase = Path(self.err_path)
-
-        """Process the location_focus paths """ 
+        """Process the location_focus paths """
         # just need one instance of location_focus here since each location_focus repo will be sent i individually as a union joined with the group_assignment_focus
         loc_path = Path(self.location_focus_path)
         loc_dataDir_routed = Path("")
         for l_path in loc_path.rglob('*'):
             if l_path.is_file():
                 loc_dataDir_routed = l_path.parent
+        print('loc_dataDir_routed:::::::::::: ', loc_dataDir_routed)
         try:
             if self.location_focus_path is not None:
                 # Process the location_focus paths to form keys and associated paths

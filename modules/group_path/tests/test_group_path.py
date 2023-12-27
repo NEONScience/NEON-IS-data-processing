@@ -63,6 +63,7 @@ class GroupPathTest(TestCase):
                         location_focus_path=self.location_focus_path,
                         group_focus_path=self.group_focus_path,
                         out_path=self.out_path,
+                        err_path=self.err_path,
                         group=self.group,
                         group_assignment_year_index=self.group_assignment_year_index,
                         group_assignment_month_index=self.group_assignment_month_index,
