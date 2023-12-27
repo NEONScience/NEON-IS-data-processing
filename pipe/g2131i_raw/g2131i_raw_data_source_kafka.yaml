@@ -1,13 +1,13 @@
 ---
 pipeline:
-  name: li191r_data_source_kafka
+  name: g2131i_raw_data_source_kafka
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v2.0.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "li191r"
+    SOURCE_TYPE: "g2131i_raw"
     LOGLEVEL: debug
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
@@ -75,7 +75,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/li191r/2023/01/01/12345/data/file.parquet
+      # /pfs/out/g2131i_raw/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do
@@ -108,11 +108,11 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: li191r_cron_daily_and_date_control
+    repo: g2131i_raw_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/li191r/*/*/*"
+    glob: "/g2131i_raw/*/*/*"
 parallelism_spec:
-  constant: 1
+  constant: 10
 autoscaling: true
 resource_requests:
   memory: 300M

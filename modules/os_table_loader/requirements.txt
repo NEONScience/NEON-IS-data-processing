@@ -1,0 +1,7 @@
+common==0.1.2
+data_access==0.0.1a2
+environs==7.3.1
+pandas==1.4.2
+psycopg2-binary==2.8.6
+pyarrow==14.0.1
+structlog==21.5.0

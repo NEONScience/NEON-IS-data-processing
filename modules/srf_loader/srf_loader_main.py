@@ -15,6 +15,7 @@ log = structlog.get_logger()
 
 
 def main() -> None:
+    """Load the science review flag entries from the database and save to files."""
     env = environs.Env()
     group_prefix: str = env.str('GROUP_PREFIX')
     out_path: Path = env.path('OUT_PATH')
