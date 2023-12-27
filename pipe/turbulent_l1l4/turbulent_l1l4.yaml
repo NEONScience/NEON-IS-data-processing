@@ -6,7 +6,6 @@ transform:
   - /bin/bash
   stdin:
   - "#!/bin/bash"
-  - rm -rf /tmp/pfs/turbulent_l0p
   - Rscript 
     ./flow.sae.ecte.l1l4.R
     DirIn=$DIR_IN
