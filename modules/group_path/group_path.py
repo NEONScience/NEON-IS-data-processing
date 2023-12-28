@@ -63,7 +63,6 @@ class GroupPath:
         for l_path in loc_path.rglob('*'):
             if l_path.is_file():
                 loc_dataDir_routed = l_path.parent
-        print('loc_dataDir_routed:::::::::::::::::: ', loc_dataDir_routed)
         try:
             if self.location_focus_path is not None:
                 # Process the location_focus paths to form keys and associated paths
@@ -88,7 +87,6 @@ class GroupPath:
         for g_path in grp_path.rglob('*'):
             if g_path.is_file():
                 grp_dataDir_routed = g_path.parent
-        print('grp_dataDir_routed:::::::::::::::::: ', grp_dataDir_routed)
         try:
             if self.group_focus_path is not None:
                 group_focus_key_paths = DictionaryList()
