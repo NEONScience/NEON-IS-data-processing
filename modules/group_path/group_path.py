@@ -59,9 +59,11 @@ class GroupPath:
         # just need one instance of location_focus here since each location_focus repo will be sent i individually as a union joined with the group_assignment_focus
         loc_path = Path(self.location_focus_path)
         loc_dataDir_routed = Path("")
+        # for loop is to get loc_dataDir_routed to pass in to err_datum_path
         for l_path in loc_path.rglob('*'):
             if l_path.is_file():
                 loc_dataDir_routed = l_path.parent
+        print('loc_dataDir_routed:::::::::::::::::: ', loc_dataDir_routed)
         try:
             if self.location_focus_path is not None:
                 # Process the location_focus paths to form keys and associated paths
@@ -82,23 +84,25 @@ class GroupPath:
         # just need one instance of group_focus here since each group_focus repo will be sent i individually as a union joined with the group_assignment_focus
         grp_path = Path(self.group_assignment_path)
         grp_dataDir_routed = Path("")
+        # for loop is to get grp_dataDir_routed to pass in to err_datum_path
         for g_path in grp_path.rglob('*'):
             if g_path.is_file():
                 grp_dataDir_routed = g_path.parent
-            try:
-                if self.group_focus_path is not None:
-                    group_focus_key_paths = DictionaryList()
-                    group_focus_keys: List[set] = self.get_keys(self.group_focus_path, self.group_focus_key_indices, group_focus_key_paths)
-                    log.debug(f'Group focus keys: {group_focus_keys}')
-                    # Get the intersection of the group_assignment keys and location_focus keys
-                    group_focus_joined_keys: set = group_focus_keys.intersection(group_assignment_keys)
-                    # Get the group file paths and associated groups for the group focus paths
-                    group_focus_path_groups: List[PathGroup] = self.get_path_groups(group_focus_joined_keys,group_assignment_key_paths,group_focus_key_paths)
-                else:
-                    group_focus_path_groups: List[PathGroup] = None
-            except Exception:
-                err_msg = sys.exc_info()
-                err_datum_path(err=err_msg,DirDatm=str(grp_dataDir_routed),DirErrBase=DirErrBase,
+        print('grp_dataDir_routed:::::::::::::::::: ', grp_dataDir_routed)
+        try:
+            if self.group_focus_path is not None:
+                group_focus_key_paths = DictionaryList()
+                group_focus_keys: List[set] = self.get_keys(self.group_focus_path, self.group_focus_key_indices, group_focus_key_paths)
+                log.debug(f'Group focus keys: {group_focus_keys}')
+                # Get the intersection of the group_assignment keys and location_focus keys
+                group_focus_joined_keys: set = group_focus_keys.intersection(group_assignment_keys)
+                # Get the group file paths and associated groups for the group focus paths
+                group_focus_path_groups: List[PathGroup] = self.get_path_groups(group_focus_joined_keys,group_assignment_key_paths,group_focus_key_paths)
+            else:
+                group_focus_path_groups: List[PathGroup] = None
+        except Exception:
+            err_msg = sys.exc_info()
+            err_datum_path(err=err_msg,DirDatm=str(grp_dataDir_routed),DirErrBase=DirErrBase,
                            RmvDatmOut=True,DirOutBase=self.out_path)
         return location_focus_path_groups, group_focus_path_groups
 
