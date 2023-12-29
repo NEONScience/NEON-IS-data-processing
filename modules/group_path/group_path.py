@@ -33,15 +33,9 @@ class GroupPath:
         self.group = config.group
         self.path_parser = PathParser(config)
         self.group_data_type = 'group'
-        self.group_assignment_key_indices = (
-        config.group_assignment_year_index, config.group_assignment_month_index, config.group_assignment_day_index, 
-        config.group_assignment_member_index)
-        self.location_focus_key_indices = (
-        config.location_focus_year_index, config.location_focus_month_index, config.location_focus_day_index, 
-        config.location_focus_location_index)
-        self.group_focus_key_indices = (
-        config.group_focus_year_index, config.group_focus_month_index, config.group_focus_day_index,
-        config.group_focus_group_index)
+        self.group_assignment_key_indices = (config.group_assignment_year_index, config.group_assignment_month_index, config.group_assignment_day_index, config.group_assignment_member_index)
+        self.location_focus_key_indices = (config.location_focus_year_index, config.location_focus_month_index, config.location_focus_day_index, config.location_focus_location_index)
+        self.group_focus_key_indices = (config.group_focus_year_index, config.group_focus_month_index, config.group_focus_day_index, config.group_focus_group_index)
 
     def add_groups_to_paths(self) -> None:
         """
@@ -89,38 +83,39 @@ class GroupPath:
         if self.location_focus_path is not None:
             # Process the location_focus paths to form keys and associated paths
             location_focus_key_paths = DictionaryList()
-            location_focus_keys: List[set] = self.get_keys(self.location_focus_path, self.location_focus_key_indices, 
-                                                           location_focus_key_paths)
+        group_assignment_keys: List[set] = self.get_keys(self.group_assignment_path, self.group_assignment_key_indices, group_assignment_key_paths)
+        log.debug(f'Group_assignment keys: {group_assignment_keys}')
+
+        """Process the location_focus paths """ 
+        # just need one instance of location_focus here since each location_focus repo will be sent i individually as a union joined with the group_assignment_focus
+        if self.location_focus_path is not None:
+            # Process the location_focus paths to form keys and associated paths
+            location_focus_key_paths = DictionaryList()
+            location_focus_keys: List[set] = self.get_keys(self.location_focus_path, self.location_focus_key_indices, location_focus_key_paths)
             log.debug(f'Location focus keys: {location_focus_keys}')
             # Get the intersection of the group_assignment keys and location_focus keys
             location_focus_joined_keys: set = location_focus_keys.intersection(group_assignment_keys)
             # Get the group file paths and associated groups for the location focus paths
-            location_focus_path_groups: List[PathGroup] = self.get_path_groups(location_focus_joined_keys, 
-                                                                               group_assignment_key_paths, 
-                                                                               location_focus_key_paths)
-        else:
+            location_focus_path_groups: List[PathGroup] = self.get_path_groups(location_focus_joined_keys,group_assignment_key_paths,location_focus_key_paths)
+        else: 
             location_focus_path_groups: List[PathGroup] = None
-
-        """Process the group_focus paths """
+        
+        """Process the group_focus paths """ 
         # just need one instance of group_focus here since each group_focus repo will be sent i individually as a union joined with the group_assignment_focus
         if self.group_focus_path is not None:
             group_focus_key_paths = DictionaryList()
-            group_focus_keys: List[set] = self.get_keys(self.group_focus_path, self.group_focus_key_indices, 
-                                                        group_focus_key_paths)
+            group_focus_keys: List[set] = self.get_keys(self.group_focus_path, self.group_focus_key_indices, group_focus_key_paths)
             log.debug(f'Group focus keys: {group_focus_keys}')
             # Get the intersection of the group_assignment keys and location_focus keys
             group_focus_joined_keys: set = group_focus_keys.intersection(group_assignment_keys)
             # Get the group file paths and associated groups for the group focus paths
-            group_focus_path_groups: List[PathGroup] = self.get_path_groups(group_focus_joined_keys, 
-                                                                            group_assignment_key_paths, 
-                                                                            group_focus_key_paths)
-        else:
+            group_focus_path_groups: List[PathGroup] = self.get_path_groups(group_focus_joined_keys,group_assignment_key_paths,group_focus_key_paths)
+        else: 
             group_focus_path_groups: List[PathGroup] = None
-
+   
         return location_focus_path_groups, group_focus_path_groups
 
-    def get_path_groups(self, joined_keys: set, group_assignment_key_paths: DictionaryList, 
-                        data_key_paths: DictionaryList) -> List[PathGroup]:
+    def get_path_groups(self, joined_keys: set, group_assignment_key_paths: DictionaryList, data_key_paths: DictionaryList) -> List[PathGroup]:
         """
         Get the group file paths and associated groups.
 
@@ -151,27 +146,26 @@ class GroupPath:
         Link the files into the output path and add the groups into the path.
 
         :param path_groups: File paths for linking and groups.
-        :param path_type: The type of data path. Either 'group_focus' or 'location_focus'
-
+        :param path_type: The type of data path. Either 'group_focus' or 'location_focus' 
+        
         """
         for path_group in path_groups:
-            # Parse the group file path and link to output
-            year, month, day, member, data_type, remainder = self.path_parser.parse_group_assignment(
-                path_group.group_file_path)
+            # Parse the group file path and link to output 
+            year, month, day, member, data_type, remainder = self.path_parser.parse_group_assignment(path_group.group_file_path)
             for group in path_group.groups:
                 link_path = Path(self.out_path, year, month, day, group, data_type, *remainder)
                 link_path.parent.mkdir(parents=True, exist_ok=True)
                 if not link_path.exists():
                     log.debug(f'file: {path_group.group_file_path} link: {link_path}')
-                    link_path.symlink_to(path_group.group_file_path)
-
-                    # Parse the associated paths and link to output
+                    link_path.symlink_to(path_group.group_file_path)   
+            
+            # Parse the associated paths and link to output 
             if path_type == 'location_focus':
                 for path in path_group.associated_paths:
                     if path.is_file():
                         source_type, year, month, day, location, remainder = self.path_parser.parse_location_focus(path)
                         for group in path_group.groups:
-                            link_path = Path(self.out_path, year, month, day, 
+                            link_path = Path(self.out_path, year, month, day,
                                              group, source_type, location, *remainder)
                             link_path.parent.mkdir(parents=True, exist_ok=True)
                             if not link_path.exists():
@@ -182,17 +176,17 @@ class GroupPath:
                     if path.is_file():
                         year, month, day, existing_group, remainder = self.path_parser.parse_group_focus(path)
                         for group in path_group.groups:
-                            link_path = Path(self.out_path, year, month, day, 
+                            link_path = Path(self.out_path, year, month, day,
                                              group, existing_group, *remainder)
                             link_path.parent.mkdir(parents=True, exist_ok=True)
                             if not link_path.exists():
                                 log.debug(f'file: {path} link: {link_path}')
                                 link_path.symlink_to(path)
-
+       
     def get_keys(self, input_path: Path, key_indices, key_paths: DictionaryList) -> set:
         """
         Loop through and associate keys and paths for joining.
-
+    
         :param input_path: The join path.
         :Param key_indices: the path indices to form the key
         :param key_paths: Paths by key.
@@ -211,7 +205,7 @@ class GroupPath:
         """
         Create a key by concatenating path elements at the join indices.
         Paths to join will have the same key.
-
+    
         :param path: A path.
         :param key_indices: Path element indices to use for the key.
         :return: The key.
@@ -222,3 +216,4 @@ class GroupPath:
             part = parts[index]
             key += part
         return key
+    
