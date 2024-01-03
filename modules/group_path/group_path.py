@@ -50,12 +50,12 @@ class GroupPath:
         loc_dataDir_routed = Path("")
         loc_dataDir_routed = [l_path.parent for l_path in loc_path.rglob('*') if l_path.is_file()]
 
-        try:
-            if location_focus_path_groups is not None:
+        if location_focus_path_groups is not None:
+            try:
                 self.link_files(location_focus_path_groups, 'location_focus')
-        except Exception:
-            err_msg = sys.exc_info()
-            err_datum_path(err=err_msg, DirDatm=str(loc_dataDir_routed), DirErrBase=DirErrBase, 
+            except Exception:
+                err_msg = sys.exc_info()
+                err_datum_path(err=err_msg, DirDatm=str(loc_dataDir_routed), DirErrBase=DirErrBase, 
                            RmvDatmOut=True, DirOutBase=self.out_path)
 
         # Get grp_dataDir_routed to pass in to err_datum_path
@@ -63,12 +63,12 @@ class GroupPath:
         grp_dataDir_routed = Path("")
         grp_dataDir_routed = [g_path.parent for g_path in grp_path.rglob('*') if g_path.is_file()]
         
-        try:
-            if group_focus_path_groups is not None:
+        if group_focus_path_groups is not None:
+            try:
                 self.link_files(group_focus_path_groups, 'group_focus')
-        except Exception:
-            err_msg = sys.exc_info()
-            err_datum_path(err=err_msg, DirDatm=str(grp_dataDir_routed), DirErrBase=DirErrBase, 
+            except Exception:
+                err_msg = sys.exc_info()
+                err_datum_path(err=err_msg, DirDatm=str(grp_dataDir_routed), DirErrBase=DirErrBase, 
                            RmvDatmOut=True, DirOutBase=self.out_path)
 
     def get_paths_and_groups(self) -> Tuple[List[PathGroup], List[PathGroup]]:  # List[PathGroup]:
