@@ -1,40 +1,39 @@
 ---
 pipeline:
-  name: parQuantumLine_pre_stats_qm
+  name: ais_maintenance_table_loader
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-dir-filt:c0ce8112
+  image: quay.io/battelleecology/os_table_loader:0.001
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m directory_filter.directory_filter_main
+  - python3 -m os_table_loader.main
   env:
-    OUT_PATH: /pfs/out
-    FILTER_DIR: data,uncertainty_data,uncertainty_coef,flags
-    FILTER_DIR_INDEX: '9'
-    LOG_LEVEL: INFO
-    RELATIVE_PATH_INDEX: '3'
+    FILE_TYPE: csv 
+    OUT_PATH: /pfs/out/ais_maintenance
+    PARTIAL_TABLE_NAME: maintenance
+    DB_CONFIG_SOURCE: mount
+    LOG_LEVEL: DEBUG 
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
 input:
-  pfs:
-    name: IN_PATH
-    repo: parQuantumLine_group_path
-    glob: /*/*/*
-parallelism_spec:
-  constant: 3
+  cron:
+    name: ais_maintenance_table_loader_tick
+    spec: "@daily"  
+    overwrite: true
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.5
+  memory: 100M
+  cpu: 0.1
 resource_limits:
-  memory: 1.5G
-  cpu: 1.2
+  memory: 300M
+  cpu: 0.5
 sidecar_resource_requests:
-  memory: 4G
-  cpu: 1.5
-datum_set_spec:
-  number: 1
+  memory: 500M
+  cpu: 0.1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

@@ -38,7 +38,7 @@ def _get_jwt(config: GithubConfig) -> str:
     return JWT().encode(payload, signing_key, alg='RS256')
 
 def _get_app_installation_access_token(config: GithubConfig, jwt_token: str):
-    """Request a Git App installation token from Github."""
+    """Request a Git App installation token from GitHub."""
     headers = {
         'Authorization': f'Bearer {jwt_token}',
         'Accept': 'application/vnd.github+json'
