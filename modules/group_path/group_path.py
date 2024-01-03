@@ -42,34 +42,11 @@ class GroupPath:
         Add the groups, one group per path. Multiple paths are created
         for the same file if more than one group is present.
         """
-        location_focus_path_groups,group_focus_path_groups = self.get_paths_and_groups()
-        DirErrBase = Path(self.err_path)
-        
-        # Get loc_dataDir_routed to pass in to err_datum_path
-        loc_path = Path(self.location_focus_path)
-        loc_dataDir_routed = Path("")
-        loc_dataDir_routed = [l_path.parent for l_path in loc_path.rglob('*') if l_path.is_file()]
-
+        location_focus_path_groups, group_focus_path_groups = self.get_paths_and_groups()
         if location_focus_path_groups is not None:
-            try:
-                self.link_files(location_focus_path_groups, 'location_focus')
-            except Exception:
-                err_msg = sys.exc_info()
-                err_datum_path(err=err_msg, DirDatm=str(loc_dataDir_routed), DirErrBase=DirErrBase, 
-                           RmvDatmOut=True, DirOutBase=self.out_path)
-
-        # Get grp_dataDir_routed to pass in to err_datum_path
-        grp_path = Path(self.group_assignment_path)
-        grp_dataDir_routed = Path("")
-        grp_dataDir_routed = [g_path.parent for g_path in grp_path.rglob('*') if g_path.is_file()]
-        
+            self.link_files(location_focus_path_groups,'location_focus')
         if group_focus_path_groups is not None:
-            try:
-                self.link_files(group_focus_path_groups, 'group_focus')
-            except Exception:
-                err_msg = sys.exc_info()
-                err_datum_path(err=err_msg, DirDatm=str(grp_dataDir_routed), DirErrBase=DirErrBase, 
-                           RmvDatmOut=True, DirOutBase=self.out_path)
+            self.link_files(group_focus_path_groups,'group_focus')
 
     def get_paths_and_groups(self) -> Tuple[List[PathGroup], List[PathGroup]]:  # List[PathGroup]:
         """Pre-process the group_assignment paths to form keys and associated paths"""
@@ -149,16 +126,23 @@ class GroupPath:
         :param path_type: The type of data path. Either 'group_focus' or 'location_focus' 
         
         """
+        DirErrBase = Path(self.err_path)
         for path_group in path_groups:
             # Parse the group file path and link to output 
             year, month, day, member, data_type, remainder = self.path_parser.parse_group_assignment(path_group.group_file_path)
-            for group in path_group.groups:
-                link_path = Path(self.out_path, year, month, day, group, data_type, *remainder)
-                link_path.parent.mkdir(parents=True, exist_ok=True)
-                if not link_path.exists():
-                    log.debug(f'file: {path_group.group_file_path} link: {link_path}')
-                    link_path.symlink_to(path_group.group_file_path)   
-            
+            if path_group.group_file_path.is_file():
+                dataDir_routed = Path(path_group.group_file_path).parent
+            try:
+                for group in path_group.groups:
+                    link_path = Path(self.out_path,year,month,day,group,data_type,*remainder)
+                    link_path.parent.mkdir(parents=True,exist_ok=True)
+                    if not link_path.exists():
+                        log.debug(f'file: {path_group.group_file_path} link: {link_path}')
+                        link_path.symlink_to(path_group.group_file_path)
+            except Exception:
+                err_msg = sys.exc_info()
+                err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
+                               RmvDatmOut=True,DirOutBase=self.out_path)
             # Parse the associated paths and link to output 
             if path_type == 'location_focus':
                 for path in path_group.associated_paths:
