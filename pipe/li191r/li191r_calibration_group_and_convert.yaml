@@ -146,7 +146,7 @@ input:
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 5
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 1.5G
