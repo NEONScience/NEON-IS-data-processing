@@ -6,7 +6,7 @@ transform:
   image: quay.io/battelleecology/neon-logjam-loader:v0.0.1
   cmd: ["/bin/bash"]
   env:
-    LOGJAM_INGEST_BUCKET: neon-logjam
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest/test_pachyderm
     OUT_PATH: /pfs/out
   stdin:
   - "#!/bin/bash"
