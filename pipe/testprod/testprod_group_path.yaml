@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: pressureAir_group_path_relHumidity
+  name: testprod_group_path
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -11,7 +11,7 @@ transform:
   - '#!/bin/bash'
   - python3 -m group_path.group_path_main
   env:
-    GROUP: pressure-air_ # The ending underscore ensures we get only pressure-air groups, no more no less
+    GROUP: par-quantum-line_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
@@ -38,22 +38,22 @@ input:
   - pfs:
       # name must be GROUP_ASSIGNMENT_PATH
       name: GROUP_ASSIGNMENT_PATH
-      repo: pressureAir_group_assignment
-      glob: /pressure-air/(*/*/*)
+      repo: testprod_group_assignment
+      glob: /par-quantum-line/(*/*/*)
       joinOn: $1
   - union: 
-    # - pfs:
-    #     # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-    #     name: LOCATION_FOCUS_PATH
-    #     repo: ptb330a_fill_date_gaps_and_regularize
-    #     glob: /ptb330a/(*/*/*)
-    #     joinOn: $1
     - pfs:
-        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
-        name: GROUP_FOCUS_PATH
-        repo: relHumidity_level1_group_consolidate_srf
-        glob: /(*/*/*)
+        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+        name: LOCATION_FOCUS_PATH
+        repo: testprod_fill_date_gaps_and_regularize
+        glob: /li191r/(*/*/*)
         joinOn: $1
+#    - pfs:
+#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
+#        name: GROUP_FOCUS_PATH
+#        repo: 
+#        glob: /(*/*/*)
+#        joinOn: $1
 parallelism_spec:
   constant: 1
 autoscaling: true
@@ -64,11 +64,8 @@ resource_limits:
   memory: 2G
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.5
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.5
+  memory: 3G
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
