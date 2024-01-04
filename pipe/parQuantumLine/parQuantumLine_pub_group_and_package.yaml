@@ -119,17 +119,17 @@ input:
       joinOn: $1
       empty_files: true
 parallelism_spec:
-  constant: 2
+  constant: 3
 autoscaling: true
 resource_requests:
-  memory: 700M
-  cpu: 1
+  memory: 2G
+  cpu: 1.3
 resource_limits:
-  memory: 1.5G
-  cpu: 1.8
+  memory: 3G
+  cpu: 2
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.3
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
