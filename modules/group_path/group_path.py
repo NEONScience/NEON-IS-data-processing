@@ -130,6 +130,7 @@ class GroupPath:
         for path_group in path_groups:
             # Parse the group file path and link to output 
             year, month, day, member, data_type, remainder = self.path_parser.parse_group_assignment(path_group.group_file_path)
+            dataDir_routed = path_group.group_file_path
             if path_group.group_file_path.is_file():
                 dataDir_routed = Path(path_group.group_file_path).parent
             try:
