@@ -100,14 +100,14 @@ input:
         empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 400M
+  memory: 500M
   cpu: .5
 resource_limits:
-  memory: 800M
+  memory: 1G
   cpu: 1.3
 sidecar_resource_requests:
   memory: 3G
-  cpu: 1
+  cpu: 1.3
 datum_set_spec:
   number: 1
 scheduling_spec:
