@@ -55,14 +55,6 @@ class GroupPath:
                                                          group_assignment_key_paths)
         log.debug(f'Group_assignment keys: {group_assignment_keys}')
 
-        """Process the location_focus paths """
-        # just need one instance of location_focus here since each location_focus repo will be sent i individually as a union joined with the group_assignment_focus
-        if self.location_focus_path is not None:
-            # Process the location_focus paths to form keys and associated paths
-            location_focus_key_paths = DictionaryList()
-        group_assignment_keys: List[set] = self.get_keys(self.group_assignment_path, self.group_assignment_key_indices, group_assignment_key_paths)
-        log.debug(f'Group_assignment keys: {group_assignment_keys}')
-
         """Process the location_focus paths """ 
         # just need one instance of location_focus here since each location_focus repo will be sent i individually as a union joined with the group_assignment_focus
         if self.location_focus_path is not None:
