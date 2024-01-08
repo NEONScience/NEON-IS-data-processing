@@ -48,7 +48,7 @@ class GroupPath:
         if group_focus_path_groups is not None:
             self.link_files(group_focus_path_groups,'group_focus')
 
-    def get_paths_and_groups(self) -> Tuple[List[PathGroup], List[PathGroup]]:  # List[PathGroup]:
+    def get_paths_and_groups(self) -> Tuple[List[PathGroup], List[PathGroup]]: # List[PathGroup]:
         """Pre-process the group_assignment paths to form keys and associated paths"""
         group_assignment_key_paths = DictionaryList()
         group_assignment_keys: List[set] = self.get_keys(self.group_assignment_path, self.group_assignment_key_indices, 
