@@ -51,8 +51,7 @@ class GroupPath:
     def get_paths_and_groups(self) -> Tuple[List[PathGroup], List[PathGroup]]: # List[PathGroup]:
         """Pre-process the group_assignment paths to form keys and associated paths"""
         group_assignment_key_paths = DictionaryList()
-        group_assignment_keys: List[set] = self.get_keys(self.group_assignment_path, self.group_assignment_key_indices, 
-                                                         group_assignment_key_paths)
+        group_assignment_keys: List[set] = self.get_keys(self.group_assignment_path, self.group_assignment_key_indices, group_assignment_key_paths)
         log.debug(f'Group_assignment keys: {group_assignment_keys}')
 
         """Process the location_focus paths """ 
