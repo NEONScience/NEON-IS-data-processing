@@ -9,6 +9,10 @@ from google.cloud import storage
 from data_access.db_config_reader import read_from_mount
 from data_access.db_connector import DbConnector
 import datetime
+import pandas as pd
+import io
+from io import BytesIO
+from io import StringIO
 
 
 def load() -> None:
@@ -30,12 +34,10 @@ def load() -> None:
             print("Starting New Datum in the load_all_logjam_files pipeline ", data_path_start)
             for path in data_path_start.rglob('*'):
                 if path.is_file():
-                    print("Path value is: ", path)
                     pathname, extension = os.path.splitext(path)
                     print("pathname is: ", pathname)
-
                     path_split = pathname.split('/')
-                    print("path_split is: ", path_split)
+                    #print("path_split is: ", path_split)
                     
                     folder = path_split[-3]
                     print("folder is: ", folder)
@@ -44,27 +46,26 @@ def load() -> None:
                     print("asset is: ", asset)
 
                     filename = path_split[-1] + ".csv"
-                    print("FileName is: ", filename)
+                    if filename == '.csv.csv':
+                        print("Not a recognized file.")
+                    else:
+                        print("FileName is: ", filename)
+                        gcs_path = os.path.join(folder, asset,filename)
+                        print("gcs_path is: ", gcs_path)
                     
-                    gcs_path = os.path.join(folder, asset,filename)
-                    print("gcs_path is: ", gcs_path)
-                    
-                    blob = ingest_bucket.get_blob(gcs_path)
-                    #blob = ingest_bucket.blob(gcs_path)
-                    print("ingest bucket is: ", ingest_bucket)
-                    print("blob is: ", blob)
-
-                    with blob.open("r") as f:
-                        print(f.read())
+                        blob = ingest_bucket.blob(gcs_path)
                         try:
-                            output_path = Path(output_directory, filename)
+                            output_path = Path(output_directory,asset,filename)
+                            print('Output Path is:', output_path)
                             output_path.parent.mkdir(parents=True, exist_ok=True)
                             print('Output Path is:', output_path)
                             with open(output_path, "wb") as output_file:
                                 output_file.write(blob.download_as_string())
+                            
                         except Exception:
                             exc_type, exc_obj, exc_tb = sys.exc_info()
                             print("Exception at line " + str(exc_tb.tb_lineno) + ": " + str(sys.exc_info()))
+
         except Exception:
             exception_type, exception_obj, exception_tb = sys.exc_info()
             print("Exception at line " + str(exception_tb.tb_lineno) + ": " + str(sys.exc_info()))
