@@ -51,7 +51,7 @@ input:
       repo: parQuantumLine_threshold
       glob: /thresholds.json
 parallelism_spec:
-  constant: 5
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 800M
