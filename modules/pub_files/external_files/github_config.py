@@ -5,7 +5,7 @@ from pub_files.application_config import ApplicationConfig
 
 
 class GithubConfig(NamedTuple):
-    """Class holding the data needed to establish a connection to Github."""
+    """Class holding the data needed to establish a connection to GitHub."""
     app_id: str
     branch: Optional[str]
     certificate_path: Path
