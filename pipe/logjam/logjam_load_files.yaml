@@ -22,7 +22,7 @@ input:
   pfs:
     name: IN_PATH
     repo: logjam_list_files
-    glob: /*/*/*/test_pachyderm/*/*
+    glob: /*/*/*/logjam_prod/*/*
     empty_files: true
 parallelism_spec:
   constant: 10
