@@ -17,10 +17,8 @@ transform:
       python3 -m pub_egress.pub_egress_main
     fi
     # If there is output, egress it
-    dirs=$(find $OUT_PATH/NEON.DOM.SITE* -maxdepth 0 -type d)
-    if [[ ${dirs} ]]; then
-      echo "Syncing files to bucket $BUCKET_NAME"
-      for DIR in $dirs; do
+    if ls $OUT_PATH/NEON.DOM.SITE* 1> /dev/null 2>&1; then
+      for DIR in $OUT_PATH/NEON.DOM.SITE*; do
         echo "Syncing $DIR to bucket $BUCKET_NAME"
         # Parse the product
         [[ "$DIR" =~ ^$OUT_PATH/(.*)$ ]]
@@ -35,6 +33,8 @@ transform:
           ":gcs://${BUCKET_NAME}/${PRODUCT}"
       done
       echo "Done"
+    else
+      echo "No pub output to egress"
     fi
     # Set some environment variables for the second module
     export DATA_PATH=$OUT_PATH
@@ -55,7 +55,7 @@ transform:
     # Environment variables for 2nd module: pub_upload.
     # DATA_PATH is set in the code above to the output from the egress module
     # Uses STARTING_PATH_INDEX above
-    VERSION: 'pipeline_test'
+    VERSION: 'pachyderm_v1'
     CHANGE_BY: pachyderm
 
     # Environment variables for 3rd module: pub_sync.
@@ -100,14 +100,14 @@ input:
         empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 400M
+  memory: 500M
   cpu: .5
 resource_limits:
-  memory: 800M
+  memory: 1G
   cpu: 1.3
 sidecar_resource_requests:
   memory: 3G
-  cpu: 1
+  cpu: 1.3
 datum_set_spec:
   number: 1
 scheduling_spec:

@@ -12,7 +12,7 @@ class ExternalFiles(NamedTuple):
 
 
 def get_external_files(config: ApplicationConfig) -> ExternalFiles:
-    """Return the external files read from Github."""
+    """Return the external files read from GitHub."""
     github_config = get_github_config(config)
     read_file = make_read_file(github_config)
     readme_template = read_file(config.readme_repo, config.readme_path)
