@@ -137,27 +137,38 @@ class GroupPath:
                                RmvDatmOut=True,DirOutBase=self.out_path)
             # Parse the associated paths and link to output 
             if path_type == 'location_focus':
-                for path in path_group.associated_paths:
-                    if path.is_file():
-                        source_type, year, month, day, location, remainder = self.path_parser.parse_location_focus(path)
-                        for group in path_group.groups:
-                            link_path = Path(self.out_path, year, month, day,
-                                             group, source_type, location, *remainder)
-                            link_path.parent.mkdir(parents=True, exist_ok=True)
-                            if not link_path.exists():
-                                log.debug(f'file: {path} link: {link_path}')
-                                link_path.symlink_to(path)
+                try:
+                    for path in path_group.associated_paths:
+                        if path.is_file():
+                            source_type,year,month,day,location,remainder = self.path_parser.parse_location_focus(path)
+                            dataDir_routed_loc = path.parent
+                            for group in path_group.groups:
+                                link_path = Path(self.out_path,year,month,day,
+                                             group,source_type,location,*remainder)
+                                link_path.parent.mkdir(parents=True,exist_ok=True)
+                                if not link_path.exists():
+                                    log.debug(f'file: {path} link: {link_path}')
+                                    link_path.symlink_to(path)
+                except Exception:
+                    err_msg = sys.exc_info()
+                    err_datum_path(err=err_msg, DirDatm=str(dataDir_routed_loc), DirErrBase=DirErrBase,
+                                   RmvDatmOut=True, DirOutBase=self.out_path)
             elif path_type == 'group_focus':
-                for path in path_group.associated_paths:
-                    if path.is_file():
-                        year, month, day, existing_group, remainder = self.path_parser.parse_group_focus(path)
-                        for group in path_group.groups:
-                            link_path = Path(self.out_path, year, month, day,
-                                             group, existing_group, *remainder)
-                            link_path.parent.mkdir(parents=True, exist_ok=True)
-                            if not link_path.exists():
-                                log.debug(f'file: {path} link: {link_path}')
-                                link_path.symlink_to(path)
+                try:
+                    for path in path_group.associated_paths:
+                        if path.is_file():
+                            year,month,day,existing_group,remainder = self.path_parser.parse_group_focus(path)
+                            for group in path_group.groups:
+                                link_path = Path(self.out_path,year,month,day,
+                                             group,existing_group,*remainder)
+                                link_path.parent.mkdir(parents=True,exist_ok=True)
+                                if not link_path.exists():
+                                    log.debug(f'file: {path} link: {link_path}')
+                                    link_path.symlink_to(path)
+                except Exception:
+                    err_msg = sys.exc_info()
+                    err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
+                               RmvDatmOut=True, DirOutBase=self.out_path)
        
     def get_keys(self, input_path: Path, key_indices, key_paths: DictionaryList) -> set:
         """
