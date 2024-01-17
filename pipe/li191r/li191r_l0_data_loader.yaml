@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/data_source_trino:3f847d9d
+  image: quay.io/battelleecology/l0_data_loader:latest
   cmd:
   - sh
   - "-c"
@@ -35,9 +35,9 @@ transform:
       export GEN_OUTPUT_DIR=$interimDir/$SOURCE_TYPE/$year/$month/$day
       export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
       mkdir -p $GEN_OUTPUT_DIR
-    done
       python3 -m l0_data_loader.l0_data_loader
-
+    done
+    EOF
   env:
     # Environment variables for data conversion step
     LOG_LEVEL: INFO
@@ -47,15 +47,15 @@ transform:
     OUT_PATH: /pfs/out
     # Environment variables for bash code
     SOURCE_TYPE: 'li191r'
-
   secrets:
   - name: l0-bucket
     env_var: BUCKET_NAME
-    key: L0_BUCKET
+    key: LO_BUCKET
 input:
-  cron:
-    name: li191r_l0_data_loader_tick
-    spec: "@every 5m"
+  pfs:
+    name: import_trigger
+    repo: li191r_cron_daily_and_date_control
+    glob: "/li191r/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 1
