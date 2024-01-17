@@ -35,12 +35,16 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
 
         dataDir_routed = path.parent
         # Double check that the directory at the group metadata index matches the group directory name
-        if group_metadata_name != group_metadata_dir:
-            log.warn(f'Path {path.parent} looks to be a datum, but the directory at the group metadata index ({group_metadata_name}) does not match the expected name ({group_metadata_dir}). Skipping...')
-            continue
+        try:
+            if (group_metadata_name != group_metadata_dir):
+                log.warn(f'Path {path.parent} looks to be a datum, but the directory at the group metadata index {group_metadata_name} does not match the expected name {group_metadata_dir}. Skipping...')
+                raise Exception
+        except:
+            err_msg = (f'Path {path.parent} looks to be a datum, but the directory at the group metadata index {group_metadata_name} does not match the expected name {group_metadata_dir}')
+            err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
+                           RmvDatmOut=True, DirOutBase=out_path)
         else:
             log.debug(f'Processing datum path {path.parent}')
-
         # Get the pub grouping location from the group metadata
         publoc = None
         products = None
@@ -53,12 +57,22 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
                 f.close()
                 break
 
-        if publoc is None or products is None:
-            log.error(f'Cannot determine publication grouping property from the files in {path}. Skipping.')
-            continue
-        if products is None:
-            log.error(f'Cannot determine data products from the files in {path}. Skipping.')
-            continue
+        try:
+            if publoc is None or products is None:
+                log.error(f'Cannot determine publication grouping property from the files in {path}. Skipping.')
+                raise Exception
+        except:
+            err_msg = (f'Cannot determine publication grouping property from the files in {path}.')
+            err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
+                           RmvDatmOut=True, DirOutBase=out_path)
+        try:
+            if products is None:
+                log.error(f'Cannot determine data products from the files in {path}.')
+                raise Exception
+        except:
+            err_msg = (f'Cannot determine data products from the files in {path}.')
+            err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
+                       RmvDatmOut=True,DirOutBase=out_path)
 
         # Pass the group parent to the path iterator
         path = Path(*parts[0:group_index+1])
