@@ -2,7 +2,7 @@ name: DEV-li191r-parQuantumLine-update-dag
 on:
   push:
     branches:
-      - 'test.actions'
+      - 'master'
     paths:
       - 'pipe/li191r/*.yaml'
       - 'pipe/li191r/pipe_list_li191r.txt'
