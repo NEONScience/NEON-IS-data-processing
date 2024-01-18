@@ -17,6 +17,7 @@ class LocationAssetLoaderTest(DatabaseBackedTest):
     def setUp(self):
         self.setUpPyfakefs()
         self.out_path = Path('/out')
+        self.err_path = Path('/pfs/out/errored')
         self.fs.create_dir(self.out_path)
 
         self.source_type = 'prt'
@@ -74,6 +75,7 @@ class LocationAssetLoaderTest(DatabaseBackedTest):
     def test_main(self):
         self.configure_mount()
         os.environ['OUT_PATH'] = str(self.out_path)
+        os.environ['ERR_PATH'] = str(self.err_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['SOURCE_TYPE'] = 'pqs1'
         location_asset_loader_main.main()
@@ -81,13 +83,14 @@ class LocationAssetLoaderTest(DatabaseBackedTest):
 
     def test_write_file(self):
         locations = FeatureCollection([self.feature])
-        location_asset_loader.write_file(asset=self.asset, locations=locations, out_path=self.out_path)
+        location_asset_loader.write_file(asset=self.asset, locations=locations, out_path=self.out_path, err_path=self.err_path)
         self.check_output()
 
     def test_write_files(self):
         location_asset_loader.write_files(get_assets=self.get_assets,
                                           get_asset_locations=self.get_asset_locations,
                                           out_path=self.out_path,
+                                          err_path=self.err_path,
                                           source_type=self.source_type)
         self.check_output()
 

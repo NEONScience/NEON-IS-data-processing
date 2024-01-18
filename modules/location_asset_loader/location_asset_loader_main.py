@@ -20,6 +20,7 @@ def main() -> None:
     env = environs.Env()
     source_type: str = env.str('SOURCE_TYPE')
     out_path: Path = env.path('OUT_PATH')
+    err_path: Path = env.path('ERR_PATH')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
     log.debug(f'out_path: {out_path}')
@@ -30,6 +31,7 @@ def main() -> None:
         location_asset_loader.write_files(get_assets=get_assets_partial,
                                           get_asset_locations=get_asset_locations_partial,
                                           out_path=out_path,
+                                          err_path=err_path,
                                           source_type=source_type)
 
 
