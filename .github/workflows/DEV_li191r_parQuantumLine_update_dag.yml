@@ -11,6 +11,16 @@ on:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 jobs:
+  # -------------------------------------------------------------
+  # Using GitHub's API is not supported for push events
+  # -------------------------------------------------------------
+  # 
+  # ----------------------------------------------------------------------------------------------
+  # Using local .git history
+  # ----------------------------------------------------------------------------------------------
+  # Event `push`: Compare the preceding remote commit -> to the current commit of the main branch 
+  # ----------------------------------------------------------------------------------------------
+
   changed_files:
     runs-on: ubuntu-latest  # windows-latest || macos-latest
     outputs:
@@ -22,12 +32,13 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: jitterbit/get-changed-files@v1
+        uses: tj-actions/changed-files@v41
+      # NOTE: `since_last_remote_commit: true` is implied by default and falls back to the previous local commit.
 
       - name: Make list of changed files
         id: changed-files-list
         env:
-          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all }}
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           file_list=""
           for file in $ALL_CHANGED_FILES; do
