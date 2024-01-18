@@ -1,7 +1,4 @@
 #	Next generation data processing algorithms and pipeline components for (most) NEON TIS and AIS data products.
-
-##  NOTE: The processing algorithms in this repository are in development and not currently used to produce data on the NEON portal. 
-
 Please see the Wiki for details on the structure of this repository and implementation of the processing pipeline.
 
 ## Credits & Acknowledgements
