@@ -5,7 +5,6 @@ from typing import Callable, Iterator
 from geojson import FeatureCollection, dumps
 import structlog
 import sys
-import re
 
 from data_access.types.asset import Asset
 from common.err_datum import err_datum_path
