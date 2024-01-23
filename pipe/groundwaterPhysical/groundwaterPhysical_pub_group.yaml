@@ -3,7 +3,7 @@ pipeline:
   name: groundwaterPhysical_pub_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/pub_grouper:b60b34db
+  image: quay.io/battelleecology/pub_grouper:2a4085ff
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"

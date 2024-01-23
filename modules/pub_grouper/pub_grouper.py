@@ -39,12 +39,12 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
             if (group_metadata_name != group_metadata_dir):
                 log.warn(f'Path {path.parent} looks to be a datum, but the directory at the group metadata index {group_metadata_name} does not match the expected name {group_metadata_dir}. Skipping...')
                 raise Exception
+            else:
+                log.debug(f'Processing datum path {path.parent}')
         except:
             err_msg = (f'Path {path.parent} looks to be a datum, but the directory at the group metadata index {group_metadata_name} does not match the expected name {group_metadata_dir}')
             err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
                            RmvDatmOut=True, DirOutBase=out_path)
-        else:
-            log.debug(f'Processing datum path {path.parent}')
         # Get the pub grouping location from the group metadata
         publoc = None
         products = None
