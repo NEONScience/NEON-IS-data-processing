@@ -43,7 +43,6 @@ def l0_data_loader() -> None:
       
     path_names = storage_client.list_blobs(ingest_bucket, prefix="v1/{source_type}/ms={download_year}-{download_month}", delimiter='/')
     for blob in path_names:
-        
         file_name = os.path.splitext(blob.name)[0]
         # print("File name is:  ", file_name)
         source_id =  re.split('_', file_name)[1]
