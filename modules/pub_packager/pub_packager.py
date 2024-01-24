@@ -34,7 +34,6 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
     publocs = set()
     # DirErrBase: the user specified error directory, i.e., /tmp/out/errored
     DirErrBase = Path(err_path)
-    dataDir_routed = Path("")
     publoc_date = 0
     for path in data_path.rglob('manifest.csv'):
         parts = path.parts
@@ -52,7 +51,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
 
         # processing timestamp
         timestamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
-
+        dataDir_routed = Path(data_path, publoc_date, publoc)
         # get the package path prefix and date field
         for path in data_path.rglob(publoc+'/*'):
             if path.is_file():
@@ -61,18 +60,23 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
         (path_prefix, date_field) = get_package_prefix(path, product_index, publoc_index, date_index, date_index_length)
 
         for path in data_path.rglob(publoc+'/*'):
-            if path.is_file():
-                file = os.path.basename(path)
-                log.debug(f'{file}')
-                if 'manifest' in file:
-                    parse_manifest(path, has_data_by_file, visibility_by_file, sort_index, date_field, timestamp)
-                    continue
-                # get the package filename
-                package_file = get_package_filename(file, sort_index, date_field, timestamp)
-                if package_file in package_files.keys():
-                    package_files[package_file].add(path)
-                else:
-                    package_files[package_file] = SortedSet({path})
+            try:
+                if path.is_file():
+                    file = os.path.basename(path)
+                    log.debug(f'{file}')
+                    if 'manifest' in file:
+                        parse_manifest(path, has_data_by_file, visibility_by_file, sort_index, date_field, timestamp)
+                        continue
+                    # get the package filename
+                    package_file = get_package_filename(file, sort_index, date_field, timestamp)
+                    if package_file in package_files.keys():
+                        package_files[package_file].add(path)
+                    else:
+                        package_files[package_file] = SortedSet({path})
+            except:
+                err_msg = sys.exc_info()
+                err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
+                           RmvDatmOut=True, DirOutBase=out_path)
 
         for package_file in package_files.keys():
             output_file = os.path.join(out_path, path_prefix, package_file)
@@ -80,23 +84,26 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
             os.makedirs(os.path.join(out_path, path_prefix), exist_ok=True)
             is_first_file = True
             for file in package_files[package_file]:
-                data = pd.read_csv(file)
-                mode = 'a'
-                write_header = False
-                if is_first_file:
-                    mode = 'w'
-                    write_header = True
-                    is_first_file = False
-                data.to_csv(output_file, mode=mode, header=write_header, index=False)
-                log.debug(f'Wrote data file {output_file}')
-
+                try:
+                    data = pd.read_csv(file)
+                    mode = 'a'
+                    write_header = False
+                    if is_first_file:
+                        mode = 'w'
+                        write_header = True
+                        is_first_file = False
+                    data.to_csv(output_file, mode=mode, header=write_header, index=False)
+                    log.debug(f'Wrote data file {output_file}')
+                except:
+                    err_msg = sys.exc_info()
+                    err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
+                           RmvDatmOut=True, DirOutBase=out_path)
         try:
-            write_manifest(out_path, path_prefix, has_data_by_file, visibility_by_file, package_path_by_file)
+            write_manifest(out_path,path_prefix,has_data_by_file,visibility_by_file,package_path_by_file)
         except:
-            dataDir_routed = Path(data_path, publoc_date, publoc)
             err_msg = sys.exc_info()
-            err_datum_path(err=err_msg, DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
-                           RmvDatmOut=True,DirOutBase=out_path)
+            err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
+                           RmvDatmOut=True, DirOutBase=out_path)
 
 
 def get_package_filename(file, sort_index, date_field, timestamp):
