@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/l0_data_loader:test8
+  image: quay.io/battelleecology/l0_data_loader:visala6
   cmd:
   - /bin/bash
   stdin:
@@ -31,7 +31,7 @@ input:
 output_branch: master
 parallelism_spec:
   constant: 1
-autoscaling: false
+autoscaling: true
 resource_requests:
   memory: 400M
   cpu: 1.2
