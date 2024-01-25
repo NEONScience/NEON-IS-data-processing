@@ -106,6 +106,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
         except:
             log.debug('.... Errored executing write_manifest ...')
             err_msg = sys.exc_info()
+            dataDir_routed = data_path
             log.debug('.... Error executing write_manifest...')
             err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
                            RmvDatmOut=True, DirOutBase=out_path)
