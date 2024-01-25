@@ -173,7 +173,7 @@ wrap.troll.cond.conv <- function(DirIn,
   
   #Write out flags
   NameFileOutFlags <- base::paste0(DirOutFlags,"/aquatroll200_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc_Temp.parquet")
-  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQfOut),silent=FALSE)
+  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQf),silent=FALSE)
   if(class(rptQfOut) == 'try-error'){
     log$error(base::paste0('Cannot write flags to ',NameFileOutFlags,'. ',attr(rptQfOut, "condition")))
     stop()
