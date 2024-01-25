@@ -1,13 +1,17 @@
-name: PROD-li191r-parQuantumLine-update-dag
+name: DEV-troll-SW-GW-update-dag
 on:
   push:
     branches:
-      - 'prod'
+      - 'master'
     paths:
-      - 'pipe/li191r/*.yaml'
-      - 'pipe/li191r/pipe_list_li191r.txt'
-      - 'pipe/parQuantumLine/*.yaml'
-      - 'pipe/parQuantumLine/pipe_list_parQuantumLine.txt'
+      - 'pipe/aquatroll200/*.yaml'
+      - 'pipe/aquatroll200/pipe_list_aquatroll200.txt'
+      - 'pipe/groundwaterPhysical/*.yaml'
+      - 'pipe/groundwaterPhysical/pipe_list_groundwaterPhysical.txt'
+      - 'pipe/leveltroll500/*.yaml'
+      - 'pipe/leveltroll500/pipe_list_leveltroll500.txt'
+      - 'pipe/surfacewaterPhysical/*.yaml'
+      - 'pipe/surfacewaterPhysical/pipe_list_surfacewaterPhysical.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 jobs:
@@ -58,9 +62,9 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
-      PATHS: 'pipe/li191r,pipe/parQuantumLine' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
+      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
+      PATHS: 'pipe/aquatroll200,pipe/groundwaterPhysical,pipe/leveltroll500,pipe/surfacewaterPhysical' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
