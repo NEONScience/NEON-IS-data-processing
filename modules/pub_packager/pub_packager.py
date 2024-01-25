@@ -74,7 +74,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
                     else:
                         package_files[package_file] = SortedSet({path})
             except:
-                log.debug('.... Error in parse_manifest or getting the package filename  ...')
+                log.debug('.... Errored executing parse_manifest or getting the package filename  ...')
                 err_msg = sys.exc_info()
                 err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
                            RmvDatmOut=True, DirOutBase=out_path)
@@ -97,13 +97,14 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
                     data.to_csv(output_file, mode=mode, header=write_header, index=False)
                     log.debug(f'Wrote data file {output_file}')
                 except:
-                    log.debug('.... Error writing output_file ...')
+                    log.debug('.... Errored writing output_file ...')
                     err_msg = sys.exc_info()
                     err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
                            RmvDatmOut=True, DirOutBase=out_path)
         try:
             write_manifest(out_path,path_prefix,has_data_by_file,visibility_by_file,package_path_by_file)
         except:
+            log.debug('.... Errored executing write_manifest ...')
             err_msg = sys.exc_info()
             log.debug('.... Error executing write_manifest...')
             err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
