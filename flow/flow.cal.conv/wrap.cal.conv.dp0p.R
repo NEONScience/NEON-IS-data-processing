@@ -312,7 +312,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
   
   # Copy with a symbolic link the desired subfolders 
   if(base::length(DirSubCopy) > 0){
-    if('stats' %in% DirSubCopy){
+    if('flags' %in% DirSubCopy){
       LnkSubObj <- TRUE
     } else {
       LnkSubObj <- FALSE
