@@ -257,11 +257,11 @@ wrap.troll.uncertainty <- function(DirIn,
   if(Context=='GW'){
     rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
                                                      NameFile = base::paste0(DirOutData,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_005.parquet"), 
-                                                     Schm = SchmDataOut),silent=FALSE)
+                                                     Schm = SchmDataOut),silent=TRUE)
   }else{
     rptDataOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut, 
                                                      NameFile = base::paste0(DirOutData,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_001.parquet"), 
-                                                     Schm = SchmDataOut),silent=FALSE)
+                                                     Schm = SchmDataOut),silent=TRUE)
   }
   
   if(any(grepl('try-error',class(rptDataOut)))){
@@ -366,7 +366,7 @@ wrap.troll.uncertainty <- function(DirIn,
       }
       rptSciStatsOut <- try(NEONprocIS.base::def.wrte.parq(data = rptSciStats, 
                                                            NameFile = base::paste0(DirOutSciStats,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_sciStats_",window,".parquet"), 
-                                                           Schm = SchmSciStatsOut),silent=FALSE)
+                                                           Schm = SchmSciStatsOut),silent=TRUE)
       
       if(any(grepl('try-error',class(rptSciStatsOut)))){
         log$error(base::paste0('Writing the output data failed: ',attr(rptSciStatsOut,"condition")))
@@ -478,11 +478,11 @@ wrap.troll.uncertainty <- function(DirIn,
     if(Context=='GW'){
       rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst,
                                                             NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"),
-                                                            Schm = SchmUcrtOut),silent=FALSE)
+                                                            Schm = SchmUcrtOut),silent=TRUE)
     }else{
       rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst,
                                                             NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_001.parquet"),
-                                                            Schm = SchmUcrtOut),silent=FALSE)
+                                                            Schm = SchmUcrtOut),silent=TRUE)
     }
 
 
@@ -630,7 +630,7 @@ wrap.troll.uncertainty <- function(DirIn,
       }
       rptUcrtOut_Agr <- try(NEONprocIS.base::def.wrte.parq(data = rptUcrt,
                                                            NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_","ucrt_",window,".parquet"),
-                                                           Schm = SchmUcrtOut),silent=FALSE)
+                                                           Schm = SchmUcrtOut),silent=TRUE)
 
       if(any(grepl('try-error',class(rptUcrtOut_Agr)))){
         log$error(base::paste0('Writing the output data failed: ',attr(rptUcrtOut_Agr,"condition")))

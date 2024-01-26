@@ -27,7 +27,7 @@ input:
   - pfs:
       name: SITE_FILE
       repo: leveltroll500_site_list
-      glob: /site-list.json
+      glob: /site-list-test.json
 resource_requests:
   memory: 100M
   cpu: 1
