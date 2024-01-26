@@ -159,7 +159,7 @@
 #' files and output to the ucrt_coef folder, as well as input into any uncertainty functions indicated in TermFuncUcrt.
 #'
 #' 11. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at
-#' the same level as the calibration folder in the input path that are to be copied with a symbolic link to the
+#' the same level as the data folder in the input path that are to be copied with a symbolic link to the
 #' output path.
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -242,6 +242,8 @@
 #     Move main functionality to wrapper function
 #   Cove Sturtevant (2021-08-10)
 #     Add datum error routing
+#   Nora Catolico (2023-01-26)
+#     Update dirSubCopy to allow copying of individual files as opposed to the whole directory
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -410,15 +412,8 @@ if (base::is.null(Para$FileUcrtFdas) && !base::is.null(FuncUcrt) && base::any(!b
 }
 
 # Retrieve optional subdirectories to copy over
-DirSubCopy <-
-  base::unique(base::setdiff(
-    Para$DirSubCopy,
-    c('data', 'uncertainty_coef', 'uncertainty_data', 'flags')
-  ))
-log$debug(base::paste0(
-  'Additional subdirectories to copy: ',
-  base::paste0(DirSubCopy, collapse = ',')
-))
+DirSubCopy <- base::unique(Para$DirSubCopy)
+log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
 
 # What are the expected subdirectories of each input path
 # It's possible that calibration folder will not exist if the
