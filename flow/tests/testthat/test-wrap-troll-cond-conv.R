@@ -70,7 +70,7 @@
 #' @seealso None currently
 #' 
 #' 
-# changelog and author contributions / copyrights
+# changelog and author contributions 
 #   Mija Choi (2024-01-09)
 #     Original Creation
 ##############################################################################################
@@ -82,206 +82,45 @@ test_that("Unit test of wrap.troll.cond.conv.R", {
   
   source('../../flow.troll.cond.conv/wrap.troll.cond.conv.R')
   library(stringr)
-  #
-  testOutputBase = "pfs/out"
+  log <- NEONprocIS.base::def.log.init(Lvl = "debug")
   #
   # Test 1. Only the input of empty directories in calibration/ and output directry are passed in
+ 
+  testOutputBase = 'pfs/out'
+  testInputDir = 'pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/02/1285'
+  testavsc = 'pfs/dp0p/aquatroll200_cond_corrected.avsc'
+  testSchmQf='pfs/dp0p/flags_troll_specific_temp.avsc'
   
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
-  }
+  wrap.troll.cond.conv (DirIn=testInputDir, 
+                        DirOutBase=testOutputBase, 
+                        SchmDataOut=NULL, 
+                        SchmQf=testSchmQf,
+                        DirSubCopy=NULL,
+                        log=NULL)
   
-  testInputDir <- 'pfs/prt_noDir_inCalibration/14491/2019/01/01'
-  
-  returnedOutputDir <-try(wrap.cal.conv.dp0p(DirIn = testInputDir, DirOutBase = testOutputBase),silent = TRUE)
-  
-  testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
   #
   # Test 2. Only the input of directories, resistance and voltage, and output directry are passed in
   
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
   }
-  
-  testInputDir <- 'pfs/prt/14491/2019/01/01'
-  testInputDataDir <- base::paste0(testInputDir, '/', 'data/')
-  testOutputUncertCoefDir <- base::paste0(gsub("prt", "out", testInputDir), '/', 'uncertainty_coef/')
-  
-  fileData <- base::dir(testInputDataDir)
-  fileUncertCoef <- base::dir(testOutputUncertCoefDir)
-  
-  returnedOutputDir <- wrap.cal.conv.dp0p(DirIn = testInputDir, DirOutBase = testOutputBase)
-  
-  testthat::expect_true (any(file.exists(testOutputBase, fileData, recursive = TRUE)))
-  testthat::expect_true (any(file.exists(testOutputBase, fileUncertCoef, recursive = TRUE)))
-  
-  # Test 3. Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
-  # NumDayExpiMax has     var       |     NumDayExpiMax
-  # --------------------------------------------------
-  #                     resistance  |       2
-  #                     voltage     |       3
-  # --------------------------------------------------
-  #
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
-  }
-  FuncConv <- data.frame(var = 'resistance', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
-  FuncUcrt <- data.frame(
-    var = 'resistance',
-    FuncUcrtMeas = 'def.ucrt.meas.cnst',
-    FuncUcrtFdas = 'def.ucrt.fdas.rstc.poly'
-    , stringsAsFactors = FALSE
-  )
-  
-  ucrtCoefFdas  <-NEONprocIS.cal::def.read.ucrt.coef.fdas(NameFile = 'testdata/fdas_calibration_uncertainty_general.json')
-  SchmDataOutList <-NEONprocIS.base::def.schm.avro.pars(FileSchm = 'testdata/prt_calibrated.avsc')
-  SchmQf <- base::paste0(base::readLines('testdata/flags_calibration.avsc'),collapse = '')
-  
-  DirCal = base::paste0(testInputDir, '/calibration')
-  NameVarExpc = character(0)
-  varCal <- base::unique(c(NameVarExpc, base::dir(DirCal)))
-  values <- c(2, 3)
-  NumDayExpiMax <- data.frame(var = varCal,NumDayExpiMax = values,stringsAsFactors = FALSE)
-  
-  returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
-    DirOutBase = testOutputBase,
-    FuncConv = FuncConv,
-    FuncUcrt = FuncUcrt,
-    ucrtCoefFdas = ucrtCoefFdas,
-    TermQf = 'resistance',
-    NumDayExpiMax = NumDayExpiMax,
-    SchmDataOutList = SchmDataOutList,
-    SchmQf = SchmQf
-  )
-  
-  testInputDataDir <- base::paste0(testInputDir, '/', 'data/')
-  testOutputFlagsDir <-base::paste0(gsub("prt", "out", testInputDir), '/', 'flags/')
-  testOutputUncertCoefDir <-base::paste0(gsub("prt", "out", testInputDir), '/', 'uncertainty_coef/')
-  testOutputUncertDataDir <-base::paste0(gsub("prt", "out", testInputDir), '/', 'uncertainty_data/')
-  
-  fileData <- base::dir(testInputDataDir)
-  fileFlags <- base::dir(testOutputFlagsDir)
-  fileUncertCoef <- base::dir(testOutputUncertCoefDir)
-  fileUncertData <- base::dir(testOutputUncertDataDir)
-  
-  testthat::expect_true (any(file.exists(testOutputBase, fileData, recursive = TRUE)))
-  testthat::expect_true (any(file.exists(testOutputBase, fileFlags, recursive = TRUE)))
-  testthat::expect_true (any(file.exists(testOutputBase, fileUncertCoef, recursive = TRUE)))
-  testthat::expect_true (any(file.exists(testOutputBase, fileUncertData, recursive = TRUE)))
-  
-  # Test 3.a test an additional sub folder by passing DirSubCopy <- c("abc")
-  #
-  
-  testInputDirSubCopy <- "pfs/prt_DirSubCopy/14491/2019/01/01"
-  
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
-  }
-  
-  returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputDirSubCopy,
-    DirOutBase = testOutputBase,
-    FuncConv = FuncConv,
-    FuncUcrt = FuncUcrt,
-    ucrtCoefFdas = ucrtCoefFdas,
-    TermQf = 'resistance',
-    NumDayExpiMax = NumDayExpiMax,
-    SchmDataOutList = SchmDataOutList,
-    SchmQf = SchmQf,
-    DirSubCopy <- c("abc")
-  )
-  
-  testOutputAbcDir <- base::paste0(gsub("prt_DirSubCopy", "out", testInputDirSubCopy),'/','abc')
-  fileAbc <- base::dir(testOutputAbcDir)
-  
-  testthat::expect_true (any(file.exists(testOutputAbcDir, fileAbc, recursive = TRUE)))
-  #
-  # Test 4. SchmDataOutList = NULL and the rest are same as in test 3.
-  
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
-  }
-  
-  FuncConv <- data.frame(var = 'voltage', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
-  
-  SchmDataOutList <- NULL
-  
-  returnedOutputDir <- try(wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
-    DirOutBase = testOutputBase,
-    FuncConv = FuncConv,
-    FuncUcrt = FuncUcrt,
-    ucrtCoefFdas = ucrtCoefFdas,
-    TermQf = 'resistance',
-    NumDayExpiMax = NumDayExpiMax,
-    SchmDataOutList = SchmDataOutList,
-    SchmQf = SchmQf
-  ),  silent = TRUE)
-  #
-  # Test 5. Avro schema has 'resistance', dataIn has 'resistance' and param, 'resistance', passed in
-  # but the calibration has wrong folders, no_resistance and no_voltage
-  #
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
-  }
-  FuncConv <- data.frame(var = 'resistance', FuncConv = 'def.cal.conv.poly', stringsAsFactors = FALSE)
-  
-  testInputWrongDir <- "pfs/prt_wrong_dir_inCalibration/14491/2019/01/01"
-  
-  returnedOutputDir <- wrap.cal.conv.dp0p(
-    DirIn = testInputWrongDir,
-    DirOutBase = testOutputBase,
-    FuncConv = FuncConv,
-    FuncUcrt = FuncUcrt,
-    ucrtCoefFdas = ucrtCoefFdas,
-    TermQf = 'resistance',
-    NumDayExpiMax = NumDayExpiMax,
-    SchmDataOutList = SchmDataOutList,
-    SchmQf = SchmQf
-  )
-  #
-  # Test 6. Avro schema has 'resistance', dataIn has 'resistance' and param, 'voltage', passed in
-  # err out due to 'voltage' missing from the data frame
-  
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
-  }
-  
-  returnedOutputDir <- try(wrap.cal.conv.dp0p(
-    DirIn = testInputDir,
-    DirOutBase = testOutputBase,
-    FuncConv = FuncConv,
-    FuncUcrt = FuncUcrt,
-    ucrtCoefFdas = ucrtCoefFdas,
-    TermQf = 'voltage',
-    NumDayExpiMax = unlist(NumDayExpiMax),
-    SchmDataOutList = SchmDataOutList,
-    SchmQf = SchmQf
-  ),  silent = TRUE)
-  
-  testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
-  
-  # test 7. the test dir  has a wrong data, avro, not parquet
-  
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
-  }
-  
-  testInputWrongDataDir <- "pfs/prt_wrong_data/14491/2019/01/01"
-  
-  returnedOutputDir <- try(wrap.cal.conv.dp0p(
-    DirIn = testInputWrongDataDir,
-    DirOutBase = testOutputBase,
-    FuncConv = FuncConv,
-    FuncUcrt = FuncUcrt,
-    ucrtCoefFdas = ucrtCoefFdas,
-    TermQf = 'resistance',
-    NumDayExpiMax = NA,
-    SchmDataOutList = SchmDataOutList,
-    SchmQf = SchmQf
-  ),  silent = TRUE)
-  
-  testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
+
+ ######
+  # 
+  # testInputWrongDataDir <- "pfs/prt_wrong_data/14491/2019/01/01"
+  # 
+  # returnedOutputDir <- try(wrap.cal.conv.dp0p(
+  #   DirIn = testInputWrongDataDir,
+  #   DirOutBase = testOutputBase,
+  #   FuncConv = FuncConv,
+  #   FuncUcrt = FuncUcrt,
+  #   ucrtCoefFdas = ucrtCoefFdas,
+  #   TermQf = 'resistance',
+  #   NumDayExpiMax = NA,
+  #   SchmDataOutList = SchmDataOutList,
+  #   SchmQf = SchmQf
+  # ),  silent = TRUE)
+  # 
+  # testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
   
 })
