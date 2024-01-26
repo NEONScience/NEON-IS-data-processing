@@ -5,7 +5,7 @@ from typing import NamedTuple, Optional
 import psycopg2.extras
 
 from data_access.db_connector import DbConnector
-from os_table_loader.result_loader import Result
+from os_table_loader.data.result_loader import Result
 
 
 class ResultValue(NamedTuple):
