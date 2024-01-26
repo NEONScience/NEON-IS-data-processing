@@ -62,7 +62,7 @@
 #' @examples
 #' # Not run
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.troll.flags <- function(DirIn="~/pfs/leveltroll500_calibration_group_and_convert/leveltroll500/2020/01/22/43705",
+#' wrap.troll.flags <- function(DirIn="~/pfs/aquatroll200_data_source_trino/aquatroll200/2020/01/02/10721",
 #'                               DirOutBase="~/pfs/out",
 #'                               SchmDataOut=NULL,
 #'                               SchmQf="~/R/NEON-IS-avro-schemas/troll_shared/flags_troll_specific.avsc",
@@ -93,28 +93,28 @@ wrap.troll.flags <- function(DirIn,
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutData <- base::paste0(DirOut,'/data')
   base::dir.create(DirOutData,recursive=TRUE)
-  DirInFlags <- base::paste0(DirIn,'/flags')
+  # DirInFlags <- base::paste0(DirIn,'/flags')
   DirOutFlags <- base::paste0(DirOut,'/flags')
   base::dir.create(DirOutFlags,recursive=TRUE)
+  # 
+  # 
+  # # Copy with a symbolic link the desired subfolders 
+  # DirSubCopy <- c('uncertainty_coef','uncertainty_data')
+  # if(base::length(DirSubCopy) > 0){
+  #   
+  #   NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
+  #                                      DirDest=DirOut,
+  #                                      LnkSubObj=FALSE,
+  #                                      log=log)
+  # }
   
-  
-  # Copy with a symbolic link the desired subfolders 
-  DirSubCopy <- c('uncertainty_coef','uncertainty_data')
-  if(base::length(DirSubCopy) > 0){
-    
-    NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
-                                       DirDest=DirOut,
-                                       LnkSubObj=FALSE,
-                                       log=log)
-  }
-  
-  # The flags folder is already populated from the calibration module. Copy over any existing files.
-  fileCopy <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
-  # Symbolically link each file
-  for(idxFileCopy in fileCopy){
-    cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
-    rptCopy <- base::system(cmdCopy)
-  }
+  # # The flags folder is already populated from the calibration module. Copy over any existing files.
+  # fileCopy <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
+  # # Symbolically link each file
+  # for(idxFileCopy in fileCopy){
+  #   cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
+  #   rptCopy <- base::system(cmdCopy)
+  # }
   
   # Take stock of our data files. 
   fileData <- base::list.files(dirInData,full.names=FALSE)
@@ -180,7 +180,7 @@ wrap.troll.flags <- function(DirIn,
   
   #Write out flags
   NameFileOutFlags <- base::paste0(DirOutFlags,"/troll_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc.parquet")
-  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQfOut),silent=FALSE)
+  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQf),silent=FALSE)
   if(class(rptQfOut) == 'try-error'){
     log$error(base::paste0('Cannot write Below Zero Pressure flags to ',NameFileOutFlags,'. ',attr(rptQfOut, "condition")))
     stop()
