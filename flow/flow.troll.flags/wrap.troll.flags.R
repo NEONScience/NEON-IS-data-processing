@@ -169,7 +169,7 @@ wrap.troll.flags <- function(DirIn,
   NameFileOutData <- base::paste0(DirOutData,"/",sensor,"_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),".parquet")
   rptDataOut <-
     base::try(NEONprocIS.base::def.wrte.parq(data = dataOut,NameFile = NameFileOutData,Schm = SchmDataOut),
-              silent = FALSE)
+              silent = TRUE)
   if (base::any(base::class(rptDataOut) == 'try-error')) {
     log$error(base::paste0('Cannot write data to ',NameFileOutData,'. ',attr(rptDataOut, "condition")))
     stop()
@@ -180,7 +180,7 @@ wrap.troll.flags <- function(DirIn,
   
   #Write out flags
   NameFileOutFlags <- base::paste0(DirOutFlags,"/troll_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc.parquet")
-  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQf),silent=FALSE)
+  rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQf),silent=TRUE)
   if(class(rptQfOut) == 'try-error'){
     log$error(base::paste0('Cannot write Below Zero Pressure flags to ',NameFileOutFlags,'. ',attr(rptQfOut, "condition")))
     stop()

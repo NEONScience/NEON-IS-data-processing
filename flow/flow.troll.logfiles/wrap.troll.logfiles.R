@@ -323,7 +323,7 @@ wrap.troll.logfiles <- function(DirIn,
           
           rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file,
                                                        NameFile = base::paste0(DirOutLogFile,csv_name,".parquet"),
-                                                       Schm = SchmDataOut),silent=FALSE)
+                                                       Schm = SchmDataOut),silent=TRUE)
           if(class(rptOut)[1] == 'try-error'){
             log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutLogFile,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
             stop()
