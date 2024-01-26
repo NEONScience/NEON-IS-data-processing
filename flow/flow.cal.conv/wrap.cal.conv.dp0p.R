@@ -312,7 +312,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
   
   # Copy with a symbolic link the desired subfolders 
   if(base::length(DirSubCopy) > 0){
-    if('flags' %in% DirSubCopy){
+    if(any(c('data','uncertainty_coef','uncertainty_data','flags') %in% DirSubCopy)){
       LnkSubObj <- TRUE
     } else {
       LnkSubObj <- FALSE
@@ -321,7 +321,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
                                        DirDest=dirOut,
                                        LnkSubObj=LnkSubObj,
                                        log=log)
-  } 
+  }
   
   # --------- Load the data ----------
   # Load in data file in parquet format into data frame 'data'. Grab the first file only, since there should only be one.
