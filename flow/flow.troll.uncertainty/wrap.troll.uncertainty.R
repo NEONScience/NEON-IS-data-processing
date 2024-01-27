@@ -93,6 +93,14 @@
 # changelog and author contributions / copyrights
 #   Nora Catolico (2023-10-03)
 #     Initial creation
+#'   Nora Catolico (2023-03-03)
+#'     updated for no troll data use case
+#'   Nora Catolico (2023-08-30)
+#'     updated for inst SW outputs for L4 discharge
+#'   Nora Catolico (2023-09-26)
+#'     updated for multiple sensors in one day 
+#'   Nora Catolico (2023-09-26)
+#'     updated to include water column height uncertainty for L4 discharge    
 ##############################################################################################
 wrap.troll.uncertainty <- function(DirIn,
                                    DirOutBase,
@@ -459,16 +467,16 @@ wrap.troll.uncertainty <- function(DirIn,
     timeDiff<-uncertaintyData$startDateTime[2]-uncertaintyData$startDateTime[1]
     uncertaintyData$endDateTime<-uncertaintyData$readout_time+timeDiff
     if(sensor=='aquatroll200'){
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn")
+      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn","elevation_ucrtMeas")
     }else{
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn")
+      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","elevation_ucrtMeas")
     }
     ucrtOut_inst <- uncertaintyData[,ucrtCol_inst]
     #standardize naming
     if(sensor=='aquatroll200'){
-      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
+      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert","waterColumnHeightMeasUncert")
     }else{
-      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert")
+      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","waterColumnHeightMeasUncert")
     }
     #write out instantaneous uncertainty data
     #ucrtOut_inst[,-c(1:2)] <-round(ucrtOut_inst[,-c(1:2)],2)

@@ -38,6 +38,18 @@ transform:
       "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
       "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
+    # ---- Run third module - quality metrics (instantaneous) - only for elevation/water column height for DSC---- 
+    Rscript ./flow.qaqc.qm.dp0p.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      Tmi=001 \
+      VarTimeBgn=readout_time \
+      VarTimeEnd=readout_time \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
     # We are done with aquatroll. Clean up interim directories before doing leveltroll
     rm -r -f /tmp/pfs/filter_joined
     mkdir -p /tmp/pfs/filter_joined
@@ -61,6 +73,18 @@ transform:
       "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
       "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF:-1"
+    # ---- Run third module - quality metrics (instantaneous) - only for elevation/water column height for DSC---- 
+    Rscript ./flow.qaqc.qm.dp0p.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      Tmi=001 \
+      VarTimeBgn=readout_time \
+      VarTimeEnd=readout_time \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF:-1" \
     EOF
   env:
     # Environment variables for filter-joiner

@@ -64,8 +64,8 @@
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' wrap.troll.cond.conv <- function(DirIn="~/pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/01/23681",
 #'                               DirOutBase="~/pfs/out",
-#'                               SchmDataOut="~/R/NEON-IS-avro-schemas/dp0p/aquatroll200_cond_corrected.avsc",
-#'                               SchmQf="~/R/NEON-IS-avro-schemas/dp0p/flags_troll_specific_temp.avsc",
+#'                               SchmDataOut="~/R/NEON-IS-avro_schemas/avro_schemas/aquatro11200/aquatro11200_cond_corrected.avsc",
+#'                               SchmQf="~/R/NEON-IS-avro_schemas/avro_schemas/troll_shared/flags_troll_specific_temp.avsc",
 #'                               DirSubCopy=NULL,
 #'                               log=log)
 #'                               
