@@ -115,6 +115,7 @@ def write_csv(path: Path, workbook_rows: list[dict],
 
 
 def get_field_formats(workbook_rows: list[dict]) -> dict[str, str]:
+    """Get the publication formats organized by field name."""
     formats_by_field_name = {}
     for row in workbook_rows:
         field_name = row['fieldName']
@@ -141,6 +142,7 @@ def parse_workbook_file(workbook_path: Path) -> list[dict]:
 
 
 def filter_workbook_rows(workbook_rows: list[dict], table_name: str, package_type: str) -> list[dict]:
+    """Filter the workbook by table name and download package type."""
     filtered_rows = []
     for row in workbook_rows:
         if row['table'] == table_name and row['downloadPkg'] == package_type:
@@ -149,6 +151,7 @@ def filter_workbook_rows(workbook_rows: list[dict], table_name: str, package_typ
 
 
 def get_workbook_header(workbook_rows: list[dict]) -> list[str]:
+    """Get the publication workbook header."""
     rows_by_rank: dict[int, str] = {}
     for row in workbook_rows:
         rank = int(row['rank'])
