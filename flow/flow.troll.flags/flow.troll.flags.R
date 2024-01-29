@@ -60,7 +60,8 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/leveltroll500_calibration_group_and_convert')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/aquatroll200_data_source_trino')
+#' aquatroll200_data_source_trino/aquatroll200/2020/01/02/10721/data/aquatroll200_10721_2020-01-02.parquet
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -132,7 +133,7 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
 DirSubCopy <-
   base::unique(base::setdiff(
     Para$DirSubCopy,
-    c('data', 'uncertainty_coef', 'uncertainty_data', 'flags')
+    c('data')
   ))
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
@@ -141,7 +142,7 @@ log$debug(base::paste0(
 
 
 #what are the expected subdirectories of each input path
-nameDirSub <- c('data','flags')
+nameDirSub <- c('data')
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
   base::paste0(nameDirSub, collapse = ',')

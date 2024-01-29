@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: leveltroll500_flags_specific
+  name: aquatroll200_flags_specific
 transform:
   image: quay.io/battelleecology/neon-is-troll-flags-r:3606e15b
   image_pull_secrets:
@@ -19,8 +19,8 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: leveltroll500_data_source_trino
-      glob: /leveltroll500/*/*/*/
+      repo: aquatroll200_data_source_trino
+      glob: /aquatroll200/*/*/*/
   - pfs:
       name: SCHEMA_FLAGS
       repo: troll_shared_avro_schemas
