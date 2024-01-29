@@ -24,7 +24,7 @@ class PublicationWriterTest(DatabaseBackedTest):
         self.setUpPyfakefs()
         self.add_input_files()
         self.add_workbook()
-        self.out_path = Path('/', 'output', 'ais_maintenance')
+        self.out_path = Path('/', 'output')
         self.out_path.mkdir(parents=True, exist_ok=True)
         self.partial_table_name = 'maintenance'
         self.file_type = 'csv'
@@ -32,11 +32,12 @@ class PublicationWriterTest(DatabaseBackedTest):
 
     def add_input_files(self):
         self.in_path = Path('/', 'input')
+        self.metadata_path = Path('DP1.20100.001', 'ARIK', '2020', '01')
         file1 = 'NEON.D10.ARIK.DP1.20100.001.003.000.030.RH_30min.2020-01.expanded.20230719T223823Z.csv'
         file2 = 'NEON.D10.ARIK.DP1.20100.001.003.000.030.RH_30min.2020-01.basic.20230719T223823Z.csv'
-        self.fs.create_file(Path(self.in_path, file1))
-        self.fs.create_file(Path(self.in_path, file2))
-        self.fs.create_file(Path(self.in_path, ManifestFile.get_filename()))
+        self.fs.create_file(Path(self.in_path, self.metadata_path, file1))
+        self.fs.create_file(Path(self.in_path, self.metadata_path, file2))
+        self.fs.create_file(Path(self.in_path, self.metadata_path, ManifestFile.get_filename()))
 
     def add_workbook(self):
         script_path = os.path.dirname(os.path.realpath(__file__))
@@ -78,7 +79,7 @@ class PublicationWriterTest(DatabaseBackedTest):
                 i += 1
                 # print(f'path: {path}')
                 # view_csv_file(path)
-        assert i == 2
+        assert i == 4
 
     def view_file(self, file_path):
         if self.file_type == 'csv':

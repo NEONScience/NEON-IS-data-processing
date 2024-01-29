@@ -25,40 +25,48 @@ def write_publication_files(*, input_path: Path, workbook_path: Path, out_path: 
                             data_loader: DataLoader, file_type: str, partial_table_name: str) -> None:
     """Write a file for each maintenance table."""
     now = datetime.now(timezone.utc)
-    time = now.strftime('%Y%m%dT%H%M%SZ')
+    time_str = now.strftime('%Y%m%dT%H%M%SZ')
     workbook_rows: list[dict] = parse_workbook_file(workbook_path)
     for path in input_path.rglob('*'):
-        if path.is_file() and path.name != ManifestFile.get_filename():
+        if path.is_file():
+            metadata_path = Path(*path.parts[2:]).parent
+            link_path = Path(out_path, metadata_path, path.name)
+            link_path.parent.mkdir(parents=True, exist_ok=True)
+            if not link_path.exists():
+                link_path.symlink_to(path)
+            # Process data files only
+            if path.name != ManifestFile.get_filename():
+                filename_parts = parse_filename(path.name)
+                data_product = path.parts[2]
+                package_type = filename_parts.package_type
+                date = filename_parts.date
+                domain = filename_parts.domain
+                site = filename_parts.site
 
-            filename_parts = parse_filename(path.name)
-            data_product = filename_parts.data_product_name
-            package_type = filename_parts.package_type
-            date = filename_parts.date
-            domain = filename_parts.domain
-            site = filename_parts.site
+                filename_prefix = f'NEON.{domain}.{site}.{data_product}'
+                filename_suffix = f'{date}.{package_type}.{time_str}.{file_type}'
 
-            filename_prefix = f'NEON.{domain}.{site}.{data_product}'
-            filename_suffix = f'{date}.{package_type}.{time}.{file_type}'
+                date_parts = date.split('-')
+                year = date_parts[0]
+                month = date_parts[1]
+                (start_date, end_date) = get_dates(int(year), int(month))
 
-            date_parts = date.split('-')
-            year = date_parts[0]
-            month = date_parts[1]
-            (start_date, end_date) = get_dates(int(year), int(month))
-
-            for table in data_loader.get_tables(partial_table_name):
-                table_workbook_rows = filter_workbook_rows(workbook_rows, table.name)
-                results = data_loader.get_site_results(table, site, start_date, end_date)
-                if results:
-                    values: dict[Result, list[ResultValue]] = {}
-                    for result in results:
-                        result_values = data_loader.get_result_values(result)
-                        values[result] = list(result_values.values())
-                    formatted_table_name = table.name.replace('_pub', '')
-                    filename = f'{filename_prefix}.{formatted_table_name}.{filename_suffix}'
-                    file_path = Path(out_path, site, year, month, filename)
-                    file_path.parent.mkdir(parents=True, exist_ok=True)
-                    if file_type == 'csv':
-                        write_csv(file_path, table_workbook_rows, values)
+                for table in data_loader.get_tables(partial_table_name):
+                    table_workbook_rows = filter_workbook_rows(workbook_rows, table.name, package_type)
+                    if not table_workbook_rows:
+                        continue
+                    results = data_loader.get_site_results(table, site, start_date, end_date)
+                    if results:
+                        values: dict[Result, list[ResultValue]] = {}
+                        for result in results:
+                            result_values = data_loader.get_result_values(result)
+                            values[result] = list(result_values.values())
+                        formatted_table_name = table.name.replace('_pub', '')
+                        filename = f'{filename_prefix}.{formatted_table_name}.{filename_suffix}'
+                        file_path = Path(out_path, metadata_path, filename)
+                        file_path.parent.mkdir(parents=True, exist_ok=True)
+                        if file_type == 'csv':
+                            write_csv(file_path, table_workbook_rows, values)
 
 
 def write_csv(path: Path, workbook_rows: list[dict],
@@ -98,7 +106,7 @@ def write_csv(path: Path, workbook_rows: list[dict],
                 if string_value is not None:
                     row.append(format_string(string_value, publication_format))
                 if number_value is not None:
-                    row.append(format_number(number_value, publication_format)) # TODO: use format
+                    row.append(format_number(number_value, publication_format))
                 if date_value is not None:
                     row.append(format_date(date_value, publication_format))
                 if uri_value is not None:
@@ -108,9 +116,9 @@ def write_csv(path: Path, workbook_rows: list[dict],
 
 def get_field_formats(workbook_rows: list[dict]) -> dict[str, str]:
     formats_by_field_name = {}
-    for workbook_row in workbook_rows:
-        field_name = workbook_row['fieldName']
-        field_format = workbook_row['pubFormat']
+    for row in workbook_rows:
+        field_name = row['fieldName']
+        field_format = row['pubFormat']
         formats_by_field_name[field_name] = field_format
     return formats_by_field_name
 
@@ -132,11 +140,10 @@ def parse_workbook_file(workbook_path: Path) -> list[dict]:
                 return list(reader)
 
 
-def filter_workbook_rows(workbook_rows: list[dict], table_name: str) -> list[dict]:
-    filtered_rows: list[dict] = []
+def filter_workbook_rows(workbook_rows: list[dict], table_name: str, package_type: str) -> list[dict]:
+    filtered_rows = []
     for row in workbook_rows:
-        row_table_name = row['table']
-        if row_table_name == table_name:
+        if row['table'] == table_name and row['downloadPkg'] == package_type:
             filtered_rows.append(row)
     return filtered_rows
 
