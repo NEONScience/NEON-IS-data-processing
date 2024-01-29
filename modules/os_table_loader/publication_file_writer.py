@@ -26,7 +26,6 @@ def write_publication_files(*, input_path: Path, workbook_path: Path, out_path: 
     """Write a file for each maintenance table."""
     now = datetime.now(timezone.utc)
     time_str = now.strftime('%Y%m%dT%H%M%SZ')
-    workbook_rows: list[dict] = parse_workbook_file(workbook_path)
     for path in input_path.rglob('*'):
         if path.is_file():
             metadata_path = Path(*path.parts[2:]).parent
@@ -42,6 +41,8 @@ def write_publication_files(*, input_path: Path, workbook_path: Path, out_path: 
                 date = filename_parts.date
                 domain = filename_parts.domain
                 site = filename_parts.site
+
+                workbook_rows: list[dict] = parse_workbook_file(workbook_path, data_product)
 
                 filename_prefix = f'NEON.{domain}.{site}.{data_product}'
                 filename_suffix = f'{date}.{package_type}.{time_str}.{file_type}'
@@ -132,13 +133,16 @@ def get_dates(year: int, month: int) -> Tuple[datetime, datetime]:
     return start_date, end_date
 
 
-def parse_workbook_file(workbook_path: Path) -> list[dict]:
+def parse_workbook_file(workbook_path: Path, data_product_idq: str) -> list[dict]:
     """Parse the publication workbook file into a list of dictionaries."""
+    expected_filename = f'publication_workbook_NEON.DOM.SITE.{data_product_idq}.txt'
     for path in workbook_path.rglob('*'):
         if path.is_file():
-            with open(path) as file:
-                reader = csv.DictReader(file, delimiter='\t')
-                return list(reader)
+            if path.name == expected_filename:
+                with open(path) as file:
+                    reader = csv.DictReader(file, delimiter='\t')
+                    return list(reader)
+    raise SystemExit(f'Publication workbook "{expected_filename}" not found.')
 
 
 def filter_workbook_rows(workbook_rows: list[dict], table_name: str, package_type: str) -> list[dict]:
