@@ -63,8 +63,8 @@ input:
         name: DATA_PATH
         repo: leveltroll500_location_group_and_restructure
         # For full-scale daily processing, glob should be /leveltroll500/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /leveltroll500/(*/*/*/(CFGLOC101669|CFGLOC101671))
-        glob: /leveltroll500/(*/*/*/(CFGLOC101375|CFGLOC101379|CFGLOC101669|CFGLOC101671))
-        #glob: /leveltroll500/(*/*/*)
+        # glob: /leveltroll500/(*/*/*/(CFGLOC101375|CFGLOC101379|CFGLOC101669|CFGLOC101671))
+        glob: /leveltroll500/(*/*/*)
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
@@ -72,11 +72,11 @@ input:
           name: LOCATION_PATH
           repo: leveltroll500_location_active_dates_assignment
           # For full-scale daily processing, glob should be /leveltroll500/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /leveltroll500/((*/*/*)/(CFGLOC101669|CFGLOC101671))
-          glob: /leveltroll500/((*/*/*)/(CFGLOC101375|CFGLOC101379|CFGLOC101669|CFGLOC101671))
-          # glob: /leveltroll500/(*/*/*)
+          # glob: /leveltroll500/((*/*/*)/(CFGLOC101375|CFGLOC101379|CFGLOC101669|CFGLOC101671))
+          glob: /leveltroll500/(*/*/*)
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
-          joinOn: $2
-          #joinOn: $1
+          # joinOn: $2
+          joinOn: $1
           group_by: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
