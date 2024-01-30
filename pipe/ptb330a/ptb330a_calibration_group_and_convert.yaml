@@ -3,7 +3,7 @@ pipeline:
   name: ptb330a_calibration_group_and_convert
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-cal-grp-conv:4178f7b8
+  image: quay.io/battelleecology/neon-is-cal-grp-conv:e0a9420e
   cmd:
   - sh
   - "-c"

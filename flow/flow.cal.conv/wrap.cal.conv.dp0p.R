@@ -197,6 +197,8 @@
 #     Fix a misplaced parenthesis in if cond,
 #   Cove Sturtevant (2022-08-25)
 #     Write empty uncertainty_coef json file even if no uncertainty coefs. 
+#   Nora Catolico (2023-01-26)
+#     Update dirSubCopy to allow copying of individual files as opposed to the whole directory
 ##############################################################################################
 wrap.cal.conv.dp0p <- function(DirIn,
                                DirOutBase,
@@ -308,10 +310,17 @@ wrap.cal.conv.dp0p <- function(DirIn,
                                   log = log)
   }
   
-  # Copy with a symbolic link the desired subfolders
-  if (base::length(DirSubCopy) > 0) {
-    NEONprocIS.base::def.dir.copy.symb(base::paste0(DirIn, '/', DirSubCopy), dirOut, log =
-                                         log)
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirSubCopy) > 0){
+    if(any(c('data','uncertainty_coef','uncertainty_data','flags') %in% DirSubCopy)){
+      LnkSubObj <- TRUE
+    } else {
+      LnkSubObj <- FALSE
+    }
+    NEONprocIS.base::def.dir.copy.symb(DirSrc=base::paste0(DirIn,'/',DirSubCopy),
+                                       DirDest=dirOut,
+                                       LnkSubObj=LnkSubObj,
+                                       log=log)
   }
   
   # --------- Load the data ----------

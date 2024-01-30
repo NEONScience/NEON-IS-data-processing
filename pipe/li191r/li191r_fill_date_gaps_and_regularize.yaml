@@ -87,7 +87,7 @@ input:
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 2G
