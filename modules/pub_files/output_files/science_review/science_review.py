@@ -23,7 +23,7 @@ def write_file(file_metadata: FileMetadata, package_type: str, timestamp: dateti
     terms: list[Term] = []
     file_path = get_file_path(file_metadata, timestamp)
     variables = database.get_variables()
-    header = get_header(variables, package_type)
+    header = get_header(variables, 'basic') # SRF file variables are same for basic and expanded
     with open(file_path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(header)

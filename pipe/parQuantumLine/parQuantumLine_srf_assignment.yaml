@@ -28,7 +28,7 @@ input:
       repo: li191r_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 4
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 200M
