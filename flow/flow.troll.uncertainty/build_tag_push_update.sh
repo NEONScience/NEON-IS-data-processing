@@ -10,4 +10,4 @@ cd ../..
 
 Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "quay.io/battelleecology/$image_name" "$tag"
 
-#also need to update modules_combined/neon-is-troll-stat-ucrt-grp
+#also need to update modules_combined: neon-is-troll-stat-ucrt-grp

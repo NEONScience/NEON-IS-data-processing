@@ -53,7 +53,13 @@
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
 #' leveltroll500 (does not output conductivity) in your schema.
 #' 
-#' @param SchmUcrtOut String. Optional. Full path to the avro schema for the output uncertainty data 
+#' @param SchmUcrtOutAgr String. Optional. Full path to the avro schema for the output aggregate uncertainty data 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
+#' 
+#' @param SchmUcrtOutInst String. Optional. Full path to the avro schema for the output instantaneous uncertainty data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
@@ -84,7 +90,8 @@
 #'                               WndwInst=TRUE,
 #'                               WndwAgr='030',
 #'                               SchmDataOut=NULL,
-#'                               SchmUcrtOut=NULL,
+#'                               SchmUcrtOutAgr=NULL,
+#'                               SchmUcrtOutInst=NULL,
 #'                               SchmSciStatsOut=NULL,
 #'                               log=log)
 
@@ -99,8 +106,9 @@
 #'     updated for inst SW outputs for L4 discharge
 #'   Nora Catolico (2023-09-26)
 #'     updated for multiple sensors in one day 
-#'   Nora Catolico (2023-09-26)
-#'     updated to include water column height uncertainty for L4 discharge    
+#'   Nora Catolico (2024-01-29)
+#'     updated to include water column height uncertainty for L4 discharge 
+#'     distinguish between average and instantaneous uncertainty outputs
 ##############################################################################################
 wrap.troll.uncertainty <- function(DirIn,
                                    DirOutBase,
@@ -108,7 +116,8 @@ wrap.troll.uncertainty <- function(DirIn,
                                    WndwInst,
                                    WndwAgr,
                                    SchmDataOut=NULL,
-                                   SchmUcrtOut=NULL,
+                                   SchmUcrtOutAgr=NULL,
+                                   SchmUcrtOutInst=NULL,
                                    SchmSciStatsOut=NULL,
                                    log=NULL
 ){
@@ -486,11 +495,11 @@ wrap.troll.uncertainty <- function(DirIn,
     if(Context=='GW'){
       rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst,
                                                             NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"),
-                                                            Schm = SchmUcrtOut),silent=TRUE)
+                                                            Schm = SchmUcrtOutInst),silent=TRUE)
     }else{
       rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst,
                                                             NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_001.parquet"),
-                                                            Schm = SchmUcrtOut),silent=TRUE)
+                                                            Schm = SchmUcrtOutInst),silent=TRUE)
     }
 
 
@@ -638,7 +647,7 @@ wrap.troll.uncertainty <- function(DirIn,
       }
       rptUcrtOut_Agr <- try(NEONprocIS.base::def.wrte.parq(data = rptUcrt,
                                                            NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_","ucrt_",window,".parquet"),
-                                                           Schm = SchmUcrtOut),silent=TRUE)
+                                                           Schm = SchmUcrtOutAgr),silent=TRUE)
 
       if(any(grepl('try-error',class(rptUcrtOut_Agr)))){
         log$error(base::paste0('Writing the output data failed: ',attr(rptUcrtOut_Agr,"condition")))
