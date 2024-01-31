@@ -60,7 +60,7 @@ def write_publication_files(config: PublicationConfig) -> None:
                             new_files[path_parts.package_type].append(file_path)
             elif path.name == ManifestFile.get_filename():
                 output_path = Path(config.path_config.out_path, path_parts.metadata_path)
-                output_path.mkdir(parents=True, exist_ok=True)
+                log.debug(f'Creating new manifest {path}.')
                 manifest_file = ManifestFile(path, path_parts.package_type, output_path)
                 manifest_files[path_parts.package_type] = manifest_file
     write_manifests(manifest_files, new_files)
