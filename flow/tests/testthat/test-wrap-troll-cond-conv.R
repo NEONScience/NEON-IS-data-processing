@@ -90,11 +90,12 @@ test_that("Unit test of wrap.troll.cond.conv.R", {
   testInputDir = 'pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/02/1285'
   testavsc = 'pfs/dp0p/aquatroll200_cond_corrected.avsc'
   testSchmQf='pfs/dp0p/flags_troll_specific_temp.avsc'
+  SchmQf = '~/R/NEON-IS-avro_schemas/avro_schemas/troll_shared/flags_troll_specific_temp.avsc'
   
   wrap.troll.cond.conv (DirIn=testInputDir, 
                         DirOutBase=testOutputBase, 
                         SchmDataOut=NULL, 
-                        SchmQf=testSchmQf,
+                        SchmQf=SchmQf,
                         DirSubCopy=NULL,
                         log=NULL)
   
