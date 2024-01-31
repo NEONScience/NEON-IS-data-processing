@@ -1,6 +1,6 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
-image_name=neon-l0-data-loader
+image_name=l0_data_loader
 tag=$(git rev-parse --short HEAD)
 cd ./modules
 docker build -t $image_name:latest -f ./l0_data_loader/Dockerfile .
