@@ -34,8 +34,8 @@ def write_publication_files(config: PublicationConfig) -> None:
             log.debug(f'path_parts: {path_parts}')
             year = int(path_parts.year)
             month = int(path_parts.month)
-            write_file(config.path_config.out_path, path_parts.metadata_path, path)
             if path.name != ManifestFile.get_filename():
+                write_file(config.path_config.out_path, path_parts.metadata_path, path)
                 domain = path.name.split('.')[1]
                 (start_date, end_date) = get_full_month(year, month)
                 workbook_path = config.path_config.workbook_path
