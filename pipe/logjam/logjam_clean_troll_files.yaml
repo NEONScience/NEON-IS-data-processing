@@ -1,43 +1,41 @@
 ---
 pipeline:
-  name: logjam_load_files
+  name: logjam_clean_troll_files
 transform:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums"
+  - Rscript
+      ./flow.troll.logfiles.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+  image: quay.io/battelleecology/neon-is-troll-logfiles-r:46164f26
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-logjam-loader:v0.0.21
-  cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m logjam_loader.load_all_logjam_files
   env:
-    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
-    OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    STARTING_PATH_INDEX: "7"
-  secrets:
-  - name: pdr-secret
-    mount_path: /var/db_secret
 input:
-  pfs:
-    name: IN_PATH
-    repo: logjam_list_files
-    glob: /*/*/*/logjam_prod/21115/*
-    empty_files: true
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: logjam_load_files
+      glob: /*
 parallelism_spec:
-  constant: 10
+  constant: 3
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.5
-resource_limits:
-  memory: 1G
+  memory: 400M
   cpu: 1.5
+resource_limits:
+  memory: 800M
+  cpu: 2
 sidecar_resource_requests:
   memory: 2G
-  cpu: 0.2
+  cpu: 0.3
 datum_set_spec:
-  number: 1
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
