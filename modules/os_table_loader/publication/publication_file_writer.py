@@ -27,7 +27,7 @@ def write_publication_files(config: PublicationConfig) -> None:
     """Write a file for each maintenance table."""
     now = datetime.now(timezone.utc)
     manifest_files = {}
-    new_files = defaultdict(list)
+    new_files = defaultdict(set)
     for path in config.path_config.input_path.rglob('*'):
         if path.is_file():
             path_parts = parse_path(path, config.path_config)
@@ -57,7 +57,7 @@ def write_publication_files(config: PublicationConfig) -> None:
                         file_path.parent.mkdir(parents=True, exist_ok=True)
                         if config.file_type == 'csv':
                             write_csv(file_path, table_workbook_rows, values)
-                            new_files[path_parts.package_type].append(file_path)
+                            new_files[path_parts.package_type].add(file_path)
             elif path.name == ManifestFile.get_filename():
                 output_path = Path(config.path_config.out_path, path_parts.metadata_path)
                 log.debug(f'Creating new manifest {path}.')
