@@ -31,6 +31,7 @@ def write_publication_files(config: PublicationConfig) -> None:
     for path in config.path_config.input_path.rglob('*'):
         if path.is_file():
             path_parts = parse_path(path, config.path_config)
+            log.debug(f'path_parts: {path_parts}')
             year = int(path_parts.year)
             month = int(path_parts.month)
             write_file(config.path_config.out_path, path_parts.metadata_path, path)
