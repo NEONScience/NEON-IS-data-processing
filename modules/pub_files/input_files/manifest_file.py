@@ -32,6 +32,13 @@ class ManifestFile:
         self._remove_files()
         self.visibility = self._get_visibility()
 
+    def add_file(self, path: Path, has_data: bool) -> None:
+        self._add_row(path.name,
+                      str(has_data),
+                      self.visibility,
+                      str(os.path.getsize(path)),
+                      self._get_md5_hash(path))
+
     def add_metadata_files(self, variables_file: Path, positions_file: Path, eml_file: Path, readme_file: Path,
                            science_review_file: Optional[ScienceReviewFile]) -> None:
         """Add the metadata files to the manifest."""
