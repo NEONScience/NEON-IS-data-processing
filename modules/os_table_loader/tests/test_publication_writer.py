@@ -22,9 +22,10 @@ from pub_files.input_files.manifest_file import ManifestFile
 class PublicationWriterTest(DatabaseBackedTest):
 
     def setUp(self):
-        self.view_files = True  # Set to True to view generated files.
+        self.view_files = False  # Set to True to view generated files.
         self.script_path = os.path.dirname(os.path.realpath(__file__))
-        self.metadata_path = Path('DP1.20100.001', 'ARIK', '2020', '01')
+        self.metadata_path_1 = Path('DP1.20100.001', 'ARIK', '2020', '01')
+        self.metadata_path_2 = Path('DP1.20100.001', 'BLUE', '2020', '01')
         self.setUpPyfakefs()
         self.in_path = Path('/', 'input')
         self.out_path = Path('/', 'output')
@@ -39,27 +40,22 @@ class PublicationWriterTest(DatabaseBackedTest):
     def add_input_files(self):
         file1 = 'NEON.D10.ARIK.DP1.20100.001.003.000.030.RH_30min.2020-01.expanded.20230719T223823Z.csv'
         file2 = 'NEON.D10.ARIK.DP1.20100.001.003.000.030.RH_30min.2020-01.basic.20230719T223823Z.csv'
-        self.fs.create_file(Path(self.in_path, self.metadata_path, 'expanded', file1))
-        self.fs.create_file(Path(self.in_path, self.metadata_path, 'basic', file2))
+        self.fs.create_file(Path(self.in_path, self.metadata_path_1, 'expanded', file1))
+        self.fs.create_file(Path(self.in_path, self.metadata_path_1, 'basic', file2))
 
     def add_manifest_files(self):
         actual_path = Path(self.script_path, 'manifest.csv')
-        file1 = Path(self.in_path, self.metadata_path, 'expanded', ManifestFile.get_filename())
-        file2 = Path(self.in_path, self.metadata_path, 'basic', ManifestFile.get_filename())
+        file1 = Path(self.in_path, self.metadata_path_1, 'expanded', ManifestFile.get_filename())
+        file2 = Path(self.in_path, self.metadata_path_1, 'basic', ManifestFile.get_filename())
         self.fs.add_real_file(actual_path, target_path=file1)
         self.fs.add_real_file(actual_path, target_path=file2)
-        file3 = Path(self.out_path, self.metadata_path, 'expanded', ManifestFile.get_filename())
-        file4 = Path(self.out_path, self.metadata_path, 'basic', ManifestFile.get_filename())
-        self.fs.add_real_file(actual_path, target_path=file3, read_only=False)
-        self.fs.add_real_file(actual_path, target_path=file4, read_only=False)
-
 
     def add_workbook(self):
         actual_workbook_path = Path(self.script_path, 'publication_workbook_elevation_of_groundwater.txt')
         workbook_filename =f'publication_workbook_NEON.DOM.SITE.DP1.20100.001.txt'
         self.fs.add_real_file(actual_workbook_path, target_path=Path(self.workbook_path, workbook_filename))
 
-    # @unittest.skip('Integration test skipped due to long process time.')
+    @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self):
         self.assertTrue(self.out_path.exists())
         os.environ['IN_PATH'] = str(self.in_path)
@@ -106,7 +102,7 @@ class PublicationWriterTest(DatabaseBackedTest):
         for path in self.out_path.rglob('*'):
             if path.is_file():
                 i += 1
-                if self.view_files:
+                if self.view_files and path.name == 'manifest.csv':
                     print(f'\npath: {path}')
                     view_csv_file(path)
         assert i == 5

@@ -106,10 +106,15 @@ class ManifestFile:
         return Visibility.private
 
     def _remove_files(self) -> None:
-        """Remove files without the package type."""
+        """Remove data files whose names do not contain the package type."""
         for row in self.manifest:
             filename = row[self.column_names[0]]
-            if self.package_type not in filename:
+            if self.package_type not in filename \
+                    and 'EML' not in filename \
+                    and 'variables' not in filename\
+                    and 'readme' not in filename\
+                    and 'science_review_flags' not in filename\
+                    and 'sensor_positions' not in filename:
                 self.manifest.remove(row)
 
     @staticmethod

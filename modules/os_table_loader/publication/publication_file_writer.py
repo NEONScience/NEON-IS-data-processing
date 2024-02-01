@@ -6,8 +6,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Tuple
 
-import structlog
-
 from os_table_loader.data.result_loader import Result
 from os_table_loader.data.result_values_loader import ResultValue
 from os_table_loader.data.table_loader import Table
@@ -20,9 +18,6 @@ import os_table_loader.publication.workbook_parser as workbook_parser
 from pub_files.input_files.manifest_file import ManifestFile
 
 
-log = structlog.get_logger()
-
-
 def write_publication_files(config: PublicationConfig) -> None:
     """Write a file for each maintenance table."""
     now = datetime.now(timezone.utc)
@@ -31,15 +26,17 @@ def write_publication_files(config: PublicationConfig) -> None:
     for path in config.path_config.input_path.rglob('*'):
         if path.is_file():
             path_parts = parse_path(path, config.path_config)
-            log.debug(f'path_parts: {path_parts}')
-            year = int(path_parts.year)
-            month = int(path_parts.month)
-            if path.name != ManifestFile.get_filename():
-                write_file(config.path_config.out_path, path_parts.metadata_path, path)
+            if path.name == 'manifest.csv':
+                output_path = Path(config.path_config.out_path, path_parts.metadata_path)
+                manifest_file = ManifestFile(path, path_parts.package_type, output_path)
+                manifest_files[path_parts.package_type] = manifest_file
+            else:
+                link_file(config.path_config.out_path, path_parts.metadata_path, path)
                 domain = path.name.split('.')[1]
-                (start_date, end_date) = get_full_month(year, month)
+                (start_date, end_date) = get_full_month(int(path_parts.year), int(path_parts.month))
                 workbook_path = config.path_config.workbook_path
-                workbook_rows: list[dict] = workbook_parser.parse_workbook_file(workbook_path, path_parts.data_product)
+                workbook_rows: list[dict] = workbook_parser.parse_workbook_file(workbook_path,
+                                                                                path_parts.data_product)
                 for table in config.data_loader.get_tables(config.partial_table_name):
                     table_workbook_rows = workbook_parser.filter_workbook_rows(workbook_rows,
                                                                                table.name,
@@ -58,11 +55,6 @@ def write_publication_files(config: PublicationConfig) -> None:
                         if config.file_type == 'csv':
                             write_csv(file_path, table_workbook_rows, values)
                             new_files[path_parts.package_type].add(file_path)
-            elif path.name == ManifestFile.get_filename():
-                output_path = Path(config.path_config.out_path, path_parts.metadata_path)
-                log.debug(f'Creating new manifest {path}.')
-                manifest_file = ManifestFile(path, path_parts.package_type, output_path)
-                manifest_files[path_parts.package_type] = manifest_file
     write_manifests(manifest_files, new_files)
 
 
@@ -121,13 +113,13 @@ def write_csv(path: Path, workbook_rows: list[dict],
             writer.writerow(row)
 
 
-def write_file(out_path: Path, metadata_path: Path, path: Path) -> Path:
+def link_file(out_path: Path, metadata_path: Path, path: Path) -> None:
     """Link the input file into the output path."""
     link_path = Path(out_path, metadata_path, path.name)
     link_path.parent.mkdir(parents=True, exist_ok=True)
     if not link_path.exists():
         link_path.symlink_to(path)
-    return metadata_path
+
 
 def get_full_month(year: int, month: int) -> Tuple[datetime, datetime]:
     """Return the start and end dates for the month."""
@@ -137,7 +129,7 @@ def get_full_month(year: int, month: int) -> Tuple[datetime, datetime]:
     return start_date, end_date
 
 
-def get_filename(table: Table, domain, now: datetime, path_parts: PathParts, config: PublicationConfig):
+def get_filename(table: Table, domain, now: datetime, path_parts: PathParts, config: PublicationConfig) -> str:
     table_name = table.name.replace('_pub', '')
     year = path_parts.year
     month = path_parts.month
