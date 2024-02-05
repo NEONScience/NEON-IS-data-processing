@@ -67,9 +67,9 @@ class PublicationWriterTest(DatabaseBackedTest):
         os.environ['LOG_LEVEL'] = 'DEBUG'
         os.environ['INPUT_PATH_PARSE_INDEX'] = '2'
         os.environ['DATA_PRODUCT_PATH_INDEX'] = '2'
+        os.environ['SITE_PATH_INDEX'] = '3'
         os.environ['YEAR_PATH_INDEX'] = '4'
         os.environ['MONTH_PATH_INDEX'] = '5'
-        os.environ['SITE_PATH_INDEX'] = '3'
         os.environ['PACKAGE_TYPE_PATH_INDEX'] = '6'
         main()
         for path in self.out_path.rglob('*'):
