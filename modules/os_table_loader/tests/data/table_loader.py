@@ -1,4 +1,4 @@
-from os_table_loader.table_loader import Table
+from os_table_loader.data.table_loader import Table
 
 
 def get_tables(_partial_table_name) -> list[Table]:

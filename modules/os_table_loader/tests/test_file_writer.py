@@ -8,23 +8,24 @@ from pathlib import Path
 from pyarrow import parquet as pq
 
 from data_access.tests.database_test import DatabaseBackedTest
-from os_table_loader.data_reader import DataReader
-from os_table_loader.loader import load_files
+from os_table_loader.data.data_loader import DataLoader
+from os_table_loader.file_writer import write_files
 from os_table_loader.main import main
-from os_table_loader.tests.mock_field_loader import get_fields
-from os_table_loader.tests.mock_result_values_loader import get_result_values
-from os_table_loader.tests.mock_result_loader import get_results
-from os_table_loader.tests.mock_table_loader import get_tables
+from os_table_loader.tests.data.field_loader import get_fields
+from os_table_loader.tests.data.result_values_loader import get_result_values
+from os_table_loader.tests.data.result_loader import get_results, get_site_results
+from os_table_loader.tests.data.table_loader import get_tables
 
 
 class LoaderTest(DatabaseBackedTest):
 
     def setUp(self):
-        root = os.path.dirname(os.path.realpath(__file__))
-        self.out_dir = Path(root, 'out_file')
+        script_path = os.path.dirname(os.path.realpath(__file__))
+        self.out_dir = Path(script_path, 'out_file')
         self.out_path = Path(self.out_dir, 'ais_maintenance')
         self.out_path.mkdir(parents=True, exist_ok=True)
-        self.file_type = 'parquet'
+        self.partial_table_name = 'maintenance'
+        self.file_type = 'csv'
         self.cleanup = True
 
     @unittest.skip('Integration test skipped due to long process time.')
@@ -32,7 +33,7 @@ class LoaderTest(DatabaseBackedTest):
         self.assertTrue(self.out_path.exists())
         os.environ['OUT_PATH'] = str(self.out_path)
         os.environ['FILE_TYPE'] = self.file_type
-        os.environ['PARTIAL_TABLE_NAME'] = 'maintenance'
+        os.environ['PARTIAL_TABLE_NAME'] = self.partial_table_name
         os.environ['DB_CONFIG_SOURCE'] = 'environment'
         os.environ['LOG_LEVEL'] = 'DEBUG'
         main()
@@ -51,12 +52,13 @@ class LoaderTest(DatabaseBackedTest):
         if self.cleanup:
             self.remove_directories()
 
-    def test_load_files(self):
-        data_reader = DataReader(get_tables=get_tables,
+    def test_write_files(self):
+        data_loader = DataLoader(get_tables=get_tables,
                                  get_fields=get_fields,
                                  get_results=get_results,
+                                 get_site_results=get_site_results,
                                  get_result_values=get_result_values)
-        load_files(self.out_path, data_reader, self.file_type, 'maintenance')
+        write_files(self.out_path, data_loader, self.file_type, self.partial_table_name)
         file_name = f'NEON.DOM.SITE.DP1.00026.001.ais_maintenanceGroundwater_pub.{self.file_type}'
         file_path = Path(self.out_path, file_name)
         self.assertTrue(file_path.exists())
@@ -81,7 +83,6 @@ class LoaderTest(DatabaseBackedTest):
 def view_csv_file(file_path: Path):
     with closing(open(file_path, 'r', encoding='UTF8')) as file:
         print()
-        print(f'file: {file_path}')
         csv_reader = csv.reader(file)
         for line in csv_reader:
             print(line)

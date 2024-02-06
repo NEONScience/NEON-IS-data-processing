@@ -5,15 +5,15 @@ from io import StringIO
 import pandas
 import pyarrow
 
-from os_table_loader.csv_file_writer import get_csv_text
-from os_table_loader.field_loader import Field
-from os_table_loader.file_writer import get_filepath, get_filename
+from os_table_loader.output.csv_file_writer import get_csv_text
+from os_table_loader.data.field_loader import Field
+from os_table_loader.output.file_path import get_filepath, get_filename
 from os_table_loader.table_data import TableData
 
 
 def write_file(out_path: Path, table_data: TableData) -> None:
     """Write a Parquet file for the given maintenance table."""
-    file_name = get_filename(table_data.table, 'parquet')
+    file_name = get_filename(table=table_data.table, extension='parquet')
     file_path = get_filepath(out_path, file_name)
     schema_json = get_avro_schema(table_data.fields)
     csv_text = get_csv_text(table_data)
