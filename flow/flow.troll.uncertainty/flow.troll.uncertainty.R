@@ -59,7 +59,11 @@
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
 #' leveltroll500 (does not output conductivity) in your schema.
 #' 
-#' 10. "FileSchmSciStats=value" (optional), where values is the full path to the avro schema for the output science statistics
+#' 10. "FileSchmStats=value" (optional), where values is the full path to the avro schema for the output statistics
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. 
+#' 
+#' 11. "FileSchmSciStats=value" (optional), where values is the full path to the avro schema for the output science statistics
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. 
 #'
@@ -82,10 +86,21 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2020/01/05') #troll data
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/surfacewaterPhysical_group_path/2020/01/05/surfacewater-physical_BARC130100/aquatroll200/CFGLOC113600/uncertainty_data) #uncertainty data
+#' Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau') #troll data
+#' Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_group_path') #uncertainty data
+#' Sys.setenv(FILE_SCHEMA_STATS_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc')
+#' Sys.setenv(SCHEMA_DATA_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc')
+#' Sys.setenv(SCHEMA_UCRT_AGR_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc')
+#' Sys.setenv(SCHEMA_UCRT_INST_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc')
+#' Sys.setenv(FILE_SCHEMA_STATS_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc')
+#' Sys.setenv(SCHEMA_DATA_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_data.avsc')
+#' Sys.setenv(SCHEMA_UCRT_AGR_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt.avsc')
+#' Sys.setenv(SCHEMA_UCRT_INST_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt_inst.avsc')
+#' Sys.setenv(SCHEMA_SCI_TROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","Context=surfacewater","WndwInst=TRUE","WndwAgr=005|030")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","Context=surfacewater","WndwInst=TRUE","WndwAgr=005|030",
+#' "FileSchmData=$SCHEMA_DATA_TROLL_AQUATROLL","FileSchmUcrtAgr=$SCHEMA_UCRT_AGR_TROLL_AQUATROLL","FileSchmUcrtInst=$SCHEMA_UCRT_INST_TROLL_AQUATROLL",
+#' "FileSchmStats=$FILE_SCHEMA_STATS_AQUATROLL","FileSchmSciStats=$SCHEMA_SCI_TROLL")
 #' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
@@ -127,7 +142,7 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr","Context"),NameParaOptn = c("FileSchmData","FileSchmUcrtAgr","FileSchmUcrtInst","FileSchmSciStats","WndwInst","WndwAgr"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr","Context"),NameParaOptn = c("FileSchmData","FileSchmUcrtAgr","FileSchmUcrtInst","FileSchmStats","FileSchmSciStats","WndwInst","WndwAgr"),log = log)
 
 
 # Echo arguments
@@ -140,6 +155,7 @@ log$debug(base::paste0('Aggregation interval(s): ', Para$WndwAgr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output aggregate uncertainty: ', Para$FileSchmUcrtAgr))
 log$debug(base::paste0('Schema for output instantaneous uncertainty: ', Para$FileSchmUcrtInst))
+log$debug(base::paste0('Schema for output stats: ', Para$FileSchmStats))
 log$debug(base::paste0('Schema for output science stats: ', Para$FileSchmSciStats))
 
 # Read in the schemas so we only have to do it once and not every
@@ -158,6 +174,11 @@ if(base::is.null(Para$FileSchmUcrtInst) || Para$FileSchmUcrtInst == 'NA'){
   SchmUcrtOutInst <- NULL
 } else {
   SchmUcrtOutInst <- base::paste0(base::readLines(Para$FileSchmUcrtInst),collapse='')
+}
+if(base::is.null(Para$FileSchmStats) || Para$FileSchmStats == 'NA'){
+  SchmStatsOut <- NULL
+} else {
+  SchmStatsOut <- base::paste0(base::readLines(Para$FileSchmStats),collapse='')
 }
 if(base::is.null(Para$FileSchmSciStats) || Para$FileSchmSciStats == 'NA'){
   SchmSciStatsOut <- NULL
@@ -229,6 +250,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         SchmDataOut=SchmDataOut,
         SchmUcrtOutAgr=SchmUcrtOutAgr,
         SchmUcrtOutInst=SchmUcrtOutInst,
+        SchmStatsOut=SchmStatsOut,
         SchmSciStatsOut=SchmSciStatsOut,
         log=log
       ),
