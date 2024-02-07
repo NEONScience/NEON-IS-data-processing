@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/group_path:ab8c_errored_v6
+  image: quay.io/battelleecology/group_path:ab8c0517
   cmd:
   - /bin/bash
   stdin:
