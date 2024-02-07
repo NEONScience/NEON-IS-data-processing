@@ -99,7 +99,7 @@ def.cal.conv.poly.split <- function(data = data.frame(data=base::numeric(0)),
     if(data[[varConv]][i]>100){
       dataConv_i<-stats::predict(object = func1, newdata = data[[varConv]][i])
     }else{
-      dataConv_i<-stats::predict(object = func1, newdata = data[[varConv]][i])
+      dataConv_i<-stats::predict(object = func2, newdata = data[[varConv]][i])
     }
     if(i==1){
       dataConv<-dataConv_i
