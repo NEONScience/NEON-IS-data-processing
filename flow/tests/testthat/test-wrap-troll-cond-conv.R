@@ -84,44 +84,59 @@ test_that("Unit test of wrap.troll.cond.conv.R", {
   library(stringr)
   log <- NEONprocIS.base::def.log.init(Lvl = "debug")
   #
-  # Test 1. Only the input of empty directories in calibration/ and output directry are passed in
+  # Test 1. Only the input of directories, resistance and voltage, and output directry are passed in
  
-  testOutputBase = 'pfs/out'
-  testInputDir = 'pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/02/1285'
-  testavsc = 'pfs/dp0p/aquatroll200_cond_corrected.avsc'
-  testSchmQf='pfs/dp0p/flags_troll_specific_temp.avsc'
-  SchmQf = '~/R/NEON-IS-avro_schemas/avro_schemas/troll_shared/flags_troll_specific_temp.avsc'
+  workingDirPath <- getwd()
+  testDirIn = file.path(workingDirPath, 'pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/02/1285')
+  testDirOut = file.path(workingDirPath, 'pfs/out')
+  testSchmDataOut = file.path(testDirOut, 'dp0p/aquatroll200_cond_corrected.avsc')
+  testSchmQf=file.path(workingDirPath, 'pfs/dp0p/flags_troll_specific_temp.avsc')
+  # get sub directory 
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(testDirIn)
+  testDirRepo <- InfoDirIn$dirRepo
   
-  wrap.troll.cond.conv (DirIn=testInputDir, 
-                        DirOutBase=testOutputBase, 
-                        SchmDataOut=NULL, 
-                        SchmQf=SchmQf,
-                        DirSubCopy=NULL,
-                        log=NULL)
+  testDirOutPath <- base::paste0(testDirOut, testDirRepo)
   
-  #
-  # Test 2. Only the input of directories, resistance and voltage, and output directry are passed in
-  
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
   }
+  
+  wrap.troll.cond.conv (DirIn=testDirIn,
+                        DirOutBase=testDirOut)
+  
+  expect_true (file.exists(testDirOutPath, recursive = TRUE))
+  #
+  # Test 2. 
 
- ######
-  # 
-  # testInputWrongDataDir <- "pfs/prt_wrong_data/14491/2019/01/01"
-  # 
-  # returnedOutputDir <- try(wrap.cal.conv.dp0p(
-  #   DirIn = testInputWrongDataDir,
-  #   DirOutBase = testOutputBase,
-  #   FuncConv = FuncConv,
-  #   FuncUcrt = FuncUcrt,
-  #   ucrtCoefFdas = ucrtCoefFdas,
-  #   TermQf = 'resistance',
-  #   NumDayExpiMax = NA,
-  #   SchmDataOutList = SchmDataOutList,
-  #   SchmQf = SchmQf
-  # ),  silent = TRUE)
-  # 
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  
+  wrap.troll.cond.conv (DirIn=testDirIn,
+                        DirOutBase=testDirOut,
+                        SchmDataOut=NULL,
+                        SchmQf=testSchmQf,
+                        DirSubCopy=NULL,
+                        log=log)
+  
+  expect_true (file.exists(testDirOutPath, recursive = TRUE))
+ 
+  # Test 3. DirSubCopy is not NULL
+  
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  
+  wrap.troll.cond.conv (DirIn=testDirIn,
+                        DirOutBase=testDirOut,
+                        SchmDataOut=NULL,
+                        SchmQf=testSchmQf,
+                        DirSubCopy='aaa',
+                        log=log)
+  
+  expect_true (file.exists(testDirOutPath, recursive = TRUE))
+  
+   # 
   # testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
   
 })
