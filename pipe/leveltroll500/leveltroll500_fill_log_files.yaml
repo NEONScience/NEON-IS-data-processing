@@ -21,7 +21,7 @@ transform:
     python3 -m filter_joiner.filter_joiner_main
     # Run log filler script
     Rscript ./flow.troll.logfiles.fill.R
-      DirIn=/tmp/pfs/filter_joined_aquatroll \
+      DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums
       # FileSchmData=$SCHEMA_DATA
