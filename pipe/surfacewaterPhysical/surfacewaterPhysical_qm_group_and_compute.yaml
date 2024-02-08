@@ -3,7 +3,7 @@ pipeline:
   name: surfacewaterPhysical_qm_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:4178f7b8
+  image: quay.io/battelleecology/neon-is-qm-avg-inst-grp:4178f7b8
   cmd:
   - sh
   - "-c"
@@ -27,8 +27,8 @@ transform:
       "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
       "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
@@ -38,6 +38,19 @@ transform:
       "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
       "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
+    # ---- Run third module - quality metrics (instantaneous) - only for elevation/water column height for DSC---- 
+    Rscript ./flow.qaqc.qm.dp0p.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_AQUATROLL_INST \
+      Tmi=001 \
+      VarTimeBgn=readout_time \
+      VarTimeEnd=readout_time \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF:-1" \
     # We are done with aquatroll. Clean up interim directories before doing leveltroll
     rm -r -f /tmp/pfs/filter_joined
     mkdir -p /tmp/pfs/filter_joined
@@ -54,13 +67,26 @@ transform:
       "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
       "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
       "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF:-1"
+    # ---- Run third module - quality metrics (instantaneous) - only for elevation/water column height for DSC---- 
+    Rscript ./flow.qaqc.qm.dp0p.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_LEVELTROLL_INST \
+      Tmi=001 \
+      VarTimeBgn=readout_time \
+      VarTimeEnd=readout_time \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
+      "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF:-1" \
     EOF
   env:
     # Environment variables for filter-joiner
@@ -114,9 +140,17 @@ input:
       repo: surfacewaterPhysical_avro_schemas
       glob: /surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_quality_metrics.avsc
   - pfs:
+      name: FILE_SCHEMA_QM_AQUATROLL_INST
+      repo: surfacewaterPhysical_avro_schemas
+      glob: /surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_quality_metrics_inst.avsc
+  - pfs:
       name: FILE_SCHEMA_QM_LEVELTROLL
       repo: surfacewaterPhysical_avro_schemas
       glob: /surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_quality_metrics.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM_LEVELTROLL_INST
+      repo: surfacewaterPhysical_avro_schemas
+      glob: /surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_quality_metrics_inst.avsc
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH

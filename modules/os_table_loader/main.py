@@ -3,16 +3,12 @@ from contextlib import closing
 from pathlib import Path
 
 import environs
+from marshmallow.validate import OneOf
 
 from common import log_config
-from data_access.db_config_reader import read_from_mount, read_from_environment
-from data_access.db_connector import DbConnector
-from os_table_loader.data_reader import get_data_reader
-from os_table_loader.loader import load_files
-
-
-def get_source_key():
-    return 'DB_CONFIG_SOURCE'
+from data_access.db_config_reader import get_connector
+from os_table_loader.data.data_loader import get_data_loader
+from os_table_loader.file_writer import write_files
 
 
 def main() -> None:
@@ -20,19 +16,15 @@ def main() -> None:
     out_path: Path = env.path('OUT_PATH')
     file_type: str = env.str('FILE_TYPE')
     partial_table_name: str = env.str('PARTIAL_TABLE_NAME')
-    db_config_source = env.str(get_source_key())
+    db_config_source = env.str('DB_CONFIG_SOURCE',
+                               validate=OneOf(['mount', 'environment'],
+                               error='DB_CONFIG_SOURCE must be one of: {choices}'))
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
-    if db_config_source == 'mount':
-        db_config = read_from_mount(Path('/var/db_secret'))
-    elif db_config_source == 'environment':
-        db_config = read_from_environment()
-    else:
-        msg = f"{get_source_key()} '{db_config_source}' should be set to 'mount' or 'environment'."
-        raise SystemExit(msg)
-    with closing(DbConnector(db_config)) as connector:
-        data_reader = get_data_reader(connector)
-        load_files(out_path, data_reader, file_type, partial_table_name)
+    with closing(get_connector(db_config_source)) as connector:
+        data_loader = get_data_loader(connector)
+        if partial_table_name is not None:
+            write_files(out_path, data_loader, file_type, partial_table_name)
 
 
 if __name__ == '__main__':
