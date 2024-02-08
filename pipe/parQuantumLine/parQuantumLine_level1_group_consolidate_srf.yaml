@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:a2479ff3
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:dfbaa1d4
   cmd:
   - sh
   - "-c"
@@ -13,6 +13,7 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    #
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/interimA
     rm -rf /tmp/interimB
@@ -20,21 +21,26 @@ transform:
     mkdir /tmp/interimA
     mkdir /tmp/interimB
     mkdir -p /tmp/pfs/interimC
+    #
     # Set some environment variables for the first module
     export OUT_PATH=$OUT_PATH_1
+    #
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
     # Set some environment variables for the second module
     export OUT_PATH=$OUT_PATH_2
     export CONFIG=$CONFIG2
+    #
     # Run second module - filter-joiner to bring in SRF (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
     # Clean up 1st interim directory (this is the only one we can clean up bc the rest use symlinks)
     rm -rf /tmp/interimA  
     # Set some environment variables for the 3rd module
     export OUT_PATH=$OUT_PATH_3
+    #
     # Run third module - level 1 consolidate (using environment variables below as input parameters)
     python3 -m level1_consolidate.level1_consolidate_main
+    #
     # Run fourth module - pub workbook loader (using environment variables below as input parameters)
     python3 -m pub_workbook_loader.pub_workbook_loader_main
     # Run fifth and final module - create pub tables and apply science review flags (if any)
@@ -45,6 +51,48 @@ transform:
       "DirData=stats|quality_metrics" \
       PathPubWb=$PUB_WORKBOOKS \
       "DirSubCopy=science_review_flags|group|location"
+    #
+    #
+    # Export Level 1 data to bucket
+    linkdir=$(mktemp -d)
+    shopt -s globstar
+    out_parquet_glob="${OUT_PATH}/**/*.parquet"
+    # Example: /2024/01/18/par-quantum-line_UKFS001000/data/par-quantum-line_UKFS001000_2024-01-18_PARQL_1min_001.parquet
+    echo "Linking output files to ${linkdir}"
+    #set -x # Echo commands to output for debugging
+    fname=""
+    for f in $out_parquet_glob; do
+      if [[ -f "$f" ]]; then
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/([0-9]+)/([0-9]+)/([0-9]+)/(${GROUP_PREFIX}_[A-Za-z0-9]+)/data/(.*)$ ]]
+        fyear="${BASH_REMATCH[1]}"
+        fmonth="${BASH_REMATCH[2]}"
+        fday="${BASH_REMATCH[3]}"
+        fgroup="${BASH_REMATCH[4]}"
+        fname="${BASH_REMATCH[5]}"
+        # Now get the timing index from the file name
+        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Z]+[0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
+        avg_int="${BASH_REMATCH[1]}"
+        #Form the output path and link
+        outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname}"
+      fi
+    done
+    #set +x
+    if [[ "${fname}" ]]; then
+      echo "Syncing files to bucket"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        copy \
+        "${linkdir}" \
+        ":gcs://${BUCKET_NAME}"
+      echo "Removing temporary files"
+      rm -rf $linkdir
+    fi
     EOF
   env:
     # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
@@ -128,9 +176,15 @@ transform:
     PUB_WORKBOOKS: /tmp/pub_workbooks
     PARALLELIZATION_INTERNAL: '2'
 
+# Environment variables for the L1 archiver
+    GROUP_PREFIX: par-quantum-line # no ending "_"
+
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
     
 input:
   join:
