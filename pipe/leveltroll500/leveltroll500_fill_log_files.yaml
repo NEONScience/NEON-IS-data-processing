@@ -1,0 +1,106 @@
+---
+pipeline:
+  name: leveltroll500_fill_log_files
+transform:
+  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: quay.io/battelleecology/neon-is-troll-logfiles-fill-r:ae7a19ae
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    # Run filter-joiner for data (using environment variables below as input parameters)
+    export CONFIG=$CONFIG
+    export OUT_PATH=$OUT_PATH
+    python3 -m filter_joiner.filter_joiner_main
+    # Run log filler script
+    Rscript ./flow.troll.logfiles.fill.R
+      DirIn=/tmp/pfs/filter_joined_aquatroll \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums
+      # FileSchmData=$SCHEMA_DATA
+      # FileSchmData=$SCHEMA_FLAGS
+    EOF
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: STREAM_DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/STREAM_DATA_PATH/*/*/*/**
+            # Join on y/m/d and sourceID 
+            join_indices: [3,4,5,6]
+        - path:
+            name: LOG_DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOG_DATA_PATH/*/*/*/**
+            # Join on y/m/d and sourceID
+            join_indices: [3,4,5,6]
+    OUT_PATH: /tmp/pfs/filter_joined
+    LOG_LEVEL: DEBUG
+    RELATIVE_PATH_INDEX: "3"
+input:
+  cross:
+  - pfs:
+      name: SCHEMA_DATA
+      repo: leveltroll500_avro_schemas
+      glob: /leveltroll500/leveltroll500_log_data.avsc
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: leveltroll500_avro_schemas
+      glob: /leveltroll500/leveltroll500_log_flags.avsc
+  - join:
+    - pfs:
+        name: STREAM_DATA_PATH
+        repo: leveltroll500_data_source_trino
+        glob: /leveltroll500/*/*/*/* #leveltroll500/Y/M/D/sourceID
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: LOG_DATA_PATH
+        repo: logjam_clean_troll_files
+        glob: /leveltroll500/*/*/*/* #leveltroll500/Y/M/D/sourceID
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 3
+autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: 1.5
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
