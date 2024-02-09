@@ -4,9 +4,9 @@ from collections import defaultdict
 import unittest
 
 from data_access.tests.database_test import DatabaseBackedTest
-from error_file_reader import reader_main
-from error_file_reader.reader import read_error_files
-from error_file_reader.reader_main import get_local_client
+from errored_datums_reader import reader_main
+from errored_datums_reader.reader import read_error_files
+from errored_datums_reader.reader_main import get_local_client
 
 
 class ReaderTest(DatabaseBackedTest):

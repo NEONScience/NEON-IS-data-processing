@@ -9,8 +9,8 @@ from pachyderm_sdk import Client
 from common import log_config
 from data_access.db_config_reader import read_from_mount, read_from_environment
 from data_access.db_connector import DbConnector
-from error_file_reader.reader import read_error_files
-from error_file_reader.writer import write_results
+from errored_datums_reader.reader import read_error_files
+from errored_datums_reader.writer import write_results
 
 
 def get_local_client() -> Client:
@@ -20,6 +20,7 @@ def get_local_client() -> Client:
 
 def get_cluster_client() -> Client:
     """Connects from within a Pachyderm cluster."""
+    # TODO: Requires an authentication token to be passed.
     return Client.new_in_cluster()
 
 

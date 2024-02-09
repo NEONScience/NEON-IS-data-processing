@@ -1,13 +1,13 @@
 ####
 #
-# This dockerfile will build the error file reader module.
+# This dockerfile will build the errored datums reader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t error_file_latest:latest -f error_file_reader/Dockerfile .
+# docker build -t errored_datums_reader:latest -f errored_datums_reader/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="error_file_reader"
+ARG APP_DIR="errored_datums_reader"
 ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
 ARG CONTAINER_APP_DIR="/usr/src/app"
