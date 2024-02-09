@@ -63,7 +63,7 @@ input:
         name: DATA_PATH
         repo: aquatroll200_location_group_and_restructure
         # For full-scale daily processing, glob should be /aquatroll200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /aquatroll200/(*/*/*/(CFGLOC101039|CFGLOC101040|CFGLOC101041|CFGLOC101046|CFGLOC101239|CFGLOC101240|CFGLOC113600|CFGLOC113601))
-        # glob: /aquatroll200/(*/*/*/(CFGLOC101039|CFGLOC101040|CFGLOC101041|CFGLOC101046|CFGLOC101239|CFGLOC101240|CFGLOC113600|CFGLOC113601))
+        # glob: /aquatroll200/(*/*/*/(CFGLOC110706|CFGLOC110708|CFGLOC113600|CFGLOC113601))
         glob: /aquatroll200/(*/*/*)
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
@@ -72,7 +72,7 @@ input:
           name: LOCATION_PATH
           repo: aquatroll200_location_active_dates_assignment
           # For full-scale daily processing, glob should be /aquatroll200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /aquatroll200/((*/*/*)/(CFGLOC101039|CFGLOC101040|CFGLOC101041|CFGLOC101046|CFGLOC101239|CFGLOC101240|CFGLOC113600|CFGLOC113601))
-          # glob: /aquatroll200/((*/*/*)/(CFGLOC101039|CFGLOC101040|CFGLOC101041|CFGLOC101046|CFGLOC101239|CFGLOC101240|CFGLOC113600|CFGLOC113601))
+          # glob: /aquatroll200/((*/*/*)/(CFGLOC110706|CFGLOC110708|CFGLOC113600|CFGLOC113601))
           glob: /aquatroll200/(*/*/*)
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           # joinOn: $2

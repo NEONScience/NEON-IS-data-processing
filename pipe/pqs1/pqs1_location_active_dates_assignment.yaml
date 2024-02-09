@@ -13,6 +13,7 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=namedLocation
+      "Prop=HOR|VER|name|description|site|Data Rate|active_periods|context"
   image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:4178f7b8
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -29,7 +30,7 @@ input:
       repo: pqs1_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 4
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 210M
@@ -40,9 +41,6 @@ resource_limits:
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.3
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.2
 datum_set_spec:
   number: 5
 scheduling_spec:
