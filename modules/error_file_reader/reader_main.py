@@ -31,6 +31,7 @@ def main() -> None:
                                error='DB_CONFIG_SOURCE must be one of: {choices}'))
     log_config.configure(log_level)
     log = structlog.get_logger()
+    log.debug('Running.')
     if db_config_source == 'environment':
         db_config = read_from_environment()
         client = get_local_client()
@@ -39,7 +40,7 @@ def main() -> None:
         client = get_cluster_client()
     else:
         log.error('Invalid database config source.')
-        raise SystemExit('Invalid database config source.')
+        exit(1)
     with closing(DbConnector(db_config)) as connector:
         version = client.get_version()
         log.debug(f'\n version: {version}\n')

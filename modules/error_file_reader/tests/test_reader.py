@@ -18,6 +18,7 @@ class ReaderTest(DatabaseBackedTest):
         pass
 
     @staticmethod
+    @unittest.skip('Requires Pachyderm client configuration.')
     def test_read_error_files() -> None:
         client = get_local_client()
         paths_by_repo: defaultdict[str, list[str]] = read_error_files(client)
