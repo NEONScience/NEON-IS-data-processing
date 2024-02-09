@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:dfbaa1d4
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:83ce2d7d
   cmd:
   - sh
   - "-c"
@@ -43,6 +43,7 @@ transform:
     #
     # Run fourth module - pub workbook loader (using environment variables below as input parameters)
     python3 -m pub_workbook_loader.pub_workbook_loader_main
+    #
     # Run fifth and final module - create pub tables and apply science review flags (if any)
     Rscript ./flow.pub.tabl.srf.R \
       DirIn=/tmp/pfs/interimC \
@@ -54,6 +55,7 @@ transform:
     #
     #
     # Export Level 1 data to bucket
+    export OUT_PATH=/pfs/out
     linkdir=$(mktemp -d)
     shopt -s globstar
     out_parquet_glob="${OUT_PATH}/**/*.parquet"
@@ -160,8 +162,7 @@ transform:
 # Environment variables for level 1 consolidation
     IN_PATH: /tmp/interimB
     OUT_PATH_3: /tmp/pfs/interimC # This will be transfered to OUT_PATH for the second module
-    GROUP_INDEX: "6"
-    # path index of names of group-level metadata to include in the output
+    GROUP_INDEX: "6" # path index of names of group-level metadata to include in the output
     GROUP_METADATA_INDEX: "7"
     GROUP_METADATA_NAMES: group,science_review_flags
     # path index of names of directories to include in the output
