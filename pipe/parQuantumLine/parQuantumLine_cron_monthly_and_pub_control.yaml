@@ -9,7 +9,7 @@ transform:
     # START_DATE must be set, format "YYYY-MM"
     # END_DATE can be set or unset (comment or remove line to unset). If unset, end month will be last month. 
     OUT_PATH: /pfs/out
-    START_MONTH: "2013-12"
+    START_MONTH: "2023-07"
     #END_MONTH: "2023-12" # Inclusive. Run the pipeline with END_MONTH set to initialize, then comment out and update pipeline (no reprocess) to let the cron take over
   stdin:
   - "#!/bin/bash"
