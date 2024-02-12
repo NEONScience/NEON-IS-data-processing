@@ -30,4 +30,5 @@ class ReaderTest(DatabaseBackedTest):
         self.configure_mount()
         os.environ['DB_CONFIG_SOURCE'] = 'environment'
         os.environ['LOG_LEVEL'] = 'DEBUG'
+        os.environ['AUTHORIZATION_TOKEN'] = ''  # Not needed on local machine if authenticated.
         reader_main.main()
