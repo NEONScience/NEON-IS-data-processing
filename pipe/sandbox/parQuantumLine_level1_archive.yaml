@@ -89,7 +89,7 @@ resource_limits:
   cpu: 3.5
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.5
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
