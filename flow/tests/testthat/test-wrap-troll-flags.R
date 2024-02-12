@@ -66,9 +66,6 @@
 #'                               DirSubCopy=NULL,
 #'                               log=log)
 #'                               
-#' 
-#' @seealso None currently
-#'
 # changelog and author contributions 
 #   Mija Choi (2024-02-07)
 #     Original Creation
@@ -86,10 +83,12 @@ test_that("Unit test of wrap.troll.flags.R", {
   # Test 1. Only the input of directories, resistance and voltage, and output directry are passed in
   
   workingDirPath <- getwd()
-  testDirIn = file.path(workingDirPath, 'pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/02/1285')
+  testDirIn = file.path(workingDirPath, 'pfs/aquatroll200_data_source_trino/aquatroll200/2020/01/02/1285')
+#  testDirInDir = "pfs/aquatroll200_data_source_trino/aquatroll200/2020/01/02/1285"
   testDirOut = file.path(workingDirPath, 'pfs/out')
-  testSchmDataOut = file.path(testDirOut, 'dp0p/aquatroll200_cond_corrected.avsc')
-  testSchmQf=file.path(workingDirPath, 'pfs/dp0p/flags_troll_specific_temp.avsc')
+#  testSchmDataOut = file.path(testDirOut, 'dp0p/aquatroll200_cond_corrected.avsc')
+  testSchmQfDir= file.path(workingDirPath, 'pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific.avsc')
+  testSchmQf <- base::paste0(base::readLines(testSchmQfDir),collapse='')
   # get sub directory 
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(testDirIn)
   testDirRepo <- InfoDirIn$dirRepo
@@ -113,7 +112,6 @@ test_that("Unit test of wrap.troll.flags.R", {
   
   wrap.troll.flags (DirIn=testDirIn,
                         DirOutBase=testDirOut,
-                        SchmDataOut=NULL,
                         SchmQf=testSchmQf,
                         DirSubCopy=NULL,
                         log=log)
@@ -128,7 +126,6 @@ test_that("Unit test of wrap.troll.flags.R", {
   
   wrap.troll.flags (DirIn=testDirIn,
                         DirOutBase=testDirOut,
-                        SchmDataOut=NULL,
                         SchmQf=testSchmQf,
                         DirSubCopy='aaa',
                         log=log)

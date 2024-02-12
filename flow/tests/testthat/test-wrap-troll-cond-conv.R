@@ -90,7 +90,8 @@ test_that("Unit test of wrap.troll.cond.conv.R", {
   testDirIn = file.path(workingDirPath, 'pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/02/1285')
   testDirOut = file.path(workingDirPath, 'pfs/out')
   testSchmDataOut = file.path(testDirOut, 'dp0p/aquatroll200_cond_corrected.avsc')
-  testSchmQf=file.path(workingDirPath, 'pfs/dp0p/flags_troll_specific_temp.avsc')
+  testSchmQfDir=file.path(workingDirPath, 'pfs/dp0p/flags_troll_specific_temp.avsc')
+  testSchmQf <- base::paste0(base::readLines(testSchmQfDir),collapse='')
   # get sub directory 
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(testDirIn)
   testDirRepo <- InfoDirIn$dirRepo
