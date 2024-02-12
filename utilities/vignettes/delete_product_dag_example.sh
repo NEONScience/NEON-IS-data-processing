@@ -12,7 +12,7 @@
 
 # Define paths
 git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
-source_type='li191r'
+source_type='pqs1'
 product='parQuantumLine'
 pipe_list_prefix='pipe_list_'
 ext='.yaml' # file extension for pipeline specs specified in the pipe_list files. Must be consistent.
@@ -28,8 +28,8 @@ spec_path_product=$git_path_pipelines/$product
 unset pipelines
 pipelines=`tac $spec_path_product/$pipe_list_prefix$product.txt`
 for pipe in $(echo ${pipelines[*]}); do
-echo pc delete pipeline ${pipe/$ext}
-pc delete pipeline ${pipe/$ext}
+echo pachctl delete pipeline ${pipe/$ext}
+pachctl delete pipeline ${pipe/$ext}
 done
 
 # Remove source type DAG
@@ -39,8 +39,8 @@ done
 unset pipelines
 pipelines=`tac $spec_path_source_type/$pipe_list_prefix$source_type.txt`
 for pipe in $(echo ${pipelines[*]}); do
-echo pc delete pipeline ${pipe/$ext}
-pc delete pipeline ${pipe/$ext}
+echo pachctl delete pipeline ${pipe/$ext}
+pachctl delete pipeline ${pipe/$ext}
 done
 
 

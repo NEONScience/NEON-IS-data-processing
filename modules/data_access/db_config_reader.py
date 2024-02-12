@@ -2,7 +2,7 @@ import environs
 from pathlib import Path
 from typing import NamedTuple
 
-from data_access.db_connector import DbConfig
+from data_access.db_connector import DbConfig, DbConnector
 
 
 class FileKeys:
@@ -58,3 +58,14 @@ def read_from_environment() -> DbConfig:
 def validate(name, value) -> None:
     if not value:
         raise ValueError(f'Environment variable {name} has not been set.')
+
+
+def get_connector(config_source: str) -> DbConnector:
+    """Return a database connector for the given config string."""
+    if config_source == 'mount':
+        mount_path = Path('/var/db_secret')
+        db_config = read_from_mount(mount_path)
+        return DbConnector(db_config)
+    elif config_source == 'environment':
+        db_config = read_from_environment()
+        return DbConnector(db_config)

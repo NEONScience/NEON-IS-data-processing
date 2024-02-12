@@ -68,7 +68,7 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: leveltroll500_flags_specific
+      repo: leveltroll500_calibration_group_and_convert
       glob: /leveltroll500/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true
