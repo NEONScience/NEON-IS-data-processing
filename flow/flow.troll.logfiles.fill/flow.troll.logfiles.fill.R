@@ -17,7 +17,7 @@
 #' 
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
-#'  
+#' 
 #' 4. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
@@ -109,6 +109,23 @@ DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
                               nameDirSub = 'data',
                               log = log)
+
+# Create the binning for each aggregation interval
+
+InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(Para$DirIn)
+WndwAgr_1 <- base::as.difftime(1,units="mins")
+WndwAgr_5 <- base::as.difftime(5,units="mins")
+timeBgnDiff <- list()
+timeEndDiff <- list()
+timeBinDiff_1 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_1,WndwTime=base::as.difftime(1,units='days'))
+timeBgnDiff_1 <- timeBinDiff_1$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+timeEndDiff_1 <- timeBinDiff_1$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+timeBgnDiff_5 <- list()
+timeEndDiff_5 <- list()
+timeBinDiff_5 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_5,WndwTime=base::as.difftime(1,units='days'))
+timeBgnDiff_5 <- timeBinDiff_5$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+timeEndDiff_5 <- timeBinDiff_5$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+
 
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)

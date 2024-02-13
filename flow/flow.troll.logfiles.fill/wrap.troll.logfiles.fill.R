@@ -44,8 +44,8 @@
 #' 
 #' @examples
 #' # Not run
-#' DirInLogs<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/03/10/21115' #cleaned log data
-#' DirInStream<-'/home/NEON/ncatolico/pfs/leveltroll500_data_source_trino/leveltroll500/2022/03/10/21115' #streamed L0 data
+#' DirInLogs<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/04/04/21115' #cleaned log data
+#' DirInStream<-'/home/NEON/ncatolico/pfs/leveltroll500_data_source_trino/leveltroll500/2022/04/04/21115' #streamed L0 data
 #' DirIn<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/03/10/21115'
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' wrap.troll.logfiles.fill <- function(DirInLogs=DirInLogs,
@@ -81,7 +81,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
   if(is.null(DirInStream)){
     DirInStream<-DirIn #only need one dir if this is run after filter joiner
   }
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirInLogs)
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirInStream)
   dirInDataStream <- fs::path(DirInStream,'data')
   dirInDataLogs <- fs::path(DirInLogs,'data')
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
@@ -141,6 +141,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
   
   ## if only one file, keep that file, otherwise merge files
   if(is.null(L0Data) & !is.null(LogData)){
+    #case with only log file
     dataOut<-LogData
     dataOut$pressure_data_quality<-NA
     dataOut$temperature_data_quality<-NA
@@ -149,64 +150,117 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
     dataOut$pressureLogFlag<-1
     dataOut$logDateFlag<-1
     dataOut$temperatureLogFlag<-1
-    if(sensor=='aquatroll200'){
+    if(sensor=='leveltroll500'){
+      keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag')
+      flagsOut<-dataOut[keep_flags]
+      keep_data<-c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','internal_battery')
+      dataOut<-dataOut[keep_data]
+    }else if(sensor=='aquatroll200'){
       dataOut$conductivityLogFlag<-1
+      keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag','conductivityLogFlag')
+      flagsOut<-dataOut[keep_flags]
+      keep_data<-c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','conductivity','conductivity_data_quality','internal_battery')
+      dataOut<-dataOut[keep_data]
     }
   }else if(!is.null(L0Data) & is.null(LogData)){
+    #case with only stream file
     dataOut<-L0Data
     dataOut$pressureLogFlag<-0
     dataOut$logDateFlag<-0
     dataOut$temperatureLogFlag<-0
-    if(sensor=='aquatroll200'){
+    if(sensor=='leveltroll500'){
+      keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag')
+      flagsOut<-dataOut[keep_flags]
+      keep_data<-c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','internal_battery')
+      dataOut<-dataOut[keep_data]
+    }else if(sensor=='aquatroll200'){
       dataOut$conductivityLogFlag<-0
+      keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag','conductivityLogFlag')
+      flagsOut<-dataOut[keep_flags]
+      keep_data<-c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','conductivity','conductivity_data_quality','internal_battery')
+      dataOut<-dataOut[keep_data]
     }
   }else{
     
     ##time to merge 
-    #(LogData$readout_time[!LogData$readout_time %in% L0Data$readout_time])
-    #(L0Data$readout_time[!L0Data$readout_time %in% LogData$readout_time])
-    if(!identical(L0Data[['readout_time']],LogData[['readout_time']])){
-      log$error(base::paste0('Files do not have identical readout times: ', DirIn))
-      base::stop()
+    log$debug(base::paste0('Merging logged data'))
+    
+    # Check times
+    timeAgr_1 <- timeBgn + timeBgnDiff_1
+    timeAgr_5 <- timeBgn + timeBgnDiff_5
+    if(sensor=='leveltroll500'|nrow(L0Data$readout_time)>288|nrow(LogData$readout_time)>288){
+      badL0Times_1<-L0Data$readout_time[!L0Data$readout_time %in% timeAgr_1]
+      badLogTimes_1<-LogData$readout_time[!LogData$readout_time %in% timeAgr_1]
+      if(length(badL0Times_1)>0){
+        log$error(base::paste0('L0 data at non-standard 1 minute intervals'))
+        base::stop()
+        #round to minute
+        L0Data$readout_time<-lubridate::round_date(L0Data$dateUTC,unit = "minute")
+      }
+      if(length(badLogTimes_1)>0){
+        log$error(base::paste0('Log data at non-standard 1 minute intervals'))
+        base::stop()
+        #round to minute
+        LogData$readout_time<-lubridate::round_date(LogData$dateUTC,unit = "minute")
+      }
+      
+    }else{
+      badL0Times_5<-L0Data$readout_time[!L0Data$readout_time %in% timeAgr_5]
+      badLogTimes_5<-LogData$readout_time[!LogData$readout_time %in% timeAgr_5]
+      if(length(badL0Times_1)>0){
+        log$error(base::paste0('L0 data at non-standard 5 minute intervals'))
+        base::stop()
+        L0Data$readout_time<-lubridate::round_date(L0Data$dateUTC,unit = "5 minutes")
+      }
+      if(length(badLogTimes_1)>0){
+        log$error(base::paste0('Log data at non-standard 5 minute intervals'))
+        base::stop()
+        LogData$readout_time<-lubridate::round_date(LogData$dateUTC,unit = "5 minutes")
+      }
     }
     
-    dataOut<-merge(L0Data,LogData,by='readout_time',all.x = TRUE)
+    #merge data
+    dataOut<-merge(L0Data,LogData,by='readout_time',all = TRUE)
+    if(nrow(dataOut)>1440){
+      log$error(base::paste0('ERROR more than 1440 rows in merged data: ', DirIn))
+      base::stop()
+    }
+    #add in columns to update
     dataOut$pressureLogFlag<-0
     dataOut$logDateFlag<-0
     dataOut$temperatureLogFlag<-0
-    #plot(dataOut$pressure.x,dataOut$readout_time)
+    dataOut$source_id.x <- unique(dataOut$source_id.x[!is.na(dataOut$source_id.x)])
+    dataOut$site_id <- unique(dataOut$site_id[!is.na(dataOut$site_id)])
     
+    #insert logged pressure data
     dataOut$pressureLogFlag[is.na(dataOut$pressure.x)]<-dataOut$logFlag[is.na(dataOut$pressure.x)]
     dataOut$logDateFlag[is.na(dataOut$pressure.x)]<-dataOut$logDateErrorFlag[is.na(dataOut$pressure.x)]
     dataOut$pressure.x[is.na(dataOut$pressure.x)]<-dataOut$pressure.y[is.na(dataOut$pressure.x)]
     
+    #insert logged temperature data
     dataOut$temperatureLogFlag[is.na(dataOut$temperature.x)]<-dataOut$logFlag[is.na(dataOut$temperature.x)]
     dataOut$temperature.x[is.na(dataOut$temperature.x)]<-dataOut$temperature.y[is.na(dataOut$temperature.x)]
     
-    if(sensor=='aquatroll200'){
+    #standardize column names
+    if(sensor=='leveltroll500'){
+      keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag')
+      flagsOut<-dataOut[keep_flags]
+      keep_data<-c('source_id.x','site_id','readout_time','pressure.x','pressure_data_quality','temperature.x','temperature_data_quality','internal_battery')
+      dataOut<-dataOut[keep_data]
+      names(dataOut)<- c('readout_time','source_id','site_id','pressure','pressure_data_quality','temperature','temperature_data_quality','internal_battery')
+    }else if(sensor=='aquatroll200'){
+      #insert logged conductivity data
       dataOut$conductivityLogFlag<-0
       dataOut$conductivityLogFlag[is.na(dataOut$conductivity.x)]<-dataOut$logFlag[is.na(dataOut$conductivity.x)]
       dataOut$conductivity.x[is.na(dataOut$conductivity.x)]<-dataOut$conductivity.y[is.na(dataOut$conductivity.x)]
+      keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag','conductivityLogFlag')
+      flagsOut<-dataOut[keep_flags]
+      keep_data<-c('readout_time','source_id.x','site_id','pressure.x','pressure_data_quality','temperature.x','temperature_data_quality','conductivity.x','conductivity_data_quality','internal_battery')
+      dataOut<-dataOut[keep_data]
+      names(dataOut)<- c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','conductivity','conductivity_data_quality','internal_battery')
     }
   }
   
-  #standardize column names
-  if(sensor=='leveltroll500'){
-    keep_flags<-c('readout_time','pressureLogFlag','logDateErrorFlag','temperatureLogFlag')
-    flagsOut<-dataOut[keep_flags]
-    
-    keep_data<-c('readout_time','source_id.x','site_id','pressure.x','temperature.x','pressure_data_quality','temperature_data_quality')
-    dataOut<-dataOut[keep_data]
-    names(dataOut)<- c('readout_time','source_id','site_id','pressure','temperature','pressure_data_quality','temperature_data_quality')
-  
-  }else if(sensor=='aquatroll200'){
-    keep_flags<-c('readout_time','pressureLogFlag','logDateErrorFlag','temperatureLogFlag','conductivityLogFlag')
-    flagsOut<-dataOut[keep_flags]
-    
-    keep_data<-c('readout_time','source_id.x','site_id','pressure.x','temperature.x','conductivity.x','pressure_data_quality','temperature_data_quality','conductivity_data_quality')
-    dataOut<-dataOut[keep_data]
-    names(dataOut)<- c('readout_time','source_id','site_id','pressure','temperature','conductivity','pressure_data_quality','temperature_data_quality','conductivity_data_quality')
-  }
   
   #write out data
   fileOutSplt <- base::strsplit(DirInStream,'[/]')[[1]] # Separate underscore-delimited components of the file name
@@ -235,7 +289,6 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
   } else {
     log$info(base::paste0('Flags written successfully in ', base::paste0(DirOutFlags,'/',csv_name_flags,".parquet")))
   }
-  
 
 }
 

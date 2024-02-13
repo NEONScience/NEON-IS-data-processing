@@ -1,9 +1,10 @@
 ---
 pipeline:
-  name: leveltroll500_fill_log_files
+  name: aquatroll200_fill_log_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:xxxxxx
+  image: quay.io/battelleecology/neon-is-troll-logfiles-fill-r:ed9ba65f
+  image_pull_secrets:
   cmd:
   - sh
   - "-c"
@@ -21,11 +22,11 @@ transform:
     python3 -m filter_joiner.filter_joiner_main
     # Run log filler script
     Rscript ./flow.troll.logfiles.fill.R
-      DirIn=/tmp/pfs/filter_joined \
+      DirIn=/tmp/pfs/filter_joined_aquatroll \
       DirOut=/pfs/out \
-      FileSchmData=$SCHEMA_DATA
-      FileSchmData=$SCHEMA_FLAGS
-      DirErr=/pfs/out/errored_datums
+      DirErr=/pfs/out/errored_datums \
+      FileSchmData=$SCHEMA_DATA \
+      FileSchmFlags=$SCHEMA_FLAGS
     EOF
   env:
     # Environment variables for filter-joiner
@@ -38,17 +39,15 @@ transform:
         - path:
             name: STREAM_DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STREAM_DATA_PATH/*/*/*/**
-            # Join on y/m/d and sourceID 
+            glob_pattern: /pfs/STREAM_DATA_PATH/*/*/*/*/**
+            # Join on y/m/d and named location 
             join_indices: [3,4,5,6]
-            outer_join: True
         - path:
             name: LOG_DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/LOG_DATA_PATH/*/*/*/**
-            # Join on y/m/d and sourceID
+            glob_pattern: /pfs/LOG_DATA_PATH/*/*/*/*/**
+            # Join on y/m/d and named location 
             join_indices: [3,4,5,6]
-            outer_join: True
     OUT_PATH: /tmp/pfs/filter_joined
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
@@ -56,27 +55,25 @@ input:
   cross:
   - pfs:
       name: SCHEMA_DATA
-      repo: leveltroll500_avro_schemas
-      glob: /leveltroll500/leveltroll500_log_data.avsc
+      repo: aquatroll200_avro_schemas
+      glob: /aquatroll200/aquatroll200_log_data.avsc
   - pfs:
       name: SCHEMA_FLAGS
-      repo: leveltroll500_avro_schemas
-      glob: /leveltroll500/leveltroll500_log_flags.avsc
+      repo: aquatroll200_avro_schemas
+      glob: /aquatroll200/aquatroll200_log_flags.avsc
   - join:
     - pfs:
         name: STREAM_DATA_PATH
-        repo: leveltroll500_data_source_trino
-        glob: /leveltroll500/2020/04/* #leveltroll500/Y/M/D
+        repo: aquatroll200_data_source_trino
+        glob: /aquatroll200/*/*/*/* #Y/M/D/sourceID
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
-        outer_join: true
     - pfs:
         name: LOG_DATA_PATH
         repo: logjam_clean_troll_files
-        glob: /leveltroll500/2020/04/* #leveltroll500/Y/M/D
+        glob: /aquatroll200/*/*/*/*
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
-        outer_join: true
 parallelism_spec:
   constant: 3
 autoscaling: true
