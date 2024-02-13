@@ -84,9 +84,7 @@ test_that("Unit test of wrap.troll.flags.R", {
   
   workingDirPath <- getwd()
   testDirIn = file.path(workingDirPath, 'pfs/aquatroll200_data_source_trino/aquatroll200/2020/01/02/1285')
-#  testDirInDir = "pfs/aquatroll200_data_source_trino/aquatroll200/2020/01/02/1285"
   testDirOut = file.path(workingDirPath, 'pfs/out')
-#  testSchmDataOut = file.path(testDirOut, 'dp0p/aquatroll200_cond_corrected.avsc')
   testSchmQfDir= file.path(workingDirPath, 'pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific.avsc')
   testSchmQf <- base::paste0(base::readLines(testSchmQfDir),collapse='')
   # get sub directory 
@@ -104,7 +102,7 @@ test_that("Unit test of wrap.troll.flags.R", {
   
   expect_true (file.exists(testDirOutPath, recursive = TRUE))
   #
-  # Test 2. 
+  # Test 2. Not NULL Schema is passed in
   
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
@@ -132,7 +130,23 @@ test_that("Unit test of wrap.troll.flags.R", {
   
   expect_true (file.exists(testDirOutPath, recursive = TRUE))
   
-  # 
-  # testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
+  #Test 4 repo is not aquatroll200
+  
+  testDirInWrong = file.path(workingDirPath, 'pfs/bquatroll200_data_source_trino/bquatroll200/2020/01/02/1285')
+  InfoDirInWrong <- NEONprocIS.base::def.dir.splt.pach.time(testDirInWrong)
+  testDirRepoWrong <- InfoDirInWrong$dirRepo
+  testDirOutPathWrong <- base::paste0(testDirOut, testDirRepoWrong)
+  
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  
+ wrap.troll.flags (DirIn=testDirInWrong,
+                    DirOutBase=testDirOut,
+                    SchmQf=testSchmQf,
+                    DirSubCopy=NULL,
+                    log=log)
+  
+ expect_true (file.exists(testDirOutPathWrong, recursive = TRUE))
   
 })

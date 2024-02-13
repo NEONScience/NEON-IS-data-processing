@@ -61,15 +61,13 @@
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' wrap.troll.cond.conv <- function(DirIn="~/pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/01/23681",
 #'                               DirOutBase="~/pfs/out",
-#'                               SchmDataOut="~/R/NEON-IS-avro-schemas/dp0p/aquatroll200_cond_corrected.avsc",
-#'                               SchmQf="~/R/NEON-IS-avro-schemas/dp0p/flags_troll_specific_temp.avsc",
+#'                               SchmDataOut=base::paste0(base::readLines("~/R/NEON-IS-avro-schemas/dp0p/aquatroll200_cond_corrected.avsc",collapse=''),
+#'                               SchmQf=base::paste0(base::readLines("~/R/NEON-IS-avro-schemas/dp0p/flags_troll_specific_temp.avsc",collapse=''),
 #'                               DirSubCopy=NULL,
 #'                               log=log)
 #'                               
-#' 
 #' @seealso None currently
-#' 
-#' 
+#'  
 # changelog and author contributions 
 #   Mija Choi (2024-01-09)
 #     Original Creation
@@ -84,15 +82,16 @@ test_that("Unit test of wrap.troll.cond.conv.R", {
   library(stringr)
   log <- NEONprocIS.base::def.log.init(Lvl = "debug")
   #
-  # Test 1. Only the input of directories, resistance and voltage, and output directry are passed in
- 
+  # Test 1. Only the input of directories, resistance and voltage, and output directory are passed in
+  #
   workingDirPath <- getwd()
   testDirIn = file.path(workingDirPath, 'pfs/aquatroll200_calibration_group_and_convert/aquatroll200/2020/01/02/1285')
   testDirOut = file.path(workingDirPath, 'pfs/out')
-  testSchmDataOut = file.path(testDirOut, 'dp0p/aquatroll200_cond_corrected.avsc')
   testSchmQfDir=file.path(workingDirPath, 'pfs/dp0p/flags_troll_specific_temp.avsc')
   testSchmQf <- base::paste0(base::readLines(testSchmQfDir),collapse='')
+  #
   # get sub directory 
+  #
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(testDirIn)
   testDirRepo <- InfoDirIn$dirRepo
   
@@ -107,7 +106,7 @@ test_that("Unit test of wrap.troll.cond.conv.R", {
   
   expect_true (file.exists(testDirOutPath, recursive = TRUE))
   #
-  # Test 2. 
+  # Test 2.  Not NULL Schema is passed in
 
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
@@ -136,8 +135,5 @@ test_that("Unit test of wrap.troll.cond.conv.R", {
                         log=log)
   
   expect_true (file.exists(testDirOutPath, recursive = TRUE))
-  
-   # 
-  # testthat::expect_true((class(returnedOutputDir)[1] == "try-error"))
   
 })
