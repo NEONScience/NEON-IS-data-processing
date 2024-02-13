@@ -8,7 +8,8 @@ from data_access.db_connector import DbConnector
 log = structlog.get_logger()
 
 
-def write_results(connector: DbConnector, paths_by_repo: defaultdict[str, list[str]]):
+def write_results(connector: DbConnector, files_by_pipeline: defaultdict[str, list[str]]):
     # TODO: implement when the database table becomes available.
-    for key in paths_by_repo.keys():
-        log.debug(f'repo: {key} error file count: {len(paths_by_repo[key])}')
+    for pipeline_name in files_by_pipeline.keys():
+        file_count = len(files_by_pipeline[pipeline_name])
+        log.debug(f'pipeline: {pipeline_name} error file count: {file_count}')

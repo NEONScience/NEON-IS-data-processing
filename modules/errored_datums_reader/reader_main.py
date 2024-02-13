@@ -45,8 +45,8 @@ def main() -> None:
     with closing(DbConnector(db_config)) as connector:
         version = client.get_version()
         log.debug(f'\n version: {version}\n')
-        paths_by_repo = read_error_files(client)
-        write_results(connector, paths_by_repo)
+        files_by_pipeline = read_error_files(client)
+        write_results(connector, files_by_pipeline)
 
 
 if __name__ == '__main__':

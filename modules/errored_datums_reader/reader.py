@@ -1,17 +1,14 @@
 from collections import defaultdict
 
 from pachyderm_sdk import Client
-from pachyderm_sdk.api.pfs import FileType
+from pachyderm_sdk.api import pfs
 
 
 def read_error_files(client: Client) -> defaultdict[str, list]:
-    """Read the output repo datums marked with errors and save by repo name."""
-    paths_by_repo: defaultdict[str, list[str]] = defaultdict(list)
-    for branch_info in client.pfs.list_branch():
-        if branch_info.branch.name == 'master':
-            repo_name = branch_info.branch.repo.name
-            for file_info in client.pfs.glob_file(commit=branch_info.head, pattern='/errored_datums/**'):
-                if file_info.file_type == FileType.FILE:
-                    path = file_info.file.path
-                    paths_by_repo[repo_name] = path
-    return paths_by_repo
+    """Read the files in the error directories and save the paths by pipeline name."""
+    files_by_pipeline: defaultdict[str, list[str]] = defaultdict(list)
+    for pipeline in client.pps.list_pipeline():
+        commit_name = f'{pipeline.pipeline.project.name}/{pipeline.pipeline.name}@master'
+        for file in client.pfs.glob_file(commit=pfs.Commit.from_uri(commit_name), pattern='/errored_datums/**'):
+            files_by_pipeline[pipeline.pipeline.name] = file.file.path
+    return files_by_pipeline

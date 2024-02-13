@@ -21,9 +21,9 @@ class ReaderTest(DatabaseBackedTest):
     @unittest.skip('Requires Pachyderm client configuration.')
     def test_read_error_files() -> None:
         client = get_local_client()
-        paths_by_repo: defaultdict[str, list[str]] = read_error_files(client)
-        for key in paths_by_repo.keys():
-            print(f'repo: {key} error file count: {len(paths_by_repo[key])}')
+        files_by_pipeline: defaultdict[str, list[str]] = read_error_files(client)
+        for pipeline_name in files_by_pipeline.keys():
+            print(f'pipeline: {pipeline_name} error file count: {len(files_by_pipeline[pipeline_name])}')
 
     @unittest.skip('Integration test skipped due to long process time.')
     def test_main(self) -> None:
