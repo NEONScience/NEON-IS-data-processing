@@ -18,12 +18,13 @@ def main() -> None:
     env = environs.Env()
     group_prefix: str = env.str('GROUP_PREFIX')
     out_path: Path = env.path('OUT_PATH')
+    err_path: Path = env.path('ERR_PATH')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     log_config.configure(log_level)
     db_config = read_from_mount(Path('/var/db_secret'))
     with closing(DbConnector(db_config)) as connector:
         get_groups_partial = partial(get_group_loaders, connector=connector)
-        load_groups(out_path=out_path, get_groups=get_groups_partial, group_prefix=group_prefix)
+        load_groups(out_path=out_path, err_path=err_path, get_groups=get_groups_partial, group_prefix=group_prefix)
 
 
 if __name__ == "__main__":
