@@ -1,5 +1,4 @@
-import os
-
+import environs
 from pachyderm_sdk import Client
 
 from common import log_config
@@ -8,13 +7,14 @@ from errored_datums_reader.db_connector import ConnectionParameters
 
 
 def main() -> None:
-    log_level = os.environ['LOG_LEVEL']
-    db_host = os.environ['DB_HOST']
-    db_user = os.environ['DB_USER']
-    db_password = os.environ['DB_PASSWORD']
-    db_name = os.environ['DB_NAME']
-    db_schema = os.environ['DB_SCHEMA']
-    authorization_token = os.environ['AUTHORIZATION_TOKEN']
+    env = environs.Env()
+    authorization_token = env.str('AUTHORIZATION_TOKEN')
+    db_host = env.str('DB_HOST')
+    db_name = env.str('DB_NAME')
+    db_password = env.str('DB_PASSWORD')
+    db_schema = env.str('DB_SCHEMA')
+    db_user = env.str('DB_USER')
+    log_level = env.log_level('LOG_LEVEL')
     log_config.configure(log_level)
     db = db_connector.connect(ConnectionParameters(
         host=db_host,
