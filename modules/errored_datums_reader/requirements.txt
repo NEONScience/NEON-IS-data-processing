@@ -1,7 +1,6 @@
 common==0.1.2
-data_access==0.0.1a2
-environs==7.3.1
-marshmallow==3.15.0
 pachyderm_sdk==2.8.4
+pg8000==1.29.2
+protobuf==4.25.3
+psycopg2==2.9.3
 structlog==24.1.0
-psycopg2-binary==2.8.6
