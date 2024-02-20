@@ -1,43 +1,38 @@
 ---
 pipeline:
-  name: aepg600m_calibration_assignment
+  name: aepg600m_location_loader
 transform:
-  cmd:
-  - Rscript
-  - ./flow.cal.asgn.R
-  - DirIn=$DIR_IN
-  - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums
-  - FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-cal-asgn-r:fe1512ea
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/location_loader:c0ce8112
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m location_loader.location_loader_main
   env:
+    LOCATION_TYPE: CONFIG
+    SOURCE_TYPE: aepg600m
+    OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
 input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: aepg600m_calibration_loader
-      glob: /aepg600m/*
-  - pfs:
-      name: FILE_YEAR
-      repo: aepg600m_cron_daily_and_date_control
-      glob: /data_year*.txt
-parallelism_spec:
-  constant: 5
+  pfs:
+    repo: aepg600m_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 200M
-  cpu: 0.8
+  memory: 100M
+  cpu: 0.1
 resource_limits:
-  memory: 600M
-  cpu: 1.5
-sidecar_resource_requests:
-  memory: 3G
+  memory: 300M
   cpu: 0.5
-datum_set_spec:
-  number: 5
+sidecar_resource_requests:
+  memory: 300M
+  cpu: 0.3
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
