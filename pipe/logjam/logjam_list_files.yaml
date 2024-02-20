@@ -14,7 +14,7 @@ transform:
   - python3 -m logjam_loader.logjam_loader
 input:
   pfs:
-    repo: aquatroll200_cron_daily_and_date_control_tick
+    repo: leveltroll500_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 autoscaling: true

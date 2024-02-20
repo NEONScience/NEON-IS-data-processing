@@ -2,7 +2,7 @@
 pipeline:
   name: aquatroll200_cond_conv
 transform:
-  image: quay.io/battelleecology/neon-is-troll-cond-conv-r:3606e15b
+  image: quay.io/battelleecology/neon-is-troll-cond-conv-r:12828b1b
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
