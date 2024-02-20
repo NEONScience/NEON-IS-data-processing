@@ -62,10 +62,10 @@
 #' @examples
 #' # Not run
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#' SchmQfOut <- base::paste0(base::readLines('~/pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific.avsc'),collapse='')
 #' wrap.troll.flags <- function(DirIn="~/pfs/aquatroll200_data_source_trino/aquatroll200/2020/01/02/10721",
 #'                               DirOutBase="~/pfs/out",
-#'                               SchmDataOut=NULL,
-#'                               SchmQf="~/R/NEON-IS-avro-schemas/troll_shared/flags_troll_specific.avsc",
+#'                               SchmQf=SchmQfOut,
 #'                               DirSubCopy=NULL,
 #'                               log=log)
 #'                               
@@ -181,7 +181,7 @@ wrap.troll.flags <- function(DirIn,
   #Write out flags
   NameFileOutFlags <- base::paste0(DirOutFlags,"/troll_",source_id,"_",format(timeBgn,format = "%Y-%m-%d"),"_flagsSpecificQc.parquet")
   rptQfOut <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,NameFile = NameFileOutFlags,Schm = SchmQf),silent=TRUE)
-  if(class(rptQfOut) == 'try-error'){
+  if(base::any(base::class(rptQfOut) == 'try-error')){
     log$error(base::paste0('Cannot write Below Zero Pressure flags to ',NameFileOutFlags,'. ',attr(rptQfOut, "condition")))
     stop()
   } else {

@@ -4,7 +4,7 @@ from typing import NamedTuple, Optional
 import psycopg2.extras
 
 from data_access.db_connector import DbConnector
-from os_table_loader.table_loader import Table
+from os_table_loader.data.table_loader import Table
 
 
 class Field(NamedTuple):

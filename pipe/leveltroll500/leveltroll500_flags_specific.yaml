@@ -2,7 +2,7 @@
 pipeline:
   name: leveltroll500_flags_specific
 transform:
-  image: quay.io/battelleecology/neon-is-troll-flags-r:3606e15b
+  image: quay.io/battelleecology/neon-is-troll-flags-r:12828b1b
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
