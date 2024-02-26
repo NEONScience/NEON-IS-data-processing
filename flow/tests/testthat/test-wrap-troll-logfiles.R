@@ -72,6 +72,7 @@ test_that("Unit test of wrap.troll.logfiles.R", {
   startDate = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%d")
   endDate = format(as.Date(log_file$V1[53], format="%m/%d/%Y"),"%d")
   testDirOutDir = file.path(testDirOut, sensor, yr, mo)
+  
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
   }
@@ -81,14 +82,51 @@ test_that("Unit test of wrap.troll.logfiles.R", {
                     SchmDataOut=NULL,
                     log=log)
   
-  expect_true (file.exists(file.path(testDirOutDir, startDate)))
-  expect_true (file.exists(file.path(testDirOutDir, endDate)))
+  for (iDate in startDate:endDate){
+    #need to keep leading 0 in the directory
+    expect_true (file.exists(file.path(testDirOutDir, str_pad(iDate, 2, pad = "0"))))
+    }
+  #
+  
   #
   # Test 2. Not NULL Schema is passed in
   # 
-   if (dir.exists(testDirOut)) {
-     unlink(testDirOut, recursive = TRUE)
-   }
-
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  # 
+  #generate schema
+  testFile = "pfs/leveltroll500/2019/11/05/21115/data/leveltroll500_21115_2019-11-05_log.parquet"
   
+  schm <- arrow::read_parquet(file=testFile,as_data_frame=FALSE)$schema
+  wrap.troll.logfiles (DirIn=testDirIn,
+                      DirOut=testDirOut,
+                      SchmDataOut=schm,
+                      log=log)
+  
+  # Test 3. The input file has date < 2018
+  
+  testDirIn = file.path(workingDirPath, 'pfs/logjam_load_files_before2018/21115')
+  fileData <- base::list.files(testDirIn,full.names=FALSE)
+  log_file  <- base::try(read.table(paste0(testDirIn, '/', fileData), header = FALSE, sep = ",", 
+                                    col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
+                                    stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
+
+  sensor = tolower(gsub(" ", "", paste(log_file$V2[13])))
+  yr = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%Y")
+  mo = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%m")
+  startDate = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%d")
+  endDate = format(as.Date(log_file$V1[53], format="%m/%d/%Y"),"%d")
+  testDirOutDir = file.path(testDirOut, sensor, yr, mo)
+  
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  wrap.troll.logfiles (DirIn=testDirIn,
+                       DirOut=testDirOut,
+                       SchmDataOut=NULL,
+                       log=log)
+  
+  expect_true (file.exists(file.path(testDirOutDir)))
+
 })
