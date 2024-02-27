@@ -118,6 +118,16 @@
 #' SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc'),collapse='')
 #' SchmSciStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc'),collapse='')
 #' SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc'),collapse='')
+# WndwAgr <- base::as.difftime(base::as.numeric('030'),units="mins")
+# if(length(WndwAgr)>0){
+#   timeBgnDiff <- list()
+#   timeEndDiff <- list()
+#   for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
+#     timeBinDiff <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr[idxWndwAgr],WndwTime=base::as.difftime(1,units='days'))
+#     timeBgnDiff[[idxWndwAgr]] <- timeBinDiff$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+#     timeEndDiff[[idxWndwAgr]] <- timeBinDiff$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+#   } # End loop around aggregation intervals
+# }
 #' wrap.troll.flags <- function(DirInTroll=DirInTroll,
 #'                               DirInUcrt=DirInUcrt,
 #'                               DirIn=NULL,
@@ -125,6 +135,8 @@
 #'                               Context='SW',
 #'                               WndwInst=TRUE,
 #'                               WndwAgr='030',
+#'                               timeBgnDiff = timeBgnDiff,
+#'                               timeEndDiff =timeEndDiff, 
 #'                               SchmDataOut=SchmDataOut,
 #'                               SchmUcrtOutAgr=SchmUcrtOutAgr,
 #'                               SchmUcrtOutInst=SchmUcrtOutInst,
@@ -154,6 +166,8 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
                                    Context,
                                    WndwInst,
                                    WndwAgr,
+                                   timeBgnDiff = timeBgnDiff,
+                                   timeEndDiff =timeEndDiff, 
                                    SchmDataOut=NULL,
                                    SchmUcrtOutAgr=NULL,
                                    SchmUcrtOutInst=NULL,
