@@ -3,7 +3,7 @@ pipeline:
   name: leveltroll500_fill_log_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:xxxxxx
+  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:55060dcb
   cmd:
   - sh
   - "-c"
@@ -14,7 +14,9 @@ transform:
     IFS=$'\n\t'
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
+    rm -rf $OUT_PATH
     mkdir -p /tmp/pfs/filter_joined
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
     # Run filter-joiner for data (using environment variables below as input parameters)
     export CONFIG=$CONFIG
     export OUT_PATH=$OUT_PATH
@@ -23,8 +25,8 @@ transform:
     Rscript ./flow.troll.logfiles.fill.R
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
-      FileSchmData=$SCHEMA_DATA
-      FileSchmData=$SCHEMA_FLAGS
+      FileSchmData=$SCHEMA_DATA \
+      FileSchmData=$SCHEMA_FLAGS \
       DirErr=/pfs/out/errored_datums
     EOF
   env:
@@ -52,6 +54,7 @@ transform:
     OUT_PATH: /tmp/pfs/filter_joined
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
 input:
   cross:
   - pfs:

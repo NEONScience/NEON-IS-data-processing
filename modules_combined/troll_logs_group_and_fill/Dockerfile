@@ -31,6 +31,8 @@ RUN apt update && \
 	 rm -rf /var/lib/apt/lists/* 
 
 # Copy in python code
+# Copy the lockfile and restore known working versions of R dependency packages
+# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
@@ -46,12 +48,6 @@ RUN R -e 'renv::restore(lockfile="./renv.lock")'
 # Create app user
 RUN groupadd appuser && \
     useradd appuser -g appuser
-
-# Copy in application code
-COPY ./${MODULE_DIR}/${APP_DIR_1}/wrap.stat.basc.R .
-COPY ./${MODULE_DIR}/${APP_DIR_1}/flow.stat.basc.R .
-COPY ./${MODULE_DIR}/${APP_DIR_2}/wrap.troll.uncertainty.R .
-COPY ./${MODULE_DIR}/${APP_DIR_2}/flow.troll.uncertainty.R .
 
 # Copy in R code
 COPY ./flow/flow.troll.logfiles.fill/flow.troll.logfiles.fill.R .
