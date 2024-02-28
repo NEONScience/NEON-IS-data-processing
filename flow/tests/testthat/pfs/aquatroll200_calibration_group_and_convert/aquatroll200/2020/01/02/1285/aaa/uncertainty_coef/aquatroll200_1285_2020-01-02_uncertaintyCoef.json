@@ -1,0 +1,542 @@
+[
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE12",
+      "Value":"191481.000000000",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE11",
+      "Value":"0.000000000",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE10",
+      "Value":"0.000000000",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE9",
+      "Value":"63.661279033",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE8",
+      "Value":"0.000000000",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE7",
+      "Value":"1.000000000",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE6",
+      "Value":"0.000000000",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE5",
+      "Value":"12056.506654199",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE4",
+      "Value":"20147.053567815",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE3",
+      "Value":"7552.872635173",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE2",
+      "Value":"35257.687865629",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE1",
+      "Value":"20776.166909108",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD3",
+      "Value":"30",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD2",
+      "Value":"100",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD1",
+      "Value":"31",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA3",
+      "Value":"0.130908",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA2",
+      "Value":"0.009998",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191481,
+      "term":"pressure",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA1",
+      "Value":"0.131289",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE12",
+      "Value":"191428.000000000",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE11",
+      "Value":"0.000000000",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE10",
+      "Value":"0.000000000",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE9",
+      "Value":"33.269032447",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE8",
+      "Value":"-0.000000000",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE7",
+      "Value":"1.000000000",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE6",
+      "Value":"0.000000000",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE5",
+      "Value":"-12151.514101119",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE4",
+      "Value":"10918.230665100",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE3",
+      "Value":"1783.659025645",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE2",
+      "Value":"18237.640503133",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE1",
+      "Value":"10202.828800560",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD3",
+      "Value":"494",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD2",
+      "Value":"125",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD1",
+      "Value":"500",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA3",
+      "Value":"0.037112",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA2",
+      "Value":"0.007592",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191428,
+      "term":"temperature",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA1",
+      "Value":"0.037880",
+      ".attrs":"deg C"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE12",
+      "Value":"191572.000000000",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE11",
+      "Value":"0.000000000",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE10",
+      "Value":"0.000000000",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE9",
+      "Value":"7592.922887842",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE8",
+      "Value":"0.000000000",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE7",
+      "Value":"1.000000000",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE6",
+      "Value":"-0.000000000",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE5",
+      "Value":"-2773315.084784245",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE4",
+      "Value":"35047.393121667",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE3",
+      "Value":"4038.196470540",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE2",
+      "Value":"7334827.438928702",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE1",
+      "Value":"1132831.881549818",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD3",
+      "Value":"75",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD2",
+      "Value":"10",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALD1",
+      "Value":"78",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA3",
+      "Value":"0.007200",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA2",
+      "Value":"0.000580",
+      ".attrs":"%"
+   },
+   {
+      "calibration_id":      191572,
+      "term":"conductivity",
+      "start_date":"2020-01-02T00:00:00.000Z",
+      "end_date":"2020-01-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALA1",
+      "Value":"0.007223",
+      ".attrs":"%"
+   }
+]
