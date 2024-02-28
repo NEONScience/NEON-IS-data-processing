@@ -50,7 +50,7 @@
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' wrap.troll.logfiles.fill <- function(DirInLogs=DirInLogs,
 #'                               DirInStream=DirInStream,
-#'                               DirIn=NULL,
+#'                               DirIn=DirIn,
 #'                               DirOutBase="~/pfs/out",
 #'                               SchmDataOut=NULL,
 #'                               SchmFlagsOut=NULL,
@@ -188,7 +188,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
     # Check times
     timeAgr_1 <- timeBgn + timeBgnDiff_1
     timeAgr_5 <- timeBgn + timeBgnDiff_5
-    if(sensor=='leveltroll500'|nrow(L0Data$readout_time)>288|nrow(LogData$readout_time)>288){
+    if(sensor=='leveltroll500'|length(L0Data$readout_time)>288|length(LogData$readout_time)>288){
       badL0Times_1<-L0Data$readout_time[!L0Data$readout_time %in% timeAgr_1]
       badLogTimes_1<-LogData$readout_time[!LogData$readout_time %in% timeAgr_1]
       if(length(badL0Times_1)>0){
@@ -268,7 +268,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
   csv_name <-paste0(sensor,'_',asset,'_',format(timeBgn,format = "%Y-%m-%d"))
   
   rptOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
-                                               NameFile = base::paste0(DirOutData,csv_name,".parquet"),
+                                               NameFile = base::paste0(DirOutData,'/',csv_name,".parquet"),
                                                Schm = SchmDataOut),silent=TRUE)
   if(class(rptOut)[1] == 'try-error'){
     log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutData,'/',csv_name,".parquet"),'. ',attr(rptOut, "condition")))
@@ -281,7 +281,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
   csv_name_flags <-paste0(sensor,'_',asset,'_',format(timeBgn,format = "%Y-%m-%d"),'_logFlags')
   
   rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,
-                                               NameFile = base::paste0(DirOutFlags,csv_name_flags,".parquet"),
+                                               NameFile = base::paste0(DirOutFlags,'/',csv_name_flags,".parquet"),
                                                Schm = SchmFlagsOut),silent=TRUE)
   if(class(rptOutFlags)[1] == 'try-error'){
     log$error(base::paste0('Cannot write Flags to ',base::paste0(DirOutFlags,'/',csv_name_flags,".parquet"),'. ',attr(rptOutFlags, "condition")))

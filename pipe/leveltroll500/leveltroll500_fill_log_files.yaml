@@ -3,7 +3,7 @@ pipeline:
   name: leveltroll500_fill_log_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:55060dcb
+  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:d1782b2c
   cmd:
   - sh
   - "-c"
@@ -22,7 +22,7 @@ transform:
     export OUT_PATH=$OUT_PATH
     python3 -m filter_joiner.filter_joiner_main
     # Run log filler script
-    Rscript ./flow.troll.logfiles.fill.R
+    Rscript ./flow.troll.logfiles.fill.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       FileSchmData=$SCHEMA_DATA \

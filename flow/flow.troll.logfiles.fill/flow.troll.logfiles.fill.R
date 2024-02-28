@@ -135,7 +135,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.troll.logfiles(
+      wrap.troll.logfiles.fill(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,
