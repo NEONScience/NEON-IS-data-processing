@@ -69,14 +69,14 @@ input:
     - pfs:
         name: STREAM_DATA_PATH
         repo: leveltroll500_data_source_trino
-        glob: /leveltroll500/2022/04/* #leveltroll500/Y/M/D
+        glob: /leveltroll500/(2022/04/*) #leveltroll500/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
     - pfs:
         name: LOG_DATA_PATH
         repo: logjam_clean_troll_files
-        glob: /leveltroll500/2022/04/* #leveltroll500/Y/M/D
+        glob: /leveltroll500/(2022/04/*) #leveltroll500/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
