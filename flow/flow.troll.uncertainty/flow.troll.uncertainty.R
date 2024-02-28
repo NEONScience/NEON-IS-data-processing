@@ -86,21 +86,21 @@
 #' 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau') #troll data
-#' Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_group_path') #uncertainty data
-#' Sys.setenv(FILE_SCHEMA_STATS_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc')
-#' Sys.setenv(SCHEMA_DATA_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc')
-#' Sys.setenv(SCHEMA_UCRT_AGR_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc')
-#' Sys.setenv(SCHEMA_UCRT_INST_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc')
-#' Sys.setenv(FILE_SCHEMA_STATS_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc')
-#' Sys.setenv(SCHEMA_DATA_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_data.avsc')
-#' Sys.setenv(SCHEMA_UCRT_AGR_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt.avsc')
-#' Sys.setenv(SCHEMA_UCRT_INST_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt_inst.avsc')
-#' Sys.setenv(SCHEMA_SCI_TROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc')
-#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","Context=surfacewater","WndwInst=TRUE","WndwAgr=005|030",
-#' "FileSchmData=$SCHEMA_DATA_TROLL_AQUATROLL","FileSchmUcrtAgr=$SCHEMA_UCRT_AGR_TROLL_AQUATROLL","FileSchmUcrtInst=$SCHEMA_UCRT_INST_TROLL_AQUATROLL",
-#' "FileSchmStats=$FILE_SCHEMA_STATS_AQUATROLL","FileSchmSciStats=$SCHEMA_SCI_TROLL")
+# Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau') #troll data
+# Sys.setenv(DIR_IN='~/pfs/surfacewaterPhysical_group_path') #uncertainty data
+# Sys.setenv(FILE_SCHEMA_STATS_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc')
+# Sys.setenv(SCHEMA_DATA_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc')
+# Sys.setenv(SCHEMA_UCRT_AGR_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc')
+# Sys.setenv(SCHEMA_UCRT_INST_TROLL_AQUATROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc')
+# Sys.setenv(FILE_SCHEMA_STATS_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc')
+# Sys.setenv(SCHEMA_DATA_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_data.avsc')
+# Sys.setenv(SCHEMA_UCRT_AGR_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt.avsc')
+# Sys.setenv(SCHEMA_UCRT_INST_TROLL_LEVELTROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt_inst.avsc')
+# Sys.setenv(SCHEMA_SCI_TROLL='~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","Context=surfacewater","WndwInst=TRUE","WndwAgr=005|030",
+#          "FileSchmData=$SCHEMA_DATA_TROLL_AQUATROLL","FileSchmUcrtAgr=$SCHEMA_UCRT_AGR_TROLL_AQUATROLL","FileSchmUcrtInst=$SCHEMA_UCRT_INST_TROLL_AQUATROLL",
+#          "FileSchmStats=$FILE_SCHEMA_STATS_AQUATROLL","FileSchmSciStats=$SCHEMA_SCI_TROLL")
 #' rm(list=setdiff(ls(),c('arg','log')))
 #' 
 #' @seealso None currently
@@ -143,7 +143,6 @@ log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used
 
 # Parse the input arguments into parameters
 Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr","Context"),NameParaOptn = c("FileSchmData","FileSchmUcrtAgr","FileSchmUcrtInst","FileSchmStats","FileSchmSciStats","WndwInst","WndwAgr"),log = log)
-
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
@@ -252,6 +251,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         SchmUcrtOutInst=SchmUcrtOutInst,
         SchmStatsOut=SchmStatsOut,
         SchmSciStatsOut=SchmSciStatsOut,
+        timeBgnDiff=timeBgnDiff,
+        timeEndDiff=timeEndDiff,
         log=log
       ),
       error = function(err) {
