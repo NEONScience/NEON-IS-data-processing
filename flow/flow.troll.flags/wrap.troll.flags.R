@@ -93,28 +93,22 @@ wrap.troll.flags <- function(DirIn,
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
   DirOutData <- base::paste0(DirOut,'/data')
   base::dir.create(DirOutData,recursive=TRUE)
-  # DirInFlags <- base::paste0(DirIn,'/flags')
+  DirInFlags <- base::paste0(DirIn,'/flags')
   DirOutFlags <- base::paste0(DirOut,'/flags')
   base::dir.create(DirOutFlags,recursive=TRUE)
-  # 
-  # 
-  # # Copy with a symbolic link the desired subfolders 
-  # DirSubCopy <- c('uncertainty_coef','uncertainty_data')
-  # if(base::length(DirSubCopy) > 0){
-  #   
-  #   NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
-  #                                      DirDest=DirOut,
-  #                                      LnkSubObj=FALSE,
-  #                                      log=log)
-  # }
   
-  # # The flags folder is already populated from the calibration module. Copy over any existing files.
-  # fileCopy <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
-  # # Symbolically link each file
-  # for(idxFileCopy in fileCopy){
-  #   cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
-  #   rptCopy <- base::system(cmdCopy)
-  # }
+  # Copy with a symbolic link the desired subfolders 
+  if(base::length(DirSubCopy) > 0){
+    NEONprocIS.base::def.dir.copy.symb(base::paste0(DirIn,'/',DirSubCopy),DirOut,LnkSubObj=FALSE,log=log)
+  } 
+  
+  # The flags folder is already populated from the calibration module. Copy over any existing files.
+  fileCopy <- base::list.files(DirInFlags,recursive=TRUE) # Files to copy over
+  # Symbolically link each file
+  for(idxFileCopy in fileCopy){
+    cmdCopy <- base::paste0('ln -s ',base::paste0(DirInFlags,'/',idxFileCopy),' ',base::paste0(DirOutFlags,'/',idxFileCopy))
+    rptCopy <- base::system(cmdCopy)
+  }
   
   # Take stock of our data files. 
   fileData <- base::list.files(dirInData,full.names=FALSE)
