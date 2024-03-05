@@ -65,9 +65,9 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
                     change_logs.append(build_change_log(data_product_id, log_values, dates_and_locations))
 
                 # Pull the log entry values
-                issue_date = log_entry.issue_date
+                issue_date: datetime = log_entry.issue_date
                 issue = log_entry.issue
-                resolution_date = log_entry.resolution_date
+                resolution_date: Optional[datetime] = log_entry.resolution_date
                 resolution = log_entry.resolution
 
                 log_values.clear()  # Reset the stored values for the new log entry.
@@ -83,8 +83,8 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
 
             # Get the dates and locations
             if is_first_date_location \
-                    or date_range_start != log_entry.date_range_start \
-                    or date_range_end != log_entry.date_range_end:
+                    or format_date(date_range_start) != format_date(log_entry.date_range_start) \
+                    or format_date(date_range_end) != format_date(log_entry.date_range_end):
 
                 if is_first_date_location is False:
                     dates_locations = DatesLocations(date_range_start, date_range_end, locations)
@@ -113,3 +113,10 @@ def build_change_log(data_product_id, log_values, dates_and_locations) -> Change
                      resolution=log_values['resolution'],
                      resolution_date=log_values['resolution_date'],
                      dates_locations=dates_and_locations)
+
+
+def format_date(date_time: Optional[datetime]) -> Optional[str]:
+    """Return the date in str format for comparisons."""
+    if date_time:
+        return date_time.strftime('%Y-%m-%d')
+    return None
