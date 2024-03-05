@@ -95,10 +95,18 @@ test_that("Unit test of wrap.troll.logfiles.R", {
     unlink(testDirOut, recursive = TRUE)
   }
   # 
-  #generate schema
-  testFile = "pfs/leveltroll500/2019/11/05/21115/data/leveltroll500_21115_2019-11-05_log.parquet"
+  #generate schema of "source_id", "readout_time", "pressure", "temperature", "logFlag" and "logDateErrorFlag")
+  #from data frame
+  source_id <- c("21115")
+  readout_time <- c("2019-01-03T00:00:00Z")
+  pressure <- c("0.000000000")
+  temperature <- c("191428.000000000")
+  logFlag <- c("1.0")
+  logDateErrorFlag <- c("0.1")
   
-  schm <- arrow::read_parquet(file=testFile,as_data_frame=FALSE)$schema
+  df1 <- data.frame(source_id, readout_time, pressure, temperature, logFlag,  logDateErrorFlag)
+  schm = NEONprocIS.base::def.schm.parq.from.df (df = df1, log=NULL)
+  
   wrap.troll.logfiles (DirIn=testDirIn,
                       DirOut=testDirOut,
                       SchmDataOut=schm,
