@@ -12,8 +12,8 @@ from pub_files.database.log_entries import LogEntry
 
 class DatesLocations(NamedTuple):
     """The locations and their affected time span."""
-    date_range_start: str
-    date_range_end: str
+    date_range_start: datetime
+    date_range_end: datetime
     location_affected: List[str]
 
 
@@ -21,9 +21,9 @@ class ChangeLog(NamedTuple):
     """The final change log format with a list of dates and affected locations."""
     data_product_id: str
     issue: str
-    issue_date: str
+    issue_date: datetime
     resolution: str
-    resolution_date: Optional[str]
+    resolution_date: Optional[datetime]
     dates_locations: List[DatesLocations]
 
 
@@ -60,13 +60,12 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
 
                 # Create a new log.
                 if not is_first_loop:
-                    dates_locations = DatesLocations(format_date(date_range_start), format_date(date_range_end),
-                                                     locations)
+                    dates_locations = DatesLocations(date_range_start, date_range_end, locations)
                     dates_and_locations.append(dates_locations)
                     change_logs.append(build_change_log(data_product_id, log_values, dates_and_locations))
 
                 # Pull the log entry values
-                issue_date = format_date(log_entry.issue_date)
+                issue_date = log_entry.issue_date
                 issue = log_entry.issue
                 resolution_date = log_entry.resolution_date
                 resolution = log_entry.resolution
@@ -74,7 +73,7 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
                 log_values.clear()  # Reset the stored values for the new log entry.
                 log_values.update(issue_date=issue_date)
                 log_values.update(issue=issue)
-                log_values.update(resolution_date=format_date(resolution_date))
+                log_values.update(resolution_date=resolution_date)
                 log_values.update(resolution=resolution)
 
                 # Reset values for next loop.
@@ -88,8 +87,7 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
                     or date_range_end != log_entry.date_range_end:
 
                 if is_first_date_location is False:
-                    dates_locations = DatesLocations(format_date(date_range_start), format_date(date_range_end),
-                                                     locations)
+                    dates_locations = DatesLocations(date_range_start, date_range_end, locations)
                     dates_and_locations.append(dates_locations)
                 date_range_start = log_entry.date_range_start
                 date_range_end = log_entry.date_range_end
@@ -101,7 +99,7 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
             is_first_date_location = False
 
         # Build the final change log
-        dates_locations = DatesLocations(format_date(date_range_start), format_date(date_range_end), locations)
+        dates_locations = DatesLocations(date_range_start, date_range_end, locations)
         dates_and_locations.append(dates_locations)
         change_logs.append(build_change_log(data_product_id, log_values, dates_and_locations))
     return change_logs
@@ -115,10 +113,3 @@ def build_change_log(data_product_id, log_values, dates_and_locations) -> Change
                      resolution=log_values['resolution'],
                      resolution_date=log_values['resolution_date'],
                      dates_locations=dates_and_locations)
-
-
-def format_date(date_time: Optional[datetime]) -> Optional[str]:
-    """Return the date in the correct format for including in the change log section of the readme file."""
-    if date_time:
-        return date_time.strftime('%Y-%m-%d')
-    return None
