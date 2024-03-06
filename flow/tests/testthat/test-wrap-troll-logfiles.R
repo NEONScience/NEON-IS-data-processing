@@ -87,8 +87,6 @@ test_that("Unit test of wrap.troll.logfiles.R", {
     expect_true (file.exists(file.path(testDirOutDir, str_pad(iDate, 2, pad = "0"))))
     }
   #
-  
-  #
   # Test 2. Not NULL Schema is passed in
   # 
   if (dir.exists(testDirOut)) {
