@@ -96,7 +96,7 @@ def.cal.conv.poly.aepg600m <- function(data = data.frame(data=base::numeric(0)),
     NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
   
   # Convert data using the calibration function
-  dataConv <- stats::predict(object = func, newdata = data[[varConv]] - as.numeric(infoCal$cal[grep("F0", infoCal$cal$Name),"Value"]))
+  dataConv <- stats::predict(object = func, newdata = data[[varConv]] - as.numeric(infoCal$cal[grep("F0", infoCal$cal$Name),"Value"]))*10
   
   return(dataConv)
   
