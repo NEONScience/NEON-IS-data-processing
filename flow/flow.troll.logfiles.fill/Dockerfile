@@ -12,6 +12,6 @@ COPY ./renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in troll flag workflow
-COPY ./flow.troll.logfiles.R .
-COPY ./wrap.troll.logfiles.R .
+COPY ./flow.troll.logfiles.fill.R .
+COPY ./wrap.troll.logfiles.fill.R .
 

@@ -1,6 +1,6 @@
 Package: NEONprocIS.qaqc
 Title: QA/QC functions for NEON IS data processing
-Version: 1.0.1
+Version: 1.1.5
 Authors@R: 
     person(given = "Cove",
            family = "Sturtevant",
