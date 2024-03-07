@@ -4,14 +4,15 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/os_table_loader:0.001
+  image: quay.io/battelleecology/os_table_loader:0.003
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
   - python3 -m os_table_loader.main
   env:
-    FILE_TYPE: csv 
+    # File output options are 'csv' or 'parquet'. 
+    FILE_TYPE: csv
     OUT_PATH: /pfs/out/ais_maintenance
     PARTIAL_TABLE_NAME: maintenance
     DB_CONFIG_SOURCE: mount
@@ -20,10 +21,10 @@ transform:
   - name: pdr-secret
     mount_path: /var/db_secret
 input:
-  cron:
-    name: ais_maintenance_table_loader_tick
-    spec: "@daily"  
-    overwrite: true
+  pfs:
+    name: IN_PATH 
+    repo: ais_maintenance_table_loader_control_tick
+    glob: /*
 autoscaling: true
 resource_requests:
   memory: 100M
