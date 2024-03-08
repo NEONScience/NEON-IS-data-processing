@@ -89,8 +89,7 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
                 if not is_first_date_location:
                     dates_locations = DatesLocations(date_range_start, date_range_end, locations_affected)
                     dates_and_locations.append(dates_locations)
-                    locations_affected = []
-                    dates_and_locations = []
+                    locations_affected = []  # Reset locations affected
 
                 date_range_start = log_entry.date_range_start
                 date_range_end = log_entry.date_range_end
