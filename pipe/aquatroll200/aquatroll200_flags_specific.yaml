@@ -19,7 +19,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: leveltroll500_fill_log_files
+      repo: aquatroll200_fill_log_files
       glob: /aquatroll200/2022/*/*/
   - pfs:
       name: SCHEMA_FLAGS

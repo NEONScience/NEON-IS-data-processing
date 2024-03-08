@@ -23,7 +23,6 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      FileSchmQm=$FILE_SCHEMA_QM_AQUATROLL \
       "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
@@ -43,7 +42,6 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      FileSchmQm=$FILE_SCHEMA_QM_AQUATROLL_INST \
       Tmi=001 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
@@ -63,7 +61,6 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      FileSchmQm=$FILE_SCHEMA_QM_LEVELTROLL \
       "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
@@ -79,7 +76,6 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      FileSchmQm=$FILE_SCHEMA_QM_LEVELTROLL_INST \
       Tmi=001 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \

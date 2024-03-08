@@ -7,3 +7,4 @@ docker tag $image_name quay.io/battelleecology/$image_name:$tag
 docker push quay.io/battelleecology/$image_name:$tag
 
 Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "quay.io/battelleecology/$image_name" "$tag"
+

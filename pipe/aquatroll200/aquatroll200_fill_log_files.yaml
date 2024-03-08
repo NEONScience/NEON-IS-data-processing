@@ -3,7 +3,7 @@ pipeline:
   name: aquatroll200_fill_log_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:46c74fb4
+  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:2798c5e4
   cmd:
   - sh
   - "-c"
@@ -48,8 +48,6 @@ transform:
     Rscript ./flow.troll.logfiles.fill.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
-      FileSchmData=$SCHEMA_DATA \
-      FileSchmFlags=$SCHEMA_FLAGS \
       DirErr=/pfs/out/errored_datums
     EOF
   env:
