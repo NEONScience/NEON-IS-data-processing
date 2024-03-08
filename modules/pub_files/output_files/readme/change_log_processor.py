@@ -114,10 +114,3 @@ def build_change_log(data_product_id, log_values, dates_and_locations) -> Change
                      resolution=log_values['resolution'],
                      resolution_date=log_values['resolution_date'],
                      dates_locations=dates_and_locations)
-
-
-def format_date(date_time: Optional[datetime]) -> Optional[str]:
-    """Return the date in y-m-d format."""
-    if date_time:
-        return date_time.strftime('%Y-%m-%d')
-    return None
