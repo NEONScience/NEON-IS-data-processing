@@ -1,6 +1,7 @@
-{% set gen_time = timestamp.strftime('%Y%m%d%H%MZ') %}
+{% set gen_time = timestamp.strftime('%Y%m%dT%H%M%SZ') %}
 {% set os_is_type = 'TOS-structured TIS Data Product Type' %}
-{% set file_prefix = 'NEON.{}.{}.{}'.format(domain, site, data_product.short_data_product_id) %}
+{% set ec_short_id = 'DP4.00200.001' %}
+{% set file_prefix = 'NEON.%s.%s.%s'|format(domain, site, data_product.short_data_product_id) %}
 This data package was produced by and downloaded from the National Ecological Observatory Network (NEON). NEON is
 funded by the National Science Foundation (Awards 0653461, 0752017, 1029808, 1138160, 1246537, 1638695, 1638696,
 1724433) and managed cooperatively by Battelle. These data are provided under the terms of the NEON data policy at
@@ -27,7 +28,7 @@ Brief Study Area Description: {{data_product.study_description}}
 Sensor(s): {{data_product.sensor}}
 {% endif %}
 
-Keywords: {{(', ').join(keywords)}}
+Keywords: {{keywords|join(', ')}}
 
 
 QUERY INFORMATION
@@ -62,13 +63,13 @@ This folder contains the following documentation files:
 This file uses the Ecological Metadata Language (EML) schema. Learn more about this specification and tools to parse
 it at https://www.neonscience.org/about/faq.
 {% endif %}
-{% if data_product.supplier == 'TIS' or data_product.type_name == os_is_type %}
+{% if (data_product.supplier == 'TIS' and data_product.short_data_product_id != ec_short_id) or data_product.type_name == os_is_type %}
 - Sensor position information: {{positions_filename}}
 {% endif %}
 {% if science_review_filename is not none %}
 - Science review flags: {{science_review_filename}}
 {% endif %}
-- Other related documents are available such as engineering specifications, field protocols, and data processing 
+- Other related documents are available such as engineering specifications, field protocols, and data processing
 documentation. Please visit https://data.neonscience.org/data-products/{{data_product.short_data_product_id}} for more information.
 
 
@@ -101,13 +102,13 @@ of this data package. For a more recent log, please visit this data product's de
 https://data.neonscience.org/data-products/{{data_product.short_data_product_id}}.
 
 {% for change_log in change_logs %}
-Issue Date: {{change_log.issue_date}}
+Issue Date: {{change_log.issue_date.strftime('%Y-%m-%d')}}
 Issue: {{change_log.issue}}
 {%    for entry in change_log.dates_locations %}
-    Date Range: {{entry.date_range_start}} to {{entry.date_range_end}}
-    Location(s) Affected: {{', '.join(entry.location_affected)}}
+    Date Range: {{entry.date_range_start.strftime('%Y-%m-%d')}} to {{entry.date_range_end.strftime('%Y-%m-%d')}}
+    Location(s) Affected: {{entry.location_affected|join(', ')}}
 {%    endfor %}
-Resolution Date: {{change_log.resolution_date}}
+Resolution Date: {{change_log.resolution_date.strftime('%Y-%m-%d')}}
 Resolution: {{change_log.resolution}}
 
 {% endfor %}

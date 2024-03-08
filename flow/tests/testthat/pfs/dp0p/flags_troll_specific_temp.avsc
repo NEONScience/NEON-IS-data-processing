@@ -1,0 +1,26 @@
+{
+  "type": "record",
+  "name": "flags_troll_specific_temp",
+  "namespace": "org.neonscience.schema.dp0p",
+  "doc": "Sensor-specific missing temperature qaqc flags for Aqua Troll 200 and Level Troll 500",
+  "fields": [
+    {
+      "name": "readout_time",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Timestamp of readout expressed in milliseconds since epoch"
+    },
+    {
+      "name": "missingTempQF",
+      "type": [
+        "null",
+        "int"
+        ],
+      "default": null,
+      "doc": "Quality flag indicating missing temperature data stream (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+      "__neon_units": "NA"
+    }
+  ]
+}

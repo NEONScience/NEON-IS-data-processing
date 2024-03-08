@@ -3,7 +3,7 @@ pipeline:
   name: surfacewaterPhysical_qm_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-qm-avg-inst-grp:4178f7b8
+  image: quay.io/battelleecology/neon-is-qm-avg-inst-grp:59d040e1
   cmd:
   - sh
   - "-c"
@@ -27,14 +27,14 @@ transform:
       "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
-      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
-      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperaturePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperaturePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
-      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
-      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
       "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
       "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
@@ -47,8 +47,8 @@ transform:
       Tmi=001 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF:-1" \
     # We are done with aquatroll. Clean up interim directories before doing leveltroll
@@ -67,11 +67,11 @@ transform:
       "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
-      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
-      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
+      "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperaturePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperaturePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF:-1"
     # ---- Run third module - quality metrics (instantaneous) - only for elevation/water column height for DSC---- 
@@ -83,8 +83,8 @@ transform:
       Tmi=001 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF:-1" \
     EOF

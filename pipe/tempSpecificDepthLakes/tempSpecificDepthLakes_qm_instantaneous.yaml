@@ -55,7 +55,7 @@ transform:
   - QfForc9=depth8WaterTempNullQF:1:depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempValidCalQF|depth8WaterTempSpikeQF:-1
   - QfForc10=depth9WaterTempNullQF:1:depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempValidCalQF|depth9WaterTempSpikeQF:-1
   - QfForc11=depth10WaterTempNullQF:1:depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempValidCalQF|depth10WaterTempSpikeQF:-1
-  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:4178f7b8
+  image: quay.io/battelleecology/neon-is-qaqc-qm-dp0p-r:59d040e1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
