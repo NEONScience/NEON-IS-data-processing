@@ -38,7 +38,7 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
     if log_entries:
         log_values = {}
         dates_and_locations: List[DatesLocations] = []
-        locations = []
+        locations_affected = []
         issue_date = None
         issue = ''
         resolution_date = None
@@ -60,7 +60,7 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
 
                 # Create a new log.
                 if not is_first_loop:
-                    dates_locations = DatesLocations(date_range_start, date_range_end, locations)
+                    dates_locations = DatesLocations(date_range_start, date_range_end, locations_affected)
                     dates_and_locations.append(dates_locations)
                     change_logs.append(build_change_log(data_product_id, log_values, dates_and_locations))
 
@@ -77,8 +77,8 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
                 log_values.update(resolution=resolution)
 
                 # Reset values for next loop.
-                dates_and_locations = []
-                locations = []
+                dates_and_locations.clear()
+                locations_affected.clear()
                 is_first_date_location = True
 
             # Get the dates and locations
@@ -87,20 +87,22 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
                     or date_range_end != log_entry.date_range_end:
 
                 if not is_first_date_location:
-                    dates_locations = DatesLocations(date_range_start, date_range_end, locations)
+                    dates_locations = DatesLocations(date_range_start, date_range_end, locations_affected)
                     dates_and_locations.append(dates_locations)
+                    locations_affected.clear()
+                    dates_and_locations.clear()
 
                 date_range_start = log_entry.date_range_start
                 date_range_end = log_entry.date_range_end
 
-            if log_entry.location_affected not in locations:
-                locations.append(log_entry.location_affected)
+            if log_entry.location_affected not in locations_affected:
+                locations_affected.append(log_entry.location_affected)
 
             is_first_loop = False
             is_first_date_location = False
 
         # Build the final change log
-        dates_locations = DatesLocations(date_range_start, date_range_end, locations)
+        dates_locations = DatesLocations(date_range_start, date_range_end, locations_affected)
         dates_and_locations.append(dates_locations)
         change_logs.append(build_change_log(data_product_id, log_values, dates_and_locations))
     return change_logs
