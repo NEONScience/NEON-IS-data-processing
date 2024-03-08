@@ -30,7 +30,7 @@ class ChangeLog(NamedTuple):
 def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[ChangeLog]:
     """
     Process log entries in order to form the list of dates and locations affected
-    for each log entry. (TODO: The logs are currently stored in a flat table. This logic
+    for each log entry. (TODO: The logs are currently stored in a flat table. The logic below
     would be unnecessary with an improved data model.)
     """
     change_logs = []
@@ -83,12 +83,13 @@ def get_change_log(data_product_id: str, log_entries: List[LogEntry]) -> List[Ch
 
             # Get the dates and locations
             if is_first_date_location \
-                    or format_date(date_range_start) != format_date(log_entry.date_range_start) \
-                    or format_date(date_range_end) != format_date(log_entry.date_range_end):
+                    or date_range_start != log_entry.date_range_start \
+                    or date_range_end != log_entry.date_range_end:
 
-                if is_first_date_location is False:
+                if not is_first_date_location:
                     dates_locations = DatesLocations(date_range_start, date_range_end, locations)
                     dates_and_locations.append(dates_locations)
+
                 date_range_start = log_entry.date_range_start
                 date_range_end = log_entry.date_range_end
 
@@ -116,7 +117,7 @@ def build_change_log(data_product_id, log_values, dates_and_locations) -> Change
 
 
 def format_date(date_time: Optional[datetime]) -> Optional[str]:
-    """Return the date in str format for comparisons."""
+    """Return the date in y-m-d format."""
     if date_time:
         return date_time.strftime('%Y-%m-%d')
     return None
