@@ -32,9 +32,9 @@
 #' 
 #' @examples
 #' # Not run
-#' DirIn<-'/home/NEON/ncatolico/pfs/logjam_load_files/21115'
+#' DirIn<-'/home/NEON/ncatolico/pfs/logjam_load_files/23646'
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.troll.logfiles <- function(DirIn="~/pfs/logjam_load_files/21115",
+#' wrap.troll.logfiles <- function(DirIn="~/pfs/logjam_load_files/23646",
 #'                               DirOut="~/pfs/out",
 #'                               SchmDataOut=NULL,
 #'                               log=log)
@@ -107,7 +107,7 @@ wrap.troll.logfiles <- function(DirIn,
         }else if(grepl('temp', tolower(col3))){
           colnames(log_data)[3]<-'temperature'
         }else if(grepl('cond', tolower(col3))){
-          colnames(log_data)[3]<-'raw_conductivity'
+          colnames(log_data)[3]<-'conductivity'
         }else if(grepl('depth', tolower(col3))){
           colnames(log_data)[3]<-'depth'
         }else{
@@ -118,14 +118,14 @@ wrap.troll.logfiles <- function(DirIn,
         }else if(grepl('temp', tolower(col4))){
           colnames(log_data)[4]<-'temperature'
         }else if(grepl('cond', tolower(col4))){
-          colnames(log_data)[4]<-'raw_conductivity'
+          colnames(log_data)[4]<-'conductivity'
         }else if(grepl('depth', tolower(col4))){
           colnames(log_data)[4]<-'depth'
         }else{
           log$error(base::paste0('File Error: No expected streams present in column 4 of ',DirIn, '/', fileData_i))
         }
         if(is.na(col5)|grepl('cond', tolower(col5))){
-          colnames(log_data)[5]<-'raw_conductivity'
+          colnames(log_data)[5]<-'conductivity'
         }else if(grepl('pressure', tolower(col5))){
           colnames(log_data)[5]<-'pressure'
         }else if(grepl('temp', tolower(col5))){
@@ -300,7 +300,7 @@ wrap.troll.logfiles <- function(DirIn,
       
       #format output file
       if(sensor=='aquatroll200'){
-        out_columns <- c('source_id','readout_time','pressure','temperature','raw_conductivity','logFlag','logDateErrorFlag','day')
+        out_columns <- c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag','day')
       }else if(sensor=='leveltroll500'){
         out_columns <- c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag','day')
       }
@@ -325,7 +325,7 @@ wrap.troll.logfiles <- function(DirIn,
           month <- substr(out_file$day[1],6,7)
           day <- substr(out_file$day[1],9,10)
           if(sensor=='aquatroll200'){
-            out_file <- out_file[,c('source_id','readout_time','pressure','temperature','raw_conductivity','logFlag','logDateErrorFlag')]
+            out_file <- out_file[,c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag')]
           }else if(sensor=='leveltroll500'){
             out_file <- out_file[,c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag')]
           }
