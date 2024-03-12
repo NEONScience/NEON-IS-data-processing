@@ -512,7 +512,7 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
       }
     }else{
       uncertaintyData$pressure_ucrtRep<-NA
-      log$error(base::paste0('No U_CVALA2 in file: ', dirUncertaintyCoefLocation))
+      log$debug(base::paste0('No U_CVALA2 in file: ', dirUncertaintyCoefLocation))
     }
   }
 
