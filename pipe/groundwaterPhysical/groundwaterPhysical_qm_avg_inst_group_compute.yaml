@@ -22,8 +22,8 @@ transform:
       DirIn=/tmp/pfs/interimData \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      # FileSchmQm=$FILE_SCHEMA_QM \
-      WndwAgr=030 \
+      FileSchmQm=$FILE_SCHEMA_QM \
+      "WndwAgr=030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
       "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
@@ -71,13 +71,13 @@ transform:
             # Filter for flags directory
             glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/aquatroll200/*/flags/**
             # Join on named location (already joined below by day)
-            join_indices: [6]
+            join_indices: [3,4,5,6]
         - path:
             name: REGULARIZED_FLAGS_PATH
             # Filter for flags directory
             glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/aquatroll200/*/flags/**
             # Join on named location (already joined below by day
-            join_indices: [6]
+            join_indices: [3,4,5,6]
     OUT_PATH: /tmp/pfs/interimData
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
