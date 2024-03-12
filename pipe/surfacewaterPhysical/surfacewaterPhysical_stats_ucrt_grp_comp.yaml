@@ -3,7 +3,7 @@ pipeline:
   name: surfacewaterPhysical_stats_ucrt_grp_comp
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:2798c5e4
+  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:299bb90f
   cmd:
   - sh
   - "-c"
