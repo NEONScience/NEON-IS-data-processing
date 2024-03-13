@@ -193,8 +193,58 @@ test_that("Unit test of wrap.troll.uncertainty.R", {
     } # End loop around aggregation intervals
   }
  
-  # Test 1. source_id = leveltroll500
+  # source_id = leveltroll500
    wrap.troll.uncertainty(DirInTroll=DirInTroll,
+                         DirInUcrt=DirInUcrt,
+                         DirIn=NULL,
+                         DirOutBase=testDirOut,
+                         Context='SW',
+                         WndwInst=TRUE,
+                         WndwAgr='030',
+                         timeBgnDiff =timeBgnDiff,
+                         timeEndDiff =timeEndDiff,
+                         SchmDataOut=SchmDataOut,
+                         SchmUcrtOutAgr=SchmUcrtOutAgr,
+                         SchmUcrtOutInst=SchmUcrtOutInst,
+                         SchmSciStatsOut=SchmSciStatsOut,
+                         SchmStatsOut=SchmStatsOut,
+                         log=log)
+  # 
+  expect_true (file.exists(testDirOutPath, recursive = TRUE))
+  #
+  # Test 2.  source_id = aquatroll200
+  
+  workingDirPath <- getwd()
+  testDirOut = file.path(workingDirPath, 'pfs/out')
+  
+  DirInTroll<-file.path(workingDirPath, 'pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2022/03/02/surfacewater-physical_BARC130100/aquatroll200/CFGLOC113600')
+  DirInUcrt<-file.path(workingDirPath, 'pfs/surfacewaterPhysical_group_path/2022/03/02/surfacewater-physical_BARC130100/aquatroll200/CFGLOC113600')
+  
+  testStatsDir<-file.path(workingDirPath, 'pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc')
+  SchmStatsOut<-base::paste0(base::readLines(testStatsDir),collapse='')
+  
+  testDataDir= file.path(workingDirPath, 'pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc')
+  SchmDataOut<-base::paste0(base::readLines(testDataDir),collapse='')
+  
+  testAgrDir= file.path(workingDirPath, 'pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc')
+  SchmUcrtOutAgr<-base::paste0(base::readLines(testAgrDir),collapse='')
+  
+  testInstDir= file.path(workingDirPath, 'pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc')
+  SchmUcrtOutInst<-base::paste0(base::readLines(testInstDir),collapse='')
+  
+  testSciStatsDir= file.path(workingDirPath, 'pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc')
+  SchmSciStatsOut<-base::paste0(base::readLines(testSciStatsDir),collapse='')
+  
+  # get sub directory 
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirInTroll)
+  testDirRepo <- InfoDirIn$dirRepo
+  
+  testDirOutPath <- base::paste0(testDirOut, testDirRepo)
+  
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  wrap.troll.uncertainty(DirInTroll=DirInTroll,
                          DirInUcrt=DirInUcrt,
                          DirIn=NULL,
                          DirOutBase=testDirOut,
@@ -211,6 +261,4 @@ test_that("Unit test of wrap.troll.uncertainty.R", {
                          log=log)
   
   expect_true (file.exists(testDirOutPath, recursive = TRUE))
-  #
-  
 })
