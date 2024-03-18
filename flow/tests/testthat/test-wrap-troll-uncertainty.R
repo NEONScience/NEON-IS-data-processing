@@ -261,4 +261,30 @@ test_that("Unit test of wrap.troll.uncertainty.R", {
                          log=log)
   
   expect_true (file.exists(testDirOutPath, recursive = TRUE))
+  
+  # Test 3
+  
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  
+  try(wrap.troll.uncertainty(DirInTroll=NULL,
+                         DirInUcrt=NULL,
+                         DirIn=DirInTroll,
+                         DirOutBase=testDirOut,
+                         Context='SW',
+                         WndwInst=TRUE,
+                         WndwAgr='030',
+                         timeBgnDiff =timeBgnDiff,
+                         timeEndDiff =timeEndDiff,
+                         SchmDataOut=SchmDataOut,
+                         SchmUcrtOutAgr=SchmUcrtOutAgr,
+                         SchmUcrtOutInst=SchmUcrtOutInst,
+                         SchmSciStatsOut=SchmSciStatsOut,
+                         SchmStatsOut=SchmStatsOut,
+                         log=log), silent = TRUE)
+  
+ # expect_true (file.exists(testDirOutPath, recursive = TRUE))
+  
+
 })
