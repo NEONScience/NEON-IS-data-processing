@@ -109,15 +109,15 @@
 #' 
 #' @examples 
 #' # NOT RUN
-#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' DirInTroll<-"~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2022/03/03/surfacewater-physical_BARC130100/aquatroll200/CFGLOC113600",
-#' DirInUcrt<-"~/pfs/surfacewaterPhysical_group_path/2022/03/03/surfacewater-physical_BARC130100/aquatroll200/CFGLOC113600",
-#' SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc'),collapse='')
-#' SchmDataOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc'),collapse='')
-#' SchmUcrtOutAgr<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc'),collapse='')
-#' SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc'),collapse='')
-#' SchmSciStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc'),collapse='')
-#' SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_aquatroll200_dp01_stats.avsc'),collapse='')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# DirInTroll<-"~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2022/04/02/surfacewater-physical_ARIK101100/leveltroll500/CFGLOC101669"
+# DirInUcrt<-"~/pfs/surfacewaterPhysical_group_path/2022/04/02/surfacewater-physical_ARIK101100/leveltroll500/CFGLOC101669"
+# SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc'),collapse='')
+# SchmDataOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_data.avsc'),collapse='')
+# SchmUcrtOutAgr<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt.avsc'),collapse='')
+# SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt_inst.avsc'),collapse='')
+# SchmSciStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc'),collapse='')
+# SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc'),collapse='')
 # WndwAgr <- base::as.difftime(base::as.numeric('030'),units="mins")
 # if(length(WndwAgr)>0){
 #   timeBgnDiff <- list()
@@ -158,6 +158,8 @@
 #'   Nora Catolico (2024-01-29)
 #'     updated to include water column height uncertainty for L4 discharge 
 #'     distinguish between average and instantaneous uncertainty outputs
+#'   Nora Catolico (2024-03-05)
+#'     updated to include non-systematic uncertainty output for discharge
 ##############################################################################################
 wrap.troll.uncertainty <- function(DirIn=NULL,
                                    DirInTroll=NULL,
@@ -498,10 +500,23 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
         return(Ucrt)
       })
       log$debug(base::paste0("Reading in: ",dirUncertaintyCoefLocation))
+      
+      #get non-systematic uncertainty for water column height
+      if(length(uncertaintyCoef)>0){
+        # Uncertainty coefficient U_CVALA2 represents the repeatability and reproducibility of the sensor
+        ucrtRep <- NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef = uncertaintyCoef, 
+                                                           NameCoef = "U_CVALA2", VarUcrt = 'pressure', TimeAgrBgn = dataOut$startDateTime[1], 
+                                                           TimeAgrEnd = dataOut$startDateTime[base::nrow(dataOut)] + as.difftime(0.001, 
+                                                                                                                                 units = "secs"), log = log)
+        uncertaintyData$pressure_ucrtRep<-ucrtRep
+      }
+    }else{
+      uncertaintyData$pressure_ucrtRep<-NA
+      log$error(base::paste0('No U_CVALA2 in file: ', dirUncertaintyCoefLocation))
     }
   }
 
-  ######## Uncert for instantaneous 5-min groundwater aqua troll data #######
+  ######## Uncertainty for instantaneous 5-min groundwater aqua troll data #######
   if(WndwInst==TRUE){
     if(sensor=="aquatroll200"){
       #temp and pressure uncert calculated earlier in pipeline
@@ -548,9 +563,9 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
     timeDiff<-uncertaintyData$startDateTime[2]-uncertaintyData$startDateTime[1]
     uncertaintyData$endDateTime<-uncertaintyData$readout_time+timeDiff
     if(sensor=='aquatroll200'){
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn","elevation_ucrtMeas")
+      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn","pressure_ucrtRep")
     }else{
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","elevation_ucrtMeas")
+      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","pressure_ucrtRep")
     }
     ucrtOut_inst <- uncertaintyData[,ucrtCol_inst]
     #standardize naming
