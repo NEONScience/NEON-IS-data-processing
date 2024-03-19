@@ -1,0 +1,42 @@
+[
+   {
+      "calibration_id":      284951,
+      "term":"pressure",
+      "start_date":"2022-03-02T00:00:00.000Z",
+      "end_date":"2022-03-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE12",
+      "Value":"284951",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      284951,
+      "term":"pressure",
+      "start_date":"2022-03-02T00:00:00.000Z",
+      "end_date":"2022-03-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE11",
+      "Value":"225820",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      284951,
+      "term":"pressure",
+      "start_date":"2022-03-02T00:00:00.000Z",
+      "end_date":"2022-03-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE10",
+      "Value":"0",
+      ".attrs":"kPa"
+   },
+   {
+      "calibration_id":      284951,
+      "term":"pressure",
+      "start_date":"2022-03-02T00:00:00.000Z",
+      "end_date":"2022-03-03T00:00:00.000Z",
+      "expired":      false,
+      "Name":"U_CVALE9",
+      "Value":"0.000088335",
+      ".attrs":"kPa"
+   }
+   ]
