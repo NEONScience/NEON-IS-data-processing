@@ -11,7 +11,8 @@ def.data.conv.type.parq(data, type, log = NULL)
 
 \item{type}{A data frame of: \cr
 \code{name} Character. Name of data column
-\code{type} Character. Data type. There may be multiple types, delimited by pipes (|)}
+\code{type} Character. Data type. There may be multiple types, delimited by pipes (|)
+\code{nullable} Boolean. Whether the field values are allowed to be null or NA}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}
@@ -24,7 +25,7 @@ Definition function. Convert data types in data frame to match parquet or avro s
 }
 \examples{
 data <- data.frame(x=c(1,2,3),y=c('one','two','three'),stringsAsFactors=FALSE)
-type <- data.frame(name=c('x'),type=c('string|utf8'),stringsAsFactors=FALSE)
+type <- data.frame(name=c('x'),type=c('string|utf8'),nullable=TRUE,stringsAsFactors=FALSE)
 dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
 }
 \references{

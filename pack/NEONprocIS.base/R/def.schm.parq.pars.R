@@ -14,6 +14,7 @@
 #' @return A data frame of: \cr
 #' \code{name} Character. Name of data column
 #' \code{type} Characer. Data type
+#' \code{nullable} Boolean. Whether the field values are allowed to be null or NA
 
 #' @references Currently none
 
@@ -32,6 +33,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2020-04-02)
 #     original creation
+#   Cove Sturtevant (2024-03-20)
+#     add whether the field is nullable
 ##############################################################################################
 def.schm.parq.pars <- function(schm, log = NULL) {
   # initialize logging if necessary
@@ -43,7 +46,10 @@ def.schm.parq.pars <- function(schm, log = NULL) {
     base::lapply(
       schm$fields,
       FUN = function(idxFld) {
-        base::data.frame(name = idxFld$name, type = idxFld$type$ToString(),stringsAsFactors = FALSE)
+        base::data.frame(name = idxFld$name, 
+                         type = idxFld$type$ToString(),
+                         nullable=idxFld$nullable,
+                         stringsAsFactors = FALSE)
       }
     ) 
   
