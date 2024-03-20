@@ -129,8 +129,20 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
       log$error(base::paste0('File ', dirInDataLogs, '/', LogFile, ' is unreadable.'))
       base::stop()
     }
+    LogData$site_id<-as.character(NA)
+    LogData$pressure<-as.double(LogData$pressure)
+    LogData$temperature<-as.double(LogData$temperature)
+    LogData$pressure_data_quality<-as.integer(0)
+    LogData$temperature_data_quality<-as.integer(0)
+    LogData$internal_battery<-as.double(0)
+    LogData$pressureLogFlag<-as.double(1)
+    LogData$logDateFlag<-as.double(1)
+    LogData$temperatureLogFlag<-as.double(1)
     if(any(grepl('conductivity',names(LogData)))){
       sensor<-'aquatroll200'
+      LogData$conductivity<-as.double(LogData$conductivity)
+      LogData$conductivity_data_quality<-as.integer(0)
+      LogData$conductivityLogFlag<-as.double(1)
     }else{
       sensor<-'leveltroll500'
     }
@@ -143,21 +155,12 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
   if(is.null(L0Data) & !is.null(LogData)){
     #case with only log file
     dataOut<-LogData
-    dataOut$pressure_data_quality<-as.integer(0)
-    dataOut$temperature_data_quality<-as.integer(0)
-    dataOut$internal_battery<-as.double(0)
-    dataOut$site_id<-NA
-    dataOut$pressureLogFlag<-1
-    dataOut$logDateFlag<-1
-    dataOut$temperatureLogFlag<-1
     if(sensor=='leveltroll500'){
       keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag')
       flagsOut<-dataOut[keep_flags]
       keep_data<-c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','internal_battery')
       dataOut<-dataOut[keep_data]
     }else if(sensor=='aquatroll200'){
-      dataOut$conductivity_data_quality<-as.integer(0)
-      dataOut$conductivityLogFlag<-1
       keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag','conductivityLogFlag')
       flagsOut<-dataOut[keep_flags]
       keep_data<-c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','conductivity','conductivity_data_quality','internal_battery')
