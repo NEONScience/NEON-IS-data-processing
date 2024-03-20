@@ -3,7 +3,7 @@ pipeline:
   name: groundwaterPhysical_stats_ucrt_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:2798c5e4
+  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:299bb90f
   cmd:
   - sh
   - "-c"
@@ -36,7 +36,8 @@ transform:
       WndwInst=TRUE \
       WndwAgr=030 \
       FileSchmData=$SCHEMA_DATA_TROLL \
-      FileSchmUcrt=$SCHEMA_UCRT_TROLL \
+      FileSchmUcrtAgr=$SCHEMA_UCRT_TROLL \
+      FileSchmUcrtInst=$SCHEMA_UCRT_TROLL \
       FileSchmSciStats=$SCHEMA_SCI_TROLL
     EOF
   env:
@@ -86,14 +87,14 @@ input:
     - pfs:
         name: QAQC_PATH
         repo: groundwaterPhysical_analyze_pad_and_qaqc_plau
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        glob: /(*/*/*)
+        joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: UNCERTAINTY_PATH
         repo: groundwaterPhysical_group_path
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        glob: /(*/*/*)
+        joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
@@ -107,6 +108,8 @@ sidecar_resource_requests:
   memory: 2G
   cpu: 0.2
 autoscaling: true
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
