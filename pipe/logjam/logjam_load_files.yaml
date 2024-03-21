@@ -22,7 +22,7 @@ input:
   pfs:
     name: IN_PATH
     repo: logjam_list_files
-    glob: /*/*/*/logjam_prod/(43692|21157|23643|5883|2281|21115|2388|44378|21124|44378|47932)/*
+    glob: /*/*/*/logjam_prod/*/*
     empty_files: true
 parallelism_spec:
   constant: 10
