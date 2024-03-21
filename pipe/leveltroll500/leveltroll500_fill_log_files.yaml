@@ -3,7 +3,7 @@ pipeline:
   name: leveltroll500_fill_log_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:2798c5e4
+  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:6b91aa83
   cmd:
   - sh
   - "-c"
@@ -26,7 +26,7 @@ transform:
     # ... should not arise because the only data coming into Pachyderm will be coming from Kafka. ...
     # ... When a conflict does arise, the Trino data will take precedence, which is fine because the ...
     # ... conflict arose because data for the same sensor and day were in both locations.
-    if [ ${DATA_PATH_TRINO+x} ]; then 
+    if [ ${DATA_PATH_TRINO+x} ] || [ ${LOG_DATA_PATH+x} ]; then 
       # Data from trino. 
       # Set CONFIG for filter-joiner to the trino version and run filter joiner
       export CONFIG=$CONFIG_TRINO
