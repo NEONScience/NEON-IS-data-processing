@@ -169,8 +169,9 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
                 # extract and write datasets
                 os.makedirs(output_path, exist_ok=True)
                 # basic
-                basic_columns = workbook_table.loc[(workbook_table['downloadPkg'] == 'basic'), ['rank','fieldName']]
-                data[basic_columns.sort_values('rank')['fieldName']].to_csv(basic_filepath, index=False)
+                if workbook_table['downloadPkg'].str.contains('basic').any():
+                    basic_columns = workbook_table.loc[(workbook_table['downloadPkg'] == 'basic'), ['rank','fieldName']]
+                    data[basic_columns.sort_values('rank')['fieldName']].to_csv(basic_filepath, index=False)
                 # expanded
                 if workbook_table['downloadPkg'].str.contains('expanded').any():
                     expanded_columns = workbook_table.loc[((workbook_table['downloadPkg'] == 'basic') |
