@@ -114,7 +114,7 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
                 if workbook_table['downloadPkg'].str.contains('expanded').any():
                     expanded_file = True
                     
-                if basic_file is False & expanded_file is False:
+                if basic_file is False and expanded_file is False:
                     log.warn(f'No download packages indicated for {table}. Skipping.')
                     continue
                 
