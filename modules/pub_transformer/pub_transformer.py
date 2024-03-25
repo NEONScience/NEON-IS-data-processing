@@ -103,6 +103,9 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
             # Create each table in the workbook if possible
             for table in workbook['table'].unique():
                 
+                # Get the table
+                workbook_table=workbook.loc[workbook['table']==table,]
+                
                 # Determine which, if any, packages files will be created for this product
                 basic_file = False
                 expanded_file = False
@@ -112,7 +115,7 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
                     expanded_file = True
                     
                 if basic_file is False & expanded_file is False:
-                    log.debug(f'No download packages indicated for {table}. Skipping.')
+                    log.warn(f'No download packages indicated for {table}. Skipping.')
                     continue
                 
                 # Load the data file(s) corresponding to this table (must have already been placed into a parquet file for each table)
@@ -128,9 +131,6 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
                     log.warn(f'No filenames in {group_data_path} contain a match to table {table}')
                     continue
     
-                # Get the table
-                workbook_table=workbook.loc[workbook['table']==table,]
-                
                 # Get the full 45-digit DP IDs to grab fields from
                 dp_number = [element for element in workbook_table['DPNumber'] if len(element)==45]
                 dp_number = dp_number[0]
