@@ -116,7 +116,7 @@ input:
     - pfs:
         name: DATA_PATH_TRINO
         repo: aquatroll200_data_source_trino
-        glob: /aquatroll200/(2022/04/*) #aquatroll200/Y/M/D
+        glob: /aquatroll200/(2022/*/*) #aquatroll200/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
@@ -130,7 +130,7 @@ input:
     - pfs:
         name: LOG_DATA_PATH
         repo: logjam_clean_troll_files
-        glob: /aquatroll200/(2022/04/*) #aquatroll200/Y/M/D
+        glob: /aquatroll200/(2022/*/*) #aquatroll200/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
         outer_join: true
