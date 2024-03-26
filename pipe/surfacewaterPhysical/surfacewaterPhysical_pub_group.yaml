@@ -3,7 +3,7 @@ pipeline:
   name: surfacewaterPhysical_pub_group
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/pub_grouper:2a40_dp15_v3
+  image: quay.io/battelleecology/pub_grouper:c0ce8112
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
