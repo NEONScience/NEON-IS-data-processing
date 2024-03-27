@@ -3,7 +3,7 @@ pipeline:
   name: parWaterSurface_pub_transformer
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/pub_transformer:c0ce8112
+  image: quay.io/battelleecology/pub_transformer:a5e4e01e
   cmd: ["/bin/bash"]
   stdin:
   - '# Run second module - pub_transformer (using environment variables below as input parameters)'
