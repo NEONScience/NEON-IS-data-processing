@@ -32,6 +32,7 @@ def write_file(out_path: Path,
     :param database: A class with functions for reading from the database.
     """
     filename = get_filename(file_metadata.path_elements, timestamp=timestamp, file_type='variables', extension='csv')
+    print(f'\nfilename:::::\n{filename}\n')
     path = Path(out_path, filename)
     with open(path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
@@ -48,8 +49,7 @@ def write_rows(writer, rows: List[WorkbookRow]) -> None:
     for row in rows:
         table_name = row.table_name
         field_name = row.field_name
-        print('variables_file write_rows table_name::::::::::', table_name)
-        print('variables_file write_rows field_name::::::::::', field_name)
+        print('variables_file write_rows table_name and field_name::::::::::', table_name, field_name)
         description = row.description
         data_type = row.data_type_code
         units = row.unit_name
