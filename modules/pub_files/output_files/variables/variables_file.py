@@ -38,6 +38,7 @@ def write_file(out_path: Path,
         writer.writerow(['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat'])
         write_rows(writer, workbook.rows)
         write_sensor_positions_variables(writer, database.get_sensor_position_variables())
+        print(f'\nIn variables_file:::::\n{path.read_text()}\n')
         if science_review_file is not None:
             write_science_review_variables(writer, science_review_file.variables)
     return path
@@ -83,6 +84,8 @@ def write_science_review_variables(writer, variables: List[FileVariables]) -> No
     for variable in variables:
         table_name = variable.table_name
         term_name = variable.term_name
+        print('write_science_review_variables table_name::::::::::',table_name)
+        print('write_science_review_variables term_name::::::::::', term_name)
         description = variable.description
         data_type = variable.data_type
         units = variable.units
