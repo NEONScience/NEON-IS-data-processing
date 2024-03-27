@@ -47,6 +47,8 @@ def write_rows(writer, rows: List[WorkbookRow]) -> None:
     for row in rows:
         table_name = row.table_name
         field_name = row.field_name
+        print('variables_file write_rows table_name::::::::::', table_name)
+        print('variables_file write_rows field_name::::::::::', field_name)
         description = row.description
         data_type = row.data_type_code
         units = row.unit_name
