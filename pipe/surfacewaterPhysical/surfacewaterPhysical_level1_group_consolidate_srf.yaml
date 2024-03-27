@@ -210,6 +210,8 @@ input:
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 800M
