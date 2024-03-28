@@ -32,14 +32,12 @@ def write_file(out_path: Path,
     :param database: A class with functions for reading from the database.
     """
     filename = get_filename(file_metadata.path_elements, timestamp=timestamp, file_type='variables', extension='csv')
-    print(f'\nfilename:::::\n{filename}\n')
     path = Path(out_path, filename)
     with open(path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat'])
         write_rows(writer, workbook.rows)
         write_sensor_positions_variables(writer, database.get_sensor_position_variables())
-        print(f'\nIn variables_file:::::\n{path.read_text()}\n')
         if science_review_file is not None:
             write_science_review_variables(writer, science_review_file.variables)
     return path
@@ -49,7 +47,6 @@ def write_rows(writer, rows: List[WorkbookRow]) -> None:
     for row in rows:
         table_name = row.table_name
         field_name = row.field_name
-        print('variables_file write_rows table_name and field_name::::::::::', table_name, field_name)
         description = row.description
         data_type = row.data_type_code
         units = row.unit_name
@@ -84,8 +81,6 @@ def write_science_review_variables(writer, variables: List[FileVariables]) -> No
     for variable in variables:
         table_name = variable.table_name
         term_name = variable.term_name
-        print('write_science_review_variables table_name::::::::::',table_name)
-        print('write_science_review_variables term_name::::::::::', term_name)
         description = variable.description
         data_type = variable.data_type
         units = variable.units
