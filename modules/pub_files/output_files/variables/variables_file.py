@@ -49,7 +49,6 @@ def write_rows(writer, rows: List[WorkbookRow]) -> None:
     for row in rows:
         table_name = row.table_name
         field_name = row.field_name
-        print('variables_file write_rows table_name and field_name::::::::::', table_name, field_name)
         description = row.description
         data_type = row.data_type_code
         units = row.unit_name
@@ -84,8 +83,6 @@ def write_science_review_variables(writer, variables: List[FileVariables]) -> No
     for variable in variables:
         table_name = variable.table_name
         term_name = variable.term_name
-        print('write_science_review_variables table_name::::::::::',table_name)
-        print('write_science_review_variables term_name::::::::::', term_name)
         description = variable.description
         data_type = variable.data_type
         units = variable.units
