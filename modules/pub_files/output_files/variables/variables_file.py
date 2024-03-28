@@ -32,14 +32,12 @@ def write_file(out_path: Path,
     :param database: A class with functions for reading from the database.
     """
     filename = get_filename(file_metadata.path_elements, timestamp=timestamp, file_type='variables', extension='csv')
-    print(f'\nfilename:::::\n{filename}\n')
     path = Path(out_path, filename)
     with open(path, 'w', encoding='UTF8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['table', 'fieldName', 'description', 'dataType', 'units', 'downloadPkg', 'pubFormat'])
         write_rows(writer, workbook.rows)
         write_sensor_positions_variables(writer, database.get_sensor_position_variables())
-        print(f'\nIn variables_file:::::\n{path.read_text()}\n')
         if science_review_file is not None:
             write_science_review_variables(writer, science_review_file.variables)
     return path
