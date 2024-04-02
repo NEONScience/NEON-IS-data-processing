@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:83ce2d7d
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:e65941ee
   cmd:
   - sh
   - "-c"
@@ -49,7 +49,7 @@ transform:
       DirIn=/tmp/pfs/interimC \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "DirData=sci_stats|uncertainty_data|stats|quality_metrics" \
+      "DirData=data|sci_stats|uncertainty_data|stats|quality_metrics" \
       PathPubWb=$PUB_WORKBOOKS \
       "DirSubCopy=science_review_flags|group|location"
     #
@@ -59,7 +59,7 @@ transform:
     # linkdir=$(mktemp -d)
     # shopt -s globstar
     # out_parquet_glob="${OUT_PATH}/**/*.parquet"
-    # # Example: /2024/01/18/surfacewater-physical_UKFS001000/data/surfacewater-physical_UKFS001000_2024-01-18_PARQL_1min_001.parquet
+    # # Example: /2024/01/18/surfacewater-physical_ARIK101100/data/surfacewater-physical_ARIK101100_2022-04-04_EOS_30_min_030.parquet
     # echo "Linking output files to ${linkdir}"
     # #set -x # Echo commands to output for debugging
     # fname=""
@@ -161,7 +161,7 @@ transform:
     GROUP_METADATA_NAMES: group,science_review_flags
     # path index of names of directories to include in the output
     DATA_TYPE_INDEX: "9"
-    DATA_TYPE_NAMES: location,stats,quality_metrics,uncertainty_data,sci_stats
+    DATA_TYPE_NAMES: data,location,stats,quality_metrics,uncertainty_data,sci_stats
     
 # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /tmp/pub_workbooks

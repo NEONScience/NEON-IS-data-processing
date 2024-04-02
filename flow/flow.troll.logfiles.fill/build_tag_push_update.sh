@@ -9,3 +9,5 @@ docker push quay.io/battelleecology/$image_name:$tag
 cd ../..
 
 Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "quay.io/battelleecology/$image_name" "$tag"
+
+#may also need to update neon-is-troll-logs-group-fill

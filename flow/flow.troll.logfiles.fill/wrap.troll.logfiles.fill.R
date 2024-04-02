@@ -44,17 +44,17 @@
 #' 
 #' @examples
 #' # Not run
-#' DirInLogs<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/04/04/21115' #cleaned log data
-#' DirInStream<-'/home/NEON/ncatolico/pfs/leveltroll500_data_source_trino/leveltroll500/2022/04/04/21115' #streamed L0 data
-#' DirIn<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/03/10/21115'
-#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.troll.logfiles.fill <- function(DirInLogs=DirInLogs,
-#'                               DirInStream=DirInStream,
-#'                               DirIn=DirIn,
-#'                               DirOutBase="~/pfs/out",
-#'                               SchmDataOut=NULL,
-#'                               SchmFlagsOut=NULL,
-#'                               log=log)
+# DirInLogs<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/04/04/21115' #cleaned log data
+# DirInStream<-'/home/NEON/ncatolico/pfs/leveltroll500_data_source_trino/leveltroll500/2022/04/04/21115' #streamed L0 data
+# DirIn<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/04/08/21115'
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# wrap.troll.logfiles.fill <- function(DirInLogs=DirInLogs,
+#                               DirInStream=DirInStream,
+#                               DirIn=DirIn,
+#                               DirOutBase="~/pfs/out",
+#                               SchmDataOut=NULL,
+#                               SchmFlagsOut=NULL,
+#                               log=log)
 #'                               
 #' @changelog
 #   Nora Catolico (2024-01-30) original creation
@@ -109,7 +109,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
       log$error(base::paste0('File ', dirInDataStream, '/', L0File, ' is unreadable.'))
       base::stop()
     }
-    if('conductivity.x' %in% names(L0Data)){
+    if(any(grepl('conductivity',names(L0Data)))){
       sensor<-'aquatroll200'
     }else{
       sensor<-'leveltroll500'
@@ -129,34 +129,38 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
       log$error(base::paste0('File ', dirInDataLogs, '/', LogFile, ' is unreadable.'))
       base::stop()
     }
-    if('conductivity.x' %in% names(L0Data)){
+    LogData$site_id<-as.character(NA)
+    LogData$pressure<-as.double(LogData$pressure)
+    LogData$temperature<-as.double(LogData$temperature)
+    LogData$pressure_data_quality<-as.integer(0)
+    LogData$temperature_data_quality<-as.integer(0)
+    LogData$internal_battery<-as.double(0)
+    LogData$pressureLogFlag<-as.double(1)
+    LogData$logDateFlag<-as.double(1)
+    LogData$temperatureLogFlag<-as.double(1)
+    if(any(grepl('conductivity',names(LogData)))){
       sensor<-'aquatroll200'
+      LogData$conductivity<-as.double(LogData$conductivity)
+      LogData$conductivity_data_quality<-as.integer(0)
+      LogData$conductivityLogFlag<-as.double(1)
     }else{
       sensor<-'leveltroll500'
     }
   }else{
     LogData <- NULL
   }
-  # note, already binned into 1-min or 5-mins in flow.troll.logfiles script
+  
   
   ## if only one file, keep that file, otherwise merge files
   if(is.null(L0Data) & !is.null(LogData)){
     #case with only log file
     dataOut<-LogData
-    dataOut$pressure_data_quality<-NA
-    dataOut$temperature_data_quality<-NA
-    dataOut$internal_battery<-NA
-    dataOut$site_id<-NA
-    dataOut$pressureLogFlag<-1
-    dataOut$logDateFlag<-1
-    dataOut$temperatureLogFlag<-1
     if(sensor=='leveltroll500'){
       keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag')
       flagsOut<-dataOut[keep_flags]
       keep_data<-c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','internal_battery')
       dataOut<-dataOut[keep_data]
     }else if(sensor=='aquatroll200'){
-      dataOut$conductivityLogFlag<-1
       keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag','conductivityLogFlag')
       flagsOut<-dataOut[keep_flags]
       keep_data<-c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','conductivity','conductivity_data_quality','internal_battery')
@@ -186,43 +190,26 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
     log$debug(base::paste0('Merging logged data'))
     
     # Check times
+    #Log data already binned into 1-min or 5-mins in flow.troll.logfiles script.
     timeAgr_1 <- timeBgn + timeBgnDiff_1
     timeAgr_5 <- timeBgn + timeBgnDiff_5
     if(sensor=='leveltroll500'|length(L0Data$readout_time)>288|length(LogData$readout_time)>288){
-      badL0Times_1<-L0Data$readout_time[!L0Data$readout_time %in% timeAgr_1]
-      badLogTimes_1<-LogData$readout_time[!LogData$readout_time %in% timeAgr_1]
-      if(length(badL0Times_1)>0){
-        log$error(base::paste0('L0 data at non-standard 1 minute intervals'))
-        base::stop()
-        #round to minute
-        L0Data$readout_time<-lubridate::round_date(L0Data$dateUTC,unit = "minute")
-      }
-      if(length(badLogTimes_1)>0){
-        log$error(base::paste0('Log data at non-standard 1 minute intervals'))
-        base::stop()
-        #round to minute
-        LogData$readout_time<-lubridate::round_date(LogData$dateUTC,unit = "minute")
-      }
-      
+      interval <-"1min"
+      L0Data$readout_time<-lubridate::round_date(L0Data$readout_time,unit = "minute")
     }else{
-      badL0Times_5<-L0Data$readout_time[!L0Data$readout_time %in% timeAgr_5]
-      badLogTimes_5<-LogData$readout_time[!LogData$readout_time %in% timeAgr_5]
-      if(length(badL0Times_1)>0){
-        log$error(base::paste0('L0 data at non-standard 5 minute intervals'))
-        base::stop()
-        L0Data$readout_time<-lubridate::round_date(L0Data$dateUTC,unit = "5 minutes")
-      }
-      if(length(badLogTimes_1)>0){
-        log$error(base::paste0('Log data at non-standard 5 minute intervals'))
-        base::stop()
-        LogData$readout_time<-lubridate::round_date(LogData$dateUTC,unit = "5 minutes")
-      }
+      interval <-"5min"
+      L0Data$readout_time<-lubridate::round_date(L0Data$readout_time,unit = "5 minutes")
     }
     
     #merge data
     dataOut<-merge(L0Data,LogData,by='readout_time',all = TRUE)
-    if(nrow(dataOut)>1440){
-      log$error(base::paste0('ERROR more than 1440 rows in merged data: ', DirIn))
+    dataOut<-dataOut[dataOut$readout_time<timeBgn+86400,]
+    if(interval=="1min" & nrow(dataOut)>1440){
+      log$error(base::paste0('ERROR more than 1440 rows in merged 1 minute data: ', DirIn))
+      base::stop()
+    }
+    if(interval=="5min" & nrow(dataOut)>288){
+      log$error(base::paste0('ERROR more than 288 rows in merged 5 minute data: ', DirIn))
       base::stop()
     }
     #add in columns to update
