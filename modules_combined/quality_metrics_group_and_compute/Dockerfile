@@ -3,7 +3,7 @@
 # docker build -t neon-is-qaqc-qm-grp -f ./modules_combined/quality_metrics_group_and_compute/Dockerfile .
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.1.4
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.1.5-e65941ee
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

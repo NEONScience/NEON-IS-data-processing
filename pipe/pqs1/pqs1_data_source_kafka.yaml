@@ -110,11 +110,21 @@ input:
     name: import_trigger
     repo: pqs1_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/pqs1/*/*/*/*"
-resource_requests:
-  memory: 200M
-  cpu: 1.3
+    glob: "/pqs1/*/*/*"
+parallelism_spec:
+  constant: 1
 autoscaling: true
+resource_requests:
+  memory: 300M
+  cpu: 1.3
+resource_limits:
+  memory: 1.5G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -132,14 +142,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]

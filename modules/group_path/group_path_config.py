@@ -8,6 +8,7 @@ class Config(NamedTuple):
     group_focus_path: Path
     group: str
     out_path: Path
+    err_path: Path
     group_assignment_year_index: int
     group_assignment_month_index: int
     group_assignment_day_index: int

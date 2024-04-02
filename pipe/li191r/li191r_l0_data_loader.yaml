@@ -1,0 +1,62 @@
+---
+pipeline:
+  name: li191r_l0_data_loader
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/l0_data_loader:via3
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m l0_data_loader.l0_data_loader
+  env:
+    # Environment variables for data conversion step
+    LOG_LEVEL: INFO
+    REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
+    # Environment variables for linkmerge step
+    IN_PATH: /tmp/interimData
+    OUT_PATH: /pfs/out
+    # Environment variables for bash code
+    SOURCE_TYPE: 'li191r'
+  secrets:
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
+input:
+  pfs:
+    name: import_trigger
+    repo: li191r_cron_daily_and_date_control
+    glob: "/li191r/*/*/*"
+output_branch: master
+parallelism_spec:
+  constant: 1
+autoscaling: true
+resource_requests:
+  memory: 800M
+  cpu: 2
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

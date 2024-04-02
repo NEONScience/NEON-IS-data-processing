@@ -48,6 +48,7 @@ placed in the output for the group at the following location:
 from structlog import get_logger
 import environs
 import os
+import sys
 from pathlib import Path
 
 import common.log_config as log_config
@@ -74,6 +75,8 @@ def main() -> None:
         
     group: str = env.str('GROUP')
     out_path: Path = env.path('OUT_PATH')
+    # DirErrBase: the user specified error directory, i.e., /errored
+    err_path: Path = env.path('ERR_PATH')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     group_assignment_year_index: int = env.int('GROUP_ASSIGNMENT_YEAR_INDEX')
     group_assignment_month_index: int = env.int('GROUP_ASSIGNMENT_MONTH_INDEX')
@@ -110,6 +113,7 @@ def main() -> None:
                     location_focus_path=location_focus_path,
                     group_focus_path=group_focus_path,
                     out_path=out_path,
+                    err_path=err_path,
                     group=group,
                     group_assignment_year_index=group_assignment_year_index,
                     group_assignment_month_index=group_assignment_month_index,
@@ -125,6 +129,7 @@ def main() -> None:
                     group_focus_month_index=group_focus_month_index,
                     group_focus_day_index=group_focus_day_index,
                     group_focus_group_index=group_focus_group_index)
+
     group_path = GroupPath(config)
     group_path.add_groups_to_paths()
 

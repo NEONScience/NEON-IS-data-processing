@@ -18,7 +18,7 @@ def logjam_loader() -> None:
     for blob in path_names:
         
         file_name = os.path.splitext(blob.name)[0]
-        file_path = Path(output_directory, blob.updated.strftime("%Y"), blob.updated.strftime("%m"), blob.updated.strftime("%d"), blob.updated.strftime("%M")[1:], file_name+".txt")         
+        file_path = Path(output_directory, blob.updated.strftime("%Y"), blob.updated.strftime("%m"), blob.updated.strftime("%d"), file_name+".csv")         
         file_path.parent.mkdir(parents=True, exist_ok=True)
         print("File name is:  ", file_path)
         log_file= open(file_path, "w")

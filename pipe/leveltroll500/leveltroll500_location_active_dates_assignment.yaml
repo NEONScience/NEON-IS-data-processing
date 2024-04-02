@@ -13,7 +13,8 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=namedLocation
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:4178f7b8
+      "Prop=HOR|VER|name|description|site|Data Rate|active_periods"
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:e65941ee
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

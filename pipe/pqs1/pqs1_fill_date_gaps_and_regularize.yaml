@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-gf-rglr:4178f7b8
+  image: quay.io/battelleecology/neon-is-gf-rglr:e65941ee
   cmd:
   - sh
   - "-c"
@@ -63,7 +63,7 @@ input:
         name: DATA_PATH
         repo: pqs1_location_group_and_restructure
         # For full-scale daily processing, glob should be /pqs1/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /pqs1/(*/*/*/(CFGLOC101256|CFGLOC110723|CFGLOC110695|CFGLOC100959|CFGLOC100247))
-        glob: /pqs1/(*/*/*/(CFGLOC100476|CFGLOC100489|CFGLOC100490|CFGLOC100111|CFGLOC100112|CFGLOC101253|CFGLOC112811|CFGLOC111132)) 
+        glob: /pqs1/(*/*/*/(CFGLOC100476|CFGLOC100489|CFGLOC100490|CFGLOC100111|CFGLOC100112|CFGLOC101253|CFGLOC110696|CFGLOC110720|CFGLOC112811|CFGLOC111132)) 
         # glob: /pqs1/(*/*/*)
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
@@ -72,6 +72,7 @@ input:
           name: LOCATION_PATH
           repo: pqs1_location_active_dates_assignment
           # For full-scale daily processing, glob should be /pqs1/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /pqs1/((*/*/*)/(CFGLOC101256|CFGLOC110723|CFGLOC110695|CFGLOC100959|CFGLOC100247))
+          #glob: /pqs1/(*/*/*)
           glob: /pqs1/((*/*/*)/(CFGLOC100476|CFGLOC100489|CFGLOC100490|CFGLOC100111|CFGLOC100112|CFGLOC101253|CFGLOC112811|CFGLOC111132)) 
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           joinOn: $2
@@ -85,20 +86,17 @@ input:
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
 parallelism_spec:
-  constant: 1
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 800M
-  cpu: 1.1
+  memory: 2G
+  cpu: 3.3
 resource_limits:
   memory: 3G
-  cpu: 2
+  cpu: 4.5
 sidecar_resource_requests:
-  memory: 1G
+  memory: 3G
   cpu: 0.5
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

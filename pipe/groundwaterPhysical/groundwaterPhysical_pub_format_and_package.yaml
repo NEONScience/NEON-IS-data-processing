@@ -3,7 +3,7 @@ pipeline:
   name: groundwaterPhysical_pub_format_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:3661a008
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:665dde06
   cmd:
   - sh
   - "-c"
@@ -12,46 +12,70 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH_TRANSFORMER
     rm -rf $OUT_PATH_PACKAGER
+    rm -rf $OUT_PATH_PUBFILES
     mkdir $OUT_PATH_TRANSFORMER
     mkdir $OUT_PATH_PACKAGER
+    mkdir $OUT_PATH_PUBFILES
+    
     # Set some environment variables for the second module
     export DATA_PATH=$GROUPED_PATH
     export OUT_PATH=$OUT_PATH_TRANSFORMER
-    # Run second module - pub_transformer (using environment variables below as input parameters)
+    
+    # Run pub_workbook_loader to load pub workbooks for pub_transformer and os_table_loader.
     python3 -m pub_workbook_loader.pub_workbook_loader_main
+    
+    # Run pub_transformer (using environment variables below as input parameters)
     python3 -m pub_transformer.pub_transformer_main
-    # Set some environment variables for the third module
+    
+    # Run pub_packager. Packager needs to be run at monthly glob. Get those paths.
     export OUT_PATH=$OUT_PATH_PACKAGER
-    # Packager needs to be run at monthly glob. Get those paths.
     product_month_paths="${OUT_PATH_TRANSFORMER}/*/*/*"
     for path in $product_month_paths; do
       echo "Processing product-month path $path"
       export DATA_PATH=$path
-      # Run third module - pub_packager (using environment variables below as input parameters)
       python3 -m pub_packager.pub_packager_main
     done
-    # Clean up after 2nd module
+    
+    # Clean up after pub_transformer.
     rm -rf $OUT_PATH_TRANSFORMER
-    # Set some environment variables for the fourth module and do some cleanup'
+    
+    # Run pub_files.
     export OUT_PATH=$OUT_PATH_PUBFILES
     export IN_PATH=$OUT_PATH_PACKAGER
     export LOCATION_PATH=$GROUPED_PATH
-    # Run fourth module - pub_files (using environment variables below as input parameters)'
     python3 -m pub_files.main
+    
+    # Run os_table_loader
+    export IN_PATH=$OUT_PATH_PUBFILES
+    export OUT_PATH="/pfs/out"
+    export WORKBOOK_PATH=$WORKBOOK_PATH
+    export PARTIAL_TABLE_NAME="maintenance"
+    export FILE_TYPE="csv"
+    export DB_CONFIG_SOURCE="mount"
+    export LOG_LEVEL=$LOG_LEVEL
+    export INPUT_PATH_PARSE_INDEX="3"
+    export DATA_PRODUCT_PATH_INDEX="3"
+    export SITE_PATH_INDEX="4"
+    export YEAR_PATH_INDEX="5"
+    export MONTH_PATH_INDEX="6"
+    export PACKAGE_TYPE_PATH_INDEX="7"
+    python3 -m os_table_loader.publication_main
+    
     EOF
   env:
     # Environment variables for 2nd (part A) module: pub_workbook_loader.
     OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
     PRODUCTS: NEON.DOM.SITE.DP1.20100.001,NEON.DOM.SITE.DP1.20015.001,NEON.DOM.SITE.DP1.20217.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
 
-    # Environment variables for 2nd module (part B): pub_transformer. 
+    # Environment variables for 2nd module (part B): pub_transformer.
     LOG_LEVEL: INFO
     PRODUCT_INDEX: '3' # input path index of the data product identifier
-    YEAR_INDEX: '4' 
-    DATA_TYPE_INDEX: '8' 
+    YEAR_INDEX: '4'
+    DATA_TYPE_INDEX: '8'
     GROUP_METADATA_DIR: group # Also shared with pub_transform
     DATA_PATH_PARSE_INDEX: '2'
     OUT_PATH_TRANSFORMER: "/tmp/pub_transformer"
@@ -63,9 +87,9 @@ transform:
     DATE_INDEX: '4' # Starting index of date in path (i.e. year index)
     DATE_INDEX_LENGTH: '2' # length of date index for pub package (should be 2 for monthly)
     SORT_INDEX: '10' # File name index corresponding to date field (delimiter = .)
-    
+
     # Environment variables for 3rd module: pub_files.
-    OUT_PATH_PUBFILES: "/pfs/out"
+    OUT_PATH_PUBFILES: "/tmp/pub_files"
     RELATIVE_PATH_INDEX: '3'
     DB_SECRETS_PATH: /var/db_secret
     GITHUB_PEM_PATH: /var/github_secret/key
@@ -82,16 +106,16 @@ transform:
     GITHUB_EML_UNIT_TYPES_PATH: eml/neon_components/neon_unitTypes.xml
     GITHUB_EML_UNITS_PATH: eml/neon_components/NEON_units.txt
     GITHUB_BRANCH: main
-    
+
   secrets:
     - name: pdr-secret
       mount_path: /var/db_secret
     - name: github-neonscience-app-secret
       mount_path: /var/github_secret
 
-input: 
+input:
   group:
-  - pfs: 
+  - pfs:
       name: GROUPED_PATH
       repo: groundwaterPhysical_pub_group
       # Glob must be product-monthly or product-site-monthly (use group to do product-site-monthly)

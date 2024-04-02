@@ -32,6 +32,13 @@ class ManifestFile:
         self._remove_files()
         self.visibility = self._get_visibility()
 
+    def add_file(self, path: Path, has_data: bool) -> None:
+        self._add_row(path.name,
+                      str(has_data),
+                      self.visibility,
+                      str(os.path.getsize(path)),
+                      self._get_md5_hash(path))
+
     def add_metadata_files(self, variables_file: Path, positions_file: Path, eml_file: Path, readme_file: Path,
                            science_review_file: Optional[ScienceReviewFile]) -> None:
         """Add the metadata files to the manifest."""
@@ -99,10 +106,15 @@ class ManifestFile:
         return Visibility.private
 
     def _remove_files(self) -> None:
-        """Remove files without the package type."""
+        """Remove data files whose names do not contain the package type."""
         for row in self.manifest:
             filename = row[self.column_names[0]]
-            if self.package_type not in filename:
+            if self.package_type not in filename \
+                    and 'EML' not in filename \
+                    and 'variables' not in filename\
+                    and 'readme' not in filename\
+                    and 'science_review_flags' not in filename\
+                    and 'sensor_positions' not in filename:
                 self.manifest.remove(row)
 
     @staticmethod

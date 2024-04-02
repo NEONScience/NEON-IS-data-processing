@@ -3,7 +3,7 @@ pipeline:
   name: leveltroll500_location_group_and_restructure
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:4178f7b8
+  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:e65941ee
   cmd:
   - sh
   - "-c"
@@ -68,7 +68,7 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: leveltroll500_flags_specific
+      repo: leveltroll500_calibration_group_and_convert
       glob: /leveltroll500/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true

@@ -12,7 +12,7 @@ transform:
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-cal-asgn-r:4178f7b8
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:e65941ee
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -37,11 +37,8 @@ resource_limits:
   memory: 600M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 5G
+  memory: 3G
   cpu: 1
-sidecar_resource_limits:
-  memory: 8Gi
-  cpu: 1.2
 datum_set_spec:
   number: 5
 scheduling_spec:

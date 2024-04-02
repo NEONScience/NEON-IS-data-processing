@@ -3,7 +3,7 @@ pipeline:
   name: groundwaterPhysical_qm_avg_inst_group_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-qm-avg-inst-grp:4178f7b8
+  image: quay.io/battelleecology/neon-is-qm-avg-inst-grp:e65941ee
   cmd:
   - sh
   - "-c"
@@ -23,7 +23,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmQm=$FILE_SCHEMA_QM \
-      WndwAgr=030 \
+      "WndwAgr=030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
       "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
@@ -32,8 +32,8 @@ transform:
       "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
       "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
       "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
-      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
-      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|missingTempQF|zeroPressureQF" \
       "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
       "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
@@ -46,14 +46,14 @@ transform:
       Tmi=005 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
-      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
       "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|zeroPressureQF" \
       "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
-      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
-      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|missingTempQF|zeroPressureQF" \
       "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
       "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
@@ -71,13 +71,13 @@ transform:
             # Filter for flags directory
             glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/aquatroll200/*/flags/**
             # Join on named location (already joined below by day)
-            join_indices: [6]
+            join_indices: [3,4,5,6]
         - path:
             name: REGULARIZED_FLAGS_PATH
             # Filter for flags directory
             glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/aquatroll200/*/flags/**
             # Join on named location (already joined below by day
-            join_indices: [6]
+            join_indices: [3,4,5,6]
     OUT_PATH: /tmp/pfs/interimData
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"

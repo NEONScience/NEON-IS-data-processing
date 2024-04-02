@@ -17,10 +17,6 @@
 #' 
 #' Nested within this path are the folders:
 #'         /data
-#'         /flags
-#'         /uncertainty_coef
-#'         /uncertainty_data
-#'         
 #'        
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
 #' of DirIn.
@@ -28,13 +24,7 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #'  
-#' 4. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
-#' file. If this input is not provided, the output schema for the data will be the same as the input data
-#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
-#' leveltroll500 (does not output conductivity) in your schema.
-#'
-#' 5. "FileSchmQf=value" (optional), where values is the full path to the avro schema for the output flags file. 
+#' 4. "FileSchmQf=value" (optional), where values is the full path to the avro schema for the output flags file. 
 #' If this input is not provided, the output schema for the flags will be auto-generated from the output data 
 #' frame. ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE FLAGS MATCHES THE ORDER OF THE INPUT ARGUMENTS (test 
 #' nested within term/variable). See below for details.
@@ -60,9 +50,10 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/leveltroll500_calibration_group_and_convert')
+#' Sys.setenv(DIR_IN='~/pfs/leveltroll500_fill_log_files')
+#' Sys.setenv(FILE_SCHEMA_QF='~/pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific.avsc')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmQf=$FILE_SCHEMA_QF")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
@@ -105,23 +96,18 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf","DirSubCopy"),log = log)
 
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
+log$debug(base::paste0('Director to copy: ', Para$DirSubCopy))
 
 # Read in the schemas so we only have to do it once and not every
 # time in the avro writer.
-if(base::is.null(Para$FileSchmData) || Para$FileSchmData == 'NA'){
-  SchmDataOut <- NULL
-} else {
-  SchmDataOut <- base::paste0(base::readLines(Para$FileSchmData),collapse='')
-}
 if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
   SchmQfOut <- NULL
 } else {
@@ -132,7 +118,7 @@ if(base::is.null(Para$FileSchmQf) || Para$FileSchmQf == 'NA'){
 DirSubCopy <-
   base::unique(base::setdiff(
     Para$DirSubCopy,
-    c('data', 'uncertainty_coef', 'uncertainty_data', 'flags')
+    c('data')
   ))
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
@@ -164,7 +150,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.troll.flags(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmDataOut=SchmDataOut,
         SchmQf=SchmQfOut,
         DirSubCopy=DirSubCopy,
         log=log
