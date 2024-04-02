@@ -3,7 +3,7 @@ pipeline:
   name: parWaterSurface_pub_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/pub_files:3661a008
+  image: quay.io/battelleecology/pub_files:d39629ff
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
