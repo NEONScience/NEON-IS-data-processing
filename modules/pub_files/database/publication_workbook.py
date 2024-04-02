@@ -59,7 +59,7 @@ def get_workbook(connector: DbConnector, data_product_id: str) -> PublicationWor
         and 
             ptd.dp_idq = %s
         order by
-            table_name
+            table_name, pfd.rank
     '''
     with closing(connection.cursor(cursor_factory=DictCursor)) as cursor:
         cursor.execute(sql, [data_product_id])

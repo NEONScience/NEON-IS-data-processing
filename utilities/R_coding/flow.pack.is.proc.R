@@ -11,11 +11,13 @@
 DirWrk00 <-
   
   # Cove
-  "/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
+  #"/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir"
   # Guy
   # "/home/NEON/glitt/R/NEON-IS-data-processing-glitt"
   # Ed
   #"/home/NEON/ayres/R/NEON-IS-data-processing"
+  #Dave
+  "~/code/NEON-IS-data-processing-ddurden"
 
   # Feel free to add your repo path! Just comment the ones not being used.
 
@@ -29,7 +31,7 @@ namePack <- c("NEONprocIS.base",
               "NEONprocIS.qaqc",
               "NEONprocIS.stat",
               "NEONprocIS.wq",
-              "NEONprocIS.pub")[1]
+              "NEONprocIS.pub")[2]
 
 
 # Do you want to run the unit tests for the package? Additionally, want to compute and show test coverage?

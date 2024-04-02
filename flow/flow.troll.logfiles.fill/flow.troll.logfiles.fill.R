@@ -5,14 +5,49 @@
 #' Nora Catolico \email{ncatolico@battelleecology.org}
 
 #' @description Workflow. Compares logged data to streamed data and fills gaps.
+#' 
+#' The arguments are: 
+#' 
+#' 1. "DirIn=value", The input path to the data from a single source ID, structured as follows: 
+#' #/pfs/BASE_REPO/source-id.The source-id folder may have multiple csv log files. 
+#' The source-id is the unique identifier of the sensor.#'         
+#'        
+#' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion 
+#' of DirIn.
+#' 
+#' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
+#' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
+#' 
+#' 4. "FileSchmData=value" (optional), where values is the full path to the avro schema for the output data 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
+#' 
+#' 5. "FileSchmFlags=value" (optional), where values is the full path to the avro schema for the output flags 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
+#' 
+#'
+#' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
+#' which uses system environment variables if available.
+#' 
+#' @return Cleaned troll log files in daily parquets.
+
+#' @references
+#' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
+
+#' @keywords Currently none
 
 #' @examples
 #' Stepping through the code in Rstudio
-Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/03/10/21115') #cleaned log data
-Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/leveltroll500_data_source_trino/leveltroll500/2022/03/10/21115') #streamed L0 data
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-arg <- c("DirIn=$DirIn","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
-rm(list=setdiff(ls(),c('arg','log')))
+# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/logjam_clean_troll_files/aquatroll200/2022/03/09/23646') #cleaned log data
+# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646') #streamed L0 data
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=$DirIn","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
+#' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
 
@@ -75,6 +110,23 @@ DirIn <-
                               nameDirSub = 'data',
                               log = log)
 
+# Create the binning for each aggregation interval
+
+InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(Para$DirIn)
+WndwAgr_1 <- base::as.difftime(1,units="mins")
+WndwAgr_5 <- base::as.difftime(5,units="mins")
+timeBgnDiff <- list()
+timeEndDiff <- list()
+timeBinDiff_1 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_1,WndwTime=base::as.difftime(1,units='days'))
+timeBgnDiff_1 <- timeBinDiff_1$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+timeEndDiff_1 <- timeBinDiff_1$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+timeBgnDiff_5 <- list()
+timeEndDiff_5 <- list()
+timeBinDiff_5 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_5,WndwTime=base::as.difftime(1,units='days'))
+timeBgnDiff_5 <- timeBinDiff_5$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+timeEndDiff_5 <- timeBinDiff_5$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+
+
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
@@ -83,7 +135,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.troll.logfiles(
+      wrap.troll.logfiles.fill(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,

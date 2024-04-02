@@ -43,6 +43,8 @@ def make_get_term_variables(connector: DbConnector):
                 field_name = '{term_name}'
             and 
                 dp_number = '{data_product}'
+            order by 
+                rank
         '''
         with closing(connection.cursor(cursor_factory=DictCursor)) as cursor:
             cursor.execute(sql)

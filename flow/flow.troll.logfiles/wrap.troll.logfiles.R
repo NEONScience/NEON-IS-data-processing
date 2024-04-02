@@ -13,7 +13,7 @@
 #' 
 #' @param DirOut Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #' 
-#' @param SchmDataOut (optional), where values is the full path to the avro schema for the output data 
+#' @param SchmDataOut (optional), A json-formatted character string containing the schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
@@ -32,9 +32,9 @@
 #' 
 #' @examples
 #' # Not run
-#' DirIn<-'/home/NEON/ncatolico/pfs/logjam_load_files/21115'
+#' DirIn<-'/home/NEON/ncatolico/pfs/logjam_load_files/23646'
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.troll.logfiles <- function(DirIn="~/pfs/logjam_load_files/21115",
+#' wrap.troll.logfiles <- function(DirIn="~/pfs/logjam_load_files/23646",
 #'                               DirOut="~/pfs/out",
 #'                               SchmDataOut=NULL,
 #'                               log=log)
@@ -107,7 +107,7 @@ wrap.troll.logfiles <- function(DirIn,
         }else if(grepl('temp', tolower(col3))){
           colnames(log_data)[3]<-'temperature'
         }else if(grepl('cond', tolower(col3))){
-          colnames(log_data)[3]<-'raw_conductivity'
+          colnames(log_data)[3]<-'conductivity'
         }else if(grepl('depth', tolower(col3))){
           colnames(log_data)[3]<-'depth'
         }else{
@@ -118,14 +118,14 @@ wrap.troll.logfiles <- function(DirIn,
         }else if(grepl('temp', tolower(col4))){
           colnames(log_data)[4]<-'temperature'
         }else if(grepl('cond', tolower(col4))){
-          colnames(log_data)[4]<-'raw_conductivity'
+          colnames(log_data)[4]<-'conductivity'
         }else if(grepl('depth', tolower(col4))){
           colnames(log_data)[4]<-'depth'
         }else{
           log$error(base::paste0('File Error: No expected streams present in column 4 of ',DirIn, '/', fileData_i))
         }
         if(is.na(col5)|grepl('cond', tolower(col5))){
-          colnames(log_data)[5]<-'raw_conductivity'
+          colnames(log_data)[5]<-'conductivity'
         }else if(grepl('pressure', tolower(col5))){
           colnames(log_data)[5]<-'pressure'
         }else if(grepl('temp', tolower(col5))){
@@ -296,11 +296,13 @@ wrap.troll.logfiles <- function(DirIn,
       
       log_data$day<-lubridate::floor_date(log_data$dateUTC,"days")
       
+      log_data$source_id<-Asset
+      
       #format output file
       if(sensor=='aquatroll200'){
-        out_columns <- c('readout_time','pressure','temperature','raw_conductivity','logFlag','logDateErrorFlag','day')
+        out_columns <- c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag','day')
       }else if(sensor=='leveltroll500'){
-        out_columns <- c('readout_time','pressure','temperature','logFlag','logDateErrorFlag','day')
+        out_columns <- c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag','day')
       }
       out<-log_data[out_columns]
       
@@ -323,9 +325,9 @@ wrap.troll.logfiles <- function(DirIn,
           month <- substr(out_file$day[1],6,7)
           day <- substr(out_file$day[1],9,10)
           if(sensor=='aquatroll200'){
-            out_file <- out_file[,c('readout_time','pressure','temperature','raw_conductivity','logFlag','logDateErrorFlag')]
+            out_file <- out_file[,c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag')]
           }else if(sensor=='leveltroll500'){
-            out_file <- out_file[,c('readout_time','pressure','temperature','logFlag','logDateErrorFlag')]
+            out_file <- out_file[,c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag')]
           }
           #create output directory
           DirOutLogFile <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',Asset,'/data/')

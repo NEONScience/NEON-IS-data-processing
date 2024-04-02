@@ -11,6 +11,7 @@
 #' @param type A data frame of: \cr
 #' \code{name} Character. Name of data column
 #' \code{type} Character. Data type. There may be multiple types, delimited by pipes (|)
+#' \code{nullable} Boolean. Whether the field values are allowed to be null or NA
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -23,7 +24,7 @@
 
 #' @examples 
 #' data <- data.frame(x=c(1,2,3),y=c('one','two','three'),stringsAsFactors=FALSE)
-#' type <- data.frame(name=c('x'),type=c('string|utf8'),stringsAsFactors=FALSE)
+#' type <- data.frame(name=c('x'),type=c('string|utf8'),nullable=TRUE,stringsAsFactors=FALSE)
 #' dataOut <- NEONprocIS.base::def.data.conv.type.parq(data=data,type=type)
 
 #' @seealso \link[NEONprocIS.base]{def.write.parq}
@@ -36,6 +37,8 @@
 #     original creation
 #   Cove Sturtevant (2023-02-21)
 #     refined arrow data types
+#   Cove Sturtevant (2024-03-20)
+#     add error checking for null values in non-nullable fields 
 ##############################################################################################
 def.data.conv.type.parq <- function(data,
                                     type,
@@ -55,6 +58,7 @@ def.data.conv.type.parq <- function(data,
     # Get column name and type 
     nameIdx <- type$name[idx]
     typeIdx <- strsplit(type$type[idx],'[|]')[[1]]
+    nullIdx <- type$nullable[idx]
     
     if(!(nameIdx %in% nameVar)){
       log$warn(base::paste0('Variable: ', nameIdx, ' not found in input data. No type conversion will be performed for this variable.'))
@@ -88,6 +92,12 @@ def.data.conv.type.parq <- function(data,
       
     } else {
       log$warn(base::paste0("Don't know what to do with data type: ",typeIdx,' intended for variable: ',nameIdx,'. No type conversion will be attempted.'))
+    }
+    
+    # Check for null / NA values for non-nullable fields
+    if(nullIdx == FALSE && base::any(base::is.na(data[[nameIdx]]))){
+      log$error(base::paste0('Field ',nameIdx,' has missing values but is indicated to be non-nullable in the schema. Check data and/or schema.'))
+      stop()
     }
     
   }
