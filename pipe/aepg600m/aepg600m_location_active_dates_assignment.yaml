@@ -1,18 +1,20 @@
 ---
 pipeline:
-  name: ptb330a_calibration_assignment
+  name: aepg600m_location_active_dates_assignment
 transform:
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
   - Rscript
-      ./flow.cal.asgn.R
+      ./flow.loc.grp.asgn.R
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-cal-asgn-r:83069e01
+      TypeFile=namedLocation
+      "Prop=HOR|VER|name|description|site|Data Rate|active_periods"
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:4178f7b8
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -21,27 +23,24 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: ptb330a_calibration_loader
-      glob: /ptb330a/*
+      repo: aepg600m_location_loader
+      glob: /aepg600m/*
   - pfs:
       name: FILE_YEAR
-      repo: ptb330a_cron_daily_and_date_control
+      repo: aepg600m_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 5
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 1.3
-resource_limits:
-  memory: 600M
-  cpu: 2
-sidecar_resource_requests:
-  memory: 3G
-  cpu: 1
-sidecar_resource_limits:
-  memory: 5Gi
+  memory: 210M
   cpu: 1.2
+resource_limits:
+  memory: 500M
+  cpu: 1.6
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
 datum_set_spec:
   number: 5
 scheduling_spec:
