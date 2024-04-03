@@ -7,7 +7,7 @@
 #' @description Wrapper function. Calculate elevation and derive uncertainty for surface and groundwater troll data products.
 #'
 
-#' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
+#' @param DirInTroll Character value. The input path to the data from a single source ID, structured as follows: 
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/source-id/#, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
 #' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor. \cr
@@ -15,6 +15,28 @@
 #' Nested within this path are the folders:
 #'         /data
 #'         /location
+#'         /flags
+#' 
+#' @param DirInUcrt Character value. The input path to the data from a single source ID, structured as follows: 
+#' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/source-id/#, where # indicates any number of parent and child directories 
+#' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
+#' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor. \cr
+#' 
+#' Nested within this path are the folders:
+#'         /uncertainty_coef
+#'         /uncertainty_data
+#' 
+#' @param DirIn 
+#' Character value. The input path to the data from a single source ID, structured as follows: 
+#' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/source-id/#, where # indicates any number of parent and child directories 
+#' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
+#' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor.
+#' DirIn is needed one if this script is run after filter joiner module. \cr
+#' 
+#' Nested within this path are the folders:
+#'         /data
+#'         /location
+#'         /flags
 #'         /uncertainty_coef
 #'         /uncertainty_data
 #'         
@@ -47,19 +69,29 @@
 #' @param WndwInst (optional) set to TRUE to include instantaneous uncertainty data output. The defualt value is FALSE. 
 #' No uncertainty data will be output if both "WndwAgr" and "WndwInst" are NULL.
 #' 
-#' @param SchmDataOut String. Optional. Full path to the avro schema for the output data 
+#' @param SchmDataOut (optional) A json-formatted character string containing the schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
 #' leveltroll500 (does not output conductivity) in your schema.
 #' 
-#' @param SchmUcrtOut String. Optional. Full path to the avro schema for the output uncertainty data 
+#' @param SchmUcrtOutAgr (optional) A json-formatted character string containing the schema for the output aggregate uncertainty data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
 #' leveltroll500 (does not output conductivity) in your schema.
 #' 
-#' @param SchmSciStatsOut String. Optional. Full path to the avro schema for the output science statistics
+#' @param SchmUcrtOutInst (optional) A json-formatted character string containing the schema for the output instantaneous uncertainty data 
+#' file. If this input is not provided, the output schema for the data will be the same as the input data
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
+#' leveltroll500 (does not output conductivity) in your schema.
+#' 
+#' @param SchmStatsOut (optional) A json-formatted character string containing the schema for the output statistics
+#' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
+#' THE INPUT DATA. 
+#' 
+#' @param SchmSciStatsOut (optional) A json-formatted character string containing the schema for the output science statistics
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
 #' THE INPUT DATA. 
 #' 
@@ -72,35 +104,76 @@
 #'
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
-
+#' 
 #' @keywords Currently none
-
+#' 
 #' @examples 
 #' # NOT RUN
-#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.troll.flags <- function(DirIn="~/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2020/02/02",
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# DirInTroll<-"~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2022/04/02/surfacewater-physical_ARIK101100/leveltroll500/CFGLOC101669"
+# DirInUcrt<-"~/pfs/surfacewaterPhysical_group_path/2022/04/02/surfacewater-physical_ARIK101100/leveltroll500/CFGLOC101669"
+# SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc'),collapse='')
+# SchmDataOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_data.avsc'),collapse='')
+# SchmUcrtOutAgr<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt.avsc'),collapse='')
+# SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_leveltroll500_specific_ucrt_inst.avsc'),collapse='')
+# SchmSciStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc'),collapse='')
+# SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/surfacewaterPhysical_leveltroll500_dp01_stats.avsc'),collapse='')
+# WndwAgr <- base::as.difftime(base::as.numeric('030'),units="mins")
+# if(length(WndwAgr)>0){
+#   timeBgnDiff <- list()
+#   timeEndDiff <- list()
+#   for(idxWndwAgr in base::seq_len(base::length(WndwAgr))){
+#     timeBinDiff <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr[idxWndwAgr],WndwTime=base::as.difftime(1,units='days'))
+#     timeBgnDiff[[idxWndwAgr]] <- timeBinDiff$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+#     timeEndDiff[[idxWndwAgr]] <- timeBinDiff$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+#   } # End loop around aggregation intervals
+# }
+#' wrap.troll.flags <- function(DirInTroll=DirInTroll,
+#'                               DirInUcrt=DirInUcrt,
+#'                               DirIn=NULL,
 #'                               DirOutBase="~/pfs/out",
-#'                               Context='GW',
+#'                               Context='SW',
 #'                               WndwInst=TRUE,
 #'                               WndwAgr='030',
-#'                               SchmDataOut=NULL,
-#'                               SchmUcrtOut=NULL,
-#'                               SchmSciStatsOut=NULL,
+#'                               timeBgnDiff = timeBgnDiff,
+#'                               timeEndDiff =timeEndDiff, 
+#'                               SchmDataOut=SchmDataOut,
+#'                               SchmUcrtOutAgr=SchmUcrtOutAgr,
+#'                               SchmUcrtOutInst=SchmUcrtOutInst,
+#'                               SchmSciStatsOut=SchmSciStatsOut,
+#'                               SchmStatsOut=SchmStatsOut,
 #'                               log=log)
-
+#'                               
 #' @seealso Currently none
-
+#' 
 # changelog and author contributions / copyrights
 #   Nora Catolico (2023-10-03)
 #     Initial creation
+#'   Nora Catolico (2023-03-03)
+#'     updated for no troll data use case
+#'   Nora Catolico (2023-08-30)
+#'     updated for inst SW outputs for L4 discharge
+#'   Nora Catolico (2023-09-26)
+#'     updated for multiple sensors in one day 
+#'   Nora Catolico (2024-01-29)
+#'     updated to include water column height uncertainty for L4 discharge 
+#'     distinguish between average and instantaneous uncertainty outputs
+#'   Nora Catolico (2024-03-05)
+#'     updated to include non-systematic uncertainty output for discharge
 ##############################################################################################
-wrap.troll.uncertainty <- function(DirIn,
+wrap.troll.uncertainty <- function(DirIn=NULL,
+                                   DirInTroll=NULL,
+                                   DirInUcrt=NULL,
                                    DirOutBase,
                                    Context,
                                    WndwInst,
                                    WndwAgr,
+                                   timeBgnDiff = timeBgnDiff,
+                                   timeEndDiff =timeEndDiff, 
                                    SchmDataOut=NULL,
-                                   SchmUcrtOut=NULL,
+                                   SchmUcrtOutAgr=NULL,
+                                   SchmUcrtOutInst=NULL,
+                                   SchmStatsOut=NULL,
                                    SchmSciStatsOut=NULL,
                                    log=NULL
 ){
@@ -112,8 +185,14 @@ wrap.troll.uncertainty <- function(DirIn,
   
 
   # Gather info about the input directory (including date), and create base output directory
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn)
-  dirInData <- fs::path(DirIn,'data')
+  if(is.null(DirInTroll)){
+    DirInTroll<-DirIn #only need one dir if this is run after filter joiner
+  }
+  if(is.null(DirInUcrt)){
+    DirInUcrt<-DirIn #only need one dir if this is run after filter joiner
+  }
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirInTroll)
+  dirInData <- fs::path(DirInTroll,'data')
   timeBgn <-  InfoDirIn$time # Earliest possible start date for the data
   timeEnd <- timeBgn + base::as.difftime(1,units='days')
   DirOut <- base::paste0(DirOutBase,InfoDirIn$dirRepo)
@@ -121,6 +200,8 @@ wrap.troll.uncertainty <- function(DirIn,
   base::dir.create(DirOutData,recursive=TRUE)
   DirOutSciStats <- base::paste0(DirOut,'/sci_stats')
   base::dir.create(DirOutSciStats,recursive=TRUE)
+  DirOutStats <- base::paste0(DirOut,'/stats')
+  base::dir.create(DirOutStats,recursive=TRUE)
   DirOutUcrt <- base::paste0(DirOut,'/uncertainty_data')
   base::dir.create(DirOutUcrt,recursive=TRUE)
   
@@ -155,12 +236,12 @@ wrap.troll.uncertainty <- function(DirIn,
   gravity <- 9.81  #kg/m3 #future mod: site specific gravity
   
   #incorporate location data
-  fileOutSplt <- base::strsplit(DirIn,'[/]')[[1]] # Separate underscore-delimited components of the file name
+  fileOutSplt <- base::strsplit(DirInTroll,'[/]')[[1]] # Separate underscore-delimited components of the file name
   CFGLOC<-tail(x=fileOutSplt,n=1)
   
   ##### Read in location data #####
   LocationData <- NULL
-  dirLocation <- base::paste0(DirIn,'/location')
+  dirLocation <- base::paste0(DirInTroll,'/location')
   dirLocLocation <- base::dir(dirLocation,full.names=TRUE)
   
   #Could be multiple source IDs in a day. Account for all.
@@ -202,9 +283,19 @@ wrap.troll.uncertainty <- function(DirIn,
             trollData_subset<-trollData_n[trollData_n$readout_time>=startDate & trollData_n$readout_time<endDate,]
             if(length(trollData_subset$readout_time)>0){
               trollData_subset$sensorElevation<- LocationHist$CFGLOC[[i]]$geometry$coordinates[3]
-              trollData_subset$z_offset<- LocationHist$CFGLOC[[i]]$z_offset
-              trollData_subset$survey_uncert <- LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty` #includes survey uncertainty and hand measurements
-              trollData_subset$real_world_uncert <-LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`
+              if(is.null(LocationHist$CFGLOC[[i]]$z_offset)|is.na(LocationHist$CFGLOC[[i]]$z_offset)){
+                trollData_subset$z_offset<-0
+              }else{
+                trollData_subset$z_offset<- LocationHist$CFGLOC[[i]]$z_offset
+              }
+              if(!is.null(LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty`)){
+                trollData_subset$survey_uncert <- LocationHist$CFGLOC[[i]]$`Survey vertical uncertainty` #includes survey uncertainty and hand measurements
+              }else{
+                trollData_subset$survey_uncert <- 0.1
+              }
+              if(!is.null(LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`)){
+                trollData_subset$real_world_uncert <-LocationHist$CFGLOC[[i]]$`Real world coordinate uncertainty`
+              }
             }
             if(i==1){
               trollData_all_n<-trollData_subset
@@ -238,7 +329,7 @@ wrap.troll.uncertainty <- function(DirIn,
   }
   
   #Define troll type. Needed for including conductivity based on sensor type
-  if(grepl("aquatroll",DirIn)){
+  if(grepl("aquatroll",DirInTroll)){
     sensor<-"aquatroll200"
   }else{
     sensor<-"leveltroll500"
@@ -273,7 +364,7 @@ wrap.troll.uncertainty <- function(DirIn,
   
   ### Read in flags
   flags <- NULL
-  dirFlags <- base::paste0(DirIn,'/flags')
+  dirFlags <- base::paste0(DirInTroll,'/flags')
   dirFlagsLocation <- base::dir(dirFlags,full.names=TRUE)
   dirFlagsLocation<-dirFlagsLocation[grepl('flagsPlausibility',dirFlagsLocation)]
   if(base::length(dirFlagsLocation)<1){
@@ -379,7 +470,7 @@ wrap.troll.uncertainty <- function(DirIn,
   
   ##### Read in uncertainty data #####
   uncertaintyData <- NULL
-  dirUncertainty <- base::paste0(DirIn,'/uncertainty_data')
+  dirUncertainty <- base::paste0(DirInUcrt,'/uncertainty_data')
   dirUncertaintyLocation <- base::dir(dirUncertainty,full.names=TRUE)
   if(base::length(dirUncertaintyLocation)<1){
     log$debug(base::paste0('No troll uncertainty data file in ',dirUncertainty))
@@ -390,7 +481,7 @@ wrap.troll.uncertainty <- function(DirIn,
 
   ##### Read in uncertainty coef #####
   uncertaintyCoef <- NULL
-  dirUncertaintyCoef <- base::paste0(DirIn,'/uncertainty_coef')
+  dirUncertaintyCoef <- base::paste0(DirInUcrt,'/uncertainty_coef')
   dirUncertaintyCoefLocation <- base::dir(dirUncertaintyCoef,full.names=TRUE)
   if(base::length(dirUncertaintyCoefLocation)<1){
     log$debug(base::paste0('No troll uncertainty data file in ',dirUncertaintyCoef))
@@ -409,10 +500,23 @@ wrap.troll.uncertainty <- function(DirIn,
         return(Ucrt)
       })
       log$debug(base::paste0("Reading in: ",dirUncertaintyCoefLocation))
+      
+      #get non-systematic uncertainty for water column height
+      if(length(uncertaintyCoef)>0){
+        # Uncertainty coefficient U_CVALA2 represents the repeatability and reproducibility of the sensor
+        ucrtRep <- NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef = uncertaintyCoef, 
+                                                           NameCoef = "U_CVALA2", VarUcrt = 'pressure', TimeAgrBgn = dataOut$startDateTime[1], 
+                                                           TimeAgrEnd = dataOut$startDateTime[base::nrow(dataOut)] + as.difftime(0.001, 
+                                                                                                                                 units = "secs"), log = log)
+        uncertaintyData$pressure_ucrtRep<-ucrtRep
+      }
+    }else{
+      uncertaintyData$pressure_ucrtRep<-NA
+      log$debug(base::paste0('No U_CVALA2 in file: ', dirUncertaintyCoefLocation))
     }
   }
 
-  ######## Uncert for instantaneous 5-min groundwater aqua troll data #######
+  ######## Uncertainty for instantaneous 5-min groundwater aqua troll data #######
   if(WndwInst==TRUE){
     if(sensor=="aquatroll200"){
       #temp and pressure uncert calculated earlier in pipeline
@@ -459,16 +563,16 @@ wrap.troll.uncertainty <- function(DirIn,
     timeDiff<-uncertaintyData$startDateTime[2]-uncertaintyData$startDateTime[1]
     uncertaintyData$endDateTime<-uncertaintyData$readout_time+timeDiff
     if(sensor=='aquatroll200'){
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn")
+      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","conductivity_ucrtExpn","pressure_ucrtRep")
     }else{
-      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn")
+      ucrtCol_inst <- c("startDateTime","endDateTime","temperature_ucrtExpn","pressure_ucrtExpn","elevation_ucrtExpn","pressure_ucrtRep")
     }
     ucrtOut_inst <- uncertaintyData[,ucrtCol_inst]
     #standardize naming
     if(sensor=='aquatroll200'){
-      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert")
+      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","groundwaterCondExpUncert","waterColumnHeightMeasUncert")
     }else{
-      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert")
+      names(ucrtOut_inst)<- c("startDateTime","endDateTime","groundwaterTempExpUncert","groundwaterPressureExpUncert","groundwaterElevExpUncert","waterColumnHeightMeasUncert")
     }
     #write out instantaneous uncertainty data
     #ucrtOut_inst[,-c(1:2)] <-round(ucrtOut_inst[,-c(1:2)],2)
@@ -478,11 +582,11 @@ wrap.troll.uncertainty <- function(DirIn,
     if(Context=='GW'){
       rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst,
                                                             NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_005.parquet"),
-                                                            Schm = SchmUcrtOut),silent=TRUE)
+                                                            Schm = SchmUcrtOutInst),silent=TRUE)
     }else{
       rptUcrtOut_Inst <- try(NEONprocIS.base::def.wrte.parq(data = ucrtOut_inst,
                                                             NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_ucrt_001.parquet"),
-                                                            Schm = SchmUcrtOut),silent=TRUE)
+                                                            Schm = SchmUcrtOutInst),silent=TRUE)
     }
 
 
@@ -630,7 +734,7 @@ wrap.troll.uncertainty <- function(DirIn,
       }
       rptUcrtOut_Agr <- try(NEONprocIS.base::def.wrte.parq(data = rptUcrt,
                                                            NameFile = base::paste0(DirOutUcrt,"/",Context,"_",sensor,"_",CFGLOC,"_",format(timeBgn,format = "%Y-%m-%d"),"_","ucrt_",window,".parquet"),
-                                                           Schm = SchmUcrtOut),silent=TRUE)
+                                                           Schm = SchmUcrtOutAgr),silent=TRUE)
 
       if(any(grepl('try-error',class(rptUcrtOut_Agr)))){
         log$error(base::paste0('Writing the output data failed: ',attr(rptUcrtOut_Agr,"condition")))

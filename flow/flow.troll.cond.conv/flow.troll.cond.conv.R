@@ -67,9 +67,11 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/aquatroll200_calibration_group_and_convert')
+#' Sys.setenv(DIR_IN='~/pfs/aquatroll200_calibration_group_and_convert')
+#' Sys.setenv(FILE_SCHEMA_DATA='~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_cond_corrected.avsc')
+#' Sys.setenv(FILE_SCHEMA_QF='~/pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific_temp.avsc')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
+#' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmData=$FILE_SCHEMA_DATA","FileSchmQf=$FILE_SCHEMA_QF")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently

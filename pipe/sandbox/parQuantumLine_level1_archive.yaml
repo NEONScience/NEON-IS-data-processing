@@ -1,0 +1,111 @@
+---
+pipeline:
+  name: parQuantumLine_level1_archive
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-dir-filt:test.deleteme.01
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    #
+    # Run first module - filter-joiner (using environment variables below as input parameters). Only needed for testing to place files in /pfs/out
+    python3 -m directory_filter.directory_filter_main
+    #
+    # Export Level 1 data to bucket
+    linkdir=$(mktemp -d)
+    shopt -s globstar
+    out_parquet_glob="${OUT_PATH}/**/*.parquet"
+    # Example: /2024/01/18/par-quantum-line_UKFS001000/data/par-quantum-line_UKFS001000_2024-01-18_PARQL_1min_001.parquet
+    echo "Linking output files to ${linkdir}"
+    #set -x # Echo commands to output for debugging
+    fname=""
+    for f in $out_parquet_glob; do
+      if [[ -f "$f" ]]; then
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/([0-9]+)/([0-9]+)/([0-9]+)/(${GROUP_PREFIX}_[A-Za-z0-9]+)/data/(.*)$ ]]
+        fyear="${BASH_REMATCH[1]}"
+        fmonth="${BASH_REMATCH[2]}"
+        fday="${BASH_REMATCH[3]}"
+        fgroup="${BASH_REMATCH[4]}"
+        fname="${BASH_REMATCH[5]}"
+        # Now get the timing index from the file name
+        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Z]+[0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
+        avg_int="${BASH_REMATCH[1]}"
+        #Form the output path and link
+        outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname}"
+      fi
+    done
+    #set +x
+    if [[ "${fname}" ]]; then
+      echo "Syncing files to bucket"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        copy \
+        "${linkdir}" \
+        ":gcs://${BUCKET_NAME}"
+      echo "Removing temporary files"
+      rm -rf $linkdir
+    fi
+    EOF
+  env:
+    # Environment variables for directory filter
+    OUT_PATH: /pfs/out
+    FILTER_DIR: data
+    FILTER_DIR_INDEX: '7'
+    RELATIVE_PATH_INDEX: '3'
+    
+    # Environment variables for the archiver
+    GROUP_PREFIX: par-quantum-line # no ending "_"
+    LOG_LEVEL: DEBUG # Shared among all modules
+    
+  secrets:
+  - name: l1-bucket
+    env_var: BUCKET_NAME
+    key: L1_BUCKET
+input:
+  pfs:
+      name: IN_PATH
+      repo: parQuantumLine_level1_group_consolidate_srf
+      glob: /*/*/*
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 2.2
+resource_limits:
+  memory: 2G
+  cpu: 3.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
