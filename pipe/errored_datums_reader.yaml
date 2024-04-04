@@ -34,7 +34,7 @@ transform:
 input:
   cron:
     name: tick
-    spec: "@never"
+    spec: "@daily"
     # overwrite: true
 autoscaling: true
 scheduling_spec:
