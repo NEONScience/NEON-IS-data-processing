@@ -45,6 +45,7 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
             err_msg = (f'Path {path.parent} looks to be a datum, but the directory at the group metadata index {group_metadata_name} does not match the expected name {group_metadata_dir}')
             err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
                            RmvDatmOut=True, DirOutBase=out_path)
+            continue
         # Get the pub grouping location from the group metadata
         publoc = None
         products = None
@@ -65,6 +66,7 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
             err_msg = (f'Cannot determine publication grouping property from the files in {path}.')
             err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
                            RmvDatmOut=True, DirOutBase=out_path)
+            continue
         try:
             if products is None:
                 log.error(f'Cannot determine data products from the files in {path}.')
@@ -73,6 +75,7 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
             err_msg = (f'Cannot determine data products from the files in {path}.')
             err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
                        RmvDatmOut=True,DirOutBase=out_path)
+            continue
 
         # Pass the group parent to the path iterator
         path = Path(*parts[0:group_index+1])
@@ -102,3 +105,4 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
                     err_msg = sys.exc_info()
                     err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
                                    RmvDatmOut=True,DirOutBase=out_path)
+                    continue
