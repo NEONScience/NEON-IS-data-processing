@@ -78,6 +78,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
                 err_msg = sys.exc_info()
                 err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
                            RmvDatmOut=True, DirOutBase=out_path)
+                continue
 
         for package_file in package_files.keys():
             output_file = os.path.join(out_path, path_prefix, package_file)
@@ -110,6 +111,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
             log.debug('.... Error executing write_manifest...')
             err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
                            RmvDatmOut=True, DirOutBase=out_path)
+            continue
 
 
 def get_package_filename(file, sort_index, date_field, timestamp):
