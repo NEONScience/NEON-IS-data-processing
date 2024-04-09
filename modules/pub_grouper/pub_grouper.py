@@ -90,19 +90,14 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
                 data_type = parts[data_type_index]
                 data = parts[data_type_index+1:]
 
-                try:
-                    for product in products:
-                        new_path = out_path.joinpath(product,year,month,day,publoc,data_type,group,*data)
-                        new_path.parent.mkdir(parents=True, exist_ok=True)
-                        if not new_path.exists():
-                            if symlink:
-                                log.debug(f'Linking path {new_path} to {subpath}.')
-                                new_path.symlink_to(subpath)
-                            else:
-                                log.debug(f'Copying {subpath} to {new_path}.')
-                                shutil.copy2(subpath,new_path)
-                except:
-                    err_msg = sys.exc_info()
-                    err_datum_path(err=err_msg,DirDatm=str(dataDir_routed),DirErrBase=DirErrBase,
-                                   RmvDatmOut=True,DirOutBase=out_path)
-                    continue
+                for product in products:
+                    new_path = out_path.joinpath(product,year,month,day,publoc,data_type,group,*data)
+                    new_path.parent.mkdir(parents=True, exist_ok=True)
+                    if not new_path.exists():
+                        if symlink:
+                            log.debug(f'Linking path {new_path} to {subpath}.')
+                            new_path.symlink_to(subpath)
+                        else:
+                            log.debug(f'Copying {subpath} to {new_path}.')
+                            shutil.copy2(subpath,new_path)
+                
