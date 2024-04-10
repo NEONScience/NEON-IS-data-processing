@@ -102,6 +102,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
                     err_msg = sys.exc_info()
                     err_datum_path(err=err_msg, DirDatm=str(dataDir_routed), DirErrBase=DirErrBase,
                            RmvDatmOut=True, DirOutBase=out_path)
+                    continue
         try:
             write_manifest(out_path,path_prefix,has_data_by_file,visibility_by_file,package_path_by_file)
         except:
