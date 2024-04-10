@@ -3,7 +3,7 @@ pipeline:
   name: parQuantumLine_pub_group_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:665dde06
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:f20902cb
   cmd:
   - sh
   - "-c"
@@ -82,6 +82,8 @@ transform:
     
     # Environment variables for 3rd module: pub_files.
     OUT_PATH_PUBFILES: "/pfs/out"
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: "/pfs/out/errored_datum"
     RELATIVE_PATH_INDEX: '3'
     DB_SECRETS_PATH: /var/db_secret
     GITHUB_PEM_PATH: /var/github_secret/key
