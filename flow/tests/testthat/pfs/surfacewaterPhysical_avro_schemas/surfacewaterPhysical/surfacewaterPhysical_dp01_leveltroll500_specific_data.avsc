@@ -1,0 +1,64 @@
+{
+  "type": "record",
+  "name": "surfacewaterPhysical_dp01_leveltroll500_specific_data",
+  "namespace": "org.neonscience.schema.dp01",
+  "doc": "L1 surface water data",
+  "fields": [
+    {
+      "name": "startDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is initiated (inclusive)"
+    },
+    {
+      "name": "endDateTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Date and time at which a sampling is completed (exclusive)"
+    },
+    {
+      "name": "surfacewaterPressure",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Calibrated pressure of surface water",
+      "__neon_units": "kilopascal"        
+    },
+    {
+      "name": "surfacewaterTemp",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Calibrated temperature in surface water",
+      "__neon_units": "celsius"
+    },
+    {
+      "name": "surfacewaterColumnHeight",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Water column height of surface water",
+      "__neon_units": "meter"
+    },
+    {
+      "name": "surfacewaterElev",
+      "type": [
+        "null",
+        "float"
+        ],
+      "default": null,
+      "doc": "Elevation of surface water",
+      "__neon_units": "meter"
+    }
+  ]
+}

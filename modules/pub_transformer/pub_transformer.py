@@ -103,6 +103,21 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
             # Create each table in the workbook if possible
             for table in workbook['table'].unique():
                 
+                # Get the table
+                workbook_table=workbook.loc[workbook['table']==table,]
+                
+                # Determine which, if any, packages files will be created for this product
+                basic_file = False
+                expanded_file = False
+                if workbook_table['downloadPkg'].str.contains('basic').any():
+                    basic_file = True
+                if workbook_table['downloadPkg'].str.contains('expanded').any():
+                    expanded_file = True
+                    
+                if basic_file is False and expanded_file is False:
+                    log.warn(f'No download packages indicated for {table}. Skipping.')
+                    continue
+                
                 # Load the data file(s) corresponding to this table (must have already been placed into a parquet file for each table)
                 data = None
                 for file in data_files:
@@ -116,9 +131,6 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
                     log.warn(f'No filenames in {group_data_path} contain a match to table {table}')
                     continue
     
-                # Get the table
-                workbook_table=workbook.loc[workbook['table']==table,]
-                
                 # Get the full 45-digit DP IDs to grab fields from
                 dp_number = [element for element in workbook_table['DPNumber'] if len(element)==45]
                 dp_number = dp_number[0]
@@ -153,24 +165,29 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
                 # determine data availability
                 if product not in has_data_by_file.keys():
                     has_data_by_file[product]={}
-                has_data_by_file[product][basic_filename] = not data[workbook_table.loc[
-                    (workbook_table['dataCategory'] == 'Y') &
-                    (workbook_table['downloadPkg'] == 'basic')]['fieldName'].values].isnull().values.all()
-                has_data_by_file[product][expanded_filename] = \
-                    not data[workbook_table.loc[(workbook_table['dataCategory'] == 'Y') & ((workbook_table['downloadPkg'] == 'basic') |
-                                        (workbook_table['downloadPkg'] == 'expanded'))]['fieldName'].values].isnull().values.all()
+                if basic_file is True:
+                    has_data_by_file[product][basic_filename] = not data[workbook_table.loc[
+                        (workbook_table['dataCategory'] == 'Y') &
+                        (workbook_table['downloadPkg'] == 'basic')]['fieldName'].values].isnull().values.all()
+                if expanded_file is True:
+                    has_data_by_file[product][expanded_filename] = \
+                        not data[workbook_table.loc[(workbook_table['dataCategory'] == 'Y') & ((workbook_table['downloadPkg'] == 'basic') |
+                                            (workbook_table['downloadPkg'] == 'expanded'))]['fieldName'].values].isnull().values.all()
                 
                 # Record portal visibility
                 if product not in visibility_by_file.keys():
                     visibility_by_file[product]={}
-                visibility_by_file[product][basic_filename] = visibility
-                visibility_by_file[product][expanded_filename] = visibility
+                if basic_file is True:
+                    visibility_by_file[product][basic_filename] = visibility
+                if expanded_file is True:
+                    visibility_by_file[product][expanded_filename] = visibility
                 
                 # extract and write datasets
                 os.makedirs(output_path, exist_ok=True)
                 # basic
-                basic_columns = workbook_table.loc[(workbook_table['downloadPkg'] == 'basic'), ['rank','fieldName']]
-                data[basic_columns.sort_values('rank')['fieldName']].to_csv(basic_filepath, index=False)
+                if workbook_table['downloadPkg'].str.contains('basic').any():
+                    basic_columns = workbook_table.loc[(workbook_table['downloadPkg'] == 'basic'), ['rank','fieldName']]
+                    data[basic_columns.sort_values('rank')['fieldName']].to_csv(basic_filepath, index=False)
                 # expanded
                 if workbook_table['downloadPkg'].str.contains('expanded').any():
                     expanded_columns = workbook_table.loc[((workbook_table['downloadPkg'] == 'basic') |

@@ -43,10 +43,10 @@
 
 #' @examples
 #' Stepping through the code in Rstudio
-#' Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/03/10/21115') #cleaned log data
-#' Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/leveltroll500_data_source_trino/leveltroll500/2022/03/10/21115') #streamed L0 data
-#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' arg <- c("DirIn=$DirIn","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
+# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/logjam_clean_troll_files/aquatroll200/2022/03/09/23646') #cleaned log data
+# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646') #streamed L0 data
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# arg <- c("DirIn=$DirIn","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently
