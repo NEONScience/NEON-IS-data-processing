@@ -2,7 +2,7 @@
 pipeline:
   name: aquatroll200_flags_specific
 transform:
-  image: quay.io/battelleecology/neon-is-troll-flags-r:12828b1b
+  image: quay.io/battelleecology/neon-is-troll-flags-r:e65941ee
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
@@ -19,8 +19,8 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: aquatroll200_data_source_trino
-      glob: /aquatroll200/*/*/*/
+      repo: aquatroll200_fill_log_files
+      glob: /aquatroll200/2022/*/*/
   - pfs:
       name: SCHEMA_FLAGS
       repo: troll_shared_avro_schemas

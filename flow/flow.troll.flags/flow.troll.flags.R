@@ -50,7 +50,7 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='~/pfs/aquatroll200_data_source_trino')
+#' Sys.setenv(DIR_IN='~/pfs/leveltroll500_fill_log_files')
 #' Sys.setenv(FILE_SCHEMA_QF='~/pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific.avsc')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmQf=$FILE_SCHEMA_QF")
@@ -96,7 +96,7 @@ if(numCoreUse > numCoreAvail){
 log$debug(paste0(numCoreUse, ' of ',numCoreAvail, ' available cores will be used for internal parallelization.'))
 
 # Parse the input arguments into parameters
-Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf"),log = log)
+Para <- NEONprocIS.base::def.arg.pars(arg = arg,NameParaReqd = c("DirIn", "DirOut","DirErr"),NameParaOptn = c("FileSchmData","FileSchmQf","DirSubCopy"),log = log)
 
 
 # Echo arguments
@@ -104,6 +104,7 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
+log$debug(base::paste0('Director to copy: ', Para$DirSubCopy))
 
 # Read in the schemas so we only have to do it once and not every
 # time in the avro writer.
@@ -126,7 +127,7 @@ log$debug(base::paste0(
 
 
 #what are the expected subdirectories of each input path
-nameDirSub <- c('data')
+nameDirSub <- c('data','flags')
 log$debug(base::paste0(
   'Additional subdirectories to copy: ',
   base::paste0(nameDirSub, collapse = ',')

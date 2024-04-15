@@ -16,6 +16,7 @@ output. Defaults to NULL, in which the logger will be created and used within th
 A data frame of: \cr
 \code{name} Character. Name of data column
 \code{type} Characer. Data type
+\code{nullable} Boolean. Whether the field values are allowed to be null or NA
 }
 \description{
 Definition function. Get the data types of each data column from a parquet schema.

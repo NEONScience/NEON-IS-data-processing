@@ -63,5 +63,31 @@
 		"resolution" : "Data were manually flagged. Sensor malfunction is ongoing, but measurements are currently being identified by automated flagging algorithms.",
 		"change_by" : "audit-initialization",
 		"tran_date" : "2023-01-16T02:42:42.164Z"
+	},
+	{
+		"dp_change_log_id" : 7454,
+		"dp_idq" : "NEON.DOM.SITE.DP1.00041.001",
+		"issue_date" : "2018-05-24T06:00:00.000Z",
+		"resolved_date" : "2018-05-24T06:00:00.000Z",
+		"date_range_start" : "2017-08-15T06:00:00.000Z",
+		"date_range_end" : "2018-06-30T06:00:00.000Z",
+		"location_affected" : "D06 KONZ soil plot 3 measurement level 1 (HOR.VER: 002.501)",
+		"issue" : "Sensor malfunction resulted in implausible measurements that were not identified by automated flagging.",
+		"resolution" : "Data were manually flagged. Sensor malfunction is ongoing, but measurements are currently being identified by automated flagging algorithms.",
+		"change_by" : "audit-initialization",
+		"tran_date" : "2023-01-16T02:42:42.164Z"
+	},
+	{
+		"dp_change_log_id" : 7454,
+		"dp_idq" : "NEON.DOM.SITE.DP1.00041.001",
+		"issue_date" : "2018-05-24T06:00:00.000Z",
+		"resolved_date" : "2018-05-24T06:00:00.000Z",
+		"date_range_start" : "2018-08-15T06:00:00.000Z",
+		"date_range_end" : "2019-06-30T06:00:00.000Z",
+		"location_affected" : "D06 KONZ soil plot 3 measurement level 1 (HOR.VER: 002.501)",
+		"issue" : "Sensor malfunction resulted in implausible measurements that were not identified by automated flagging.",
+		"resolution" : "Data were manually flagged. Sensor malfunction is ongoing, but measurements are currently being identified by automated flagging algorithms.",
+		"change_by" : "audit-initialization",
+		"tran_date" : "2023-01-16T02:42:42.164Z"
 	}
 ]
