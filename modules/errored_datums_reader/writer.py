@@ -11,10 +11,16 @@ def write_to_db(db: Db, files_by_pipeline: defaultdict[str, list[str]]) -> None:
         values 
             (%(dag_name)s, %(pipeline_name)s, %(file_path)s) 
     '''
+    
+    delete_sql = f'''
+        delete from {db.schema}.errored_datums where dag_name = %s and pipeline_name = %s
+    '''
     with closing(db.connection.cursor()) as cursor:
         for pipeline_name in files_by_pipeline.keys():
             dag_name = pipeline_name.split('_')[0]
             for file_path in files_by_pipeline[pipeline_name]:
                 params = dict(dag_name=dag_name, pipeline_name=pipeline_name, file_path=file_path)
+                delete_params = dict(dag_name=dag_name, pipeline_name=pipeline_name)
+                cursor.execute(delete_sql, delete_params)
                 cursor.execute(sql, params)
         db.connection.commit()
