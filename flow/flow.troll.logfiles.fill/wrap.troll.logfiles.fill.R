@@ -44,16 +44,30 @@
 #' 
 #' @examples
 #' # Not run
-# DirInLogs<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/04/04/21115' #cleaned log data
-# DirInStream<-'/home/NEON/ncatolico/pfs/leveltroll500_data_source_trino/leveltroll500/2022/04/04/21115' #streamed L0 data
-# DirIn<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/04/08/21115'
+# DirInLogs<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/09/02/44378' #cleaned log data
+# DirInStream<-'/home/NEON/ncatolico/pfs/leveltroll500_data_source_trino/leveltroll500/2022/09/02/44378' #streamed L0 data
+# DirIn<-NULL
+# SchmDataOut<-base::paste0(base::readLines('~/pfs/leveltroll500_avro_schemas/leveltroll500/leveltroll500_log_data.avsc'),collapse='')
+# SchmFlagsOut<-base::paste0(base::readLines('~/pfs/leveltroll500_avro_schemas/leveltroll500/leveltroll500_log_flags.avsc'),collapse='')
+# WndwAgr_1 <- base::as.difftime(1,units="mins")
+# WndwAgr_5 <- base::as.difftime(5,units="mins")
+# timeBgnDiff <- list()
+# timeEndDiff <- list()
+# timeBinDiff_1 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_1,WndwTime=base::as.difftime(1,units='days'))
+# timeBgnDiff_1 <- timeBinDiff_1$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+# timeEndDiff_1 <- timeBinDiff_1$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+# timeBgnDiff_5 <- list()
+# timeEndDiff_5 <- list()
+# timeBinDiff_5 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_5,WndwTime=base::as.difftime(1,units='days'))
+# timeBgnDiff_5 <- timeBinDiff_5$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+# timeEndDiff_5 <- timeBinDiff_5$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # wrap.troll.logfiles.fill <- function(DirInLogs=DirInLogs,
 #                               DirInStream=DirInStream,
 #                               DirIn=DirIn,
 #                               DirOutBase="~/pfs/out",
-#                               SchmDataOut=NULL,
-#                               SchmFlagsOut=NULL,
+#                               SchmDataOut=SchmDataOut,
+#                               SchmFlagsOut=SchmFlagsOut,
 #                               log=log)
 #'                               
 #' @changelog
@@ -203,6 +217,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
     
     #merge data
     dataOut<-merge(L0Data,LogData,by='readout_time',all = TRUE)
+    dataOut<-dataOut[!duplicated(dataOut$readout_time),]
     dataOut<-dataOut[dataOut$readout_time<timeBgn+86400,]
     if(interval=="1min" & nrow(dataOut)>1440){
       log$error(base::paste0('ERROR more than 1440 rows in merged 1 minute data: ', DirIn))
@@ -217,7 +232,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
     dataOut$logDateFlag<-0
     dataOut$temperatureLogFlag<-0
     dataOut$source_id.x <- unique(dataOut$source_id.x[!is.na(dataOut$source_id.x)])
-    dataOut$site_id <- unique(dataOut$site_id[!is.na(dataOut$site_id)])
+    dataOut$site_id.x <- unique(dataOut$site_id.x[!is.na(dataOut$site_id.x)])
     
     #insert logged pressure data
     dataOut$pressureLogFlag[is.na(dataOut$pressure.x)]<-dataOut$logFlag[is.na(dataOut$pressure.x)]
@@ -232,9 +247,9 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
     if(sensor=='leveltroll500'){
       keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag')
       flagsOut<-dataOut[keep_flags]
-      keep_data<-c('source_id.x','site_id','readout_time','pressure.x','pressure_data_quality','temperature.x','temperature_data_quality','internal_battery')
+      keep_data<-c('source_id.x','site_id.x','readout_time','pressure.x','pressure_data_quality.x','temperature.x','temperature_data_quality.x','internal_battery.x')
       dataOut<-dataOut[keep_data]
-      names(dataOut)<- c('readout_time','source_id','site_id','pressure','pressure_data_quality','temperature','temperature_data_quality','internal_battery')
+      names(dataOut)<- c('readout_time','source_id','site_id.x','pressure','pressure_data_quality','temperature','temperature_data_quality','internal_battery')
     }else if(sensor=='aquatroll200'){
       #insert logged conductivity data
       dataOut$conductivityLogFlag<-0
@@ -242,9 +257,9 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
       dataOut$conductivity.x[is.na(dataOut$conductivity.x)]<-dataOut$conductivity.y[is.na(dataOut$conductivity.x)]
       keep_flags<-c('readout_time','pressureLogFlag','logDateFlag','temperatureLogFlag','conductivityLogFlag')
       flagsOut<-dataOut[keep_flags]
-      keep_data<-c('readout_time','source_id.x','site_id','pressure.x','pressure_data_quality','temperature.x','temperature_data_quality','conductivity.x','conductivity_data_quality','internal_battery')
+      keep_data<-c('readout_time','source_id.x','site_id.x','pressure.x','pressure_data_quality.x','temperature.x','temperature_data_quality.x','conductivity.x','conductivity_data_quality.x','internal_battery.x')
       dataOut<-dataOut[keep_data]
-      names(dataOut)<- c('source_id','site_id','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','conductivity','conductivity_data_quality','internal_battery')
+      names(dataOut)<- c('source_id','site_id.x','readout_time','pressure','pressure_data_quality','temperature','temperature_data_quality','conductivity','conductivity_data_quality','internal_battery')
     }
   }
   
