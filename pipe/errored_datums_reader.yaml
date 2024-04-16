@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/errored_datums_reader:test5
+  image: quay.io/battelleecology/errored_datums_reader:test7
   cmd:
   - /bin/bash
   stdin:
@@ -34,7 +34,7 @@ transform:
 input:
   cron:
     name: tick
-    spec: "@never"
+    spec: "@daily"
     # overwrite: true
 autoscaling: true
 scheduling_spec:
