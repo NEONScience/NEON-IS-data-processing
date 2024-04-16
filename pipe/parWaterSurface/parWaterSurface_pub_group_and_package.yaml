@@ -55,7 +55,7 @@ transform:
     LOG_LEVEL: INFO
     OUT_PATH_GROUPER: "/tmp/pub_grouper"
     # ERR_PATH can be changed, it is user specified
-    ERR_PATH_GROUPER: "/pfs/out/packager/errored_datum"
+    ERR_PATH_GROUPER: "/pfs/out/grouper/errored_datum"
     YEAR_INDEX: '3' # Also shared with pub_transform
     GROUP_INDEX: '6'
     DATA_TYPE_INDEX: '7' # Also shared with pub_transform
