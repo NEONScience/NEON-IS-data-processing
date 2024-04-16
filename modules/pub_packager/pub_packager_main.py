@@ -12,7 +12,7 @@ def main() -> None:
     env = environs.Env()
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     out_path = env.path('OUT_PATH')
-    err_path = env.path('ERR_PATH')
+    err_path = env.path('ERR_PATH_PACKAGER')
     data_path = env.path('DATA_PATH')
     product_index: int = env.int('PRODUCT_INDEX')
     publoc_index: int = env.int('PUBLOC_INDEX')

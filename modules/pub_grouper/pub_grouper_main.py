@@ -14,7 +14,7 @@ def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')
-    err_path: Path = env.path('ERR_PATH')
+    err_path: Path = env.path('ERR_PATH_GROUPER')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     year_index: int = env.int('YEAR_INDEX')
     group_index: int = env.int('GROUP_INDEX')
