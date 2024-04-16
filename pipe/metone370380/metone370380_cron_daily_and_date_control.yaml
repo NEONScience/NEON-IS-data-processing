@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: leveltroll500_cron_daily_and_date_control
+  name: metone370380_cron_daily_and_date_control
 transform:
   image: quay.io/battelleecology/neon-is-date-cntl:72752fa7
   cmd: ["/bin/bash"]
@@ -11,9 +11,9 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2022-01-01"
-    END_DATE: "2022-12-31"
-    SOURCE_TYPE: "leveltroll500"
+    START_DATE: "2024-03-31" # Inclusive
+    END_DATE: "2024-03-31" # Inclusive
+    SOURCE_TYPE: "metone370380"
   stdin:
   - "#!/bin/bash"
   - ./cron_daily_and_date_control/populate_site_dates.sh
@@ -26,7 +26,7 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: leveltroll500_site_list
+      repo: metone370380_site_list
       glob: /site-list.json
 resource_requests:
   memory: 100M
@@ -36,7 +36,7 @@ resource_limits:
   cpu: 1.5
 sidecar_resource_requests:
   memory: 500M
-  cpu: 0.2
+  cpu: 0.5
 autoscaling: true
 scheduling_spec:
   node_selector:

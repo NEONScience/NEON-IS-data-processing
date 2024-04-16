@@ -169,7 +169,7 @@ transform:
   
 # Environment variables for pub table and srf module
     PUB_WORKBOOKS: /tmp/pub_workbooks
-    PARALLELIZATION_INTERNAL: '1'
+    PARALLELIZATION_INTERNAL: '2'
 
 # Environment variables for the L1 archiver
     GROUP_PREFIX: groundwater-physical # no ending "_"
@@ -211,14 +211,14 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 1
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 600M
-  cpu: 1.2
+  memory: 2G
+  cpu: 2.4
 resource_limits:
-  memory: 1G
-  cpu: 2
+  memory: 3G
+  cpu: 3
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.5

@@ -75,8 +75,10 @@ wrap.troll.logfiles <- function(DirIn,
     
     if(any(grepl('SUNA',log_file$V2))){
       log$debug(base::paste0('skipping SUNA file: ', DirIn, '/', fileData_i))
+      base::stop()
     }else if(any(grepl('_Depth',log_file$V1))){
       log$debug(base::paste0('skipping sonde file: ', DirIn, '/', fileData_i))
+      base::stop()
     }else{
       #find row where data actually starts
       start<-which(grepl('Seconds',log_file$V2))+1
@@ -188,9 +190,9 @@ wrap.troll.logfiles <- function(DirIn,
       colnames(log_metadata)<-c("label","value")
       
       #Metadata values
-      logName <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Log Name"]
-      Troll_SN <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Serial Number"]
-      Asset <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Device Name"]
+      logName <- log_metadata$value[!is.na(log_metadata$label) & (log_metadata$label=="Log Name"|log_metadata$label=="File Name")][1]
+      Troll_SN <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Serial Number"][1]
+      Asset <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Device Name"][1]
       #log$debug(base::paste0('metadata: ',logName,'_',Troll_SN,'_',Asset))
       if(length(Asset)<1){
         log$info(base::paste0('File Info: No asset specified in ',DirIn, '/', fileData_i))
@@ -206,20 +208,20 @@ wrap.troll.logfiles <- function(DirIn,
       }else if(nchar(Site)>4){
         Site <-substr(Site,5,8)
       }
-      Device <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Device"]
-      if(grepl('level',tolower(Device))){
+      Device <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Device"][1]
+      if(!is.na(Device) & grepl('level',tolower(Device))){
         Device<-"Level TROLL 500"
         Context <- "surfacewater"
         sensor <- "leveltroll500"
         keep<-c('readout_time','seconds','pressure','temperature')
         log_data<-log_data[keep]
-      }else if(grepl('aqua',tolower(Device))){
+      }else if(!is.na(Device) & grepl('aqua',tolower(Device))){
         Device<-"Aqua TROLL 200"
         sensor <- "aquatroll200"
-        if(grepl("IN",logName)|grepl("Inlet",logName)|grepl("OT",logName)|grepl("Outlet",logName)|grepl("L1",logName)|
-           grepl("L2",logName)|grepl("Lit",logName)|grepl("S1",logName)|grepl("S2",logName)){
+        if(!is.na(logName) & (grepl("IN",logName)|grepl("Inlet",logName)|grepl("OT",logName)|grepl("Outlet",logName)|grepl("L1",logName)|
+           grepl("L2",logName)|grepl("Lit",logName)|grepl("S1",logName)|grepl("S2",logName))){
           Context <- "surfacewater"
-        }else if(grepl("GW",logName)|any(grepl("conductivity",tolower(colnames(log_data))))){
+        }else if(!is.na(logName) & (grepl("GW",logName)|any(grepl("conductivity",tolower(colnames(log_data)))))){
           Context <- "groundwater"
         }else{
           log$error(base::paste0('File Error: Context not specified in ',DirIn, '/', fileData_i))
@@ -282,73 +284,75 @@ wrap.troll.logfiles <- function(DirIn,
           #cannot use log data with bad dates
           #log$debug(base::paste0("Log data contains erroneous dates that cannot be linked to the correct time."))
           log_data<-log_data[log_data$dateUTC>"2018-01-01 00:00:00 UTC",]
-          log$error(base::paste0('File Error: ALL DATA 1970 in ',DirIn, '/', fileData_i))
+          log$debug(base::paste0('File Error: ALL DATA 1970 in ',DirIn, '/', fileData_i))
         }
       }
-      log_data$readout_time<-log_data$dateUTC
-      
-      #round to minute
-      if(Context=='surfacewater'){
-        log_data$readout_time<-lubridate::round_date(log_data$dateUTC,unit = "minute")
-      }else if(Context=='groundwater'){
-        log_data$readout_time<-lubridate::round_date(log_data$dateUTC,unit = "5 minutes")
+      if(nrow(log_data)>0){
+        log_data$readout_time<-log_data$dateUTC
+        
+        #round to minute
+        if(Context=='surfacewater'){
+          log_data$readout_time<-lubridate::round_date(log_data$dateUTC,unit = "minute")
+        }else if(Context=='groundwater'){
+          log_data$readout_time<-lubridate::round_date(log_data$dateUTC,unit = "5 minutes")
+        }
+        
+        log_data$day<-lubridate::floor_date(log_data$dateUTC,"days")
+        
+        log_data$source_id<-Asset
+        
+        #format output file
+        if(sensor=='aquatroll200'){
+          out_columns <- c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag','day')
+        }else if(sensor=='leveltroll500'){
+          out_columns <- c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag','day')
+        }
+        out<-log_data[out_columns]
+        
+        first_reading<-log_data$dateUTC[1]
+        if(length(log_data$dateUTC)>0){
+          last_reading<-log_data$dateUTC[length(log_data$dateUTC)]
+        }else{
+          last_reading<-NA
+        }
+        
+        ###subset into 1-day data files
+        all_days<-split(out, as.Date(out$day))
+        #output daily files
+        if(length(all_days)>0){
+          for(j in 1:length(all_days)){
+            #create DF
+            out_file <- as.data.frame(all_days[j])
+            colnames(out_file) <- out_columns
+            year <- substr(out_file$day[1],1,4)
+            month <- substr(out_file$day[1],6,7)
+            day <- substr(out_file$day[1],9,10)
+            if(sensor=='aquatroll200'){
+              out_file <- out_file[,c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag')]
+            }else if(sensor=='leveltroll500'){
+              out_file <- out_file[,c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag')]
+            }
+            #create output directory
+            DirOutLogFile <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',Asset,'/data/')
+            base::dir.create(DirOutLogFile,recursive=TRUE)
+            csv_name <-paste0(sensor,'_',Asset,'_',year,'-',month,'-',day,'_log')
+            
+            rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file,
+                                                         NameFile = base::paste0(DirOutLogFile,csv_name,".parquet"),
+                                                         Schm = SchmDataOut),silent=TRUE)
+            if(class(rptOut)[1] == 'try-error'){
+              log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutLogFile,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+              stop()
+            } else {
+              log$info(base::paste0('Data written successfully in ', base::paste0(DirOutLogFile,csv_name,".parquet")))
+            }
+          }#end of days loop
+        }else{
+          log$error(base::paste0('No days can be written out for ',DirIn, '/', fileData_i))
+        }
       }
-      
-      log_data$day<-lubridate::floor_date(log_data$dateUTC,"days")
-      
-      log_data$source_id<-Asset
-      
-      #format output file
-      if(sensor=='aquatroll200'){
-        out_columns <- c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag','day')
-      }else if(sensor=='leveltroll500'){
-        out_columns <- c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag','day')
-      }
-      out<-log_data[out_columns]
-      
-      first_reading<-log_data$dateUTC[1]
-      if(length(log_data$dateUTC)>0){
-        last_reading<-log_data$dateUTC[length(log_data$dateUTC)]
-      }else{
-        last_reading<-NA
-      }
-      
-      ###subset into 1-day data files
-      all_days<-split(out, as.Date(out$day))
-      #output daily files
-      if(length(all_days)>0){
-        for(j in 1:length(all_days)){
-          #create DF
-          out_file <- as.data.frame(all_days[j])
-          colnames(out_file) <- out_columns
-          year <- substr(out_file$day[1],1,4)
-          month <- substr(out_file$day[1],6,7)
-          day <- substr(out_file$day[1],9,10)
-          if(sensor=='aquatroll200'){
-            out_file <- out_file[,c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag')]
-          }else if(sensor=='leveltroll500'){
-            out_file <- out_file[,c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag')]
-          }
-          #create output directory
-          DirOutLogFile <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',Asset,'/data/')
-          base::dir.create(DirOutLogFile,recursive=TRUE)
-          csv_name <-paste0(sensor,'_',Asset,'_',year,'-',month,'-',day,'_log')
-          
-          rptOut <- try(NEONprocIS.base::def.wrte.parq(data = out_file,
-                                                       NameFile = base::paste0(DirOutLogFile,csv_name,".parquet"),
-                                                       Schm = SchmDataOut),silent=TRUE)
-          if(class(rptOut)[1] == 'try-error'){
-            log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutLogFile,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
-            stop()
-          } else {
-            log$info(base::paste0('Data written successfully in ', base::paste0(DirOutLogFile,csv_name,".parquet")))
-          }
-        }#end of days loop
-      }else{
-        log$error(base::paste0('No days can be written out for ',DirIn, '/', fileData_i))
-      }
-    } #end of troll
-  } #end of file loop
+    }
+  } #end of file
 }
 
 
