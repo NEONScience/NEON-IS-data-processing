@@ -59,10 +59,10 @@
 #     Original Creation
 ##############################################################################################
 # Define test context
-context("\n                       Unit test of wrap.troll.logfiles.R\n")
+context("\n                       Unit test of wrap.troll.logfiles.fill.R\n")
 
 # Unit test of wrap.troll.logfiles.R
-test_that("Unit test of wrap.troll.logfiles.R", {
+test_that("Unit test of wrap.troll.logfiles.fill.R", {
   
   source('../../flow.troll.logfiles.fill/wrap.troll.logfiles.fill.R')
   library(stringr)
@@ -79,7 +79,7 @@ test_that("Unit test of wrap.troll.logfiles.R", {
   
   DirInLogs<-file.path(workingDirPath, 'pfs/logjam_clean_troll_files/leveltroll500/2022/04/04/21115') 
   DirInStream<-file.path(workingDirPath, 'pfs/leveltroll500_data_source_trino/leveltroll500/2022/04/04/21115')
-  DirIn<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/leveltroll500/2022/04/08/21115'
+  DirIn<-'pfs/logjam_clean_troll_files/leveltroll500/2022/04/08/21115'
  
   tt <- wrap.troll.logfiles.fill (DirInLogs=DirInLogs,
                                        DirInStream=DirInStream,
