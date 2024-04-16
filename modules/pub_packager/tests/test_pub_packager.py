@@ -69,7 +69,7 @@ class PubPackagerTest(TestCase):
     def test_main(self):
         os.environ['DATA_PATH'] = str(self.data_path)
         os.environ['OUT_PATH'] = str(self.out_path)
-        os.environ['ERR_PATH'] = str(self.err_path)
+        os.environ['ERR_PATH_PACKAGER'] = str(self.err_path)
         os.environ['PRODUCT_INDEX'] = str(self.product_index)
         os.environ['PUBLOC_INDEX'] = str(self.publoc_index)
         os.environ['DATE_INDEX'] = str(self.date_index)

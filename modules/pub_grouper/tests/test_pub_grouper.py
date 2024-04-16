@@ -54,7 +54,7 @@ class PubGrouperTest(TestCase):
     def test_main(self):
         os.environ["DATA_PATH"] = str(self.input_path)
         os.environ["OUT_PATH"] = str(self.output_path)
-        os.environ["ERR_PATH"] = str(self.err_path)
+        os.environ["ERR_PATH_GROUPER"] = str(self.err_path)
         os.environ["LOG_LEVEL"] = "DEBUG"
         os.environ["YEAR_INDEX"] = str(self.year_index)
         os.environ["GROUP_INDEX"] = str(self.group_index)
