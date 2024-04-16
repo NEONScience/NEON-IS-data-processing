@@ -86,8 +86,6 @@ transform:
     
     # Environment variables for 3rd module: pub_files.
     OUT_PATH_PUBFILES: "/pfs/out"
-    # ERR_PATH can be changed, it is user specified
-    ERR_PATH: "/pfs/out/errored_datum"
     RELATIVE_PATH_INDEX: '3'
     DB_SECRETS_PATH: /var/db_secret
     GITHUB_PEM_PATH: /var/github_secret/key
