@@ -80,6 +80,8 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
                              DirOutBase,
                              SchmDataOut=NULL,
                              SchmFlagsOut=NULL,
+                             timeBgnDiff_1= timeBgnDiff_1,
+                             timeBgnDiff_5= timeBgnDiff_5,
                              log=NULL
 ){
   

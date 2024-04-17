@@ -10,4 +10,4 @@ cd ../..
 
 Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "quay.io/battelleecology/$image_name" "$tag"
 
-#may also need to update neon-is-troll-logs-group-fill
+#also need to update modules_combined/troll_logs_group_and_fill: neon-is-troll-logs-group-fill
