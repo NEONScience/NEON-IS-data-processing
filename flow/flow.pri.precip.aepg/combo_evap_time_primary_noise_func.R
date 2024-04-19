@@ -167,9 +167,8 @@ noise_removal = function(
       raw_df_summ$nMedian[currRow] <- nMedian #just for plotting
       raw_df_summ$nMean[currRow] <- nMean #just for plotting
       
-    } else if  (bench == raw & any(raw_df_summ$raw[i:currRow-1] == raw_df_summ$bench[i:currRow-1])) {
-      print(raw_df_summ$summ[currRow])
-      print(paste0('evap accounted in previous 24h, bench adjusted by rain only: ',  bench - prev_bench))
+    } else if (precip)
+      print(paste0('no evap accounting, bench adjusted by rain only: ',  bench - prev_bench))
       adj_bench <-  adj_bench + (bench - prev_bench) #just rain adjustment bc a previous rain got the evap
     } else {
       adj_bench <- adj_bench #else maintain
