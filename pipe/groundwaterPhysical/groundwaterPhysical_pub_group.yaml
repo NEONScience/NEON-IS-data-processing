@@ -14,7 +14,7 @@ transform:
     LOG_LEVEL: INFO
     OUT_PATH: "/pfs/out"
     # ERR_PATH can be changed, it is user specified
-    ERR_PATH: "pfs/out/errored_datums"
+    ERR_PATH_GROUPER: "pfs/out/errored_datums"
     YEAR_INDEX: '3' # Also shared with pub_transform
     GROUP_INDEX: '6'
     DATA_TYPE_INDEX: '7' # Also shared with pub_transform
