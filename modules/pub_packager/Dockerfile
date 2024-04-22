@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the pub_packager module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t pub_packager:latest -f pub_packager/Dockerfile .
+# docker build --no-cache -t pub_packager:latest -f pub_packager/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

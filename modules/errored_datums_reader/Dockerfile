@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the errored datums reader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t errored_datums_reader:latest -f errored_datums_reader/Dockerfile .
+# docker build --no-cache -t errored_datums_reader:latest -f errored_datums_reader/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
