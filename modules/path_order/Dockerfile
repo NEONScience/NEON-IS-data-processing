@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the path order module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t path_order:latest -f path_order/Dockerfile .
+# docker build --no-cache -t path_order:latest -f path_order/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
