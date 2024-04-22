@@ -14,6 +14,7 @@ def main() -> None:
     env = environs.Env()
     data_path: Path = env.path('DATA_PATH')
     out_path: Path = env.path('OUT_PATH')
+    err_path: Path = env.path('ERR_PATH_GROUPER')
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     year_index: int = env.int('YEAR_INDEX')
     group_index: int = env.int('GROUP_INDEX')
@@ -31,7 +32,7 @@ def main() -> None:
 
     log_config.configure(log_level)
 
-    pub_group(data_path=data_path, out_path=out_path, year_index=year_index, group_index=group_index, 
+    pub_group(data_path=data_path, out_path=out_path, err_path=err_path, year_index=year_index, group_index=group_index,
               data_type_index=data_type_index, group_metadata_dir=group_metadata_dir, publoc_key=publoc_key,
               symlink=symlink)
 

@@ -2,7 +2,7 @@
 # This dockerfile will build the pub_files module.
 # Example command (must be run from project root directory to include the 'common' and
 # 'data_access' directories in the Docker context):
-# docker build -t pub_files:latest -f pub_files/Dockerfile .
+# docker build --no-cache -t pub_files:latest -f pub_files/Dockerfile .
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 

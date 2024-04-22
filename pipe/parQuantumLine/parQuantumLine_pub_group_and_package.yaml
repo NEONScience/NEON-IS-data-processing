@@ -3,7 +3,7 @@ pipeline:
   name: parQuantumLine_pub_group_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:665dde06
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:33b3a829
   cmd:
   - sh
   - "-c"
@@ -54,6 +54,8 @@ transform:
     # Environment variables for 1st module: pub_grouper.
     LOG_LEVEL: INFO
     OUT_PATH_GROUPER: "/tmp/pub_grouper"
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH_GROUPER: "/pfs/out/grouper/errored_datums"
     YEAR_INDEX: '3' # Also shared with pub_transform
     GROUP_INDEX: '6'
     DATA_TYPE_INDEX: '7' # Also shared with pub_transform
@@ -75,6 +77,8 @@ transform:
 
     # Environment variables for 3rd module: pub_packager.
     OUT_PATH_PACKAGER: "/tmp/pub_packager"
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH_PACKAGER: "/pfs/out/packager/errored_datums"
     PUBLOC_INDEX: '7' # input path index of the pub package location (typically the site)
     DATE_INDEX: '4' # Starting index of date in path (i.e. year index)
     DATE_INDEX_LENGTH: '2' # length of date index for pub package (should be 2 for monthly)

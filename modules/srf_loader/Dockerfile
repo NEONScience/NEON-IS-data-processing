@@ -1,7 +1,7 @@
 ####
 # This dockerfile will build the srf loader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t srf_loader:latest -f srf_loader/Dockerfile .
+# docker build --no-cache -t srf_loader:latest -f srf_loader/Dockerfile .
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 

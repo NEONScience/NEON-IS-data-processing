@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the level1 consolidation module. It also includes the pub_workbook_loader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t level1_consolidate:latest -f level1_consolidate/Dockerfile .
+# docker build --no-cache -t level1_consolidate:latest -f level1_consolidate/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
