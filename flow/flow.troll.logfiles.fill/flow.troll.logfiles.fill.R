@@ -140,6 +140,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         DirOutBase=Para$DirOut,
         SchmDataOut=SchmDataOut,
         SchmFlagsOut=SchmFlagsOut,
+        timeBgnDiff_1= timeBgnDiff_1,
+        timeBgnDiff_5= timeBgnDiff_5,
         log=log
       ),
       error = function(err) {
