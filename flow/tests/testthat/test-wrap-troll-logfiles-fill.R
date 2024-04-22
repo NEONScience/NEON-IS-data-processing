@@ -114,9 +114,29 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
+  #
+  # Test 2. Leveltroll500, empty DirInStream
+  #
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  
+  DirInStreamEmpty<-file.path(workingDirPath, 'pfs/leveltroll500_data_source_trino/leveltroll500/2022/04/04/21115_empty')
+  tt <- wrap.troll.logfiles.fill (DirInLogs=DirInLogs,
+                                  DirInStream=DirInStreamEmpty,
+                                  DirIn=DirIn,
+                                  DirOutBase=testDirOut,
+                                  SchmDataOut=NULL,
+                                  SchmFlagsOut=NULL,
+                                  timeBgnDiff_1= timeBgnDiff_1,
+                                  timeBgnDiff_5= timeBgnDiff_5,
+                                  log=log)
+  
+  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
+  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
   
   #
-  # Test 2. Leveltroll500, more params are passed in
+  # Test 3. Leveltroll500, more params are passed in
   #
   
   SchmDataOut<-base::paste0(base::readLines('pfs/leveltroll500_avro_schemas/leveltroll500/leveltroll500_log_data.avsc'),collapse='')
@@ -139,7 +159,7 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
   #
-  # Test 3. aquatroll200, only the input of directories, resistance and voltage, and output directry are passed in
+  # Test 4. aquatroll200, only the input of directories, resistance and voltage, and output directry are passed in
   # SchmDataOut=NULL and SchmFlagsOut=NULL
   #
   DirInLogs<-file.path(workingDirPath, 'pfs/logjam_clean_troll_files/aquatroll200/2022/03/09/23646') 
@@ -168,7 +188,28 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
   
   #
-  # Test 4. aquatroll200,  DirIn = NULL, SchmDataOut=NULL and SchmFlagsOut=NULL
+  # Test 5. aquatroll200, empty DirInStream
+  #
+  if (dir.exists(testDirOut)) {
+    unlink(testDirOut, recursive = TRUE)
+  }
+  
+  DirInStreamEmpty<-file.path(workingDirPath, 'pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646_empty')
+  tt <- wrap.troll.logfiles.fill (DirInLogs=DirInLogs,
+                                  DirInStream=DirInStreamEmpty,
+                                  DirIn=DirIn,
+                                  DirOutBase=testDirOut,
+                                  SchmDataOut=NULL,
+                                  SchmFlagsOut=NULL,
+                                  timeBgnDiff_1= timeBgnDiff_1,
+                                  timeBgnDiff_5= timeBgnDiff_5,
+                                  log=log)
+  
+  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
+  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
+  
+  #
+  # Test 6. aquatroll200,  DirIn = NULL, SchmDataOut=NULL and SchmFlagsOut=NULL
   
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
@@ -188,7 +229,7 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
   
   #
-  # Test 5. aquatroll200,  DirIn = NOT NULL, SchmDataOut=aquatroll200_log_data_noConductivity.avsc and
+  # Test 7. aquatroll200,  DirIn = NOT NULL, SchmDataOut=aquatroll200_log_data_noConductivity.avsc and
   # SchmFlagsOut= NOT NULL
   
   SchmDataOut<-base::paste0(base::readLines('pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_data_noConductivity.avsc'),collapse='')
@@ -212,7 +253,7 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
   
   #
-  # Test 6. aquatroll200,  DirIn = NOT NULL, SchmDataOut=NULL and SchmFlagsOut= NOT NULL
+  # Test 8. aquatroll200,  DirIn = NOT NULL, SchmDataOut=NULL and SchmFlagsOut= NOT NULL
   
   SchmDataOut<-base::paste0(base::readLines('pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_data.avsc'),collapse='')
   SchmFlagsOut<-base::paste0(base::readLines('pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_flags.avsc'),collapse='')
