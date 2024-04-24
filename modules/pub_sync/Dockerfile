@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the publication sync module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t neon-is-pub-sync:latest -f pub_sync/Dockerfile .
+# docker build --no-cache -t neon-is-pub-sync:latest -f pub_sync/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

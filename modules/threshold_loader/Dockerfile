@@ -1,7 +1,7 @@
 ####
 # This dockerfile will build the threshold loader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t threshold_loader:latest -f threshold_loader/Dockerfile .
+# docker build --no-cache -t threshold_loader:latest -f threshold_loader/Dockerfile .
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 

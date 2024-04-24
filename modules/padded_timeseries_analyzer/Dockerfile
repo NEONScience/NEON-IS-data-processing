@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the padded timeseries analyzer module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t padded_timeseries_analyzer:latest -f padded_timeseries_analyzer/Dockerfile .
+# docker build --no-cache -t padded_timeseries_analyzer:latest -f padded_timeseries_analyzer/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

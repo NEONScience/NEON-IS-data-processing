@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the timeseries padder module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t timeseries_padder:latest -f timeseries_padder/Dockerfile .
+# docker build --no-cache -t timeseries_padder:latest -f timeseries_padder/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
