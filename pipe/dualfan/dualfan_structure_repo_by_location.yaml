@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - Comb=TRUE
-  image: quay.io/battelleecology/neon-is-loc-repo-strc-r:e65941ee
+  image: quay.io/battelleecology/neon-is-loc-repo-strc-r:588e4d45
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
