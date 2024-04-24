@@ -11,7 +11,7 @@ def.validate.vector(vectIn, TestEmpty = TRUE, TestNumc = TRUE, log = NULL)
 
 \item{TestEmpty}{Boolean. TRUE to test whether the vector is empty (function will return FALSE if empty).}
 
-\item{TestNumc}{Boolean. TRUE to test whether the vector is numeric (function will return FALSE if not numeric).}
+\item{TestNumc}{Boolean. TRUE to test whether the vector is numeric or logical (function will return FALSE if not numeric or logical (which converts to 0 or 1)).}
 }
 \value{
 Boolean. True if the input vector is not empty. FALSE otherwise. \cr
