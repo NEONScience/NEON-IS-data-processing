@@ -7,7 +7,7 @@
 #
 ###
 # Start with the pub package R image. 
-FROM quay.io/battelleecology/neon-is-pack-pub-r:v1.0.2-e65941ee
+FROM quay.io/battelleecology/neon-is-pack-pub-r:v1.0.2-505c66b5
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
