@@ -44,33 +44,33 @@
 #' 
 #' @examples
 #' # Not run
-DirInLogs<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/aquatroll200/2022/03/09/23646' #cleaned log data
-DirInStream<-'/home/NEON/ncatolico/pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646' #streamed L0 data
-DirIn<-NULL
-SchmDataOut<-base::paste0(base::readLines('~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_data.avsc'),collapse='')
-SchmFlagsOut<-base::paste0(base::readLines('~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_flags.avsc'),collapse='')
-WndwAgr_1 <- base::as.difftime(1,units="mins")
-WndwAgr_5 <- base::as.difftime(5,units="mins")
-timeBgnDiff <- list()
-timeEndDiff <- list()
-timeBinDiff_1 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_1,WndwTime=base::as.difftime(1,units='days'))
-timeBgnDiff_1 <- timeBinDiff_1$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
-timeEndDiff_1 <- timeBinDiff_1$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
-timeBgnDiff_5 <- list()
-timeEndDiff_5 <- list()
-timeBinDiff_5 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_5,WndwTime=base::as.difftime(1,units='days'))
-timeBgnDiff_5 <- timeBinDiff_5$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
-timeEndDiff_5 <- timeBinDiff_5$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-wrap.troll.logfiles.fill <- function(DirInLogs=DirInLogs,
-                              DirInStream=DirInStream,
-                              DirIn=DirIn,
-                              DirOutBase="~/pfs/out",
-                              SchmDataOut=SchmDataOut,
-                              SchmFlagsOut=SchmFlagsOut,
-                              timeBgnDiff_1= timeBgnDiff_1,
-                              timeBgnDiff_5= timeBgnDiff_5,
-                              log=log)
+# DirInLogs<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/aquatroll200/2022/03/09/23646' #cleaned log data
+# DirInStream<-'/home/NEON/ncatolico/pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646' #streamed L0 data
+# DirIn<-NULL
+# SchmDataOut<-base::paste0(base::readLines('~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_data.avsc'),collapse='')
+# SchmFlagsOut<-base::paste0(base::readLines('~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_flags.avsc'),collapse='')
+# WndwAgr_1 <- base::as.difftime(1,units="mins")
+# WndwAgr_5 <- base::as.difftime(5,units="mins")
+# timeBgnDiff <- list()
+# timeEndDiff <- list()
+# timeBinDiff_1 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_1,WndwTime=base::as.difftime(1,units='days'))
+# timeBgnDiff_1 <- timeBinDiff_1$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+# timeEndDiff_1 <- timeBinDiff_1$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+# timeBgnDiff_5 <- list()
+# timeEndDiff_5 <- list()
+# timeBinDiff_5 <- NEONprocIS.base::def.time.bin.diff(WndwBin=WndwAgr_5,WndwTime=base::as.difftime(1,units='days'))
+# timeBgnDiff_5 <- timeBinDiff_5$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
+# timeEndDiff_5 <- timeBinDiff_5$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# wrap.troll.logfiles.fill <- function(DirInLogs=DirInLogs,
+#                               DirInStream=DirInStream,
+#                               DirIn=DirIn,
+#                               DirOutBase="~/pfs/out",
+#                               SchmDataOut=SchmDataOut,
+#                               SchmFlagsOut=SchmFlagsOut,
+#                               timeBgnDiff_1= timeBgnDiff_1,
+#                               timeBgnDiff_5= timeBgnDiff_5,
+#                               log=log)
 #'                               
 #' @changelog
 #   Nora Catolico (2024-01-30) original creation
