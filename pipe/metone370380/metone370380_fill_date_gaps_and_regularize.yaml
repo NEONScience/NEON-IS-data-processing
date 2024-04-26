@@ -1,0 +1,120 @@
+---
+pipeline:
+  name: metone370380_fill_date_gaps_and_regularize
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-gf-rglr:e65941ee
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH
+    mkdir -p $OUT_PATH
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m date_gap_filler.date_gap_filler_main
+    # Run second module - regularize
+    Rscript ./flow.rglr.R \
+      DirIn=/tmp/pfs/date_filled \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirRglr=data|uncertainty_data|flags" \
+      FreqRglr=1 \
+      MethRglr=CybiEc \
+      WndwRglr=Trlg \
+      IdxWndw=IdxWndwMin \
+      RptTimeWndw=FALSE \
+      DropNotNumc=FALSE \
+      "DirSubCopy=location|uncertainty_coef"
+    EOF
+  env:
+    # Environment variables for date gap filler
+    LOG_LEVEL: INFO
+    OUT_PATH: /tmp/pfs/date_filled
+    OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
+    DATA_SOURCE_TYPE_INDEX: '3'
+    DATA_YEAR_INDEX: '4'
+    DATA_MONTH_INDEX: '5'
+    DATA_DAY_INDEX: '6'
+    DATA_LOCATION_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
+    LOCATION_SOURCE_TYPE_INDEX: '3'
+    LOCATION_YEAR_INDEX: '4'
+    LOCATION_MONTH_INDEX: '5'
+    LOCATION_DAY_INDEX: '6'
+    LOCATION_INDEX: '7'
+    EMPTY_FILE_TYPE_INDEX: '4'
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
+    # Environment variables for regularizer
+    PARALLELIZATION_INTERNAL: '3' # Parallelization within R. If increased, adjust resource requests appropriately.
+input:
+  cross:
+  - pfs:
+      name: EMPTY_FILE_PATH
+      repo: metone370380_empty_files
+      glob: /metone370380
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - group:
+    - pfs:
+        name: DATA_PATH
+        repo: metone370380_location_group_and_restructure
+        # For full-scale daily processing, glob should be /metone370380/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /metone370380/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
+        glob: /metone370380/(*/*/*)
+        #glob: /metone370380/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
+        group_by: $1
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - join:
+      - pfs:
+          name: LOCATION_PATH
+          repo: metone370380_location_active_dates_assignment
+          # For full-scale daily processing, glob should be /metone370380/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /metone370380/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
+          glob: /metone370380/(*/*/*)
+          #glob: /metone370380/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
+          # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
+          joinOn: $1
+          #joinOn: $2
+          group_by: $1
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      - pfs:
+          name: DATE_LIMITER_PATH
+          repo: metone370380_cron_daily_and_date_control
+          glob: /metone370380/(*/*/*)
+          joinOn: $1
+          group_by: $1
+          empty_files: true # This can remain true even if LINK_TYPE=COPY
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
