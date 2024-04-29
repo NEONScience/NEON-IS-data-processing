@@ -115,7 +115,7 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
   #
-  # Test 2. Leveltroll500, empty DirInStream
+  # Test 2. Leveltroll500, DirInStream does not have files in the sub directories, i.e., empty directory
   # is.null(L0Data) & !is.null(LogData))
   #
   if (dir.exists(testDirOut)) {
@@ -123,6 +123,11 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   }
   
   DirInStreamEmpty<-file.path(workingDirPath, 'pfs/leveltroll500_data_source_trino/leveltroll500/2022/04/04/21115_empty')
+  subDirPartsEmpty = strsplit(DirInStreamEmpty,split = "/")[[1]][12:16]
+  subDirEmpty = paste0(subDirPartsEmpty, collapse = '', sep='/')
+  subDirPathEmpty = file.path(subDirEmpty)
+  testOutputDirPathEmpty <- base::paste0(testDirOut,"/", subDirPathEmpty)
+  
   tt <- wrap.troll.logfiles.fill (DirInLogs=DirInLogs,
                                   DirInStream=DirInStreamEmpty,
                                   DirIn=DirIn,
@@ -133,8 +138,8 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
                                   timeBgnDiff_5= timeBgnDiff_5,
                                   log=log)
   
-  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
-  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
+  testthat::expect_true(file.exists(file.path(testOutputDirPathEmpty, "data")))
+  testthat::expect_true(file.exists(file.path(testOutputDirPathEmpty, "flags")))
   
   #
   # Test 3. Leveltroll500, empty DirInLogs = NULL
@@ -145,10 +150,6 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   }
 
   DirInLogs_empty<-file.path(workingDirPath, 'pfs/logjam_clean_troll_files/leveltroll500/2022/04/04/21115_empty') 
-  subDirParts_empty = strsplit(DirInLogs_empty,split = "/")[[1]][12:16]
-  subDir_empty = paste0(subDirParts_empty, collapse = '', sep='/')
-  subDirPath_empty = file.path(subDir_empty)
-  testOutputDirPath_empty <- base::paste0(testDirOut,"/", subDirPath_empty)
   tt <- wrap.troll.logfiles.fill (DirInLogs=DirInLogs_empty,
                                   DirInStream=DirInStream,
                                   DirIn=DirIn,
@@ -159,8 +160,8 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
                                   timeBgnDiff_5= timeBgnDiff_5,
                                   log=log)
   
-  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
-  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
+  testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
+  testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
   #
   # Test 4. Leveltroll500, more params are passed in
   #
@@ -214,7 +215,7 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
   
   #
-  # Test 6. aquatroll200, empty DirInStream
+  # Test 6. aquatroll200, DirInStream does not have files in the sub directories
   # is.null(L0Data) & !is.null(LogData))
   #
   if (dir.exists(testDirOut)) {
@@ -222,6 +223,10 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   }
   
   DirInStreamEmpty<-file.path(workingDirPath, 'pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646_empty')
+  subDirPartsEmpty = strsplit(DirInStreamEmpty,split = "/")[[1]][12:16]
+  subDirEmpty = paste0(subDirPartsEmpty, collapse = '', sep='/')
+  subDirPathEmpty = file.path(subDirEmpty)
+  testOutputDirPathEmpty <- base::paste0(testDirOut,"/", subDirPathEmpty)
   tt <- wrap.troll.logfiles.fill (DirInLogs=DirInLogs,
                                   DirInStream=DirInStreamEmpty,
                                   DirIn=DirIn,
@@ -232,8 +237,8 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
                                   timeBgnDiff_5= timeBgnDiff_5,
                                   log=log)
   
-  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
-  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
+  testthat::expect_true(file.exists(file.path(testOutputDirPathEmpty, "data")))
+  testthat::expect_true(file.exists(file.path(testOutputDirPathEmpty, "flags")))
   
   #
   # Test 7. aquatroll200, empty DirInLogs = NULL
@@ -244,10 +249,6 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   }
   
   DirInLogs_empty<-file.path(workingDirPath, 'pfs/logjam_clean_troll_files/aquatroll200/2022/03/09/23646_empty') 
-  subDirParts_empty = strsplit(DirInLogs_empty,split = "/")[[1]][12:16]
-  subDir_empty = paste0(subDirParts_empty, collapse = '', sep='/')
-  subDirPath_empty = file.path(subDir_empty)
-  testOutputDirPath_empty <- base::paste0(testDirOut,"/", subDirPath_empty)
   tt <- wrap.troll.logfiles.fill (DirInLogs=DirInLogs_empty,
                                   DirInStream=DirInStream,
                                   DirIn=DirIn,
@@ -258,8 +259,8 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
                                   timeBgnDiff_5= timeBgnDiff_5,
                                   log=log)
   
-  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
-  #testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
+  testthat::expect_true(file.exists(file.path(testOutputDirPath, "data")))
+  testthat::expect_true(file.exists(file.path(testOutputDirPath, "flags")))
   #
   #
   # Test 8. aquatroll200,  DirIn = NULL, SchmDataOut=NULL and SchmFlagsOut=NULL
