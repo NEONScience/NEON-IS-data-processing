@@ -1,0 +1,61 @@
+{
+    "type": "record",
+    "name": "aquatroll200_log_flags",
+    "namespace": "org.neonscience.schema.dp0p",
+    "doc": "Log data flags for the Aqua Troll 200 sensor",
+    "__version": "1.0",
+    "__neon_parts": [
+        "0317730000"
+    ],
+    "fields": [
+        {
+            "name": "readout_time",
+            "type": {
+                "type": "long",
+                "logicalType": "timestamp-millis"
+            },
+            "doc": "Timestamp of readout expressed in milliseconds since epoch",
+            "__neon_units": "millisecond"
+        },
+        {
+          "name": "pressureLogDataQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the pressure log data (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+        {
+          "name": "logDataDateQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the log data readout time (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+        {
+          "name": "temperatureLogDataQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the pressure log data (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        },
+        {
+          "name": "conductivityLogDataQF",
+          "type": [
+            "null",
+            "int8"
+            ],
+          "default": null,
+          "doc": "Quality flag for the conductivity log data (1=fail, 0=pass, -1=NA (i.e., could not be run))",
+          "__neon_units": "NA"
+        }
+    ]
+}
