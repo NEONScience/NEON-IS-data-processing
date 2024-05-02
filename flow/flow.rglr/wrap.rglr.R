@@ -160,7 +160,8 @@ wrap.rglr <- function(DirIn,
     # assignment module) is done before running this code to limit the overall range of regularization.
     timeActvAll <- base::lapply(locMeta,
                                 FUN=function(locMetaIdx){
-                                    if(base::length(locMetaIdx$active_periods) > 0){
+                                    if(base::length(locMetaIdx$active_periods) > 0 && 
+                                       base::is.list(locMetaIdx$active_periods)){
                                       return(locMetaIdx$active_periods)
                                     } else {
                                       return(NA)
