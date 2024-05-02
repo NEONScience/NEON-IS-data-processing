@@ -1,0 +1,55 @@
+---
+pipeline:
+  name: troll_logjam_assign_clean_files
+transform:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - Rscript
+      ./flow.troll.logfiles.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+  image: quay.io/battelleecology/neon-is-troll-logfiles-r:588e4d45
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+    ERR_PATH: /pfs/out/errored_datums
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: troll_logjam_load_files
+      glob: /*
+parallelism_spec:
+  constant: 3
+autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: 1.5
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

@@ -1,0 +1,80 @@
+---
+pipeline:
+  name: troll_cond_conv
+transform:
+  image: quay.io/battelleecology/neon-is-troll-cond-conv-r:588e4d45
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    #
+    # Get source type /SOURCE_TYPE/YYYY/MM/DD 
+    source_type=$(echo $DIR_IN | cut -f $SOURCE_TYPE_INDEX -d "/")
+    echo $source_type
+    #
+    # Run conductivity conversion module for aquatroll only. 
+    if [ $source_type = "aquatroll200" ]; then 
+      Rscript ./flow.troll.cond.conv.R \
+        DirIn=$DIR_IN \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmData=$FILE_SCHEMA_DATA_COND_CONV \
+        FileSchmQf=$SCHEMA_FLAGS_SPEC_TEMP
+    else
+      # Pass leveltroll data to the output
+      cp -R /pfs/DIR_IN/leveltroll500 /pfs/out/leveltroll500
+    fi
+  env:
+    LOG_LEVEL: INFO
+    SOURCE_TYPE_INDEX: "4"
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: troll_calibration_group_and_convert
+      glob: /*/*/*/*/
+  - pfs:
+      name: FILE_SCHEMA_DATA_COND_CONV
+      repo: troll_avro_schemas
+      glob: /aquatroll200/aquatroll200_cond_corrected.avsc
+  - pfs:
+      name: SCHEMA_FLAGS_SPEC_TEMP
+      repo: troll_avro_schemas
+      glob: /troll_shared/flags_troll_specific_temp.avsc
+parallelism_spec:
+  constant: 4
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 1.2
+resource_limits:
+  memory: 1G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
