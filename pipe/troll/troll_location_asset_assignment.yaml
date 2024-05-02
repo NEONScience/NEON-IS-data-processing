@@ -13,7 +13,7 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=asset
-      "Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations"
+      "Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|context"
   image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:588e4d45
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
