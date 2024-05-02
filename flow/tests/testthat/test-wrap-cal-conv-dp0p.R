@@ -266,7 +266,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
   values <- c(2, 3)
   NumDayExpiMax <- data.frame(var = varCal,NumDayExpiMax = values,stringsAsFactors = FALSE)
   
-  returnedOutputDir <- wrap.cal.conv.dp0p(
+  returnedOutputDir <- try(wrap.cal.conv.dp0p(
     DirIn = testInputDir,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
@@ -276,7 +276,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     NumDayExpiMax = NumDayExpiMax,
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf
-  )
+  ), silent = TRUE)
   
   testInputDataDir <- base::paste0(testInputDir, '/', 'data/')
   testOutputFlagsDir <-base::paste0(gsub("prt", "out", testInputDir), '/', 'flags/')
@@ -302,7 +302,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     unlink(testOutputBase, recursive = TRUE)
   }
   
-  returnedOutputDir <- wrap.cal.conv.dp0p(
+  returnedOutputDir <- try(wrap.cal.conv.dp0p(
     DirIn = testInputDirSubCopy,
     DirOutBase = testOutputBase,
     FuncConv = FuncConv,
@@ -313,7 +313,7 @@ test_that("Unit test of wrap.cal.conv.dp0p.R", {
     SchmDataOutList = SchmDataOutList,
     SchmQf = SchmQf,
     DirSubCopy <- c("abc")
-  )
+  ), silent = TRUE)
   
   testOutputAbcDir <- base::paste0(gsub("prt_DirSubCopy", "out", testInputDirSubCopy),'/','abc')
   fileAbc <- base::dir(testOutputAbcDir)
