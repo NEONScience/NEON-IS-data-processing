@@ -5,7 +5,8 @@
 #'
 #'
 #' @param FileIn Character value. The input path to the data from a single source ID, structured as follows: 
-#' #/pfs/BASE_REPO/source-id.The source-id folder may have multiple csv log files. 
+#' #/pfs/BASE_REPO/source-id/<file-name>, where file-name can be "12345678345678.csv". 
+#' The source-id folder may have multiple csv log files. 
 #' The source-id is the unique identifier of the sensor. \cr#'
 #' 
 #' @param DirOut Character value. The output path that will replace the #/pfs/BASE_REPO portion of FileIn. 
@@ -29,7 +30,7 @@
 #' 
 #' @examples
 #' # Not run
-#' FileIn<-'/home/NEON/ncatolico/pfs/logjam_load_files/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv'
+#' FileIn<-'~/pfs/logjam_load_files/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv'
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' wrap.troll.logfiles <- function(FileIn="~/pfs/logjam_load_files/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv",
 #'                               DirOut="~/pfs/out",
