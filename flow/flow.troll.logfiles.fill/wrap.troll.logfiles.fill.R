@@ -44,8 +44,8 @@
 #' 
 #' @examples
 #' # Not run
-# DirInLogs<-'/home/NEON/ncatolico/pfs/logjam_clean_troll_files/aquatroll200/2022/03/09/23646' #cleaned log data
-# DirInStream<-'/home/NEON/ncatolico/pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646' #streamed L0 data
+# DirInLogs<-'/home/NEON/ncatolico/pfs/troll_logjam_assign_clean_files/aquatroll200/2022/06/30/9622' #cleaned log data
+# DirInStream<-'/home/NEON/ncatolico/pfs/troll_data_source_trino/aquatroll200/2022/06/30/9622' #streamed L0 data
 # DirIn<-NULL
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_data.avsc'),collapse='')
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_flags.avsc'),collapse='')
@@ -62,15 +62,16 @@
 # timeBgnDiff_5 <- timeBinDiff_5$timeBgnDiff # Add to timeBgn of each day to represent the starting time sequence
 # timeEndDiff_5 <- timeBinDiff_5$timeEndDiff # Add to timeBgn of each day to represent the end time sequence
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# wrap.troll.logfiles.fill <- function(DirInLogs=DirInLogs,
-#                               DirInStream=DirInStream,
-#                               DirIn=DirIn,
-#                               DirOutBase="~/pfs/out",
-#                               SchmDataOut=SchmDataOut,
-#                               SchmFlagsOut=SchmFlagsOut,
-#                               timeBgnDiff_1= timeBgnDiff_1,
-#                               timeBgnDiff_5= timeBgnDiff_5,
-#                               log=log)
+# wrap.troll.logfiles.fill(
+#   DirInLogs=DirInLogs,
+#   DirInStream=DirInStream,
+#   DirIn=DirIn,
+#   DirOutBase="~/pfs/out",
+#   SchmDataOut="~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_data.avsc",
+#   SchmFlagsOut=SchmFlagsOut,
+#   timeBgnDiff_1= timeBgnDiff_1,
+#   timeBgnDiff_5= timeBgnDiff_5,
+#   log=log)
 #'                               
 #' @changelog
 #   Nora Catolico (2024-01-30) original creation
@@ -122,7 +123,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
       base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(dirInDataStream, '/', L0File),
                                                log = log),
                 silent = FALSE)
-    if (base::any(base::class(data) == 'try-error')) {
+    if (base::any(base::class(L0Data) == 'try-error')) {
       # Generate error and stop execution
       log$error(base::paste0('File ', dirInDataStream, '/', L0File, ' is unreadable.'))
       base::stop()
@@ -142,7 +143,7 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
       base::try(NEONprocIS.base::def.read.parq(NameFile = base::paste0(dirInDataLogs, '/', LogFile),
                                                log = log),
                 silent = FALSE)
-    if (base::any(base::class(data) == 'try-error')) {
+    if (base::any(base::class(LogData) == 'try-error')) {
       # Generate error and stop execution
       log$error(base::paste0('File ', dirInDataLogs, '/', LogFile, ' is unreadable.'))
       base::stop()
@@ -213,10 +214,10 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
     timeAgr_5 <- timeBgn + timeBgnDiff_5
     if(sensor=='leveltroll500'|length(L0Data$readout_time)>288|length(LogData$readout_time)>288){
       interval <-"1min"
-      L0Data$readout_time<-lubridate::round_date(L0Data$readout_time,unit = "minute")
+      L0Data$readout_time<-lubridate::floor_date(L0Data$readout_time,unit = "minute")
     }else{
       interval <-"5min"
-      L0Data$readout_time<-lubridate::round_date(L0Data$readout_time,unit = "5 minutes")
+      L0Data$readout_time<-lubridate::floor_date(L0Data$readout_time,unit = "5 minutes")
     }
     
     #merge data
