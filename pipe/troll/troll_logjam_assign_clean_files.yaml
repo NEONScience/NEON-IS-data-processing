@@ -10,7 +10,7 @@ transform:
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=$ERR_PATH
-  image: quay.io/battelleecology/neon-is-troll-logfiles-r:293a4fae
+  image: quay.io/battelleecology/neon-is-troll-logfiles-r:c7f44f45
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

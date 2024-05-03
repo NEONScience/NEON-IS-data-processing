@@ -37,7 +37,7 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/troll_logjam_load_files/23646')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/troll_logjam_load_files/54766')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -119,9 +119,6 @@ foreach::foreach(idxFileIn = fileData) %dopar% {
       error = function(err) {
         call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
         log$error(err$message)
-        base::message("Error resulted from call to: ")
-        base::print(err$call)
-        
         InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn, 
                                                              log = log)
         NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = InfoDirIn$dirRepo, 

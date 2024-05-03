@@ -32,14 +32,14 @@
 #' 
 #' @examples
 #' # Not run
-#' DirIn<-'/home/NEON/ncatolico/pfs/logjam_load_files/5886'
+#' DirIn<-'/home/NEON/ncatolico/pfs/logjam_load_files/23622'
 #' FileIn <- "b6a5483d7675e2f5294cbb0b22021694.csv"
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# wrap.troll.logfiles <- function(FileIn = "b6a5483d7675e2f5294cbb0b22021694.csv",
-#                               DirIn="~/pfs/logjam_load_files/5886",
-#                               DirOut="~/pfs/out",
-#                               SchmDataOut=NULL,
-#                               log=log)
+#' wrap.troll.logfiles <- function(FileIn = "b6a5483d7675e2f5294cbb0b22021694.csv",
+#'                               DirIn="~/pfs/logjam_load_files/5886",
+#'                               DirOut="~/pfs/out",
+#'                               SchmDataOut=NULL,
+#'                               log=log)
 #'                               
 #' @changelog
 #   Nora Catolico (2024-01-09) original creation
@@ -71,7 +71,6 @@ wrap.troll.logfiles <- function(FileIn,
     log$error(base::paste0('File ', DirIn, '/', FileIn, ' is unreadable. Likely not a troll file.'))
     base::stop()
   }
-  
   if(any(grepl('SUNA',log_file$V2))){
     log$debug(base::paste0('skipping SUNA file: ', DirIn, '/', FileIn))
     base::stop()
@@ -213,6 +212,7 @@ wrap.troll.logfiles <- function(FileIn,
     if(length(Asset)<1){
       log$info(base::paste0('File Info: No asset specified in ',DirIn, '/', FileIn))
     }
+    #define Site
     Site <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Site"]
     if(length(Site)<1){
       log$info(base::paste0('File Info: No site specified in ',DirIn, '/', FileIn))
@@ -224,6 +224,10 @@ wrap.troll.logfiles <- function(FileIn,
     }else if(nchar(Site)>4){
       Site <-substr(Site,5,8)
     }
+    #fix for specific use case
+    if(grepl('Central America Standard Time',timezone) & !is.na(Site) & (Site == "MCDI"|Site == "KING")){
+      timezone<-'US/Central'
+    }  
     Device <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Device"][1]
     if(!is.na(Device) & grepl('level',tolower(Device))){
       Device<-"Level TROLL 500"
@@ -321,7 +325,11 @@ wrap.troll.logfiles <- function(FileIn,
       log_data$source_id<-Asset
       
       #format output file
+      #create any missing columns in log file
+      if(!'pressure' %in% names(log_data)){log_data$pressure<-NA}
+      if(!'temperature' %in% names(log_data)){log_data$temperature<-NA}
       if(sensor=='aquatroll200'){
+        if(!'conductivity' %in% names(log_data)){log_data$conductivity<-NA}
         out_columns <- c('source_id','readout_time','pressure','temperature','conductivity','logFlag','logDateErrorFlag','day')
       }else if(sensor=='leveltroll500'){
         out_columns <- c('source_id','readout_time','pressure','temperature','logFlag','logDateErrorFlag','day')
