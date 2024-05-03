@@ -43,10 +43,10 @@
 
 #' @examples
 #' Stepping through the code in Rstudio
-# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/logjam_clean_troll_files/aquatroll200/2022/03/09/23646') #cleaned log data
-# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646') #streamed L0 data
+# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/troll_logjam_assign_clean_files/aquatroll200/2022/06/30/9622') #cleaned log data
+# Sys.setenv(DirIn='/home/NEON/ncatolico/pfs/troll_data_source_trino/aquatroll200/2022/06/30/9622') #streamed L0 data
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=$DirIn","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
+# arg <- c("DirIn=$DirIn","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmData=~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_data.avsc","FileSchmFlags=~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_flags.avsc")
 #' rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso None currently

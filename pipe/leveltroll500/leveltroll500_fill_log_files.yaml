@@ -3,7 +3,7 @@ pipeline:
   name: leveltroll500_fill_log_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:bd388c37
+  image: quay.io/battelleecology/neon-is-troll-logs-group-fill:c7f44f45
   cmd:
   - sh
   - "-c"
