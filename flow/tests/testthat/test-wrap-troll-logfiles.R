@@ -5,9 +5,8 @@
 #'
 #'
 #' @param FileIn Character value. The input path to the data from a single source ID, structured as follows: 
-#' #/pfs/BASE_REPO/source-id/<file-name>, where file-name can be "12345678345678.csv". 
-#' The source-id folder may have multiple csv log files. 
-#' The source-id is the unique identifier of the sensor. \cr#'
+#' #/pfs/BASE_REPO/source-id/<file-name>, where file-name can be "12345678345678.csv".
+#' The source-id is the unique identifier of the sensor and may have multiple csv log files. 
 #' 
 #' @param DirOut Character value. The output path that will replace the #/pfs/BASE_REPO portion of FileIn. 
 #' 
