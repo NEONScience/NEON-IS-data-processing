@@ -6,12 +6,11 @@
 #' 
 #' @description Wrapper function. Validates, cleans, and formats troll log files into daily parquets.
 #'
-#'
-#' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
-#' #/pfs/BASE_REPO/source-id.The source-id folder may have multiple csv log files. 
+#' @param FileIn Character value. The input path to the data from a single source ID, structured as follows: 
+#' #/pfs/BASE_REPO/source-id/file.
 #' The source-id is the unique identifier of the sensor. \cr#'
 #' 
-#' @param DirOut Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
+#' @param DirOut Character value. The output path that will replace the #/pfs/BASE_REPO portion of FileIn. 
 #' 
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
@@ -32,11 +31,9 @@
 #' 
 #' @examples
 #' # Not run
-#' DirIn<-'/home/NEON/ncatolico/pfs/logjam_load_files/23622'
 #' FileIn <- "b6a5483d7675e2f5294cbb0b22021694.csv"
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.troll.logfiles <- function(FileIn = "b6a5483d7675e2f5294cbb0b22021694.csv",
-#'                               DirIn="~/pfs/logjam_load_files/5886",
+#' wrap.troll.logfiles <- function(FileIn = "~/pfs/logjam_load_files/5886/b6a5483d7675e2f5294cbb0b22021694.csv",
 #'                               DirOut="~/pfs/out",
 #'                               SchmDataOut=NULL,
 #'                               log=log)
@@ -46,7 +43,6 @@
 #' 
 ##############################################################################################
 wrap.troll.logfiles <- function(FileIn,
-                             DirIn,
                              DirOut,
                              SchmDataOut=NULL,
                              log=NULL
@@ -56,26 +52,23 @@ wrap.troll.logfiles <- function(FileIn,
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
   } 
-  
-  # Take stock of our data file 
-  log$debug(base::paste0('File identified:', DirIn, '/', FileIn))
-  
+
   # --------- Load the data ----------
   # Load in the csv log file(s)
   log_file  <-
-    base::try(read.table(paste0(DirIn, '/', FileIn), header = FALSE, sep = ",", 
+    base::try(read.table(paste0(FileIn), header = FALSE, sep = ",", 
                          col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
                          stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
   if (base::any(base::class(log_file) == 'try-error')) {
     # Generate error and stop execution
-    log$error(base::paste0('File ', DirIn, '/', FileIn, ' is unreadable. Likely not a troll file.'))
+    log$error(base::paste0('File ', FileIn, ' is unreadable. Likely not a troll file.'))
     base::stop()
   }
   if(any(grepl('SUNA',log_file$V2))){
-    log$debug(base::paste0('skipping SUNA file: ', DirIn, '/', FileIn))
+    log$debug(base::paste0('skipping SUNA file: ', FileIn))
     base::stop()
   }else if(any(grepl('_Depth',log_file$V1))){
-    log$debug(base::paste0('skipping sonde file: ', DirIn, '/', FileIn))
+    log$debug(base::paste0('skipping sonde file: ', FileIn))
     base::stop()
   }else{
     #find row where data actually starts
@@ -97,12 +90,12 @@ wrap.troll.logfiles <- function(FileIn,
       if(grepl('date', tolower(col1))){
         colnames(log_data)[1]<-'readout_time'
       }else{
-        log$error(base::paste0('File Error: No datetime column where expected in ',DirIn, '/', FileIn))
+        log$error(base::paste0('File Error: No datetime column where expected in ', FileIn))
       }
       if(grepl('seconds', tolower(col2))){
         colnames(log_data)[2]<-'seconds'
       }else{
-        log$error(base::paste0('File Error: No seconds column where expected in ',DirIn, '/', FileIn))
+        log$error(base::paste0('File Error: No seconds column where expected in ', FileIn))
       }
       if(grepl('pressure', tolower(col3))){
         colnames(log_data)[3]<-'pressure'
@@ -113,7 +106,7 @@ wrap.troll.logfiles <- function(FileIn,
       }else if(grepl('depth', tolower(col3))){
         colnames(log_data)[3]<-'depth'
       }else{
-        log$error(base::paste0('File Error: No expected streams present in column 3 of ',DirIn, '/', FileIn))
+        log$error(base::paste0('File Error: No expected streams present in column 3 of ', FileIn))
       }
       if(grepl('pressure', tolower(col4))){
         colnames(log_data)[4]<-'pressure'
@@ -124,7 +117,7 @@ wrap.troll.logfiles <- function(FileIn,
       }else if(grepl('depth', tolower(col4))){
         colnames(log_data)[4]<-'depth'
       }else{
-        log$error(base::paste0('File Error: No expected streams present in column 4 of ',DirIn, '/', FileIn))
+        log$error(base::paste0('File Error: No expected streams present in column 4 of ', FileIn))
       }
       if(!is.na(col5)){
         if(grepl('cond', tolower(col5))){
@@ -136,7 +129,7 @@ wrap.troll.logfiles <- function(FileIn,
         }else if(grepl('depth', tolower(col5))|grepl('elevation', tolower(col5))){
           colnames(log_data)[5]<-'depth'
         }else{
-          log$error(base::paste0('File Error: No expected streams present in column 5 of ',DirIn, '/', FileIn))
+          log$error(base::paste0('File Error: No expected streams present in column 5 of ', FileIn))
         }
       }
       if(!is.na(col6)){
@@ -149,13 +142,13 @@ wrap.troll.logfiles <- function(FileIn,
         }else if(grepl('depth', tolower(col6))|grepl('elevation', tolower(col6))){
           colnames(log_data)[6]<-'depth'
         }else{
-          log$error(base::paste0('File Error: No expected streams present in column 5 of ',DirIn, '/', FileIn))
+          log$error(base::paste0('File Error: No expected streams present in column 5 of ', FileIn))
         }
       }
       log_data<-log_data[!is.na(log_data$readout_time),]
       log_metadata<-log_file[1:start,]
     }else{
-      log$error(base::paste0('File Error: No data in ',DirIn, '/', FileIn))
+      log$error(base::paste0('File Error: No data in ', FileIn))
     }
     
     #check timezone. lot's of different styles... 
@@ -168,7 +161,7 @@ wrap.troll.logfiles <- function(FileIn,
       timezone<-log_metadata$V3[grepl('Time Zone',log_metadata$V2)]
     }else{
       timezone<-'ERROR'
-      log$error(base::paste0('File Error: timezone not specified in ',DirIn, '/', FileIn))
+      log$error(base::paste0('File Error: timezone not specified in ', FileIn))
     }
     #then clean up TZ 
     #grep("Dateline", OlsonNames(), value=TRUE)
@@ -210,17 +203,17 @@ wrap.troll.logfiles <- function(FileIn,
     Asset <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Device Name"][1]
     #log$debug(base::paste0('metadata: ',logName,'_',Troll_SN,'_',Asset))
     if(length(Asset)<1){
-      log$info(base::paste0('File Info: No asset specified in ',DirIn, '/', FileIn))
+      log$info(base::paste0('File Info: No asset specified in ', FileIn))
     }
     #define Site
     Site <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Site"]
     if(length(Site)<1){
-      log$info(base::paste0('File Info: No site specified in ',DirIn, '/', FileIn))
+      log$info(base::paste0('File Info: No site specified in ', FileIn))
     }else if(Site == 'Default Site'){
       Site <- NA
-      log$info(base::paste0('File Info: Default site specified in ',DirIn, '/', FileIn))
+      log$info(base::paste0('File Info: Default site specified in ', FileIn))
     }else if(length(Site)>1){
-      log$info(base::paste0('File Info: More than one site specified in ',DirIn, '/', FileIn))
+      log$info(base::paste0('File Info: More than one site specified in ', FileIn))
     }else if(nchar(Site)>4){
       Site <-substr(Site,5,8)
     }
@@ -244,10 +237,10 @@ wrap.troll.logfiles <- function(FileIn,
       }else if(!is.na(logName) & (grepl("GW",logName)|any(grepl("conductivity",tolower(colnames(log_data)))))){
         Context <- "groundwater"
       }else{
-        log$error(base::paste0('File Error: Context not specified in ',DirIn, '/', FileIn))
+        log$error(base::paste0('File Error: Context not specified in ', FileIn))
       }
     }else{
-      log$error(base::paste0('File Error: Device not specified in ',DirIn, '/', FileIn))
+      log$error(base::paste0('File Error: Device not specified in ', FileIn))
     }
     
     
@@ -274,7 +267,7 @@ wrap.troll.logfiles <- function(FileIn,
         log_data$dateTime <- lubridate::mdy_hm(log_data$readout_time, tz = timezone)
       }
     }else{
-      log$error(base::paste0('File Error: Invalid date time format',log_data$readout_time[1],' in ',DirIn, '/', FileIn))#this shouldn't happen
+      log$error(base::paste0('File Error: Invalid date time format',log_data$readout_time[1],' in ', FileIn))#this shouldn't happen
     } 
     log_data<-log_data[!is.na(log_data$dateTime),]
     
@@ -307,7 +300,7 @@ wrap.troll.logfiles <- function(FileIn,
         #cannot use log data with bad dates
         #log$debug(base::paste0("Log data contains erroneous dates that cannot be linked to the correct time."))
         log_data<-log_data[log_data$dateUTC>"2018-01-01 00:00:00 UTC",]
-        log$debug(base::paste0('File Error: ALL DATA 1970 in ',DirIn, '/', FileIn))
+        log$debug(base::paste0('File Error: ALL DATA 1970 in ', FileIn))
       }
     }
     if(nrow(log_data)>0){
@@ -375,7 +368,7 @@ wrap.troll.logfiles <- function(FileIn,
           }
         }#end of days loop
       }else{
-        log$error(base::paste0('No days can be written out for ',DirIn, '/', FileIn))
+        log$error(base::paste0('No days can be written out for ', FileIn))
       }
     }
   }

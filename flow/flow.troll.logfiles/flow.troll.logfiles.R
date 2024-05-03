@@ -37,7 +37,7 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/troll_logjam_load_files/54766')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/troll_logjam_load_files/23646')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -98,8 +98,8 @@ DirIn <-
                               log = log)
 
 # Take stock of our data files. 
-fileData <- base::list.files(DirIn,full.names=FALSE)
-log$debug(base::paste0('Files identified:', DirIn, '/', fileData))
+fileData <- base::list.files(DirIn,full.names=TRUE)
+log$debug(base::paste0('Files identified:', fileData))
 
 
 # Process each datum path
@@ -111,7 +111,6 @@ foreach::foreach(idxFileIn = fileData) %dopar% {
     withCallingHandlers(
       wrap.troll.logfiles(
         FileIn=idxFileIn,
-        DirIn=DirIn,
         DirOut=Para$DirOut,
         SchmDataOut=SchmDataOut,
         log=log
