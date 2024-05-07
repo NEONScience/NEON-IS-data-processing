@@ -15,8 +15,8 @@ jobs:
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
       REPO: troll_site_list # Pachyderm repo
       BRANCH: master 
-      IN_PATH: 'pipe/troll/site-list.json' # Single path to local file or directory. If directory, all files in directory will be place in pachyderm at OUT_PATH. 
-      OUT_PATH: 'site-list.json' # Path to place the file(s) in Pachyderm. If IN_PATH is a file, specify to the file. If IN_PATH is a directory, specify to the directory. 
+      IN_PATHS: 'pipe/troll/site-list.json' # Comma-separated list (no spaces) to one or more paths or directories. Length must match OUT_PATHS. If directory, all files in directory will be placed in pachyderm at corresponding entry of OUT_PATHS. 
+      OUT_PATHS: 'site-list.json' # Comma-separated list (no spaces) of corresponding path(s) to place the files(s) in Pachyderm. Must be same length as IN_PATHS. If corresponding entry in IN_PATHS is a file, specify to the file. If corresponding entry in IN_PATHS is a directory, specify to the directory. 
     steps:
       - uses: actions/checkout@v4
       - run: ls -la
