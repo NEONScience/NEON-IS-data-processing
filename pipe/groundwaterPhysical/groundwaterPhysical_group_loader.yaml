@@ -7,7 +7,6 @@ transform:
     GROUP_PREFIX: groundwater-physical_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
-    # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
   image: quay.io/battelleecology/group_loader:68b73fdc
   image_pull_secrets:
@@ -23,7 +22,7 @@ input:
     branch: master
     empty_files: true
     glob: /*
-    repo: aquatroll200_cron_daily_and_date_control_tick
+    repo: troll_cron_daily_and_date_control_tick
 autoscaling: true
 resource_requests:
   memory: 50M
@@ -32,7 +31,7 @@ resource_limits:
   memory: 300M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 600M
+  memory: 500M
   cpu: 0.2
 scheduling_spec:
   node_selector:

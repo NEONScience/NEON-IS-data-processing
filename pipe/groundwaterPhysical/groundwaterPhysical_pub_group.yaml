@@ -13,7 +13,6 @@ transform:
     # Environment variables for 1st module: pub_grouper.
     LOG_LEVEL: INFO
     OUT_PATH: "/pfs/out"
-    # ERR_PATH can be changed, it is user specified
     ERR_PATH_GROUPER: "pfs/out/errored_datums"
     YEAR_INDEX: '3' # Also shared with pub_transform
     GROUP_INDEX: '6'
@@ -45,8 +44,8 @@ resource_limits:
   memory: 1.5G
   cpu: 1.8
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.3
+  memory: 3G
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
@@ -66,13 +65,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "add",
-      "path": "/containers/1/env/-",
-      "value": {
-        "name": "GOMEMLIMIT",
-        "value": "2000000000"
-      }
-    }
-  ]

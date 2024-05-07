@@ -9,8 +9,8 @@ transform:
     # START_DATE must be set, format "YYYY-MM"
     # END_DATE can be set or unset (comment or remove line to unset). If unset, end month will be last month. 
     OUT_PATH: /pfs/out
-    START_MONTH: "2022-01"
-    END_MONTH: "2022-12" # Inclusive. Run the pipeline with END_MONTH set to initialize, then comment out and update pipeline (no reprocess) to let the cron take over
+    START_MONTH: "2022-07"
+    END_MONTH: "2022-07" # Inclusive. Run the pipeline with END_MONTH set to initialize, then comment out and update pipeline (no reprocess) to let the cron take over
   stdin:
   - "#!/bin/bash"
   - ./cron_monthly_and_pub_control/populate_pub_months.sh
@@ -28,7 +28,7 @@ resource_limits:
   memory: 200M
   cpu: 1
 sidecar_resource_requests:
-  memory: 64M
+  memory: 200M
   cpu: 0.1
 scheduling_spec:
   node_selector:
