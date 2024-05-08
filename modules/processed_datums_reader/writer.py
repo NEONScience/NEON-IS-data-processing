@@ -23,7 +23,7 @@ def write_to_db(db: Db, files_by_pipeline: defaultdict(lambda: defaultdict(int))
         
 def clear_existing_records(db: Db, dag_name: str, pipeline_name: str, group_name: str) -> None:
     sql = f'''
-        delete from {db.schema}.errored_datums 
+        delete from {db.schema}.processed_datums 
         where 
            dag_name = %(dag_name)s  
         and 
