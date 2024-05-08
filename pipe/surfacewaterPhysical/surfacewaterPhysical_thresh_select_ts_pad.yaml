@@ -13,10 +13,12 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/threshold_select
     rm -rf /tmp/threshold_selectCopy
     mkdir -p /tmp/threshold_select
+    
     # Run first module - threshold_select
     Rscript ./flow.thsh.slct.R \
       DirIn=$REPO_LOCATIONS \
@@ -27,11 +29,14 @@ transform:
       "TermCtxt2=temperature|surfacewater" \
       "TermCtxt3=conductivity|surfacewater" \
       "DirSubCopy=location|data"
+    
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 
     rm -r -f /tmp/threshold_select 
+    
     # Run second module - timeseries_padder
     python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+    
     EOF
   env:
     DATA_PATH: /tmp/threshold_selectCopy
@@ -62,7 +67,7 @@ resource_limits:
   memory: 2G
   cpu: 5
 sidecar_resource_requests:
-  memory: 4G
+  memory: 3G
   cpu: 0.3
 datum_set_spec:
   number: 1

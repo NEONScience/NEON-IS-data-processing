@@ -18,7 +18,7 @@ input:
   # Choose a monthly cron date to be something sufficiently after the 1st to allow kafka lag and timeseries pad
   cron:
     name: tick
-    spec: "0 7 5 * *" # Run at 00:00 MST (07:00 GMT) on the 5th of the month 
+    spec: "0 7 6 * *" # Run at 00:00 MST (07:00 GMT) on the 6th of the month 
     overwrite: true
 autoscaling: true
 resource_requests:
