@@ -25,7 +25,7 @@ input:
       glob: /*
   - pfs:
       name: FILE_YEAR
-      repo: aquatroll200_cron_daily_and_date_control
+      repo: troll_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
   constant: 4
@@ -37,7 +37,7 @@ resource_limits:
   memory: 800M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 1G
+  memory: 3G
   cpu: 0.2
 datum_set_spec:
   number: 10

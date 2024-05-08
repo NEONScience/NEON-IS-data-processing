@@ -26,7 +26,7 @@ input:
       glob: /surfacewater-physical/*
   - pfs:
       name: FILE_YEAR
-      repo: leveltroll500_cron_daily_and_date_control
+      repo: troll_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
   constant: 5
@@ -38,7 +38,7 @@ resource_limits:
   memory: 400M
   cpu: 2
 sidecar_resource_requests:
-  memory: 2G
+  memory: 3G
   cpu: 0.8
 datum_set_spec:
   number: 5

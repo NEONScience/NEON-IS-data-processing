@@ -14,7 +14,6 @@ transform:
     GROUP: groundwater-physical_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
-    # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
     GROUP_ASSIGNMENT_YEAR_INDEX: '4'
     GROUP_ASSIGNMENT_MONTH_INDEX: '5'
@@ -45,7 +44,7 @@ input:
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
-        repo: aquatroll200_fill_date_gaps_and_regularize
+        repo: troll_fill_date_gaps_and_regularize
         glob: /aquatroll200/(*/*/*)
         joinOn: $1
 #    - pfs:
@@ -64,8 +63,8 @@ resource_limits:
   memory: 2G
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 4G
-  cpu: 0.8
+  memory: 3G
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:

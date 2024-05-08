@@ -23,7 +23,7 @@ input:
     branch: master
     empty_files: true
     glob: /*
-    repo: leveltroll500_cron_daily_and_date_control_tick
+    repo: troll_cron_daily_and_date_control_tick
 autoscaling: true
 resource_requests:
   memory: 50M
@@ -32,7 +32,7 @@ resource_limits:
   memory: 300M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 600M
+  memory: 500M
   cpu: 0.2
 scheduling_spec:
   node_selector:
