@@ -202,8 +202,9 @@ wrap.troll.logfiles <- function(FileIn,
     Troll_SN <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Serial Number"][1]
     Asset <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Device Name"][1]
     #log$debug(base::paste0('metadata: ',logName,'_',Troll_SN,'_',Asset))
-    if(length(Asset)<1){
-      log$info(base::paste0('File Info: No asset specified in ', FileIn))
+    if(length(Asset)<1 || Asset == " " || nchar(Asset) == 0){
+      log$error(base::paste0('File Info: No asset specified in ', FileIn))
+      stop()
     }
     #define Site
     Site <- log_metadata$value[!is.na(log_metadata$label) & log_metadata$label=="Site"]
