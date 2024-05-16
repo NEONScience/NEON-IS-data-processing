@@ -93,7 +93,8 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   DirInLogs<-file.path(workingDirPath, 'pfs/logjam_clean_troll_files/leveltroll500/2022/04/04/21115') 
   DirInStream<-file.path(workingDirPath, 'pfs/leveltroll500_data_source_trino/leveltroll500/2022/04/04/21115')
   DirIn<-'pfs/logjam_clean_troll_files/leveltroll500/2022/04/08/21115'
-  subDirParts = strsplit(DirInLogs,split = "/")[[1]][12:16]
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirInLogs)
+  subDirParts = InfoDirIn$dirRepo
   subDir = paste0(subDirParts, collapse = '', sep='/')
   subDirPath = file.path(subDir)
   testOutputDirPath <- base::paste0(testDirOut,"/", subDirPath)
@@ -123,7 +124,8 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   }
   
   DirInStreamEmpty<-file.path(workingDirPath, 'pfs/leveltroll500_data_source_trino/leveltroll500/2022/04/04/21115_empty')
-  subDirPartsEmpty = strsplit(DirInStreamEmpty,split = "/")[[1]][12:16]
+  InfoDirInEmpty <- NEONprocIS.base::def.dir.splt.pach.time(DirInStreamEmpty)
+  subDirPartsEmpty = InfoDirInEmpty$dirRepo
   subDirEmpty = paste0(subDirPartsEmpty, collapse = '', sep='/')
   subDirPathEmpty = file.path(subDirEmpty)
   testOutputDirPathEmpty <- base::paste0(testDirOut,"/", subDirPathEmpty)
@@ -192,7 +194,8 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   DirInLogs<-file.path(workingDirPath, 'pfs/logjam_clean_troll_files/aquatroll200/2022/03/09/23646') 
   DirInStream<-file.path(workingDirPath, 'pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646')
   DirIn<-'pfs/logjam_clean_troll_files/aquatroll200/2022/03/16/23646'
-  subDirParts = strsplit(DirInLogs,split = "/")[[1]][12:16]
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirInLogs)
+  subDirParts = InfoDirIn$dirRepo
   subDir = paste0(subDirParts, collapse = '', sep='/')
   subDirPath = file.path(subDir)
   testOutputDirPath <- base::paste0(testDirOut,"/", subDirPath)
@@ -223,7 +226,8 @@ test_that("Unit test of wrap.troll.logfiles.fill.R", {
   }
   
   DirInStreamEmpty<-file.path(workingDirPath, 'pfs/aquatroll200_data_source_trino/aquatroll200/2022/03/09/23646_empty')
-  subDirPartsEmpty = strsplit(DirInStreamEmpty,split = "/")[[1]][12:16]
+  InfoDirInEmpty <- NEONprocIS.base::def.dir.splt.pach.time(DirInStreamEmpty)
+  subDirPartsEmpty = InfoDirInEmpty$dirRepo
   subDirEmpty = paste0(subDirPartsEmpty, collapse = '', sep='/')
   subDirPathEmpty = file.path(subDirEmpty)
   testOutputDirPathEmpty <- base::paste0(testDirOut,"/", subDirPathEmpty)
