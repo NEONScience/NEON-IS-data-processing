@@ -21,6 +21,7 @@ def write_to_db(db: Db, files_by_pipeline: defaultdict[str, list[str]]) -> None:
         db.connection.commit()
         
 def clear_existing_records(db: Db, dag_name: str, pipeline_name: str) -> None:
+    
     sql = f'''
         delete from {db.schema}.errored_datums 
         where 

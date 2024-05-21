@@ -18,9 +18,16 @@ def read_processed_files(client: Client) -> defaultdict[lambda: defaultdict[int]
             for file in client.pfs.glob_file(commit=pfs.Commit.from_uri(pipeline_commit_name), pattern='/????/??/??/*'):
                 path = file.file.path
                 path_parts = path.split('/')
-                processed_date = f'{path_parts[0]}/{path_parts[1]}/{path_parts[2]}'
-                group_name = path_parts[3]
+                pipeline_date_path = f'/{path_parts[1]}/{path_parts[2]}/{path_parts[3]}'
+                processed_date = f'{path_parts[1]}-{path_parts[2]}-{path_parts[3]}'
+                print(f'processed_date: {processed_date}')
+                print(f'pipeline_date_path: {pipeline_date_path}')
+                group_name = path_parts[4]
+                print(f'group_name: {group_name}')
+                count = 0
                 for file in client.pfs.glob_file(commit=pfs.Commit.from_uri(pipeline_commit_name),
-                                                 pattern=f'{processed_date}/{group_name}/**'):
-                    files_by_pipeline[pipeline_name][processed_date] += 1
+                                                 pattern=f'{pipeline_date_path}/{group_name}/**'):
+                    count +=1
+                    files_by_pipeline[pipeline_name][processed_date] = count
+                print(f'Files count in the pipeline {pipeline_name} for the group {group_name} and processed_date is: {count}')
     return files_by_pipeline
