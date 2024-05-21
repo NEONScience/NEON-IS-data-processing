@@ -3,13 +3,14 @@
 pipeline:
   name: troll_cron_daily_and_date_control
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:72752fa7
+  image: quay.io/battelleecology/neon-is-date-cntl:00ddb6a7
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
     # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
-    # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
-    START_DATE: "2022-06-30"
-    END_DATE: "2022-07-05"
+    # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be LAG_DAYS_END ago. 
+    LAG_DAYS_END: "3"
+    START_DATE: "2022-06-29"
+    END_DATE: "2022-08-02"
     OUT_PATH: /pfs/out
     SOURCE_TYPE_AQUATROLL: "aquatroll200"
     SOURCE_TYPE_LEVELTROLL: "leveltroll500"
@@ -21,12 +22,15 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # AQUATROLL
     export SOURCE_TYPE=$SOURCE_TYPE_AQUATROLL
     ./cron_daily_and_date_control/populate_site_dates.sh
+    
     # LEVELTROLL
     export SOURCE_TYPE=$SOURCE_TYPE_LEVELTROLL
     ./cron_daily_and_date_control/populate_site_dates.sh
+    
     EOF
 input:
   cross:

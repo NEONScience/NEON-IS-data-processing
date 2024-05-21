@@ -10,7 +10,8 @@
 	"site" : "BIGC"
 	},
 	{
-	"site" : "BLDE"
+	"site" : "BLDE",
+	"kafka_start_date" : "2024-05-08"
 	},
 	{
 	"site" : "BLUE",
