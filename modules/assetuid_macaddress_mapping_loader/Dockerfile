@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the assetuid_macaddresss_loader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t assetuid_macaddresss_loader:latest -f assetuid_macaddresss_loader/Dockerfile .
+# docker build --no-cache -t assetuid_macaddresss_loader:latest -f assetuid_macaddresss_loader/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

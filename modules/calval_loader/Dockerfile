@@ -1,7 +1,7 @@
 ####
 # This dockerfile will build the caliration repo loader module.
 # Example command (must be run from project root directory(from the modules folder) to include common path in Docker context):
-# docker build -t neon-cval-loader:latest:latest -f calval_loader/Dockerfile .
+# docker build --no-cache -t neon-cval-loader:latest:latest -f calval_loader/Dockerfile .
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 

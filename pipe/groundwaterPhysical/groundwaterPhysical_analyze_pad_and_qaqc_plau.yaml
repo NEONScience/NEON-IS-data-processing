@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:e65941ee
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:54b91605
   cmd:
   - sh
   - "-c"
@@ -13,15 +13,19 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/pfs/padded_analyzer
     rm -rf /tmp/pfs/padded_analyzerCopy
     mkdir -p /tmp/pfs/padded_analyzer
+
     # Run first module - padded_timeseries_analyzer
     python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output) 
     rm -r -f /tmp/pfs/padded_analyzer 
+
     # Run second module - qaqc plausibility
     Rscript ./flow.qaqc.plau.R \
       DirIn=/tmp/pfs/padded_analyzerCopy \
@@ -61,7 +65,7 @@ resource_limits:
   memory: 4G
   cpu: 5.5
 sidecar_resource_requests:
-  memory: 2G
+  memory: 3G
   cpu: 0.3
 datum_set_spec:
   number: 1

@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/data_source_trino:v0.2.5
+  image: quay.io/battelleecology/data_source_trino:8fa53f71
   cmd:
   - sh
   - "-c"

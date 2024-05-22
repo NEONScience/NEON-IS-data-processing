@@ -6,8 +6,10 @@ transform:
   env:
     GROUP_PREFIX: temp-soil
     LOG_LEVEL: INFO
-    OUT_PATH: /pfs/out
-  image: quay.io/battelleecology/group_loader:c0ce8112
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
+  image: quay.io/battelleecology/group_loader:68b73fdc
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
   secrets:

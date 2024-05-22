@@ -95,18 +95,12 @@ def.cal.conv.poly.split <- function(data = data.frame(data=base::numeric(0)),
     NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALM', log = log)
   
   # Convert data using the calibration function based on range
-  for(i in 1:length(data[[varConv]])){
-    if(data[[varConv]][i]>100){
-      dataConv_i<-stats::predict(object = func1, newdata = data[[varConv]][i])
-    }else{
-      dataConv_i<-stats::predict(object = func2, newdata = data[[varConv]][i])
-    }
-    if(i==1){
-      dataConv<-dataConv_i
-    }else{
-      dataConv<-append(dataConv,dataConv_i)
-    }
-  }
+  dataRaw <- data[[varConv]]
+  dataConv <- NA * dataRaw
+  setFunc01 <- !base::is.na(dataRaw) & dataRaw > 100
+  dataConv[setFunc01] <- stats::predict(object = func1, newdata = dataRaw[setFunc01])
+  setFunc02 <- !base::is.na(dataRaw) & dataRaw <= 100
+  dataConv[setFunc02] <- stats::predict(object = func2, newdata = dataRaw[setFunc02])
   
   return(dataConv)
   

@@ -12,6 +12,7 @@ def main() -> None:
     env = environs.Env()
     log_level: str = env.log_level('LOG_LEVEL', 'INFO')
     out_path = env.path('OUT_PATH')
+    err_path = env.path('ERR_PATH_PACKAGER')
     data_path = env.path('DATA_PATH')
     product_index: int = env.int('PRODUCT_INDEX')
     publoc_index: int = env.int('PUBLOC_INDEX')
@@ -20,7 +21,8 @@ def main() -> None:
     sort_index: int = env.int('SORT_INDEX')
     log_config.configure(log_level)
     pub_package(data_path=data_path,
-                out_path=out_path,
+                out_path=out_path, 
+                err_path=err_path,
                 product_index=product_index,
                 publoc_index=publoc_index,
                 date_index=date_index,

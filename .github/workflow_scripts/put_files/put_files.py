@@ -29,8 +29,11 @@ def main():
     pach_token = os.environ["PACH_TOKEN"] # auth token (string). Needs repoOwner roles
     repo_name = os.environ["REPO"] # The Pachyderm repo (e.g. "empty_files_prt")
     branch_name = os.environ["BRANCH"] # The branch of the pachyderm repo (e.g. "master")
-    in_path = os.environ["IN_PATH"] # The local path to the folder that will be uploaded into pachyderm (e.g. "empty_files/prt"")
-    out_path = os.environ["OUT_PATH"] # The path where the folder will be placed in the pachydemr repo (e.g. "prt")
+    in_paths = env.list("IN_PATHS") # The local path(s) to the file(s)/folder(s) that will be uploaded into pachyderm (e.g. "empty_files/prt""). If multiple, must match length of out_path
+    out_paths = env.list("OUT_PATHS") # The path(s) where the file(s)/folder(s) will be placed in the pachydemr repo (e.g. "prt"). If multiple, must match length of in_path
+
+    # Create dictionary of in_path:out_path pairs
+    in_out_paths = {in_paths[i]: out_paths[i] for i in range(len(in_paths))}
     
     # Setup connection to Pachyderm
     client = setup_client(pachd_address,pach_token)
@@ -44,13 +47,16 @@ def main():
         
     # Put the updated file(s) into Pachyderm
     branch = pfs.Branch.from_uri(repo_name+"@"+branch_name)
-    if Path(in_path).is_dir():
-        with client.pfs.commit(branch=branch) as commit:
-            client.pfs.put_files(commit=commit,source=in_path,path=out_path)
-    else:
-        with client.pfs.commit(branch=branch) as commit:
-            with open(in_path, "rb") as source:
-                client.pfs.put_file_from_file(commit=commit,path=out_path,file=source,append=False)
+    with client.pfs.commit(branch=branch) as commit:
+      for in_path,out_path in in_out_paths.items():
+        if Path(in_path).is_dir():
+          client.pfs.put_files(commit=commit,source=in_path,path=out_path)
+          print(f'Put path:',in_path,' into ',repo_name+"@"+branch_name+out_path)
+        else:
+          with open(in_path, "rb") as source:
+            client.pfs.put_file_from_file(commit=commit,path=out_path,file=source,append=False)
+            print(f'Put file:',in_path,' into ',repo_name+"@"+branch_name+out_path)
+    
 
 if __name__ == "__main__":
     main()

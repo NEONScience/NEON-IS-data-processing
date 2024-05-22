@@ -1,7 +1,7 @@
 ####
 # This dockerfile will build the l0_data_loader repo loader module.
 # Example command (must be run from project root directory(from the modules folder) to include common path in Docker context):
-# docker build -t l0_data_loader:latest -f l0_data_loader/Dockerfile .
+# docker build --no-cache -t l0_data_loader:latest -f l0_data_loader/Dockerfile .
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 

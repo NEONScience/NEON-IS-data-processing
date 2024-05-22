@@ -3,7 +3,7 @@ pipeline:
   name: logjam_list_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-logjam-loader:v0.0.21
+  image: quay.io/battelleecology/neon-logjam-loader:01ca94aa
   cmd: ["/bin/bash"]
   env:
     LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
@@ -14,7 +14,7 @@ transform:
   - python3 -m logjam_loader.logjam_loader
 input:
   pfs:
-    repo: leveltroll500_cron_daily_and_date_control_tick
+    repo: logjam_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 autoscaling: true

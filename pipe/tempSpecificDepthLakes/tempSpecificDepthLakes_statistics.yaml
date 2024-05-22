@@ -2,7 +2,7 @@
 pipeline:
   name: tempSpecificDepthLakes_statistics
 transform:
-  image: quay.io/battelleecology/neon-is-stat-basc-r:e65941ee
+  image: quay.io/battelleecology/neon-is-stat-basc-r:cb658966
   cmd:
   - Rscript
   - ./flow.stat.basc.R

@@ -3,7 +3,7 @@
 image_name=neon-srf-loader
 tag=$(git rev-parse --short HEAD)
 cd ./modules
-docker build -t $image_name:latest -f ./srf_loader/Dockerfile .
+docker build --no-cache -t $image_name:latest -f ./srf_loader/Dockerfile .
 docker tag $image_name quay.io/battelleecology/$image_name:$tag
 docker push quay.io/battelleecology/$image_name:$tag
 cd ..

@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the grouper module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t grouper:latest -f grouper/Dockerfile .
+# docker build --no-cache -t grouper:latest -f grouper/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/location_loader:c0ce8112
+  image: quay.io/battelleecology/location_loader:ee44d9db
   cmd:
   - /bin/bash
   stdin:
@@ -13,7 +13,9 @@ transform:
   env:
     LOCATION_TYPE: CONFIG
     SOURCE_TYPE: windobserverii
-    OUT_PATH: /pfs/out
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
     LOG_LEVEL: INFO
   secrets:
   - name: pdr-secret
