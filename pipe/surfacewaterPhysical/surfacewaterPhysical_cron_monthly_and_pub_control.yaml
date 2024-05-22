@@ -9,8 +9,8 @@ transform:
     # START_DATE must be set, format "YYYY-MM"
     # END_DATE can be set or unset (comment or remove line to unset). If unset, end month will be last month. 
     OUT_PATH: /pfs/out
-    START_MONTH: "2022-01"
-    END_MONTH: "2022-12" # Inclusive. Run the pipeline with END_MONTH set to initialize, then comment out and update pipeline (no reprocess) to let the cron take over
+    START_MONTH: "2016-03"
+    END_MONTH: "2016-03" # Inclusive. Run the pipeline with END_MONTH set to initialize, then comment out and update pipeline (no reprocess) to let the cron take over
   stdin:
   - "#!/bin/bash"
   - ./cron_monthly_and_pub_control/populate_pub_months.sh
@@ -18,7 +18,7 @@ input:
   # Choose a monthly cron date to be something sufficiently after the 1st to allow kafka lag and timeseries pad
   cron:
     name: tick
-    spec: "0 7 6 * *" # Run at 00:00 MST (07:00 GMT) on the 6th of the month 
+    spec: "0 7 10 * *" # Run at 00:00 MST (07:00 GMT) on the 10th of the month 
     overwrite: true
 autoscaling: true
 resource_requests:
