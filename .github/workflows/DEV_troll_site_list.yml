@@ -1,4 +1,4 @@
-name: DEV-aquatroll200-site-list
+name: DEV-troll-site-list
 on:
   push:
     branches:
