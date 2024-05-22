@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the OS table loader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t os_table_loader:latest -f os_table_loader/Dockerfile .
+# docker build --no-cache -t os_table_loader:latest -f os_table_loader/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

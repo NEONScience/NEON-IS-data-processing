@@ -45,14 +45,8 @@ input:
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
-        repo: aquatroll200_fill_date_gaps_and_regularize
-        glob: /aquatroll200/(*/*/*)
-        joinOn: $1
-    - pfs:
-        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
-        name: LOCATION_FOCUS_PATH
-        repo: leveltroll500_fill_date_gaps_and_regularize
-        glob: /leveltroll500/(*/*/*)
+        repo: troll_fill_date_gaps_and_regularize
+        glob: /*/(*/*/*)
         joinOn: $1
 #    - pfs:
 #        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
@@ -61,7 +55,7 @@ input:
 #        glob: /(*/*/*)
 #        joinOn: $1
 parallelism_spec:
-  constant: 1
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 600M
@@ -70,8 +64,8 @@ resource_limits:
   memory: 2G
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 4G
-  cpu: 0.8
+  memory: 3G
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:

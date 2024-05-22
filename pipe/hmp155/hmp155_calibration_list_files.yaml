@@ -3,7 +3,7 @@ pipeline:
   name: hmp155_calibration_list_files
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-cval-loader:c0ce8112
+  image: quay.io/battelleecology/neon-cval-loader:01ca94aa
   cmd: ["/bin/bash"]
   env:
     CVAL_INGEST_BUCKET: neon-cval

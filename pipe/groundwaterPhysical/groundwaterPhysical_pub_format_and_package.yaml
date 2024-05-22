@@ -3,7 +3,7 @@ pipeline:
   name: groundwaterPhysical_pub_format_and_package
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:665dde06
+  image: quay.io/battelleecology/neon-is-pub-grp-pack:33b3a829
   cmd:
   - sh
   - "-c"
@@ -83,6 +83,7 @@ transform:
 
     # Environment variables for 3rd module: pub_packager. Also uses PRODUCT_INDEX from pub_transformer.
     OUT_PATH_PACKAGER: "/tmp/pub_packager"
+    ERR_PATH_PACKAGER: "/pfs/out/packager/errored_datums"
     PUBLOC_INDEX: '7' # input path index of the pub package location (typically the site)
     DATE_INDEX: '4' # Starting index of date in path (i.e. year index)
     DATE_INDEX_LENGTH: '2' # length of date index for pub package (should be 2 for monthly)
@@ -123,7 +124,7 @@ input:
       glob: /(*/*/*)/*/(*)
       group_by: $1$2
 parallelism_spec:
-  constant: 10
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 700M
@@ -132,8 +133,8 @@ resource_limits:
   memory: 1.5G
   cpu: 1.8
 sidecar_resource_requests:
-  memory: 800M
-  cpu: 0.3
+  memory: 3G
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

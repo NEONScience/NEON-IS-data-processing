@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the directory filter module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t neon-is-dir-filt:latest -f directory_filter/Dockerfile .
+# docker build --no-cache -t neon-is-dir-filt:latest -f directory_filter/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

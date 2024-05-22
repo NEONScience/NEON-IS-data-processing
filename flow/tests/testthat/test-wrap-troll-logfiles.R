@@ -4,11 +4,11 @@
 #' @description Wrapper function. Validates, cleans, and formats troll log files into daily parquets.
 #'
 #'
-#' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
-#' #/pfs/BASE_REPO/source-id.The source-id folder may have multiple csv log files. 
-#' The source-id is the unique identifier of the sensor. \cr#'
+#' @param FileIn Character value. The input path to the data from a single source ID, structured as follows: 
+#' #/pfs/BASE_REPO/source-id/<file-name>, where file-name can be "12345678345678.csv".
+#' The source-id is the unique identifier of the sensor and may have multiple csv log files. 
 #' 
-#' @param DirOut Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
+#' @param DirOut Character value. The output path that will replace the #/pfs/BASE_REPO portion of FileIn. 
 #' 
 #' @param SchmDataOut (optional), where values is the full path to the avro schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
@@ -29,9 +29,9 @@
 #' 
 #' @examples
 #' # Not run
-#' DirIn<-'/home/NEON/ncatolico/pfs/logjam_load_files/21115'
+#' FileIn<-'~/pfs/logjam_load_files/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv'
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.troll.logfiles <- function(DirIn="~/pfs/logjam_load_files/21115",
+#' wrap.troll.logfiles <- function(FileIn="~/pfs/logjam_load_files/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv",
 #'                               DirOut="~/pfs/out",
 #'                               SchmDataOut=NULL,
 #'                               log=log)
@@ -39,6 +39,9 @@
 # changelog and author contributions 
 #   Mija Choi (2024-02-20)
 #     Original Creation
+#   Mija Choi (2024-05-03)
+#     Updated after a change in one of the input parameters of wrap.troll.logfiles.R, 
+#     DirIn to FileIn.
 ##############################################################################################
 # Define test context
 context("\n                       Unit test of wrap.troll.logfiles.R\n")
@@ -53,13 +56,13 @@ test_that("Unit test of wrap.troll.logfiles.R", {
   # Test 1. Only the input of directories, resistance and voltage, and output directry are passed in
   
   workingDirPath <- getwd()
-  testDirIn = file.path(workingDirPath, 'pfs/logjam_load_files/21115')
+  testFileIn = file.path(workingDirPath, 'pfs/logjam_load_files/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv')
   testDirOut = file.path(workingDirPath, 'pfs/out')
   #
-  fileData <- base::list.files(testDirIn,full.names=FALSE)
-  log_file  <- base::try(read.table(paste0(testDirIn, '/', fileData), header = FALSE, sep = ",", 
-                          col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
-                        stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
+  fileData <- base::list.files(testFileIn,full.names=TRUE)
+  log_file  <- base::try(read.table(paste0(testFileIn), header = FALSE, sep = ",", 
+                         col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
+                         stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
   #log_file$V1[52]  "11/5/2019 19:50"
   #log_file$V1[53]  "11/19/2019 19:11"
   #log_file$V2[13] "Level TROLL 500"
@@ -77,7 +80,7 @@ test_that("Unit test of wrap.troll.logfiles.R", {
     unlink(testDirOut, recursive = TRUE)
   }
   
-  wrap.troll.logfiles (DirIn=testDirIn,
+  wrap.troll.logfiles (FileIn=testFileIn,
                     DirOut=testDirOut,
                     SchmDataOut=NULL,
                     log=log)
@@ -105,19 +108,19 @@ test_that("Unit test of wrap.troll.logfiles.R", {
   df1 <- data.frame(source_id, readout_time, pressure, temperature, logFlag,  logDateErrorFlag)
   schm = NEONprocIS.base::def.schm.parq.from.df (df = df1, log=NULL)
   
-  wrap.troll.logfiles (DirIn=testDirIn,
+  wrap.troll.logfiles (FileIn=testFileIn,
                       DirOut=testDirOut,
                       SchmDataOut=schm,
                       log=log)
   
   # Test 3. The input file has date < 2018
   
-  testDirIn = file.path(workingDirPath, 'pfs/logjam_load_files_before2018/21115')
-  fileData <- base::list.files(testDirIn,full.names=FALSE)
-  log_file  <- base::try(read.table(paste0(testDirIn, '/', fileData), header = FALSE, sep = ",", 
+  testFileIn = file.path(workingDirPath, 'pfs/logjam_load_files_before2018/21115/7a5c6a2adb01c935f8dc87a3fcc25316.csv')
+  fileData <- base::list.files(testFileIn,full.names=TRUE)
+  
+  log_file  <- base::try(read.table(paste0(testFileIn), header = FALSE, sep = ",", 
                                     col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
                                     stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
-
   sensor = tolower(gsub(" ", "", paste(log_file$V2[13])))
   yr = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%Y")
   mo = format(as.Date(log_file$V1[52], format="%m/%d/%Y"),"%m")
@@ -128,7 +131,7 @@ test_that("Unit test of wrap.troll.logfiles.R", {
   if (dir.exists(testDirOut)) {
     unlink(testDirOut, recursive = TRUE)
   }
-  wrap.troll.logfiles (DirIn=testDirIn,
+  wrap.troll.logfiles (FileIn=testFileIn,
                        DirOut=testDirOut,
                        SchmDataOut=NULL,
                        log=log)

@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the group path module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t group_path:latest -f group_path/Dockerfile .
+# docker build --no-cache -t group_path:latest -f group_path/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

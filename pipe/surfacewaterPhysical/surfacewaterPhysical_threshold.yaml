@@ -22,7 +22,7 @@ transform:
     mount_path: /var/db_secret
 input:
   pfs:
-    repo: leveltroll500_cron_daily_and_date_control_tick
+    repo: troll_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 autoscaling: true

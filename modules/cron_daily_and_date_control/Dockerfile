@@ -2,7 +2,7 @@
 #
 # This dockerfile will build an image to run the cron_daily_and_date_control module.
 # Example command (run from modules/ directory in Docker context):
-# docker build -t neon-is-date-cntl -f ./cron_daily_and_date_control/Dockerfile .
+# docker build --no-cache -t neon-is-date-cntl -f ./cron_daily_and_date_control/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi:8.3

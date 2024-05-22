@@ -20,7 +20,8 @@ class LocationLoaderTest(DatabaseBackedTest):
 
     def setUp(self):
         self.setUpPyfakefs()
-        self.out_path = Path('/out')
+        self.out_path = Path('/pfs/out')
+        self.err_path = Path('/pfs/out/errored')
         self.fs.create_dir(self.out_path)
 
     @unittest.skip('Integration test skipped due to long process time.')
@@ -29,6 +30,7 @@ class LocationLoaderTest(DatabaseBackedTest):
         os.environ['LOCATION_TYPE'] = 'CONFIG'
         os.environ['SOURCE_TYPE'] = 'pqs1'
         os.environ['OUT_PATH'] = str(self.out_path)
+        os.environ['ERR_PATH'] = str(self.err_path)
         os.environ['LOG_LEVEL'] = 'DEBUG'
         location_loader_main.main()
         file_path = Path(self.out_path, 'pqs1/CFGLOC100243/CFGLOC100243.json')
@@ -38,7 +40,7 @@ class LocationLoaderTest(DatabaseBackedTest):
         site = 'CPER'
         domain = 'D10'
         location = 'CFGLOC123'
-        schema_names = set('prt')
+        schema_names = ['prt']
         description = 'A test location.'
         expected_type = 'CONFIG'
         group = ['group']
@@ -63,7 +65,7 @@ class LocationLoaderTest(DatabaseBackedTest):
             return [named_location]
 
         # test
-        location_loader.load_locations(out_path=self.out_path, get_locations=get_locations, source_type='prt')
+        location_loader.load_locations(out_path=self.out_path, err_path=self.err_path, get_locations=get_locations, source_type='prt')
         # check output
         file_path = Path(self.out_path, next(iter(schema_names)), location, f'{location}.json')
         self.assertTrue(file_path.exists())

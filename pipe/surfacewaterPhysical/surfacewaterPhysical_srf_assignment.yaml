@@ -12,7 +12,7 @@ transform:
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
-  image: quay.io/battelleecology/neon-is-srf-asgn-r:e65941ee
+  image: quay.io/battelleecology/neon-is-srf-asgn-r:505c66b5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -25,7 +25,7 @@ input:
       glob: /*
   - pfs:
       name: FILE_YEAR
-      repo: leveltroll500_cron_daily_and_date_control
+      repo: troll_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
   constant: 4
@@ -37,7 +37,7 @@ resource_limits:
   memory: 800M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 1G
+  memory: 3G
   cpu: 0.2
 datum_set_spec:
   number: 10

@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the joiner module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t joiner:latest -f joiner/Dockerfile .
+# docker build --no-cache -t joiner:latest -f joiner/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

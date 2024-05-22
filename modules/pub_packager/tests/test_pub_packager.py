@@ -21,6 +21,7 @@ class PubPackagerTest(TestCase):
         self.temp_dir_name = self.temp_dir.path
         self.input_path = Path(self.temp_dir_name, 'repo/inputs')
         self.data_path = Path(self.input_path, 'DP1.00066.001/2019/05')
+        self.err_path = Path('errored')
         self.out_path = Path(self.temp_dir_name, 'outputs')
         self.output_path = Path(self.out_path, 'DP1.00066.001/CPER/2019/05')
         self.data_file_1 = Path(self.data_path,
@@ -57,6 +58,7 @@ class PubPackagerTest(TestCase):
     def test_package(self):
         pub_package(data_path=self.data_path,
                 out_path=self.out_path,
+                err_path=self.err_path,
                 product_index=self.product_index,
                 publoc_index=self.publoc_index,
                 date_index=self.date_index,
@@ -67,6 +69,7 @@ class PubPackagerTest(TestCase):
     def test_main(self):
         os.environ['DATA_PATH'] = str(self.data_path)
         os.environ['OUT_PATH'] = str(self.out_path)
+        os.environ['ERR_PATH_PACKAGER'] = str(self.err_path)
         os.environ['PRODUCT_INDEX'] = str(self.product_index)
         os.environ['PUBLOC_INDEX'] = str(self.publoc_index)
         os.environ['DATE_INDEX'] = str(self.date_index)

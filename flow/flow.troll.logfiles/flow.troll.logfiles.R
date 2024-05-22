@@ -37,7 +37,7 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/logjam_load_files')
+#' Sys.setenv(DIR_IN='/home/NEON/ncatolico/pfs/troll_logjam_load_files/23646')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -97,33 +97,39 @@ DirIn <-
                               nameDirSub = NULL,
                               log = log)
 
+# Take stock of our data files. 
+fileData <- base::list.files(DirIn,full.names=TRUE)
+log$debug(base::paste0('Files identified:', fileData))
+
+
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
-foreach::foreach(idxDirIn = DirIn) %dopar% {
-  log$info(base::paste0('Processing path to datum: ', idxDirIn))
-  
+foreach::foreach(idxFileIn = fileData) %dopar% {
+  log$info(base::paste0('Processing path to file: ', idxFileIn))
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
       wrap.troll.logfiles(
-        DirIn=idxDirIn,
+        FileIn=idxFileIn,
         DirOut=Para$DirOut,
         SchmDataOut=SchmDataOut,
         log=log
       ),
       error = function(err) {
         call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
-        
-        # Re-route the failed datum
-        NEONprocIS.base::def.err.datm(
-          err=err,
-          call.stack=call.stack,
-          DirDatm=idxDirIn,
-          DirErrBase=Para$DirErr,
-          RmvDatmOut=TRUE,
-          DirOutBase=Para$DirOut,
-          log=log
-        )
+        log$error(err$message)
+        InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxFileIn, 
+                                                             log = log)
+        DirSub <- strsplit(InfoDirIn$dirRepo,".", fixed = TRUE)[[1]][1]
+        NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = DirSub, 
+                                      log = log)
+        csvname <- DirSub %>%
+          strsplit( "/" ) %>%
+          sapply( tail, 1 )
+        nameFileErr <- base::paste0(Para$DirErr, DirSub, "/",csvname)
+        log$info(base::paste0("Re-routing failed datum path to ", nameFileErr))
+        con <- base::file(nameFileErr, "w")
+        base::close(con)
       }
     ),
     # This simply to avoid returning the error
