@@ -15,19 +15,15 @@ def read_processed_files(client: Client) -> defaultdict[lambda: defaultdict[int]
             pipeline_info = client.pps.inspect_pipeline(pipeline=pps.Pipeline(name=pipeline_name), details=True)
             project_name = pipeline_info.pipeline.project.name
             pipeline_commit_name = f'{project_name}/{pipeline_name}@master'
+            
             for file in client.pfs.glob_file(commit=pfs.Commit.from_uri(pipeline_commit_name), pattern='/????/??/??/*'):
                 path = file.file.path
                 path_parts = path.split('/')
                 pipeline_date_path = f'/{path_parts[1]}/{path_parts[2]}/{path_parts[3]}'
                 processed_date = f'{path_parts[1]}-{path_parts[2]}-{path_parts[3]}'
-                print(f'processed_date: {processed_date}')
-                print(f'pipeline_date_path: {pipeline_date_path}')
+                #print(f'processed_date: {processed_date}')
+                #print(f'pipeline_date_path: {pipeline_date_path}')
                 group_name = path_parts[4]
-                print(f'group_name: {group_name}')
-                count = 0
-                for file in client.pfs.glob_file(commit=pfs.Commit.from_uri(pipeline_commit_name),
-                                                 pattern=f'{pipeline_date_path}/{group_name}/**'):
-                    count +=1
-                    files_by_pipeline[pipeline_name][processed_date] = count
-                print(f'Files count in the pipeline {pipeline_name} for the group {group_name} and processed_date is: {count}')
+                #print(f'group_name: {group_name}')
+                files_by_pipeline[pipeline_name][processed_date] += 1
     return files_by_pipeline
