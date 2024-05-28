@@ -1,0 +1,22 @@
+name: "Build and deploy latest to nonprod"
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: 'read'
+        id-token: 'write'
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: Get short SHA
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+    
+      - name: Build and deploy
+        uses: ./.github/actions/build-and-deploy
+        with:
+            image-tag: "${short_sha}"
