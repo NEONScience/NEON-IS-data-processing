@@ -22,9 +22,6 @@ def read_processed_files(client: Client, l1_pipelines_path: Path) -> defaultdict
                         path_parts = path.split('/')
                         pipeline_date_path = f'/{path_parts[1]}/{path_parts[2]}/{path_parts[3]}'
                         processed_date = f'{path_parts[1]}-{path_parts[2]}-{path_parts[3]}'
-                        # print(f'processed_date: {processed_date}')
-                        # print(f'pipeline_date_path: {pipeline_date_path}')
                         group_name = path_parts[4]
-                        # print(f'group_name: {group_name}')
                         files_by_pipeline[pipeline_name][processed_date] += 1
     return files_by_pipeline

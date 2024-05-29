@@ -36,7 +36,5 @@ def clear_existing_records(db: Db, dag_name: str, pipeline_name: str, processed_
             processed_date = %(processed_date)s
     '''
     with closing(db.connection.cursor()) as cursor:
-       # print(sql.as_string(db.connection))
-
         cursor.execute(sql, dict(dag_name=dag_name, pipeline_name=pipeline_name, processed_date=date_object))
         db.connection.commit()
