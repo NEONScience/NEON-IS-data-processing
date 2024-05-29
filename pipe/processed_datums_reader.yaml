@@ -33,10 +33,14 @@ transform:
     envVar: AUTHORIZATION_TOKEN
     key: token
 input:
-  cron:
-    name: tick
-    spec: "@daily"
-    # overwrite: true
+  cross:
+  - cron:
+      name: tick
+      spec: "@daily"
+  - pfs:
+      name: PIPELINE_NAME_L1
+      repo: level1_pipeline_list
+      glob: "/level1_pipeline_list.txt"
 autoscaling: true
 scheduling_spec:
   node_selector:
