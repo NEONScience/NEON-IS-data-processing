@@ -4,13 +4,9 @@ from collections import defaultdict
 from pathlib import Path
 
 
-# from pachyderm_sdk.api.pps import Pipeline
-
-
 def read_processed_files(client: Client, l1_pipelines_path: Path) -> defaultdict[lambda: defaultdict[int]]:
     pipeline_name = "level1_pipeline_list"
     files_by_pipeline = defaultdict(lambda: defaultdict(int))
-    # source = (pfs.File.from_uri("level1_pipeline_list@master:/level1_pipeline_list.txt"))
     for source in l1_pipelines_path.rglob('*'):
         if source.is_file():
             with (client.pfs.pfs_file(file=source) as pfs_file):
