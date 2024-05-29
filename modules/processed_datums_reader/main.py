@@ -15,6 +15,7 @@ def main() -> None:
     db_schema = env.str('DB_SCHEMA')
     db_user = env.str('DB_USER')
     log_level = env.log_level('LOG_LEVEL')
+    l1_pipelines_path: Path = env.path('PIPELINE_NAME_L1', None)
     log_config.configure(log_level)
     db = db_connector.connect(ConnectionParameters(
         host=db_host,
@@ -24,7 +25,7 @@ def main() -> None:
         schema=db_schema
     ))
     client = Client.new_in_cluster(auth_token=authorization_token)
-    app.run(client, db)
+    app.run(client, db, l1_pipelines_path)
 
 
 if __name__ == '__main__':
