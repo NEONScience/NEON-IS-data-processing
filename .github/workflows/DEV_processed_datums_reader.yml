@@ -1,10 +1,10 @@
-name: DEV-errored-datums-reader
+name: DEV-processed-datums-reader
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'pipe/errored_datums_reader.yaml'
+      - 'pipe/processed_datums_reader.yaml'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 jobs:

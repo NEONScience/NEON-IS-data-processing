@@ -1,8 +1,8 @@
-name: DEV-errored-datums-reader
+name: PROD-errored-datums-reader
 on:
   push:
     branches:
-      - 'master'
+      - 'prod'
     paths:
       - 'pipe/errored_datums_reader.yaml'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
@@ -55,8 +55,8 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
+      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
