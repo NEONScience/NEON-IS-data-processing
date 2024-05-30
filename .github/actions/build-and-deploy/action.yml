@@ -33,7 +33,7 @@ runs:
 
       - name: Build image
         shell: bash
-        run: docker build ./modules/group_loader/ --build-arg TAG=${{ inputs.image-tag }} --no-cache --tag ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
+        run: docker build -f ./modules/group_loader/Dockerfile  --build-arg TAG=${{ inputs.image-tag }} --no-cache --tag ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
 
       - name: Push image
         shell: bash
