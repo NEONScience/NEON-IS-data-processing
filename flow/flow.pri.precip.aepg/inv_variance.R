@@ -12,6 +12,10 @@ for (file in files){
   precip <- rbind(precip, df)
 }
 
+#not sure if it matters but pachy seems to not add source_id or site_id to the filled in data
+precip$source_id = precip$source_id[1] 
+precip$site_id = precip$site_id[1]
+
 #nevermind I just needed to go further in the pipeline! 
 ########################################################
 #This fudges the data a bit because the inconsistent time stamps made it hard to fill in NAs for the missing times
@@ -38,18 +42,35 @@ for (file in files){
 
 precip$avgtmi <-  lubridate::floor_date(as.POSIXct(precip$readout_time, tz = 'UTC'), unit = '5 min')
 
+#original ATBD Nulls out all Precip when 2 or more gauges are unstable for entire average 
+
 precip5min <- precip %>% dplyr::group_by(avgtmi, source_id, site_id) %>%
   dplyr::summarise(sensor_depth = mean(total_precipitation_depth, na.rm = T), # reported from sensor
                   gauge1_depth = mean(strain_gauge1_depth, na.rm = T),
                   gauge2_depth = mean(strain_gauge2_depth, na.rm = T),
                   gauge3_depth = mean(strain_gauge3_depth, na.rm = T),
-                  stability_1 = sum(strain_gauge1_stability, na.rm = T), #should be 30
-                  stability_2 = sum(strain_gauge2_stability, na.rm = T), 
-                  stability_3 = sum(strain_gauge3_stability, na.rm = T), 
-                  na_count_1 =    length(which(is.na(strain_gauge1_depth))),
-                  na_count_2 =    length(which(is.na(strain_gauge2_depth))),
-                  na_count_3 =    length(which(is.na(strain_gauge3_depth))), 
-                  tot_row = length(site_id)) #should be ~30 
+                  stability_1PassQM = round(((length(which(strain_gauge1_stability==1)))/30)*100), 
+                  stability_2PassQM = round(((length(which(strain_gauge1_stability==1)))/30)*100), 
+                  stability_3PassQM = round(((length(which(strain_gauge1_stability==1)))/30)*100), 
+                  stability_1NAQM = round(((length(which(is.na(strain_gauge1_stability)))+length(which(is.nan(strain_gauge1_stability))))/30)*100),
+                  stability_2NAQM = round(((length(which(is.na(strain_gauge2_stability)))+length(which(is.nan(strain_gauge2_stability))))/30)*100),
+                  stability_3NAQM = round(((length(which(is.na(strain_gauge3_stability)))+length(which(is.nan(strain_gauge3_stability))))/30)*100), 
+                  stability_1FailQM = round(((length(which(strain_gauge1_stability==0)))/30)*100), 
+                  stability_2FailQM = round(((length(which(strain_gauge2_stability==0)))/30)*100),
+                  stability_3FailQM = round(((length(which(strain_gauge3_stability==0)))/30)*100)) %>% 
+  #or more strain gauges are unstable for the entire averaging period then no depth information will be reported for that time interval (i.e., 𝐷̅1,2,3 = 𝑵𝑼𝑳𝑳)
+  # PS when looking at grafana there are very few instances of stability = 0
+  dplyr::mutate(gauge1_depth = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA,
+                                                 TRUE ~ gauge1_depth),
+                gauge2_depth = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA,
+                                                 TRUE ~ gauge1_depth),
+                gauge3_depth = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA,
+                                                 TRUE ~ gauge1_depth),
+                unstableQF = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA,
+                                              TRUE ~ 0))
+                
+                  
+  
                   
 ### calculate delta variances (adopted from dsmith r code)
 
@@ -115,11 +136,13 @@ scaled_pcp <- rbind(scaled_pcp, df)
 # avg
 # sensor
 # scaled
+
 scaled_pcp <- as.data.frame(scaled_pcp) %>% 
               arrange(avgtmi) %>% 
               mutate(avg_5min_pcp =  avg_depth - lag(avg_depth), 
                      scaled_5min_pcp = scaled_total_depth - lag(scaled_total_depth), 
                      sensor_5min_pcp = sensor_depth - lag(sensor_depth))
+
 library(ggplot2)
 
 ggplot(scaled_pcp, aes(x = avgtmi)) +
