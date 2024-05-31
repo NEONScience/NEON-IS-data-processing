@@ -1,5 +1,5 @@
-name: "Build and deploy neon-is-group-loader module"
-description: "Builds the service, pushes the image to Artifact Registry"
+name: "Build a module and push the image"
+description: "Builds the module, pushes the image to Artifact Registry"
 
 inputs:
    region:
@@ -9,10 +9,6 @@ inputs:
      required: false
      default: neon-shared-service/neonscience/neon-is-group-loader
    image-tag:
-     required: true
-   project:
-     required: true
-   service:
      required: true
 
 runs:

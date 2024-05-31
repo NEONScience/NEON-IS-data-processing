@@ -1,4 +1,4 @@
-name: "Build and deploy latest to nonprod"
+name: "Build and push latest to nonprod"
 
 on:
   workflow_dispatch:
