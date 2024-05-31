@@ -4,6 +4,7 @@
 
 library(magrittr)
 library(dplyr)
+
 files <- list.files('/scratch/pfs/aepg600m/tb/regl/aepg600m/2023/', recursive = T, pattern = 'CFGLOC102875.*[0-9].parquet')
 
 precip <- data.frame()
@@ -42,8 +43,6 @@ precip$site_id = precip$site_id[1]
 
 precip$avgtmi <-  lubridate::floor_date(as.POSIXct(precip$readout_time, tz = 'UTC'), unit = '5 min')
 
-#original ATBD Nulls out all Precip when 2 or more gauges are unstable for entire average 
-
 precip5min <- precip %>% dplyr::group_by(avgtmi, source_id, site_id) %>%
   dplyr::summarise(sensor_depth = mean(total_precipitation_depth, na.rm = T), # reported from sensor
                   gauge1_depth = mean(strain_gauge1_depth, na.rm = T),
@@ -63,14 +62,14 @@ precip5min <- precip %>% dplyr::group_by(avgtmi, source_id, site_id) %>%
   dplyr::mutate(gauge1_depth = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA,
                                                  TRUE ~ gauge1_depth),
                 gauge2_depth = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA,
-                                                 TRUE ~ gauge1_depth),
+                                                 TRUE ~ gauge2_depth),
                 gauge3_depth = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA,
-                                                 TRUE ~ gauge1_depth),
+                                                 TRUE ~ gauge3_depth),
                 unstableQF = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA,
                                               TRUE ~ 0))
-                
+
                   
-  
+
                   
 ### calculate delta variances (adopted from dsmith r code)
 
@@ -133,6 +132,8 @@ scaled_pcp <- rbind(scaled_pcp, df)
 
 
 ### next calculate lag values of the sensor vs the calculated with cal coefficients to see if they are similar. 
+
+#need to add more testing here, just a couple visuals for now. 
 # avg
 # sensor
 # scaled
