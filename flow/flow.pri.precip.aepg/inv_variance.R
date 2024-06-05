@@ -7,7 +7,7 @@ library(dplyr)
 
 #pick a site
 #OSBS
-#files <- list.files('/scratch/pfs/aepg600m/tb/regl/aepg600m/2023/', recursive = T, pattern = 'CFGLOC102875.*[0-9].parquet')
+files <- list.files('/scratch/pfs/aepg600m/tb/regl/aepg600m/2023/', recursive = T, pattern = 'CFGLOC102875.*[0-9].parquet')
 
 #SRER 
 #files <- list.files('/scratch/pfs/aepg600m/tb/regl/aepg600m/2023/', recursive = T, pattern = 'CFGLOC104646.*[0-9].parquet')
@@ -22,13 +22,16 @@ library(dplyr)
 #files <- list.files('/scratch/pfs/aepg600m/tb/aepg600m/2023/', recursive = T, pattern = '46911.*[0-9].parquet')
 
 #TALL
-files <- list.files('/scratch/pfs/aepg600m/tb/aepg600m/2023/', recursive = T, pattern = '26991.*[0-9].parquet')
+#files <- list.files('/scratch/pfs/aepg600m/tb/aepg600m/2023/', recursive = T, pattern = '26991.*[0-9].parquet')
 
  
 #ready in pachy files
 precip <- data.frame()
 for (file in files){
-  df <- NEONprocIS.base::def.read.parq(paste0('/scratch/pfs/aepg600m/tb/aepg600m/2023/', file))
+  df <- tryCatch (
+        {NEONprocIS.base::def.read.parq(paste0('/scratch/pfs/aepg600m/tb/aepg600m/2023/', file))},
+         error = function(e) { NEONprocIS.base::def.read.parq(paste0('/scratch/pfs/aepg600m/tb/regl/aepg600m/2023/', file))}
+    )
   precip <- rbind(precip, df)
 }
 
@@ -101,7 +104,7 @@ scaled_pcp <- data.frame()
 
 for(i in seq_along(list_of_df)) {
 
-  
+  browser()
   ##############################################
   df <- list_of_df[[i]]
   
