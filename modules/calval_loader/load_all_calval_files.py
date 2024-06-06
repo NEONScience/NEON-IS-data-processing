@@ -19,7 +19,7 @@ def load() -> None:
     in_path: Path = env.path('IN_PATH')
     # print("IN_PATH value is:", in_path)
     output_directory: Path = env.path('OUT_PATH')
-    sensor_type = env.str('SOURCE_TYPE')
+    sensor_type = env.list('SOURCE_TYPE')
     db_config = read_from_mount(Path('/var/db_secret'))
     storage_client = storage.Client()
     ingest_bucket = storage_client.bucket(ingest_bucket_name)
@@ -44,7 +44,7 @@ def load() -> None:
                         root = ET.fromstring(blob.download_as_string())
                         asset_id = root.find('SensorID').find('MxAssetID').text
                         avro_schema_name = get_avro_schema_name(connector.get_connection(), asset_id)
-                        if ((avro_schema_name != None) and (avro_schema_name == sensor_type)):
+                        if ((avro_schema_name != None) and (avro_schema_name in sensor_type)):
                             stream_id = root.find('StreamCalVal').find('StreamID').text
                             stream_name = get_calibration_stream_name(connector.get_connection(), avro_schema_name,
                                                                       stream_id)
