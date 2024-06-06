@@ -11,9 +11,10 @@ from errored_datums_reader.tests.db_connector_iam import read_environment
 
 
 @unittest.skip('Integration test.')
-class ReaderTest(unittest.TestCase):
+class ErroredDatumsReaderTest(unittest.TestCase):
 
     def setUp(self):
+        """Create the database client."""
         self.client = Client.from_config()
         self.db = db_connector_iam.connect(read_environment())
 
