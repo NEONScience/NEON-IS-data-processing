@@ -1,20 +1,21 @@
 ####
-# This dockerfile will build the group loader module.
+#
+# This dockerfile will build the errored datums reader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t group_loader:latest -f group_loader/Dockerfile .
+# docker build --no-cache -t errored_datums_reader:latest -f errored_datums_reader/Dockerfile .
+#
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="modules/group_loader"
-ARG COMMON_DIR="modules/common"
-ARG DATA_ACCESS_DIR="modules/data_access"
+ARG APP_DIR="processed_datums_reader"
+ARG COMMON_DIR="common"
+ARG DATA_ACCESS_DIR="data_access"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt
-COPY ${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt
+COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
@@ -28,8 +29,7 @@ RUN update-ca-trust && \
             python39-devel \
             python39-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/data-access-requirements.txt && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
     microdnf clean all --disableplugin=subscription-manager && \
     groupadd -g 9999 appuser && \
