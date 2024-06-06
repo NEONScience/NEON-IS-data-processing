@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from collections import defaultdict
 import unittest
+from collections import defaultdict
 
 from pachyderm_sdk import Client
 
@@ -10,6 +10,7 @@ from errored_datums_reader.tests import db_connector_iam
 from errored_datums_reader.tests.db_connector_iam import read_environment
 
 
+@unittest.skip('Integration test.')
 class ReaderTest(unittest.TestCase):
 
     def setUp(self):
