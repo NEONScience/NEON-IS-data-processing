@@ -57,8 +57,8 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
+      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
       PATHS: 'pipe/errored_datums_reader'
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
