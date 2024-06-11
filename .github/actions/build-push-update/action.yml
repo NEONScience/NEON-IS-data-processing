@@ -54,9 +54,10 @@ runs:
 
       - name: Commit the pipeline yamls
         run: |
-          git config --local user.email "choim@battelleecology.org"
-          git config --local user.name "Github Actions"
-          git add ****
+          git config --global user.email "choim@battelleecology.org"
+          git config --global user.name "choim"
+          git diff --name-only
+          git add .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
           git push origin || echo "No changes to commit"
         
