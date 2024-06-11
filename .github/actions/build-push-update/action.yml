@@ -42,7 +42,7 @@ runs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-            any::tidyverse
+            any::dplyr
             any::arrow
             any::rlang
             
@@ -51,4 +51,12 @@ runs:
         
       - name: update pipeline spec yamls
         run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}" "${{ inputs.image-tag }}"
+
+      - name: Commit the pipeline yamls
+        run: |
+          git config --local user.email "choim@battelleecology.org"
+          git config --local user.name "Github Actions"
+          git add ****
+          git commit -m "pipeline yamls updated"  || echo "No yamls updated"
+          git push origin || echo "No changes to commit"
         
