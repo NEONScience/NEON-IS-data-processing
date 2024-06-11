@@ -49,7 +49,7 @@ runs:
       - name: Check out repository
         uses: actions/checkout@v3
         
-      - name: update pipeline spec yamls
+      - name: Update pipeline spec yamls
         run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}" "${{ inputs.image-tag }}"
 
       - name: Commit the pipeline yamls
