@@ -1,10 +1,6 @@
 name: "Build a module and push the image"
 description: "Builds the module, pushes the image to Artifact Registry"
 
-on:
-  push:
-    branches: choim-NSE8879
-
 inputs:
    region:
      required: false
