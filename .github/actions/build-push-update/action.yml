@@ -11,10 +11,6 @@ inputs:
    image-tag:
      required: true
 
-on:
-  push:
-    branches: choim-NSE8879
-
 runs:
    using: "composite"
    steps: 
