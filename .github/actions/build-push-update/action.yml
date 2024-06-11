@@ -63,5 +63,5 @@ runs:
           git diff --name-only
           git add .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin || echo "No changes to commit"
+          git push origin choim-NSE8879 || echo "No changes to commit"
         
