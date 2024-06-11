@@ -42,7 +42,7 @@ runs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-            any::dplyr
+            any::tidyverse
             any::arrow
             any::rlang
             
