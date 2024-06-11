@@ -1,6 +1,10 @@
 name: "Build a module and push the image"
 description: "Builds the module, pushes the image to Artifact Registry"
 
+on:
+  push:
+    branches: choim-NSE8879
+
 inputs:
    region:
      required: false
@@ -54,8 +58,8 @@ runs:
 
       - name: Commit the pipeline yamls
         run: |
-          git config --global user.email "choim@battelleecology.org"
-          git config --global user.name "choim"
+          git config --local user.email "actions@github.com"
+          git config --local user.name "gitHub Actions"
           git diff --name-only
           git add .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
