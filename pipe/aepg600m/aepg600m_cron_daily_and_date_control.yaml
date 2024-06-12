@@ -3,20 +3,53 @@ pipeline:
   name: aepg600m_cron_daily_and_date_control
 transform:
   image: quay.io/battelleecology/neon-is-date-cntl:00ddb6a7
-  cmd: ["/bin/bash"]
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
     # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
-    # start_date field in the site-list file is the earliest date to pull data from a site
-    # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
-    # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
-    OUT_PATH: /pfs/out
-    START_DATE: "2023-09-25" # Inclusive
-    END_DATE: "2023-12-31"
-    SOURCE_TYPE: "aepg600m"
-  stdin:
-  - "#!/bin/bash"
-  - ./cron_daily_and_date_control/populate_site_dates.sh
+    # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be LAG_DAYS_END ago. 
+    # NOTE that the aepg600m needs to handle both heated and unheated source types, and have different site-dates for kafka and trino loaders.
+    # This is because some kafka topics start with <site>dfir instead of simply <site>, which the trino loader cannot handle
+    LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
+    START_DATE: "2023-01-01"
+    #END_DATE: "2024-06-01"
+    OUT_PATH_KAFKA: /pfs/out/kafka
+    OUT_PATH_TRINO: /pfs/out/trino
+    SOURCE_TYPE_NONHEATED: "aepg600m"
+    SOURCE_TYPE_HEATED: "aepg600m_heated"
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Non-heated - Kafka
+    export SOURCE_TYPE=$SOURCE_TYPE_NONHEATED
+    export SITE_FILE=$SITE_FILE_NONHEATED_KAFKA
+    export OUT_PATH=$OUT_PATH_KAFKA
+    ./cron_daily_and_date_control/populate_site_dates.sh
+    
+    # Heated - Kafka
+    export SOURCE_TYPE=$SOURCE_TYPE_HEATED
+    export SITE_FILE=$SITE_FILE_HEATED_KAFKA
+    export OUT_PATH=$OUT_PATH_KAFKA
+    ./cron_daily_and_date_control/populate_site_dates.sh
+    
+    # Non-heated - Trino
+    export SOURCE_TYPE=$SOURCE_TYPE_NONHEATED
+    export SITE_FILE=$SITE_FILE_NONHEATED_TRINO
+    export OUT_PATH=$OUT_PATH_TRINO
+    ./cron_daily_and_date_control/populate_site_dates.sh
+    
+    # Heated - Trino
+    export SOURCE_TYPE=$SOURCE_TYPE_HEATED
+    export SITE_FILE=$SITE_FILE_HEATED_TRINO
+    export OUT_PATH=$OUT_PATH_TRINO
+    ./cron_daily_and_date_control/populate_site_dates.sh
+    
+    EOF
 input:
   cross:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
@@ -25,9 +58,21 @@ input:
       spec: "0 7 * * *" # Run at 00:00 MST (07:00 GMT)
       overwrite: true
   - pfs:
-      name: SITE_FILE
+      name: SITE_FILE_HEATED_KAFKA
       repo: aepg600m_site_list
-      glob: /site-list.json
+      glob: /site-list-heated-kafka.json
+  - pfs:
+      name: SITE_FILE_NONHEATED_KAFKA
+      repo: aepg600m_site_list
+      glob: /site-list-nonheated-kafka.json
+  - pfs:
+      name: SITE_FILE_HEATED_TRINO
+      repo: aepg600m_site_list
+      glob: /site-list-heated-trino.json
+  - pfs:
+      name: SITE_FILE_NONHEATED_TRINO
+      repo: aepg600m_site_list
+      glob: /site-list-nonheated-trino.json
 resource_requests:
   memory: 100M
   cpu: 1
