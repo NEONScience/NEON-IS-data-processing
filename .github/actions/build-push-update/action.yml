@@ -29,15 +29,10 @@ runs:
 
       - name: Build image with multi tags
         shell: bash
-<<<<<<< HEAD:.github/actions/build-push-update/action.yml
         run: docker build . -f ./modules/group_loader/Dockerfile  --build-arg TAG=${{ inputs.image-tag }} --no-cache --t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
-=======
-        run: docker build . --build-arg TAG=${{ inputs.image-tag }} --no-cache -f ./modules/group_loader/Dockerfile -t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }} -t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:v1.0.0
->>>>>>> master:.github/actions/build-and-push/action.yml
 
       - name: Push image with all tags
         shell: bash
-<<<<<<< HEAD:.github/actions/build-push-update/action.yml
         run: docker push ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
 
       - name: Set up R
@@ -69,6 +64,3 @@ runs:
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
           git push origin group-loader-yaml-updates || echo "No changes to commit"
         
-=======
-        run: docker push ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }} --all-tags
->>>>>>> master:.github/actions/build-and-push/action.yml
