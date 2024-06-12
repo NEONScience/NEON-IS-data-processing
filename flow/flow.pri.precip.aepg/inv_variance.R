@@ -66,29 +66,50 @@ if (precip$site_id[1] %in% c('PUUM', 'TALL', 'GUAN')){
 
 precip$avgtmi <-  lubridate::floor_date(as.POSIXct(precip$readout_time, tz = 'UTC'), unit = '5 min')
 
-precip5min <- precip %>% dplyr::group_by(avgtmi, source_id, site_id) %>%
+
+#set all frequencies to NA if the gauge is not stable
+#ATBD NEON.DOC.000898 pg 7 eq 1
+
+precip <- precip %>% mutate(strain_gauge1_depth = dplyr::case_when(strain_gauge1_stability != 1 ~ NA_real_,
+                                                                  TRUE ~ strain_gauge1_depth),
+                            strain_gauge2_depth = dplyr::case_when(strain_gauge2_stability != 1~ NA_real_,
+                                                                  TRUE ~ strain_gauge2_depth),
+                            strain_gauge3_depth = dplyr::case_when(strain_gauge3_stability != 1 ~ NA_real_,
+                                                                  TRUE ~ strain_gauge3_depth) )
+
+
+precip$strain_gauge1_depth <- ifelse(any(is.na(c(precip$strain_gauge1_depth, precip$strain_gauge2_depth, precip$strain_gauge3_depth))), NA, precip$strain_gauge1_depth)
+#equation 2 in pachy
+
+#take 5 minute average, calculate percent of unstable gauges, Null out all 3 if gauges are unstable. 
+precip5min <- preciptst %>% dplyr::group_by(avgtmi, source_id, site_id) %>%
   dplyr::summarise(sensor_depth = mean(total_precipitation_depth, na.rm = T), # reported from sensor
-                  gauge1_depth = mean(strain_gauge1_depth, na.rm = T),
-                  gauge2_depth = mean(strain_gauge2_depth, na.rm = T),
-                  gauge3_depth = mean(strain_gauge3_depth, na.rm = T),
+                  gauge1_depth = mean(strain_gauge1_depth, na.rm = T), # eq 3 modified to 5 minute
+                  gauge2_depth = mean(strain_gauge2_depth, na.rm = T),  # eq 3 modified to 5 minute
+                  gauge3_depth = mean(strain_gauge3_depth, na.rm = T),  # eq 3 modified to 5 minute
+
+                  #does not play into final QF but does null out some values if not stable enough. 
                   stability_1PassQM = round(((length(which(strain_gauge1_stability==1)))/30)*100), 
-                  stability_2PassQM = round(((length(which(strain_gauge1_stability==1)))/30)*100), 
-                  stability_3PassQM = round(((length(which(strain_gauge1_stability==1)))/30)*100), 
+                  stability_2PassQM = round(((length(which(strain_gauge2_stability==1)))/30)*100), 
+                  stability_3PassQM = round(((length(which(strain_gauge3_stability==1)))/30)*100), 
                   stability_1NAQM = round(((length(which(is.na(strain_gauge1_stability)))+length(which(is.nan(strain_gauge1_stability))))/30)*100),
                   stability_2NAQM = round(((length(which(is.na(strain_gauge2_stability)))+length(which(is.nan(strain_gauge2_stability))))/30)*100),
                   stability_3NAQM = round(((length(which(is.na(strain_gauge3_stability)))+length(which(is.nan(strain_gauge3_stability))))/30)*100), 
-                  stability_1FailQM = round(((length(which(strain_gauge1_stability==0)))/30)*100), 
-                  stability_2FailQM = round(((length(which(strain_gauge2_stability==0)))/30)*100),
-                  stability_3FailQM = round(((length(which(strain_gauge3_stability==0)))/30)*100)) %>% 
+                  stability_1SearchQM = round(((length(which(strain_gauge1_stability==0)))/30)*100), 
+                  stability_2SearchQM = round(((length(which(strain_gauge2_stability==0)))/30)*100),
+                  stability_3SearchQM = round(((length(which(strain_gauge3_stability==0)))/30)*100),
+                  stability_1FailQM = round(((length(which(strain_gauge1_stability==-1)))/30)*100), 
+                  stability_2FailQM = round(((length(which(strain_gauge2_stability==-1)))/30)*100),
+                  stability_3FailQM = round(((length(which(strain_gauge3_stability==-1)))/30)*100)) %>% 
   #or more strain gauges are unstable for the entire averaging period then no depth information will be reported for that time interval (i.e., 𝐷̅1,2,3 = 𝑵𝑼𝑳𝑳)
   # PS when looking at grafana there are very few instances of stability = 0
-  dplyr::mutate(gauge1_depth = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA_real_,
+  dplyr::mutate(gauge1_depth = dplyr::case_when(rowSums(cbind(stability_1FailQM,  stability_2FailQM, stability_3FailQM)) >= 200 ~ NA_real_,
                                                  TRUE ~ gauge1_depth),
-                gauge2_depth = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA_real_,
+                gauge2_depth = dplyr::case_when(rowSums(cbind(stability_1FailQM, stability_2FailQM, stability_3FailQM)) >= 200 ~ NA_real_,
                                                  TRUE ~ gauge2_depth),
-                gauge3_depth = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA_real_,
+                gauge3_depth = dplyr::case_when(rowSums(cbind(stability_1FailQM, stability_2FailQM, stability_3FailQM))  >= 200 ~ NA_real_,
                                                  TRUE ~ gauge3_depth),
-                unstableQF = dplyr::case_when(stability_1FailQM + stability_2FailQM + stability_3FailQM > 200 ~ NA_real_,
+                unstableQF = dplyr::case_when(rowSums(cbind(stability_1FailQM, stability_2FailQM, stability_3FailQM)) >= 200 ~ 1,
                                               TRUE ~ 0))
 
                   
@@ -104,26 +125,11 @@ scaled_pcp <- data.frame()
 
 for(i in seq_along(list_of_df)) {
 
-  browser()
   ##############################################
-  df <- list_of_df[[i]]
   
-  # #test two missing over period
-  # if (i == 1){
-  # df$gauge1_depth <- NA
-  # df$gauge2_depth <- NA}
-  # 
-  # # test one missing (should still work)
-  # if (i == 2){
-  #   df$gauge1_depth <- NA
-  #   }
-  #test all 3 missing
-  # if (i == 3){
-  #   df$gauge1_depth <- NA
-  #   df$gauge2_depth <- NA
-  #   df$gauge3_depth <- NA
-  #   }
-
+  # This doesn't handle a single missing point very well. further QC after? 
+  
+  df <- list_of_df[[i]]
   
   #avg of three gauges
   df$avg_depth <- apply(df[,c('gauge1_depth', 'gauge2_depth', 'gauge3_depth')], MARGIN = 1, FUN = mean, na.rm = T)
@@ -235,10 +241,21 @@ ggplot(scaled_pcp, aes(x = avgtmi)) +
   geom_line(aes(y = scaled_total_depth, color = 'Scaled Depth')) + 
   #sensor started offset from our calc values. See what it looks like without it. 
   #scaled_pcp$sensor_depth[1]-scaled_pcp$scaled_total_depth[1] = 40.83
-  #geom_line(aes(y = sensor_depth - 40.83, color = 'Sensor Depth minus initial offset')) + #OSBS
+  geom_line(aes(y = sensor_depth - 40.83, color = 'Sensor Depth minus initial offset')) + #OSBS
   #geom_line(aes(y = sensor_depth - 40.83, color = 'Sensor Depth minus initial offset')) + #SRER
   ggtitle('Compare calculated depths') -> p2
 
 plotly::ggplotly(p2)   
+
+t.test((scaled_pcp$scaled_5min_pcp - scaled_pcp$sensor_5min_pcp), mu = 0)
+
+scaled_pcp %>% filter(avgtmi > '2023-09-26') %>% 
+ggplot()+
+  geom_point(aes(x = scaled_5min_pcp, y = sensor_5min_pcp))
+
+scaled_pcp %>% filter(avgtmi > '2023-09-26') %>% 
+  ggplot()+
+  geom_point(aes(x = avgtmi, y = scaled_5min_pcp - sensor_5min_pcp))
+
 
 
