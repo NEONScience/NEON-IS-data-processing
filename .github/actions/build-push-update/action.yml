@@ -27,11 +27,11 @@ runs:
         shell: bash
         run: gcloud auth configure-docker ${{ inputs.region }}-docker.pkg.dev --quiet
 
-      - name: Build image with multi tags
+      - name: Build image
         shell: bash
         run: docker build . -f ./modules/group_loader/Dockerfile  --build-arg TAG=${{ inputs.image-tag }} --no-cache --t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
 
-      - name: Push image with all tags
+      - name: Push image
         shell: bash
         run: docker push ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
 
