@@ -225,12 +225,13 @@ wrap.troll.logfiles.fill <- function(DirInLogs=NULL,
     dataOut<-dataOut[!duplicated(dataOut$readout_time),]
     dataOut<-dataOut[dataOut$readout_time<timeBgn+86400,]
     if(interval=="1min" & nrow(dataOut)>1440){
-      log$error(base::paste0('ERROR more than 1440 rows in merged 1 minute data: ', DirIn))
-      base::stop()
+      log$debug(base::paste0('ERROR more than 1440 rows in merged 1 minute data: ', DirIn))
+      dataOut<-dataOut[1:1440,]
+      
     }
     if(interval=="5min" & nrow(dataOut)>288){
-      log$error(base::paste0('ERROR more than 288 rows in merged 5 minute data: ', DirIn))
-      base::stop()
+      log$debug(base::paste0('ERROR more than 288 rows in merged 5 minute data: ', DirIn))
+      dataOut<-dataOut[1:288,]
     }
     #add in columns to update
     dataOut$pressureLogFlag<-0
