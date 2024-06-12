@@ -43,11 +43,11 @@ runs:
 
       - name: Install R packages   
         uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: |
-            any::tidyverse
-            any::arrow
-            any::rlang
+        # with:
+        #   packages: |
+        #     any::tidyverse
+        #     any::arrow
+        #     any::rlang
 
       - name: Update pipeline spec yamls
         shell: bash
@@ -58,8 +58,9 @@ runs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
+          git checkout -b group-loader-yaml-updates
           git diff --name-only
           git add .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin || echo "No changes to commit"
+          git push origin group-loader-yaml-updates || echo "No changes to commit"
         
