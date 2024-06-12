@@ -30,9 +30,9 @@ transform:
 
     # Select empty files based on source_type
     if [ $source_type = "aepg600m_heated" ]; then 
-      export EMPTY_FILE_PATH=$EMPTY_FILE_PATH_NONHEATED
-    elif [ $source_type = "aepg600m" ]; then 
       export EMPTY_FILE_PATH=$EMPTY_FILE_PATH_HEATED
+    elif [ $source_type = "aepg600m" ]; then 
+      export EMPTY_FILE_PATH=$EMPTY_FILE_PATH_NONHEATED
     fi
       
     # Run first module - filter-joiner (using environment variables below as input parameters)
