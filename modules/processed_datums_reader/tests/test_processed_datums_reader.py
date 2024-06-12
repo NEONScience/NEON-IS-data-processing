@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from collections import defaultdict
 import unittest
+from collections import defaultdict
 
 from pachyderm_sdk import Client
 
@@ -10,9 +10,11 @@ from errored_datums_reader.tests import db_connector_iam
 from errored_datums_reader.tests.db_connector_iam import read_environment
 
 
-class ReaderTest(unittest.TestCase):
+@unittest.skip('Integration test.')
+class ProcessedDatumsReaderTest(unittest.TestCase):
 
     def setUp(self):
+        """Create the database client."""
         self.client = Client.from_config()
         self.db = db_connector_iam.connect(read_environment())
 
