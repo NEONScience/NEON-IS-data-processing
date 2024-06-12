@@ -2,7 +2,7 @@
 pipeline:
   name: l2130i_raw_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v3.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v3.3.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
