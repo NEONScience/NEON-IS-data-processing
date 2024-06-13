@@ -24,11 +24,11 @@ input:
   - pfs:
       name: DIR_IN
       repo: aepg600m_location_asset
-      glob: /aepg600m/*
+      glob: /*/*
   - pfs:
       name: FILE_YEAR
       repo: aepg600m_cron_daily_and_date_control
-      glob: /data_year*.txt
+      glob: /trino/data_year*.txt
 parallelism_spec:
   constant: 2
 autoscaling: true

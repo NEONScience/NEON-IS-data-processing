@@ -1,0 +1,72 @@
+---
+pipeline:
+  name: processed_datums_reader
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/processed_datums_reader:test_1
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m processed_datums_reader.main
+  env:
+    LOG_LEVEL: DEBUG
+    
+  secrets:
+  - name: pdr-secret
+    envVar: DB_HOST
+    key: hostname
+  - name: pdr-secret
+    envVar: DB_USER
+    key: username
+  - name: pdr-secret
+    envVar: DB_PASSWORD
+    key: password
+  - name: pdr-secret
+    envVar: DB_NAME
+    key: database
+  - name: pdr-secret
+    envVar: DB_SCHEMA
+    key: schema
+  - name: errored-datums-repo-reader-secret
+    envVar: AUTHORIZATION_TOKEN
+    key: token
+input:
+  cross:
+  - cron:
+      name: tick
+      spec: "@daily"
+  - pfs:
+      name: PIPELINE_NAME_L1
+      repo: level1_pipeline_list
+      glob: "/level1_pipeline_list.txt"
+autoscaling: true
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+pod_patch: |-
+  [
+    { "op": "replace",
+      "path":"/containers/1/resources/requests/memory",
+      "value":"64M"
+    },
+    { "op": "replace",
+      "path": "/containers/1/resources/requests/cpu",
+      "value": "0.5"
+    }
+  ]

@@ -13,11 +13,31 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH
     mkdir -p $OUT_PATH
+    
+    # Detect the source_type
+    unset source_type
+    if [ ${LOCATION_PATH+x} ]; then 
+      export SOURCE_TYPE_PATH=$LOCATION_PATH
+    elif [ ${DATA_PATH+x} ]; then 
+      export SOURCE_TYPE_PATH=$DATA_PATH
+    fi
+    source_type=$(echo $SOURCE_TYPE_PATH | cut -f 4 -d "/")
+    echo "source_type: $source_type"
+
+    # Select empty files based on source_type
+    if [ $source_type = "aepg600m_heated" ]; then 
+      export EMPTY_FILE_PATH=$EMPTY_FILE_PATH_HEATED
+    elif [ $source_type = "aepg600m" ]; then 
+      export EMPTY_FILE_PATH=$EMPTY_FILE_PATH_NONHEATED
+    fi
+      
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m date_gap_filler.date_gap_filler_main
+    
     # Run second module - regularize
     Rscript ./flow.rglr.R \
       DirIn=/tmp/pfs/date_filled \
@@ -54,17 +74,22 @@ transform:
 input:
   cross:
   - pfs:
-      name: EMPTY_FILE_PATH
+      name: EMPTY_FILE_PATH_NONHEATED
       repo: aepg600m_empty_files
       glob: /aepg600m
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - pfs:
+      name: EMPTY_FILE_PATH_HEATED
+      repo: aepg600m_empty_files
+      glob: /aepg600m_heated
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - group:
     - pfs:
         name: DATA_PATH
         repo: aepg600m_location_group_and_restructure
         # For full-scale daily processing, glob should be /aepg600m/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /aepg600m/(*/*/*/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
-        #glob: /aepg600m/(*/*/*)
-        glob: /aepg600m/(*/*/*/(CFGLOC102875|CFGLOC104646))
+        glob: /(*/*/*/*)
+        #glob: /aepg600m/(*/*/*/(CFGLOC102875|CFGLOC104646))
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
@@ -72,17 +97,17 @@ input:
           name: LOCATION_PATH
           repo: aepg600m_location_active_dates_assignment
           # For full-scale daily processing, glob should be /aepg600m/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /aepg600m/((*/*/*)/(CFGLOC100445|CFGLOC100218|CFGLOC100219|CFGLOC100446|CFGLOC100449|CFGLOC100087))
-          #glob: /aepg600m/(*/*/*)
-          glob: /aepg600m/((*/*/*)/(CFGLOC102875|CFGLOC104646))
+          glob: /(*/*/*/*)
+          #glob: /aepg600m/((*/*/*)/(CFGLOC102875|CFGLOC104646))
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
-          #joinOn: $1
-          joinOn: $2
+          joinOn: $1
+          #joinOn: $2
           group_by: $1
           empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       - pfs:
           name: DATE_LIMITER_PATH
           repo: aepg600m_cron_daily_and_date_control
-          glob: /aepg600m/(*/*/*)
+          glob: /trino/(*/*/*/*)
           joinOn: $1
           group_by: $1
           empty_files: true # This can remain true even if LINK_TYPE=COPY
