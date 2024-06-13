@@ -51,24 +51,25 @@ site_files <- files[grepl(files, pattern = cfgs[1])]
                           strain_gauge2_stabQF = ifelse(strain_gauge2_stability != 1, 1, 0),
                           strain_gauge3_depth =  ifelse(strain_gauge3_stability != 1 ,  NA_real_, strain_gauge3_depth),
                           strain_gauge3_stabQF = ifelse(strain_gauge3_stability != 1, 1, 0)) %>% 
-                    dplyr::mutate(strain_gauge1_depth = ifelse(is.na(strain_gauge1_depth) | is.na(strain_gauge2_depth) | is.na(strain_gauge3_depth), NA_real_, strain_gauge1_depth),
-                           strain_gauge2_depth = ifelse(is.na(strain_gauge1_depth) | is.na(strain_gauge2_depth) | is.na(strain_gauge3_depth), NA_real_, strain_gauge2_depth),
-                           strain_gauge3_depth = ifelse(is.na(strain_gauge1_depth) | is.na(strain_gauge2_depth) | is.na(strain_gauge3_depth), NA_real_, strain_gauge3_depth)) %>% 
+                    # dplyr::mutate(strain_gauge1_depth = ifelse(is.na(strain_gauge1_depth) | is.na(strain_gauge2_depth) | is.na(strain_gauge3_depth), NA_real_, strain_gauge1_depth),
+                    #        strain_gauge2_depth = ifelse(is.na(strain_gauge1_depth) | is.na(strain_gauge2_depth) | is.na(strain_gauge3_depth), NA_real_, strain_gauge2_depth),
+                    #        strain_gauge3_depth = ifelse(is.na(strain_gauge1_depth) | is.na(strain_gauge2_depth) | is.na(strain_gauge3_depth), NA_real_, strain_gauge3_depth)) %>% 
                     dplyr::mutate(precip_depth  = rowMeans(x = cbind(strain_gauge1_depth, strain_gauge2_depth, strain_gauge3_depth), na.rm = F),
                            stabilityQF = ifelse(strain_gauge1_stabQF == 1 |strain_gauge2_stabQF == 1  | strain_gauge3_stabQF == 1 , 1, 0)) %>%
-                    dplyr::mutate(nullQF = ifelse(is.na(precip_depth), 1, 0)) %>%
+                    # dplyr::mutate(nullQF = ifelse(is.na(precip_depth), 1, 0)) %>%
                     dplyr::select(source_id, 
                            site_id,
                            readout_time,
-                           strain_gauge1_depth,
-                           strain_gauge1_stabQF,
-                           strain_gauge2_depth, 
-                           strain_gauge2_stabQF,
-                           strain_gauge3_depth,
-                           strain_gauge3_stabQF,
                            precip_depth,
-                           stabilityQF, 
-                           nullQF) 
+                           stabilityQF) 
+### Max Diff across 3 gauges (range) may be a quality flag (eg TALL gauges sept 2023 as example)      
+### heater streams 
+### inlet temps vs orifice temp
+### orifice heater flag
+
+      
+      
+      
 
       precip_5min <- precipqf %>% 
         dplyr::mutate(avgtmi = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = '5 min')) %>% 

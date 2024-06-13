@@ -6,6 +6,11 @@
 # calculated daily ranges (envelopes)
 # returns single CFGLOC of daily envelopes
 
+
+
+### todo envelope analysis on all 3 gauges
+#add mode
+
 envelope_calc_func <- function(files, cfg){
   
   site_files <- files[grepl(files, pattern = cfg)]
