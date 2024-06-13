@@ -167,7 +167,7 @@ noise_removal = function(
       raw_df_summ$nMedian[currRow] <- nMedian #just for plotting
       raw_df_summ$nMean[currRow] <- nMean #just for plotting
       
-    } else if (precip)
+    } else if (precip){
       print(paste0('no evap accounting, bench adjusted by rain only: ',  bench - prev_bench))
       adj_bench <-  adj_bench + (bench - prev_bench) #just rain adjustment bc a previous rain got the evap
     } else {
