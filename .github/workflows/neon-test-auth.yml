@@ -7,7 +7,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions: # Read more at : https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-        contents: 'read'
+        contents: 'write'
         id-token: 'write'
     steps:
       - name: "Checkout"
