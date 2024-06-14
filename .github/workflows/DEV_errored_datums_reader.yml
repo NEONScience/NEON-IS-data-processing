@@ -4,7 +4,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'pipe/errored_datums_reader/errored_datums_reader.yaml'
+      - 'pipe/errored_datums_reader/*.yaml'
       - 'pipe/errored_datums_reader/pipe_list_errored_datums_reader.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
