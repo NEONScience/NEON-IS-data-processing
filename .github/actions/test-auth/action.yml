@@ -5,6 +5,12 @@ inputs:
    region:
      required: false
      default: us-central1
+   image:
+     required: false
+     default: neon-shared-service/neonscience/neon-is-group-loader
+   image-tag:
+     required: true
+
 runs:
    using: "composite"
    steps: 
@@ -16,12 +22,22 @@ runs:
 
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v2"
+   
+      - name: "Docker auth"
+        shell: bash
+        run: gcloud auth configure-docker ${{ inputs.region }}-docker.pkg.dev --quiet
 
+      - name: Build image
+        shell: bash
+        run: docker build . -f ./modules/group_loader/Dockerfile  --build-arg TAG=${{ inputs.image-tag }} --no-cache -t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
 
-      - name: Create branch 
-        uses: peterjgrainger/action-create-branch@v2.2.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          branch: 'eah-test-auth'
-          sha: '${{ github.event.pull_request.head.sha }}'
+      - name: Push image
+        shell: bash
+        run: docker push ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      #- name: Update pipeline spec yamls
+      #  shell: bash
+      #  run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}" "${{ inputs.image-tag }}"

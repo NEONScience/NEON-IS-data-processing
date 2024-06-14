@@ -4,19 +4,28 @@ on:
   workflow_dispatch:
     
 jobs:
-  build:
-    permissions: # Read more at : https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
-      contents: write
-    name: Create Branch
-    runs-on: ubuntu-latest
+  deploy:
+  runs-on: ubuntu-latest
+  permissions: # Read more at : https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+      contents: 'read'
+      id-token: 'write'
     steps:
-      - name: Checkout code
+      - name: "Checkout"
         uses: actions/checkout@v4.1.4
 
-      - name: Checkout Branch
+      - name: "Checkout Branch"
         uses: peterjgrainger/action-create-branch@v2.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: 'release-notes'
+          branch: 'testing-auth'
           sha: '${{ github.event.pull_request.head.sha }}'
+
+      - name: "Get short SHA"
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+   
+      - name: "Test Auth with GCP SA"
+        uses: ./.github/actions/test-auth
+        with:
+            image-tag: "${short_sha}"
+~                                                    
