@@ -169,14 +169,14 @@ parallelism_spec:
   constant: 5
 autoscaling: true #set back to true after testing
 resource_requests:
-  memory: 1.5G
-  cpu: 3.3
+  memory: 500M
+  cpu: 1.2
 resource_limits:
-  memory: 3G
-  cpu: 4.5
+  memory: 1G
+  cpu: 2
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 0.6
+  memory: 2G
+  cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:
