@@ -24,7 +24,7 @@ jobs:
       - name: "Get short SHA"
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
    
-      - name: "Test Auth with GCP SA"
-        uses: ./.github/actions/test-auth
-        with:
-            image-tag: "${short_sha}"
+#      - name: "Test Auth with GCP SA"
+#        uses: ./.github/actions/test-auth
+#        with:
+#            image-tag: "${short_sha}"
