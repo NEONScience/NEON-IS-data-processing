@@ -1,11 +1,11 @@
-name: DEV-errored-datums-reader
+name: DEV-processed-datums-reader
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'pipe/errored_datums_reader/*.yaml'
-      - 'pipe/errored_datums_reader/pipe_list_errored_datums_reader.txt'
+      - 'pipe/processed_datums_reader/*.yaml'
+      - 'pipe/processed_datums_reader/pipe_list_processed_datums_reader.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 jobs:
@@ -58,7 +58,7 @@ jobs:
     env:
       PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
-      PATHS: 'pipe/errored_datums_reader'
+      PATHS: 'pipe/processed_datums_reader'
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
