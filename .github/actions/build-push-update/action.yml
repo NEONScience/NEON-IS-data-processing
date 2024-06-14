@@ -12,7 +12,8 @@ inputs:
      required: true
 
 env:
-  pr-number: ${{ github.event.pull_request.number }}
+   pr-number: ${{ github.event.pull_request.number }}
+   image-name: neon-is-group-loader
   
 runs:
    using: "composite"
@@ -56,9 +57,9 @@ runs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
-          git checkout -b group-loader/${{ env.pr-number }}
+          git checkout -b ${{ env.image-name }}/${{ env.pr-number }}
           git diff --name-only
           git add .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin group-loader/${{ env.pr-number }} || echo "No changes to commit"
+          git push origin ${{ env.image-name }}/${{ env.pr-number }} || echo "No changes to commit"
         
