@@ -2,18 +2,17 @@
 pipeline:
   name: aepg600m_data_source_kafka
 transform:
-  image: quay.io/battelleecology/kafka-loader:v1.0.17-kafka
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v3.3.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "aepg600m"
     LOGLEVEL: debug
-    YEAR_INDEX: "5"
-    MONTH_INDEX: "6"
-    DAY_INDEX: "7"
-    KAFKA_RETENTION_DAYS: "30"
-    BUCKET_NAME: "neon-dev-l0-ingest"
+    SOURCE_TYPE_INDEX: "5"
+    YEAR_INDEX: "6"
+    MONTH_INDEX: "7"
+    DAY_INDEX: "8"
+    KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
@@ -24,6 +23,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
   cmd:
   - sh
   - "-c"
@@ -35,14 +37,19 @@ transform:
     meta=$(curl -sH "Metadata-Flavor: Google" "http://metadata/computeMetadata/v1/instance/zone")
     zone=$(echo $meta | cut -d "/" -f 4)
     echo $zone
+    
     # Get today's date for evaluating kafka data retention period
     date_today=$(date -u +%Y-%m-%d)
     kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
-    # Get date from input path. Terminal path structure must be /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
-    # Datum must be set at /SOURCE_TYPE/YYYY/MM/DD or /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
+    
+    # Get date from input path. Terminal path structure must be /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
+    # Datum must be set at /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD or /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
+    source_type=$(echo $import_trigger | cut -f $SOURCE_TYPE_INDEX -d "/")
+    export SOURCE_TYPE=$source_type
     date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
     echo $date_path
     date_str=$(date -u +%Y-%m-%d -d $date_path)
+    
     # Get each site to run
     if [[ -f ${import_trigger} ]]; then
       import_trigger_glob="${import_trigger}"
@@ -63,12 +70,14 @@ transform:
         echo -n "Today's date ($date_today) is beyond the Kafka retention period ($KAFKA_RETENTION_DAYS days). Skipping..."
         continue
       fi
+      
       # We are ok to run
-      echo "Extracting $date_str kafka data for $site"
+      echo "Extracting $date_str kafka data for $SOURCE_TYPE at $site"
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
     done
+    
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
@@ -107,10 +116,11 @@ input:
   pfs:
     name: import_trigger
     repo: aepg600m_cron_daily_and_date_control
-    # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/aepg600m/*/*/*"
+    # Must be datum by day (e.g. /kafka/SOURCE_TYPE/*/*/*) or by day/site (e.g. /kafka/SOURCE_TYPE/*/*/*/*)
+    # Note that aepg600m has separate kafka and trino date-site controls bc some kafka topics start with <site>dfir instead of simply <site>
+    glob: "/kafka/*/*/*/*" 
 parallelism_spec:
-  constant: 10
+  constant: 1
 autoscaling: true
 resource_requests:
   memory: 300M
@@ -119,7 +129,7 @@ resource_limits:
   memory: 1.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 1G
+  memory: 2G
   cpu: 0.5
 datum_set_spec:
   number: 1

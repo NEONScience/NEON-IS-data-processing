@@ -9,10 +9,14 @@ transform:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
+  - export SOURCE_TYPE=$SOURCE_TYPE_1
+  - python3 -m location_loader.location_loader_main
+  - export SOURCE_TYPE=$SOURCE_TYPE_2
   - python3 -m location_loader.location_loader_main
   env:
     LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: aepg600m
+    SOURCE_TYPE_1: aepg600m
+    SOURCE_TYPE_2: aepg600m_heated
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
   secrets:

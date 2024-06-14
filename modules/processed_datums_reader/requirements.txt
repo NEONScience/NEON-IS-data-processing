@@ -1,0 +1,7 @@
+common==0.1.2
+pachyderm_sdk==2.10.0
+pg8000==1.29.2
+protobuf==4.25.3
+structlog==24.1.0
+psycopg2-binary==2.8.6
+environs==7.3.1

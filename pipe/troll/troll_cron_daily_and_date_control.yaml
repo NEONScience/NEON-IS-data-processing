@@ -8,7 +8,7 @@ transform:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
     # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be LAG_DAYS_END ago. 
-    LAG_DAYS_END: "3"
+    LAG_DAYS_END: "3" # Default is 2. Don't go lower than 2.
     START_DATE: "2016-03-04"
     END_DATE: "2016-04-04"
     OUT_PATH: /pfs/out
