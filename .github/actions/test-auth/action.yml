@@ -19,10 +19,9 @@ runs:
 
 
       - name: Create branch 
-        shell: bash
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "gitHub Actions"
-          git checkout -b "testing-github-actions"
-          git push -u origin "testing-github-actions"
-        
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: 'eah-test-auth'
+          sha: '${{ github.event.pull_request.head.sha }}'
