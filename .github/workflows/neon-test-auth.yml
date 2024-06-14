@@ -28,4 +28,3 @@ jobs:
         uses: ./.github/actions/test-auth
         with:
             image-tag: "${short_sha}"
-~                                                    
