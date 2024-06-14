@@ -12,8 +12,10 @@ inputs:
      required: true
 
 env:
-   pr-number: ${{ github.event.pull_request.number }}
+   # neon IS image/module name
    image-name: neon-is-group-loader
+   # github pull request number 
+   pr-number: ${{ github.event.pull_request.number }}
   
 runs:
    using: "composite"
