@@ -11,6 +11,9 @@ inputs:
    image-tag:
      required: true
 
+env:
+  pr-number: ${{ github.event.pull_request.number }}
+  
 runs:
    using: "composite"
    steps: 
@@ -41,8 +44,8 @@ runs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install R packages   
-        uses: r-lib/actions/setup-r-dependencies@v2
+      # - name: Install R packages   
+      #   uses: r-lib/actions/setup-r-dependencies@v2
 
       - name: Update pipeline spec yamls
         shell: bash
@@ -53,9 +56,9 @@ runs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
-          git checkout -b group-loader/${{ github.event.pull_request.number }}
+          git checkout -b group-loader/${{ env.pr-number }}
           git diff --name-only
           git add .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin group-loader/${{ github.event.pull_request.number }} || echo "No changes to commit"
+          git push origin group-loader/${{ env.pr-number }} || echo "No changes to commit"
         
