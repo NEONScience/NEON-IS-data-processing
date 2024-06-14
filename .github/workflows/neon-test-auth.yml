@@ -11,12 +11,23 @@ jobs:
         id-token: 'write'
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+     
+      name: Create Branch
 
-      - name: Get short SHA
-        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-    
-      - name: Build push and update
-        uses: ./.github/actions/test-auth
+jobs:
+  build:
+    permissions: # Read more at : https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+      contents: write
+    name: Create Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.4
+
+      - name: Checkout Branch
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-            image-tag: "${short_sha}"
+          branch: 'release-notes'
+          sha: '${{ github.event.pull_request.head.sha }}'
