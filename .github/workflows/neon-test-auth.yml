@@ -1,4 +1,4 @@
-name: "Build and push latest to nonprod"
+name: "Test Google SA Auth"
 
 on:
   workflow_dispatch:
