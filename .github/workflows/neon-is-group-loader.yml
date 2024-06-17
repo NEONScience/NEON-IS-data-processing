@@ -2,12 +2,20 @@ name: "Build and push latest to nonprod"
 
 on:
   workflow_dispatch:
+  
+env:
+   # neon IS image/module name
+   image-name: neon-is-group-loader
+   # github pull request number 
+   pr-number: ${{ github.event.pull_request.number }}
+   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
+  
     
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-        contents: 'read'
+        contents: 'write'
         id-token: 'write'
     steps:
       - name: "Checkout"

@@ -11,12 +11,7 @@ inputs:
    image-tag:
      required: true
 
-env:
-   # neon IS image/module name
-   image-name: neon-is-group-loader
-   # github pull request number 
-   pr-number: ${{ github.event.pull_request.number }}
-  
+
 runs:
    using: "composite"
    steps: 
@@ -51,8 +46,8 @@ runs:
       #           any::tidyverse
       #           any::arrow
 
-      - name: Check out repository
-        uses: actions/checkout@v4
+      # - name: Check out repository
+      #   uses: actions/checkout@v4
 
       - name: Update pipeline spec yamls
         shell: bash
