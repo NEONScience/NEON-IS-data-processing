@@ -50,7 +50,7 @@ runs:
       #   uses: actions/checkout@v4
 
       - name: Update pipeline spec yamls
-        shell: cmd
+        shell: bash
         run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}" "${{ inputs.image-tag }}"
 
       - name: Commit the pipeline yamls
