@@ -60,6 +60,6 @@ runs:
           git config --local user.name "gitHub Actions"
           git diff --name-only
           git add .
-          git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin  || echo "No changes to commit"
+          # git commit -m "pipeline yamls updated"  || echo "No yamls updated"
+          # git push origin  || echo "No changes to commit"
         
