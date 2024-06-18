@@ -44,6 +44,9 @@ runs:
         with:
             packages: |
               any::usethis
+              any::dplyr
+              any::rlang
+              any:tidyverse
 
       # - name: Check out repository
       #   uses: actions/checkout@v4
