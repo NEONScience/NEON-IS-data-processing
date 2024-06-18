@@ -35,6 +35,7 @@ imgGrep <- gsub(pattern='.',replacement='\\.',x=imgBase,fixed=TRUE)
 imgGrep <- gsub(pattern='/',replacement='\\/',x=imgGrep,fixed=TRUE)
 imgGrep <- paste0(imgGrep,'\\:\\S+')
 imgRepl <- paste0(imgBase,':',tagNew)
+cat('\nimgGrep::::::::::', imgGrep)
 cat('\nimgRepl::::::::::', imgRepl)
 cat('\ntagNew::::::::::', tagNew)
 
@@ -45,8 +46,8 @@ file <- base::list.files('.',pattern=typeFile,full.names = TRUE, recursive=TRUE)
 for(idxFile in file){
 
   text <- base::readLines(idxFile)
+  cat('\ntext::::::::::', text)
   textEdit <- base::grepl(pattern=imgGrep,x=text)
-  cat('\ntextEdit::::::::::', textEdit)
   
   if(sum(textEdit) > 0){
     message(idxFile)
