@@ -7,7 +7,7 @@ inputs:
      default: us-central1
    image:
      required: false
-     default: neon-shared-service/neonscience/group-loader
+     default: neon-shared-service/neonscience/group_loader
    image-tag:
      required: true
 
@@ -61,7 +61,7 @@ runs:
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
           git diff --name-only
-          # git add .
-          # git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          # git push origin  || echo "No changes to commit"
+          git add .
+          git commit -m "pipeline yamls updated"  || echo "No yamls updated"
+          git push origin  || echo "No changes to commit"
         
