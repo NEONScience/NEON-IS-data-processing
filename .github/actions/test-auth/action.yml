@@ -1,5 +1,5 @@
-name: "Build a module and push the image"
-description: "Builds the module, pushes the image to Artifact Registry"
+name: "Test Github Auth"
+description: "Authenticates to Github and checks out a branch"
 
 inputs:
    region:
@@ -22,15 +22,10 @@ runs:
 
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v2"
-
+   
       - name: "Docker auth"
         shell: bash
         run: gcloud auth configure-docker ${{ inputs.region }}-docker.pkg.dev --quiet
 
-      - name: Build image
-        shell: bash
-        run: docker build . -f ./modules/group_loader/Dockerfile  --build-arg TAG=${{ inputs.image-tag }} --no-cache --tag ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
-
-      - name: Push image
-        shell: bash
-        run: docker push ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
+      - name: "Set up R"
+        uses: r-lib/actions/setup-r@v2

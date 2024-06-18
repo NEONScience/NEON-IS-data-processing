@@ -1,0 +1,77 @@
+[
+	{
+	"site" : "ARIK",
+	"kafka_start_date" : "2024-03-01"
+	},
+	{
+	"site" : "BLUE",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "BONA",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "CLBJ",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "CPER",
+	"kafka_start_date" : "2022-12-30"
+	},
+	{
+	"site" : "HARV",
+	"kafka_start_date" : "2023-03-03"
+	},
+	{
+	"site" : "KONZ",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "NIWO"
+	},
+	{
+	"site" : "ONAQ",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "ORNL",
+	"kafka_start_date" : "2023-05-10"
+	},
+	{
+	"site" : "PRIN",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "REDB",
+	"kafka_start_date" : "2024-02-06"
+	},
+	{
+	"site" : "SCBI",
+	"kafka_start_date" : "2023-03-03"
+	},
+	{
+	"site" : "SJER",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "TOOL",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "UNDE",
+	"kafka_start_date" : "2023-03-15"
+	},
+	{
+	"site" : "WOOD",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "WREF",
+	"kafka_start_date" : "2023-02-03"
+	},
+	{
+	"site" : "YELL",
+	"kafka_start_date" : "2023-02-03"
+	}
+]

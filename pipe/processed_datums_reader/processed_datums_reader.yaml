@@ -1,17 +1,18 @@
 ---
 pipeline:
-  name: errored_datums_reader
+  name: processed_datums_reader
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/errored_datums_reader:test7
+  image: quay.io/battelleecology/processed_datums_reader:c5470f41
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m errored_datums_reader.main
+  - python3 -m processed_datums_reader.main
   env:
     LOG_LEVEL: DEBUG
+    
   secrets:
   - name: pdr-secret
     envVar: DB_HOST
@@ -32,10 +33,14 @@ transform:
     envVar: AUTHORIZATION_TOKEN
     key: token
 input:
-  cron:
-    name: tick
-    spec: "@daily"
-    # overwrite: true
+  cross:
+  - cron:
+      name: tick
+      spec: "@daily"
+  - pfs:
+      name: PIPELINE_NAME_L1
+      repo: level1_pipeline_list
+      glob: "/level1_pipeline_list.txt"
 autoscaling: true
 scheduling_spec:
   node_selector:

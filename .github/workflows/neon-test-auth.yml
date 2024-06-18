@@ -1,0 +1,31 @@
+name: "Test Google SA Auth"
+
+on:
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions: # Read more at : https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+        contents: 'write'
+        id-token: 'write'
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4.1.4
+
+      - name: "Checkout Branch"
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        with:
+          branch: 'liz-testings'
+          sha: '${{ github.event.pull_request.head.sha }}'
+
+      - name: "Get short SHA"
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+   
+      - name: "Test Auth"
+        uses: ./.github/actions/test-auth
+        with: 
+           image-tag: "${short_sha}"

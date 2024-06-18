@@ -12,11 +12,37 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/kafka_merged
     rm -rf $OUT_PATH
     mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
     mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    
+    # Detect the source_type
+    unset source_type
+    if [ ${DATA_PATH_TRINO+x} ]; then 
+      export SOURCE_TYPE_PATH=$DATA_PATH_TRINO
+    elif [ ${KAFKA_UNMERGED_DATA+x} ]; then 
+      export SOURCE_TYPE_PATH=$KAFKA_UNMERGED_DATA
+    elif [ ${CALIBRATION_PATH+x} ]; then 
+      export SOURCE_TYPE_PATH=$CALIBRATION_PATH
+    fi
+    source_type=$(echo $SOURCE_TYPE_PATH | cut -f $SOURCE_TYPE_INDEX -d "/")
+    echo "source_type: $source_type"
+
+    # Select schemas based on source_type
+    if [ $source_type = "aepg600m_heated" ]; then 
+      export FILE_SCHEMA_L0=/pfs/FILE_SCHEMAS/aepg600m/aepg600m_heated.avsc
+      export FILE_SCHEMA_DATA=/pfs/FILE_SCHEMAS/aepg600m/aepg600m_heated_calibrated.avsc
+    elif [ $source_type = "aepg600m" ]; then 
+      export FILE_SCHEMA_L0=/pfs/FILE_SCHEMAS/aepg600m/aepg600m.avsc
+      export FILE_SCHEMA_DATA=/pfs/FILE_SCHEMAS/aepg600m/aepg600m_calibrated.avsc
+    else
+      unset FILE_SCHEMA_L0
+      unset FILE_SCHEMA_DATA
+    fi
+      
     # Detect if we have data coming from Kafka or trino
     # Note that we run the filter-joiner in sequential if statements rather than an elif statement ...
     # ... so that if there is any overlap in sensor data coming from both Kafka and Trino on the same day, the ...
@@ -28,28 +54,33 @@ transform:
     # ... conflict arose because data for the same sensor and day were in both locations.
     if [ ${DATA_PATH_TRINO+x} ]; then 
       # Data from trino. 
+      
       # Set CONFIG for filter-joiner to the trino version and run filter joiner
       export CONFIG=$CONFIG_TRINO
       python3 -m filter_joiner.filter_joiner_main
     fi  
     if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
       # Data from kafka. 
+      
       # Run kafka combiner
       Rscript ./flow.kfka.comb.R \
           DirIn=$KAFKA_UNMERGED_DATA \
           DirOut=/tmp/kafka_merged \
           DirErr=/pfs/out/errored_datums \
           FileSchmL0=$FILE_SCHEMA_L0
+          
       # Set CONFIG for filter-joiner to the kafka version and run filter joiner
       export CONFIG=$CONFIG_KAFKA
       python3 -m filter_joiner.filter_joiner_main
     fi  
+    
     # Run calibration conversion module
     Rscript ./flow.cal.conv.R  \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmData=$FILE_SCHEMA_DATA \
+      FileSchmQf=/pfs/FILE_SCHEMAS/aepg600m/flags_calibration_aepg600m.avsc \
       "TermFuncConv=strain_gauge1_frequency_raw:def.cal.conv.poly.aepg600m|strain_gauge2_frequency_raw:def.cal.conv.poly.aepg600m|strain_gauge3_frequency_raw:def.cal.conv.poly.aepg600m" \
       "TermQf=strain_gauge1_frequency_raw|strain_gauge2_frequency_raw|strain_gauge3_frequency_raw" 
       
@@ -67,14 +98,14 @@ transform:
         - path:
             name: DATA_PATH_TRINO
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_TRINO/aepg600m/*/*/*/*/**
+            glob_pattern: /pfs/DATA_PATH_TRINO/*/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
         - path:
             name: CALIBRATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/aepg600m/*/*/*/*/**
+            glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
     CONFIG_KAFKA: |
@@ -86,62 +117,56 @@ transform:
         - path:
             name: DATA_PATH_KAFKA
             # Filter for data directory
-            glob_pattern: /tmp/kafka_merged/aepg600m/*/*/*/*/**
+            glob_pattern: /tmp/kafka_merged/*/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
         - path:
             name: CALIBRATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/aepg600m/*/*/*/*/**
+            glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+    # Environment variable to determine source type
+    SOURCE_TYPE_INDEX: "4"
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '1' # Option for calibration conversion module
 input:
   cross:
   - pfs:
-      name: FILE_SCHEMA_L0
+      name: FILE_SCHEMAS
       repo: aepg600m_avro_schemas
-      glob: /aepg600m/aepg600m.avsc
-  - pfs:
-      name: FILE_SCHEMA_DATA
-      repo: aepg600m_avro_schemas
-      glob: /aepg600m/aepg600m_calibrated.avsc
-  - pfs:
-      name: FILE_SCHEMA_FLAGS
-      repo: aepg600m_avro_schemas
-      glob: /aepg600m/flags_calibration_aepg600m.avsc
+      glob: /aepg600m/
 
   # Outer join all days so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
         name: CALIBRATION_PATH
         repo: aepg600m_calibration_assignment
-        glob: /aepg600m/(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_TRINO
         repo: aepg600m_data_source_trino
-        glob: /aepg600m/(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    # - pfs:
-    #     name: KAFKA_UNMERGED_DATA
-    #     repo: aepg600m_data_source_kafka
-    #     glob: /aepg600m/(*)/(*)/(*)
-    #     joinOn: $1/$2/$3
-    #     outer_join: true
-    #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: KAFKA_UNMERGED_DATA
+        repo: aepg600m_data_source_kafka
+        glob: /(*)/(*)/(*)/(*)
+        joinOn: $1/$2/$3/$4
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 1
+  constant: 5
 autoscaling: true #set back to true after testing
 resource_requests:
   memory: 1.5G

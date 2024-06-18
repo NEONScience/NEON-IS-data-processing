@@ -9,13 +9,17 @@ transform:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
+  - export SOURCE_TYPE=$SOURCE_TYPE_1
+  - python3 -m location_asset_loader.location_asset_loader_main
+  - export SOURCE_TYPE=$SOURCE_TYPE_2
   - python3 -m location_asset_loader.location_asset_loader_main
   env:
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
     LOG_LEVEL: INFO
-    SOURCE_TYPE: aepg600m
+    SOURCE_TYPE_1: aepg600m
+    SOURCE_TYPE_2: aepg600m_heated
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret

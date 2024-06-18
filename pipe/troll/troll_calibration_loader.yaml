@@ -4,21 +4,17 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-cval-loader:01ca94aa
+  image: quay.io/battelleecology/neon-cval-loader:57821bc3
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - export SOURCE_TYPE=$SOURCE_TYPE_1
-  - python3 -m calval_loader.load_all_calval_files
-  - export SOURCE_TYPE=$SOURCE_TYPE_2
   - python3 -m calval_loader.load_all_calval_files
   env:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE_1: aquatroll200
-    SOURCE_TYPE_2: leveltroll500
+    SOURCE_TYPE: "aquatroll200,leveltroll500"
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret

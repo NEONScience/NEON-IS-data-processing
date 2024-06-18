@@ -16,7 +16,7 @@ jobs:
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
     
-      - name: Build and deploy
-        uses: ./.github/actions/build-and-deploy
+      - name: Build push and update
+        uses: ./.github/actions/build-push-update
         with:
             image-tag: "${short_sha}"
