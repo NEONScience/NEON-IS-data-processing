@@ -46,6 +46,7 @@ for(idxFile in file){
 
   text <- base::readLines(idxFile)
   textEdit <- base::grepl(pattern=imgGrep,x=text)
+  cat('\ntextEdit::::::::::', textEdit)
   
   if(sum(textEdit) > 0){
     message(idxFile)
