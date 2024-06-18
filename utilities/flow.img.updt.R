@@ -29,11 +29,11 @@ if(length(arg) == 0){
   ImgBld <- as.logical(arg[5]) # Build,tag, push downstream module images and update pipeline specs?
   
 }
-print('pathBgn:::::::::', pathBgn)
-print('typeFile:::::::::', typeFile)
-print('imgBase:::::::::', imgBase)
-print('tagNewe:::::::::', tagNew)
-print('ImgBld:::::::::', ImgBld)
+cat('pathBgn:::::::::', pathBgn)
+cat('typeFile:::::::::', typeFile)
+cat('imgBase:::::::::', imgBase)
+cat('tagNewe:::::::::', tagNew)
+cat('ImgBld:::::::::', ImgBld)
 
 setwd(pathBgn)
 imgGrep <- gsub(pattern='.',replacement='\\.',x=imgBase,fixed=TRUE)
@@ -47,7 +47,7 @@ file <- base::list.files('.',pattern=typeFile,full.names = TRUE, recursive=TRUE)
 # Go through each file, searching for the image 
 for(idxFile in file){
 
-  print('idxFile:::::::::', idxFile)
+  cat('idxFile:::::::::', idxFile)
   text <- base::readLines(idxFile)
   textEdit <- base::grepl(pattern=imgGrep,x=text)
   
