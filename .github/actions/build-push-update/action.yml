@@ -7,7 +7,7 @@ inputs:
      default: us-central1
    image:
      required: false
-     default: neon-shared-service/neonscience/neon-is-group-loader
+     default: neon-shared-service/neonscience/group-loader
    image-tag:
      required: true
 
