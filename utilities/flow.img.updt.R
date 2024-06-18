@@ -35,6 +35,8 @@ imgGrep <- gsub(pattern='.',replacement='\\.',x=imgBase,fixed=TRUE)
 imgGrep <- gsub(pattern='/',replacement='\\/',x=imgGrep,fixed=TRUE)
 imgGrep <- paste0(imgGrep,'\\:\\S+')
 imgRepl <- paste0(imgBase,':',tagNew)
+cat('\nimgRepl::::::::::', imgRepl)
+cat('\ntagNew::::::::::', tagNew)
 
 # Find all of the indicated file type
 file <- base::list.files('.',pattern=typeFile,full.names = TRUE, recursive=TRUE)
@@ -53,6 +55,8 @@ for(idxFile in file){
     textNew <- base::sub(pattern=imgGrep,replacement = imgRepl,x=text[idxEdit])
     print(paste(text[idxEdit],' -> ',textNew))
     text[idxEdit] <- textNew 
+    cat('\nidxEdit::::::::::', idxEdit)
+    cat('\ntextNew::::::::::', textNew)
   }
   
   if(sum(textEdit) > 0){
