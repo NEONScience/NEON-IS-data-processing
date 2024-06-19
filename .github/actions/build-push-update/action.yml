@@ -27,7 +27,7 @@ runs:
 
       - name: Build image
         shell: bash
-        run: docker build -t ${{ inputs.image }}:latest -f ./modules/${{ env.REPO_NAME}}/Dockerfile .
+        run: docker build -t ${{ inputs.image }}:latest -f ./modules/${{ env.MODULE_NAME}}/Dockerfile .
 
       - name: Tag image with short SHA
         shell: bash

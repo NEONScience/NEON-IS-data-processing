@@ -16,8 +16,9 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   # IMAGE_NAME: ${{ github.repository }}
-  # Get just the repo name from the event
+  # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
+  MODULE_NAME: group_loader
 
 jobs:
   deploy:
