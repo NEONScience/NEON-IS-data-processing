@@ -32,10 +32,14 @@ runs:
         shell: bash
         run: docker build -t ${{ inputs.image }}:latest -f ./modules/group_loader/Dockerfile .
 
-      - name: Tag image
+      - name: Tag image with tag1
         shell: bash
-        run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:v1.1.1
+        run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }} 
  
+       - name: Tag image with tag2
+        shell: bash
+        run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:v1.1.1
+
       - name: Push image
         shell: bash
         run: docker push ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }} --all-tags
