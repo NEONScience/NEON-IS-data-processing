@@ -34,9 +34,8 @@ runs:
 
       - name: Tag image
         shell: bash
-   #     run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ env.pr-number }}
-        run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
-      
+        run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:v1.1.1
+ 
       - name: Push image
         shell: bash
         run: docker push ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }} --all-tags
@@ -64,6 +63,7 @@ runs:
           git config --local user.name "gitHub Actions"
           git diff --name-only
           git add -u .
+          git checkout -b feature-group-loader
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin  || echo "No changes to commit"
+          git push origin feature-group-loader  || echo "No changes to commit"
         
