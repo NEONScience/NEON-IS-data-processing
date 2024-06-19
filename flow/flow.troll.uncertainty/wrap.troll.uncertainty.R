@@ -110,8 +110,8 @@
 #' @examples 
 #' # NOT RUN
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# DirInTroll<-"~/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2022/04/08/groundwater-physical_ARIK301000/aquatroll200/CFGLOC101239"
-# DirInUcrt<-"~/pfs/groundwaterPhysical_group_path/2022/04/08/groundwater-physical_ARIK301000/aquatroll200/CFGLOC101239"
+# DirInTroll<-"~/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2017/01/23/groundwater-physical_ARIK306000/aquatroll200/CFGLOC101244"
+# DirInUcrt<-"~/pfs/groundwaterPhysical_group_path/2017/01/23/groundwater-physical_ARIK306000/aquatroll200/CFGLOC101244"
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_data.avsc'),collapse='')
 # SchmUcrtOutAgr<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_ucrt.avsc'),collapse='')
 # SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_ucrt.avsc'),collapse='')
@@ -413,7 +413,7 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
         # Rows to pull
         flagDataWndwTime <- base::subset(flagData,subset=setTime==idxWndwTime)  
         #only use data that does not fail spike test
-        flagDataWndwTime<-flagDataWndwTime[!is.na(flagDataWndwTime$pressure)&flagDataWndwTime$pressureSpikeQF==0,]
+        flagDataWndwTime<-flagDataWndwTime[!is.na(flagDataWndwTime$pressure)&flagDataWndwTime$pressureSpikeQF!=1,]
         # Compute stats excluding flagged data
         if(length(flagDataWndwTime$pressure)>0){
           groundwaterPressureMean<-mean(flagDataWndwTime$pressure)
@@ -600,7 +600,6 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
       log$info("Instantaneous uncertainty data written out.")
     }
   }
-
 
   ######## Uncertainty for L1 mean 5 and 30 minute outputs ########
   #the repeatability and reproducibility of the sensor and  uncertainty of the calibration procedures and coefficients including uncertainty in the standard
