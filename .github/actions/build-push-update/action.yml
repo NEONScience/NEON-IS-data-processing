@@ -55,7 +55,7 @@ runs:
 
       - name: Update pipeline spec yamls
         shell: bash
-        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}" "${{ inputs.image-tag }}"
+        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }/${{ inputs.image }}}" "${{ inputs.image-tag }}"
 
       - name: Commit the pipeline yamls
         shell: bash
