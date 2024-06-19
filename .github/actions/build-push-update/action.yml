@@ -5,7 +5,7 @@ description: "Builds the module, pushes the image to Artifact Registry"
 inputs:
   image:
     required: false
-    default: neon-is-group-loader
+    default: neon-is-location-loader
   image-tag:
     required: true
 
