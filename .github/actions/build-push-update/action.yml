@@ -36,7 +36,7 @@ runs:
         shell: bash
         run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }} 
  
-       - name: Tag image with tag2
+      - name: Tag image with tag2
         shell: bash
         run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:v1.1.1
 
