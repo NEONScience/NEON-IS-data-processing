@@ -1,0 +1,42 @@
+name: "Build and push the latest module to nonprod"
+
+on:
+  workflow_dispatch:
+  
+env:
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
+  # Use github and google registries
+  GHCR_REGISTRY: ghcr.io
+  GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
+  GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
+  GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
+  GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
+  GHCR_NS: battelleecology
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  # IMAGE_NAME: ${{ github.repository }}
+  # Get just the repo name from the event, i.e., NEON-IS-data-processing
+  REPO_NAME: ${{ github.event.repository.name }}
+  # IS module name
+  MODULE_NAME: location_loader
+  # git tag
+  SEM_VERSION: v1.0.0
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: 'write'
+        id-token: 'write'
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4.1.4"
+
+      - name: Get short SHA
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+    
+      - name: Build push and update
+        uses: ./.github/actions/build-push-update
+        with:
+            image-tag: "${short_sha}"
