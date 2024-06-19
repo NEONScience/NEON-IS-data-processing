@@ -3,12 +3,6 @@ name: "Build and push latest to nonprod"
 on:
   workflow_dispatch:
   
-env:
-   # github pull request number 
-   pr-number: ${{ github.event.pull_request.number }}
-   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
-  
-    
 jobs:
   deploy:
     runs-on: ubuntu-latest
