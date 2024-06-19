@@ -67,7 +67,7 @@ runs:
           git config --local user.name "gitHub Actions"
           git diff --name-only
           git add -u .
-          git checkout -b feature-group-loader
+          git tag group-loader/v1.1.2
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin feature-group-loader  || echo "No changes to commit"
+          git push origin group-loader/v1.1.2  || echo "No changes to commit"
         
