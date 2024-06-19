@@ -35,7 +35,7 @@ runs:
  
       - name: Tag image with semantic version
         shell: bash
-        run: docker tag ${{ inputs.image }}  ${{ env.GCP_REGISTRY }}/${{ inputs.image }}:v1.1.3
+        run: docker tag ${{ inputs.image }}  ${{ env.GCP_REGISTRY }}/${{ inputs.image }}:v1.1.4
 
       - name: Push image
         shell: bash
@@ -55,7 +55,7 @@ runs:
 
       - name: Update pipeline spec yamls
         shell: bash
-        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }/${{ inputs.image }}" "${{ inputs.image-tag }}"
+        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ inputs.image }}" "${{ inputs.image-tag }}"
 
       - name: Commit the pipeline yamls
         shell: bash
@@ -63,7 +63,7 @@ runs:
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
           git diff --name-only
-          git tag group-loader/v1.1.3 
+          git tag group-loader/v1.1.4 
           git add  -u .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
           git push origin   || echo "No changes to commit"

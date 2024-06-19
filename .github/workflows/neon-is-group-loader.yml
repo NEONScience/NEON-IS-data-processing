@@ -1,4 +1,4 @@
-name: "Build and push latest to nonprod"
+name: "neon-is-group-loader"
 
 on:
   workflow_dispatch:
