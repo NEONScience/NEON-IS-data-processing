@@ -1,4 +1,4 @@
-name: "neon-is-group-loader"
+name: "Build and push ${{ env.REPO_NAME}} to nonprod"
 
 on:
   workflow_dispatch:
