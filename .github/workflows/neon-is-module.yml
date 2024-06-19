@@ -1,4 +1,4 @@
-name: "Build and push the latest to nonprod"
+name: "Build and push the latest module to nonprod"
 
 on:
   workflow_dispatch:
@@ -19,9 +19,9 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: group_loader
+  MODULE_NAME: location_loader
   # git tag
-  SEM_VERSION: v1.1.6
+  SEM_VERSION: v1.0.0
 
 jobs:
   deploy:
