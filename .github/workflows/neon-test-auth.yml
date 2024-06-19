@@ -40,3 +40,12 @@ jobs:
         uses: ./.github/actions/test-auth
         with: 
            image-tag: "${short_sha}"
+
+      - name: "GOOGLE AUTH"
+        id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+            workload_identity_provider: "${{ vars.SHARED_WIF_PROVIDER }}"
+            service_account: "${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}"
+
+
