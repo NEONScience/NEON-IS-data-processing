@@ -32,13 +32,13 @@ runs:
         shell: bash
         run: docker build -t ${{ inputs.image }}:latest -f ./modules/group_loader/Dockerfile .
 
-      - name: Tag image with tag1
+      - name: Tag image with short SHA
         shell: bash
         run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }} 
  
-      - name: Tag image with tag2
+      - name: Tag image with semantic version
         shell: bash
-        run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:v1.1.1
+        run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:v1.1.2
 
       - name: Push image
         shell: bash
@@ -66,8 +66,8 @@ runs:
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
           git diff --name-only
-          git add -u .
-          git tag group-loader/v1.1.2
+          git add  .
+     #     git tag group-loader/v1.1.2
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin group-loader/v1.1.2  || echo "No changes to commit"
+          git push origin   || echo "No changes to commit"
         
