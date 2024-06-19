@@ -3,6 +3,22 @@ name: "Build and push latest to nonprod"
 on:
   workflow_dispatch:
   
+env:
+  # Use github and google registries
+  GHCR_REGISTRY: ghcr.io
+  GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
+  GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
+  GHCR_NS: battelleecology
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  # IMAGE_NAME: ${{ github.repository }}
+  # Get just the repo name from the event
+  REPO_NAME: ${{ github.event.repository.name }}
+  # github pull request number 
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
