@@ -1,4 +1,4 @@
-name: "Build and push ${{ env.REPO_NAME}} to nonprod"
+name: "Build and push the latest to nonprod"
 
 on:
   workflow_dispatch:
