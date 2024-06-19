@@ -33,9 +33,9 @@ runs:
         shell: bash
         run: docker tag ${{ inputs.image }}  ${{ env.GCP_REGISTRY }}/${{ inputs.image }}:${{ inputs.image-tag }} 
  
-       - name: Tag image with semantic version
-         shell: bash
-         run: docker tag ${{ inputs.image }}  ${{ env.GCP_REGISTRY }}/${{ inputs.image }}:${{ env.SEM_VERSION }}
+      - name: Tag image with semantic version
+        shell: bash
+        run: docker tag ${{ inputs.image }}  ${{ env.GCP_REGISTRY }}/${{ inputs.image }}:${{ env.SEM_VERSION }}
 
       - name: Push image
         shell: bash
