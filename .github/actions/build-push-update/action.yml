@@ -34,8 +34,8 @@ runs:
 
       - name: Tag image
         shell: bash
-   #     run: docker tag ${{ inputs.image }} -t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }} -t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ env.pr-number }}
-        run: docker tag ${{ inputs.image }} -t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
+   #     run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ env.pr-number }}
+        run: docker tag ${{ inputs.image }}  ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
       
       - name: Push image
         shell: bash
