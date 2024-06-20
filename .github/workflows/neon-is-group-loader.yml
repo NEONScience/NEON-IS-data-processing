@@ -19,9 +19,9 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: location_loader
+  MODULE_NAME: group_loader
   # git tag
-  SEM_VERSION: v1.0.0
+  SEM_VERSION: v1.1.8
 
 jobs:
   deploy:
