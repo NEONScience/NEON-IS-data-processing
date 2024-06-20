@@ -3,9 +3,6 @@ description: "Builds the module, pushes the image to Artifact Registry"
 
 
 inputs:
-  # image:
-  #   required: false
-  #   default: ${{ env.IMAGE_NAME }}
   image-tag:
     required: true
 
@@ -33,9 +30,9 @@ runs:
         shell: bash
         run: docker tag ${{ env.IMAGE_NAME }}  ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.image-tag }} 
  
-      # - name: Tag image with semantic version
-      #   shell: bash
-      #   run: docker tag ${{ env.IMAGE_NAME }}  ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SEM_VERSION }}
+      - name: Tag image with semantic version
+        shell: bash
+        run: docker tag ${{ env.IMAGE_NAME }}  ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.SEM_VERSION }}
 
       - name: Push image
         shell: bash
