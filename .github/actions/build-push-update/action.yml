@@ -33,9 +33,9 @@ runs:
         shell: bash
         run: docker tag ${{ inputs.image }}  ${{ env.GCP_REGISTRY }}/${{ inputs.image }}:${{ inputs.image-tag }} 
  
-      - name: Tag image with semantic version
-        shell: bash
-        run: docker tag ${{ inputs.image }}  ${{ env.GCP_REGISTRY }}/${{ inputs.image }}:${{ env.SEM_VERSION }}
+      # - name: Tag image with semantic version
+      #   shell: bash
+      #   run: docker tag ${{ inputs.image }}  ${{ env.GCP_REGISTRY }}/${{ inputs.image }}:${{ env.SEM_VERSION }}
 
       - name: Push image
         shell: bash
@@ -66,5 +66,5 @@ runs:
           git tag ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}
           git add  -u .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}  || echo "No changes to commit"
+  #        git push origin ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}  || echo "No changes to commit"
         
