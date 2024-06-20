@@ -21,7 +21,7 @@ env:
   # IS module name
   MODULE_NAME: group_loader
   # git tag
-  SEM_VERSION: v1.1.7
+  SEM_VERSION: v1.1.8
 
 jobs:
   deploy:
