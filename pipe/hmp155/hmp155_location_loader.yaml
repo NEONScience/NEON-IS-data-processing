@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-location-loader:ee44d9db
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-location-loader:08681a3
   cmd:
   - /bin/bash
   stdin:
