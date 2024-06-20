@@ -1,0 +1,31 @@
+name: "Test Github Auth"
+description: "Authenticates to Github and checks out a branch"
+
+inputs:
+   region:
+     required: false
+     default: us-central1
+   image:
+     required: false
+     default: neon-shared-service/neonscience/neon-is-group-loader
+   image-tag:
+     required: true
+
+runs:
+   using: "composite"
+   steps: 
+#      - id: "auth"
+#        uses: "google-github-actions/auth@v2"
+#        with:
+#            workload_identity_provider: "${{ vars.SHARED_WIF_PROVIDER }}"
+#            service_account: "${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}" 
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+   
+      - name: "Docker auth"
+        shell: bash
+        run: gcloud auth configure-docker "${{ env.GCP_REGISTRY }}" --quiet
+
+      - name: "Set up R"
+        uses: r-lib/actions/setup-r@v2
