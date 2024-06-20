@@ -1,4 +1,4 @@
-name: "Build and push the latest module to nonprod"
+name: "Build and push location_loader to nonprod"
 
 on:
   workflow_dispatch:
