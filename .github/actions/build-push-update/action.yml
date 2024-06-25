@@ -36,7 +36,7 @@ runs:
 
       - name: Push image
         shell: bash
-        run: docker push ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }} --all-tags
+        run: docker push ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.image-tag }}
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
