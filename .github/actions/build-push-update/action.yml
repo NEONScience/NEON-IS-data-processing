@@ -39,22 +39,22 @@ runs:
       #   run: docker push ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.image-tag }}
 
       # Login to google artifact registry
-       - name: Log into registry ${{ env.GCP_ARTIFACT_HOST }}
-         uses: 'docker/login-action@v3'
-         with:
-           registry: ${{ env.GCP_ARTIFACT_HOST }}
-           username: 'oauth2accesstoken'
-           password: ${{ steps.auth.outputs.access_token }}
+      - name: Log into registry ${{ env.GCP_ARTIFACT_HOST }}
+        uses: 'docker/login-action@v3'
+        with:
+            registry: ${{ env.GCP_ARTIFACT_HOST }}
+            username: 'oauth2accesstoken'
+            password: ${{ steps.auth.outputs.access_token }}
            
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
-       - name: Log into registry ${{ env.REGISTRY }}
-         if: github.event_name != 'pull_request'
-       uses: docker/login-action@v3
-       with:
-         registry: ${{ env.REGISTRY }}
-         username: ${{ github.actor }}
-         password: ${{ env.GITHUB_TOKEN }}
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+            registry: ${{ env.REGISTRY }}
+            username: ${{ github.actor }}
+            password: ${{ env.GITHUB_TOKEN }}
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
@@ -62,15 +62,15 @@ runs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
-            ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NS }}/${{ env.REPO_NAME }}/modules/${{ env.MODULE_NAME }}
-          tags: |
+            images: |
+              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
+              ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NS }}/${{ env.REPO_NAME }}/modules/${{ env.MODULE_NAME }}
+            tags: |
             # type=schedule
             # type=ref,event=branch
             # type=ref,event=tag
             # type=ref,event=pr
-            type=sha
+              type=sha
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -78,10 +78,10 @@ runs:
         id: build-and-push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+            context: .
+            push: ${{ github.event_name != 'pull_request' }}
+            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
        
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
