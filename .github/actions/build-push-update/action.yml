@@ -29,7 +29,7 @@ runs:
 
       - name: Build image
         shell: bash
-        run: docker build . -f ./modules/group_loader/Dockerfile  --build-arg TAG=${{ inputs.image-tag }} --no-cache --t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
+        run: docker build . -f ./modules/group_loader/Dockerfile  --build-arg TAG=${{ inputs.image-tag }} --no-cache -t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
 
       - name: Push image
         shell: bash
@@ -41,8 +41,8 @@ runs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install R packages   
-        uses: r-lib/actions/setup-r-dependencies@v2
+      # - name: Install R packages   
+      #   uses: r-lib/actions/setup-r-dependencies@v2
         # with:
         #   packages: |
         #     any::tidyverse
