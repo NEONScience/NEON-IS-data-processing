@@ -7,7 +7,7 @@
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="location_loader"
+ARG APP_DIR="modules/location_loader"
 ARG COMMON_DIR="modules/common"
 ARG DATA_ACCESS_DIR="modules/data_access"
 ARG CONTAINER_APP_DIR="/usr/src/app"
