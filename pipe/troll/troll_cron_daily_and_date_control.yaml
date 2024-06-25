@@ -9,8 +9,8 @@ transform:
     # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be LAG_DAYS_END ago. 
     LAG_DAYS_END: "3" # Default is 2. Don't go lower than 2.
-    START_DATE: "2017-01-01"
-    END_DATE: "2017-01-31"
+    START_DATE: "2022-08-25"
+    END_DATE: "2023-10-05"
     OUT_PATH: /pfs/out
     SOURCE_TYPE_AQUATROLL: "aquatroll200"
     SOURCE_TYPE_LEVELTROLL: "leveltroll500"
