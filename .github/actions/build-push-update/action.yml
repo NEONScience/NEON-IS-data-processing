@@ -79,9 +79,11 @@ runs:
         uses: docker/build-push-action@v5
         with:
             context: .
-            push: ${{ github.event_name != 'pull_request' }}
-            tags: ${{ steps.meta.outputs.tags }}
-            labels: ${{ steps.meta.outputs.labels }}
+       #     push: ${{ github.event_name != 'pull_request' }}
+       #     tags: ${{ steps.meta.outputs.tags }}
+            tags: ${{ inputs.image-tag }}
+       
+       #     labels: ${{ steps.meta.outputs.labels }}
        
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
