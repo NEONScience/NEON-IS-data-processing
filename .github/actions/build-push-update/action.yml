@@ -64,13 +64,13 @@ runs:
         with:
             images: |
               ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
-              ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NS }}/${{ env.REPO_NAME }}/modules/${{ env.MODULE_NAME }}
-            #tags: |
+         #     ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NS }}/${{ env.REPO_NAME }}/modules/${{ env.MODULE_NAME }}
+            tags: |
             # type=schedule
             # type=ref,event=branch
             # type=ref,event=tag
             # type=ref,event=pr
-            # type=short_sha
+              type=short_sha
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
