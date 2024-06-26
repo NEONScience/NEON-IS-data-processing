@@ -1,0 +1,87 @@
+---
+pipeline:
+  name: precipWeighing_group_path
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/group_path:ab8c0517
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m group_path.group_path_main
+  env:
+    GROUP: precip-weighing_
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
+    GROUP_ASSIGNMENT_YEAR_INDEX: '4'
+    GROUP_ASSIGNMENT_MONTH_INDEX: '5'
+    GROUP_ASSIGNMENT_DAY_INDEX: '6'
+    GROUP_ASSIGNMENT_MEMBER_INDEX: '7'
+    GROUP_ASSIGNMENT_DATA_TYPE_INDEX: '8'
+    LOCATION_FOCUS_SOURCE_TYPE_INDEX: '3'
+    LOCATION_FOCUS_YEAR_INDEX: '4'
+    LOCATION_FOCUS_MONTH_INDEX: '5'
+    LOCATION_FOCUS_DAY_INDEX: '6'
+    LOCATION_FOCUS_LOCATION_INDEX: '7'
+    LOCATION_FOCUS_DATA_TYPE_INDEX: '8'
+    GROUP_FOCUS_YEAR_INDEX: '3'
+    GROUP_FOCUS_MONTH_INDEX: '4'
+    GROUP_FOCUS_DAY_INDEX: '5'
+    GROUP_FOCUS_GROUP_INDEX: '6'
+input:
+# The input to the group_path module must be a join between the group_assignment module and the union of any/all 
+#   data repos that are currently in a location focus structure or a (different/L1+ dependency) group focus structure
+  join:
+  - pfs:
+      # name must be GROUP_ASSIGNMENT_PATH
+      name: GROUP_ASSIGNMENT_PATH
+      repo: precipWeighing_group_assignment
+      glob: /precip-weighing/(*/*/*)
+      joinOn: $1
+  - union: 
+    - pfs:
+        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+        name: LOCATION_FOCUS_PATH
+        repo: aepg600m_fill_date_gaps_and_regularize
+        glob: /*/(*/*/*)
+        joinOn: $1
+#    - pfs:
+#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
+#        name: GROUP_FOCUS_PATH
+#        repo: 
+#        glob: /(*/*/*)
+#        joinOn: $1
+parallelism_spec:
+  constant: 1
+autoscaling: true
+resource_requests:
+  memory: 600M
+  cpu: 0.4
+resource_limits:
+  memory: 2G
+  cpu: 1.2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

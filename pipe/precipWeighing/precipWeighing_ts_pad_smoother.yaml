@@ -1,0 +1,68 @@
+---
+pipeline:
+  name: precipWeighing_ts_pad_smoother
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:cb658966
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Run timeseries_padder
+    python3 -m timeseries_padder.timeseries_padder.constant_pad_main 
+    EOF
+  env:
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    YEAR_INDEX: '3'
+    MONTH_INDEX: '4'
+    DAY_INDEX: '5'
+    LOCATION_INDEX: '8'
+    DATA_TYPE_INDEX: '9'
+    RELATIVE_PATH_INDEX: '3'
+    PAD_DIR: data,flags
+    WINDOW_SIZE: '10'
+    COPY_DIR: none # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none' if none other are desired.
+output_branch: master
+input:
+  pfs:
+    name: DATA_PATH
+    repo: precipWeighing_analyze_pad_and_qaqc_plau
+    glob: /*/*/*
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 800M
+  cpu: 3.3
+resource_limits:
+  memory: 1.5G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.7
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
