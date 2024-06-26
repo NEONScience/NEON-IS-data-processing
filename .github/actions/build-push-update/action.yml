@@ -65,12 +65,13 @@ runs:
             images: |
               ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
          #     ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NS }}/${{ env.REPO_NAME }}/modules/${{ env.MODULE_NAME }}
-         #   tags: |
+            tags: |
+              type=semver,pattern={{version}}
             # type=schedule
             # type=ref,event=branch
             # type=ref,event=tag
             # type=ref,event=pr
-            # type=short_sha
+            # type=sha
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -80,8 +81,8 @@ runs:
         with:
             context: .
        #     push: ${{ github.event_name != 'pull_request' }}
-       #     tags: ${{ steps.meta.outputs.tags }}
-            tags: ${{ env.SEM_VERSION }}
+              tags: ${{ steps.meta.outputs.tags }}
+       #     tags: ${{ env.SEM_VERSION }}
        
        #     labels: ${{ steps.meta.outputs.labels }}
        
@@ -110,5 +111,5 @@ runs:
           git tag ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}
           git add  -u .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-  #        git push origin ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}  || echo "No changes to commit"
+          git push origin ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}  || echo "No changes to commit"
         
