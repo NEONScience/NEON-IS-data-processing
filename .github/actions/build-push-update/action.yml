@@ -81,7 +81,7 @@ runs:
             context: .
        #     push: ${{ github.event_name != 'pull_request' }}
        #     tags: ${{ steps.meta.outputs.tags }}
-            tags: ${{ inputs.image-tag }}
+            tags: ${{ env.SEM_VERSION }}
        
        #     labels: ${{ steps.meta.outputs.labels }}
        
