@@ -111,5 +111,5 @@ runs:
           git tag ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}
           git add  -u .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}  || echo "No changes to commit"
+          git push origin   || echo "No changes to commit"
         
