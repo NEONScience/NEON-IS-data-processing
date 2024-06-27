@@ -2,6 +2,7 @@
 import os
 import sys
 from pathlib import Path
+import re
 
 from structlog import get_logger
 
@@ -118,5 +119,5 @@ class PaddedTimeSeriesAnalyzer:
 
     @staticmethod
     def get_data_file_date(filename: str) -> str:
-        """Parse the date from file names in format source_location_yyyy-mm-dd.xxx"""
-        return filename.split('.')[0].split('_')[2]
+        """Parse the date from file names in format source_location_yyyy-mm-dd_etc.xxx"""
+        return re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}",filename).group()
