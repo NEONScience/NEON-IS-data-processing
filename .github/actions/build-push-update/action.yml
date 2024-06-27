@@ -21,6 +21,10 @@ runs:
       - name: "Docker auth"
         shell: bash
         run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT_HOST }} --quiet
+        
+      # setup-buildx-action for Docker
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v3
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
