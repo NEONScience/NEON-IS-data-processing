@@ -22,7 +22,7 @@ env:
   MODULE_NAME: location_loader
   IMAGE_NAME: neon-is-location-loader
   # git tag
-  SEM_VERSION: v1.2.0
+  SEM_VERSION: v1.2.4
 
 jobs:
   deploy:
