@@ -9,7 +9,7 @@ transform:
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-loader:41d265d
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-loader:9c657ca
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
   secrets:
