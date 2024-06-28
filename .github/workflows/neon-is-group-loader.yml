@@ -12,6 +12,7 @@ env:
   GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
   GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
   GHCR_NS: battelleecology
+  #GHCR_NS: NEONScience
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
@@ -22,7 +23,7 @@ env:
   MODULE_NAME: group_loader
   IMAGE_NAME: neon-is-group-loader
   # git tag
-  SEM_VERSION: v1.1.8
+  SEM_VERSION: v1.2.0
 
 jobs:
   deploy:
