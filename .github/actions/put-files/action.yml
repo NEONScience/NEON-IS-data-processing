@@ -1,4 +1,4 @@
-name: level1-pipeline-list
+name: level1-pipeline-list-action
 
 runs:
    using: "composite"
@@ -7,8 +7,8 @@ runs:
 
       - uses: actions/setup-python@v3
         with:
-          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-          cache: 'pip'
+            python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+            cache: 'pip'
 
       - name: install .....put_files/requirements.txt
         shell: bash
