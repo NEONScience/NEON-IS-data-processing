@@ -38,7 +38,7 @@ readr::write_csv(envelope, file = '/scratch/pfs/aepg600m_fill_date_gaps_and_regu
 
 envelope_df <-  readr::read_csv( file = '/scratch/pfs/aepg600m_fill_date_gaps_and_regularize/envelope.csv', col_names = T)
 
-envelope_df <- envelope_df %>% filter(site_id %in% c('OSBS', 'PUUM', 'SRER', 'TALL', 'GUAN')) 
+envelope_df <- envelope_df
 envelope_df$rnd_envelope <- round(envelope_df$envelope,2)
 env_filt <- envelope_df %>% filter(envelope != -Inf)  %>%
                             filter(!is.na(site_id)) %>% 
@@ -204,47 +204,68 @@ for (site in unique(envelope_summ_month$site_id)){
     ylim(0,6)
   print(p)}
 
-env <- data.frame(site = c('OSBS', 'PUUM', 'SRER', 'TALL', 'GUAN'),
+env <- data.frame(site = unique(envelope_summ_month$site_id),
                   envelope = NA, 
-                  start_day_of_year = NA, 
-                  end_day_of_year = NA, 
-                  start_date = NA,
+                  start_day_of_year = 1, 
+                  end_day_of_year = 365, 
+                  start_date =  '2012-01-01',
                   end_date = NA) 
 
 #TALL, not seasonal
 env$envelope[env$site == 'TALL'] <- 2.0 
-env$start_day_of_year[env$site == 'TALL'] <- 1
-env$end_day_of_year[env$site == 'TALL'] <- 365
-env$start_date[env$site == 'TALL'] <- '2023-01-01'
-env$end_date[env$site == 'TALL'] <- NA
 
-#SRER , not seasonal, has clear monsoon season  
 env$envelope[env$site == 'SRER'] <- 0.4
-env$start_day_of_year[env$site == 'SRER'] <- 1
-env$end_day_of_year[env$site == 'SRER'] <- 365
-env$start_date[env$site == 'SRER'] <- '2023-01-01'
-env$end_date[env$site == 'SRER'] <- NA
 
-#PUUM, not seasonal, maybe had errant data early 2023
 env$envelope[env$site == 'PUUM'] <- 2.0
-env$start_day_of_year[env$site == 'PUUM'] <- 1
-env$end_day_of_year[env$site == 'PUUM'] <- 365
-env$start_date[env$site == 'PUUM'] <- '2023-01-01'
-env$end_date[env$site == 'PUUM'] <- NA
 
-#OSBS, not seasonal
 env$envelope[env$site == 'OSBS'] <- 2.3
-env$start_day_of_year[env$site == 'OSBS'] <- 1
-env$end_day_of_year[env$site == 'OSBS'] <- 365
-env$start_date[env$site == 'OSBS'] <- '2023-01-01'
-env$end_date[env$site == 'OSBS'] <- NA
 
-#GUAN, not seasonal
 env$envelope[env$site == 'GUAN'] <- 0.8
-env$start_day_of_year[env$site == 'GUAN'] <- 1
-env$end_day_of_year[env$site == 'GUAN'] <- 365
-env$start_date[env$site == 'GUAN'] <- '2023-01-01'
-env$end_date[env$site == 'GUAN'] <- NA
+
+env$envelope[env$site == 'WREF'] <- 2.0
+
+env$envelope[env$site == 'WOOD'] <- 0.9
+
+env$envelope[env$site == 'UNDE'] <- 0.9
+
+#TOOL, seasonal likely 1.0 winter, 2.0 summer?
+env$envelope[env$site == 'TOOL'] <- 1.0
+
+env$envelope[env$site == 'SJER'] <- 2.0
+
+#SCBI much higher in 2024, could be noisier gauge?
+env$envelope[env$site == 'SCBI'] <- 0.8
+
+#REDB (skip? trash data)
+
+#prin, higher early 2023
+
+env$envelope[env$site == 'PRIN'] <- 0.9
+
+env$envelope[env$site == 'ORNL'] <- 1.0
+
+env$envelope[env$site == 'ONAQ'] <- 0.9
+
+#KONZ. high noise, higher in summer maybe? aim for the middle for now
+env$envelope[env$site == 'KONZ'] <- 3.0
+
+#HARV, maybe seasonal, higher in both summers, aim for the middle for now
+env$envelope[env$site == 'HARV'] <- 1.5
+
+#CPER, pretty noisy, maybe seasonal?
+env$envelope[env$site == 'CPER'] <- 3.0
+
+env$envelope[env$site == 'CLBJ'] <- 0.8
+
+env$envelope[env$site == 'BONA'] <- 1.7
+
+env$envelope[env$site == 'BLUE'] <- 1.8
+
+env$envelope[env$site == 'ARIK'] <- 1.4
+
+#MISSING NIWO, REDB, YELL
+
 
 readr::write_csv(env, file = '/scratch/pfs/aepg600m_fill_date_gaps_and_regularize/envelope_threshold.csv')
 readr::read_csv( file = '/scratch/pfs/aepg600m_fill_date_gaps_and_regularize/envelope_threshold.csv')
+

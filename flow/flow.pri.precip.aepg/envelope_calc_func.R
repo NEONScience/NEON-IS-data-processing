@@ -6,18 +6,13 @@
 # calculated daily ranges (envelopes)
 # returns single CFGLOC of daily envelopes
 
-
-
-### todo envelope analysis on all 3 gauges
-#add mode
-
+#todo needs value change with new data for Vars
 envelope_calc_func <- function(files, cfg){
   
-  site_files <- files[grepl(files, pattern = "CFGLOC108877")]
-  tall <- site_files[grepl(site_files, pattern = '2024-02-2')]
-  
+  site_files <- files[grepl(files, pattern = CFG)]
+
   precip <- NEONprocIS.base::def.read.parq.ds(
-    fileIn = tall,
+    fileIn = site_files,
     Var = c('readout_time',
             'source_id',
             'site_id', 
