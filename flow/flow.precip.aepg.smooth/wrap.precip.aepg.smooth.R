@@ -87,6 +87,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
     log <- NEONprocIS.base::def.log.init()
   } 
   
+  Quant <- 0.8 # 0.5 is the median. The higher this value is, the more difficult it is to say that it rained
+  
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirInData <- fs::path(DirIn,'data')
@@ -156,7 +158,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   strainGaugeDepthAgr$precipType <- NA
   
   #!!! Needs logic for NA start
-  strainGaugeDepthAgr$bench[1:currRow] <-  stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[1:currRow],.8,na.rm=TRUE)
+  strainGaugeDepthAgr$bench[1:currRow] <-  stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[1:currRow],Quant,na.rm=TRUE)
   
   ##loop through data to establish benchmarks 
   skipping <- FALSE
@@ -172,7 +174,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
       next
     } else if (skipping) {
       # Re-establish the benchmark
-      strainGaugeDepthAgr$bench[i:currRow] <- stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],.8,na.rm=TRUE)
+      strainGaugeDepthAgr$bench[i:currRow] <- stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],Quant,na.rm=TRUE)
       timeSincePrecip <- NA
       skipping <- FALSE
     }
@@ -194,9 +196,10 @@ wrap.precip.aepg.smooth <- function(DirIn,
     precip <- FALSE
     precipType <- NA
     
-    # !!!! THIS NEEDS ATTENTION. 
-    #missing data handling
-    raw <- ifelse(is.na(raw), bench, raw) #if the initial benchmark creation was NA then this may still be a problem. 
+    # missing data handling
+    # !!!! THIS NEEDS ATTENTION. If the initial benchmark creation was NA then this may still be a problem. 
+    # If the current depth value is NA, set it to the benchmark
+    raw <- ifelse(is.na(raw), bench, raw) 
     
     #how many measurements in a row has raw been >= bench?
     if (raw >= bench){
@@ -206,93 +209,138 @@ wrap.precip.aepg.smooth <- function(DirIn,
     }
     
     # Compute median over last range size (i.e. 1 day)
-    raw_med_lastDay <- quantile(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],.8,na.rm=TRUE)
+    # !!! Write a note about what we're going to use this for. !!!
+    raw_med_lastDay <- quantile(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],Quant,na.rm=TRUE)
     
     
-    #if precip total increased check to see by how much
+    # if precip total increased check to if any precip triggers are reached
     if (raw > bench){
       rawChange <- raw - bench
-      #if change was bigger than 90% of range of noise in the data or greater and > 0.2 mm  or if this is the ThshCount+1 change in a row, update benchmark
-      #all values supplied by original algorithm
-      if ((rawChange > (ChangeFactor * Envelope) & rawChange > ThshChange )){ #0.2 should probably be a threshold to check
-        bench <- raw
-        precip <- TRUE
+      
+      if ((rawChange > (ChangeFactor * Envelope) & rawChange > ThshChange )){ 
+        # If change was bigger than 90% of diel range of noise in the data and also 
+        #   greater than the expected instrument sensitivity to rain, then it rained!
+        bench <- raw # Update the benchmark for the next data point
+        precip <- TRUE 
         timeSincePrecip <- 0
         precipType <- 'volumeThresh'
+        # SHOULD WE RESET THE rawCount HERE???
+        rawCount <- 0
+        
       } else if (grepl('volumeThresh',x=strainGaugeDepthAgr$precipType[currRow-1]) && rawChange > ThshChange){
-        bench <- raw
+        # Or, if is has been raining with the volume threshold and the precip depth continues to increase 
+        #   above the expected instrument sensitivity, continue to say it is raining.
+        bench <- raw # Update the benchmark for the next data point
         precip <- TRUE
         timeSincePrecip <- 0
-        precipType <- 'volumeThreshCont'
+        precipType <- 'volumeThreshContinued'
+        # SHOULD WE RESET THE rawCount HERE???
+        rawCount <- 0
+        
       } else if (rawCount == ThshCount){
-        # For drizzle (triggering count threshold), go back to the start of the drizzle
-        #   and set the bench to increasing raw values
-        for (idx in (currRow-ThshCount+2):currRow) {
+        
+        # Or, if the precip depth has been above the benchmark for exactly the time threshold 
+        #   considered for drizzle (ThshCount), say that it rained (i.e. drizzle), and 
+        #   continue to count.
+        bench <- raw # Update the benchmark for the next data point
+        precip <- TRUE
+        timeSincePrecip <- 0
+        precipType <- 'ThshCount'
+        
+        # Now go back to the start of the drizzle and set the bench to increasing 
+        #   raw values and continue to count.
+        benchNext <- bench
+        for (idx in (currRow-1):(currRow-ThshCount+2)) {
           rawIdx <- strainGaugeDepthAgr$strainGaugeDepth[idx]
-          rawIdxMinus1 <- strainGaugeDepthAgr$strainGaugeDepth[idx-1]
-          if(rawIdx > rawIdxMinus1){
-            # We've gone up, increase the bench
+          rawIdx <- ifelse(is.na(rawIdx), benchNext, rawIdx) 
+          if(rawIdx < benchNext){
+            benchNext <- rawIdx
             strainGaugeDepthAgr$bench[idx] <- rawIdx
           } else {
-            # We've gone down, keep the bench the same as previous
-            strainGaugeDepthAgr$bench[idx] <- rawIdxMinus1
+            strainGaugeDepthAgr$bench[idx] <- benchNext
           }
+        # 
+        # for (idx in (currRow-ThshCount+2):(currRow-1)) {
+        #   rawIdx <- strainGaugeDepthAgr$strainGaugeDepth[idx]
+        #   #rawIdxMinus1 <- strainGaugeDepthAgr$strainGaugeDepth[idx-1]
+        #   benchIdxMinus1 <- strainGaugeDepthAgr$bench[idx-1]
+        #   if(rawIdx > benchIdxMinus1){
+        #     # We've gone up, increase the bench
+        #     strainGaugeDepthAgr$bench[idx] <- rawIdx
+        #   } else {
+        #     # We've gone down, keep the bench the same as previous
+        #     strainGaugeDepthAgr$bench[idx] <- strainGaugeDepthAgr$bench[idx-1]
+        #   }
+          # Record rain stats
+          strainGaugeDepthAgr$precip[idx] <- precip
+          strainGaugeDepthAgr$precipType[idx] <- 'ThshCountBackFilledToStart'
         }
-      } else if ( rawCount >= ThshCount){
+        
+      } else if (rawCount >= ThshCount){
+        # Or, if it continues to drizzle and raw is continuing to rise, keep saying that it's raining
         bench <- raw 
         precip <- TRUE
         timeSincePrecip <- 0
         precipType <- 'ThshCount'
         
-      } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize){
-        bench <- raw_med_lastDay
-        
-        strainGaugeDepthAgr$bench[i:currRow] <- bench
-        
-        # Set the top of the rain event to the median of the next day in order to 
-        # remove the noise from the top of the rain event
-        
-        # !!!! TO-DO !!!!!
-        # This doesn't seem to work well when the ThshCount is triggered (drizzle). 
-        # !!!!!
-        idxBgn <- i-1
-        keepGoing <- TRUE
-        while(keepGoing == TRUE && idxBgn >= (i-rangeSize+1)){
-          if(strainGaugeDepthAgr$bench[idxBgn] > bench){
-            strainGaugeDepthAgr$bench[idxBgn] <- bench
-            idxBgn <- idxBgn - 1
-          } else {
-            keepGoing <- FALSE
-          }
-        }
+      # } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize){
+      #   # Or, 
+      #   bench <- raw_med_lastDay
+      #   
+      #   strainGaugeDepthAgr$bench[i:currRow] <- bench
+      #   
+      #   # Set the top of the rain event to the median of the next day in order to 
+      #   # remove the noise from the top of the rain event
+      #   
+      #   # !!!! TO-DO !!!!!
+      #   # This doesn't seem to work well when the ThshCount is triggered (drizzle). 
+      #   # !!!!!
+      #   idxBgn <- i-1
+      #   keepGoing <- TRUE
+      #   while(keepGoing == TRUE && idxBgn >= (i-rangeSize+1)){
+      #     if(strainGaugeDepthAgr$bench[idxBgn] > bench){
+      #       strainGaugeDepthAgr$bench[idxBgn] <- bench
+      #       idxBgn <- idxBgn - 1
+      #     } else {
+      #       keepGoing <- FALSE
+      #     }
+      #   }
       }
-    # One day after rain ends, back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
-    } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize){  
+        
+    } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (bench-Envelope)){  # Maybe use Envelope instead of Recharge?
+      # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
+      # back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
+      # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
       bench <- raw_med_lastDay
       strainGaugeDepthAgr$bench[i:currRow] <- bench
+      strainGaugeDepthAgr$precipType[i:currRow] <- paste0(strainGaugeDepthAgr$precipType[i-1],"BackAdjToMedNextDay")
       
       idxBgn <- i-1
       keepGoing <- TRUE
-      while(keepGoing == TRUE && idxBgn >= (i-rangeSize+1)){
+      while(keepGoing == TRUE) { #} && idxBgn >= (i-rangeSize+1)){
         #print(idxBgn)
-        if(strainGaugeDepthAgr$bench[idxBgn] > bench){
+        if(is.na(strainGaugeDepthAgr$precip[idxBgn]) || strainGaugeDepthAgr$precip[idxBgn] == FALSE){
+          # Stop if we are past the point where the precip started
+          keepGoing <- FALSE
+        } else if(strainGaugeDepthAgr$bench[idxBgn] > bench){
           strainGaugeDepthAgr$bench[idxBgn] <- bench
+          strainGaugeDepthAgr$precipType[idxBgn] <- paste0(strainGaugeDepthAgr$precipType[idxBgn],"BackAdjToMedNextDay")
           idxBgn <- idxBgn - 1
         } else {
           keepGoing <- FALSE
         }
       }    
     
+    } else if ((bench-raw_med_lastDay) > ChangeFactor*Envelope && !recentPrecip){
       # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
-    } else if ((-1*(raw_med_lastDay-bench) > (ChangeFactor * Envelope)) && !recentPrecip){
       bench <- raw_med_lastDay
-      rawCount <- 0
-      
-      #next check if the difference is > a Recharge rate, I think this is for bucket emptying and restarting
-      #TB adding code to account for precip empty
+
     } else if ((bench - raw) > Recharge){
-      strainGaugeDepthAgr$strainGaugeDepth[currRow:nrow(strainGaugeDepthAgr)] <- strainGaugeDepthAgr$strainGaugeDepth[currRow:nrow(strainGaugeDepthAgr)]+bench 
-      raw <- strainGaugeDepthAgr$strainGaugeDepth[currRow]
+      # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
+      
+      #TB adding code to account for precip empty
+      #strainGaugeDepthAgr$strainGaugeDepth[currRow:nrow(strainGaugeDepthAgr)] <- strainGaugeDepthAgr$strainGaugeDepth[currRow:nrow(strainGaugeDepthAgr)]+bench 
+      #raw <- strainGaugeDepthAgr$strainGaugeDepth[currRow]
       bench <- raw
     } 
     

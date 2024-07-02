@@ -94,7 +94,7 @@
 #' Rscript flow.precip.aepg.avg.depth.R "DirIn=/scratch/pfs/aepg600m_calibration_group_and_convert" "DirOut=/scratch/pfs/out" "DirErr=/scratch/pfs/out/errored_datums"  
 #'
 #' Not Run - Stepping through the code in Rstudio
-#' Sys.setenv(DIR_IN='DirIn=/scratch/pfs/aepg600m_calibration_group_and_convert')
+#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "DirErr=/scratch/pfs/out/errored_datums")
 #' # Then copy and paste rest of workflow into the command window
