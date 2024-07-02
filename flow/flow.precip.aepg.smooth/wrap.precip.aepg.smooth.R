@@ -123,7 +123,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
 
   # Aggregate depth streams into a single depth. 
-  data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = T))  
+  data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F))  
   
   # Do time averaging
   strainGaugeDepthAgr <- data %>%
