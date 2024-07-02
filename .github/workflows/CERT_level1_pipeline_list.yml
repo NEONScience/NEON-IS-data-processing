@@ -23,5 +23,5 @@ jobs:
       - run: ls -la
       
       - name: Put file
-        uses: ./.github/actions/put-file
+        uses: ./.github/actions/put-files
             
