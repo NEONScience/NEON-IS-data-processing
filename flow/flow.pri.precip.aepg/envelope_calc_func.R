@@ -13,10 +13,11 @@
 
 envelope_calc_func <- function(files, cfg){
   
-  site_files <- files[grepl(files, pattern = cfg)]
+  site_files <- files[grepl(files, pattern = "CFGLOC108877")]
+  tall <- site_files[grepl(site_files, pattern = '2024-02-2')]
   
   precip <- NEONprocIS.base::def.read.parq.ds(
-    fileIn = site_files,
+    fileIn = tall,
     Var = c('readout_time',
             'source_id',
             'site_id', 
@@ -31,8 +32,8 @@ envelope_calc_func <- function(files, cfg){
     Df = T)
   
   #not sure if it matters but pachy seems to not add source_id or site_id to the filled in data
-  precip$source_id = unique(precip$source_id)[1] 
-  precip$site_id = unique(precip$site_id)[1]
+  precip$source_id = unique(precip$source_id)[unique(!is.na(precip$source_id))][1] 
+  precip$site_id = unique(precip$site_id)[unique(!is.na(precip$site_id))][1] 
   
   ########################################################
   
@@ -42,44 +43,26 @@ envelope_calc_func <- function(files, cfg){
   #QF = 1 if any strain gauge is not reading stable. 
   precipqf <- precip %>% 
     dplyr::mutate(strain_gauge1_depth =  ifelse(strain_gauge1_stability != 1,  NA_real_, strain_gauge1_depth),
-                  strain_gauge1_stabQF = ifelse(strain_gauge1_stability != 1, 1, 0),
                   strain_gauge2_depth =  ifelse(strain_gauge2_stability != 1, NA_real_, strain_gauge2_depth),
-                  strain_gauge2_stabQF = ifelse(strain_gauge2_stability != 1, 1, 0),
-                  strain_gauge3_depth =  ifelse(strain_gauge3_stability != 1 ,  NA_real_, strain_gauge3_depth),
-                  strain_gauge3_stabQF = ifelse(strain_gauge3_stability != 1, 1, 0)) %>% 
-    dplyr::mutate(strain_gauge1_depth = ifelse(is.na(strain_gauge1_depth) | is.na(strain_gauge2_depth) | is.na(strain_gauge3_depth), NA_real_, strain_gauge1_depth),
-                  strain_gauge2_depth = ifelse(is.na(strain_gauge1_depth) | is.na(strain_gauge2_depth) | is.na(strain_gauge3_depth), NA_real_, strain_gauge2_depth),
-                  strain_gauge3_depth = ifelse(is.na(strain_gauge1_depth) | is.na(strain_gauge2_depth) | is.na(strain_gauge3_depth), NA_real_, strain_gauge3_depth)) %>% 
-    dplyr::mutate(precip_depth  = rowMeans(x = cbind(strain_gauge1_depth, strain_gauge2_depth, strain_gauge3_depth), na.rm = F),
-                  stabilityQF = ifelse(strain_gauge1_stabQF == 1 |strain_gauge2_stabQF == 1  | strain_gauge3_stabQF == 1 , 1, 0)) %>%
-    dplyr::mutate(nullQF = ifelse(is.na(precip_depth), 1, 0)) %>%
+                  strain_gauge3_depth =  ifelse(strain_gauge3_stability != 1 ,  NA_real_, strain_gauge3_depth)) %>% 
+    dplyr::mutate(precip_depth  = rowMeans(x = cbind(strain_gauge1_depth, strain_gauge2_depth, strain_gauge3_depth), na.rm = F)) %>% 
     dplyr::select(source_id, 
                   site_id,
                   readout_time,
                   strain_gauge1_depth,
-                  strain_gauge1_stabQF,
                   strain_gauge2_depth, 
-                  strain_gauge2_stabQF,
                   strain_gauge3_depth,
-                  strain_gauge3_stabQF,
-                  precip_depth,
-                  stabilityQF, 
-                  nullQF) 
-  
-  precip_5min <- precipqf %>% 
-    dplyr::mutate(avgtmi = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = '5 min')) %>% 
-    dplyr::group_by(avgtmi, source_id, site_id) %>%
-    dplyr::summarise(precip_depth_5min = mean(precip_depth, na.rm = T),
-                     stabilityQF   = sum(stabilityQF, na.rm = T), # just doing a percent and a sum for now
-                     stabilityQM = round((sum(stabilityQF, na.rm = T)/dplyr::n())*100,0),
-                     nullQF = sum(nullQF, na.rm = T), # might not keep this
-                     nullQM = round((sum(nullQF, na.rm = T)/dplyr::n())*100,0))
-  
+                  precip_depth)
+
+ 
   #calculate envelope
-  precip_daily <- precip_5min %>% 
-    dplyr::mutate(dailytmi = lubridate::floor_date(as.POSIXct(avgtmi, tz = 'UTC'), unit = '1 day')) %>%
+  precip_daily <- precipqf %>% 
+    dplyr::mutate(dailytmi = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = '1 day')) %>%
     dplyr::group_by(dailytmi, source_id, site_id) %>%
-    dplyr::summarise(envelope = max(precip_depth_5min, na.rm = T) - min(precip_depth_5min, na.rm = T)) 
+    dplyr::summarise(envelope = max(precip_depth, na.rm = T) - min(precip_depth, na.rm = T),
+                     env_s1 = max(strain_gauge1_depth, na.rm = T) - min(strain_gauge1_depth, na.rm = T),
+                     env_s2 = max(strain_gauge2_depth, na.rm = T) - min(strain_gauge2_depth, na.rm = T),
+                     env_s3 = max(strain_gauge3_depth, na.rm = T) - min(strain_gauge3_depth, na.rm = T)) 
   
   return(precip_daily)
 }
