@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - 'cert'
-    paths:
-      - 'pipe/li191r/site-list.json'
+    # paths:
+    #   - 'pipe/li191r/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 jobs:
   put-file:
@@ -21,9 +21,5 @@ jobs:
       - uses: actions/checkout@v4
       - run: ls -la
       
-      - uses: actions/setup-python@v3
-        with:
-          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-          cache: 'pip'
-      - run: pip install -r .github/workflow_scripts/put_files/requirements.txt
-      - run: python3 -u .github/workflow_scripts/put_files/put_files.py
+      - name: Put file
+        uses: ./.github/actions/put-files
