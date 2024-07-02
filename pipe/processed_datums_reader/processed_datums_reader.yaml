@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/processed_datums_reader:vis_test_11
+  image: quay.io/battelleecology/processed_datums_reader:0f746484
   
   cmd:
   - /bin/bash
