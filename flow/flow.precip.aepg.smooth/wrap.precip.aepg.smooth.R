@@ -73,8 +73,10 @@
 wrap.precip.aepg.smooth <- function(DirIn,
                                     DirOutBase,
                                     WndwAgr = '5 min',
+                                    RangeSizeHour = 24, #  Period of evaluation (e.g. 24 for 1 day)
                                     ThshCountHour = 6,
                                     Envelope = 3,
+                                    Quant = 0.8, # Where is the benchmark set (quantile) within the envelope (diel variation)
                                     ThshChange = 0.2,
                                     ChangeFactor = 0.9,
                                     Recharge = 100, #if raw data was this much less than bench mark likely a bucket empty/recalibration (original was 25)
@@ -87,8 +89,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     log <- NEONprocIS.base::def.log.init()
   } 
   
-  Quant <- 0.8 # 0.5 is the median. The higher this value is, the more difficult it is to say that it rained
-  
+
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirInData <- fs::path(DirIn,'data')
@@ -138,10 +139,10 @@ wrap.precip.aepg.smooth <- function(DirIn,
   WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
   if(stringr::str_detect(WndwAgr, 'min')) {
     ThshCount <- ThshCountHour * (60/WndwAgrNumc) 
-    rangeSize <- 24*(60/WndwAgrNumc)   #!!! POTENTIAL FOR MAKING AN INPUT VARIABLE !!!
+    rangeSize <- RangeSizeHour*(60/WndwAgrNumc)   #!!! POTENTIAL FOR MAKING AN INPUT VARIABLE !!!
   } else if ((stringr::str_detect(WndwAgr, 'hour')) ){
     ThshCount <- ThshCountHour/WndwAgrNumc
-    rangeSize <- 24/WndwAgrNumc #account for evap in last 24 hours
+    rangeSize <- RangeSizeHour/WndwAgrNumc #account for evap in last 24 hours
   } else {
     log$fatal('averaging unit needs to be in minutes (min) or hours (hour)')
     stop()
