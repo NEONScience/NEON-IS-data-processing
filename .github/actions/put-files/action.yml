@@ -1,12 +1,11 @@
-name: put-files-action
+name: "put files"
+description: "Put the updated file(s) into Pachyderm master branch"
 
 inputs:
    pachd_address:
      required: true
-     default: 
    pach_token:
      required: true
-     default: 
    repo_name:
      required: true
    branch_name:
