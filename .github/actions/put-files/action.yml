@@ -1,4 +1,4 @@
-name: level1-pipeline-list-action
+name: put-files-action
 
 runs:
    using: "composite"
