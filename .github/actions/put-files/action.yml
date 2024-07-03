@@ -1,5 +1,22 @@
 name: put-files-action
 
+inputs:
+   pachd_address:
+     required: true
+     default: 
+   pach_token:
+     required: true
+     default: 
+   repo_name:
+     required: true
+   branch_name:
+     required: true
+     default: master
+   in_paths:
+     required: true
+   out_paths:
+     required: true
+
 runs:
    using: "composite"
 
