@@ -25,7 +25,7 @@ jobs:
       
       - name: Put file
         uses: ./.github/actions/put-files
-        with
+        with:
           pachd_address: "${{ env.PACHD_ADDRESS }}"
           pach_token: "${{ env.PACH_TOKEN }}"
           repo_name: "${{ env.REPO }}""
