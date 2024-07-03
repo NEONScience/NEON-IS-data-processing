@@ -26,10 +26,10 @@ jobs:
       - name: Put file
         uses: ./.github/actions/put-files
         with:
-          pachd_address: "${{ env.PACHD_ADDRESS }}"
-          pach_token: "${{ env.PACH_TOKEN }}"
-          repo_name: "${{ env.REPO }}""
-          branch_name: "${{ env.BRANCH }}"
-          in_paths: "${{ env.IN_PATHS }}"
-          out_paths: "${{ env.OUT_PATHS }}"
+            pachd_address: "${{ env.PACHD_ADDRESS }}"
+            pach_token: "${{ env.PACH_TOKEN }}"
+            repo_name: "${{ env.REPO }}""
+            branch_name: "${{ env.BRANCH }}"
+            in_paths: "${{ env.IN_PATHS }}"
+            out_paths: "${{ env.OUT_PATHS }}"
         
