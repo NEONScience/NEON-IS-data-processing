@@ -74,7 +74,7 @@ transform:
         fname="${BASH_REMATCH[5]}"
         
         # Now get the data product and timing index from the file name
-        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Z]+[0-9]+_${fyear}-${fmonth}-${fday}_([A-Za-z0-9]+)_[A-Za-z0-9]+_[A-Za-z0-9]+_([A-Za-z0-9]+).parquet ]]
+        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_([A-Za-z0-9]+)_[A-Za-z0-9]+_[A-Za-z0-9]+_([A-Za-z0-9]+).parquet ]]
         table_prefix="${BASH_REMATCH[1]}"
         unset dp_shortname
         if [[ $table_prefix = "EOS" ]]; then
