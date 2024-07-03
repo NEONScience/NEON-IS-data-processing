@@ -77,7 +77,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                     Envelope = 3,
                                     ThshChange = 0.2,
                                     ChangeFactor = 0.9,
-                                    Recharge = 250, #if raw data was this much less than bench mark likely a bucket empty/recalibration (original was 25)
+                                    Recharge = 100, #if raw data was this much less than bench mark likely a bucket empty/recalibration (original was 25)
                                     DirSubCopy=NULL,
                                     log=NULL
 ){
@@ -359,20 +359,17 @@ wrap.precip.aepg.smooth <- function(DirIn,
   }
 
   # TESTING ONLY
-df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4)],id.vars=c('startDateTime'))
+strainGaugeDepthAgr$weighPrecipBulk <- strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1)
+strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(weighPrecipBulk = ifelse(weighPrecipBulk < 0, 0, weighPrecipBulk))
+
+df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4,7)],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
+
+
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
   
   # Take stock of our flags files. 
   fileFlags<- base::list.files(dirInFlags,full.names=FALSE)
