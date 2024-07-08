@@ -38,6 +38,8 @@
 #' 
 #' @param ChangeFactor Numeric fraction by which Envelope is multiplied to determine if change in depth is precipitation, default is 0.9
 #' 
+#' @param ChangeFactorEvap Numeric fraction by which Envelope is multiplied to determine when a negative change in depth is considered evaporation, and the benchmark moved down accordingly. Default is 0.5
+#' 
 #' @param Recharge Numeric value. If raw data drops by much or more, assume it is a bucket empty/recalibration
 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
@@ -79,6 +81,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                     Quant = 0.8, # Where is the benchmark set (quantile) within the envelope (diel variation)
                                     ThshChange = 0.2,
                                     ChangeFactor = 0.9,
+                                    ChangeFactorEvap = 0.5,
                                     Recharge = 100, #if raw data was this much less than bench mark likely a bucket empty/recalibration (original was 25)
                                     DirSubCopy=NULL,
                                     log=NULL
@@ -226,7 +229,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
         timeSincePrecip <- 0
         precipType <- 'volumeThresh'
         # SHOULD WE RESET THE rawCount HERE???
-        rawCount <- 0
+        # rawCount <- 0
         
       } else if (grepl('volumeThresh',x=strainGaugeDepthAgr$precipType[currRow-1]) && rawChange > ThshChange){
         # Or, if is has been raining with the volume threshold and the precip depth continues to increase 
@@ -236,7 +239,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
         timeSincePrecip <- 0
         precipType <- 'volumeThreshContinued'
         # SHOULD WE RESET THE rawCount HERE???
-        rawCount <- 0
+        # rawCount <- 0
         
       } else if (rawCount == ThshCount){
         
@@ -260,18 +263,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           } else {
             strainGaugeDepthAgr$bench[idx] <- benchNext
           }
-        # 
-        # for (idx in (currRow-ThshCount+2):(currRow-1)) {
-        #   rawIdx <- strainGaugeDepthAgr$strainGaugeDepth[idx]
-        #   #rawIdxMinus1 <- strainGaugeDepthAgr$strainGaugeDepth[idx-1]
-        #   benchIdxMinus1 <- strainGaugeDepthAgr$bench[idx-1]
-        #   if(rawIdx > benchIdxMinus1){
-        #     # We've gone up, increase the bench
-        #     strainGaugeDepthAgr$bench[idx] <- rawIdx
-        #   } else {
-        #     # We've gone down, keep the bench the same as previous
-        #     strainGaugeDepthAgr$bench[idx] <- strainGaugeDepthAgr$bench[idx-1]
-        #   }
+          
           # Record rain stats
           strainGaugeDepthAgr$precip[idx] <- precip
           strainGaugeDepthAgr$precipType[idx] <- 'ThshCountBackFilledToStart'
@@ -284,28 +276,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
         timeSincePrecip <- 0
         precipType <- 'ThshCount'
         
-      # } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize){
-      #   # Or, 
-      #   bench <- raw_med_lastDay
-      #   
-      #   strainGaugeDepthAgr$bench[i:currRow] <- bench
-      #   
-      #   # Set the top of the rain event to the median of the next day in order to 
-      #   # remove the noise from the top of the rain event
-      #   
-      #   # !!!! TO-DO !!!!!
-      #   # This doesn't seem to work well when the ThshCount is triggered (drizzle). 
-      #   # !!!!!
-      #   idxBgn <- i-1
-      #   keepGoing <- TRUE
-      #   while(keepGoing == TRUE && idxBgn >= (i-rangeSize+1)){
-      #     if(strainGaugeDepthAgr$bench[idxBgn] > bench){
-      #       strainGaugeDepthAgr$bench[idxBgn] <- bench
-      #       idxBgn <- idxBgn - 1
-      #     } else {
-      #       keepGoing <- FALSE
-      #     }
-      #   }
       }
         
     } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (bench-Envelope)){  # Maybe use Envelope instead of Recharge?
@@ -314,12 +284,12 @@ wrap.precip.aepg.smooth <- function(DirIn,
       # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
       bench <- raw_med_lastDay
       strainGaugeDepthAgr$bench[i:currRow] <- bench
-      strainGaugeDepthAgr$precipType[i:currRow] <- paste0(strainGaugeDepthAgr$precipType[i-1],"BackAdjToMedNextDay")
+      strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
       
       idxBgn <- i-1
       keepGoing <- TRUE
-      while(keepGoing == TRUE) { #} && idxBgn >= (i-rangeSize+1)){
-        #print(idxBgn)
+      while(keepGoing == TRUE) { 
+        
         if(is.na(strainGaugeDepthAgr$precip[idxBgn]) || strainGaugeDepthAgr$precip[idxBgn] == FALSE){
           # Stop if we are past the point where the precip started
           keepGoing <- FALSE
@@ -331,18 +301,15 @@ wrap.precip.aepg.smooth <- function(DirIn,
           keepGoing <- FALSE
         }
       }    
-    
-    } else if ((bench-raw_med_lastDay) > ChangeFactor*Envelope && !recentPrecip){
+    } else if ((bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
       # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
       bench <- raw_med_lastDay
-
+      precipType <- 'EvapAdj'
+      
     } else if ((bench - raw) > Recharge){
       # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
-      
-      #TB adding code to account for precip empty
-      #strainGaugeDepthAgr$strainGaugeDepth[currRow:nrow(strainGaugeDepthAgr)] <- strainGaugeDepthAgr$strainGaugeDepth[currRow:nrow(strainGaugeDepthAgr)]+bench 
-      #raw <- strainGaugeDepthAgr$strainGaugeDepth[currRow]
       bench <- raw
+      
     } 
     
     #update in the data
