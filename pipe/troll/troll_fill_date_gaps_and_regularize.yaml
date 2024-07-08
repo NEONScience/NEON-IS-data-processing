@@ -1,0 +1,140 @@
+---
+pipeline:
+  name: troll_fill_date_gaps_and_regularize
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-gf-rglr:a1797c20
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    #
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH
+    mkdir -p $OUT_PATH
+    #
+    # Get source type /SOURCE_TYPE/YYYY/MM/DD 
+    if [ ${LOCATION_PATH+x} ]; then 
+      source_type=$(echo $LOCATION_PATH | cut -f 4 -d "/")
+      echo "Source type: $source_type"
+    else
+      echo "LOCATION_PATH does not exist (no locations active for datum $DATA_PATH). Skipping..."
+      exit 0
+    fi
+    #
+    if [ $source_type = "aquatroll200" ]; then 
+      export EMPTY_FILE_PATH="/pfs/EMPTY_FILES/aquatroll200"
+    elif [ $source_type = "leveltroll500" ]; then 
+      export EMPTY_FILE_PATH="/pfs/EMPTY_FILES/leveltroll500"
+    else
+      echo "No source type determined. Check inputs."
+      exit 1
+    fi
+    #
+    # Run first module - date-gap-filler (using environment variables below as input parameters)
+    python3 -m date_gap_filler.date_gap_filler_main
+    #
+    # Run second module - regularize
+    Rscript ./flow.rglr.R \
+      DirIn=/tmp/pfs/date_filled \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "DirRglr=data|uncertainty_data|flags" \
+      MethRglr=CybiEc \
+      WndwRglr=Trlg \
+      IdxWndw=IdxWndwMin \
+      RptTimeWndw=FALSE \
+      DropNotNumc=FALSE \
+      "DirSubCopy=location|uncertainty_coef"
+    EOF
+  env:
+    # Environment variables for date gap filler
+    LOG_LEVEL: INFO
+    OUT_PATH: /tmp/pfs/date_filled
+    OUTPUT_DIRECTORIES: data,location,uncertainty_data,uncertainty_coef,flags
+    DATA_SOURCE_TYPE_INDEX: '3'
+    DATA_YEAR_INDEX: '4'
+    DATA_MONTH_INDEX: '5'
+    DATA_DAY_INDEX: '6'
+    DATA_LOCATION_INDEX: '7'
+    DATA_TYPE_INDEX: '8'
+    LOCATION_SOURCE_TYPE_INDEX: '3'
+    LOCATION_YEAR_INDEX: '4'
+    LOCATION_MONTH_INDEX: '5'
+    LOCATION_DAY_INDEX: '6'
+    LOCATION_INDEX: '7'
+    EMPTY_FILE_TYPE_INDEX: '4'
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
+    # Environment variables for regularizer
+    PARALLELIZATION_INTERNAL: '3' # Parallelization within R. If increased, adjust resource requests appropriately.
+input:
+  cross:
+  - pfs:
+      name: EMPTY_FILES
+      repo: troll_empty_files
+      glob: /
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - group:
+    - pfs:
+        name: DATA_PATH
+        repo: troll_location_group_and_restructure
+        # For full-scale daily processing, glob should be /aquatroll200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /aquatroll200/(*/*/*/(CFGLOC101039|CFGLOC101040|CFGLOC101041|CFGLOC101046|CFGLOC101239|CFGLOC101240|CFGLOC113600|CFGLOC113601))
+        # glob: /aquatroll200/(*/*/*/(CFGLOC110706|CFGLOC110708|CFGLOC113600|CFGLOC113601))
+        glob: /(*/*/*/*)
+        group_by: $1
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - join:
+      - pfs:
+          name: LOCATION_PATH
+          repo: troll_location_active_dates_assignment
+          # For full-scale daily processing, glob should be /aquatroll200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /aquatroll200/((*/*/*)/(CFGLOC101039|CFGLOC101040|CFGLOC101041|CFGLOC101046|CFGLOC101239|CFGLOC101240|CFGLOC113600|CFGLOC113601))
+          # glob: /aquatroll200/((*/*/*)/(CFGLOC110706|CFGLOC110708|CFGLOC113600|CFGLOC113601))
+          glob: /(*/*/*/*)
+          # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
+          # joinOn: $2
+          joinOn: $1
+          group_by: $1
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      - pfs:
+          name: DATE_LIMITER_PATH
+          repo: troll_cron_daily_and_date_control
+          glob: /(*/*/*/*)
+          joinOn: $1
+          group_by: $1
+          empty_files: true # This can remain true even if LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

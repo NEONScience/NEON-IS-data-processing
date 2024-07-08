@@ -1,0 +1,29 @@
+name: PROD-level1-pipeline-list
+on:
+  push:
+    branches:
+      - 'prod'
+    paths:
+      - 'pipe/processed_datums_reader/level1_pipeline_list.txt'
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
+jobs:
+  put-file:
+    runs-on: arc-neon-gke
+    #runs-on: ubuntu-latest 
+    env:
+      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
+      REPO: level1_pipeline_list # Pachyderm repo
+      BRANCH: master 
+      IN_PATHS: 'pipe/processed_datums_reader/level1_pipeline_list.txt'
+      OUT_PATHS: 'level1_pipeline_list.txt'
+    steps:
+      - uses: actions/checkout@v4
+      - run: ls -la
+      
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          cache: 'pip'
+      - run: pip install -r .github/workflow_scripts/put_files/requirements.txt
+      - run: python3 -u .github/workflow_scripts/put_files/put_files.py

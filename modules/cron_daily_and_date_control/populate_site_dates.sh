@@ -1,10 +1,16 @@
 #!/bin/bash
 
-# If global END_DATE unset, set to 2 days ago
+
+# If global END_DATE unset, set to X days ago (default 2)
 echo "Global start date = $START_DATE"
 if [ -z $END_DATE ]; then 
-  END_DATE=$(date -u -d "2 days ago" +%Y-%m-%d);
-  echo "Input END_DATE is unset. Using 2 days previous."
+  
+  if [ -z $LAG_DAYS_END ]; then 
+    LAG_DAYS_END=2
+  fi
+
+  END_DATE=$(date -u -d "$LAG_DAYS_END days ago" +%Y-%m-%d);
+  echo "Input END_DATE is unset. Using $LAG_DAYS_END days previous."
 fi
 echo "Global end date = $END_DATE"
 

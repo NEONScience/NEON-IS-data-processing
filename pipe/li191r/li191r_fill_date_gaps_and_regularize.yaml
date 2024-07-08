@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-gf-rglr:e65941ee
+  image: quay.io/battelleecology/neon-is-gf-rglr:a1797c20
   cmd:
   - sh
   - "-c"
@@ -16,7 +16,7 @@ transform:
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH
     mkdir -p $OUT_PATH
-    # Run first module - filter-joiner (using environment variables below as input parameters)
+    # Run first module - date-gap-filler (using environment variables below as input parameters)
     python3 -m date_gap_filler.date_gap_filler_main
     # Run second module - regularize
     Rscript ./flow.rglr.R \

@@ -1,7 +1,7 @@
 ####
 # This dockerfile will build the readme loader module.
 # Example command (must be run from project root directory to include the 'common' path in the Docker context):
-# docker build -t readme_loader:latest -f readme_loader/Dockerfile .
+# docker build --no-cache -t readme_loader:latest -f readme_loader/Dockerfile .
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 

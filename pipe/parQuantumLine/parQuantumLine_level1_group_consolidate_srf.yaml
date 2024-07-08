@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:e65941ee
+  image: quay.io/battelleecology/neon-is-levl1-grp-cons-srf:505c66b5
   cmd:
   - sh
   - "-c"
@@ -73,7 +73,7 @@ transform:
         fgroup="${BASH_REMATCH[4]}"
         fname="${BASH_REMATCH[5]}"
         # Now get the timing index from the file name
-        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Z]+[0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
+        [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
         avg_int="${BASH_REMATCH[1]}"
         #Form the output path and link
         outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"

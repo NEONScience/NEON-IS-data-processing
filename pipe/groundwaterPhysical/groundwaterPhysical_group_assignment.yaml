@@ -13,7 +13,7 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=group
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:e65941ee
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:588e4d45
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -26,7 +26,7 @@ input:
       glob: /groundwater-physical/*
   - pfs:
       name: FILE_YEAR
-      repo: aquatroll200_cron_daily_and_date_control
+      repo: troll_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
   constant: 5

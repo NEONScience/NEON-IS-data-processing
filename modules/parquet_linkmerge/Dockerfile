@@ -5,7 +5,7 @@
 # docker build -t parquet_linkmerge:latest -f parquet_linkmerge/Dockerfile .
 #
 ###
-FROM registry.access.redhat.com/ubi8/ubi-minimal
+FROM registry.access.redhat.com/ubi9/ubi-minimal
 
 ARG APP_DIR="parquet_linkmerge"
 ARG COMMON_DIR="common"
@@ -22,11 +22,11 @@ RUN update-ca-trust && \
             shadow-utils \
             gcc \
             libzstd  \
-            python38 \
-            python38-pip \
-            python38-wheel \
-            python38-devel \
-            python38-setuptools && \
+            python311 \
+            python311-pip \
+            python311-wheel \
+            python311-devel \
+            python311-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \

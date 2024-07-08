@@ -3,7 +3,7 @@ pipeline:
   name: groundwaterPhysical_stats_ucrt_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:e65941ee
+  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:e326a29c
   cmd:
   - sh
   - "-c"
@@ -12,11 +12,20 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -r -f /tmp/pfs/filter_joined
     mkdir -p /tmp/pfs/filter_joined
+
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
+
+    # Dole out schemas
+    export FILE_SCHEMA_STATS='/pfs/SCHEMAS/groundwaterPhysical/groundwaterPhysical_dp01_stats.avsc'
+    export SCHEMA_DATA_TROLL='/pfs/SCHEMAS/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_data.avsc'
+    export SCHEMA_UCRT_TROLL='/pfs/SCHEMAS/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_ucrt.avsc'
+    export SCHEMA_SCI_TROLL='/pfs/SCHEMAS/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_sci_stats.avsc'
+
     # Run second module - basic stats
     Rscript ./flow.stat.basc.R \
       DirIn=/tmp/pfs/filter_joined \
@@ -27,6 +36,7 @@ transform:
       "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr" \
       "TermStat2=conductivity:mean|minimum|maximum|variance|numPts|stdEr" \
       DirSubCopy=location
+
     # Run third module - troll-specific uncertainty comps
     Rscript ./flow.troll.uncertainty.R \
       DirIn=/tmp/pfs/filter_joined \
@@ -67,22 +77,12 @@ transform:
     PARALLELIZATION_INTERNAL: '2' # Option for stats module
 input:
   cross:
-  - pfs:
-      name: FILE_SCHEMA_STATS
-      repo: groundwaterPhysical_avro_schemas
-      glob: /groundwaterPhysical/groundwaterPhysical_dp01_stats.avsc
-  - pfs:
-      name: SCHEMA_DATA_TROLL
-      repo: groundwaterPhysical_avro_schemas
-      glob: /groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_data.avsc
-  - pfs:
-      name: SCHEMA_UCRT_TROLL
-      repo: groundwaterPhysical_avro_schemas
-      glob: /groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_ucrt.avsc
-  - pfs:
-      name: SCHEMA_SCI_TROLL
-      repo: groundwaterPhysical_avro_schemas
-      glob: /groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_sci_stats.avsc
+  - group:
+    - pfs:
+        name: SCHEMAS
+        repo: groundwaterPhysical_avro_schemas
+        glob: /(groundwaterPhysical)/(groundwaterPhysical_dp01_stats.avsc|groundwaterPhysical_dp01_troll_specific_data.avsc|groundwaterPhysical_dp01_troll_specific_ucrt.avsc|groundwaterPhysical_dp01_troll_specific_sci_stats.avsc)
+        group_by: $1
   - join:
     - pfs:
         name: QAQC_PATH
@@ -105,8 +105,8 @@ resource_limits:
   memory: 1.5G
   cpu: 4
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.2
+  memory: 3G
+  cpu: 0.5
 autoscaling: true
 datum_set_spec:
   number: 1

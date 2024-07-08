@@ -1,0 +1,70 @@
+---
+pipeline:
+  name: metone370380_calibration_assignment
+transform:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
+  - Rscript
+      ./flow.cal.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+  image: quay.io/battelleecology/neon-is-cal-asgn-r:83069e01
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: metone370380_calibration_loader
+      glob: /metone370380/*
+  - pfs:
+      name: FILE_YEAR
+      repo: metone370380_cron_daily_and_date_control
+      glob: /data_year*.txt
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 200M
+  cpu: 0.8
+resource_limits:
+  memory: 600M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1
+datum_set_spec:
+  number: 5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+# pod_patch: |-
+#   [
+#     { "op": "replace",
+#       "path": "/containers/1/env/-",
+#       "value": {
+#         "name": "GOMEMLIMIT",
+#         "value": "2000000000"
+#       }
+#     }
+#   ]

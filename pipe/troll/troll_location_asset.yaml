@@ -1,0 +1,57 @@
+---
+pipeline:
+  name: troll_location_asset
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/location_asset_loader:e550f1f2
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - export SOURCE_TYPE=$SOURCE_TYPE_1
+  - python3 -m location_asset_loader.location_asset_loader_main
+  - export SOURCE_TYPE=$SOURCE_TYPE_2
+  - python3 -m location_asset_loader.location_asset_loader_main
+  env:
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
+    LOG_LEVEL: INFO
+    SOURCE_TYPE_1: aquatroll200
+    SOURCE_TYPE_2: leveltroll500
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    repo: troll_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 100M
+  cpu: 0.15
+resource_limits:
+  memory: 300M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 500M
+  cpu: 0.2
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

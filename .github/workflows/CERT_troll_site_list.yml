@@ -1,0 +1,29 @@
+name: CERT-troll-site-list
+on:
+  push:
+    branches:
+      - 'cert'
+    paths:
+      - 'pipe/troll/site-list.json'
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
+jobs:
+  put-file:
+    runs-on: arc-neon-gke
+    #runs-on: ubuntu-latest 
+    env:
+      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
+      REPO: troll_site_list # Pachyderm repo
+      BRANCH: master 
+      IN_PATHS: 'pipe/troll/site-list.json' # Comma-separated list (no spaces) to one or more paths or directories. Length must match OUT_PATHS. If directory, all files in directory will be placed in pachyderm at corresponding entry of OUT_PATHS. 
+      OUT_PATHS: 'site-list.json' # Comma-separated list (no spaces) of corresponding path(s) to place the files(s) in Pachyderm. Must be same length as IN_PATHS. If corresponding entry in IN_PATHS is a file, specify to the file. If corresponding entry in IN_PATHS is a directory, specify to the directory. 
+    steps:
+      - uses: actions/checkout@v4
+      - run: ls -la
+      
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          cache: 'pip'
+      - run: pip install -r .github/workflow_scripts/put_files/requirements.txt
+      - run: python3 -u .github/workflow_scripts/put_files/put_files.py

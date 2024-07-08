@@ -12,10 +12,12 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Run first module - pub_egress (using environment variables below as input parameters)
     if [[ $(echo $DATA_PATH) ]]; then
       python3 -m pub_egress.pub_egress_main
     fi
+    
     # If there is output, egress it
     if ls $OUT_PATH/NEON.DOM.SITE* 1> /dev/null 2>&1; then
       for DIR in $OUT_PATH/NEON.DOM.SITE*; do
@@ -36,26 +38,29 @@ transform:
     else
       echo "No pub output to egress"
     fi
+    
     # Set some environment variables for the second module
     export DATA_PATH=$OUT_PATH
+    
     # Run second module - pub_upload (using environment variables below as input parameters)
     python3 -m pub_uploader.pub_uploader_main
+    
     # Run third module - pub_sync (using environment variables below as input parameters)
     python3 -m pub_sync.pub_sync_main
+    
     EOF
   env:
     LOG_LEVEL: INFO
     
     # Environment variables for 1st module: pub_egress. The pub bucket and egress url are specified via secrets below.
     OUT_PATH: "/pfs/out"
-    # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
 
     # Environment variables for 2nd module: pub_upload.
     # DATA_PATH is set in the code above to the output from the egress module
     # Uses STARTING_PATH_INDEX above
-    VERSION: 'pipeline_test'
+    VERSION: 'pachyderm_v1'
     CHANGE_BY: pachyderm
 
     # Environment variables for 3rd module: pub_sync.
@@ -100,14 +105,14 @@ input:
         empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 400M
+  memory: 500M
   cpu: .5
 resource_limits:
-  memory: 800M
+  memory: 1G
   cpu: 1.3
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 1
+  memory: 3G
+  cpu: 1.3
 datum_set_spec:
   number: 1
 scheduling_spec:

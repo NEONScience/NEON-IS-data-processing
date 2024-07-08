@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/data_source_trino:v0.2.5
+  image: quay.io/battelleecology/data_source_trino:56c11e6b
   cmd:
   - sh
   - "-c"
@@ -13,22 +13,26 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     interimDir="/tmp/interimData"
     rm -rf $interimDir
+    
     # Get today's date for evaluating kafka data retention period
     date_today=$(date -u +%Y-%m-%d)
     kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    
     # Run first module - data_source_site (pull data from database by site)
     # Split data source path
     for path in $(find -L $import_trigger -type f); do
       echo "Processing $path"
       p=${path#/pfs}
       IFS="/"; arr=($p); unset IFS;
-      year=${arr[3]}
-      month=${arr[4]}
-      day=${arr[5]}
-      site=${arr[6]}
+      source_type=${arr[3]}
+      year=${arr[4]}
+      month=${arr[5]}
+      day=${arr[6]}
+      site=${arr[7]}
       type=$(echo $site | cut -f 2 -d "." --only-delimited); # Extract the "kafka" from site.kafka if present
       if [ "$type" = "kafka" ] && [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]
       then
@@ -39,21 +43,101 @@ transform:
         echo "$year/$month/$day/$site is indicated to be streaming from Kafka. Skipping..."
         continue
       fi
-      echo "Extracting data from Trino for $year/$month/$day/$site"
+      
+      # Set env vars for trino loader
       export GEN_DATE=$year-$month-$day
       export GEN_SITE_NAME=$site
-      export GEN_OUTPUT_DIR=$interimDir/aepg600m/$year/$month/$day
       export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
+      export SOURCE_TYPE=$source_type
+      export GEN_YAML_CONF="/usr/src/app/genscript/configs/$(echo $SOURCE_TYPE)_streams.yaml"
+      export GEN_SCHEMA_FILE="/usr/src/app/schemas/aepg600m/$(echo $SOURCE_TYPE).avsc"
+      echo "Extracting $SOURCE_TYPE from Trino for $year/$month/$day/$site"
+      export GEN_OUTPUT_DIR=$interimDir/$SOURCE_TYPE/$year/$month/$day
       mkdir -p $GEN_OUTPUT_DIR
       /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second
     done
+    
     # Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day
     python3 -m parquet_linkmerge.parquet_linkmerge_main
+    
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # !!!! TEMPORARY FIX FOR INCORRECT "name:" FIELD in aepg600m_heated.avsc schema.  !!!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    set -x # Uncomment to troubleshoot
+    if [[ -d "$OUT_PATH/$source_type" ]]; then
+      if [ $source_type = "aepg600m_heated" ]; then 
+
+        shopt -s globstar
+        out_parquet_glob="${OUT_PATH}/**/*.parquet"
+    
+        for f in $out_parquet_glob; do
+        
+          # Parse the path
+          [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+          psourcetype="${BASH_REMATCH[1]}"
+          pyear="${BASH_REMATCH[2]}"
+          pmonth="${BASH_REMATCH[3]}"
+          pday="${BASH_REMATCH[4]}"
+          psourceid="${BASH_REMATCH[5]}"
+          fname="${BASH_REMATCH[6]}"
+  
+          # Parse the file name
+          [[ "$fname" =~ ^(.*)_([0-9]+)_([0-9]{4})-([0-9]{2})-([0-9]{2}).parquet$ ]]
+          fsourcetype="${BASH_REMATCH[1]}"
+          fsourceid="${BASH_REMATCH[2]}"
+          fyear="${BASH_REMATCH[3]}"
+          fmonth="${BASH_REMATCH[4]}"
+          fday="${BASH_REMATCH[5]}"
+          
+          # Construct new file name, forcing source type to aepg600m_heated
+          fname_fix="aepg600m_heated_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"
+          
+          # Replace the file
+          mv $OUT_PATH/$psourcetype/$pyear/$pmonth/$pday/$psourceid/data/$fname $OUT_PATH/$psourcetype/$pyear/$pmonth/$pday/$psourceid/data/$fname_fix
+        done
+      fi
+    fi
+    set +x
+
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    # Export L0 data to bucket
+    # if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+    #   linkdir=$(mktemp -d)
+    #   shopt -s globstar
+    #   out_parquet_glob="${OUT_PATH}/**/*.parquet"
+    #   # Example: /pfs/out/li191r/2023/01/01/12345/data/file.parquet
+    #   echo "Linking output files to ${linkdir}"
+    #   #set -x
+    #   for f in $out_parquet_glob; do
+    #     # Parse the path
+    #     [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+    #     fsourcetype="${BASH_REMATCH[1]}"
+    #     fyear="${BASH_REMATCH[2]}"
+    #     fmonth="${BASH_REMATCH[3]}"
+    #     fday="${BASH_REMATCH[4]}"
+    #     fsourceid="${BASH_REMATCH[5]}"
+    #     fname="${BASH_REMATCH[6]}"
+    #     outdir="${linkdir}/v1/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+    #     mkdir -p "${outdir}"
+    #     ln -s "${f}" "${outdir}/${fname}"
+    #   done
+    #   #set +x
+    #   echo "Syncing files to bucket"
+    #   rclone \
+    #     --no-check-dest \
+    #     --copy-links \
+    #     --gcs-bucket-policy-only \
+    #     --gcs-no-check-bucket \
+    #     copy \
+    #     "${linkdir}" \
+    #     ":gcs://${BUCKET_NAME}"
+    #   echo "Removing temporary files"
+    #   rm -rf $linkdir
+    # fi
     EOF
   env:
-    # Environment variables for data conversion step
-    GEN_YAML_CONF: "/usr/src/app/genscript/configs/aepg600m_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/aepg600m/aepg600m.avsc"
+    # Static environment variables for data conversion step
     LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
@@ -64,7 +148,7 @@ transform:
     MONTH_INDEX: '5'
     DAY_INDEX: '6'
     SOURCE_ID_INDEX: '7'
-    KAFKA_RETENTION_DAYS: "30"
+    KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -75,23 +159,28 @@ transform:
   - name: pachd-trino-secret
     key: TRINO_USER
     env_var: PRESTO_USER
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
 input:
   pfs:
     name: import_trigger
     repo: aepg600m_cron_daily_and_date_control
-    glob: "/aepg600m/*/*/*"
+    # Must be datum by day (e.g. /trino/SOURCE_TYPE/*/*/*) or by day/site (e.g. /trino/SOURCE_TYPE/*/*/*/*)
+    # Note that aepg600m has separate kafka and trino date-site controls bc some kafka topics start with <site>dfir instead of simply <site>
+    glob: "/trino/*/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 1
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 400M
-  cpu: 1.2
+  memory: 300M
+  cpu: 0.5
 resource_limits:
-  memory: 800M
-  cpu: 2
+  memory: 500M
+  cpu: 1.5
 sidecar_resource_requests:
-  memory: 2G
+  memory: 3G
   cpu: 0.5
 datum_set_spec:
   number: 1

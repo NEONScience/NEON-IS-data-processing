@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the context filter module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t context_filter:latest -f context_filter/Dockerfile .
+# docker build --no-cache -t context_filter:latest -f context_filter/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal

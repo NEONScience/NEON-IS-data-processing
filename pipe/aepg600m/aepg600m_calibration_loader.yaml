@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-cval-loader:fe1512ea
+  image: quay.io/battelleecology/neon-cval-loader:57821bc3
   cmd:
   - /bin/bash
   stdin:
@@ -14,7 +14,7 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: aepg600m
+    SOURCE_TYPE: "aepg600m,aepg600m_heated"
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
