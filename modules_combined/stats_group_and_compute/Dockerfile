@@ -3,7 +3,7 @@
 # docker build -t neon-is-stat-basc-grp -f ./modules_combined/stats_group_and_compute/Dockerfile .
 
 # Start with the R stats package image. 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v0.0.4-cb658966
+FROM quay.io/battelleecology/neon-is-pack-stat-r:v0.0.4-0540506a
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

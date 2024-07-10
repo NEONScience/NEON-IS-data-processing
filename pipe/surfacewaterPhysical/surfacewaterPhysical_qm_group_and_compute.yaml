@@ -3,7 +3,7 @@ pipeline:
   name: surfacewaterPhysical_qm_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-qm-avg-inst-grp:cb658966
+  image: quay.io/battelleecology/neon-is-qm-avg-inst-grp:0540506a
   cmd:
   - sh
   - "-c"

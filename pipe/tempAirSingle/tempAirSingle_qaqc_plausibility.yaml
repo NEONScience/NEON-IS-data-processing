@@ -11,7 +11,7 @@ transform:
   - FileSchmQf=$SCHEMA_FLAGS
   - TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)
   - DirSubCopy=uncertainty_data|flags|uncertainty_coef
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:54b91605
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:0540506a
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

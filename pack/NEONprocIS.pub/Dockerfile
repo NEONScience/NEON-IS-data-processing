@@ -4,7 +4,7 @@
 
 
 # Start with the neon-is-base-r image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.4-588e4d45
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.6-0540506a
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

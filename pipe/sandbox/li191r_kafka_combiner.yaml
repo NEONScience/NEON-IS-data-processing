@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileSchmL0=$FILE_SCHEMA_L0
-  image: quay.io/battelleecology/neon-is-kfka-comb-r:588e4d45
+  image: quay.io/battelleecology/neon-is-kfka-comb-r:0540506a
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
