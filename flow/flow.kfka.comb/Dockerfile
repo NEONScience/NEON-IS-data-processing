@@ -3,7 +3,7 @@
 # docker build --no-cache -t neon-is-kfka-comb-r ~/R/NEON-IS-data-processing/flow/flow.kfka.comb/
 
 # Start with the pub package image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.5-bed3a052
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.6-0540506a
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

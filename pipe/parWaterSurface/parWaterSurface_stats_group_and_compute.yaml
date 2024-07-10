@@ -3,7 +3,7 @@ pipeline:
   name: parWaterSurface_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-basc-grp:bed3a052
+  image: quay.io/battelleecology/neon-is-stat-basc-grp:0540506a
   cmd:
   - sh
   - "-c"

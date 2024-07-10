@@ -3,7 +3,7 @@ pipeline:
   name: relHumidity_stats_group_and_compute
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:bed3a052
+  image: quay.io/battelleecology/neon-is-stat-avg-inst-grp:0540506a
   cmd:
   - sh
   - "-c"
