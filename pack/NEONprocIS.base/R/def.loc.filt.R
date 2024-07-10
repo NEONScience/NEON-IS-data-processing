@@ -360,11 +360,12 @@ def.loc.filt <- function(NameFileIn,
               base::eval(parse(text = txtPropSortEval))
               txtItemGeoProp <- base::paste0('itemGeoProp <- ',txtEval,'$properties$location_properties')
               base::eval(parse(text = txtItemGeoProp))
-              nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
-              idxSortItem <- sort(nameItem,index.return=TRUE)$ix
-              txtItemGeoSort <- base::paste0(txtEval,'$properties$location_properties <- ',txtEval,'$properties$location_properties[idxSortItem]')
-              base::eval(parse(text = txtItemGeoSort))
-
+              if(!base::is.null(itemGeoProp)){
+                nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
+                idxSortItem <- sort(nameItem,index.return=TRUE)$ix
+                txtItemGeoSort <- base::paste0(txtEval,'$properties$location_properties <- ',txtEval,'$properties$location_properties[idxSortItem]')
+                base::eval(parse(text = txtItemGeoSort))
+              }
             }
             
             # Are there more reference locations?
