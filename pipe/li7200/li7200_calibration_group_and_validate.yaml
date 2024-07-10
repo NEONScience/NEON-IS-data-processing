@@ -3,7 +3,7 @@ pipeline:
   name: li7200_calibration_group_and_validate
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-cal-grp-conv:a0a78d1a
+  image: quay.io/battelleecology/neon-is-cal-grp-conv:bed3a052
   cmd: ["/bin/bash"]
   cmd:
   - sh
