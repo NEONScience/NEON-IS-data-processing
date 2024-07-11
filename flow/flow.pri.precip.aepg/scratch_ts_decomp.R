@@ -11,7 +11,7 @@ files <- list.files('/scratch/pfs/aepg600m_fill_date_gaps_and_regularize', recur
 #cfg <- "CFGLOC113591" #Yell
 #cfg <- "CFGLOC104646" #srer
 cfg <- "CFGLOC109787" #konz
-
+cfg <- "CFGLOC106786" #tool 
 
 
 #works for one site. 
@@ -42,6 +42,7 @@ strainGaugeDepthAgr <- precipdf %>%
   dplyr::group_by(startDateTime,endDateTime) %>%
   dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T))
 
+#ts can't have na (prob smarter to gap fill?)
 nona <- strainGaugeDepthAgr[!is.na(strainGaugeDepthAgr$strainGaugeDepth),]
 
 #288 = 1 day of 5 min data
