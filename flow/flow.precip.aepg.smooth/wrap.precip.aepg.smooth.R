@@ -314,7 +314,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
         
       }
         
-    } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (bench-Envelope)){  # Maybe use Envelope instead of Recharge?
+    } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
       # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
       # back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
       # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
@@ -346,6 +346,22 @@ wrap.precip.aepg.smooth <- function(DirIn,
       # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
       bench <- raw
       
+      # Get rid of a couple hours before the recharge. This is when calibrations are occuring and strain gauges are being replaced.
+      # Set the benchmark constant to the point 2 hours before the recharge
+      setAdj <- strainGaugeDepthAgr$startDateTime > (strainGaugeDepthAgr$startDateTime[currRow] -as.difftime(3,units='hours')) &
+        strainGaugeDepthAgr$startDateTime < strainGaugeDepthAgr$startDateTime[currRow]
+      idxSet <- head(which(setAdj),1) - 1
+      if (idxSet < 1){
+        strainGaugeDepthAgr$bench[setAdj] <- NA
+        strainGaugeDepthAgr$precip[setAdj] <- NA
+        strainGaugeDepthAgr$precipType[setAdj] <- NA
+      } else {
+        strainGaugeDepthAgr$bench[setAdj] <- strainGaugeDepthAgr$bench[idxSet]
+        strainGaugeDepthAgr$precip[setAdj] <- strainGaugeDepthAgr$precip[idxSet]
+        strainGaugeDepthAgr$precipType[setAdj] <- "ExcludeBeforeRecharge"
+        # !!!!!!!!!! CREATE INFORMATIONAL FLAG !!!!!!!!!!!
+      }
+
     } 
     
     #update in the data
