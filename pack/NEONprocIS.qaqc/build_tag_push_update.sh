@@ -7,7 +7,7 @@
 #     /pipe directory. 
 #
 # **** BEFORE RUNNING ****
-# 1. Commit all changes
+# 1. Commit all changes, including an update to the package version in the DESCRIPTION file
 # 2. Run this script from root repository (NEON-IS-data-processing)
 # ************************
 

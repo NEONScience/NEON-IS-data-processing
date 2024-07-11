@@ -10,7 +10,7 @@ transform:
   - DirErr=/pfs/out/errored_datums
   - DirSubCombData=data
   - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:588e4d45
+  image: quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:aa651ed4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
