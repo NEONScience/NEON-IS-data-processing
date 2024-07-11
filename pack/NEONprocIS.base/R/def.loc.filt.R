@@ -62,6 +62,8 @@
 #      stop execution when schema does not conform
 #   Cove Sturtevant (2023-11-16)
 #      add option to filter for select properties
+#   Cove Sturtevant (2024-07-09)
+#      apply additional sorting of output 
 ##############################################################################################
 def.loc.filt <- function(NameFileIn,
                          NameFileOut = NULL,
@@ -144,8 +146,11 @@ def.loc.filt <- function(NameFileIn,
         }
         if(base::is.null(timeRmv) || (timeRmv > TimeEnd)){
           loc$features[[idxLoc]]$properties$remove_date <- TimeEndFmt
-          
         }
+        
+        # Sort the top level and properties list
+        loc$features[[idxLoc]] <- loc$features[[idxLoc]][sort(names(loc$features[[idxLoc]]))] # Top level
+        loc$features[[idxLoc]]$properties <- loc$features[[idxLoc]]$properties[sort(names(loc$features[[idxLoc]]$properties))] # Properties list
       }
     }
     loc$features <- loc$features[setKeepLoc]
@@ -212,6 +217,17 @@ def.loc.filt <- function(NameFileIn,
             if(base::is.null(timeEndGeo) || (timeEndGeo > TimeEnd)){
               locGeo[[idxGeo]]$properties$end_date <- TimeEndFmt
             }
+            
+            # Sort the top level feature list, properties and nested location_properties. For some reason, these reorder in the database call sometimes
+            locGeo[[idxGeo]] <- locGeo[[idxGeo]][sort(names(locGeo[[idxGeo]]))]
+            locGeo[[idxGeo]]$properties <- locGeo[[idxGeo]]$properties[sort(base::names(locGeo[[idxGeo]]$properties))]
+            if('location_properties' %in% base::names(locGeo[[idxGeo]]$properties)){
+              itemGeoProp <- locGeo[[idxGeo]]$properties$location_properties
+              nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
+              idxSortItem <- sort(nameItem,index.return=TRUE)$ix
+              locGeo[[idxGeo]]$properties$location_properties <- locGeo[[idxGeo]]$properties$location_properties[idxSortItem]
+            }
+            
           
           } else {
             # We're deleting this geolocation, let's move on
@@ -226,6 +242,9 @@ def.loc.filt <- function(NameFileIn,
           idxGeoRef <- 1
           setRmvGeoRef <- base::list()
           cont <- TRUE
+          
+          # Sort the properties
+          locGeoRef00$properties <- locGeoRef00$properties[sort(names(locGeoRef00$properties))]
           
           while (cont) {
             # Get the parent of our current level
@@ -336,6 +355,17 @@ def.loc.filt <- function(NameFileIn,
                 base::eval(parse(text = txtTimeEval))
               }
               
+              # Sort the properties and nested location_properties to ensure consistent output
+              txtPropSortEval <- base::paste0(txtEval,'$properties <- ',txtEval,'$properties[sort(base::names(',txtEval,'$properties))]')
+              base::eval(parse(text = txtPropSortEval))
+              txtItemGeoProp <- base::paste0('itemGeoProp <- ',txtEval,'$properties$location_properties')
+              base::eval(parse(text = txtItemGeoProp))
+              if(!base::is.null(itemGeoProp)){
+                nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
+                idxSortItem <- sort(nameItem,index.return=TRUE)$ix
+                txtItemGeoSort <- base::paste0(txtEval,'$properties$location_properties <- ',txtEval,'$properties$location_properties[idxSortItem]')
+                base::eval(parse(text = txtItemGeoSort))
+              }
             }
             
             # Are there more reference locations?

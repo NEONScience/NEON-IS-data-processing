@@ -5,8 +5,6 @@ from pathlib import Path
 
 
 def read_processed_files(client: Client, l1_pipelines_path: Path) -> defaultdict[lambda: defaultdict[int]]:
-    #pipeline_name = "level1_pipeline_list"
-    print(f"Pipeline Path is: {l1_pipelines_path}")
     files_by_pipeline = defaultdict(lambda: defaultdict(int))
     with open(l1_pipelines_path, 'r') as file:
         # Read the content of the file

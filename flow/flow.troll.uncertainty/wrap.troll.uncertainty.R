@@ -110,13 +110,13 @@
 #' @examples 
 #' # NOT RUN
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# DirInTroll<-"~/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2022/04/08/groundwater-physical_ARIK301000/aquatroll200/CFGLOC101239"
-# DirInUcrt<-"~/pfs/groundwaterPhysical_group_path/2022/04/08/groundwater-physical_ARIK301000/aquatroll200/CFGLOC101239"
-# SchmDataOut<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_data.avsc'),collapse='')
-# SchmUcrtOutAgr<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_ucrt.avsc'),collapse='')
-# SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_ucrt.avsc'),collapse='')
-# SchmSciStatsOut<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_sci_stats.avsc'),collapse='')
-# SchmStatsOut<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_stats.avsc'),collapse='')
+# DirInTroll<-"~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2019/06/18/surfacewater-physical_SUGG130100/aquatroll200/CFGLOC113610"
+# DirInUcrt<-"~/pfs/surfacewaterPhysical_group_path/2019/06/18/surfacewater-physical_SUGG130100/aquatroll200/CFGLOC113610"
+# SchmDataOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc'),collapse='')
+# SchmUcrtOutAgr<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc'),collapse='')
+# SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc'),collapse='')
+# SchmSciStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc'),collapse='')
+# SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_aquatroll200_dp01_stats.avsc'),collapse='')
 # WndwAgr <- base::as.difftime(base::as.numeric('030'),units="mins")
 # if(length(WndwAgr)>0){
 #   timeBgnDiff <- list()
@@ -413,7 +413,7 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
         # Rows to pull
         flagDataWndwTime <- base::subset(flagData,subset=setTime==idxWndwTime)  
         #only use data that does not fail spike test
-        flagDataWndwTime<-flagDataWndwTime[!is.na(flagDataWndwTime$pressure)&flagDataWndwTime$pressureSpikeQF==0,]
+        flagDataWndwTime<-flagDataWndwTime[!is.na(flagDataWndwTime$pressure)&flagDataWndwTime$pressureSpikeQF!=1,]
         # Compute stats excluding flagged data
         if(length(flagDataWndwTime$pressure)>0){
           groundwaterPressureMean<-mean(flagDataWndwTime$pressure)
@@ -601,7 +601,6 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
     }
   }
 
-
   ######## Uncertainty for L1 mean 5 and 30 minute outputs ########
   #the repeatability and reproducibility of the sensor and  uncertainty of the calibration procedures and coefficients including uncertainty in the standard
   if(length(WndwAgr)>0){
@@ -665,7 +664,7 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
           #Elevation Uncertainty
           #survey_uncert is the uncertainty of the sensor elevation relative to other aquatic instruments at the NEON site.
           #survey_uncert includes the total station survey uncertainty and the uncertainty of hand measurements between the sensor and survey point.
-          survey_uncert<-mean(dataWndwTime$survey_uncert)
+          survey_uncert<-mean(dataWndwTime$survey_uncert,na.rm = TRUE)
           elevation_ucrtExpn_L1<-2*((1*survey_uncert^2+((1000/(density*gravity))^2)*pressure_ucrtComb_L1^2)^0.5)
 
           if(sensor=='aquatroll200'){
@@ -696,11 +695,11 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
             numPts <- base::sum(x=!base::is.na(dataComp),na.rm=FALSE)
             se <- stats::sd(dataComp,na.rm=TRUE)/base::sqrt(numPts)
             # Compute combined uncertainty for L1 specific conductivity
-            for(i in 1:length(dataWndwTime$conductivity_ucrtMeas)){
+            for(i in 1:length(dataWndwTime$raw_conductivity)){
               dataWndwTime$conductivity_ucrtComb_L1[i]<-((se^2)*(((1/(1+0.0191*(dataWndwTime$temperature[i]-25)))^2)*U_CVALA3_cond^2)+((((0.0191*dataWndwTime$raw_conductivity[i])/((1+0.0191*(dataWndwTime$temperature[i]-25))^2))^2)*U_CVALA3_temp^2))^0.5
             }
             # Compute expanded uncertainty for L1 specific conductivity
-            conductivity_ucrtExpn_L1<-2*mean(dataWndwTime$conductivity_ucrtComb_L1)
+            conductivity_ucrtExpn_L1<-2*mean(dataWndwTime$conductivity_ucrtComb_L1,na.rm = TRUE)
           }
         }else{
           temperature_ucrtExpn_L1<-NA

@@ -74,15 +74,15 @@
 ##############################################################################################
 wrap.precip.aepg.smooth <- function(DirIn,
                                     DirOutBase,
-                                    WndwAgr = '5 min',
-                                    RangeSizeHour = 24, #  Period of evaluation (e.g. 24 for 1 day)
-                                    ThshCountHour = 6,
-                                    Envelope = 3,
-                                    Quant = 0.8, # Where is the benchmark set (quantile) within the envelope (diel variation)
-                                    ThshChange = 0.2,
-                                    ChangeFactor = 0.9,
-                                    ChangeFactorEvap = 0.5,
-                                    Recharge = 100, #if raw data was this much less than bench mark likely a bucket empty/recalibration (original was 25)
+                                    # WndwAgr = '5 min',
+                                    # RangeSizeHour = 24, #  Period of evaluation (e.g. 24 for 1 day)
+                                    # Envelope = 3,
+                                    # ThshCountHour = 15,
+                                    # Quant = 0.5, # Where is the benchmark set (quantile) within the envelope (diel variation)
+                                    # ThshChange = 0.2,
+                                    # ChangeFactor = 1,
+                                    # ChangeFactorEvap = 0.5,
+                                    # Recharge = 20, #if raw data was this much less than bench mark likely a bucket empty/recalibration (original was 25)
                                     DirSubCopy=NULL,
                                     log=NULL
 ){
@@ -97,6 +97,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirInData <- fs::path(DirIn,'data')
   dirInFlags <- fs::path(DirIn,'flags')
+  dirThsh <- base::paste0(DirIn,'/threshold')
+  fileThsh <- base::dir(dirThsh)
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutData <- fs::path(dirOut,'data')
   dirOutFlags <- fs::path(dirOut,'flags')
@@ -113,6 +115,39 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                        LnkSubObj=FALSE,
                                        log=log)
   }    
+  
+  # Read in the thresholds file (read first file only, there should only be 1)
+  if(base::length(fileThsh) > 1){
+    fileThsh <- fileThsh[1]
+    log$info(base::paste0('There is more than one threshold file in ',dirThsh,'. Using ',fileThsh))
+  }
+  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile=base::paste0(dirThsh,'/',fileThsh)))
+  
+  # !!!!!!!!!!!! LOTS OF FUDGING HERE FOR TESTING. CORRECT WHEN FINAL THRESHOLDS ARE CREATED !!!!!!!!!!!!!!!!!!!
+  # Verify that the term(s) needed in the input parameters are included in the threshold files
+  termTest <- "priPrecipBulk"
+  exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
+  if(base::sum(exstThsh) != base::length(termTest)){
+    log$error(base::paste0('Thresholds for term(s): ',base::paste(termTest[!exstThsh],collapse=','),' do not exist in the thresholds file. Cannot proceed.')) 
+    stop()
+  }
+  # Assign thresholds
+  thshIdxTerm <- thsh[thsh$term_name == termTest,]
+
+  WndwAgr = thshIdxTerm$string_value[thshIdxTerm$threshold_name == 'Despiking Method']
+  RangeSizeHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Step Test value']
+  Envelope = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking maximum (%) missing points per window']
+  ThshCountHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Range Threshold Hard Max']
+  Quant = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking window size - points']
+  ThshChange = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking maximum consecutive points (n)']
+  ChangeFactor = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking MAD']
+  ChangeFactorEvap = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking window step - points.']
+  Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Range Threshold Soft Max']
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  
+  
+  
+  
   
   # Take stock of our data files.
   # !! Try to make more generic, while excluding the manifest.txt file
@@ -134,7 +169,10 @@ wrap.precip.aepg.smooth <- function(DirIn,
     dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
     dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
     dplyr::group_by(startDateTime,endDateTime) %>%
-    dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T))
+    dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),
+                     strainGauge1DepthMean = mean(strainGauge1Depth, na.rm = T),
+                     strainGauge2DepthMean = mean(strainGauge2Depth, na.rm = T),
+                     strainGauge3DepthMean = mean(strainGauge3Depth, na.rm = T))
   
   # !!!! Do/add summarization of stability, temp stuff, flags (in different data frame) !!!!
   
@@ -189,8 +227,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
     }
     
     # #establish nth min/max of range
-    # nMin <- sort(strainGaugeDepthAgr$strainGaugeDepth[i:currRow], decreasing = FALSE)[nthVal]
-    # nMax <- sort(strainGaugeDepthAgr$strainGaugeDepth[i:currRow], decreasing = TRUE)[nthVal]
     recentPrecip <- base::any(strainGaugeDepthAgr$precip[i:currRow])
     
 
@@ -326,35 +362,41 @@ wrap.precip.aepg.smooth <- function(DirIn,
     }
   }
 
-  # TESTING ONLY
-strainGaugeDepthAgr$weighPrecipBulk <- strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1)
-strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(weighPrecipBulk = ifelse(weighPrecipBulk < 0, 0, weighPrecipBulk))
+  # Compute precip
+  strainGaugeDepthAgr$precipBulk <- strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1)
+  strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precipBulk < 0, 0, precipBulk))
 
-df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4,7)],id.vars=c('startDateTime'))
-plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
-
-
-
+  # Output central day
+  setOut <- strainGaugeDepthAgr$startDateTime >= InfoDirIn$time & 
+    strainGaugeDepthAgr$startDateTime < (InfoDirIn$time + as.difftime(1,units='days'))
+  strainGaugeDepthAgr <- strainGaugeDepthAgr[setOut,]
+  
+  
+  # Grab the data file name for the center day
+  nameFileOut <- fileData[grepl(base::format(InfoDirIn$time,'%Y-%m-%d'),fileData)][1]
   
 
 
   
-  # Take stock of our flags files. 
-  fileFlags<- base::list.files(dirInFlags,full.names=FALSE)
+
+
   
-  flags <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFlags),
-                                             VarTime='readout_time',
-                                             RmvDupl=TRUE,
-                                             Df=TRUE, 
-                                             log=log)
-  
+  # # Take stock of our flags files. 
+  # fileFlags<- base::list.files(dirInFlags,full.names=FALSE)
+  # 
+  # flags <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFlags),
+  #                                            VarTime='readout_time',
+  #                                            RmvDupl=TRUE,
+  #                                            Df=TRUE, 
+  #                                            log=log)
+  # 
   
   # Write out the combined dataset to file
   fileOut <- fs::path(dirOutData,nameFileOut)
 
   rptWrte <-
     base::try(NEONprocIS.base::def.wrte.parq(
-        data = data,
+        data = strainGaugeDepthAgr,
         NameFile = fileOut,
         log=log
     ),
@@ -369,7 +411,7 @@ plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
     stop()
   } else {
     log$info(base::paste0(
-      'Combined kafka output written to file ',
+      'Wrote computed precipitation to file ',
       fileOut
       ))
   }

@@ -124,7 +124,7 @@ input:
       glob: /(*/*/*)/*/(*)
       group_by: $1$2
 parallelism_spec:
-  constant: 5
+  constant: 6
 autoscaling: true
 resource_requests:
   memory: 700M
