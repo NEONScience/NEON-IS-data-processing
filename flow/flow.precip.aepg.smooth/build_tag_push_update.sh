@@ -1,6 +1,6 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
-image_name=neon-is-precip-aepg-smooth
+image_name=neon-is-precip-aepg-smooth-r
 tag=$(git rev-parse --short HEAD)
 cd ./flow/flow.precip.aepg.smooth
 docker build -t $image_name:latest .
