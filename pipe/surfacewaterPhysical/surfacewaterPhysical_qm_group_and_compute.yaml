@@ -34,10 +34,10 @@ transform:
       "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperaturePersistenceQF|zeroPressureQF" \
-      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperaturePersistenceQF|zeroPressureQF" \
+      "GrpQfBeta2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperaturePersistenceQF" \
       "GrpQfBetaIgnr2=temperature:temperatureNullQF|temperatureGapQF" \
       "GrpQfAlph3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
-      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivityPersistenceQF|missingTempQF|zeroPressureQF" \
+      "GrpQfBeta3=conductivity:conductivityNullQF|conductivityGapQF|conductivityRangeQF|conductivityStepQF|conductivityPersistenceQF|missingTempQF" \
       "GrpQfBetaIgnr3=conductivity:conductivityNullQF|conductivityGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF|temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1" \
       "QfForc2=missingTempQF:1:temperatureRangeQF|temperatureStepQF|temperatureSpikeQF|conductivityRangeQF|conductivityStepQF|conductivitySpikeQF|conductivityPersistenceQF:-1"
