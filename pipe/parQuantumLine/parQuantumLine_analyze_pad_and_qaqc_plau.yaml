@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:0540506a
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:2df94058
   cmd:
   - sh
   - "-c"
@@ -49,7 +49,7 @@ input:
       repo: parQuantumLine_avro_schemas
       glob: /parQuantumLine/flags_plausibility_parQuantumLine.avsc
 parallelism_spec:
-  constant: 2
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 2G

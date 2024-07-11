@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Troll Logfile Processing
 
 # Start with the neon-is-base-r image.
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.6-0540506a
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org

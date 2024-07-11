@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Calibration assignment
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.6-0540506a
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

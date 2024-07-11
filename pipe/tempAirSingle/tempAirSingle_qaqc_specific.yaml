@@ -14,7 +14,7 @@ transform:
   - RmvFlow=TRUE
   - RmvHeat=TRUE
   - FileSchmQf=$SCHEMA_FLAGS
-  image: quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:0540506a
+  image: quay.io/battelleecology/neon-is-qaqc-temp-air-aspi-r:aa651ed4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

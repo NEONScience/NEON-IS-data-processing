@@ -92,3 +92,20 @@ test_that("No applicable active periods. Output is NULL and no file is written",
             
           }
 )
+test_that("Multiple output groups are sorted",
+          {
+            nameFileIn = 'def.grp.trnc.actv/CFGLOC100245_1.json'
+            nameFileOut = 'def.grp.trnc.actv/output.txt'
+            timeBgn <- base::as.POSIXct('2017-01-01T00:00:00Z', tz = 'GMT')
+            timeEnd <- base::as.POSIXct('2019-12-02T00:00:00Z', tz = 'GMT')
+            
+            grp <- NEONprocIS.base::def.grp.trnc.actv(NameFileIn = nameFileIn, NameFileOut = nameFileOut, TimeBgn = timeBgn, TimeEnd = timeEnd)
+            testthat::expect_true(file.exists(nameFileOut))
+            testthat::expect_true(length(grp$features) == 2)
+            testthat::expect_true(grp$features[[1]]$properties$group == 'test-group_1')
+            testthat::expect_true(grp$features[[2]]$properties$group == 'test-group_2')
+            testthat::expect_true(grp$features[[2]]$properties$data_product_ID[1] == 'DP1.20008.001')
+            if (file.exists(nameFileOut)) { file.remove(nameFileOut)}
+            
+          }
+)
