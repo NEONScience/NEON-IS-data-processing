@@ -1,15 +1,10 @@
 name: "Build a module and push the image"
 description: "Builds the module, pushes the image to Artifact Registry"
 
+
 inputs:
-   region:
-     required: false
-     default: us-central1
-   image:
-     required: false
-     default: neon-shared-service/neonscience/neon-is-group-loader
-   image-tag:
-     required: true
+  image-tag:
+    required: true
 
 runs:
    using: "composite"
@@ -17,50 +12,71 @@ runs:
       - id: "auth"
         uses: "google-github-actions/auth@v2"
         with:
-            workload_identity_provider: 'projects/991678141243/locations/global/workloadIdentityPools/shared-pool/providers/github-actions-prvdr'
-            service_account: 'sa-github-neonscience@neon-shared-service.iam.gserviceaccount.com'
+            workload_identity_provider: ${{ env.GCP_PROVIDER }}
+            service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
 
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v2"
 
       - name: "Docker auth"
         shell: bash
-        run: gcloud auth configure-docker ${{ inputs.region }}-docker.pkg.dev --quiet
+        run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT_HOST }} --quiet
+        
+      # setup-buildx-action for Docker
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build image
-        shell: bash
-        run: docker build . -f ./modules/group_loader/Dockerfile  --build-arg TAG=${{ inputs.image-tag }} --no-cache -t ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+            images: |
+              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
+            tags: |
+              type=semver,pattern={{version}}
+              type=schedule
+              type=ref,event=tag
+              type=ref,event=pr
+              type=sha
 
-      - name: Push image
-        shell: bash
-        run: docker push ${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}:${{ inputs.image-tag }}
-
+      # Build and push Docker image with Buildx (don't push on PR)
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v5
+        with:
+            context: .
+            file: ./modules/${{ env.MODULE_NAME }}/Dockerfile
+            push: ${{ github.event_name != 'pull_request' }}
+            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
+       
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
-
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      # - name: Install R packages   
-      #   uses: r-lib/actions/setup-r-dependencies@v2
-        # with:
-        #   packages: |
-        #     any::tidyverse
-        #     any::arrow
-        #     any::rlang
+        
+      - name: Install R packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+            packages: |
+              any::usethis
+              any::dplyr
+              any::rlang
+              any::tidyverse
 
       - name: Update pipeline spec yamls
         shell: bash
-        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ inputs.region }}-docker.pkg.dev/${{ inputs.image }}" "${{ inputs.image-tag }}"
+        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ inputs.image-tag }}"
 
       - name: Commit the pipeline yamls
         shell: bash
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
-          git checkout -b group-loader-yaml-updates
           git diff --name-only
-          git add .
+          git tag ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}
+          git add  -u .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin group-loader-yaml-updates || echo "No changes to commit"
+          git push origin   || echo "No changes to commit"
         

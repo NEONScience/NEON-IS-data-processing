@@ -4,7 +4,7 @@
 # docker build --no-cache -t neon-is-gf-rglr -f <path to this file> <path to parent directory of flow/ and modules/>
 
 # Start with the base R image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.4-588e4d45
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

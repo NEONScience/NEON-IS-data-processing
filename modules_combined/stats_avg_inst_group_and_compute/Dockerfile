@@ -4,7 +4,7 @@
 # docker build -t neon-is-stat-avg-inst-grp -f ./modules_combined/stats_avg_inst_group_and_compute/Dockerfile .
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v0.0.4-cb658966
+FROM quay.io/battelleecology/neon-is-pack-stat-r:v0.0.4-aa651ed4
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

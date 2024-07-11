@@ -14,7 +14,7 @@ transform:
       FileYear=$FILE_YEAR
       TypeFile=namedLocation
       "Prop=HOR|VER|name|description|site|Data Rate|active_periods|context"
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:588e4d45
+  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:aa651ed4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

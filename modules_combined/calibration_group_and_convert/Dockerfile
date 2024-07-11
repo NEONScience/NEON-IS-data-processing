@@ -3,7 +3,7 @@
 # docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
 
 # Start with the calibration package image. 
-FROM quay.io/battelleecology/neon-is-pack-cal-r:v1.3.2-a0a78d1a
+FROM quay.io/battelleecology/neon-is-pack-cal-r:v1.3.2-aa651ed4
 
 
 # maintainer handle

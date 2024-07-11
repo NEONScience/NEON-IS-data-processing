@@ -25,7 +25,6 @@ class VariablePad:
         self.pad_dirs = config.pad_dirs
         self.copy_dirs = config.copy_dirs
         self.data_file_path = DataPathParser(config)
-        self.data_types = [config.data_dir]
         self.out_dir_parts = list(self.out_path.parts)
         self.relative_path_index = config.relative_path_index
 
@@ -38,7 +37,7 @@ class VariablePad:
                 if path.is_file():
                     parts = path.parts
                     year, month, day, location, data_type = self.data_file_path.parse(path)
-                    if data_type in self.data_types:
+                    if data_type in self.pad_dirs:
                         date_location_key = year+month+day+location
                         config_location_path = Path(*parts[:self.data_file_path.location_index + 1])
                         # get min of all data rates (to ensure adequate window coverage)

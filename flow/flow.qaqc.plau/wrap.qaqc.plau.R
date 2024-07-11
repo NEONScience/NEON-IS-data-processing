@@ -111,6 +111,8 @@
 #     Convert flow script to wrapper function
 #   Cove Sturtevant (2022-02-10)
 #     Allow existing flags files to be passed through
+#   Cove Sturtevant (2024-07-10)
+#     Fix bug causing some flagged points not to be removed when rmv=TRUE
 ##############################################################################################
 wrap.qaqc.plau <- function(DirIn,
                            DirOutBase,
@@ -394,7 +396,7 @@ wrap.qaqc.plau <- function(DirIn,
     qf[[idxTerm]] <- base::subset(x=qf[[idxTerm]],select=mapNameQf$nameQf[setTest])
     
     # Remove data (turn to NA) for failed test results if requested
-    dataOut[[idxTerm]][base::apply(X=base::subset(x=qf[[idxTerm]],select=ParaTest[[idxTerm]]$rmv),MARGIN=1,FUN=base::sum) > 0] <- NA
+    dataOut[[idxTerm]][base::apply(X=base::subset(x=qf[[idxTerm]],select=ParaTest[[idxTerm]]$rmv),MARGIN=1,FUN=base::max,na.rm=TRUE) > 0] <- NA
     
     # prep the column names for final output (term name as prefix)
     names(qf[[idxTerm]])<- base::paste0(base::paste(base::toupper(base::substr(mapNameQf$nameTest[setTest],1,1)),
