@@ -123,7 +123,7 @@ input:
       joinOn: $1
       empty_files: true
 parallelism_spec:
-  constant: 3
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 3G

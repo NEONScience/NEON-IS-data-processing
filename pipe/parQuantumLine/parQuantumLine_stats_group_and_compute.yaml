@@ -72,7 +72,7 @@ input:
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 3
+  constant: 5
 resource_requests: 
   memory: 1.8G
   cpu: 6
