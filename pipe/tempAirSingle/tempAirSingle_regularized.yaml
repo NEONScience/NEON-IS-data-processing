@@ -15,7 +15,7 @@ transform:
   - RptTimeWndw=FALSE
   - DropNotNumc=FALSE
   - DirSubCopy=location
-  image: quay.io/battelleecology/neon-is-rglr-r:0540506a
+  image: quay.io/battelleecology/neon-is-rglr-r:aa651ed4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

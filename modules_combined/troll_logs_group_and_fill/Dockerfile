@@ -3,7 +3,7 @@
 # docker build -t neon-is-troll-logs-group-fill -f ./modules_combined/troll_logs_group_and_fill/Dockerfile .
 
 # Start with the base R image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.6-0540506a
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org

@@ -6,7 +6,7 @@
 
 
 # Start with the neon-is-base-r image. # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base & eddy4R.qaqc
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.6-0540506a as intermediate
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4 as intermediate
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -29,7 +29,7 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 #RUN git clone -b deve https://github.com/NEONScience/eddy4R.git
 
 # Now make the final build, which will leave behind our access token
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.6-0540506a
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
 
 # copy the eddy4R.base package from the previous image (comment this out if the eddy4R packages are listed in the renv.lock file)
 #COPY --from=intermediate /eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
