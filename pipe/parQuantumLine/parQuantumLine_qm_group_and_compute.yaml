@@ -75,7 +75,7 @@ input:
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 2
+  constant: 5
 autoscaling: true
 resource_requests: 
   memory: 900M
