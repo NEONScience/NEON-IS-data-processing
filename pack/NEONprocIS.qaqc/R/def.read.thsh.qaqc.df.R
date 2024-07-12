@@ -32,6 +32,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2019-05-16)
 #     original creation
+#   Cove Sturtevant (2024-07-11)
+#     fix bug turning NA values for dates into numeric
 ##############################################################################################
 def.read.thsh.qaqc.df <- function(NameFile=NULL,
                                   strJson=NULL,
@@ -73,8 +75,18 @@ def.read.thsh.qaqc.df <- function(NameFile=NULL,
   
   # Interpret the dates 
   if(!base::is.null(thsh) && base::nrow(thsh) > 0){
-    thsh$start_date <- base::as.POSIXct(thsh$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
-    thsh$end_date <- base::as.POSIXct(thsh$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+    # Start date
+    if (base::is.character(thsh$start_date)){
+      thsh$start_date <- base::as.POSIXct(thsh$start_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+    } else {
+      thsh$start_date <- base::as.POSIXct(thsh$start_date,origin='1970-01-01',tz='GMT')
+    }
+    # End date
+    if (base::is.character(thsh$end_date)){
+      thsh$end_date <- base::as.POSIXct(thsh$end_date,format='%Y-%m-%dT%H:%M:%OSZ',tz='GMT')
+    } else {
+      thsh$end_date <- base::as.POSIXct(thsh$end_date,origin='1970-01-01',tz='GMT')
+    }
   }
   
   return(thsh)
