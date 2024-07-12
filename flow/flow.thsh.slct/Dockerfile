@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Threshold selection by date, source-id, term and context
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.1.5-aa651ed4
+FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.1.6-039a10a7
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
