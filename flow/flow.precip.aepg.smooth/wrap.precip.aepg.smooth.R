@@ -352,9 +352,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
         strainGaugeDepthAgr$startDateTime < strainGaugeDepthAgr$startDateTime[currRow]
       idxSet <- head(which(setAdj),1) - 1
       if (idxSet < 1){
-        strainGaugeDepthAgr$bench[setAdj] <- NA
-        strainGaugeDepthAgr$precip[setAdj] <- NA
-        strainGaugeDepthAgr$precipType[setAdj] <- NA
+        strainGaugeDepthAgr$bench[setAdj] <- as.numeric(NA)
+        strainGaugeDepthAgr$precip[setAdj] <- as.logical(NA)
+        strainGaugeDepthAgr$precipType[setAdj] <- as.character(NA)
       } else {
         strainGaugeDepthAgr$bench[setAdj] <- strainGaugeDepthAgr$bench[idxSet]
         strainGaugeDepthAgr$precip[setAdj] <- strainGaugeDepthAgr$precip[idxSet]
@@ -379,7 +379,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   }
 
   # Compute precip
-  strainGaugeDepthAgr$precipBulk <- strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1)
+  strainGaugeDepthAgr$precipBulk <- as.numeric(strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1))
   strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precipBulk < 0, 0, precipBulk))
 
   # Output central day
