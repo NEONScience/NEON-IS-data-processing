@@ -195,9 +195,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
   currRow <- rangeSize #instead of 24 for hourly this will be how ever many rows encompass one day
   
   #initialize fields
-  strainGaugeDepthAgr$bench <- NA
+  strainGaugeDepthAgr$bench <- as.numeric(NA)
   strainGaugeDepthAgr$precip <- FALSE #add TRUE when rain detected
-  strainGaugeDepthAgr$precipType <- NA
+  strainGaugeDepthAgr$precipType <- as.character(NA)
   
   #!!! Needs logic for NA start
   strainGaugeDepthAgr$bench[1:currRow] <-  stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[1:currRow],Quant,na.rm=TRUE)
