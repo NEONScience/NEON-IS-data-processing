@@ -22,7 +22,7 @@ input:
     repo: parQuantumLine_group_path
     glob: /*/*/*
 parallelism_spec:
-  constant: 3
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 500M
