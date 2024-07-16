@@ -45,9 +45,9 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         FileSchmQf=$SCHEMA_FLAGS_AQUATROLL \
-        "TermTest1=pressure:null|gap|range|step|spike|persistence" \
-        "TermTest2=temperature:null|gap|range|step|spike|persistence" \
-        "TermTest3=conductivity:null|gap|range|step|spike|persistence" \
+        "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+        "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+        "TermTest3=conductivity:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
         DirSubCopy=location
     elif [ $DATA_TYPE = 'leveltroll' ]
     then 
@@ -56,8 +56,8 @@ transform:
         DirOut=/pfs/out \
         DirErr=/pfs/out/errored_datums \
         FileSchmQf=$SCHEMA_FLAGS_LEVELTROLL \
-        "TermTest1=pressure:null|gap|range|step|spike|persistence" \
-        "TermTest2=temperature:null|gap|range|step|spike|persistence" \
+        "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike|persistence" \
+        "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
         DirSubCopy=location
     else echo "FATAL - Cannot determine source_type as aquatroll or leveltroll. Aborting..."
     fi

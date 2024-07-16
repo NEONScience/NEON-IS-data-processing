@@ -32,9 +32,9 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmQf=$SCHEMA_FLAGS \
-      "TermTest1=pressure:null|gap|range|step|spike|persistence" \
-      "TermTest2=temperature:null|gap|range|step|spike|persistence" \
-      "TermTest3=conductivity:null|gap|range|step|spike|persistence" \
+      "TermTest1=pressure:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+      "TermTest2=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
+      "TermTest3=conductivity:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
       DirSubCopy=location
     EOF
   env:
