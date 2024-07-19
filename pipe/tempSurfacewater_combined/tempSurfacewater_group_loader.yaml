@@ -1,0 +1,53 @@
+pipeline:
+  name: tempSurfacewater_group_loader
+transform:
+  cmd:
+    - /bin/bash
+  env:
+    GROUP_PREFIX: temp-surfacewater_
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
+  image: quay.io/battelleecology/group_loader:68b73fdc
+  image_pull_secrets:
+    - battelleecology-quay-read-all-pull-secret
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+  stdin:
+    - '#!/bin/bash'
+    - python3 -m group_loader.group_loader_main
+input:
+  pfs:
+    branch: master
+    empty_files: true
+    glob: /*
+    repo: li191r_cron_daily_and_date_control_tick
+autoscaling: true
+resource_requests:
+  memory: 50M
+  cpu: 0.1
+resource_limits:
+  memory: 300M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 200M
+  cpu: 0.2
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
