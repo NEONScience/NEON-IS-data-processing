@@ -1,0 +1,60 @@
+---
+pipeline:
+  name: tempSurfacewater_srf_assignment
+transform:
+  cmd: ["/bin/bash"]
+  stdin:
+  - "#!/bin/bash"
+  - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
+  - Rscript
+      ./flow.srf.asgn.R
+      DirIn=$DIR_IN
+      DirOut=/pfs/out
+      DirErr=$ERR_PATH
+      FileYear=$FILE_YEAR
+  image: quay.io/battelleecology/neon-is-srf-asgn-r:aa651ed4
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  env:
+    LOG_LEVEL: INFO
+input:
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: tempSurfacewater_srf_loader
+      glob: /*
+  - pfs:
+      name: FILE_YEAR
+      repo: li191r_cron_daily_and_date_control
+      glob: /data_year*.txt
+parallelism_spec:
+  constant: 2
+autoscaling: true
+resource_requests:
+  memory: 200M
+  cpu: 0.8
+resource_limits:
+  memory: 800M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.2
+datum_set_spec:
+  number: 10
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
