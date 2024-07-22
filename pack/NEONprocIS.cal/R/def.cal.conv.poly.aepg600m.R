@@ -91,13 +91,23 @@ def.cal.conv.poly.aepg600m <- function(data = data.frame(data=base::numeric(0)),
     
   }
 
-  # Construct the polynomial calibration function
-  func <-
-    NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
+  # # Construct the polynomial calibration function
+  # func <-
+  #   NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
+  # 
+  # # Convert data using the calibration function
+  # dataConv <- stats::predict(object = func, newdata = data[[varConv]] - as.numeric(infoCal$cal[grep("F0", infoCal$cal$Name),"Value"]))*10
+
+  #!!!!! ADD ERROR CHECKING
+  idxA2 <- grepl(pattern='CVALA2',x=infoCal$cal$Name)
+  A2 <- base::as.numeric(infoCal$cal$Value[idxA2])
+  idxA1 <- grepl(pattern='CVALA1',x=infoCal$cal$Name)
+  A1 <- base::as.numeric(infoCal$cal$Value[idxA1])
+  idxF0 <- grepl(pattern='CVALF0',x=infoCal$cal$Name)
+  F0 <- base::as.numeric(infoCal$cal$Value[idxF0])
   
-  # Convert data using the calibration function
-  dataConv <- stats::predict(object = func, newdata = data[[varConv]] - as.numeric(infoCal$cal[grep("F0", infoCal$cal$Name),"Value"]))*10
-  
+  dataConv <- (A1*(data[[varConv]]-F0) + A2*(data[[varConv]]-F0))*10
+    
   return(dataConv)
   
 }
