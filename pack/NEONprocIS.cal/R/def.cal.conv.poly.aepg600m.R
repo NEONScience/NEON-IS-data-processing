@@ -106,7 +106,7 @@ def.cal.conv.poly.aepg600m <- function(data = data.frame(data=base::numeric(0)),
   idxF0 <- grepl(pattern='CVALF0',x=infoCal$cal$Name)
   F0 <- base::as.numeric(infoCal$cal$Value[idxF0])
   
-  dataConv <- (A1*(data[[varConv]]-F0) + A2*(data[[varConv]]-F0))*10
+  dataConv <- (A1*(data[[varConv]]-F0) + A2*(data[[varConv]]-F0)^2)*10
     
   return(dataConv)
   
