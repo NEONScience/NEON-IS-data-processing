@@ -225,7 +225,7 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
   memory: 2G

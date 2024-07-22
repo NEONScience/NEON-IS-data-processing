@@ -1,0 +1,34 @@
+name: DEV-prt-site-list
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'pipe/prt/site-list.json'
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
+jobs:
+  put-file:
+    runs-on: arc-neon-gke
+    #runs-on: ubuntu-latest 
+    env:
+      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
+      REPO: prt_site_list # Pachyderm repo
+      BRANCH: master 
+      IN_PATHS: 'pipe/prt/site-list.json' # Comma-separated list (no spaces) to one or more paths or directories. Length must match OUT_PATHS. If directory, all files in directory will be placed in pachyderm at corresponding entry of OUT_PATHS. 
+      OUT_PATHS: 'site-list.json' # Comma-separated list (no spaces) of corresponding path(s) to place the files(s) in Pachyderm. Must be same length as IN_PATHS. If corresponding entry in IN_PATHS is a file, specify to the file. If corresponding entry in IN_PATHS is a directory, specify to the directory. 
+    steps:
+      - uses: actions/checkout@v4
+      - run: ls -la
+      
+      - name: Put file
+        uses: ./.github/actions/put-files
+        with:
+          pachd_address: ${{ env.PACHD_ADDRESS }}
+          pach_token: ${{ env.PACH_TOKEN }}
+          repo_name: ${{ env.REPO }}
+          branch_name: ${{ env.BRANCH }}
+          in_paths: ${{ env.IN_PATHS }}
+          out_paths: ${{ env.OUT_PATHS }}
+        
+        
