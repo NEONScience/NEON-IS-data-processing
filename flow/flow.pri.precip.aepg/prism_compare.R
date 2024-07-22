@@ -1,5 +1,5 @@
 ##some prism comps with output from smoothing function 
-site <- 'WREF'
+site <- 'KONZ'
 dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip'
 
 # Get list of applicable data files
@@ -59,7 +59,8 @@ dfpr_week <- dfpr %>%
 dfpr_week_long <- data.table::melt(dfpr_week,id.vars=c('week'))
 
 #weekly plots
-plotly::plot_ly(data=dfpr_week_long,x=~week,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
+if (FALSE) {
+  plotly::plot_ly(data=dfpr_week_long,x=~week,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - Weekly'))
 plotly::plot_ly(data=dfpr_week,x=~prism,y=~neon, type = 'scatter', mode = 'markers') %>%
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - Weekly')) %>%
@@ -73,7 +74,7 @@ plotly::plot_ly(data=dfpr_week,x=~prism,y=~neon, type = 'scatter', mode = 'marke
     yref = "y",
     line = list(color = "black")
   )))
-
+}
 
 #sum by month 
 dfpr_mnth <- dfpr %>% 
@@ -85,7 +86,8 @@ dfpr_mnth <- dfpr %>%
 dfpr_mnth_long <- data.table::melt(dfpr_mnth,id.vars=c('mnth'))
 
 #monthly comps
-plotly::plot_ly(data=dfpr_mnth_long,x=~mnth,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
+if (FALSE) {
+  plotly::plot_ly(data=dfpr_mnth_long,x=~mnth,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - monthly'))
 plotly::plot_ly(data=dfpr_mnth,x=~prism,y=~neon, type = 'scatter', mode = 'markers') %>%
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - monthly')) %>%
@@ -99,7 +101,7 @@ plotly::plot_ly(data=dfpr_mnth,x=~prism,y=~neon, type = 'scatter', mode = 'marke
     yref = "y",
     line = list(color = "black")
   )))
-
+}
 
 
 
@@ -113,18 +115,20 @@ dfpr_year <- dfpr %>%
 dfpr_year_long <- data.table::melt(dfpr_year,id.vars=c('year'))
 
 #annual plots
-plotly::plot_ly(data=dfpr_year_long,x=~year,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
-  plotly::layout(title = paste0('PRISM vs NEON at ', site,' - yearly'))
-plotly::plot_ly(data=dfpr_year,x=~prism,y=~neon, type = 'scatter', mode = 'markers') %>%
-  plotly::layout(title = paste0('PRISM vs NEON at ', site,' - yearly')) %>%
-  plotly::layout(shapes = list(list(
-    type = "line", 
-    x0 = 0, 
-    x1 = ~max(prism, neon,na.rm=TRUE), 
-    xref = "x",
-    y0 = 0, 
-    y1 = ~max(prism, neon,na.rm=TRUE), 
-    yref = "y",
-    line = list(color = "black")
-  )))
-
+if (FALSE) {
+  plotly::plot_ly(data=dfpr_year_long,x=~year,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
+    plotly::layout(title = paste0('PRISM vs NEON at ', site,' - yearly'))
+  plotly::plot_ly(data=dfpr_year,x=~prism,y=~neon, type = 'scatter', mode = 'markers') %>%
+    plotly::layout(title = paste0('PRISM vs NEON at ', site,' - yearly')) %>%
+    plotly::layout(shapes = list(list(
+      type = "line", 
+      x0 = 0, 
+      x1 = ~max(prism, neon,na.rm=TRUE), 
+      xref = "x",
+      y0 = 0, 
+      y1 = ~max(prism, neon,na.rm=TRUE), 
+      yref = "y",
+      line = list(color = "black")
+    )))
+  
+}
