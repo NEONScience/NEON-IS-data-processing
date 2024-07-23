@@ -416,7 +416,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
         data = strainGaugeDepthAgr,
         NameFile = fileOut,
         NameFileSchm=NULL,
-        Schm=SchmStat,
+        Schm=SchmData,
         log=log
     ),
     silent = TRUE)
