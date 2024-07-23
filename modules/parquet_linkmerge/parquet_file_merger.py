@@ -91,7 +91,7 @@ class ParquetFileMerger:
                 log.error(f"{f} schema does not match {path} schema")
                 sys.exit(1)
             log.info(f"Merging {f} with {path}")
-            df = df.append(tbf.to_pandas())
+            df = df._append(tbf.to_pandas())
         df = df.sort_values('readout_time')
         # Check which columns in the data frame are hashable
         hashable_columns = [x for x in df.columns if isinstance(df[x][0], Hashable)]
