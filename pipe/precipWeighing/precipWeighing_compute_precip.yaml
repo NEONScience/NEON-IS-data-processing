@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-precip-aepg-smooth-r:2b3e596b
+  image: quay.io/battelleecology/neon-is-precip-aepg-smooth-r:df320539
   cmd:
   - sh
   - "-c"
