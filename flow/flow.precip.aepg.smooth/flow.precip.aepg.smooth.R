@@ -138,7 +138,8 @@ Para <-
                      "DirErr" 
                      ),
     NameParaOptn = c(
-                     "DirSubCopy"
+                     "DirSubCopy",
+                     "FileSchmData"
                      ),
     log = log
   )
@@ -149,6 +150,16 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
+# Retrieve output schema for data
+FileSchmData <- Para$FileSchmData
+log$debug(base::paste0('Output schema for bulk precipitation: ',base::paste0(FileSchmData,collapse=',')))
+
+# Read in the schema 
+if(base::is.null(FileSchmData) || FileSchmData == 'NA'){
+  SchmData <- NULL
+} else {
+  SchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
+}
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
@@ -182,6 +193,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.precip.aepg.smooth(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
+        SchmData=SchmData,
         DirSubCopy=DirSubCopy,
         log=log
         ),

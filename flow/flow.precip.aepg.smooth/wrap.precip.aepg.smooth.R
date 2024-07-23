@@ -74,6 +74,7 @@
 ##############################################################################################
 wrap.precip.aepg.smooth <- function(DirIn,
                                     DirOutBase,
+                                    SchmData=NULL,
                                     # WndwAgr = '5 min',
                                     # RangeSizeHour = 24, #  Period of evaluation (e.g. 24 for 1 day)
                                     # Envelope = 3,
@@ -414,6 +415,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
     base::try(NEONprocIS.base::def.wrte.parq(
         data = strainGaugeDepthAgr,
         NameFile = fileOut,
+        NameFileSchm=NULL,
+        Schm=SchmStat,
         log=log
     ),
     silent = TRUE)

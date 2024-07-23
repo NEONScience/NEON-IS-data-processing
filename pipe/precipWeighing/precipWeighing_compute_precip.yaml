@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-precip-aepg-smooth-r:2f8161de
+  image: quay.io/battelleecology/neon-is-precip-aepg-smooth-r:2b3e596b
   cmd:
   - sh
   - "-c"
@@ -18,26 +18,33 @@ transform:
     Rscript ./flow.precip.aepg.smooth.R \
       DirIn=$DIR_IN \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums
+      DirErr=/pfs/out/errored_datums \
+      FileSchmData=$FILE_SCHEMA_DATA
     EOF
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
+    PARALLELIZATION_INTERNAL: '3'
 output_branch: master
 input:
-  pfs:
-    name: DIR_IN
-    repo: precipWeighing_ts_pad_smoother
-    glob: /*/*/*
+  cross:
+  - pfs:
+      name: DIR_IN
+      repo: precipWeighing_ts_pad_smoother
+      glob: /*/*/*
+  - pfs:
+      name: FILE_SCHEMA_DATA
+      repo: precipWeighing_avro_schemas
+      glob: /precipWeighing/precipWeighing_precip_output.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 1.5
+  memory: 2G
+  cpu: 3.3
 resource_limits:
-  memory: 1G
-  cpu: 2.2
+  memory: 3G
+  cpu: 4.5
 sidecar_resource_requests:
   memory: 3G
   cpu: 0.3
