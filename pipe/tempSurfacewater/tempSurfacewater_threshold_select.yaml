@@ -9,7 +9,7 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileThsh=$FILE_THRESHOLDS
-  - TermCtxt1=temp|surfacewater
+  - TermCtxt1=temperature|surfacewater
   - DirSubCopy=location
   image: quay.io/battelleecology/neon-is-thsh-slct-r:039a10a7
   image_pull_secrets:

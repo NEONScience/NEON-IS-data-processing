@@ -28,7 +28,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmQf=$SCHEMA_FLAGS \
-      "TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence"
+      "TermTest1=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence"
     EOF
   env:
     # Environment variables for padded timeseries analyzer
