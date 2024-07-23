@@ -1,5 +1,5 @@
 ##some prism comps with output from smoothing function 
-site <- 'KONZ'
+site <- 'YELL'
 dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip'
 
 # Get list of applicable data files
@@ -35,7 +35,7 @@ dfpr_long <- data.table::melt(dfpr,id.vars=c('startDate'))
 plotly::plot_ly(data=dfpr_long,x=~startDate,y=~value,color=~variable, type = 'bar', mode = 'markers') %>% 
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily'))
 
-plotly::plot_ly(data=dfpr,x=~ppt,y=~dailyPrecipNEON, type = 'scatter', mode = 'markers') %>% 
+plotly::plot_ly(data=dfpr,x=~ppt,y=~dailyPrecipNEON, type = 'scatter', mode = 'markers', hoverinfo= 'text', text = format(dfpr$startDate,'%Y-%m-%d')) %>% 
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily')) %>%
   plotly::layout(shapes = list(list(
     type = "line", 
