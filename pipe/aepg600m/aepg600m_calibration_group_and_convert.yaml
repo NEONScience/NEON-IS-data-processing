@@ -134,7 +134,7 @@ transform:
     # Environment variable to determine source type
     SOURCE_TYPE_INDEX: "4"
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '1' # Option for calibration conversion module
+    PARALLELIZATION_INTERNAL: '2' # Option for calibration conversion module
 input:
   cross:
   - pfs:
@@ -169,11 +169,11 @@ parallelism_spec:
   constant: 5
 autoscaling: true #set back to true after testing
 resource_requests:
-  memory: 500M
-  cpu: 1.2
+  memory: 900M
+  cpu: 2.2
 resource_limits:
-  memory: 1G
-  cpu: 2
+  memory: 1.5G
+  cpu: 3
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.5
