@@ -80,6 +80,6 @@ runs:
           git diff --name-only
           git tag ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}
           git add  -u .
-          git commit -m "pipeline yamls updated"  || echo "No yamls updated"
+          git commit -m "pipeline yamls updated with ${{ inputs.image-tag }}"  || echo "No yamls updated "
           git push origin   || echo "No changes to commit"
         
