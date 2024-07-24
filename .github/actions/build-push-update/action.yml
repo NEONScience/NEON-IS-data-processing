@@ -33,9 +33,11 @@ runs:
         uses: docker/metadata-action@v5
         with:
             images: |
-              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
+              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}/git-semver
             tags: |
               type=semver,pattern={{version}}
+              type=semver,pattern={{major}}.{{minor}}
+              type=semver,pattern={{major}}
               type=schedule
               type=ref,event=tag
               type=ref,event=pr
@@ -49,7 +51,8 @@ runs:
         with:
             context: .
             file: ./modules/${{ env.MODULE_NAME }}/Dockerfile
-            push: ${{ github.event_name != 'pull_request' }}
+   #         push: ${{ github.event_name != 'pull_request' }}
+            push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
        
