@@ -7,7 +7,7 @@ transform:
   - "./flow.thsh.filt.R"
   - DirIn=$threshold
   - DirOut=/pfs/out
-  - Term=temp
+  - Term=temperature
   - Ctxt=surfacewater
   image: quay.io/battelleecology/neon-is-thsh-filt-r:v1.0.0
   image_pull_secrets:

@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:b85fe5e7
+  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:039a10a7
   cmd:
   - sh
   - "-c"
@@ -23,7 +23,7 @@ transform:
       DirOut=/tmp/threshold_select \
       DirErr=/pfs/out/errored_datums \
       FileThsh=$FILE_THRESHOLDS \
-      "TermCtxt1=temp|soil" \
+      "TermCtxt1=temperature|soil" \
       "DirSubCopy=data|location"
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 

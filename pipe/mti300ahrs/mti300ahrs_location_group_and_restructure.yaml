@@ -3,7 +3,7 @@ pipeline:
   name: mti300ahrs_location_group_and_restructure
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:588e4d45
+  image: quay.io/battelleecology/neon-is-loc-grp-strc-comb:aa651ed4
   cmd:
   - sh
   - "-c"

@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:a6517eb1
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:039a10a7
   cmd:
   - sh
   - "-c"
@@ -28,7 +28,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmQf=$SCHEMA_FLAGS \
-      "TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence"
+      "TermTest1=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence"
     EOF
   env:
     # Environment variables for padded timeseries analyzer

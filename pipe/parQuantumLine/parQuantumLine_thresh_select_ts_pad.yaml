@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:b85fe5e7
+  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:039a10a7
   cmd:
   - sh
   - "-c"
@@ -51,7 +51,7 @@ input:
       repo: parQuantumLine_threshold
       glob: /thresholds.json
 parallelism_spec:
-  constant: 2
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 800M

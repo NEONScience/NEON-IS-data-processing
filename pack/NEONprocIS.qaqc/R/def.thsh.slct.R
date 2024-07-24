@@ -71,7 +71,7 @@ def.thsh.slct <- function(thsh,
   }
   
   log$debug(base::paste0('Selecting thresholds for term: ', Term, ' and context(s): ', base::paste0(Ctxt,collapse=','),
-                         ' for location: ', NameLoc, ' and date: ', timeBgn))
+                         ' for location: ', NameLoc, ' and date: ', Time))
   
   # Handle dates
   timeBgn <- Time

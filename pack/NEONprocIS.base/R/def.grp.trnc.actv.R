@@ -43,6 +43,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2022-11-23)
 #     original creation, from def.loc.trnc.actv
+#   Cove Sturtevant (20234-07-10)
+#     apply sorting to output
 ##############################################################################################
 def.grp.trnc.actv <- function(
                              NameFileIn,
@@ -71,8 +73,31 @@ def.grp.trnc.actv <- function(
     # Load in the raw json info
     listFile <- rjson::fromJSON(file = NameFileIn, simplify = FALSE)
     
+    # Sort the list of groups by group name
+    nameGrp <- unlist(lapply(listFile$features,FUN=function(idx){idx$properties$group}))
+    if(base::length(nameGrp) > 1){
+      listFile$features <- listFile$features[order(nameGrp)]
+    }
+    
     # Run through each group that is present in the file
     for (idx in base::seq_len(base::length(listFile$features))){
+      
+      # Sort for consistent output
+      grpIdx <- listFile$features[[idx]]
+      nameItem <- base::names(grpIdx)
+      listFile$features[[idx]] <- grpIdx[sort(nameItem)]
+      # Descend into "properties"
+      if('properties' %in% names(listFile$features[[idx]])){
+        grpIdxProp <- listFile$features[[idx]]$properties
+        nameProp <- base::names(grpIdxProp)
+        listFile$features[[idx]]$properties <- grpIdxProp[sort(nameProp)] 
+        # Sort products
+        if('data_product_ID' %in% names(listFile$features[[idx]]$properties)){
+          idDp <- listFile$features[[idx]]$properties$data_product_ID
+          listFile$features[[idx]]$properties$data_product_ID <- as.list(sort(unlist(idDp)))
+        }
+      }
+      
       
       # Pull the active dates, and add start/end dates if not present
       timeActv <- base::lapply(listFile$features[[idx]]$properties$active_periods,
@@ -108,11 +133,21 @@ def.grp.trnc.actv <- function(
                                }
       )
       
+      
+      
       # Get rid of the active dates we nulled out
       if (base::length(timeActv) > 0){
         setKeep <- !(base::unlist(base::lapply(timeActv,is.null)))
         listFile$features[[idx]]$properties$active_periods <- timeActv[setKeep]
       }
+      
+      # Sort the remaining active periods
+      timeActvKeep <- listFile$features[[idx]]$properties$active_periods
+      if (base::length(timeActvKeep) > 0){
+        timeBgnActv <- base::unlist(base::lapply(timeActvKeep,FUN=function(idxList){idxList$start_date}))
+        listFile$features[[idx]]$properties$active_periods <- timeActvKeep[base::order(timeBgnActv)]
+      }
+        
       
     } # End loop around feature list (number of groups)
     

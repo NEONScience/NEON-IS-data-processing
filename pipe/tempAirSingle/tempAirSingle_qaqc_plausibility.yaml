@@ -9,9 +9,9 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileSchmQf=$SCHEMA_FLAGS
-  - TermTest1=temp:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)
+  - TermTest1=temperature:null|gap|range(rmv)|step(rmv)|spike|persistence(rmv)
   - DirSubCopy=uncertainty_data|flags|uncertainty_coef
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:54b91605
+  image: quay.io/battelleecology/neon-is-qaqc-plau-r:039a10a7
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
