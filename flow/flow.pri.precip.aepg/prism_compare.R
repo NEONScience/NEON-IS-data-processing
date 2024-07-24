@@ -1,12 +1,12 @@
 ##some prism comps with output from smoothing function 
-site <- 'YELL'
+site <- 'OSBS'
 dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip'
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='*.parquet',recursive=TRUE,full.names=TRUE)
 ptrnSite <- paste0('*/precip-weighing_',site,'*')
 filesSite <- filesAll[grepl(pattern=ptrnSite,filesAll)]
-VarKeep=c('startDateTime','endDateTime','precipBulk')
+VarKeep=c('startDateTime','endDateTime','precipBulk','precipType')
 strainGaugeDepthAgr <- NEONprocIS.base::def.read.parq.ds(fileIn = filesSite,Var=VarKeep,VarTime='startDateTime',Df=TRUE)
 
 
@@ -31,9 +31,34 @@ dfpr <- left_join(strainGaugeDepthAgr_prism, prism, by = 'startDate')
 dfpr <- dfpr[2:(nrow(dfpr)-1), ]
 dfpr_long <- data.table::melt(dfpr,id.vars=c('startDate'))
 
+# Find calibration events
+setRecharge <- which(strainGaugeDepthAgr$precipType=="ExcludeBeforeRecharge")
+setCal <- unique(c(setRecharge[diff(setRecharge) > 1],tail(setRecharge,1)))
+# dfCal <- strainGaugeDepthAgr[setCal,]
+
 #daily comps
-plotly::plot_ly(data=dfpr_long,x=~startDate,y=~value,color=~variable, type = 'bar', mode = 'markers') %>% 
-  plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily'))
+library(plotly)
+vline <- function(x = 0,y=1, color = "red") {
+  list(
+    type = "line",
+    y0 = 0,
+    y1 = y,
+    yref = "paper",
+    x0 = x,
+    x1 = x,
+    line = list(color = color, dash="dot")
+  )
+}
+
+p <- plotly::plot_ly(data=dfpr_long,x=~startDate,y=~value,color=~variable, type = 'bar', mode = 'markers') %>% 
+  plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily')) 
+for (i in seq_len(length(setCal))){
+  print(i)
+  p<-p %>% 
+    plotly::add_trace(x =strainGaugeDepthAgr$startDateTime[setCal[i]], type = 'scatter', mode = 'lines',
+                      line = list(color = "red", dash = "dash"))
+}
+print(p)
 
 plotly::plot_ly(data=dfpr,x=~ppt,y=~dailyPrecipNEON, type = 'scatter', mode = 'markers', hoverinfo= 'text', text = format(dfpr$startDate,'%Y-%m-%d')) %>% 
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily')) %>%
@@ -59,9 +84,17 @@ dfpr_week <- dfpr %>%
 dfpr_week_long <- data.table::melt(dfpr_week,id.vars=c('week'))
 
 #weekly plots
-if (FALSE) {
-  plotly::plot_ly(data=dfpr_week_long,x=~week,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
-  plotly::layout(title = paste0('PRISM vs NEON at ', site,' - Weekly'))
+if (TRUE) {
+  p <- plotly::plot_ly(data=dfpr_week_long,x=~week,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
+        plotly::layout(title = paste0('PRISM vs NEON at ', site,' - Weekly'))
+  for (i in seq_len(length(setCal))){
+    print(i)
+    p<-p %>% 
+      plotly::add_trace(x =strainGaugeDepthAgr$startDateTime[setCal[i]], type = 'scatter', mode = 'lines',
+                        line = list(color = "red", dash = "dash"))
+  }
+  print(p)
+  
 plotly::plot_ly(data=dfpr_week,x=~prism,y=~neon, type = 'scatter', mode = 'markers') %>%
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - Weekly')) %>%
   plotly::layout(shapes = list(list(
@@ -86,9 +119,17 @@ dfpr_mnth <- dfpr %>%
 dfpr_mnth_long <- data.table::melt(dfpr_mnth,id.vars=c('mnth'))
 
 #monthly comps
-if (FALSE) {
-  plotly::plot_ly(data=dfpr_mnth_long,x=~mnth,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
+if (TRUE) {
+  p <- plotly::plot_ly(data=dfpr_mnth_long,x=~mnth,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - monthly'))
+  for (i in seq_len(length(setCal))){
+    print(i)
+    p<-p %>% 
+      plotly::add_trace(x =strainGaugeDepthAgr$startDateTime[setCal[i]], type = 'scatter', mode = 'lines',
+                        line = list(color = "red", dash = "dash"))
+  }
+  print(p)
+  
 plotly::plot_ly(data=dfpr_mnth,x=~prism,y=~neon, type = 'scatter', mode = 'markers') %>%
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - monthly')) %>%
   plotly::layout(shapes = list(list(
