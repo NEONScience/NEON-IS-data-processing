@@ -212,12 +212,27 @@ wrap.precip.aepg.smooth <- function(DirIn,
     # Check for at least 1/2 a day of non-NA values. 
     # If not, get to the next point at which we have at least 1/2 day and start fresh
     if(base::sum(base::is.na(strainGaugeDepthAgr$strainGaugeDepth[i:currRow])) > .5*rangeSize){
+      
+      # Find the last non-NA value 
+      setEval <- i:currRow
+      idxEnd <- setEval[tail(which(!is.na(strainGaugeDepthAgr$strainGaugeDepth[setEval])),1)]
+      
+      # Remove the benchmark extending into the gap
+      strainGaugeDepthAgr$bench[(idxEnd+1):currRow] <- NA
+      
+      # Skip until there is enough data
       skipping <- TRUE
       currRow <- currRow + 1
       next
+      
     } else if (skipping) {
+      
+      # Find the first non-NA value to begin at
+      setEval <- i:currRow
+      idxBgnNext <- setEval[head(which(!is.na(strainGaugeDepthAgr$strainGaugeDepth[setEval])),1)]
+      
       # Re-establish the benchmark
-      strainGaugeDepthAgr$bench[i:currRow] <- stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],Quant,na.rm=TRUE)
+      strainGaugeDepthAgr$bench[idxBgnNext:currRow] <- stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[idxBgnNext:currRow],Quant,na.rm=TRUE)
       timeSincePrecip <- NA
       skipping <- FALSE
     }
