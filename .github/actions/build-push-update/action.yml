@@ -33,7 +33,7 @@ runs:
         uses: docker/metadata-action@v5
         with:
             images: |
-              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}/git-semver
+              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
             tags: |
               type=semver,pattern={{version}}
               type=semver,pattern={{major}}.{{minor}}
@@ -51,7 +51,7 @@ runs:
         with:
             context: .
             file: ./modules/${{ env.MODULE_NAME }}/Dockerfile
-   #         push: ${{ github.event_name != 'pull_request' }}
+            push: ${{ github.event_name != 'pull_request' }}
             push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
@@ -78,7 +78,7 @@ runs:
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
           git diff --name-only
-          git tag ${{ env.MODULE_NAME }}/${{ env.SEM_VERSION }}
+          git tag ${{  inputs.image-tag  }}
           git add  -u .
           git commit -m "pipeline yamls updated with ${{ inputs.image-tag }}"  || echo "No yamls updated "
           git push origin   || echo "No changes to commit"

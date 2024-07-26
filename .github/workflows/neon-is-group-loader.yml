@@ -24,7 +24,7 @@ env:
   MODULE_NAME: group_loader
   IMAGE_NAME: neon-is-group-loader
   # git tag
-  SEM_VERSION: v1.2.0
+  #SEM_VERSION: v1.2.0
 
 jobs:
   deploy:
@@ -35,9 +35,17 @@ jobs:
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
-
+        with:
+          fetch-depth: '0'
+        
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@v1 # Don't use @master or @v1 unless you're happy to test the latest version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
+          WITH_V: true
     
       - name: Build push and update
         uses: ./.github/actions/build-push-update
