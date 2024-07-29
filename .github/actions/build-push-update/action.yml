@@ -5,8 +5,8 @@ description: "Builds the module, pushes the image to Artifact Registry"
 inputs:
   image-tag:
     required: true
-  sem-ver:
-    required: true
+  # sem-ver:
+  #   required: true
 
 runs:
    using: "composite"
@@ -58,7 +58,7 @@ runs:
   #          push: true
             tags: |
               ${{ steps.meta.outputs.tags }}
-              ${{ inputs.sem-ver }}
+               ${{ env.semver }}
             labels: ${{ steps.meta.outputs.labels }}
        
       - name: Set up R
