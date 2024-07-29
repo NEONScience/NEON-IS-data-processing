@@ -41,7 +41,6 @@ runs:
               type=semver,pattern={{major}}.{{minor}}
               type=semver,pattern={{major}}
               type=schedule
-              type=ref,event=semver
               type=sha
               # type=ref,event=tag
               # type=ref,event=pr
