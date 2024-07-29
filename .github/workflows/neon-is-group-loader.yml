@@ -37,13 +37,13 @@ jobs:
         uses: "actions/checkout@v4.1.4"
         with:
           fetch-depth: '0'
-        
-      - name: Get short SHA
-        run: |
-          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "semver=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-        
 
+      - name: Get short SHA
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        
+      - name: Get semver
+        run: echo "semver=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        
       - name: Build push and update
         uses: ./.github/actions/build-push-update
         with:

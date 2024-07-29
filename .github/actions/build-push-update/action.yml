@@ -41,10 +41,11 @@ runs:
               type=semver,pattern={{major}}.{{minor}}
               type=semver,pattern={{major}}
               type=schedule
-              type=ref,event=branch
-              type=ref,event=tag
-              type=ref,event=pr
+              type=ref,event=semver
               type=sha
+              # type=ref,event=tag
+              # type=ref,event=pr
+              # type=ref,event=branch
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -58,7 +59,7 @@ runs:
   #          push: true
             tags: |
               ${{ steps.meta.outputs.tags }}
-               ${{ env.semver }}
+              ${{ env.semver }}
             labels: ${{ steps.meta.outputs.labels }}
        
       - name: Set up R
