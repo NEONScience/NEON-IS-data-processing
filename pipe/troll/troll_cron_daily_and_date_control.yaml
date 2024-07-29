@@ -10,7 +10,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be LAG_DAYS_END ago. 
     LAG_DAYS_END: "3" # Default is 2. Don't go lower than 2.
     START_DATE: "2016-03-04"
-    END_DATE: "2021-07-02"
+    END_DATE: "2022-07-02"
     OUT_PATH: /pfs/out
     SOURCE_TYPE_AQUATROLL: "aquatroll200"
     SOURCE_TYPE_LEVELTROLL: "leveltroll500"
