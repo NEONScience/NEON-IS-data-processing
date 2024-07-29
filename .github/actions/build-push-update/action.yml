@@ -5,8 +5,6 @@ description: "Builds the module, pushes the image to Artifact Registry"
 inputs:
   image-tag:
     required: true
-  # sem-ver:
-  #   required: true
 
 runs:
    using: "composite"
