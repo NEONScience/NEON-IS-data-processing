@@ -45,8 +45,16 @@ runs:
               # type=ref,event=tag
               # type=ref,event=pr
               # type=ref,event=branch
+              
+      # export semver as tag              
+      - name: Build and export to Docker
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          load: true
+          tags: ${{ env.semver }}
 
-      # Build and push Docker image with Buildx (don't push on PR)
+      # Build and push Docker image with Buildx (don't push on PR) with multiple tags
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         id: build-and-push
