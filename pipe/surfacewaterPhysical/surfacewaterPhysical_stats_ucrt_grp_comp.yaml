@@ -118,7 +118,7 @@ transform:
             join_indices: [3,4,5,6]
     OUT_PATH_AQUATROLL: /tmp/pfs/filter_joined_aquatroll
     OUT_PATH_LEVELTROLL: /tmp/pfs/filter_joined_leveltroll
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     PARALLELIZATION_INTERNAL: '2' # Option for stats module
@@ -147,13 +147,13 @@ parallelism_spec:
   constant: 5
 resource_requests: 
   memory: 800M
-  cpu: 2.2
+  cpu: 2.5
 resource_limits:
   memory: 1.5G
-  cpu: 4
+  cpu: 3.5
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 0.2
+  memory: 4G
+  cpu: 0.5
 autoscaling: true
 scheduling_spec:
   node_selector:
