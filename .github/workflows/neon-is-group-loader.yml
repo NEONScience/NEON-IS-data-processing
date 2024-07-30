@@ -25,7 +25,7 @@ env:
   MODULE_NAME: group_loader
   IMAGE_NAME: neon-is-group-loader
   # git tag
-  #SEM_VERSION: v1.2.0
+  #semver
 
 jobs:
   deploy:
