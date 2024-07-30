@@ -46,6 +46,7 @@ jobs:
         run: echo "semver=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Get version parts
+        shell: bash
         run: |
           LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
           MAJOR=$(echo $LAST_TAG | awk -F "." '{print $1}')
