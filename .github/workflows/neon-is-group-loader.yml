@@ -45,14 +45,14 @@ jobs:
       - name: Get semver
         run: |
           echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-          echo "MAJOR=$LAST_TAG | awk -F "." '{print $1}'" >> $GITHUB_ENV
-          echo "MINOR=$LAST_TAG | awk -F "." '{print $2}'" >> $GITHUB_ENV
-          echo "PATCH=$LAST_TAG | awk -F "." '{print $3}'">> $GITHUB_ENV
-          echo $MAJOR
-          echo $MINOR
+          echo "MAJOR=$(echo $LAST_TAG | awk -F "." '{print $1}') >> $GITHUB_ENV
+          echo "MINOR=$(echo $LAST_TAG | awk -F "." '{print $2}') >> $GITHUB_ENV
+          echo "PATCH=$(echo $LAST_TAG | awk -F "." '{print $3}') >> $GITHUB_ENV
+          echo " MAJOR is $MAJOR"
+          echo " MINOR is $MINOR"
           echo "NEW_TAG=$MAJOR.$MINOR.$(($PATCH + 1))" >> $GITHUB_ENV
-          echo $LAST_TAG
-          echo $NEW_TAG
+          echo " LAST_TAG is $LAST_TAG"
+          echo " NEW_TAG is $NEW_TAG "
         
       - name: Build push and update
         uses: ./.github/actions/build-push-update-autotag-semver
