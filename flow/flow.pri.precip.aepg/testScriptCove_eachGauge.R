@@ -1,34 +1,35 @@
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/09/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/02/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/15/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/05/01/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/01/15/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/18/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/09/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/11/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/10/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/04/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 
 DirOutBase <- "/scratch/pfs/outCove"
 DirSubCopy <- NULL
-WndwAgr <- '30 min'
-RangeSizeHour <- 24
-Envelope <- 3
-ThshCountHour <- 15
-Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
+WndwAgr <- '5 min'
+RangeSizeHour <- 48
+Envelope <- 4.2
+ThshCountHour <- 6
+Quant <- 0.8 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
 ChangeFactor <- 1
 ChangeFactorEvap <- 0.5
@@ -68,14 +69,23 @@ data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
 
 
 # Aggregate depth streams into a single depth. 
-data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F))  
+data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F),
+                               strainGaugeTemperature = base::rowMeans(x=base::cbind(strain_gauge1_temperature, strain_gauge2_temperature, strain_gauge3_temperature), na.rm = F))  
 
 # Do time averaging
 strainGaugeDepthAgr <- data %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
   dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
   dplyr::group_by(startDateTime,endDateTime) %>%
-  dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),strainGauge1Depth = mean(strainGauge1Depth, na.rm = T),strainGauge2Depth = mean(strainGauge2Depth, na.rm = T),strainGauge3Depth = mean(strainGauge3Depth, na.rm = T))
+  dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),
+                   strainGauge1Depth = mean(strainGauge1Depth, na.rm = T),
+                   strainGauge2Depth = mean(strainGauge2Depth, na.rm = T),
+                   strainGauge3Depth = mean(strainGauge3Depth, na.rm = T),
+                   strainGaugeTemperature = mean(strainGaugeTemperature, na.rm = T),
+                   strainGauge1Temperature = mean(strain_gauge1_temperature, na.rm = T),
+                   strainGauge2Temperature = mean(strain_gauge2_temperature, na.rm = T),
+                   strainGauge3Temperature = mean(strain_gauge3_temperature, na.rm = T))
+
 
 # !!!! Do/add summarization of stability, temp stuff, flags (in different data frame) !!!!
 
@@ -344,8 +354,15 @@ for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','st
   
   
 }
-stop()
+
 # df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4,7)],id.vars=c('startDateTime'))
 df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGauge1Depth','bench1','strainGauge2Depth','bench2','strainGauge3Depth','bench3','strainGaugeMeanDepth','benchMean')],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
+# Look at the relationship with temperature
+plotly::plot_ly(data=strainGaugeDepthAgr,x=~strainGaugeTemperature,y=~strainGaugeDepth,type = 'scatter', mode = 'markers') %>%
+  plotly::add_trace(x=~strainGauge1Temperature,y=~strainGauge1Depth,type = 'scatter', mode = 'markers') %>%
+  plotly::add_trace(x=~strainGauge2Temperature,y=~strainGauge2Depth,type = 'scatter', mode = 'markers') %>%
+  plotly::add_trace(x=~strainGauge3Temperature,y=~strainGauge3Depth,type = 'scatter', mode = 'markers')
+
+# Attempt to remove the relationship with temperature
