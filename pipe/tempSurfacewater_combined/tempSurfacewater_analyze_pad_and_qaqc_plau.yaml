@@ -1,0 +1,81 @@
+---
+pipeline:
+  name: tempSurfacewater_analyze_pad_and_qaqc_plau
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/neon-is-ts-pad-anls-qaqc-plau:039a10a7
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/padded_analyzer
+    rm -rf /tmp/pfs/padded_analyzerCopy
+    mkdir -p /tmp/pfs/padded_analyzer
+    # Run first module - padded_timeseries_analyzer
+    python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/pfs/padded_analyzer 
+    # Run second module - qaqc plausibility
+    Rscript ./flow.qaqc.plau.R \
+      DirIn=/tmp/pfs/padded_analyzerCopy \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQf=$SCHEMA_FLAGS \
+      "TermTest1=temperature:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence"
+    EOF
+  env:
+    # Environment variables for padded timeseries analyzer
+    OUT_PATH: /tmp/pfs/padded_analyzer
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: '3'
+    ERR_PATH: /pfs/out/errored_datums
+    # Environment variables for qaqc plausibility
+    PARALLELIZATION_INTERNAL: '5'
+input:
+  cross:
+  - pfs:
+      name: DATA_PATH
+      repo: tempSurfacewater_thresh_select_ts_pad
+      glob: /*/*/*
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: tempSurfacewater_avro_schemas
+      glob: /tempSurfacewater/flags_plausibility_tempSurfacewater.avsc
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 5.5
+resource_limits:
+  memory: 4G
+  cpu: 7
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

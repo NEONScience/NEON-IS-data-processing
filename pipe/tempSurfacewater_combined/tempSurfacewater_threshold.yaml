@@ -1,0 +1,54 @@
+---
+pipeline:
+  name: tempSurfacewater_threshold
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: quay.io/battelleecology/threshold_loader:c0ce8112
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m threshold_loader.threshold_loader_main
+  env:
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: par
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: surfacewater
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    repo: prt_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 32M
+  cpu: 0.05
+resource_limits:
+  memory: 200M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 200M
+  cpu: 0.5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
