@@ -218,8 +218,10 @@ wrap.precip.aepg.smooth <- function(DirIn,
       setEval <- i:currRow
       idxEnd <- setEval[tail(which(!is.na(strainGaugeDepthAgr$strainGaugeDepth[setEval])),1)]
       
-      # Remove the benchmark extending into the gap
-      strainGaugeDepthAgr$bench[(idxEnd+1):currRow] <- NA
+      if(length(idxEnd) > 0){
+        # Remove the benchmark extending into the gap
+        strainGaugeDepthAgr$bench[(idxEnd+1):currRow] <- NA
+      }
       
       # Skip until there is enough data
       skipping <- TRUE
