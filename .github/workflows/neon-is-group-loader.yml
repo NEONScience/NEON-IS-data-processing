@@ -1,4 +1,4 @@
-name: "group_loader to nonprod"
+name: "DEV group_loader to nonprod"
 
 on:
   workflow_dispatch:
@@ -25,7 +25,7 @@ env:
   MODULE_NAME: group_loader
   IMAGE_NAME: neon-is-group-loader
   # git tag
-  #semver
+  # semver
 
 jobs:
   deploy:
