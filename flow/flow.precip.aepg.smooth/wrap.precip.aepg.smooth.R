@@ -205,7 +205,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
   ##loop through data to establish benchmarks 
   skipping <- FALSE
-  for (i in 1:nrow(strainGaugeDepthAgr)){
+  numRow <- nrow(strainGaugeDepthAgr)
+  for (i in 1:numRow){
     
     #if(currRow == 865){stop()} 
     
@@ -223,7 +224,13 @@ wrap.precip.aepg.smooth <- function(DirIn,
       # Skip until there is enough data
       skipping <- TRUE
       currRow <- currRow + 1
-      next
+
+      #stop at end of data frame
+      if (currRow == numRow){
+        break()
+      } else {
+        next
+      }
       
     } else if (skipping) {
       

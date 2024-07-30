@@ -113,7 +113,8 @@ for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','st
   
   ##loop through data to establish benchmarks 
   skipping <- FALSE
-  for (i in 1:nrow(strainGaugeDepthAgr)){
+  numRow <- nrow(strainGaugeDepthAgr)
+  for (i in 1:numRow){
     
     #if(currRow == 4574){stop()} 
     
@@ -131,7 +132,13 @@ for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','st
       # Skip until there is enough data
       skipping <- TRUE
       currRow <- currRow + 1
-      next
+
+      #stop at end of data frame
+      if (currRow == numRow){
+        break()
+      } else {
+        next
+      }
       
     } else if (skipping) {
       
