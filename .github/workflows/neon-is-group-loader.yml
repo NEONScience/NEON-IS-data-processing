@@ -43,8 +43,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         
       - name: Get semver
-        run: | 
-          echo "semver=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        run: echo "semver=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Get version parts
         shell: bash
