@@ -53,7 +53,7 @@ jobs:
           PATCH=$(echo $LAST_TAG | awk -F "." '{print $3}')
 
       - name: Get next tag
-        run:  echo "NEW_TAG="$MAJOR.$MINOR.$(($PATCH + 1))" >> $GITHUB_ENV
+        run:  echo "NEW_TAG="$MAJOR.$MINOR.$(($PATCH + 1))"" >> $GITHUB_ENV
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update-autotag-semver
