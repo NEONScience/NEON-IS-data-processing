@@ -1,4 +1,4 @@
-name: "DEV group_loader to nonprod"
+name: "DEV group_loader to nonprod semver"
 
 on:
   workflow_dispatch:
@@ -43,7 +43,14 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         
       - name: Get semver
-        run: echo "semver=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        shell: bash
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0)
+          MAJOR=$(echo $LAST_TAG | awk -F "." '{print $1}')
+          MINOR=$(echo $LAST_TAG | awk -F "." '{print $2}')
+          PATCH=$(echo $LAST_TAG | awk -F "." '{print $3}')
+          echo $MAJOR
+          echo $MINOR
         
       - name: Build push and update
         uses: ./.github/actions/build-push-update
