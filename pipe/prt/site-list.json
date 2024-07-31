@@ -206,5 +206,132 @@
 	{
 	"site" : "YELL",
 	"kafka_start_date" : "2023-02-03"
+	},
+	{
+	"site" : "ARIK",
+	"kafka_start_date" : "2024-03-01"
+	},
+	{
+	"site" : "BARC"
+	},
+	{
+	"site" : "BIGC",
+	"kafka_start_date" : "2024-06-01"
+	},
+	{
+	"site" : "BLDE",
+	"kafka_start_date" : "2024-05-08"
+	},
+	{
+	"site" : "BLUE",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "BLWA"
+	},
+	{
+	"site" : "CARI",
+	"kafka_start_date" : "2024-03-01"
+	},
+	{
+	"site" : "COMO",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "CRAM",
+	"kafka_start_date" : "2024-07-20"
+	},
+	{
+	"site" : "CUPE",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "FLNT"
+	},
+	{
+	"site" : "GUIL",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "HOPB",
+	"kafka_start_date" : "2024-01-17"
+	},
+	{
+	"site" : "KING",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "LECO",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "LEWI",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "LIRO"
+	},
+	{
+	"site" : "MART",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "MAYF",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "MCDI",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "MCRA",
+	"kafka_start_date" : "2024-02-05"
+	},
+	{
+	"site" : "OKSR",
+	"kafka_start_date" : "2024-04-06"
+	},
+	{
+	"site" : "POSE",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "PRIN",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "PRLA"
+	},
+	{
+	"site" : "PRPO"
+	},
+	{
+	"site" : "REDB",
+	"kafka_start_date" : "2024-02-06"
+	},
+	{
+	"site" : "SUGG"
+	},
+	{
+	"site" : "SYCA",
+	"kafka_start_date" : "2024-04-11"
+	},
+	{
+	"site" : "TECR",
+	"kafka_start_date" : "2024-03-17"
+	},
+	{
+	"site" : "TOMB"
+	},
+	{
+	"site" : "TOOK"
+	},
+	{
+	"site" : "WALK",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "WLOU",
+	"kafka_start_date" : "2024-02-06"
 	}
 ]
