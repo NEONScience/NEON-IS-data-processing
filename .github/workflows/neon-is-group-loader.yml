@@ -48,10 +48,10 @@ jobs:
       - name: Get version parts
         shell: bash
         run: |
-          LAST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
-          MAJOR=$(echo $LAST_TAG | awk -F "." '{printf "%0" length($1) $1}')
-          MINOR=$(echo $LAST_TAG | awk -F "." '{print $2}')
-          PATCH=$(echo $LAST_TAG | awk -F "." '{print $3}')
+          echo "{LAST_TAG}={$(git describe --tags $(git rev-list --tags --max-count=1))} >> "$GITHUB_ENV" 
+          echo "{MAJOR}={$(echo $LAST_TAG | awk -F "." '{printf "%0" length($1) $1}')} >> "$GITHUB_ENV"
+          echo "{MINOR}={$(echo $LAST_TAG | awk -F "." '{print $2}')} >> "$GITHUB_ENV"
+          echo "{PATCH}={$(echo $LAST_TAG | awk -F "." '{print $3}')} >> "$GITHUB_ENV"
 
       - name: Get next tag
         run:  echo "NEW_TAG="$MAJOR.$MINOR.$(($PATCH + 1))"" >> $GITHUB_ENV
