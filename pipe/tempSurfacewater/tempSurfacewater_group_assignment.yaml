@@ -22,7 +22,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: parQuantumLine_group_loader
+      repo: tempSurfacewater_group_loader
       glob: /temp-surfacewater/*
   - pfs:
       name: FILE_YEAR
