@@ -26,7 +26,7 @@ input:
       glob: /temp-surfacewater/*
   - pfs:
       name: FILE_YEAR
-      repo: li191r_cron_daily_and_date_control
+      repo: prt_cron_daily_and_date_control
       glob: /data_year_*.txt
 parallelism_spec:
   constant: 2

@@ -21,7 +21,7 @@ input:
     branch: master
     empty_files: true
     glob: /*
-    repo: li191r_cron_daily_and_date_control_tick
+    repo: prt_cron_daily_and_date_control_tick
 autoscaling: true
 resource_requests:
   memory: 50M
