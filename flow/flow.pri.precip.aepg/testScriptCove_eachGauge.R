@@ -96,6 +96,35 @@ if (FALSE) {
   fit3 <- list(coefficients=c(0,0.01707193))
   data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$internal_temperature
 }
+# Attempt a daily fit, testing for high enough R2 and positive slope
+# Note - could also apply this to the envelope, falling back on the pre-defined threshold if day(s) without rain cannot be determined
+if (TRUE) {
+  timeDay <- lubridate::floor_date(as.POSIXct(data$readout_time, tz = 'UTC'),unit='day')
+  tempRegr <- data.frame(day=unique(timeDay),
+                         slopeTemp1=as.numeric(NA),
+                         rsq1=as.numeric(NA),
+                         slopeTemp2=as.numeric(NA),
+                         rsq2=as.numeric(NA),
+                         slopeTemp2=as.numeric(NA),
+                         rsq2=as.numeric(NA)
+                         )
+  for (idxDay in unique(timeDay)){
+    setDay <- timeDay == idxDay # row indices for this day
+    fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,])
+    fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,])
+    fit3 <- lm(strainGauge1Depth ~ strain_gauge3_temperature,data[setDay,])
+    
+    idxOut <- tempRegr$day == idxDay
+    tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
+    tempRegr$rsq1[idxOut] <- summary(fit1)$r.squared
+    tempRegr$slopeTemp2[idxOut] <- fit2$coefficients[2]
+    tempRegr$rsq2[idxOut] <- summary(fit2)$r.squared
+    tempRegr$slopeTemp3[idxOut] <- fit3$coefficients[2]
+    tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
+  }
+  
+  
+}
 
 # Aggregate depth streams into a single depth. 
 data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F),
@@ -392,7 +421,7 @@ for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','st
 df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGauge1Depth','bench1','strainGauge2Depth','bench2','strainGauge3Depth','bench3','strainGaugeMeanDepth','benchMean')],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
-if (FALSE){
+if (TRUE){
   # Look at the relationship with gauge temperature
   plotly::plot_ly(data=strainGaugeDepthAgr,x=~strainGaugeTemperature,y=~strainGaugeDepth,type = 'scatter', mode = 'markers') %>%
     plotly::add_trace(x=~strainGauge1Temperature,y=~strainGauge1Depth,type = 'scatter', mode = 'markers') %>%
@@ -400,8 +429,8 @@ if (FALSE){
     plotly::add_trace(x=~strainGauge3Temperature,y=~strainGauge3Depth,type = 'scatter', mode = 'markers')
   
   # Look at the relationship with internal temperature
-  plotly::plot_ly(data=strainGaugeDepthAgr,x=~internalTemperature,y=~strainGaugeDepth,type = 'scatter', mode = 'markers') %>%
-    plotly::add_trace(x=~internalTemperature,y=~strainGauge1Depth,type = 'scatter', mode = 'markers') %>%
-    plotly::add_trace(x=~internalTemperature,y=~strainGauge2Depth,type = 'scatter', mode = 'markers') %>%
-    plotly::add_trace(x=~internalTemperature,y=~strainGauge3Depth,type = 'scatter', mode = 'markers')
+  # plotly::plot_ly(data=strainGaugeDepthAgr,x=~internalTemperature,y=~strainGaugeDepth,type = 'scatter', mode = 'markers') %>%
+  #   plotly::add_trace(x=~internalTemperature,y=~strainGauge1Depth,type = 'scatter', mode = 'markers') %>%
+  #   plotly::add_trace(x=~internalTemperature,y=~strainGauge2Depth,type = 'scatter', mode = 'markers') %>%
+  #   plotly::add_trace(x=~internalTemperature,y=~strainGauge3Depth,type = 'scatter', mode = 'markers')
 }
