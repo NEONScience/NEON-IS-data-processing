@@ -59,7 +59,6 @@ runs:
             tags: |
               ${{ steps.meta.outputs.tags }}
               ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
-              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.NEW_TAG }}
             labels: ${{ steps.meta.outputs.labels }}
        
       - name: Set up R
