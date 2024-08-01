@@ -98,6 +98,7 @@ if (FALSE) {
 }
 # Attempt a daily fit, testing for high enough R2 and positive slope
 # Note - could also apply this to the envelope, falling back on the pre-defined threshold if day(s) without rain cannot be determined
+setNoRain <- NULL
 if (TRUE) {
   timeDay <- lubridate::floor_date(as.POSIXct(data$readout_time, tz = 'UTC'),unit='day')
   tempRegr <- data.frame(day=unique(timeDay),
@@ -105,14 +106,14 @@ if (TRUE) {
                          rsq1=as.numeric(NA),
                          slopeTemp2=as.numeric(NA),
                          rsq2=as.numeric(NA),
-                         slopeTemp2=as.numeric(NA),
-                         rsq2=as.numeric(NA)
+                         slopeTemp3=as.numeric(NA),
+                         rsq3=as.numeric(NA)
                          )
   for (idxDay in unique(timeDay)){
     setDay <- timeDay == idxDay # row indices for this day
-    fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,])
-    fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,])
-    fit3 <- lm(strainGauge1Depth ~ strain_gauge3_temperature,data[setDay,])
+    fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
+    fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
+    fit3 <- lm(strainGauge1Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
     
     idxOut <- tempRegr$day == idxDay
     tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
@@ -123,12 +124,46 @@ if (TRUE) {
     tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
   }
   
+  # Keep only the excellent regressions
+  rsq_min <- 0.9 # minimum R-squared to accept regression
+  tempRegrKeep <- tempRegr
+  tempRegrKeep$slopeTemp1[tempRegrKeep$rsq1 < rsq_min] <- NA
+  tempRegrKeep$slopeTemp2[tempRegrKeep$rsq2 < rsq_min] <- NA
+  tempRegrKeep$slopeTemp3[tempRegrKeep$rsq3 < rsq_min] <- NA
+  
+  # Regressions for some sensors are better than others. 
+  # Use the non-rain days identified by the sensor with the most accepted regressions
+  numDaysNoRain <- colSums(!is.na(tempRegrKeep))[c('slopeTemp1','slopeTemp2','slopeTemp3')]
+  if (any(numDaysNoRain > 0)){
+    idxSensMax <- which.max(numDaysNoRain) # strain gauge to use
+    setNoRain <- !is.na(tempRegrKeep[[paste0('slopeTemp',idxSensMax)]]) # no-rain days
+    
+    # Average the slopes for the no-rain days for each sensor
+    # tempRegrNoRain <- colMeans(tempRegr[setNoRain,-1])
+    
+    # Average the slopes that meet the threshold R-squared
+    tempRegrNoRain <- colMeans(tempRegrKeep[,-1],na.rm=TRUE)
+    
+    # Remove the temp relationship
+    if(!is.na(tempRegrNoRain["slopeTemp1"])){
+      data$strainGauge1Depth <- data$strainGauge1Depth - tempRegrNoRain["slopeTemp1"]*data$strain_gauge1_temperature
+    }
+    if(!is.na(tempRegrNoRain["slopeTemp2"])){
+      data$strainGauge2Depth <- data$strainGauge2Depth - tempRegrNoRain["slopeTemp2"]*data$strain_gauge2_temperature
+    }
+    if(!is.na(tempRegrNoRain["slopeTemp3"])){
+      data$strainGauge3Depth <- data$strainGauge3Depth - tempRegrNoRain["slopeTemp3"]*data$strain_gauge3_temperature
+    }
+    
+  }
+  
   
 }
 
 # Aggregate depth streams into a single depth. 
 data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F),
                                strainGaugeTemperature = base::rowMeans(x=base::cbind(strain_gauge1_temperature, strain_gauge2_temperature, strain_gauge3_temperature), na.rm = F))  
+
 
 
 # Do time averaging
@@ -147,7 +182,28 @@ strainGaugeDepthAgr <- data %>%
                    internalTemperature = mean(internal_temperature, na.rm=T))
 
 
-
+# Get the envelope if we have determined days without rain
+if(!is.null(setNoRain)){
+  dayNoRain <- tempRegr$day[setNoRain]
+  timeDay <- lubridate::floor_date(strainGaugeDepthAgr$startDateTime,unit='day')
+  
+  envelopeComp <- data.frame(day=unique(timeDay),envelope=as.numeric(NA))
+                         
+  for (idxDay in unique(timeDay)){
+    if(!(idxDay %in% dayNoRain)){
+      next
+    }
+    setDay <- timeDay == idxDay # row indices for this day
+    envelopeIdx <- max(strainGaugeDepthAgr$strainGaugeDepth,na.rm=TRUE)-min(strainGaugeDepthAgr$strainGaugeDepth,na.rm=TRUE)
+    envelopeComp$envelope[envelopeComp$day == idxDay] <- envelopeIdx
+  }
+  
+  # Take the max envelope
+  envelopeMax<- max(envelopeComp$envelope,na.rm=TRUE)
+  if(!is.na(envelopeMax)){
+    Envelope <- envelopeMax
+  }
+}
 
 # !!!! Do/add summarization of stability, temp stuff, flags (in different data frame) !!!!
 
