@@ -2,7 +2,7 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/02/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/15/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
@@ -66,11 +66,41 @@ data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
                                           RmvDupl=TRUE,
                                           Df=TRUE, 
                                           log=log)
+if (!('internal_temperature' %in% names(data))){
+  data$internal_temperature <- as.numeric(NA)
+}
 
+# Do a linear model between strain gauge depth and strain gauge temperature. Remove relationship
+if (FALSE){
+  fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data)
+  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$strain_gauge1_temperature
+  fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data)
+  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$strain_gauge2_temperature
+  fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data)
+  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$strain_gauge3_temperature
+}
+if (FALSE){
+  fit1 <- lm(strainGauge1Depth ~ internal_temperature,data)
+  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$internal_temperature
+  fit2 <- lm(strainGauge2Depth ~ internal_temperature,data)
+  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$internal_temperature
+  fit3 <- lm(strainGauge3Depth ~ internal_temperature,data)
+  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$internal_temperature
+}
+# use set coefficients (CPER) from 2023-07-15 4-day pad (no rain)
+if (FALSE) {
+  fit1 <- list(coefficients=c(0,0.1289444))
+  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$internal_temperature
+  fit2 <- list(coefficients=c(0,0.322979))
+  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$internal_temperature
+  fit3 <- list(coefficients=c(0,0.01707193))
+  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$internal_temperature
+}
 
 # Aggregate depth streams into a single depth. 
 data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F),
                                strainGaugeTemperature = base::rowMeans(x=base::cbind(strain_gauge1_temperature, strain_gauge2_temperature, strain_gauge3_temperature), na.rm = F))  
+
 
 # Do time averaging
 strainGaugeDepthAgr <- data %>%
@@ -84,7 +114,10 @@ strainGaugeDepthAgr <- data %>%
                    strainGaugeTemperature = mean(strainGaugeTemperature, na.rm = T),
                    strainGauge1Temperature = mean(strain_gauge1_temperature, na.rm = T),
                    strainGauge2Temperature = mean(strain_gauge2_temperature, na.rm = T),
-                   strainGauge3Temperature = mean(strain_gauge3_temperature, na.rm = T))
+                   strainGauge3Temperature = mean(strain_gauge3_temperature, na.rm = T),
+                   internalTemperature = mean(internal_temperature, na.rm=T))
+
+
 
 
 # !!!! Do/add summarization of stability, temp stuff, flags (in different data frame) !!!!
@@ -359,10 +392,16 @@ for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','st
 df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGauge1Depth','bench1','strainGauge2Depth','bench2','strainGauge3Depth','bench3','strainGaugeMeanDepth','benchMean')],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
-# Look at the relationship with temperature
-plotly::plot_ly(data=strainGaugeDepthAgr,x=~strainGaugeTemperature,y=~strainGaugeDepth,type = 'scatter', mode = 'markers') %>%
-  plotly::add_trace(x=~strainGauge1Temperature,y=~strainGauge1Depth,type = 'scatter', mode = 'markers') %>%
-  plotly::add_trace(x=~strainGauge2Temperature,y=~strainGauge2Depth,type = 'scatter', mode = 'markers') %>%
-  plotly::add_trace(x=~strainGauge3Temperature,y=~strainGauge3Depth,type = 'scatter', mode = 'markers')
-
-# Attempt to remove the relationship with temperature
+if (FALSE){
+  # Look at the relationship with gauge temperature
+  plotly::plot_ly(data=strainGaugeDepthAgr,x=~strainGaugeTemperature,y=~strainGaugeDepth,type = 'scatter', mode = 'markers') %>%
+    plotly::add_trace(x=~strainGauge1Temperature,y=~strainGauge1Depth,type = 'scatter', mode = 'markers') %>%
+    plotly::add_trace(x=~strainGauge2Temperature,y=~strainGauge2Depth,type = 'scatter', mode = 'markers') %>%
+    plotly::add_trace(x=~strainGauge3Temperature,y=~strainGauge3Depth,type = 'scatter', mode = 'markers')
+  
+  # Look at the relationship with internal temperature
+  plotly::plot_ly(data=strainGaugeDepthAgr,x=~internalTemperature,y=~strainGaugeDepth,type = 'scatter', mode = 'markers') %>%
+    plotly::add_trace(x=~internalTemperature,y=~strainGauge1Depth,type = 'scatter', mode = 'markers') %>%
+    plotly::add_trace(x=~internalTemperature,y=~strainGauge2Depth,type = 'scatter', mode = 'markers') %>%
+    plotly::add_trace(x=~internalTemperature,y=~strainGauge3Depth,type = 'scatter', mode = 'markers')
+}
