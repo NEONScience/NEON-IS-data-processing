@@ -2,7 +2,7 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/02/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
@@ -194,7 +194,7 @@ if(!is.null(setNoRain)){
       next
     }
     setDay <- timeDay == idxDay # row indices for this day
-    envelopeIdx <- max(strainGaugeDepthAgr$strainGaugeDepth,na.rm=TRUE)-min(strainGaugeDepthAgr$strainGaugeDepth,na.rm=TRUE)
+    envelopeIdx <- max(strainGaugeDepthAgr$strainGaugeDepth[setDay],na.rm=TRUE)-min(strainGaugeDepthAgr$strainGaugeDepth[setDay],na.rm=TRUE)
     envelopeComp$envelope[envelopeComp$day == idxDay] <- envelopeIdx
   }
   
