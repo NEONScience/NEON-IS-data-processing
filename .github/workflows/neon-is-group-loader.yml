@@ -57,10 +57,10 @@ jobs:
           echo "prefix=$(echo $prefix | sed 's/[0-9]//g')" >> $GITHUB_ENV
 
       - name: Get next tag
-        run:  echo "new_tag=${prefix}${major}.${minor}.$((${patch} + 1))" >> $GITHUB_ENV
+        run:  echo "new_tag=${prefix}${major}.${minor}.$((${patch} + 01))" >> $GITHUB_ENV
 
       - name: Build push and update
-        uses: ./.github/actions/build-push-update-autotag-semver
+        uses: ./.github/actions/build-push-update
         with:
             image-tag: "${short_sha}"
   #          sem-ver: "${semver}"
