@@ -1,34 +1,35 @@
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/09/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/02/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/05/01/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/01/15/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/18/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/09/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/11/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/10/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/04/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 
 DirOutBase <- "/scratch/pfs/outCove"
 DirSubCopy <- NULL
-WndwAgr <- '30 min'
-RangeSizeHour <- 24
-Envelope <- 3
-ThshCountHour <- 15
-Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
+WndwAgr <- '5 min'
+RangeSizeHour <- 48
+Envelope <- 4.2
+ThshCountHour <- 6
+Quant <- 0.8 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
 ChangeFactor <- 1
 ChangeFactorEvap <- 0.5
@@ -65,17 +66,144 @@ data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
                                           RmvDupl=TRUE,
                                           Df=TRUE, 
                                           log=log)
+if (!('internal_temperature' %in% names(data))){
+  data$internal_temperature <- as.numeric(NA)
+}
 
+# Do a linear model between strain gauge depth and strain gauge temperature. Remove relationship
+if (FALSE){
+  fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data)
+  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$strain_gauge1_temperature
+  fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data)
+  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$strain_gauge2_temperature
+  fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data)
+  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$strain_gauge3_temperature
+}
+if (FALSE){
+  fit1 <- lm(strainGauge1Depth ~ internal_temperature,data)
+  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$internal_temperature
+  fit2 <- lm(strainGauge2Depth ~ internal_temperature,data)
+  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$internal_temperature
+  fit3 <- lm(strainGauge3Depth ~ internal_temperature,data)
+  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$internal_temperature
+}
+# use set coefficients (CPER) from 2023-07-15 4-day pad (no rain)
+if (FALSE) {
+  fit1 <- list(coefficients=c(0,0.1289444))
+  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$internal_temperature
+  fit2 <- list(coefficients=c(0,0.322979))
+  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$internal_temperature
+  fit3 <- list(coefficients=c(0,0.01707193))
+  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$internal_temperature
+}
+# Attempt a daily fit, testing for high enough R2 and positive slope
+# Note - could also apply this to the envelope, falling back on the pre-defined threshold if day(s) without rain cannot be determined
+setNoRain <- NULL
+if (TRUE) {
+  timeDay <- lubridate::floor_date(as.POSIXct(data$readout_time, tz = 'UTC'),unit='day')
+  tempRegr <- data.frame(day=unique(timeDay),
+                         slopeTemp1=as.numeric(NA),
+                         rsq1=as.numeric(NA),
+                         slopeTemp2=as.numeric(NA),
+                         rsq2=as.numeric(NA),
+                         slopeTemp3=as.numeric(NA),
+                         rsq3=as.numeric(NA)
+                         )
+  for (idxDay in unique(timeDay)){
+    setDay <- timeDay == idxDay # row indices for this day
+    fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
+    fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
+    fit3 <- lm(strainGauge1Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
+    
+    idxOut <- tempRegr$day == idxDay
+    tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
+    tempRegr$rsq1[idxOut] <- summary(fit1)$r.squared
+    tempRegr$slopeTemp2[idxOut] <- fit2$coefficients[2]
+    tempRegr$rsq2[idxOut] <- summary(fit2)$r.squared
+    tempRegr$slopeTemp3[idxOut] <- fit3$coefficients[2]
+    tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
+  }
+  
+  # Keep only the excellent regressions
+  rsq_min <- 0.9 # minimum R-squared to accept regression
+  tempRegrKeep <- tempRegr
+  tempRegrKeep$slopeTemp1[tempRegrKeep$rsq1 < rsq_min] <- NA
+  tempRegrKeep$slopeTemp2[tempRegrKeep$rsq2 < rsq_min] <- NA
+  tempRegrKeep$slopeTemp3[tempRegrKeep$rsq3 < rsq_min] <- NA
+  
+  # Regressions for some sensors are better than others. 
+  # Use the non-rain days identified by the sensor with the most accepted regressions
+  numDaysNoRain <- colSums(!is.na(tempRegrKeep))[c('slopeTemp1','slopeTemp2','slopeTemp3')]
+  if (any(numDaysNoRain > 0)){
+    idxSensMax <- which.max(numDaysNoRain) # strain gauge to use
+    setNoRain <- !is.na(tempRegrKeep[[paste0('slopeTemp',idxSensMax)]]) # no-rain days
+    
+    # Average the slopes for the no-rain days for each sensor
+    # tempRegrNoRain <- colMeans(tempRegr[setNoRain,-1])
+    
+    # Average the slopes that meet the threshold R-squared
+    tempRegrNoRain <- colMeans(tempRegrKeep[,-1],na.rm=TRUE)
+    
+    # Remove the temp relationship
+    if(!is.na(tempRegrNoRain["slopeTemp1"])){
+      data$strainGauge1Depth <- data$strainGauge1Depth - tempRegrNoRain["slopeTemp1"]*data$strain_gauge1_temperature
+    }
+    if(!is.na(tempRegrNoRain["slopeTemp2"])){
+      data$strainGauge2Depth <- data$strainGauge2Depth - tempRegrNoRain["slopeTemp2"]*data$strain_gauge2_temperature
+    }
+    if(!is.na(tempRegrNoRain["slopeTemp3"])){
+      data$strainGauge3Depth <- data$strainGauge3Depth - tempRegrNoRain["slopeTemp3"]*data$strain_gauge3_temperature
+    }
+    
+  }
+  
+  
+}
 
 # Aggregate depth streams into a single depth. 
-data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F))  
+data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F),
+                               strainGaugeTemperature = base::rowMeans(x=base::cbind(strain_gauge1_temperature, strain_gauge2_temperature, strain_gauge3_temperature), na.rm = F))  
+
+
 
 # Do time averaging
 strainGaugeDepthAgr <- data %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
   dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
   dplyr::group_by(startDateTime,endDateTime) %>%
-  dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),strainGauge1Depth = mean(strainGauge1Depth, na.rm = T),strainGauge2Depth = mean(strainGauge2Depth, na.rm = T),strainGauge3Depth = mean(strainGauge3Depth, na.rm = T))
+  dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),
+                   strainGauge1Depth = mean(strainGauge1Depth, na.rm = T),
+                   strainGauge2Depth = mean(strainGauge2Depth, na.rm = T),
+                   strainGauge3Depth = mean(strainGauge3Depth, na.rm = T),
+                   strainGaugeTemperature = mean(strainGaugeTemperature, na.rm = T),
+                   strainGauge1Temperature = mean(strain_gauge1_temperature, na.rm = T),
+                   strainGauge2Temperature = mean(strain_gauge2_temperature, na.rm = T),
+                   strainGauge3Temperature = mean(strain_gauge3_temperature, na.rm = T),
+                   internalTemperature = mean(internal_temperature, na.rm=T))
+
+
+# Get the envelope if we have determined days without rain
+if(!is.null(setNoRain)){
+  dayNoRain <- tempRegr$day[setNoRain]
+  timeDay <- lubridate::floor_date(strainGaugeDepthAgr$startDateTime,unit='day')
+  
+  envelopeComp <- data.frame(day=unique(timeDay),envelope=as.numeric(NA))
+                         
+  for (idxDay in unique(timeDay)){
+    if(!(idxDay %in% dayNoRain)){
+      next
+    }
+    setDay <- timeDay == idxDay # row indices for this day
+    envelopeIdx <- max(strainGaugeDepthAgr$strainGaugeDepth,na.rm=TRUE)-min(strainGaugeDepthAgr$strainGaugeDepth,na.rm=TRUE)
+    envelopeComp$envelope[envelopeComp$day == idxDay] <- envelopeIdx
+  }
+  
+  # Take the max envelope
+  envelopeMax<- max(envelopeComp$envelope,na.rm=TRUE)
+  if(!is.na(envelopeMax)){
+    Envelope <- envelopeMax
+  }
+}
 
 # !!!! Do/add summarization of stability, temp stuff, flags (in different data frame) !!!!
 
@@ -344,8 +472,21 @@ for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','st
   
   
 }
-stop()
+
 # df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4,7)],id.vars=c('startDateTime'))
 df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGauge1Depth','bench1','strainGauge2Depth','bench2','strainGauge3Depth','bench3','strainGaugeMeanDepth','benchMean')],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
+if (TRUE){
+  # Look at the relationship with gauge temperature
+  plotly::plot_ly(data=strainGaugeDepthAgr,x=~strainGaugeTemperature,y=~strainGaugeDepth,type = 'scatter', mode = 'markers') %>%
+    plotly::add_trace(x=~strainGauge1Temperature,y=~strainGauge1Depth,type = 'scatter', mode = 'markers') %>%
+    plotly::add_trace(x=~strainGauge2Temperature,y=~strainGauge2Depth,type = 'scatter', mode = 'markers') %>%
+    plotly::add_trace(x=~strainGauge3Temperature,y=~strainGauge3Depth,type = 'scatter', mode = 'markers')
+  
+  # Look at the relationship with internal temperature
+  # plotly::plot_ly(data=strainGaugeDepthAgr,x=~internalTemperature,y=~strainGaugeDepth,type = 'scatter', mode = 'markers') %>%
+  #   plotly::add_trace(x=~internalTemperature,y=~strainGauge1Depth,type = 'scatter', mode = 'markers') %>%
+  #   plotly::add_trace(x=~internalTemperature,y=~strainGauge2Depth,type = 'scatter', mode = 'markers') %>%
+  #   plotly::add_trace(x=~internalTemperature,y=~strainGauge3Depth,type = 'scatter', mode = 'markers')
+}
