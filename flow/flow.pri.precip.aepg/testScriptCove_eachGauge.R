@@ -2,7 +2,7 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/02/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/04/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
@@ -79,23 +79,7 @@ if (FALSE){
   fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data)
   data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$strain_gauge3_temperature
 }
-if (FALSE){
-  fit1 <- lm(strainGauge1Depth ~ internal_temperature,data)
-  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$internal_temperature
-  fit2 <- lm(strainGauge2Depth ~ internal_temperature,data)
-  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$internal_temperature
-  fit3 <- lm(strainGauge3Depth ~ internal_temperature,data)
-  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$internal_temperature
-}
-# use set coefficients (CPER) from 2023-07-15 4-day pad (no rain)
-if (FALSE) {
-  fit1 <- list(coefficients=c(0,0.1289444))
-  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$internal_temperature
-  fit2 <- list(coefficients=c(0,0.322979))
-  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$internal_temperature
-  fit3 <- list(coefficients=c(0,0.01707193))
-  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$internal_temperature
-}
+
 # Attempt a daily fit, testing for high enough R2 and positive slope
 # Note - could also apply this to the envelope, falling back on the pre-defined threshold if day(s) without rain cannot be determined
 setNoRain <- NULL
@@ -113,7 +97,7 @@ if (TRUE) {
     setDay <- timeDay == idxDay # row indices for this day
     fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
     fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
-    fit3 <- lm(strainGauge1Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
+    fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
     
     idxOut <- tempRegr$day == idxDay
     tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
@@ -131,18 +115,98 @@ if (TRUE) {
   tempRegrKeep$slopeTemp2[tempRegrKeep$rsq2 < rsq_min] <- NA
   tempRegrKeep$slopeTemp3[tempRegrKeep$rsq3 < rsq_min] <- NA
   
-  # Regressions for some sensors are better than others. 
+  # Regressions for some sensors are better than others.
+  # Also, the regression for some sensors is transient, applicable only within a day
   # Use the non-rain days identified by the sensor with the most accepted regressions
+  # and require at least 2 consecutive days without rain, recomputing
+  # the temperature regression for the consecutive period
   numDaysNoRain <- colSums(!is.na(tempRegrKeep))[c('slopeTemp1','slopeTemp2','slopeTemp3')]
   if (any(numDaysNoRain > 0)){
+
     idxSensMax <- which.max(numDaysNoRain) # strain gauge to use
     setNoRain <- !is.na(tempRegrKeep[[paste0('slopeTemp',idxSensMax)]]) # no-rain days
-    
+
     # Average the slopes for the no-rain days for each sensor
     # tempRegrNoRain <- colMeans(tempRegr[setNoRain,-1])
     
     # Average the slopes that meet the threshold R-squared
     tempRegrNoRain <- colMeans(tempRegrKeep[,-1],na.rm=TRUE)
+    
+    
+    
+    
+    
+    # # Find the longest consecutive no-rain period and recompute the regression
+    # NoRainConsec <- data.frame(dayBgn=seq.POSIXt(from=tempRegr$day[1],to=tail(tempRegr$day,1),by='day'),daysNoRain=0)
+    # numDay <- length(NoRainConsec$dayBgn)
+    # for (idxDay in seq_len(numDay)){
+    # 
+    #   # Move to next day if it rained
+    #   if(!(NoRainConsec$dayBgn[idxDay] %in% tempRegrKeep$day[setNoRain])){
+    #     next
+    #   } else {
+    #     # Add the rain for today
+    #     NoRainConsec$daysNoRain[idxDay] <- 1
+    #   }
+    # 
+    # 
+    #   idxNext <- idxDay + 1
+    #   while(idxNext <= numDay){
+    # 
+    #     # If it didn't rain, add to the tally and continue
+    #     if(NoRainConsec$dayBgn[idxNext] %in% tempRegrKeep$day[setNoRain]){
+    # 
+    #       NoRainConsec$daysNoRain[idxDay] <- NoRainConsec$daysNoRain[idxDay] + 1
+    #       idxNext <- idxNext + 1
+    #       next
+    # 
+    #     } else {
+    # 
+    #     # If it did rain, exit and restart
+    #       break
+    #     }
+    # 
+    #   }
+    # }
+    # 
+    # # Choose the longest consecutive no-rain period to compute the regression
+    # idxBgnConsec <- which.max(NoRainConsec$daysNoRain)
+    # daysNoRainConsec <- NoRainConsec$daysNoRain[idxBgnConsec]
+    # 
+    # # If the longest consecutive no-rain period is greater than 1 day, do the regression
+    # if (NoRainConsec$daysNoRain[idxBgnConsec] > 1){
+    #   setRegr <- timeDay %in% NoRainConsec$dayBgn[idxBgnConsec:(idxBgnConsec+daysNoRainConsec-1)] # row indices for the consecutive no-rain period
+    # 
+    #   fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setRegr,],na.action="na.omit")
+    #   fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setRegr,],na.action="na.omit")
+    #   fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data[setRegr,],na.action="na.omit")
+    # 
+    # 
+    #   tempRegrNoRain <- data.frame(
+    #     slopeTemp1 = fit1$coefficients[2],
+    #     rsq1 = summary(fit1)$r.squared,
+    #     slopeTemp2 = fit2$coefficients[2],
+    #     rsq2 = summary(fit2)$r.squared,
+    #     slopeTemp3 = fit3$coefficients[2],
+    #     rsq3 = summary(fit3)$r.squared
+    #   )
+    #   
+    #   
+    #   # Check for adequate R-squared
+    #   rsq_min_consec <- 0.5 # minimum R-squared to accept regression
+    #   tempRegrNoRain$slopeTemp1[tempRegrNoRain$rsq1 < rsq_min_consec] <- NA
+    #   tempRegrNoRain$slopeTemp2[tempRegrNoRain$rsq2 < rsq_min_consec] <- NA
+    #   tempRegrNoRain$slopeTemp3[tempRegrNoRain$rsq3 < rsq_min_consec] <- NA
+    #   
+    # 
+    #   # Make into named vector
+    #   tempRegrNoRain <- unlist(tempRegrNoRain)
+    # 
+    # }
+
+    
+    
+    
     
     # Remove the temp relationship
     if(!is.na(tempRegrNoRain["slopeTemp1"])){
