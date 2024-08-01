@@ -24,7 +24,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       FileSchmStat=$FILE_SCHEMA_STATS \
       "WndwAgr=001|030" \
-      "TermStat1=temp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)"
+      "TermStat1=temperature:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst.fdas.rstc)"
     EOF
   env:
     # Environment variables for filter-joiner

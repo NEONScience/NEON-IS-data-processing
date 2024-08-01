@@ -7,7 +7,7 @@ transform:
   - ./flow.qaqc.temp.air.aspi.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
-  - SensTermTemp=prt:temp
+  - SensTermTemp=prt:temperature
   - SensTermTbne=dualfan:turbine_speed
   - SensTermWind1=windobserverii:u_axis_wind_speed:v_axis_wind_speed
   - SensTermHeat=heater:state

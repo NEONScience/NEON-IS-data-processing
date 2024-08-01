@@ -13,7 +13,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
-    TERM: temp
+    TERM: temperature
     # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: aspirated-single
     LOG_LEVEL: INFO
