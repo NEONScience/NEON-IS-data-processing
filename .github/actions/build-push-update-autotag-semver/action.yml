@@ -58,8 +58,7 @@ runs:
             push: true
             tags: |
               ${{ steps.meta.outputs.tags }}
-              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
-              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.NEW_TAG }}
+              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.new_tag }}
             labels: ${{ steps.meta.outputs.labels }}
 
       - name: Set up R
