@@ -56,7 +56,7 @@ jobs:
         run:  echo "NEW_TAG=${MAJOR}.${MINOR}.$((${PATCH} + 1))" >> $GITHUB_ENV
 
       - name: Build push and update
-        uses: ./.github/actions/build-push-update
+        uses: ./.github/actions/build-push-update-autotag-semver
         with:
             image-tag: "${short_sha}"
   #          sem-ver: "${semver}"
