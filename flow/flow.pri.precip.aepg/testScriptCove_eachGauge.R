@@ -2,14 +2,14 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/02/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/04/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/04/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/05/01/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/01/15/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/15/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/18/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
@@ -26,8 +26,8 @@ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/04/01/precip-weighing
 DirOutBase <- "/scratch/pfs/outCove"
 DirSubCopy <- NULL
 WndwAgr <- '5 min'
-RangeSizeHour <- 48
-Envelope <- 4.2
+RangeSizeHour <- 24
+Envelope <- 0.3
 ThshCountHour <- 6
 Quant <- 0.8 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
@@ -94,18 +94,20 @@ if (TRUE) {
                          rsq3=as.numeric(NA)
                          )
   for (idxDay in unique(timeDay)){
-    setDay <- timeDay == idxDay # row indices for this day
-    fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
-    fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
-    fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
-    
-    idxOut <- tempRegr$day == idxDay
-    tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
-    tempRegr$rsq1[idxOut] <- summary(fit1)$r.squared
-    tempRegr$slopeTemp2[idxOut] <- fit2$coefficients[2]
-    tempRegr$rsq2[idxOut] <- summary(fit2)$r.squared
-    tempRegr$slopeTemp3[idxOut] <- fit3$coefficients[2]
-    tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
+    try({
+      setDay <- timeDay == idxDay # row indices for this day
+      fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
+      fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
+      fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
+      
+      idxOut <- tempRegr$day == idxDay
+      tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
+      tempRegr$rsq1[idxOut] <- summary(fit1)$r.squared
+      tempRegr$slopeTemp2[idxOut] <- fit2$coefficients[2]
+      tempRegr$rsq2[idxOut] <- summary(fit2)$r.squared
+      tempRegr$slopeTemp3[idxOut] <- fit3$coefficients[2]
+      tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
+    })
   }
   
   # Keep only the excellent regressions
