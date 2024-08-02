@@ -110,14 +110,24 @@
 #' @examples 
 #' # NOT RUN
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# DirInTroll<-"~/pfs/surfacewaterPhysical_analyze_pad_and_qaqc_plau/2019/06/18/surfacewater-physical_SUGG130100/aquatroll200/CFGLOC113610"
-# DirInUcrt<-"~/pfs/surfacewaterPhysical_group_path/2019/06/18/surfacewater-physical_SUGG130100/aquatroll200/CFGLOC113610"
-# SchmDataOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc'),collapse='')
-# SchmUcrtOutAgr<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc'),collapse='')
-# SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc'),collapse='')
-# SchmSciStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc'),collapse='')
-# SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_aquatroll200_dp01_stats.avsc'),collapse='')
+# DirInTroll<-"~/pfs/groundwaterPhysical_analyze_pad_and_qaqc_plau/2018/01/01/groundwater-physical_LEWI303000/aquatroll200/CFGLOC103937"
+# DirInUcrt<-"~/pfs/groundwaterPhysical_group_path/2018/01/01/groundwater-physical_LEWI303000/aquatroll200/CFGLOC103937"
+# Context<-'GW'
+# if(Context=='SW'){
+#   SchmDataOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_aquatroll200_specific_data.avsc'),collapse='')
+#   SchmUcrtOutAgr<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt.avsc'),collapse='')
+#   SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_aquatroll200_specific_ucrt_inst.avsc'),collapse='')
+#   SchmSciStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_dp01_troll_specific_sci_stats.avsc'),collapse='')
+#   SchmStatsOut<-base::paste0(base::readLines('~/pfs/surfacewaterPhysical_avro_schemas/surfacewaterPhysical/stats_ucrt_grp_avro_schemas/surfacewaterPhysical_aquatroll200_dp01_stats.avsc'),collapse='')
+# }else{
+#   SchmDataOut<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_data.avsc'),collapse='')
+#   SchmUcrtOutAgr<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_ucrt.avsc'),collapse='')
+#   SchmUcrtOutInst<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_ucrt.avsc'),collapse='')
+#   SchmSciStatsOut<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_troll_specific_sci_stats.avsc'),collapse='')
+#   SchmStatsOut<-base::paste0(base::readLines('~/pfs/groundwaterPhysical_avro_schemas/groundwaterPhysical/groundwaterPhysical_dp01_stats.avsc'),collapse='')
+# }
 # WndwAgr <- base::as.difftime(base::as.numeric('030'),units="mins")
+# WndwInst <- TRUE
 # if(length(WndwAgr)>0){
 #   timeBgnDiff <- list()
 #   timeEndDiff <- list()
@@ -159,6 +169,8 @@
 #'     distinguish between average and instantaneous uncertainty outputs
 #'   Nora Catolico (2024-03-05)
 #'     updated to include non-systematic uncertainty output for discharge
+#'   Nora Catolico (2024-08-01)
+#'     minor update to uncertainty calculation for specific conductivity
 ##############################################################################################
 wrap.troll.uncertainty <- function(DirIn=NULL,
                                    DirInTroll=NULL,
@@ -539,7 +551,10 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
       for(i in 1:length(uncertaintyData$rawConductivity_ucrtMeas)){
         U_CVALA1_cond<-uncertaintyData$rawConductivity_ucrtMeas[i]
         U_CVALA1_temp<-uncertaintyData$temperature_ucrtMeas[i]
-        uncertaintyData$conductivity_ucrtMeas[i]<-((((1/(1+0.0191*(trollData$temperature[i]-25)))^2)*U_CVALA1_cond^2)+((((0.0191*trollData$raw_conductivity[i])/((1+0.0191*(trollData$temperature[i]-25))^2))^2)*U_CVALA1_temp^2))^0.5
+        denominator <- 1+0.0191*(trollData$temperature[i]-25)
+        #uncertainty for individual specific conductivity measurements eq. 11
+        uncertaintyData$conductivity_ucrtMeas[i]<-((((1/denominator)^2)*(U_CVALA1_cond^2))+
+                                                     ((((0.0191*trollData$raw_conductivity[i])/(denominator^2))^2)*(U_CVALA1_temp^2)))^0.5
       }
       uncertaintyData$conductivity_ucrtComb<-uncertaintyData$conductivity_ucrtMeas
       uncertaintyData$conductivity_ucrtExpn<-2*uncertaintyData$conductivity_ucrtMeas
@@ -648,9 +663,13 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
         if(length(uncertaintyCoef)>0){
           #Temperature Uncertainty
           #combined uncertainty of temperature is equal to the standard uncertainty values provided by CVAL
-          #numPts <- base::sum(x=!base::is.na(dataWndwTime$temperature),na.rm=FALSE)
-          #se <- stats::sd(dataWndwTime$temperature,na.rm=TRUE)/base::sqrt(numPts)
-          #TemperatureExpUncert<-2*(se^2+U_CVALA3_temp^2)^0.5
+          # numPts <- base::sum(x=!base::is.na(dataWndwTime$temperature),na.rm=FALSE)
+          # tempStrErr <- stats::sd(dataWndwTime$temperature,na.rm=TRUE)/base::sqrt(numPts)
+          # U_CVALA3_temp <- NEONprocIS.stat::def.ucrt.dp01.cal.cnst(ucrtCoef = uncertaintyCoef, 
+          #                                                    NameCoef = "U_CVALA3", VarUcrt = 'temperature', TimeAgrBgn = dataWndwTime$startDateTime[1], 
+          #                                                    TimeAgrEnd = dataWndwTime$startDateTime[base::nrow(dataWndwTime)] + as.difftime(0.001, 
+          #                                                                                                                          units = "secs"), log = log)
+          # TemperatureExpUncert<-2*(tempStrErr^2+U_CVALA3_temp^2)^0.5
           temperature_ucrtExpn_L1<-NEONprocIS.stat::wrap.ucrt.dp01.cal.cnst(data=dataWndwTime,VarUcrt='temperature',ucrtCoef=uncertaintyCoef)
 
           #Pressure Uncertainty
@@ -690,13 +709,20 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
 
             # Compute uncertainty of the mean due to natural variation, represented by the standard error of the mean
             #log$debug(base::paste0('Computing L1 uncertainty due to natural variation (standard error)'))
-            dataComp<-dataWndwTime$conductivity
+            dataComp_cond<-dataWndwTime$conductivity
+            dataComp_temp<-dataWndwTime$temperature
             conductivity_ucrtComb_L1<-NA
-            numPts <- base::sum(x=!base::is.na(dataComp),na.rm=FALSE)
-            se <- stats::sd(dataComp,na.rm=TRUE)/base::sqrt(numPts)
+            numPts <- base::sum(x=!base::is.na(dataComp_cond),na.rm=FALSE)
+            se_cond <- stats::sd(dataComp_cond,na.rm=TRUE)/base::sqrt(numPts)
+            se_temp <- stats::sd(dataComp_temp,na.rm=TRUE)/base::sqrt(numPts)
             # Compute combined uncertainty for L1 specific conductivity
             for(i in 1:length(dataWndwTime$raw_conductivity)){
-              dataWndwTime$conductivity_ucrtComb_L1[i]<-((se^2)*(((1/(1+0.0191*(dataWndwTime$temperature[i]-25)))^2)*U_CVALA3_cond^2)+((((0.0191*dataWndwTime$raw_conductivity[i])/((1+0.0191*(dataWndwTime$temperature[i]-25))^2))^2)*U_CVALA3_temp^2))^0.5
+              denominator <- 1+0.0191*(dataWndwTime$temperature[i]-25)
+              #equation 20
+              dataWndwTime$conductivity_ucrtComb_L1[i]<-((se_cond^2)+
+                                                           (((1/denominator)^2)*(U_CVALA3_cond^2))+
+                                                           ((((0.0191*dataWndwTime$conductivity[i])/(denominator^2))^2)*(U_CVALA3_temp^2))
+                                                         )^0.5
             }
             # Compute expanded uncertainty for L1 specific conductivity
             conductivity_ucrtExpn_L1<-2*mean(dataWndwTime$conductivity_ucrtComb_L1,na.rm = TRUE)
