@@ -134,13 +134,13 @@ input:
     - pfs:
         name: QAQC_PATH
         repo: surfacewaterPhysical_analyze_pad_and_qaqc_plau
-        glob: /((2016|2017)/*/*)
+        glob: /(*/*/*)
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: UNCERTAINTY_PATH
         repo: surfacewaterPhysical_group_path
-        glob: /((2016|2017)/*/*)
+        glob: /(*/*/*)
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
