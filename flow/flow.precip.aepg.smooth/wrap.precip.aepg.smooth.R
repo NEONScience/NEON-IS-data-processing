@@ -202,6 +202,24 @@ wrap.precip.aepg.smooth <- function(DirIn,
   tempRegrKeep$slopeTemp2[tempRegrKeep$rsq2 < rsq_min] <- NA
   tempRegrKeep$slopeTemp3[tempRegrKeep$rsq3 < rsq_min] <- NA
   
+  # Also require that there be no change in depth between the first and last hours of the day 
+  # that is greater than the pre-defined envelope
+  dataHourly <- data %>%
+    dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = 'hour')) %>%
+    dplyr::group_by(startDateTime) %>%
+    dplyr::summarise(strainGauge1Depth = median(strainGauge1Depth, na.rm = T),
+                     strainGauge2Depth = median(strainGauge2Depth, na.rm = T),
+                     strainGauge3Depth = median(strainGauge3Depth, na.rm = T))
+  dataDaily <- dataHourly %>%
+    dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'day')) %>%
+    dplyr::group_by(startDateTime) %>%
+    dplyr::summarise(strainGauge1DepthChg = tail(strainGauge1Depth,1)-head(strainGauge1Depth,1),
+                     strainGauge2DepthChg = tail(strainGauge2Depth,1)-head(strainGauge2Depth,1),
+                     strainGauge3DepthChg = tail(strainGauge3Depth,1)-head(strainGauge3Depth,1))
+  tempRegrKeep$slopeTemp1[is.na(dataDaily$strainGauge1DepthChg) | abs(dataDaily$strainGauge1DepthChg) > Envelope] <- NA
+  tempRegrKeep$slopeTemp2[is.na(dataDaily$strainGauge2DepthChg) | abs(dataDaily$strainGauge2DepthChg) > Envelope] <- NA
+  tempRegrKeep$slopeTemp3[is.na(dataDaily$strainGauge3DepthChg) | abs(dataDaily$strainGauge3DepthChg) > Envelope] <- NA  
+  
   # Use the non-rain days identified by the sensor with the most accepted regressions
   numDaysNoRain <- colSums(!is.na(tempRegrKeep))[c('slopeTemp1','slopeTemp2','slopeTemp3')]
   if (any(numDaysNoRain > 0)){
