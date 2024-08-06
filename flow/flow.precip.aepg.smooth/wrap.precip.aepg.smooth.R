@@ -460,28 +460,28 @@ wrap.precip.aepg.smooth <- function(DirIn,
       }
         
     } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
-      # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
-      # back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
-      # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
-      bench <- raw_med_lastDay
-      strainGaugeDepthAgr$bench[i:currRow] <- bench
-      strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
-      
-      idxBgn <- i-1
-      keepGoing <- TRUE
-      while(keepGoing == TRUE) { 
-        
-        if(is.na(strainGaugeDepthAgr$precip[idxBgn]) || strainGaugeDepthAgr$precip[idxBgn] == FALSE){
-          # Stop if we are past the point where the precip started
-          keepGoing <- FALSE
-        } else if(strainGaugeDepthAgr$bench[idxBgn] > bench){
-          strainGaugeDepthAgr$bench[idxBgn] <- bench
-          strainGaugeDepthAgr$precipType[idxBgn] <- paste0(strainGaugeDepthAgr$precipType[idxBgn],"BackAdjToMedNextDay")
-          idxBgn <- idxBgn - 1
-        } else {
-          keepGoing <- FALSE
-        }
-      }    
+      # # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
+      # # back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
+      # # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
+      # bench <- raw_med_lastDay
+      # strainGaugeDepthAgr$bench[i:currRow] <- bench
+      # strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
+      # 
+      # idxBgn <- i-1
+      # keepGoing <- TRUE
+      # while(keepGoing == TRUE) { 
+      #   
+      #   if(is.na(strainGaugeDepthAgr$precip[idxBgn]) || strainGaugeDepthAgr$precip[idxBgn] == FALSE){
+      #     # Stop if we are past the point where the precip started
+      #     keepGoing <- FALSE
+      #   } else if(strainGaugeDepthAgr$bench[idxBgn] > bench){
+      #     strainGaugeDepthAgr$bench[idxBgn] <- bench
+      #     strainGaugeDepthAgr$precipType[idxBgn] <- paste0(strainGaugeDepthAgr$precipType[idxBgn],"BackAdjToMedNextDay")
+      #     idxBgn <- idxBgn - 1
+      #   } else {
+      #     keepGoing <- FALSE
+      #   }
+      # }    
     } else if ((bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
       # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
       bench <- raw_med_lastDay
