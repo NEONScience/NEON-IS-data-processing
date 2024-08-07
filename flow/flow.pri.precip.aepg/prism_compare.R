@@ -1,32 +1,17 @@
 ##some prism comps with output from smoothing function 
 # library(dplyr)
 
-site <- 'CPER'
-dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip/'
+site <- 'HARV'
+dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic/'
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='parquet',recursive=TRUE,full.names=TRUE)
+filesAll <- list.files(path=dirSmooth,pattern='parquet',recursive=TRUE,full.names=TRUE) # Keep this second one. Needed to consistent get all years.
 ptrnSite <- paste0('*/precip-weighing_',site,'*')
 filesSite <- filesAll[grepl(pattern=ptrnSite,filesAll)]
 
 VarKeep=c('startDateTime','endDateTime','precipBulk','precipType')
 strainGaugeDepthAgr <- NEONprocIS.base::def.read.parq.ds(fileIn = filesSite,Var=VarKeep,VarTime='startDateTime',Df=TRUE)
-
-
-# Regularize to ensure any errored days get NAs filled in
-# timeMeas <- as.POSIXlt(strainGaugeDepthAgr$startDateTime)
-# strainGaugeDepthAgrRglr <- eddy4R.base::def.rglr(timeMeas=timeMeas,
-#                                               dataMeas = strainGaugeDepthAgr[c('precipBulk','precipType')],
-#                                               BgnRglr=timeMeas[1],
-#                                               EndRglr=timeMeas[nrow(strainGaugeDepthAgr)],
-#                                               MethRglr = 'CybiEc',
-#                                               FreqRglr=1/(60*5),
-#                                               WndwRglr='Trlg',
-#                                               IdxWndw='IdxWndwMin',
-#                                               DropNotNumc = FALSE)
-# strainGaugeDepthAgrRglr <- cbind(strainGaugeDepthAgrRglr$timeRglr,strainGaugeDepthAgrRglr$dataRglr)
-# names(strainGaugeDepthAgrRglr) <- c('startDateTime','precipBulk','precipType')
-# strainGaugeDepthAgrRglr$startDateTime <- as.POSIXct(strainGaugeDepthAgrRglr$startDateTime)
 
 ### pull in prism data
 # site <- stringr::str_extract(DirIn, pattern= '[A-Z]{4}')
@@ -108,7 +93,7 @@ dfpr_week <- dfpr %>%
 dfpr_week_long <- data.table::melt(dfpr_week,id.vars=c('week'))
 
 #weekly plots
-if (TRUE) {
+if (FALSE) {
   p <- plotly::plot_ly(data=dfpr_week_long,x=~week,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
         plotly::layout(title = paste0('PRISM vs NEON at ', site,' - Weekly'))
   for (i in seq_len(length(setCal))){
@@ -143,7 +128,7 @@ dfpr_mnth <- dfpr %>%
 dfpr_mnth_long <- data.table::melt(dfpr_mnth,id.vars=c('mnth'))
 
 #monthly comps
-if (TRUE) {
+if (FALSE) {
   p <- plotly::plot_ly(data=dfpr_mnth_long,x=~mnth,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - monthly'))
   for (i in seq_len(length(setCal))){

@@ -10,9 +10,9 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/01/15/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/18/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/11/08/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
@@ -25,15 +25,18 @@ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing
 
 DirOutBase <- "/scratch/pfs/outCove"
 DirSubCopy <- NULL
-WndwAgr <- '5 min'
+WndwAgr <- '30 min'
 RangeSizeHour <- 24
-Envelope <- 2.3
-ThshCountHour <- 15
-Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
+Envelope <- 1.5
+ThshCountHour <- 6
+Quant <- 0.8 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
 ChangeFactor <- 1
 ChangeFactorEvap <- 0.5
 Recharge <- 20
+
+# Start logging
+log <- NEONprocIS.base::def.log.init(Lvl='debug')
 
 # Gather info about the input directory and create the output directory.
 InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)

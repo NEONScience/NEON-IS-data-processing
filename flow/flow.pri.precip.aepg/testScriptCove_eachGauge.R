@@ -2,17 +2,17 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/02/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/04/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/05/01/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/01/15/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/18/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/11/08/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
@@ -26,14 +26,17 @@ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing
 DirOutBase <- "/scratch/pfs/outCove"
 DirSubCopy <- NULL
 WndwAgr <- '5 min'
-RangeSizeHour <- 48
-Envelope <- 4.2
-ThshCountHour <- 6
-Quant <- 0.8 # Where is the benchmark set (quantile) within the envelope (diel variation)
+RangeSizeHour <- 24
+Envelope <-2.5
+ThshCountHour <- 15
+Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
 ChangeFactor <- 1
 ChangeFactorEvap <- 0.5
 Recharge <- 20
+
+# Start logging
+log <- NEONprocIS.base::def.log.init(Lvl='debug')
 
 # Gather info about the input directory and create the output directory.
 InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
@@ -79,23 +82,7 @@ if (FALSE){
   fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data)
   data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$strain_gauge3_temperature
 }
-if (FALSE){
-  fit1 <- lm(strainGauge1Depth ~ internal_temperature,data)
-  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$internal_temperature
-  fit2 <- lm(strainGauge2Depth ~ internal_temperature,data)
-  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$internal_temperature
-  fit3 <- lm(strainGauge3Depth ~ internal_temperature,data)
-  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$internal_temperature
-}
-# use set coefficients (CPER) from 2023-07-15 4-day pad (no rain)
-if (FALSE) {
-  fit1 <- list(coefficients=c(0,0.1289444))
-  data$strainGauge1Depth <- data$strainGauge1Depth - fit1$coefficients[2]*data$internal_temperature
-  fit2 <- list(coefficients=c(0,0.322979))
-  data$strainGauge2Depth <- data$strainGauge2Depth - fit2$coefficients[2]*data$internal_temperature
-  fit3 <- list(coefficients=c(0,0.01707193))
-  data$strainGauge3Depth <- data$strainGauge3Depth - fit3$coefficients[2]*data$internal_temperature
-}
+
 # Attempt a daily fit, testing for high enough R2 and positive slope
 # Note - could also apply this to the envelope, falling back on the pre-defined threshold if day(s) without rain cannot be determined
 setNoRain <- NULL
@@ -110,18 +97,20 @@ if (TRUE) {
                          rsq3=as.numeric(NA)
                          )
   for (idxDay in unique(timeDay)){
-    setDay <- timeDay == idxDay # row indices for this day
-    fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
-    fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
-    fit3 <- lm(strainGauge1Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
-    
-    idxOut <- tempRegr$day == idxDay
-    tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
-    tempRegr$rsq1[idxOut] <- summary(fit1)$r.squared
-    tempRegr$slopeTemp2[idxOut] <- fit2$coefficients[2]
-    tempRegr$rsq2[idxOut] <- summary(fit2)$r.squared
-    tempRegr$slopeTemp3[idxOut] <- fit3$coefficients[2]
-    tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
+    try({
+      setDay <- timeDay == idxDay # row indices for this day
+      fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
+      fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
+      fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
+      
+      idxOut <- tempRegr$day == idxDay
+      tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
+      tempRegr$rsq1[idxOut] <- summary(fit1)$r.squared
+      tempRegr$slopeTemp2[idxOut] <- fit2$coefficients[2]
+      tempRegr$rsq2[idxOut] <- summary(fit2)$r.squared
+      tempRegr$slopeTemp3[idxOut] <- fit3$coefficients[2]
+      tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
+    },silent=TRUE)
   }
   
   # Keep only the excellent regressions
@@ -131,18 +120,126 @@ if (TRUE) {
   tempRegrKeep$slopeTemp2[tempRegrKeep$rsq2 < rsq_min] <- NA
   tempRegrKeep$slopeTemp3[tempRegrKeep$rsq3 < rsq_min] <- NA
   
-  # Regressions for some sensors are better than others. 
+  # Also require that there be no change in depth between the start and end of the day that is 
+  # greater than the pre-defined envelope
+  dataHourly <- data %>%
+    dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = 'hour')) %>%
+    dplyr::group_by(startDateTime) %>%
+    dplyr::summarise(strainGauge1Depth = median(strainGauge1Depth, na.rm = T),
+                     strainGauge2Depth = median(strainGauge2Depth, na.rm = T),
+                     strainGauge3Depth = median(strainGauge3Depth, na.rm = T))
+  dataDaily <- dataHourly %>%
+    dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'day')) %>%
+    dplyr::group_by(startDateTime) %>%
+    dplyr::summarise(strainGauge1DepthChg = tail(strainGauge1Depth,1)-head(strainGauge1Depth,1),
+                     strainGauge2DepthChg = tail(strainGauge2Depth,1)-head(strainGauge2Depth,1),
+                     strainGauge3DepthChg = tail(strainGauge3Depth,1)-head(strainGauge3Depth,1))
+  tempRegrKeep$slopeTemp1[is.na(dataDaily$strainGauge1DepthChg) | abs(dataDaily$strainGauge1DepthChg) > Envelope] <- NA
+  tempRegrKeep$slopeTemp2[is.na(dataDaily$strainGauge2DepthChg) | abs(dataDaily$strainGauge2DepthChg) > Envelope] <- NA
+  tempRegrKeep$slopeTemp3[is.na(dataDaily$strainGauge3DepthChg) | abs(dataDaily$strainGauge3DepthChg) > Envelope] <- NA
+  
+  
+  
+  
+  # Regressions for some sensors are better than others.
+  # Also, the regression for some sensors is transient, applicable only within a day
   # Use the non-rain days identified by the sensor with the most accepted regressions
+  # and require at least 2 days without rain, optionally recomputing
+  # the temperature regression for the longest consecutive no-rain period
   numDaysNoRain <- colSums(!is.na(tempRegrKeep))[c('slopeTemp1','slopeTemp2','slopeTemp3')]
   if (any(numDaysNoRain > 0)){
+
     idxSensMax <- which.max(numDaysNoRain) # strain gauge to use
     setNoRain <- !is.na(tempRegrKeep[[paste0('slopeTemp',idxSensMax)]]) # no-rain days
-    
+
     # Average the slopes for the no-rain days for each sensor
     # tempRegrNoRain <- colMeans(tempRegr[setNoRain,-1])
     
     # Average the slopes that meet the threshold R-squared
     tempRegrNoRain <- colMeans(tempRegrKeep[,-1],na.rm=TRUE)
+    
+    
+    
+    
+    # Find the longest consecutive no-rain period and recompute the regression.
+    if (FALSE) {
+      
+      NoRainConsec <- data.frame(dayBgn=seq.POSIXt(from=tempRegr$day[1],to=tail(tempRegr$day,1),by='day'),daysNoRain=0)
+      numDay <- length(NoRainConsec$dayBgn)
+      for (idxDay in seq_len(numDay)){
+  
+        # Move to next day if it rained
+        if(!(NoRainConsec$dayBgn[idxDay] %in% tempRegrKeep$day[setNoRain])){
+          next
+        } else {
+          # Add the rain for today
+          NoRainConsec$daysNoRain[idxDay] <- 1
+        }
+  
+  
+        idxNext <- idxDay + 1
+        while(idxNext <= numDay){
+  
+          # If it didn't rain, add to the tally and continue
+          if(NoRainConsec$dayBgn[idxNext] %in% tempRegrKeep$day[setNoRain]){
+  
+            NoRainConsec$daysNoRain[idxDay] <- NoRainConsec$daysNoRain[idxDay] + 1
+            idxNext <- idxNext + 1
+            next
+  
+          } else {
+  
+          # If it did rain, exit and restart
+            break
+          }
+  
+        }
+      }
+  
+      # Choose the longest consecutive no-rain period to compute the regression
+      idxBgnConsec <- which.max(NoRainConsec$daysNoRain)
+      daysNoRainConsec <- NoRainConsec$daysNoRain[idxBgnConsec]
+  
+      # If the longest consecutive no-rain period is greater than 1 day, do the regression
+      if (NoRainConsec$daysNoRain[idxBgnConsec] > 1){
+        setRegr <- timeDay %in% NoRainConsec$dayBgn[idxBgnConsec:(idxBgnConsec+daysNoRainConsec-1)] # row indices for the consecutive no-rain period
+  
+        fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setRegr,],na.action="na.omit")
+        fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setRegr,],na.action="na.omit")
+        fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data[setRegr,],na.action="na.omit")
+  
+  
+        tempRegrNoRain <- data.frame(
+          slopeTemp1 = fit1$coefficients[2],
+          rsq1 = summary(fit1)$r.squared,
+          slopeTemp2 = fit2$coefficients[2],
+          rsq2 = summary(fit2)$r.squared,
+          slopeTemp3 = fit3$coefficients[2],
+          rsq3 = summary(fit3)$r.squared
+        )
+  
+  
+        # Check for adequate R-squared
+        rsq_min_consec <- 0.5 # minimum R-squared to accept regression
+        tempRegrNoRain$slopeTemp1[tempRegrNoRain$rsq1 < rsq_min_consec] <- NA
+        tempRegrNoRain$slopeTemp2[tempRegrNoRain$rsq2 < rsq_min_consec] <- NA
+        tempRegrNoRain$slopeTemp3[tempRegrNoRain$rsq3 < rsq_min_consec] <- NA
+  
+  
+        # Make into named vector
+        tempRegrNoRain <- unlist(tempRegrNoRain)
+  
+      } else {
+        tempRegrNoRain$slopeTemp1 <- NA
+        tempRegrNoRain$slopeTemp2 <- NA
+        tempRegrNoRain$slopeTemp3 <- NA
+        tempRegrNoRain <- unlist(tempRegrNoRain)
+        
+      }
+    }
+    
+    
+    
     
     # Remove the temp relationship
     if(!is.na(tempRegrNoRain["slopeTemp1"])){
@@ -375,30 +472,30 @@ for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','st
         precipType <- 'ThshCount'
       }
     } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
-      # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
-      # back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
-      # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
-      #stop()
-      bench <- raw_med_lastDay
-      strainGaugeDepthAgr$bench[i:currRow] <- bench
-      strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
-      
-      idxBgn <- i-1
-      keepGoing <- TRUE
-      while(keepGoing == TRUE) {
-        #print(idxBgn)
-        if(is.na(strainGaugeDepthAgr$precip[idxBgn]) || strainGaugeDepthAgr$precip[idxBgn] == FALSE){
-          # Stop if we are past the point where the precip started
-          keepGoing <- FALSE
-        } else if(strainGaugeDepthAgr$bench[idxBgn] > bench){
-          strainGaugeDepthAgr$bench[idxBgn] <- bench
-          strainGaugeDepthAgr$precipType[idxBgn] <- paste0(strainGaugeDepthAgr$precipType[idxBgn],"BackAdjToMedNextDay")
-          idxBgn <- idxBgn - 1
-        } else {
-          keepGoing <- FALSE
-        }
-      }    
-      
+      # # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
+      # # back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
+      # # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
+      # #stop()
+      # bench <- raw_med_lastDay
+      # strainGaugeDepthAgr$bench[i:currRow] <- bench
+      # strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
+      # 
+      # idxBgn <- i-1
+      # keepGoing <- TRUE
+      # while(keepGoing == TRUE) {
+      #   #print(idxBgn)
+      #   if(is.na(strainGaugeDepthAgr$precip[idxBgn]) || strainGaugeDepthAgr$precip[idxBgn] == FALSE){
+      #     # Stop if we are past the point where the precip started
+      #     keepGoing <- FALSE
+      #   } else if(strainGaugeDepthAgr$bench[idxBgn] > bench){
+      #     strainGaugeDepthAgr$bench[idxBgn] <- bench
+      #     strainGaugeDepthAgr$precipType[idxBgn] <- paste0(strainGaugeDepthAgr$precipType[idxBgn],"BackAdjToMedNextDay")
+      #     idxBgn <- idxBgn - 1
+      #   } else {
+      #     keepGoing <- FALSE
+      #   }
+      # }    
+      # 
     } else if ((bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
       # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
       bench <- raw_med_lastDay
