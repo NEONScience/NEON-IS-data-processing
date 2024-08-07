@@ -169,7 +169,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
     dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
     dplyr::group_by(startDateTime,endDateTime) %>%
-    dplyr::summarise(strainGaugeDepth = mean(total_precip_depth, na.rm = T),
+    dplyr::summarise(strainGaugeDepth = mean(total_precipitation_depth, na.rm = T),
                      strainGauge1DepthMean = mean(strainGauge1Depth, na.rm = T),
                      strainGauge2DepthMean = mean(strainGauge2Depth, na.rm = T),
                      strainGauge3DepthMean = mean(strainGauge3Depth, na.rm = T))
