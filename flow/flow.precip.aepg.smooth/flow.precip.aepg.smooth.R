@@ -109,7 +109,7 @@ library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
-source("./wrap.precip.aepg.smooth.R")
+source("./wrap.precip.aepg.smooth_Belfort_depth.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
