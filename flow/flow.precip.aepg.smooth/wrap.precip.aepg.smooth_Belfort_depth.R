@@ -164,6 +164,10 @@ wrap.precip.aepg.smooth <- function(DirIn,
   # Aggregate depth streams into a single depth. 
   data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F))  
   
+  # Recompute total precip depth from Belfort 
+  data$total_precipitation_depth <- data$total_gauge_weight*50
+
+  
   # Do time averaging
   strainGaugeDepthAgr <- data %>%
     dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
