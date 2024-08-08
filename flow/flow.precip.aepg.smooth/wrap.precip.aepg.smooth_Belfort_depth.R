@@ -193,7 +193,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'day')) %>%
     dplyr::group_by(startDateTime) %>%
     dplyr::summarise(strainGaugeDepthChg = tail(strainGaugeDepth,1)-head(strainGaugeDepth,1))
-  setNoRain <- dataDaily$strainGaugeDepthChg < 0.25*Envelope
+  setNoRain <- (dataDaily$strainGaugeDepthChg < 0.25*Envelope) & (dataDaily$strainGaugeDepthChg > -1*Envelope)
   setNoRain[is.na(setNoRain)] <- FALSE
 
   # Get the envelope if we have determined days without rain
@@ -463,11 +463,18 @@ wrap.precip.aepg.smooth <- function(DirIn,
   # Grab the data file name for the center day
   nameFileOut <- fileData[grepl(base::format(InfoDirIn$time,'%Y-%m-%d'),fileData)][1]
   
-
+  
+  
+  
+  
+  # Implement range check (turn this into a flag)
+  setBad <- strainGaugeDepthAgr$precipBulk > 50
+  strainGaugeDepthAgr$precipBulk[setBad] <- NA
+  strainGaugeDepthAgr$precipType[setBad] <- "Removed - Out of range"
 
   
-
-
+  
+  
   
   # # Take stock of our flags files. 
   # fileFlags<- base::list.files(dirInFlags,full.names=FALSE)
