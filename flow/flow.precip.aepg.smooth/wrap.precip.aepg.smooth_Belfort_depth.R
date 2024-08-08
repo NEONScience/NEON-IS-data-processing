@@ -190,6 +190,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     dplyr::group_by(startDateTime) %>%
     dplyr::summarise(strainGaugeDepthChg = tail(strainGaugeDepth,1)-head(strainGaugeDepth,1))
   setNoRain <- dataDaily$strainGaugeDepthChg < 0.25*Envelope
+  setNoRain[is.na(setNoRain)] <- FALSE
 
   # Get the envelope if we have determined days without rain
   if(any(setNoRain)){
