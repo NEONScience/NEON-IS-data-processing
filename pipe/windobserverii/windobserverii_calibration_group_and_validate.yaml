@@ -110,7 +110,6 @@ input:
       name: FILE_SCHEMA_FLAGS
       repo: windobserverii_avro_schemas
       glob: /windobserverii/flags_calibration_windobserverii.avsc
-  # Outer join all repos so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
         name: CALIBRATION_PATH

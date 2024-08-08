@@ -49,7 +49,6 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=$FILE_SCHEMA_FLAGS \
       "TermQf=u_axis_wind_speed|v_axis_wind_speed"
       
@@ -109,18 +108,9 @@ input:
       repo: windobserverii_avro_schemas
       glob: /windobserverii/windobserverii.avsc
   - pfs:
-      name: FILE_SCHEMA_DATA
-      repo: windobserverii_avro_schemas
-      glob: /windobserverii/windobserverii_calibrated.avsc
-  - pfs:
       name: FILE_SCHEMA_FLAGS
       repo: windobserverii_avro_schemas
       glob: /windobserverii/flags_calibration_windobserverii.avsc
-  - pfs:
-      name: FILE_UNCERTAINTY_FDAS
-      repo: windobserverii_uncertainty_fdas
-      glob: /fdas_calibration_uncertainty_general.json
-  # Outer join all days so that varying sensors between kafka and trino loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
         name: CALIBRATION_PATH
