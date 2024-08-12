@@ -169,8 +169,8 @@
 #'     distinguish between average and instantaneous uncertainty outputs
 #'   Nora Catolico (2024-03-05)
 #'     updated to include non-systematic uncertainty output for discharge
-#'   Nora Catolico (2024-08-01)
-#'     minor update to uncertainty calculation for specific conductivity
+#'   Nora Catolico (2024-08-12)
+#'     update to uncertainty calculation for specific conductivity
 ##############################################################################################
 wrap.troll.uncertainty <- function(DirIn=NULL,
                                    DirInTroll=NULL,
@@ -552,9 +552,13 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
         U_CVALA1_cond<-uncertaintyData$rawConductivity_ucrtMeas[i]
         U_CVALA1_temp<-uncertaintyData$temperature_ucrtMeas[i]
         denominator <- 1+0.0191*(trollData$temperature[i]-25)
+        uA1C2<-(U_CVALA1_cond*trollData$raw_conductivity[i])^2
+        uA1T2<-U_CVALA1_temp^2
         #uncertainty for individual specific conductivity measurements eq. 11
-        uncertaintyData$conductivity_ucrtMeas[i]<-((((1/denominator)^2)*(U_CVALA1_cond^2))+
-                                                     ((((0.0191*trollData$raw_conductivity[i])/(denominator^2))^2)*(U_CVALA1_temp^2)))^0.5
+        uncertaintyData$conductivity_ucrtMeas[i]<-(
+                                                    ((1/denominator)^2)*(uA1C2)+
+                                                    ((((0.0191*trollData$raw_conductivity[i])/(denominator^2))^2)*uA1T2)
+                                                  )^0.5
       }
       uncertaintyData$conductivity_ucrtComb<-uncertaintyData$conductivity_ucrtMeas
       uncertaintyData$conductivity_ucrtExpn<-2*uncertaintyData$conductivity_ucrtMeas
@@ -718,10 +722,12 @@ wrap.troll.uncertainty <- function(DirIn=NULL,
             # Compute combined uncertainty for L1 specific conductivity
             for(i in 1:length(dataWndwTime$raw_conductivity)){
               denominator <- 1+0.0191*(dataWndwTime$temperature[i]-25)
+              uA3C2<-(U_CVALA3_cond*trollData$raw_conductivity[i])^2
+              uA3T2<-U_CVALA3_temp^2
               #equation 20
               dataWndwTime$conductivity_ucrtComb_L1[i]<-((se_cond^2)+
-                                                           (((1/denominator)^2)*(U_CVALA3_cond^2))+
-                                                           ((((0.0191*dataWndwTime$conductivity[i])/(denominator^2))^2)*(U_CVALA3_temp^2))
+                                                           (((1/denominator)^2)*uA3C2)+
+                                                           ((((0.0191*dataWndwTime$raw_conductivity[i])/(denominator^2))^2)*uA3T2)
                                                          )^0.5
             }
             # Compute expanded uncertainty for L1 specific conductivity
