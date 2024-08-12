@@ -169,7 +169,7 @@
 #'     distinguish between average and instantaneous uncertainty outputs
 #'   Nora Catolico (2024-03-05)
 #'     updated to include non-systematic uncertainty output for discharge
-#'   Nora Catolico (2024-08-12)
+#'   Nora Catolico (2024-08-01)
 #'     update to uncertainty calculation for specific conductivity
 ##############################################################################################
 wrap.troll.uncertainty <- function(DirIn=NULL,
