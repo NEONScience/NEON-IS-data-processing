@@ -1,8 +1,8 @@
 ##some prism comps with output from smoothing function 
 # library(dplyr)
 
-site <- 'HARV'
-dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic/'
+site <- 'SCBI'
+dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_TPD_TGW_fix/'
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='parquet',recursive=TRUE,full.names=TRUE)
@@ -168,7 +168,8 @@ dfpr_year_long <- data.table::melt(dfpr_year,id.vars=c('year'))
 if (TRUE) {
   plotly::plot_ly(data=dfpr_year_long,x=~year,y=~value,color=~variable, type = 'bar', mode = 'markers') %>%
     plotly::layout(title = paste0('PRISM vs NEON at ', site,' - yearly'))
-  plotly::plot_ly(data=dfpr_year,x=~prism,y=~neon, type = 'scatter', mode = 'markers') %>%
+  
+  plotly::plot_ly(data=dfpr_year,x=~prism,y=~neon, type = 'scatter', mode = 'markers', hoverinfo= 'text', text = format(dfpr_year$year,'%Y')) %>%
     plotly::layout(title = paste0('PRISM vs NEON at ', site,' - yearly')) %>%
     plotly::layout(shapes = list(list(
       type = "line", 
