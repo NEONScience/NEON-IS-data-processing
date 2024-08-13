@@ -28,20 +28,17 @@ input:
       repo: windobserverii_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 5
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 1G
+  memory: 200M
   cpu: 0.8
 resource_limits:
-  memory: 2G
+  memory: 600M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 5G
+  memory: 3G
   cpu: 1
-sidecar_resource_limits:
-  memory: 8Gi
-  cpu: 1.2
 datum_set_spec:
   number: 5
 scheduling_spec:
