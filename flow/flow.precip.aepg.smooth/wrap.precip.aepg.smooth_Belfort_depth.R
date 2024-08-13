@@ -323,6 +323,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     # Compute median over last range size (i.e. 1 day)
     # !!! Write a note about what we're going to use this for. !!!
     raw_med_lastDay <- quantile(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],Quant,na.rm=TRUE)
+    raw_min_lastDay <- min(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],na.rm=TRUE)
     
     
     # if precip total increased check to if any precip triggers are reached
@@ -411,7 +412,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
       }
     } else if ((bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
       # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
-      bench <- raw_med_lastDay
+      # bench <- raw_med_lastDay
+      bench <- raw_min_lastDay
       precipType <- 'EvapAdj'
       
     } else if ((bench - raw) > Recharge){
