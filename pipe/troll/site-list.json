@@ -4,7 +4,8 @@
 	"kafka_start_date" : "2024-03-01"
 	},
 	{
-	"site" : "BARC"
+	"site" : "BARC",
+	"kafka_start_date" : "2024-08-11"
 	},
 	{
 	"site" : "BIGC",
@@ -38,7 +39,8 @@
 	"kafka_start_date" : "2024-02-09"
 	},
 	{
-	"site" : "FLNT"
+	"site" : "FLNT",
+	"kafka_start_date" : "2024-08-11"
 	},
 	{
 	"site" : "GUIL",
@@ -61,7 +63,8 @@
 	"kafka_start_date" : "2024-01-25"
 	},
 	{
-	"site" : "LIRO"
+	"site" : "LIRO",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
 	"site" : "MART",
@@ -92,17 +95,20 @@
 	"kafka_start_date" : "2024-02-09"
 	},
 	{
-	"site" : "PRLA"
+	"site" : "PRLA",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
-	"site" : "PRPO"
+	"site" : "PRPO",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
 	"site" : "REDB",
 	"kafka_start_date" : "2024-02-06"
 	},
 	{
-	"site" : "SUGG"
+	"site" : "SUGG",
+	"kafka_start_date" : "2024-08-11"
 	},
 	{
 	"site" : "SYCA",
@@ -113,10 +119,12 @@
 	"kafka_start_date" : "2024-03-17"
 	},
 	{
-	"site" : "TOMB"
+	"site" : "TOMB",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
-	"site" : "TOOK"
+	"site" : "TOOK",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
 	"site" : "WALK",
