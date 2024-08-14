@@ -13,6 +13,7 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=namedLocation
+      "Prop=HOR|VER|name|description|site|Data Rate|active_periods"
   image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:aa651ed4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -29,11 +30,19 @@ input:
       repo: windobserverii_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 4
-resource_requests:
-  memory: 300M
-  cpu: 1.2
+  constant: 2
 autoscaling: true
+resource_requests:
+  memory: 210M
+  cpu: 1.2
+resource_limits:
+  memory: 500M
+  cpu: 1.6
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -51,14 +60,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"100M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.1"
-    }
-  ]

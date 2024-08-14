@@ -1,104 +1,137 @@
 [
 	{
-	"site" : "ARIK"
+	"site" : "ARIK",
+	"kafka_start_date" : "2024-03-01"
 	},
 	{
-	"site" : "BARC"
+	"site" : "BARC",
+	"kafka_start_date" : "2024-08-11"
 	},
 	{
-	"site" : "BIGC"
+	"site" : "BIGC",
+	"kafka_start_date" : "2024-06-01"
 	},
 	{
-	"site" : "BLDE"
+	"site" : "BLDE",
+	"kafka_start_date" : "2024-05-08"
 	},
 	{
-	"site" : "BLUE"
+	"site" : "BLUE",
+	"kafka_start_date" : "2024-02-09"
 	},
 	{
 	"site" : "BLWA"
 	},
 	{
-	"site" : "CARI"
+	"site" : "CARI",
+	"kafka_start_date" : "2024-03-01"
 	},
 	{
-	"site" : "COMO"
+	"site" : "COMO",
+	"kafka_start_date" : "2024-02-09"
 	},
 	{
-	"site" : "CRAM"
+	"site" : "CRAM",
+	"kafka_start_date" : "2024-07-20"
 	},
 	{
-	"site" : "CUPE"
+	"site" : "CUPE",
+	"kafka_start_date" : "2024-02-09"
 	},
 	{
-	"site" : "FLNT"
+	"site" : "FLNT",
+	"kafka_start_date" : "2024-08-11"
 	},
 	{
-	"site" : "GUIL"
+	"site" : "GUIL",
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
-	"site" : "HOPB"
+	"site" : "HOPB",
+	"kafka_start_date" : "2024-01-17"
 	},
 	{
-	"site" : "KING"
+	"site" : "KING",
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
-	"site" : "LECO"
+	"site" : "LECO",
+	"kafka_start_date" : "2024-02-09"
 	},
 	{
-	"site" : "LEWI"
+	"site" : "LEWI",
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
-	"site" : "LIRO"
+	"site" : "LIRO",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
-	"site" : "MART"
+	"site" : "MART",
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
-	"site" : "MAYF"
+	"site" : "MAYF",
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
-	"site" : "MCDI"
+	"site" : "MCDI",
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
-	"site" : "MCRA"
+	"site" : "MCRA",
+	"kafka_start_date" : "2024-02-05"
 	},
 	{
-	"site" : "OKSR"
+	"site" : "OKSR",
+	"kafka_start_date" : "2024-04-06"
 	},
 	{
-	"site" : "POSE"
+	"site" : "POSE",
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
-	"site" : "PRIN"
+	"site" : "PRIN",
+	"kafka_start_date" : "2024-02-09"
 	},
 	{
-	"site" : "PRLA"
+	"site" : "PRLA",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
-	"site" : "PRPO"
+	"site" : "PRPO",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
-	"site" : "REDB"
+	"site" : "REDB",
+	"kafka_start_date" : "2024-02-06"
 	},
 	{
-	"site" : "SUGG"
+	"site" : "SUGG",
+	"kafka_start_date" : "2024-08-11"
 	},
 	{
-	"site" : "SYCA"
+	"site" : "SYCA",
+	"kafka_start_date" : "2024-04-11"
 	},
 	{
-	"site" : "TECR"
+	"site" : "TECR",
+	"kafka_start_date" : "2024-03-17"
 	},
 	{
-	"site" : "TOMB"
+	"site" : "TOMB",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
-	"site" : "TOOK"
+	"site" : "TOOK",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
-	"site" : "WALK"
+	"site" : "WALK",
+	"kafka_start_date" : "2024-02-09"
 	},
 	{
-	"site" : "WLOU"
+	"site" : "WLOU",
+	"kafka_start_date" : "2024-02-06"
 	}
 ]
