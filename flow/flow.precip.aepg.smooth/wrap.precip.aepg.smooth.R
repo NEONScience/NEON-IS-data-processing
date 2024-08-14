@@ -165,87 +165,91 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
   
   # -------------- BEGIN EXPERIMENTAL ---------------
-  
-  # Attempt a daily fit, testing for high enough R2 and positive slope
-  # Note - could also apply this to the envelope, falling back on the pre-defined threshold if day(s) without rain cannot be determined
-  setNoRain <- NULL
-  timeDay <- lubridate::floor_date(as.POSIXct(data$readout_time, tz = 'UTC'),unit='day')
-  tempRegr <- data.frame(day=unique(timeDay),
-                         slopeTemp1=as.numeric(NA),
-                         rsq1=as.numeric(NA),
-                         slopeTemp2=as.numeric(NA),
-                         rsq2=as.numeric(NA),
-                         slopeTemp3=as.numeric(NA),
-                         rsq3=as.numeric(NA)
-  )
-  for (idxDay in unique(timeDay)){
-    try({
-      setDay <- timeDay == idxDay # row indices for this day
-      fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
-      fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
-      fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
+  if(FALSE){
+    
+    # Attempt a daily fit, testing for high enough R2 and positive slope
+    # Note - could also apply this to the envelope, falling back on the pre-defined threshold if day(s) without rain cannot be determined
+    setNoRain <- NULL
+    timeDay <- lubridate::floor_date(as.POSIXct(data$readout_time, tz = 'UTC'),unit='day')
+    tempRegr <- data.frame(day=unique(timeDay),
+                           slopeTemp1=as.numeric(NA),
+                           rsq1=as.numeric(NA),
+                           slopeTemp2=as.numeric(NA),
+                           rsq2=as.numeric(NA),
+                           slopeTemp3=as.numeric(NA),
+                           rsq3=as.numeric(NA)
+    )
+    for (idxDay in unique(timeDay)){
+      try({
+        setDay <- timeDay == idxDay # row indices for this day
+        fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
+        fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
+        fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
+        
+        idxOut <- tempRegr$day == idxDay
+        tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
+        tempRegr$rsq1[idxOut] <- summary(fit1)$r.squared
+        tempRegr$slopeTemp2[idxOut] <- fit2$coefficients[2]
+        tempRegr$rsq2[idxOut] <- summary(fit2)$r.squared
+        tempRegr$slopeTemp3[idxOut] <- fit3$coefficients[2]
+        tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
+      })
+    }
+    
+    # Keep only the excellent regressions
+    rsq_min <- 0.9 # minimum R-squared to accept regression
+    tempRegrKeep <- tempRegr
+    tempRegrKeep$slopeTemp1[tempRegrKeep$rsq1 < rsq_min] <- NA
+    tempRegrKeep$slopeTemp2[tempRegrKeep$rsq2 < rsq_min] <- NA
+    tempRegrKeep$slopeTemp3[tempRegrKeep$rsq3 < rsq_min] <- NA
+    
+    # Also require that there be no change in depth between the first and last hours of the day 
+    # that is greater than the pre-defined envelope
+    dataHourly <- data %>%
+      dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = 'hour')) %>%
+      dplyr::group_by(startDateTime) %>%
+      dplyr::summarise(strainGauge1Depth = median(strainGauge1Depth, na.rm = T),
+                       strainGauge2Depth = median(strainGauge2Depth, na.rm = T),
+                       strainGauge3Depth = median(strainGauge3Depth, na.rm = T))
+    dataDaily <- dataHourly %>%
+      dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'day')) %>%
+      dplyr::group_by(startDateTime) %>%
+      dplyr::summarise(strainGauge1DepthChg = tail(strainGauge1Depth,1)-head(strainGauge1Depth,1),
+                       strainGauge2DepthChg = tail(strainGauge2Depth,1)-head(strainGauge2Depth,1),
+                       strainGauge3DepthChg = tail(strainGauge3Depth,1)-head(strainGauge3Depth,1))
+    tempRegrKeep$slopeTemp1[is.na(dataDaily$strainGauge1DepthChg) | abs(dataDaily$strainGauge1DepthChg) > Envelope] <- NA
+    tempRegrKeep$slopeTemp2[is.na(dataDaily$strainGauge2DepthChg) | abs(dataDaily$strainGauge2DepthChg) > Envelope] <- NA
+    tempRegrKeep$slopeTemp3[is.na(dataDaily$strainGauge3DepthChg) | abs(dataDaily$strainGauge3DepthChg) > Envelope] <- NA  
+    
+    # Use the non-rain days identified by the sensor with the most accepted regressions
+    # Remove the temperature relationship
+    numDaysNoRain <- colSums(!is.na(tempRegrKeep))[c('slopeTemp1','slopeTemp2','slopeTemp3')]
+    if (any(numDaysNoRain > 0)){
       
-      idxOut <- tempRegr$day == idxDay
-      tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
-      tempRegr$rsq1[idxOut] <- summary(fit1)$r.squared
-      tempRegr$slopeTemp2[idxOut] <- fit2$coefficients[2]
-      tempRegr$rsq2[idxOut] <- summary(fit2)$r.squared
-      tempRegr$slopeTemp3[idxOut] <- fit3$coefficients[2]
-      tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
-    })
-  }
-  
-  # Keep only the excellent regressions
-  rsq_min <- 0.9 # minimum R-squared to accept regression
-  tempRegrKeep <- tempRegr
-  tempRegrKeep$slopeTemp1[tempRegrKeep$rsq1 < rsq_min] <- NA
-  tempRegrKeep$slopeTemp2[tempRegrKeep$rsq2 < rsq_min] <- NA
-  tempRegrKeep$slopeTemp3[tempRegrKeep$rsq3 < rsq_min] <- NA
-  
-  # Also require that there be no change in depth between the first and last hours of the day 
-  # that is greater than the pre-defined envelope
-  dataHourly <- data %>%
-    dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = 'hour')) %>%
-    dplyr::group_by(startDateTime) %>%
-    dplyr::summarise(strainGauge1Depth = median(strainGauge1Depth, na.rm = T),
-                     strainGauge2Depth = median(strainGauge2Depth, na.rm = T),
-                     strainGauge3Depth = median(strainGauge3Depth, na.rm = T))
-  dataDaily <- dataHourly %>%
-    dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'day')) %>%
-    dplyr::group_by(startDateTime) %>%
-    dplyr::summarise(strainGauge1DepthChg = tail(strainGauge1Depth,1)-head(strainGauge1Depth,1),
-                     strainGauge2DepthChg = tail(strainGauge2Depth,1)-head(strainGauge2Depth,1),
-                     strainGauge3DepthChg = tail(strainGauge3Depth,1)-head(strainGauge3Depth,1))
-  tempRegrKeep$slopeTemp1[is.na(dataDaily$strainGauge1DepthChg) | abs(dataDaily$strainGauge1DepthChg) > Envelope] <- NA
-  tempRegrKeep$slopeTemp2[is.na(dataDaily$strainGauge2DepthChg) | abs(dataDaily$strainGauge2DepthChg) > Envelope] <- NA
-  tempRegrKeep$slopeTemp3[is.na(dataDaily$strainGauge3DepthChg) | abs(dataDaily$strainGauge3DepthChg) > Envelope] <- NA  
-  
-  # Use the non-rain days identified by the sensor with the most accepted regressions
-  numDaysNoRain <- colSums(!is.na(tempRegrKeep))[c('slopeTemp1','slopeTemp2','slopeTemp3')]
-  if (any(numDaysNoRain > 0)){
-    
-    idxSensMax <- which.max(numDaysNoRain) # strain gauge to use
-    setNoRain <- !is.na(tempRegrKeep[[paste0('slopeTemp',idxSensMax)]]) # no-rain days
-    
-    # Average the slopes for the no-rain days for each sensor
-    # tempRegrNoRain <- colMeans(tempRegr[setNoRain,-1])
-    
-    # Average the slopes that meet the threshold R-squared
-    tempRegrNoRain <- colMeans(tempRegrKeep[,-1],na.rm=TRUE)
-    
-    # Remove the temp relationship
-    if(!is.na(tempRegrNoRain["slopeTemp1"])){
-      data$strainGauge1Depth <- data$strainGauge1Depth - tempRegrNoRain["slopeTemp1"]*data$strain_gauge1_temperature
-    }
-    if(!is.na(tempRegrNoRain["slopeTemp2"])){
-      data$strainGauge2Depth <- data$strainGauge2Depth - tempRegrNoRain["slopeTemp2"]*data$strain_gauge2_temperature
-    }
-    if(!is.na(tempRegrNoRain["slopeTemp3"])){
-      data$strainGauge3Depth <- data$strainGauge3Depth - tempRegrNoRain["slopeTemp3"]*data$strain_gauge3_temperature
+      idxSensMax <- which.max(numDaysNoRain) # strain gauge to use
+      setNoRain <- !is.na(tempRegrKeep[[paste0('slopeTemp',idxSensMax)]]) # no-rain days
+      
+      # Average the slopes for the no-rain days for each sensor
+      # tempRegrNoRain <- colMeans(tempRegr[setNoRain,-1])
+      
+      # Average the slopes that meet the threshold R-squared
+      tempRegrNoRain <- colMeans(tempRegrKeep[,-1],na.rm=TRUE)
+      
+      # Remove the temp relationship
+      if(!is.na(tempRegrNoRain["slopeTemp1"])){
+        data$strainGauge1Depth <- data$strainGauge1Depth - tempRegrNoRain["slopeTemp1"]*data$strain_gauge1_temperature
+      }
+      if(!is.na(tempRegrNoRain["slopeTemp2"])){
+        data$strainGauge2Depth <- data$strainGauge2Depth - tempRegrNoRain["slopeTemp2"]*data$strain_gauge2_temperature
+      }
+      if(!is.na(tempRegrNoRain["slopeTemp3"])){
+        data$strainGauge3Depth <- data$strainGauge3Depth - tempRegrNoRain["slopeTemp3"]*data$strain_gauge3_temperature
+      }
+      
     }
     
   }
-    
+  
   # -------------- END EXPERIMENTAL ---------------
   
 
@@ -269,9 +273,21 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
   # -------------- BEGIN EXPERIMENTAL ---------------
   
-  # Get the envelope if we have determined days without rain
-  if(!is.null(setNoRain)){
-    dayNoRain <- tempRegr$day[setNoRain]
+  # Use the average strain gauge depth to recompute days without rain
+  dataHourly <- strainGaugeDepthAgr %>%
+    dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'hour')) %>%
+    dplyr::group_by(startDateTime) %>%
+    dplyr::summarise(strainGaugeDepth = median(strainGaugeDepth, na.rm = T))
+  dataDaily <- dataHourly %>%
+    dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'day')) %>%
+    dplyr::group_by(startDateTime) %>%
+    dplyr::summarise(strainGaugeDepthChg = tail(strainGaugeDepth,1)-head(strainGaugeDepth,1))
+  setNoRain <- (dataDaily$strainGaugeDepthChg < 0.25*Envelope) & (dataDaily$strainGaugeDepthChg > -1*Envelope)
+  setNoRain[is.na(setNoRain)] <- FALSE
+  
+  # Recompute the envelope if we have determined days without rain
+  if(any(setNoRain)){
+    dayNoRain <- dataDaily$startDateTime[setNoRain]
     timeDay <- lubridate::floor_date(strainGaugeDepthAgr$startDateTime,unit='day')
     
     envelopeComp <- data.frame(day=unique(timeDay),envelope=as.numeric(NA))
@@ -396,6 +412,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     # Compute median over last range size (i.e. 1 day)
     # !!! Write a note about what we're going to use this for. !!!
     raw_med_lastDay <- quantile(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],Quant,na.rm=TRUE)
+    raw_min_lastDay <- min(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],na.rm=TRUE)
     
     
     # if precip total increased check to if any precip triggers are reached
@@ -460,31 +477,32 @@ wrap.precip.aepg.smooth <- function(DirIn,
       }
         
     } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
-      # # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
-      # # back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
-      # # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
-      # bench <- raw_med_lastDay
-      # strainGaugeDepthAgr$bench[i:currRow] <- bench
-      # strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
-      # 
-      # idxBgn <- i-1
-      # keepGoing <- TRUE
-      # while(keepGoing == TRUE) { 
-      #   
-      #   if(is.na(strainGaugeDepthAgr$precip[idxBgn]) || strainGaugeDepthAgr$precip[idxBgn] == FALSE){
-      #     # Stop if we are past the point where the precip started
-      #     keepGoing <- FALSE
-      #   } else if(strainGaugeDepthAgr$bench[idxBgn] > bench){
-      #     strainGaugeDepthAgr$bench[idxBgn] <- bench
-      #     strainGaugeDepthAgr$precipType[idxBgn] <- paste0(strainGaugeDepthAgr$precipType[idxBgn],"BackAdjToMedNextDay")
-      #     idxBgn <- idxBgn - 1
-      #   } else {
-      #     keepGoing <- FALSE
-      #   }
-      # }    
+      # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
+      # back-adjust the benchmark to the Quant of the last day to avoid overestimating actual precip
+      # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
+      bench <- raw_med_lastDay
+      strainGaugeDepthAgr$bench[i:currRow] <- bench
+      strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
+
+      idxBgn <- i-1
+      keepGoing <- TRUE
+      while(keepGoing == TRUE) {
+
+        if(is.na(strainGaugeDepthAgr$precip[idxBgn]) || strainGaugeDepthAgr$precip[idxBgn] == FALSE){
+          # Stop if we are past the point where the precip started
+          keepGoing <- FALSE
+        } else if(strainGaugeDepthAgr$bench[idxBgn] > bench){
+          strainGaugeDepthAgr$bench[idxBgn] <- bench
+          strainGaugeDepthAgr$precipType[idxBgn] <- paste0(strainGaugeDepthAgr$precipType[idxBgn],"BackAdjToMedNextDay")
+          idxBgn <- idxBgn - 1
+        } else {
+          keepGoing <- FALSE
+        }
+      }
     } else if ((bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
       # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
-      bench <- raw_med_lastDay
+      # bench <- raw_med_lastDay
+      bench <- raw_min_lastDay # Set to the min of the last day to better track evap
       precipType <- 'EvapAdj'
       
     } else if ((bench - raw) > Recharge){
