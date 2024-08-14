@@ -1,6 +1,9 @@
 name: "group_loader to nonprod"
 
 on:
+  push:
+    branches:
+      - 'master'
   workflow_dispatch:
     tags:
       - "v*.*.*"
