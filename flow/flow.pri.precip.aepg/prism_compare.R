@@ -1,8 +1,9 @@
 ##some prism comps with output from smoothing function 
 # library(dplyr)
 
-site <- 'SCBI'
-dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_TPD_TGW_fix/'
+site <- 'SRER'
+prism_site <- site
+dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_TGW_minEvap'
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='parquet',recursive=TRUE,full.names=TRUE)
@@ -17,7 +18,7 @@ strainGaugeDepthAgr <- NEONprocIS.base::def.read.parq.ds(fileIn = filesSite,Var=
 # site <- stringr::str_extract(DirIn, pattern= '[A-Z]{4}')
 prism_files <- list.files('/scratch/prism', full.names = T)
 
-file <- stringr::str_subset(prism_files, pattern = site)
+file <- stringr::str_subset(prism_files, pattern = prism_site)
 prism <- readr::read_csv(file)
 # strainGaugeDepthAgr_prism <- strainGaugeDepthAgrRglr %>%
 strainGaugeDepthAgr_prism <- strainGaugeDepthAgr %>%
