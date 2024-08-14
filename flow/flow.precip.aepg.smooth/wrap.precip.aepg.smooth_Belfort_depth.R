@@ -166,6 +166,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
   # Recompute total precip depth from Belfort 
   data$total_precipitation_depth <- data$total_gauge_weight*50
+  data$total_precipitation_depth[is.na(data$strainGaugeDepth)] <- NA
 
   
   # Do time averaging

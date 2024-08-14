@@ -9,7 +9,7 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/01/15/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/04/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/04/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/11/08/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/11/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
@@ -20,7 +20,7 @@ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/04/01/precip-weighing
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/10/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/02/15/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/02/15/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
@@ -28,7 +28,7 @@ DirOutBase <- "/scratch/pfs/outCove"
 DirSubCopy <- NULL
 WndwAgr <- '5 min'
 RangeSizeHour <- 24
-Envelope <- 0.3
+Envelope <- 3
 ThshCountHour <- 15
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
@@ -76,6 +76,7 @@ data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
 data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F))  
 
 data$total_precipitation_depth <- data$total_gauge_weight*50
+data$total_precipitation_depth[is.na(data$strainGaugeDepth)] <- NA
 
 
 # Do time averaging
