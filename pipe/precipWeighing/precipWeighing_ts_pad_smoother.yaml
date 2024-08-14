@@ -42,11 +42,11 @@ resource_requests:
   memory: 300M
   cpu: 1.2
 resource_limits:
-  memory: 600M
+  memory: 500M
   cpu: 2
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.7
+  cpu: 1.5
 datum_set_spec:
   number: 1
 scheduling_spec:
