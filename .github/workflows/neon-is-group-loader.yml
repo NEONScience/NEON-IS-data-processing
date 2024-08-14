@@ -2,6 +2,8 @@ name: "group_loader to nonprod"
 
 on:
   workflow_dispatch:
+    tags:
+      - "v*.*.*"
   
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -23,7 +25,7 @@ env:
   MODULE_NAME: group_loader
   IMAGE_NAME: neon-is-group-loader
   # git tag
-  SEM_VERSION: v1.2.0
+  # semver
 
 jobs:
   deploy:
@@ -34,12 +36,17 @@ jobs:
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
+        with:
+          fetch-depth: '0'
 
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-    
+
+      - name: Get semver
+        run:  echo "semver=$(git describe --tags --abbrev=0 | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+
       - name: Build push and update
-        uses: ./.github/actions/build-push-update
+        uses: ./.github/actions/build-push
         with:
             image-tag: "${short_sha}"
             
