@@ -1,9 +1,11 @@
 ##some prism comps with output from smoothing function 
 # library(dplyr)
 
-site <- 'SRER'
-prism_site <- site
-dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_TGW_minEvap'
+site <- 'CLBJ'
+dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip'
+Div <- .75 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
+dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_TGW_minEvap_QC_15.5'
+Div <- 1 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='parquet',recursive=TRUE,full.names=TRUE)
@@ -18,7 +20,7 @@ strainGaugeDepthAgr <- NEONprocIS.base::def.read.parq.ds(fileIn = filesSite,Var=
 # site <- stringr::str_extract(DirIn, pattern= '[A-Z]{4}')
 prism_files <- list.files('/scratch/prism', full.names = T)
 
-file <- stringr::str_subset(prism_files, pattern = prism_site)
+file <- stringr::str_subset(prism_files, pattern = site)
 prism <- readr::read_csv(file)
 # strainGaugeDepthAgr_prism <- strainGaugeDepthAgrRglr %>%
 strainGaugeDepthAgr_prism <- strainGaugeDepthAgr %>%
@@ -26,7 +28,7 @@ strainGaugeDepthAgr_prism <- strainGaugeDepthAgr %>%
   mutate(startDateTime = startDateTime + 12*60*60) %>%
   mutate(startDate = lubridate::floor_date(startDateTime, '1 day')) %>%
   group_by(startDate) %>%
-  summarise(dailyPrecipNEON = sum(precipBulk)) %>%
+  summarise(dailyPrecipNEON = sum(precipBulk)/Div) %>%
   mutate(startDate=as.Date(startDate))
 
 dfpr <- dplyr::inner_join(strainGaugeDepthAgr_prism, prism, by = 'startDate')
