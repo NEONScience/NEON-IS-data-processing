@@ -2,7 +2,7 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/02/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/06/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/06/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
@@ -11,7 +11,7 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/11/15/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/11/15/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
@@ -95,9 +95,9 @@ if (!('internal_temperature' %in% names(data))){
 
 # Apply Belfort's calibration to each gauge (use the _compensated streams since they have no cal applied)
 # 50 mm of rain is 1 kg
-data <- data %>% dplyr::mutate(strainGauge1DepthBf = ((A1*(strain_gauge1_frequency_compensated/1000)+B1*(strain_gauge1_frequency_compensated/1000)^2)-kgZero)*50,
-                               strainGauge2DepthBf = ((A2*(strain_gauge2_frequency_compensated/1000)+B2*(strain_gauge2_frequency_compensated/1000)^2)-kgZero)*50,
-                               strainGauge3DepthBf = ((A3*(strain_gauge3_frequency_compensated/1000)+B3*(strain_gauge3_frequency_compensated/1000)^2)-kgZero)*50)  
+# data <- data %>% dplyr::mutate(strainGauge1DepthBf = ((A1*(strain_gauge1_frequency_compensated/1000)+B1*(strain_gauge1_frequency_compensated/1000)^2)-kgZero)*50,
+#                                strainGauge2DepthBf = ((A2*(strain_gauge2_frequency_compensated/1000)+B2*(strain_gauge2_frequency_compensated/1000)^2)-kgZero)*50,
+#                                strainGauge3DepthBf = ((A3*(strain_gauge3_frequency_compensated/1000)+B3*(strain_gauge3_frequency_compensated/1000)^2)-kgZero)*50)
 
 
 
@@ -195,7 +195,7 @@ if (FALSE) {
 
 # Aggregate depth streams into a single depth. 
 data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F),
-                               strainGaugeDepthBf = base::rowMeans(x=base::cbind(strainGauge1DepthBf, strainGauge2DepthBf, strainGauge3DepthBf), na.rm = F),
+                               # strainGaugeDepthBf = base::rowMeans(x=base::cbind(strainGauge1DepthBf, strainGauge2DepthBf, strainGauge3DepthBf), na.rm = F),
                                strainGaugeTemperature = base::rowMeans(x=base::cbind(strain_gauge1_temperature, strain_gauge2_temperature, strain_gauge3_temperature), na.rm = F))  
 
 
@@ -206,13 +206,13 @@ strainGaugeDepthAgr <- data %>%
   dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
   dplyr::group_by(startDateTime,endDateTime) %>%
   dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),
-                   strainGaugeDepthBf = mean(strainGaugeDepthBf, na.rm = T),
+                   # strainGaugeDepthBf = mean(strainGaugeDepthBf, na.rm = T),
                    strainGauge1Depth = mean(strainGauge1Depth, na.rm = T),
                    strainGauge2Depth = mean(strainGauge2Depth, na.rm = T),
                    strainGauge3Depth = mean(strainGauge3Depth, na.rm = T),
-                   strainGauge1DepthBf = mean(strainGauge1DepthBf, na.rm = T),
-                   strainGauge2DepthBf = mean(strainGauge2DepthBf, na.rm = T),
-                   strainGauge3DepthBf = mean(strainGauge3DepthBf, na.rm = T),
+                   # strainGauge1DepthBf = mean(strainGauge1DepthBf, na.rm = T),
+                   # strainGauge2DepthBf = mean(strainGauge2DepthBf, na.rm = T),
+                   # strainGauge3DepthBf = mean(strainGauge3DepthBf, na.rm = T),
                    strainGaugeTemperature = mean(strainGaugeTemperature, na.rm = T),
                    strainGauge1Temperature = mean(strain_gauge1_temperature, na.rm = T),
                    strainGauge2Temperature = mean(strain_gauge2_temperature, na.rm = T),
@@ -274,9 +274,9 @@ if(stringr::str_detect(WndwAgr, 'min')) {
 }
 
 strainGaugeDepthAgr$strainGaugeMeanDepth <- strainGaugeDepthAgr$strainGaugeDepth
-strainGaugeDepthAgr$strainGaugeMeanDepthBf <- strainGaugeDepthAgr$strainGaugeDepthBf
+# strainGaugeDepthAgr$strainGaugeMeanDepthBf <- strainGaugeDepthAgr$strainGaugeDepthBf
 
-for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','strainGaugeMeanDepth','strainGauge1DepthBf','strainGauge2DepthBf','strainGauge3DepthBf','strainGaugeMeanDepthBf')){
+for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','strainGaugeMeanDepth')){#,'strainGauge1DepthBf','strainGauge2DepthBf','strainGauge3DepthBf','strainGaugeMeanDepthBf')){
 
   strainGaugeDepthAgr$strainGaugeDepth <- strainGaugeDepthAgr[[idxName]]
 
@@ -548,7 +548,8 @@ for(idxName in c('strainGauge1Depth','strainGauge2Depth','strainGauge3Depth','st
 }
 
 # df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4,7)],id.vars=c('startDateTime'))
-df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGauge1Depth','bench1','strainGauge2Depth','bench2','strainGauge3Depth','bench3','strainGaugeMeanDepth','benchMean','strainGauge1DepthBf','bench1Bf','strainGauge2DepthBf','bench2Bf','strainGauge3DepthBf','bench3Bf','strainGaugeMeanDepthBf','benchMeanBf')],id.vars=c('startDateTime'))
+# df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGauge1Depth','bench1','strainGauge2Depth','bench2','strainGauge3Depth','bench3','strainGaugeMeanDepth','benchMean','strainGauge1DepthBf','bench1Bf','strainGauge2DepthBf','bench2Bf','strainGauge3DepthBf','bench3Bf','strainGaugeMeanDepthBf','benchMeanBf')],id.vars=c('startDateTime'))
+df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGauge1Depth','bench1','strainGauge2Depth','bench2','strainGauge3Depth','bench3','strainGaugeMeanDepth','benchMean')],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
 if (FALSE){

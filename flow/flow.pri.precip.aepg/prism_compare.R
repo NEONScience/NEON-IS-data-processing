@@ -1,8 +1,8 @@
 ##some prism comps with output from smoothing function 
 # library(dplyr)
 
-site <- 'CLBJ'
-dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip'
+site <- 'YELL'
+dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_minEvap_15.5'
 Div <- .75 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
 dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_TGW_minEvap_QC_15.5'
 Div <- 1 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
@@ -40,8 +40,11 @@ dfpr <- dfpr[2:(nrow(dfpr)-1), ]
 setKeep <- !is.na(dfpr$dailyPrecipNEON) & !is.na(dfpr$ppt)
 dfpr <- dfpr[setKeep,]
 
-dfpr_long <- data.table::melt(dfpr,id.vars=c('startDate'))
-
+# Compute daily regression
+regrDaily <- lm(dailyPrecipNEON ~ ppt,dfpr)
+rsqDaily <- summary(regrDaily)$r.squared
+regrLine <- data.frame(x = c(0,max(dfpr$ppt,na.rm=TRUE)),
+                       y=c(regrDaily$coefficients[1],max(dfpr$ppt,na.rm=TRUE)*regrDaily$coefficients[2]+regrDaily$coefficients[1]))
 
 # Find calibration events
 setRecharge <- which(strainGaugeDepthAgr$precipType=="ExcludeBeforeRecharge")
@@ -62,28 +65,53 @@ vline <- function(x = 0,y=1, color = "red") {
   )
 }
 
+dfpr_long <- data.table::melt(dfpr,id.vars=c('startDate'))
 p <- plotly::plot_ly(data=dfpr_long,x=~startDate,y=~value,color=~variable, type = 'bar', mode = 'markers') %>% 
   plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily')) 
 for (i in seq_len(length(setCal))){
   print(i)
-  p<-p %>% 
+  p<- p %>% 
     plotly::add_trace(x =strainGaugeDepthAgr$startDateTime[setCal[i]], type = 'scatter', mode = 'lines',
                       line = list(color = "red", dash = "dash"))
 }
 print(p)
 
 plotly::plot_ly(data=dfpr,x=~ppt,y=~dailyPrecipNEON, type = 'scatter', mode = 'markers', hoverinfo= 'text', text = format(dfpr$startDate,'%Y-%m-%d')) %>% 
-  plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily')) %>%
-  plotly::layout(shapes = list(list(
-    type = "line", 
-    x0 = 0, 
-    x1 = ~max(ppt, dailyPrecipNEON,na.rm=TRUE), 
-    xref = "x",
-    y0 = 0, 
-    y1 = ~max(ppt, dailyPrecipNEON,na.rm=TRUE), 
-    yref = "y",
-    line = list(color = "black")
-  )))
+plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily'),
+               showlegend = FALSE) %>%
+  plotly::layout(shapes = list(
+    list(
+      type = "line", 
+      x0 = 0, 
+      x1 = ~max(ppt, dailyPrecipNEON,na.rm=TRUE), 
+      xref = "x",
+      y0 = 0, 
+      y1 = ~max(ppt, dailyPrecipNEON,na.rm=TRUE), 
+      yref = "y",
+      line = list(color = "black")
+    ),
+    list(
+      type = "line", 
+      x0 = regrLine$x[1], 
+      x1 = regrLine$x[2], 
+      xref = "x",
+      y0 = regrLine$y[1], 
+      y1 = regrLine$y[2], 
+      yref = "y",
+      line = list(color = "red")
+    )
+  )
+) %>%
+  plotly::add_trace(x=~max(ppt, dailyPrecipNEON,na.rm=TRUE)*.75,
+                    y=~max(ppt, dailyPrecipNEON,na.rm=TRUE)*.25,
+                    name = 'fit',
+                    type = 'scatter',
+                    mode = 'text',
+                    text=paste0('y = ',round(regrDaily$coefficients[2],2),'x + ',round(regrDaily$coefficients[1],2),'; R2 = ', round(rsqDaily,2)),
+                    textposition = 'middle center',
+                    textfont = list(color = 'red', size = 14)
+  )
+  
 
 
 #weekly comp
