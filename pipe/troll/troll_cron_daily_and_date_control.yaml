@@ -10,7 +10,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be LAG_DAYS_END ago. 
     LAG_DAYS_END: "3" # Default is 2. Don't go lower than 2.
     START_DATE: "2016-03-04"
-    END_DATE: "2024-01-02"
+    # END_DATE: "2024-07-02"
     OUT_PATH: /pfs/out
     SOURCE_TYPE_AQUATROLL: "aquatroll200"
     SOURCE_TYPE_LEVELTROLL: "leveltroll500"
@@ -44,10 +44,10 @@ input:
       repo: troll_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 100M
-  cpu: 1
-resource_limits:
   memory: 300M
+  cpu: 1.5
+resource_limits:
+  memory: 400M
   cpu: 1.5
 sidecar_resource_requests:
   memory: 500M
