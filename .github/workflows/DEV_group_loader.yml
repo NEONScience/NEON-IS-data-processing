@@ -6,7 +6,7 @@ on:
       - 'master'
   workflow_dispatch:
     tags:
-      - "v*.*.*"
+      - "group_loader/v*.*.*"
   
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
