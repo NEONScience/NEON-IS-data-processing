@@ -1,4 +1,4 @@
-name: "Build a module and push the image"
+name: "Build a module, push the image and update pipeline spec yamls"
 description: "Builds the module, pushes the image to Artifact Registry"
 
 
