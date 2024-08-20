@@ -58,12 +58,12 @@ runs:
         
       - name: Install R packages
         uses: r-lib/actions/setup-r-dependencies@v2
-        # with:
-        #     packages: |
-        #       any::usethis
-        #       any::dplyr
-        #       any::rlang
-        #       any::tidyverse
+        with:
+            packages: |
+              any::usethis
+              any::dplyr
+              any::rlang
+              any::tidyverse
 
       - name: Update pipeline spec yamls
         shell: bash
