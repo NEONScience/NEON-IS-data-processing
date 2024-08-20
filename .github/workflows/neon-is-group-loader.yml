@@ -6,7 +6,7 @@ on:
       - 'master'
   workflow_dispatch:
     tags:
-      - "v*.*.*"
+      - "group_loader/v*.*.*"
   
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
         run:  echo "semver=$(git describe --tags --abbrev=0 | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
-        uses: ./.github/actions/build-push
+        uses: ./.github/actions/build-push-update
         with:
             image-tag: "${short_sha}"
             

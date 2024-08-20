@@ -65,9 +65,9 @@ runs:
         #       any::rlang
         #       any::tidyverse
 
-      # - name: Update pipeline spec yamls
-      #   shell: bash
-      #   run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ inputs.image-tag }}"
+      - name: Update pipeline spec yamls
+        shell: bash
+        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ inputs.image-tag }}"
 
       - name: Commit the pipeline yamls
         shell: bash
