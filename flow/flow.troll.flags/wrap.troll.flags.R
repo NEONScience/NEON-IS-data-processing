@@ -130,7 +130,7 @@ wrap.troll.flags <- function(DirIn,
   trollData$zeroPressureQF <- -1
   trollData$zeroPressureQF[trollData$pressure>0]<-0
   trollData$zeroPressureQF[trollData$pressure<=0]<-1
-  trollData$pressure[trollData$zeroPressureQF==1]<-NA
+  #trollData$pressure[trollData$zeroPressureQF==1]<-NA
   source_id<-trollData$source_id[1]
   
   #Define troll type
