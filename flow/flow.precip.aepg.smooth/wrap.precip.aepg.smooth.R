@@ -306,6 +306,11 @@ wrap.precip.aepg.smooth <- function(DirIn,
     if(!is.na(envelopeMax)){
       Envelope <- envelopeMax
     }
+    
+    # if Envelope is larger than Recharge threshold adjust recharge. 
+    if(Envelope > Recharge){
+      Recharge <- 1.25*Envelope
+    }
   }
   
   # -------------- END EXPERIMENTAL ---------------
