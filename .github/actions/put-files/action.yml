@@ -32,5 +32,12 @@ runs:
 
       - name: install .....put_files/put_files.py
         shell: bash
+        env:
+          PACHD_ADDRESS: ${{ inputs.pachd_address }}
+          PACH_TOKEN: ${{ inputs.pach_token }}
+          REPO: ${{ inputs.repo_name }}
+          BRANCH: ${{ inputs.branch_name }}
+          IN_PATHS: ${{ inputs.in_paths }}
+          OUT_PATHS: ${{ inputs.out_paths }}
         run: python3 -u .github/workflow_scripts/put_files/put_files.py
         
