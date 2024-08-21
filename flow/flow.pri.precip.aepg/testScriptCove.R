@@ -6,7 +6,7 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/02/15/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/01/15/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/04/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
@@ -20,15 +20,15 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/10/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/02/15/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/02/15/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
 DirOutBase <- "/scratch/pfs/outCove"
 DirSubCopy <- NULL
-WndwAgr <- '5 min'
-RangeSizeHour <- 24
-Envelope <- 3
+WndwAgr <- '30 min'
+RangeSizeHour <- 48
+Envelope <- 1.2
 ThshCountHour <- 15
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
@@ -79,14 +79,28 @@ data$total_precipitation_depth <- data$total_gauge_weight*50
 data$total_precipitation_depth[is.na(data$strainGaugeDepth)] <- NA
 
 
+
+
+# Load in flags 
+
+
+
+
+
 # Do time averaging
 strainGaugeDepthAgr <- data %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
   dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
   dplyr::group_by(startDateTime,endDateTime) %>%
-  # dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T))
-  dplyr::summarise(strainGaugeDepth = mean(total_precipitation_depth, na.rm = T))
+  dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T))
+  # dplyr::summarise(strainGaugeDepth = mean(total_precipitation_depth, na.rm = T))
 
+
+# Aggregate flags
+
+
+# Decision process for aggregated data. How much data went into the time average? Flag or below threshold, or don't use in the smoothing algorithm. 
+# Something like 25% of the average.
 
 # -------------- BEGIN EXPERIMENTAL ---------------
 
@@ -190,9 +204,11 @@ for (i in 1:numRow){
     }
     
   } else if (skipping) {
+    
     # Find the first non-NA value to begin at
     setEval <- i:currRow
     idxBgnNext <- setEval[head(which(!is.na(strainGaugeDepthAgr$strainGaugeDepth[setEval])),1)]
+    
     # Re-establish the benchmark
     strainGaugeDepthAgr$bench[idxBgnNext:currRow] <- stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[idxBgnNext:currRow],Quant,na.rm=TRUE)
     timeSincePrecip <- NA
@@ -205,8 +221,6 @@ for (i in 1:numRow){
   }
   
   # #establish nth min/max of range
-  # nMin <- sort(strainGaugeDepthAgr$strainGaugeDepth[i:currRow], decreasing = FALSE)[nthVal]
-  # nMax <- sort(strainGaugeDepthAgr$strainGaugeDepth[i:currRow], decreasing = TRUE)[nthVal]
   recentPrecip <- base::any(strainGaugeDepthAgr$precip[i:currRow])
   
   
@@ -367,4 +381,8 @@ strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precip
 # df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4,7)],id.vars=c('startDateTime'))
 df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4)],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
+
+
+# Post-precip computation 
+# Hard and soft thresholds for max precip over the averaging interval
 
