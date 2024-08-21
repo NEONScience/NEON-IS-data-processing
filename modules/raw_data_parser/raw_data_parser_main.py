@@ -3,7 +3,7 @@ import environs
 from pathlib import Path
 from structlog import get_logger
 
-from raw_data_parser.raw_data_parser import pass_raw
+from raw_data_parser.raw_data_parser import parse_raw
 import common.log_config as log_config
 
 log = get_logger()
@@ -20,7 +20,7 @@ def main() -> None:
     log_config.configure(log_level)
 
     log.debug(f'input path is {data_path}.')
-    pass_raw(source_type, pass_field, data_path, out_path, relative_path_index)
+    parse_raw(source_type, pass_field, data_path, out_path, relative_path_index)
 
 
 if __name__ == "__main__":

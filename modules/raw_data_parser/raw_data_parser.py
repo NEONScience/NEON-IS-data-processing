@@ -15,8 +15,8 @@ log = get_logger()
 keep_columns = ['source_id', 'site_id', 'readout_time']
 
 
-def pass_raw(source_type: str, pass_field: str, data_path: Path, out_path: Path,
-             relative_path_index: int) -> None:
+def parse_raw(source_type: str, parse_field: str, data_path: Path, out_path: Path,
+              relative_path_index: int) -> None:
     out_df = pd.DataFrame()
     out_file = None
 
@@ -27,9 +27,9 @@ def pass_raw(source_type: str, pass_field: str, data_path: Path, out_path: Path,
             log.debug(f'{df.columns}')
 
             if out_df.empty:
-                out_df = sensor_pass(df, source_type, pass_field)
+                out_df = sensor_parse(df, source_type, parse_field)
             else:
-                out_df = pd.concat([sensor_pass(df, source_type, pass_field), out_df], ignore_index=True)
+                out_df = pd.concat([sensor_parse(df, source_type, parse_field), out_df], ignore_index=True)
             if not out_file:
                 out_source_type: str = source_type.split('_')[0]
                 out_file = create_output_path(source_type,
@@ -40,12 +40,12 @@ def pass_raw(source_type: str, pass_field: str, data_path: Path, out_path: Path,
         write_to_parquet(out_file, out_df)
 
 
-def sensor_pass(df: pd.DataFrame, source_type: str, pass_field: str) -> pd.DataFrame:
+def sensor_parse(df: pd.DataFrame, source_type: str, parse_field: str) -> pd.DataFrame:
     parser = pass_code_dict.get(source_type)
 
     if source_type.lower() == 'li7200_raw':
         # extract_and_rename(data_string: str, name_mapping: dict):
-        extracted_df = df[pass_field].apply(lambda x: extract_and_rename(x, parser))
+        extracted_df = df[parse_field].apply(lambda x: extract_and_rename(x, parser))
         # Convert the series of dictionaries into a DataFrame
         extracted_df = pd.json_normalize(extracted_df)
 
@@ -75,7 +75,7 @@ def extract_and_rename(data_string: str, name_mapping: dict) -> Dict:
     return extracted_data
 
 
-def write_to_parquet(out_file: str, out_df: pd.DataFrame) -> None:
+def write_to_parquet(out_file: Path, out_df: pd.DataFrame) -> None:
     hashable_cols = [x for x in out_df.columns if isinstance(out_df[x].iloc[0], Hashable)]
     dupcols = [x.encode('UTF-8') for x in hashable_cols
                if (out_df[x].duplicated().sum() / (int(out_df[x].size) - 1)) > 0.3]
