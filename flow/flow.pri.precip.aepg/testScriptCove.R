@@ -18,7 +18,7 @@ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/02/15/precip-weigh
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/09/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/10/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/05/28/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/02/15/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
@@ -138,6 +138,10 @@ if(any(setNoRain)){
   envelopeMax<- max(envelopeComp$envelope,na.rm=TRUE)
   if(!is.na(envelopeMax)){
     Envelope <- envelopeMax
+  }
+  # if envelope is larger than Recharge threshold adjust recharge. 
+  if(Envelope > Recharge){
+    Recharge <- 1.25*Envelope
   }
 }
 
