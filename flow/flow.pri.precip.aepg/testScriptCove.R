@@ -18,9 +18,9 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/09/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/10/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/05/28/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/02/15/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/02/15/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
@@ -28,7 +28,7 @@ DirOutBase <- "/scratch/pfs/outCove"
 DirSubCopy <- NULL
 WndwAgr <- '5 min'
 RangeSizeHour <- 24
-Envelope <- 3
+Envelope <- 13
 ThshCountHour <- 15
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
@@ -84,8 +84,8 @@ strainGaugeDepthAgr <- data %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
   dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
   dplyr::group_by(startDateTime,endDateTime) %>%
-  # dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T))
-  dplyr::summarise(strainGaugeDepth = mean(total_precipitation_depth, na.rm = T))
+  dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T))
+  # dplyr::summarise(strainGaugeDepth = mean(total_precipitation_depth, na.rm = T))
 
 
 # -------------- BEGIN EXPERIMENTAL ---------------
@@ -124,6 +124,10 @@ if(any(setNoRain)){
   envelopeMax<- max(envelopeComp$envelope,na.rm=TRUE)
   if(!is.na(envelopeMax)){
     Envelope <- envelopeMax
+  }
+  # if envelope is larger than Recharge threshold adjust recharge. 
+  if(Envelope > Recharge){
+    Recharge <- 1.25*Envelope
   }
 }
 
