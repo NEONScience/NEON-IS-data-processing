@@ -1,4 +1,4 @@
-name: "location_loader to nonprod"
+name: "DEV-location-loader"
 
 on:
   push:
