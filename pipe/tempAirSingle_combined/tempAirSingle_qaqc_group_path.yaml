@@ -45,15 +45,15 @@ input:
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
-        repo: dualfan_merge_data_by_location
-        glob: /li191r/(*/*/*)
+        repo: dualfan_location_active_dates_assignment
+        glob: /dualfan/(*/*/*)
         joinOn: $1
-#    - pfs:
-#        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH
-#        name: GROUP_FOCUS_PATH
-#        repo: 
-#        glob: /(*/*/*)
-#        joinOn: $1
+    - pfs:
+        # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+        name: LOCATION_FOCUS_PATH
+        repo: windobserverii_fill_date_gaps_and_regularize
+        glob: /windobserverii/(*/*/*)
+        joinOn: $1
 parallelism_spec:
   constant: 5
 autoscaling: true
