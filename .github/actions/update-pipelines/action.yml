@@ -16,8 +16,8 @@ inputs:
      required: true
 
 update-pipelines:
-   needs: changed_files
-   runs-on: arc-neon-gke
+   # needs: changed_files
+   # runs-on: arc-neon-gke
 
    steps:
       - uses: actions/checkout@v4
