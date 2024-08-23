@@ -15,7 +15,9 @@ inputs:
    changed_files:
      required: true
 
-update-pipelines:
+runs:
+   using: "composite"
+
    # needs: changed_files
    # runs-on: arc-neon-gke
 
