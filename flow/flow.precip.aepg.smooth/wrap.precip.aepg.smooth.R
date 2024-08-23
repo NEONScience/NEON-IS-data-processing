@@ -559,7 +559,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     # Get the records for this date
     setOut <- strainGaugeDepthAgr$startDateTime >= InfoDirIn$time & 
       strainGaugeDepthAgr$startDateTime < (InfoDirIn$time + as.difftime(1,units='days'))
-    strainGaugeDepthAgrOut <- strainGaugeDepthAgr[setOut,]
+    strainGaugeDepthAgrIdx <- strainGaugeDepthAgr[setOut,]
     
     # Replace the date in the output path structure with the current date
     dirOutDataIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),
@@ -584,7 +584,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
       
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
-          data = dirOutDataIdx,
+          data = strainGaugeDepthAgrIdx,
           NameFile = fileOutIdx,
           NameFileSchm=NULL,
           Schm=SchmData,
