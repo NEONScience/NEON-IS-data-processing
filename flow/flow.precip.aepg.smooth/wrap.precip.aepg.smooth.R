@@ -557,8 +557,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
     
     dayOutIdx <- dayOut[idxDayOut]
     # Get the records for this date
-    setOut <- strainGaugeDepthAgr$startDateTime >= InfoDirIn$time & 
-      strainGaugeDepthAgr$startDateTime < (InfoDirIn$time + as.difftime(1,units='days'))
+    setOut <- strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
+      strainGaugeDepthAgr$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
     strainGaugeDepthAgrIdx <- strainGaugeDepthAgr[setOut,]
     
     # Replace the date in the output path structure with the current date
