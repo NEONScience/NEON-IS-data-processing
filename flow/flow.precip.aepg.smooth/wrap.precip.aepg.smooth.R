@@ -553,7 +553,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
   # For the central day and adjacent days on either side of the central day, output a file with the results. A later module will average output for each day
   dayOut <- InfoDirIn$time+as.difftime(c(-1,0,1),units='days')
   
-  for(dayOutIdx in dayOut){
+  for(idxDayOut in seq_len(length(dayOut))){
+    
+    dayOutIdx <- dayOut[idxDayOut]
     # Get the records for this date
     setOut <- strainGaugeDepthAgr$startDateTime >= InfoDirIn$time & 
       strainGaugeDepthAgr$startDateTime < (InfoDirIn$time + as.difftime(1,units='days'))
