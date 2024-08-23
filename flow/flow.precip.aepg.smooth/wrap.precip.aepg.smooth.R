@@ -566,7 +566,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
                          replacement=format(dayOutIdx,'%Y/%m/%d'),
                          x=dirOutData,
                          fixed=TRUE)
-    base::dir.create(dirOutDataIdx)
+    base::dir.create(dirOutDataIdx,recursive = TRUE)
 
     # Get the filename for this day
     nameFileIdx <- fileData[grepl(format(dayOutIdx,'%Y-%m-%d'),fileData)][1]
