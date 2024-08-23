@@ -40,5 +40,5 @@ runs:
           TRANSACTION: ${{ env.TRANSACTION }}
           UPDATE_SCOPE: ${{ env.UPDATE_SCOPE }}
           CHANGED_FILES: ${{ env.CHANGED_FILES }}
-        run: python3 -u .github/workflow_scripts/update_pipelines/update_dag_pipelines.py
+        run: python3 -u .github/workflow_scripts/update_dag_pipelines/update_dag_pipelines.py
  
