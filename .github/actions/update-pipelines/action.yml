@@ -33,9 +33,9 @@ runs:
         env:
           PACHD_ADDRESS: ${{ inputs.pachd_address }}
           PACH_TOKEN: ${{ inputs.pach_token }}
-          PATHS: ${{ env.PATHS }}
-          TRANSACTION: ${{ env.TRANSACTION }}
-          UPDATE_SCOPE: ${{ env.UPDATE_SCOPE }}
-          CHANGED_FILES: ${{ env.CHANGED_FILES }}
+          PATHS: ${{ inputs.PATHS }}
+          TRANSACTION: ${{ inputs.TRANSACTION }}
+          UPDATE_SCOPE: ${{ inputs.UPDATE_SCOPE }}
+          CHANGED_FILES: ${{ inputs.CHANGED_FILES }}
         run: python3 -u .github/workflow_scripts/update_dag_pipelines/update_dag_pipelines.py
  
