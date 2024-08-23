@@ -71,7 +71,6 @@ jobs:
             pachd_address: ${{ env.PACHD_ADDRESS }}
             pach_token: ${{ env.PACH_TOKEN }}
             paths: ${{ env.PATHS }}
+            transaction: ${{ env.TRANSACTION }}
             update_scope: ${{ env.UPDATE_SCOPE" }}
             changed_files: ${{ env.CHANGED_FILES }}
-            transaction: ${{ env.TRANSACTION }}
-
