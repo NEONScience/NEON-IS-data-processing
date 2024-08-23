@@ -3,7 +3,7 @@
 # docker build --no-cache -t neon-is-precip-aepg-comb-r <path to this directory>
 
 # Start with the neon-is-precip-aepg-comb-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.1.6-039a10a7
+FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org

@@ -167,7 +167,7 @@ log$debug(base::paste0(
 ))
 
 # What are the expected subdirectories of each input path
-nameDirSub <- c('data','flags')
+nameDirSub <- c('data')
 log$debug(base::paste0(
   'Minimum expected subdirectories of each datum path: ',
   base::paste0(nameDirSub, collapse = ',')

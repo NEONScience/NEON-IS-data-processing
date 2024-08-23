@@ -57,7 +57,7 @@
 #   Teresa Burlingame & Cove Sturtevant (2024-06-25)
 #     Initial creation
 ##############################################################################################
-wrap.precip.aepg.smooth <- function(DirIn,
+wrap.precip.aepg.comb <- function(DirIn,
                                     DirOutBase,
                                     SchmData=NULL,
                                     DirSubCopy=NULL,
@@ -97,15 +97,16 @@ wrap.precip.aepg.smooth <- function(DirIn,
   fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
 
   # Read all files
-  data <- base::lapply(fileData,NEONprocIS.base::def.read.parq,log=log)
+  data <- base::lapply(fs::path(dirInData,fileData),NEONprocIS.base::def.read.parq,log=log)
     
   # Using the 1st file as a starting point, average the precip values
   dataOut <- data[[1]]
   dataOut$bench <- as.numeric(NA)
   dataOut$precipType <- as.character(NA)
-  dataOut$precipBulk <- do.call(mean,
-                                base::lapply(data,FUN=function(dataIdx){dataIdx$precipBulk}),
-                                na.rm=TRUE
+  dataOut$precipBulk <- rowMeans(do.call(cbind,
+                                     base::lapply(data,FUN=function(dataIdx){dataIdx$precipBulk})
+                                     ),
+                              na.rm=TRUE
   )
   dataOut$precip <- dataOut$precipBulk > 0
   dataOut$precip[is.na(dataOut$precip)] <- FALSE
