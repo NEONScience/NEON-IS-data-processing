@@ -1,0 +1,31 @@
+name: "update pipelines"
+description: "update pipelines"
+
+inputs:
+   pachd_address:
+     required: true
+   pach_token:
+     required: true
+   paths:
+     required: true
+   transaction:
+     required: true
+   updated_scope:
+     required: true
+   changed_files:
+     required: true
+
+update-pipelines:
+   needs: changed_files
+   runs-on: arc-neon-gke
+
+   steps:
+      - uses: actions/checkout@v4
+      - run: ls -la
+      
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          cache: 'pip'
+      - run: pip install -r .github/workflow_scripts/update_dag_pipelines/requirements.txt
+      - run: python3 -u .github/workflow_scripts/update_dag_pipelines/update_dag_pipelines.py
