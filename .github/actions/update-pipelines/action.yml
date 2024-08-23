@@ -30,12 +30,12 @@ runs:
 
       - name: install .....update_pipelines/update_dag_pipelines.py
         shell: bash
-        env:
-          PACHD_ADDRESS: ${{ inputs.pachd_address }}
-          PACH_TOKEN: ${{ inputs.pach_token }}
-          PATHS: ${{ inputs.PATHS }}
-          TRANSACTION: ${{ inputs.TRANSACTION }}
-          UPDATE_SCOPE: ${{ inputs.UPDATE_SCOPE }}
-          CHANGED_FILES: ${{ inputs.CHANGED_FILES }}
+        # env:
+        #   PACHD_ADDRESS: ${{ inputs.pachd_address }}
+        #   PACH_TOKEN: ${{ inputs.pach_token }}
+        #   PATHS: ${{ inputs.PATHS }}
+        #   TRANSACTION: ${{ inputs.TRANSACTION }}
+        #   UPDATE_SCOPE: ${{ inputs.UPDATE_SCOPE }}
+        #   CHANGED_FILES: ${{ inputs.CHANGED_FILES }}
         run: python3 -u .github/workflow_scripts/update_dag_pipelines/update_dag_pipelines.py
  
