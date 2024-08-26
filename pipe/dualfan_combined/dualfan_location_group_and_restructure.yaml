@@ -16,9 +16,29 @@ transform:
     rm -rf /tmp/pfs/filter_joined
     rm -rf /tmp/pfs/structured
     rm -rf /tmp/pfs/structuredCopy
+    rm -rf /tmp/kafka_merged
+    rm -rf $OUT_PATH
+    mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
     mkdir -p /tmp/pfs/filter_joined
-    # Run first module - filter-joiner (using environment variables below as input parameters)
-    python3 -m filter_joiner.filter_joiner_main
+    if [ ${DATA_PATH_TRINO+x} ]; then 
+      # Data from trino. 
+      # Set CONFIG for filter-joiner to the trino version and run filter joiner
+      export CONFIG=$CONFIG_TRINO
+      python3 -m filter_joiner.filter_joiner_main
+    fi  
+    if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
+      # Data from kafka. 
+      # Run kafka combiner
+      Rscript ./flow.kfka.comb.R \
+          DirIn=$KAFKA_UNMERGED_DATA \
+          DirOut=/tmp/kafka_merged \
+          DirErr=/pfs/out/errored_datums \
+          FileSchmL0=$FILE_SCHEMA_L0
+      # Set CONFIG for filter-joiner to the kafka version and run filter joiner
+      export CONFIG=$CONFIG_KAFKA
+      python3 -m filter_joiner.filter_joiner_main
+    fi  
     # Run second module - structure repo by location
     Rscript ./flow.loc.repo.strc.R \
       DirIn=/tmp/pfs/filter_joined \
@@ -40,15 +60,35 @@ transform:
     EOF
   env:
     # Environment variables for filter-joiner
-    CONFIG: |
+    CONFIG_TRINO: |
       ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: DATA_PATH
+            name: DATA_PATH_TRINO
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH/dualfan/*/*/*/*/**
+            glob_pattern: /pfs/DATA_PATH_TRINO/dualfan/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    CONFIG_KAFKA: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_KAFKA
+            # Filter for data directory
+            glob_pattern: /tmp/kafka_merged/dualfan/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
@@ -72,6 +112,21 @@ input:
       glob: /dualfan/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - pfs:
+      name: DATA_PATH_TRINO
+      repo: dualfan_data_source_trino
+      glob: /dualfan/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      outer_join: true
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  - pfs:
+      name: KAFKA_UNMERGED_DATA
+      repo: dualfan_data_source_kafka
+      glob: /dualfan/(*)/(*)/(*)
+      joinOn: $1/$2/$3
+      outer_join: true
+      empty_files: false
+      
 parallelism_spec:
   constant: 5
 autoscaling: true
