@@ -65,13 +65,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: ls -la
-
-      - name: Update pipelines
-        uses: ./.github/actions/update-pipelines
+      
+      - uses: actions/setup-python@v3
         with:
-          pachd_address: ${{ env.PACHD_ADDRESS }}
-          pach_token: ${{ env.PACH_TOKEN }}
-          paths: ${{ env.PATHS }}
-          transaction: ${{ env.TRANSACTION }}
-          update_scope: ${{ env.UPDATE_SCOPE }}
-          changed_files: ${{ env.CHANGED_FILES }}
+          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          cache: 'pip'
+      - run: pip install -r .github/workflow_scripts/update_dag_pipelines/requirements.txt
+      - run: python3 -u .github/workflow_scripts/update_dag_pipelines/update_dag_pipelines.py
+      
