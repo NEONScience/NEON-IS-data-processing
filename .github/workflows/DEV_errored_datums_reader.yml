@@ -35,6 +35,8 @@ jobs:
 
       - name: Make list of changed files
         id: changed-files-list
+        with:
+          context: .
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
