@@ -1,6 +1,6 @@
 # Run from root repository (NEON-IS-data-processing)
 #!/usr/bin/env bash
-image_name=raw_data_parser
+image_name=raw-data-parser
 tag=$(git rev-parse --short HEAD)
 cd ./modules
 docker build --no-cache -t $image_name:latest -f ./raw_data_parser/Dockerfile .

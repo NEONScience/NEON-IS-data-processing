@@ -3,7 +3,7 @@ pipeline:
   name: li7200_parse_kafka_raw_data
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-sae-trst-dp0p-python:raw-data-parser-5
+  image: quay.io/battelleecology/raw-data-parser:1
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
