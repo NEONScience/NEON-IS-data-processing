@@ -308,8 +308,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
     }
     
     # if Envelope is larger than Recharge threshold adjust recharge. 
-    if(Envelope > Recharge){
-      Recharge <- 1.25*Envelope
+    if(Envelope > Recharge/3){
+      Recharge <- 3*Envelope
     }
   }
   
@@ -481,7 +481,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
         
       }
         
-    } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+    # } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+    }
+    if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
       # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
       # back-adjust the benchmark to the Quant of the last day to avoid overestimating actual precip
       # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
@@ -504,7 +506,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           keepGoing <- FALSE
         }
       }
-    } else if ((bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
+    } else if ((raw < bench) && (bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
       # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
       # bench <- raw_med_lastDay
       bench <- raw_min_lastDay # Set to the min of the last day to better track evap

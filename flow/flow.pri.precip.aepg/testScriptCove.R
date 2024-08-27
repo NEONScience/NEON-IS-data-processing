@@ -4,10 +4,10 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/06/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/08/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/02/15/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/08/07/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/08/07/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/08/07/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/11/08/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
@@ -18,7 +18,7 @@ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/08/07/precip-weigh
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/09/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/10/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/05/28/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/04/13/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/02/15/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
@@ -28,7 +28,7 @@ DirOutBase <- "/scratch/pfs/outCove"
 DirSubCopy <- NULL
 WndwAgr <- '5 min'
 RangeSizeHour <- 24
-Envelope <- 13.33333333
+Envelope <- 1
 ThshCountHour <- 15
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
@@ -141,8 +141,8 @@ if(any(setNoRain)){
   }
   
   # if envelope is larger than Recharge threshold adjust recharge.
-  if(Envelope > Recharge){
-    Recharge <- 1.25*Envelope
+  if(Envelope > Recharge/3){
+    Recharge <- 3*Envelope
   }
 }
 
@@ -182,7 +182,7 @@ skipping <- FALSE
 numRow <- nrow(strainGaugeDepthAgr)
 for (i in 1:numRow){
 
-  #if(currRow == 4574){stop()}
+  # if(i == 189){stop()}
 
   # Check for at least 1/2 a day of non-NA values.
   # If not, get to the next point at which we have at least 1/2 day and start fresh
@@ -312,10 +312,13 @@ for (i in 1:numRow){
       timeSincePrecip <- 0
       precipType <- 'ThshCount'
     }
-  } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+  # } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+  } 
+  if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+    
     # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
     # back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
-    # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
+
     bench <- raw_med_lastDay
     strainGaugeDepthAgr$bench[i:currRow] <- bench
     strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
@@ -335,7 +338,7 @@ for (i in 1:numRow){
         keepGoing <- FALSE
       }
     }
-  } else if ((bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
+  } else if ((raw < bench) && (bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
     # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
     # bench <- raw_med_lastDay
     bench <- raw_min_lastDay
@@ -387,4 +390,4 @@ plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
 # Post-precip computation
 # Hard and soft thresholds for max precip over the averaging interval
-
+# Envelope == Massive --> Flag all the data
