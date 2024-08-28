@@ -5,6 +5,7 @@ site <- 'ONAQ'
 # dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_minEvap_15.5'
 # Div <- .75 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
 dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_zeroCal'
+dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_postAdj'
 Div <- 1 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
 
 # Get list of applicable data files
