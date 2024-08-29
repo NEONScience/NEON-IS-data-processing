@@ -64,7 +64,7 @@ jobs:
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
       PATHS: 'pipe/troll,pipe/groundwaterPhysical,pipe/surfacewaterPhysical' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
       TRANSACTION: True
-      UPDATE_SCOPE: all # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
+      UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
     steps:
       - uses: actions/checkout@v4
