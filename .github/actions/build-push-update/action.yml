@@ -50,7 +50,9 @@ runs:
             context: ./modules
             file: ./modules/${{ env.MODULE_NAME }}/Dockerfile
             push: ${{ github.event_name != 'pull_request' }}
-            tags: ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
+            tags: |
+              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
+ #             ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
        
       - name: Set up R
