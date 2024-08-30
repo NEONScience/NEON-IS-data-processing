@@ -1,10 +1,12 @@
 ##some prism comps with output from smoothing function 
 old = F
 if (old){
-dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_minEvap_15.5'
+dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_zeroCal/'
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='*.parquet',recursive=TRUE,full.names=TRUE)
+filesAll <- list.files(path=dirSmooth,pattern='*.parquet',recursive=TRUE,full.names=TRUE)
+
 sites <- stringr::str_sub(unique(unlist(stringr::str_extract_all(filesAll, pattern = '[A-Z]{4}9'))), start = 1, end = 4)
 
 slopes <- as.data.frame(sites)
@@ -13,14 +15,17 @@ slopes$rsq_prism_NEON_old <- NA
 
 
 }else{
-dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_minEvap_15.5_P0'
+dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_postAdj/'
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='*.parquet',recursive=TRUE,full.names=TRUE)
+filesAll <- list.files(path=dirSmooth,pattern='*.parquet',recursive=TRUE,full.names=TRUE)
+
 sites <- stringr::str_sub(unique(unlist(stringr::str_extract_all(filesAll, pattern = '[A-Z]{4}9'))), start = 1, end = 4)
 
 slopes$prism_NEON <- NA
-slopes$rsq_prism_NEON <- NA}
+slopes$rsq_prism_NEON <- NA
+}
 
 #prism vs NEON
 for (site in slopes$sites){
@@ -34,6 +39,8 @@ for (site in slopes$sites){
     ### pull in prism data
     # site <- stringr::str_extract(DirIn, pattern= '[A-Z]{4}')
     prism_files <- list.files('/scratch/prism', full.names = T)
+    prism_files <- list.files('/scratch/prism', full.names = T)
+    
     
     file <- stringr::str_subset(prism_files, pattern = site)
     prism <- readr::read_csv(file)
@@ -75,3 +82,5 @@ error = function(e) {slopes$reg[slopes$site==site] <-NA
   })
 }
 
+slopes$diff <- slopes$prism_NEON - slopes$prism_NEON_old
+slopes$rsqdiff <- slopes$rsq_prism_NEON - slopes$rsq_prism_NEON_old
