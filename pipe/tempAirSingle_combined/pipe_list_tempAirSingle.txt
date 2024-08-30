@@ -1,12 +1,12 @@
 tempAirSingle_group_loader.yaml
 tempAirSingle_group_assignment.yaml
 tempAirSingle_group_path.yaml
-tempAirSingle_srf_loader.yaml
-tempAirSingle_srf_assignment.yaml
-
 tempAirSingle_threshold.yaml
 tempAirSingle_thresh_select_ts_pad.yaml
 tempAirSingle_analyze_pad_and_qaqc_plau.yaml
+tempAirSingle_group_path.yaml
+tempAirSingle_qaqc_specific.yaml
+tempAirSingle_pre_statistics_group.yaml
 tempAirSingle_pre_stats_qm.yaml
 tempAirSingle_stats_group_and_compute.yaml
 tempAirSingle_qm_group_and_compute.yaml
