@@ -95,9 +95,10 @@ def.cal.conv.poly.aepg600m <- function(data = data.frame(data=base::numeric(0)),
   func <-
     NEONprocIS.cal::def.cal.func.poly(infoCal = infoCal, Prfx='CVALA', log = log)
 
-  # # Convert data using the calibration function
-  # dataConv <- stats::predict(object = func, newdata = data[[varConv]] - as.numeric(infoCal$cal[grep("F0", infoCal$cal$Name),"Value"]))*10
-  dataConv <- stats::predict(object = func, newdata = data[[varConv]] - as.numeric(infoCal$cal[grep("P0", infoCal$cal$Name),"Value"]))*10
+  # Convert data using the calibration function
+  dpthBckt <- stats::predict(object = func, newdata = data[[varConv]] - as.numeric(infoCal$cal[grep("P0", infoCal$cal$Name),"Value"]))*10 # Total bucket depth (mm)
+  dpthZero <- stats::predict(object = func, as.numeric(infoCal$cal[grep("F0", infoCal$cal$Name),"Value"]) - as.numeric(infoCal$cal[grep("P0", infoCal$cal$Name),"Value"]))*10 # Bucket depth with only oil and antifreeze (i.e. zeroed) (mm)
+  dataConv <- dpthBckt - dpthZero
   
   return(dataConv)
   

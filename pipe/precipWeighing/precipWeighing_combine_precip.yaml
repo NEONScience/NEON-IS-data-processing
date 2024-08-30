@@ -1,43 +1,47 @@
 ---
 pipeline:
-  name: troll_flags_specific
+  name: precipWeighing_combine_precip
 transform:
-  image: quay.io/battelleecology/neon-is-troll-flags-r:8f4e46e5
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  cmd: ["/bin/bash"]
-  stdin:
-  - "#!/bin/bash"
-  - Rscript ./flow.troll.flags.R
-      DirIn=$DIR_IN
-      DirOut=/pfs/out
+  image: quay.io/battelleecology/neon-is-precip-aepg-comb-r:4d165c82
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Run precip computation module
+    Rscript ./flow.precip.aepg.comb.R \
+      DirIn=$DIR_IN \
+      DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums
-      FileSchmQf=$SCHEMA_FLAGS
+    EOF
   env:
+    OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
+    PARALLELIZATION_INTERNAL: '3'
+output_branch: master
 input:
-  cross:
-  - pfs:
-      name: DIR_IN
-      repo: troll_fill_log_files
-      # /source_type/YYYY/MM/DD
-      glob: /*/*/*/*/
-  - pfs:
-      name: SCHEMA_FLAGS
-      repo: troll_avro_schemas
-      glob: /troll_shared/flags_troll_specific.avsc
+  pfs:
+    name: DIR_IN
+    repo: precipWeighing_compute_precip_dynamic
+    glob: /*/*/*
 parallelism_spec:
-  constant: 3
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 1.2
+  memory: 2G
+  cpu: 3.3
 resource_limits:
-  memory: 1G
-  cpu: 2
+  memory: 3G
+  cpu: 4.5
 sidecar_resource_requests:
-  memory: 1G
-  cpu: 0.5
+  memory: 3G
+  cpu: 0.3
 datum_set_spec:
   number: 1
 scheduling_spec:

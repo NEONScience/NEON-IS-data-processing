@@ -306,6 +306,11 @@ wrap.precip.aepg.smooth <- function(DirIn,
     if(!is.na(envelopeMax)){
       Envelope <- envelopeMax
     }
+    
+    # if Envelope is larger than Recharge threshold adjust recharge. 
+    if(Envelope > Recharge/3){
+      Recharge <- 3*Envelope
+    }
   }
   
   # -------------- END EXPERIMENTAL ---------------
@@ -476,7 +481,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
         
       }
         
-    } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+    # } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+    }
+    if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
       # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
       # back-adjust the benchmark to the Quant of the last day to avoid overestimating actual precip
       # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
@@ -499,7 +506,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           keepGoing <- FALSE
         }
       }
-    } else if ((bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
+    } else if ((raw < bench) && (bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
       # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
       # bench <- raw_med_lastDay
       bench <- raw_min_lastDay # Set to the min of the last day to better track evap
@@ -545,20 +552,69 @@ wrap.precip.aepg.smooth <- function(DirIn,
   strainGaugeDepthAgr$precipBulk <- as.numeric(strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1))
   strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precipBulk < 0, 0, precipBulk))
 
-  # Output central day
-  setOut <- strainGaugeDepthAgr$startDateTime >= InfoDirIn$time & 
-    strainGaugeDepthAgr$startDateTime < (InfoDirIn$time + as.difftime(1,units='days'))
-  strainGaugeDepthAgr <- strainGaugeDepthAgr[setOut,]
+  # For the central day and adjacent days on either side of the central day, output a file with the results. A later module will average output for each day
+  dayOut <- InfoDirIn$time+as.difftime(c(-1,0,1),units='days')
   
+  for(idxDayOut in seq_len(length(dayOut))){
+    
+    dayOutIdx <- dayOut[idxDayOut]
+    # Get the records for this date
+    setOut <- strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
+      strainGaugeDepthAgr$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
+    strainGaugeDepthAgrIdx <- strainGaugeDepthAgr[setOut,]
+    
+    # Replace the date in the output path structure with the current date
+    dirOutDataIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),
+                         replacement=format(dayOutIdx,'%Y/%m/%d'),
+                         x=dirOutData,
+                         fixed=TRUE)
+    base::dir.create(dirOutDataIdx,recursive = TRUE)
+
+    # Get the filename for this day
+    nameFileIdx <- fileData[grepl(format(dayOutIdx,'%Y-%m-%d'),fileData)][1]
+
+    if(!is.na(nameFileIdx)){
+      # Append the center date to the end of the file name to know where it came from
+      nameFileIdxSplt <- base::strsplit(nameFileIdx,'.',fixed=TRUE)[[1]]
+      nameFileIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
+                                  '_from_',
+                                  format(InfoDirIn$time,'%Y-%m-%d')),
+                           utils::tail(nameFileIdxSplt,1))
+      nameFileOutIdx <- base::paste0(nameFileIdxSplt,collapse='.')
+      
+      # Write out the data to file
+      fileOutIdx <- fs::path(dirOutDataIdx,nameFileOutIdx)
+      
+      rptWrte <-
+        base::try(NEONprocIS.base::def.wrte.parq(
+          data = strainGaugeDepthAgrIdx,
+          NameFile = fileOutIdx,
+          NameFileSchm=NULL,
+          Schm=SchmData,
+          log=log
+        ),
+        silent = TRUE)
+      if ('try-error' %in% base::class(rptWrte)) {
+        log$error(base::paste0(
+          'Cannot write output to ',
+          fileOutIdx,
+          '. ',
+          attr(rptWrte, "condition")
+        ))
+        stop()
+      } else {
+        log$info(base::paste0(
+          'Wrote computed precipitation to file ',
+          fileOutIdx
+        ))
+      }
+      
+    } else {
+      log$warn(paste0(nameFileIdx,' is not able to be output because this data file was not found in the input.'))
+    }
+    
+  }
   
-  # Grab the data file name for the center day
-  nameFileOut <- fileData[grepl(base::format(InfoDirIn$time,'%Y-%m-%d'),fileData)][1]
-  
-
-
-  
-
-
   
   # # Take stock of our flags files. 
   # fileFlags<- base::list.files(dirInFlags,full.names=FALSE)
@@ -570,32 +626,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
   #                                            log=log)
   # 
   
-  # Write out the combined dataset to file
-  fileOut <- fs::path(dirOutData,nameFileOut)
-
-  rptWrte <-
-    base::try(NEONprocIS.base::def.wrte.parq(
-        data = strainGaugeDepthAgr,
-        NameFile = fileOut,
-        NameFileSchm=NULL,
-        Schm=SchmData,
-        log=log
-    ),
-    silent = TRUE)
-  if ('try-error' %in% base::class(rptWrte)) {
-    log$error(base::paste0(
-      'Cannot write output to ',
-      fileOut,
-      '. ',
-      attr(rptWrte, "condition")
-    ))
-    stop()
-  } else {
-    log$info(base::paste0(
-      'Wrote computed precipitation to file ',
-      fileOut
-      ))
-  }
-
+  
   return()
 } 

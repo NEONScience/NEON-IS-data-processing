@@ -20,7 +20,8 @@
 	"kafka_start_date" : "2024-02-09"
 	},
 	{
-	"site" : "BLWA"
+	"site" : "BLWA",
+	"kafka_start_date" : "2024-08-22"
 	},
 	{
 	"site" : "CARI",
