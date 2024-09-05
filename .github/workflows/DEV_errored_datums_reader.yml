@@ -22,12 +22,14 @@ jobs:
   changed_files:
     runs-on: ubuntu-latest  # windows-latest || macos-latest
     outputs:
+    # Use this changed_file_list if you plan to use get-changed-files-action 
       changed_file_list: ${{ steps.changed-files-action.outputs.changed_file_list }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
-
+          
+    # Using get-changed-files-action 
       - name: Get changed files action
         id: changed-files-action
         uses: ./.github/actions/get-changed-files
