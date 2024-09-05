@@ -4,44 +4,117 @@ pipeline:
 transform:
   image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: quay.io/battelleecology/replace_macaddress_with_assetuid:c0ce8112
-  cmd: ["/bin/bash"]
-  stdin:
-  - "#!/bin/bash"
-  - "python3 -m replace_macaddress_with_assetuid.replace_macaddress_with_assetuid_main"
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t' 
+    # Detect if we have data coming from Kafka or trino
+    # Note that we run the macAddress-replacer in sequential if statements rather than an elif statement ...
+    # ... so that if there is any overlap in sensor data coming from both Kafka and Trino on the same day, the ...
+    # ... trino data wins (filter joiner will not copy a file if it is already in the destination). This scenario ...
+    # ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka ...
+    # ... retention period for data that have already been loaded from Trino. In normal operations this scenario ...
+    # ... should not arise because the only data coming into Pachyderm will be coming from Kafka. ...
+    # ... When a conflict does arise, the Trino data will take precedence, which is fine because the ...
+    # ... conflict arose because data for the same sensor and day were in both locations.
+    if [ ${DATA_PATH_TRINO+x} ]; then 
+      # Data from trino.
+      # Set DATA_PATH for macAddress-replacer to the trino repo and run replacer
+      export DATA_PATH=$DATA_PATH_TRINO
+      python3 -m replace_macaddress_with_assetuid.replace_macaddress_with_assetuid_main
+    fi
+    if [ ${DATA_PATH_KAFKA+x} ]; then 
+      # Data from kafka. already parsed from raw
+      # set DATA_PATH for macAddress-replacer to the kafka repo and run replacer
+      export DATA_PATH=$DATA_PATH_KAFKA
+      python3 -m replace_macaddress_with_assetuid.replace_macaddress_with_assetuid_main
+    fi
   env:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "3"
     LOG_LEVEL: DEBUG
-#    LINK_TYPE: SYMLINK # options are COPY or SYMLINK
+    # LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
-  join:
-  - pfs:
-      name: DATA_PATH
-      repo: li7200_data_source_trino
-      glob: /li7200/*/*/*/(*)
-      join_on: $1
-      empty_files: true
-  - pfs:
-      name: MAP_PATH
-      repo: li7200_assetuid_macaddress_map
-      glob: /li7200_stcdd/(*)
-      join_on: $1
-# another option to join      
-#  cross:
-#  - pfs:
-#      name: DATA_PATH
-#      repo: li7200_data_source_trino
-#      glob: /li7200/*/*/*
-#  - pfs:
-#      name: MAP_PATH
-#      repo: li7200_assetuid_macaddress_map
-#      glob: /li7200_stcdd
+  union:
+#    - join:
+#      - pfs:
+#          name: DATA_PATH_TRINO
+#          repo: li7200_data_source_trino
+#          glob: /li7200/*/*/*/(*)
+#          empty_files: true
+#          joinOn: $1
+#      - pfs:
+#          name: MAP_PATH
+#          repo: li7200_assetuid_macaddress_map
+#          glob: /li7200_stcdd/(*)
+#          joinOn: $1
+#    - join:
+#      - pfs:
+#          name: DATA_PATH_KAFKA
+#          repo: li7200_parse_kafka_raw_data
+#          glob: /li7200/*/*/*/(*)
+#          empty_files: true
+#          joinOn: $1
+#      - pfs:
+#          name: MAP_PATH
+#          repo: li7200_assetuid_macaddress_map
+#          glob: /li7200_stcdd/(*)
+#          joinOn: $1
+# another option to join
+  union:
+    - cross:
+      - pfs:
+          name: DATA_PATH_TRINO
+          repo: li7200_data_source_trino
+          glob: /li7200/*/*/*
+      - pfs:
+          name: MAP_PATH
+          repo: li7200_assetuid_macaddress_map
+          glob: /li7200_stcdd
+    - cross:
+      - pfs:
+          name: DATA_PATH_KAFKA
+          repo: li7200_parse_kafka_raw_data
+          glob: /li7200/*/*/*
+      - pfs:
+          name: MAP_PATH
+          repo: li7200_assetuid_macaddress_map
+          glob: /li7200_stcdd
 #
 parallelism_spec:
   constant: 1
 resource_requests:
   memory: 1G
   cpu: 1.0
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.6
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
 autoscaling: true
 scheduling_spec:
   node_selector:
