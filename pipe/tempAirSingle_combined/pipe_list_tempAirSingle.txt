@@ -8,9 +8,7 @@ tempAirSingle_group_path.yaml
 tempAirSingle_qaqc_specific.yaml
 tempAirSingle_merge_qaqc_data.yaml
 tempAirSingle_pre_statistics_group.yaml
-tempAirSingle_pre_stats_qm.yaml
 tempAirSingle_stats_group_and_compute.yaml
- # Below Pipeline is Similar to tempAirSingle_quality_metrics tempAirSingle_quality_metrics.yaml
 tempAirSingle_qm_group_and_compute.yaml 
 tempAirSingle_level1_group_consolidate_srf.yaml
 tempAirSingle_cron_monthly_and_pub_control.yaml
