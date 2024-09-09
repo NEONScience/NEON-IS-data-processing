@@ -50,6 +50,12 @@ transform:
             glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
             # Join on named location (already joined below by day
             join_indices: [6]
+        - path:
+            name: QAQC_SPECIFIC_PATH
+            # Filter for flags directory
+            glob_pattern: /pfs/QAQC_SPECIFIC_PATH/*/*/*/*/*/*/flags/**
+            # Join on named location (already joined below by day
+            join_indices: [6]
     OUT_PATH: /tmp/pfs/filter_joined
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
@@ -70,6 +76,12 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: REGULARIZED_FLAGS_PATH
+        repo: tempAirSingle_group_path
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: QAQC_SPECIFIC_PATH
         repo: tempAirSingle_qaqc_specific
         glob: /(*/*/*)
         joinOn: $1
