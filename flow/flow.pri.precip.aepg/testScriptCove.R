@@ -1,34 +1,34 @@
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/08/01/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/06/15/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/08/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/30/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/02/15/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/08/07/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/07/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/08/07/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/11/08/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/11/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/03/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/09/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/10/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/04/13/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/02/15/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2016/12/01/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2016/12/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/06/01/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/06/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
+ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
+#DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
-DirOutBase <- "/scratch/pfs/outCove"
+DirOutBase <- "/scratch/pfs/out_tb"
 DirSubCopy <- NULL
-WndwAgr <- '5 min'
-RangeSizeHour <- 24
-Envelope <- 1
+WndwAgr <- '30 min'
+RangeSizeHour <-24
+Envelope <- 1.8
 ThshCountHour <- 15
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
@@ -110,11 +110,13 @@ strainGaugeDepthAgr <- data %>%
 dataHourly <- strainGaugeDepthAgr %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'hour')) %>%
   dplyr::group_by(startDateTime) %>%
-  dplyr::summarise(strainGaugeDepth = median(strainGaugeDepth, na.rm = T))
+  dplyr::summarise(strainGaugeDepthMed = median(strainGaugeDepth, na.rm = T),
+                   strainGaugeDepthMin = min(strainGaugeDepth, na.rm = T), 
+                   strainGaugeDepthMax = max(strainGaugeDepth, na.rm = T))
 dataDaily <- dataHourly %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'day')) %>%
   dplyr::group_by(startDateTime) %>%
-  dplyr::summarise(strainGaugeDepthChg = tail(strainGaugeDepth,1)-head(strainGaugeDepth,1))
+  dplyr::summarise(strainGaugeDepthChg = tail(strainGaugeDepthMax,1)-head(strainGaugeDepthMin,1))
 setNoRain <- (dataDaily$strainGaugeDepthChg < 0.25*Envelope) & (dataDaily$strainGaugeDepthChg > -1*Envelope)
 setNoRain[is.na(setNoRain)] <- FALSE
 
@@ -387,7 +389,7 @@ strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precip
 df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4)],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
-
+print(Envelope)
 # Post-precip computation
 # Hard and soft thresholds for max precip over the averaging interval
 # Envelope == Massive --> Flag all the data

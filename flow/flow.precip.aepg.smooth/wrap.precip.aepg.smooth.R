@@ -277,11 +277,13 @@ wrap.precip.aepg.smooth <- function(DirIn,
   dataHourly <- strainGaugeDepthAgr %>%
     dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'hour')) %>%
     dplyr::group_by(startDateTime) %>%
-    dplyr::summarise(strainGaugeDepth = median(strainGaugeDepth, na.rm = T))
+    dplyr::summarise(strainGaugeDepthMed = median(strainGaugeDepth, na.rm = T),
+                     strainGaugeDepthMin = min(strainGaugeDepth, na.rm = T), 
+                     strainGaugeDepthMax = max(strainGaugeDepth, na.rm = T))
   dataDaily <- dataHourly %>%
     dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'day')) %>%
     dplyr::group_by(startDateTime) %>%
-    dplyr::summarise(strainGaugeDepthChg = tail(strainGaugeDepth,1)-head(strainGaugeDepth,1))
+    dplyr::summarise(strainGaugeDepthChg = tail(strainGaugeDepthMax,1)-head(strainGaugeDepthMin,1))
   setNoRain <- (dataDaily$strainGaugeDepthChg < 0.25*Envelope) & (dataDaily$strainGaugeDepthChg > -1*Envelope)
   setNoRain[is.na(setNoRain)] <- FALSE
   
