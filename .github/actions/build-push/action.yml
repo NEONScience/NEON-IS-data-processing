@@ -57,6 +57,6 @@ runs:
             push: true
             tags: |
               ${{ steps.meta.outputs.tags }}
-              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
+        #      ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
             labels: ${{ steps.meta.outputs.labels }}
             
