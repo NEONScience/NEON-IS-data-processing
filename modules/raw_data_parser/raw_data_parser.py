@@ -55,7 +55,7 @@ def sensor_parse(df: pd.DataFrame, source_type: str, parse_field: str) -> pd.Dat
 
 def extract_and_rename(data_string: str, name_mapping: dict) -> Dict:
     # Regular expression to find all (name number) pairs
-    pattern = r'\((\w+)\s+([\d.]+)\)'
+    pattern = r'\((\w+)\s([\w\.\-:]+)\)'
 
     # Find all matches
     matches = re.findall(pattern, data_string)
