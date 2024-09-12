@@ -42,7 +42,7 @@ runs:
               # type=schedule
               type=sha
               # type=ref,event=tag
-              type=ref,event=pr
+              # type=ref,event=pr
               # type=ref,event=branch
               
       # Build and push Docker image with Buildx (don't push on PR) with multiple tags

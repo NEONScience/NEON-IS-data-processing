@@ -1,4 +1,4 @@
-name: "group_loader to nonprod"
+name: "Build-push"
 
 on:
   push:
