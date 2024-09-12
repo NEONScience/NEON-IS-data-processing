@@ -2,9 +2,9 @@ name: "Build a module, push the image and update pipeline spec yamls"
 description: "Builds the module, pushes the image to Artifact Registry"
 
 
-inputs:
-  image-tag:
-    required: true
+# inputs:
+#   image-tag:
+#     required: true
 
 runs:
    using: "composite"
@@ -39,7 +39,7 @@ runs:
               type=schedule
               type=ref,event=tag
               type=ref,event=pr
-              type=sha
+              # type=sha
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action

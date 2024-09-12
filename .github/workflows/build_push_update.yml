@@ -47,6 +47,6 @@ jobs:
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
-        with:
-            image-tag: "${short_sha}"
+        # with:
+        #     image-tag: "${short_sha}"
             
