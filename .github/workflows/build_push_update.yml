@@ -1,4 +1,4 @@
-name: "build-push-update"
+name: "Build-push-update"
 
 on:
   push:
