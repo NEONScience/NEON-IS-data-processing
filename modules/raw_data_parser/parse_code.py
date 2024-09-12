@@ -9,9 +9,10 @@ parse_code_dict = {
         'CO2Raw': 'co2_raw',
         'H2ORaw': 'h2o_raw',
         'CO2D': 'co2_molar_density',
-        'H2OD': 'h2o_concentration_density',
+        'H2OD': 'h2o_molar_density',
         'Temp': 'temperature',
         'Pres': 'pressure',
+        'DPres': 'differential_pressure',
         'Cooler': 'cooler',
         'CO2MFd': 'co2_mole_fraction_dry',
         'H2OMFd': 'h2o_mole_fraction_dry',
@@ -23,7 +24,7 @@ parse_code_dict = {
         'H2OAWO': 'h2o_nonabsorbing_wavelength',
         'CO2AW': 'co2_absorbing_wavelength',
         'CO2AWO': 'co2_nonabsorbing_wavelength'
-    },
+},
     'g2131i_raw': {
         'presCavi': 1,
         'tempCavi': 2,
