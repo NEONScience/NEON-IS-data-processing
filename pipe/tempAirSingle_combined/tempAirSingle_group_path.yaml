@@ -51,7 +51,7 @@ input:
     - pfs:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
-        repo: dualfan_location_active_dates_assignment
+        repo: dualfan_location_group_and_restructure
         glob: /dualfan/(*/*/*)
         joinOn: $1
     - pfs:
