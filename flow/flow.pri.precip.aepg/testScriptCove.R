@@ -9,10 +9,10 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
+ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/06/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
- DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
@@ -21,12 +21,12 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
-#DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
 DirOutBase <- "/scratch/pfs/out_tb"
 DirSubCopy <- NULL
-WndwAgr <- '30 min'
+WndwAgr <- '5 min'
 RangeSizeHour <-24
 Envelope <- 1.8
 ThshCountHour <- 15
@@ -63,6 +63,8 @@ if(base::length(DirSubCopy) > 0){
 # Take stock of our data files.
 # !! Try to make more generic, while excluding the manifest.txt file
 fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
+fileFlagsPlau <- base::list.files(dirInFlags,pattern='Plausibility.parquet',full.names=FALSE)
+fileFlagsCal <- base::list.files(dirInFlags,pattern='Cal.parquet',full.names=FALSE)
 
 # Read the datasets
 data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
@@ -71,21 +73,47 @@ data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
                                           Df=TRUE,
                                           log=log)
 
+flagsPlau <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFlagsPlau),
+                                          VarTime='readout_time',
+                                          RmvDupl=TRUE,
+                                          Df=TRUE,
+                                          log=log)
 
+flagsCal <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFlagsCal),
+                                               VarTime='readout_time',
+                                               RmvDupl=TRUE,
+                                               Df=TRUE,
+                                               log=log)
+
+flags <- dplyr::full_join(flagsPlau, flagsCal, by =  'readout_time')
+
+#combine three gauges into one flagging variable. If any are 1 all flagged, any -1 all flagged, else not flagged
+
+flagNames <- names(flags)[grepl(unique(names(flags)), pattern = 'strainGauge')]
+
+flagNames <- unique(sub(pattern='strainGauge[1-3]Depth',replacement='',x=flagNames))
+
+qfs<- flags[, 'readout_time', drop = F]
+
+for (name in flagNames){
+  flags_sub <- flags[,grepl(names(flags), pattern = name)]
+  flagVar <- paste0('strainGaugeDepth', name)
+  qfs[[flagVar]] <- NA
+  flag_0 <- rowSums(flags_sub == 0, na.rm = T)
+  qfs[[flagVar]][flag_0 == ncol(flags_sub)] <- 0
+  flag_1 <- rowSums(flags_sub == 1, na.rm = T)
+  qfs[[flagVar]][flag_1 >=1] <- 1
+  flags_neg1 <- rowSums(flags_sub == -1, na.rm = T)
+  qfs[[flagVar]][is.na(qfs[[flagVar]]) & flags_neg1 >=1] <- -1
+  qfs[[flagVar]][is.na(qfs[[flagVar]])] <- -1
+}
+
+  
 # Aggregate depth streams into a single depth.
 data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F))
 
 data$total_precipitation_depth <- data$total_gauge_weight*50
 data$total_precipitation_depth[is.na(data$strainGaugeDepth)] <- NA
-
-
-
-
-# Load in flags
-
-
-
-
 
 # Do time averaging
 strainGaugeDepthAgr <- data %>%
@@ -97,7 +125,8 @@ strainGaugeDepthAgr <- data %>%
 
 
 # Aggregate flags
-
+flagsAgr <- strainGaugeDepthAgr %>% dplyr::select(startDateTime, endDateTime)
+flagsAgr$insuffDataQF <- 0
 
 # Decision process for aggregated data. How much data went into the time average? Flag or below threshold, or don't use in the smoothing algorithm.
 # Something like 25% of the average.
@@ -202,6 +231,7 @@ for (i in 1:numRow){
     # Skip until there is enough data
     skipping <- TRUE
     currRow <- currRow + 1
+    
 
     #stop at end of data frame
     if (currRow == numRow){
@@ -384,6 +414,8 @@ for (i in 1:numRow){
 # TESTING ONLY
 strainGaugeDepthAgr$precipBulk <- strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1)
 strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precipBulk < 0, 0, precipBulk))
+
+flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
 
 # df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4,7)],id.vars=c('startDateTime'))
 df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4)],id.vars=c('startDateTime'))
