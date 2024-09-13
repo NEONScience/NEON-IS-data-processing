@@ -2,9 +2,9 @@
 #!/usr/bin/env bash
 image_name=group_loader
 tag=$(git rev-parse --short HEAD)
-cd ./modules
-docker build -t $image_name:latest -f ./group_loader/Dockerfile .
+#cd ./modules
+docker build -t $image_name:latest -f ./modules/group_loader/Dockerfile .
 docker tag $image_name quay.io/battelleecology/$image_name:$tag
 docker push quay.io/battelleecology/$image_name:$tag
-cd ..
+#cd ..
 Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "quay.io/battelleecology/$image_name" "$tag"
