@@ -1,10 +1,9 @@
-name: "Build-push-update"
+name: "Build-push-update_errored_datums_reader"
 
 on:
   push:
-    branches:
-      - 'master'
-  workflow_dispatch:
+    # branches:
+    #   - 'master'
     tags:
       - "errored_datums_reader/v*.*.*"
 
@@ -25,7 +24,7 @@ env:
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
   MODULE_NAME: errored_datums_reader
-  IMAGE_NAME: neon-is-err-datums-reader
+  IMAGE_NAME: neon-is-err-datum-reader
 
 jobs:
   deploy:
