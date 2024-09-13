@@ -6,7 +6,7 @@ on:
       - 'master'
   workflow_dispatch:
     tags:
-      - "group_loader/v*.*.*"
+      - "errored_datums_reader/v*.*.*"
   
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -25,8 +25,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: group_loader
-  IMAGE_NAME: neon-is-group-loader
+  MODULE_NAME: errored_datums_reader
+  IMAGE_NAME: neon-is-err-datums-reader
   # git tag
   # semver
 
