@@ -2,7 +2,9 @@
 #!/usr/bin/env bash
 image_name=location_loader
 tag=$(git rev-parse --short HEAD)
-docker build --no-cache -t $image_name:latest -f ./modules/location_loader/Dockerfile .
+cd ./modules
+docker build -t $image_name:latest -f ./location_loader/Dockerfile .
 docker tag $image_name quay.io/battelleecology/$image_name:$tag
 docker push quay.io/battelleecology/$image_name:$tag
+cd ..
 Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "quay.io/battelleecology/$image_name" "$tag"
