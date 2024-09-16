@@ -84,5 +84,5 @@ runs:
           git add  -u .
           git commit -m "pipeline specifications updated"  || echo "No pipeline specifications updated"
           git push origin deployment-candidate-${{ env.MODULE_NAME }} || echo "No changes to commit"
-          gh pr create --title 'Deployment Candidate: ${{ env.MODULE_NAME }}' --body "Auto-created by Github action" --base master --head deployment-candidate-${{ env.MODULE_NAME }} --reviewer neon-is-data-processing-admin
+          gh pr create --title 'Deployment Candidate: ${{ env.MODULE_NAME }}' --body "Auto-created by Github action" --base master --head deployment-candidate-${{ env.MODULE_NAME }} --reviewer @NEONScience/neon-is-data-processing-admin
           
