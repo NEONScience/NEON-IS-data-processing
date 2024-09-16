@@ -1,11 +1,6 @@
 name: "Build a module, push the image and update pipeline spec yamls"
 description: "Builds the module, pushes the image to Artifact Registry"
 
-
-# inputs:
-#   image-tag:
-#     required: true
-
 runs:
    using: "composite"
    steps: 

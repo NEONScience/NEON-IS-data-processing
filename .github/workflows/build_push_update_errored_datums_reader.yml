@@ -28,7 +28,7 @@ env:
   IMAGE_NAME: neon-is-err-datum-reader
 
 jobs:
-  deploy:
+  build-push-update:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
