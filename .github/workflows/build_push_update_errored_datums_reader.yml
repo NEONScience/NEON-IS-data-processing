@@ -6,7 +6,10 @@ on:
     #   - 'master'
     tags:
       - "errored_datums_reader/v*.*.*"
-
+permissions:
+  contents: write
+  pull-requests: write
+  
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
