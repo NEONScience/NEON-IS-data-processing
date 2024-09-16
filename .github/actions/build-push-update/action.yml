@@ -85,7 +85,7 @@ runs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          branch: "deployment-candidate-${{ env.MODULE_NAME }}""
+          branch: "deployment-candidate-${{ env.MODULE_NAME }}"
           delete-branch: true
           title: 'Deployment Candidate: ${{ env.MODULE_NAME }}'
           body: |
