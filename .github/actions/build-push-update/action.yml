@@ -60,10 +60,7 @@ runs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
             packages: |
-              any::usethis
-              any::dplyr
-              any::rlang
-              any::tidyverse
+              any::fs
 
       - name: Update pipeline spec yamls
         shell: bash
