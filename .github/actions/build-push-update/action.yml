@@ -66,13 +66,14 @@ runs:
         shell: bash
         run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
 
-      - name: Commit the pipeline yamls
+      - name: Commit the pipeline yamls to a new PR
         shell: bash
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
+          git checkout -b release-candidate-${{ env.MODULE_NAME }}
           git diff --name-only
           git add  -u .
           git commit -m "pipeline yamls updated"  || echo "No yamls updated"
-          git push origin   || echo "No changes to commit"
+          git push origin release-candidate-${{ env.MODULE_NAME }} || echo "No changes to commit"
         
