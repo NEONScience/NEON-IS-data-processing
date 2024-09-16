@@ -9,6 +9,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # Use github and google registries
   GHCR_REGISTRY: ghcr.io
   GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
@@ -47,6 +48,5 @@ jobs:
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
-        # with:
-        #     image-tag: "${short_sha}"
+
             
