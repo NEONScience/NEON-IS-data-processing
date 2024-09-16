@@ -78,11 +78,10 @@ runs:
           git push origin --delete deployment-candidate-${{ env.MODULE_NAME }} || echo "No existing branch deployment-candidate-${{ env.MODULE_NAME }}"
           echo "If branch deployment-candidate-${{ env.MODULE_NAME }} existed, it was deleted."
           git checkout -b deployment-candidate-${{ env.MODULE_NAME }}
-          echo "Checked out new branch deployment-candidate-${{ env.MODULE_NAME }}"
           echo "Changed files to be committed:"
           git diff --name-only
           git add  -u .
           git commit -m "pipeline specifications updated"  || echo "No pipeline specifications updated"
           git push origin deployment-candidate-${{ env.MODULE_NAME }} || echo "No changes to commit"
-          gh pr create --title 'Deployment Candidate: ${{ env.MODULE_NAME }}' --body "Auto-created by Github action" --base master --head deployment-candidate-${{ env.MODULE_NAME }}
+          gh pr create --title 'Deployment Candidate: ${{ env.MODULE_NAME }}' --body "Auto-created by Github action" --base master --head "deployment-candidate-${{ env.MODULE_NAME }}"
           
