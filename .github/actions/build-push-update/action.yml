@@ -69,6 +69,10 @@ runs:
       - name: Commit the pipeline yamls to a new PR
         shell: bash
         run: |
+          # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+          set -euo pipefail
+          IFS=$'\n\t'
+          testCommandFail
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
           git checkout -b release-candidate-${{ env.MODULE_NAME }}
