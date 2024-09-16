@@ -35,7 +35,7 @@ input:
   cron:
     name: tick
     spec: "@daily"
-    # overwrite: true
+    overwrite: true
 autoscaling: true
 resource_requests:
   memory: 120M
