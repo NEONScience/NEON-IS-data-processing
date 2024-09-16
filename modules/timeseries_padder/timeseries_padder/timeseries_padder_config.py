@@ -15,6 +15,7 @@ class Config(NamedTuple):
     location_index: int
     data_type_index: int
     relative_path_index: int
+    data_dir = 'data'
     threshold_dir = 'threshold'
     location_dir = 'location'
     location_file_extension = '.json'
