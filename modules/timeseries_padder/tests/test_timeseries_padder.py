@@ -15,7 +15,7 @@ class TimeSeriesPadTest(TestCase):
         """Set required files in mock filesystem."""
         self.setUpPyfakefs()
         self.out_path = Path('/tmp/out')
-        self.pad_dirs = ['tmp']
+        self.pad_dirs = ['data']
         self.copy_dirs = ['copy_data1','copy_data2']
         self.non_copy_dir = 'non_copy'
         location = 'CFGLOC112154'
