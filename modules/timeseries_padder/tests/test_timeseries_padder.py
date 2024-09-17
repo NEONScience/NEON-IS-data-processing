@@ -16,6 +16,7 @@ class TimeSeriesPadTest(TestCase):
         self.setUpPyfakefs()
         self.out_path = Path('/tmp/out')
         self.pad_dirs = ['data']
+        self.data_dir = 'data'
         self.copy_dirs = ['copy_data1','copy_data2']
         self.non_copy_dir = 'non_copy'
         location = 'CFGLOC112154'
@@ -27,7 +28,7 @@ class TimeSeriesPadTest(TestCase):
         self.metadata_path = Path(month_path, day, location)
         #  data file
         self.data_filename = f'prt_{location}_2018-01-{day}.ext'
-        data_path = Path(input_root, self.metadata_path, Config.data_dir, self.data_filename)
+        data_path = Path(input_root, self.metadata_path, self.data_dir, self.data_filename)
         self.fs.create_file(data_path)
         for i in self.copy_dirs:
             other_data_path = Path(input_root, self.metadata_path, i, self.data_filename)
@@ -94,8 +95,8 @@ class TimeSeriesPadTest(TestCase):
         not_exists_data_path = Path(self.out_path, 'prt/2018/01/01/CFGLOC112154/data', self.data_filename)
         previous_data_path = Path(self.out_path, 'prt/2018/01/02/CFGLOC112154/data', self.data_filename)
         next_data_path = Path(self.out_path, 'prt/2018/01/04/CFGLOC112154/data', self.data_filename)
-        data_path = Path(self.out_path, self.metadata_path, Config.data_dir, self.data_filename)
-        manifest_path = Path(self.out_path, self.metadata_path, Config.data_dir, Config.manifest_filename)
+        data_path = Path(self.out_path, self.metadata_path, self.data_dir, self.data_filename)
+        manifest_path = Path(self.out_path, self.metadata_path, self.data_dir, Config.manifest_filename)
         threshold_path = Path(self.out_path, self.metadata_path, Config.threshold_dir, Config.threshold_filename)
         print(f'data_path: {data_path}')
         print(f'manifest_path: {manifest_path}')
