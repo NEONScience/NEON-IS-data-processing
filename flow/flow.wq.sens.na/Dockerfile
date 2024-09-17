@@ -17,7 +17,7 @@ RUN groupadd app && \
 WORKDIR /home/app
 
 # Copy in application code
-COPY ./flow.qaqc.wq.sens.na.R .
+COPY ./flow.wq.sens.na.R .
 
 # Run as app user
 RUN chown app:app -R /home/app
