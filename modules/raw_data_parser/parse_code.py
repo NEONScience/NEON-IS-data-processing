@@ -49,5 +49,19 @@ parse_code_dict = {
         'd18OWater': 10,
         'd2HWater': 11,
         'N2Flag': 13
+    },
+    'pluvio_raw': {
+        'intensity_rt': 1,
+        'accu_rt_nrt': 2,
+        'accu_nrt': 3,
+        'accu_total_nrt': 4,
+        'bucket_rt': 5,
+        'bucket_nrt': 6,
+        'cell_temperature': 7,
+        'heater_status': 8,
+        'sensorStatus': 9,
+        'electronics_temperature': 10,
+        'supply_voltage': 11,
+        'inletTemp': 12
     }
 }

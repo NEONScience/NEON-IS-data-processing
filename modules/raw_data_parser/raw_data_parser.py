@@ -43,7 +43,7 @@ def parse_raw(source_type: str, parse_field: str, data_path: Path, out_path: Pat
 def sensor_parse(df: pd.DataFrame, source_type: str, parse_field: str) -> pd.DataFrame:
     parser = parse_code_dict.get(source_type)
 
-    if source_type.lower() == 'li7200_raw':
+    if source_type.lower() == 'li7200_raw' or 'pluvio_raw':
         # extract_and_rename(data_string: str, name_mapping: dict):
         extracted_df = df[parse_field].apply(lambda x: extract_and_rename(x, parser))
         # Convert the series of dictionaries into a DataFrame
