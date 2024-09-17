@@ -51,17 +51,17 @@ parse_code_dict = {
         'N2Flag': 13
     },
     'pluvio_raw': {
-        'intensity_rt': 1,
-        'accu_rt_nrt': 2,
-        'accu_nrt': 3,
-        'accu_total_nrt': 4,
-        'bucket_rt': 5,
-        'bucket_nrt': 6,
-        'cell_temperature': 7,
-        'heater_status': 8,
-        'sensorStatus': 9,
-        'electronics_temperature': 10,
-        'supply_voltage': 11,
-        'inletTemp': 12
+        'intensity_rt': 0,
+        'accu_rt_nrt': 1,
+        'accu_nrt': 2,
+        'accu_total_nrt': 3,
+        'bucket_rt': 4,
+        'bucket_nrt': 5,
+        'cell_temperature': 6,
+        'heater_status': 7,
+        'sensorStatus': 8,
+        'electronics_temperature': 9,
+        'supply_voltage': 10,
+        'inletTemp': 11
     }
 }
