@@ -16,7 +16,7 @@ class TimeSeriesPadTest(TestCase):
         self.setUpPyfakefs()
         self.out_path = Path('/tmp/out')
         self.pad_dirs = ['data']
-        self.data_dir = 'data'
+        self.data_dir = self.pad_dirs[0]
         self.copy_dirs = ['copy_data1','copy_data2']
         self.non_copy_dir = 'non_copy'
         location = 'CFGLOC112154'
