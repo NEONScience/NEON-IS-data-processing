@@ -59,7 +59,7 @@ def sensor_parse(df: pd.DataFrame, source_type: str, parse_field: str) -> pd.Dat
         return out_df
         
         
-def extract_pulvio_data(input_string: str, name_mapping: dict):
+def extract_pluvio_data(input_string: str, name_mapping: dict):
     # Split the input string by semicolons to get key-value pairs
     raw_data = input_string.split(';')
 
