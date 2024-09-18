@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - 'master'
-    paths:
-      - 'modules/calval_loader/*'
+    # paths:
+    #   - 'modules/calval_loader/*'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
