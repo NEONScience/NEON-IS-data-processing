@@ -67,7 +67,6 @@ runs:
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
           set -euo pipefail
           IFS=$'\n\t'
-          git checkout choim-calval-loader
           git config --local user.email "actions@github.com"
           git config --local user.name "gitHub Actions"
           # Delete out any previous deployment candidate branch

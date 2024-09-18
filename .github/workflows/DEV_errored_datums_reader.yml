@@ -3,7 +3,7 @@ name: "Build-push-update_calval-loader"
 on:
   push:
     branches:
-      - 'choim-calval-loader'
+      - 'master'
     paths:
       - 'modules/calval_loader/*'
   workflow_dispatch: {} # Allows trigger of workflow from web interface

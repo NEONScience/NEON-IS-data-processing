@@ -2,12 +2,10 @@ name: "Build-push-update_calval-loader"
 
 on:
   push:
-    branches:
-      - 'master'
-    paths:
-      - 'modules/calval_loader/*'
-  workflow_dispatch: {} # Allows trigger of workflow from web interface
-  
+    # branches:
+    #   - 'master'
+    tags:
+      - "calval_loader/v*.*.*"
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
