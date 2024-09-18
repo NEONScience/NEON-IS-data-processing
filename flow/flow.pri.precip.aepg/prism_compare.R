@@ -1,7 +1,7 @@
 ##some prism comps with output from smoothing function 
 # library(dplyr)
 
-site <- 'ONAQ'
+site <- 'UNDE'
 # dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_minEvap_15.5'
 # Div <- .75 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
 dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_zeroCal'
@@ -19,14 +19,15 @@ strainGaugeDepthAgr <- NEONprocIS.base::def.read.parq.ds(fileIn = filesSite,Var=
 
 ### pull in prism data
 # site <- stringr::str_extract(DirIn, pattern= '[A-Z]{4}')
-prism_files <- list.files('/scratch/prism', full.names = T)
+prism_files <- list.files('/scratch/prism/current', full.names = T)
+prism_files <- list.files('/scratch/prism/current', full.names = T)
 
 file <- stringr::str_subset(prism_files, pattern = site)
 prism <- readr::read_csv(file)
 # strainGaugeDepthAgr_prism <- strainGaugeDepthAgrRglr %>%
 strainGaugeDepthAgr_prism <- strainGaugeDepthAgr %>%
   #prism day is 12:00 UTC DATE - 24HR so adjust time window on NEON data to make comparison
-  mutate(startDateTime = startDateTime + 12*60*60) %>%
+  mutate(startDateTime = startDateTime - 12*60*60) %>%
   mutate(startDate = lubridate::floor_date(startDateTime, '1 day')) %>%
   group_by(startDate) %>%
   summarise(dailyPrecipNEON = sum(precipBulk)/Div) %>%

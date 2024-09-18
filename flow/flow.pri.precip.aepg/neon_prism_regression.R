@@ -1,7 +1,7 @@
 ##some prism comps with output from smoothing function 
-old = F
+old = T
 if (old){
-dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_zeroCal/'
+dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_zeroCal/2023'
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='*.parquet',recursive=TRUE,full.names=TRUE)
@@ -38,8 +38,8 @@ for (site in slopes$sites){
     
     ### pull in prism data
     # site <- stringr::str_extract(DirIn, pattern= '[A-Z]{4}')
-    prism_files <- list.files('/scratch/prism', full.names = T)
-    prism_files <- list.files('/scratch/prism', full.names = T)
+    prism_files <- list.files('/scratch/prism/current', full.names = T)
+    prism_files <- list.files('/scratch/prism/current', full.names = T)
     
     
     file <- stringr::str_subset(prism_files, pattern = site)
@@ -47,8 +47,8 @@ for (site in slopes$sites){
     
     strainGaugeDepthAgr_prism <- strainGaugeDepthAgr %>%
       #prism day is 12:00 UTC DATE - 24HR so adjust time window on NEON data to make comparison
-       mutate(startDateTime = startDateTime + 12*60*60,
-               endDateTime = startDateTime + 12*60*60) %>%
+       mutate(startDateTime = startDateTime - 12*60*60,
+               endDateTime = startDateTime - 12*60*60) %>%
       mutate(startDate = lubridate::floor_date(startDateTime, '1 day')) %>%
       group_by(startDate) %>%
       summarise(dailyPrecipNEON = sum(precipBulk))
