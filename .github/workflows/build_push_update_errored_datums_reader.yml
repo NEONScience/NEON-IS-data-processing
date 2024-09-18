@@ -1,12 +1,10 @@
-name: "Build-push-update_calval-loader"
+name: "Build-push-update_errored_datums_reader"
 
 on:
-  # push:
+  push:
     # branches:
     #   - 'master'
-
-  workflow_dispatch: {} # Allows trigger of workflow from web interface
-      tags:
+    tags:
       - "calval_loader/v*.*.*"
   
 env:
@@ -52,5 +50,3 @@ jobs:
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
-
-            
