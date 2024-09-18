@@ -59,7 +59,7 @@ runs:
 
       - name: Update pipeline spec yamls
         shell: bash
-        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "quay.io/battelleecology/neon-cval-loader:354779bc" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
 
       - name: Commit the pipeline yamls to a new PR
         shell: bash
@@ -78,5 +78,5 @@ runs:
           git add  -u .
           git commit -m "pipeline specifications updated"  || echo "No pipeline specifications updated"
           git push origin deployment-candidate-${{ env.MODULE_NAME }} || echo "No changes to commit"
-        #  gh pr create --title 'Deployment Candidate: ${{ env.MODULE_NAME }}' --body "Auto-created by Github action" --base master --head "deployment-candidate-${{ env.MODULE_NAME }}"
+          gh pr create --title 'Deployment Candidate: ${{ env.MODULE_NAME }}' --body "Auto-created by Github action" --base master --head "deployment-candidate-${{ env.MODULE_NAME }}"
           
