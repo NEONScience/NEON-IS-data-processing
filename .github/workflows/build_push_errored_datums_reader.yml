@@ -1,4 +1,4 @@
-name: "Build-push_errored_datums_reader"
+name: "Build-push_calval-loader"
 
 on:
   push:
@@ -22,8 +22,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: errored_datums_reader
-  IMAGE_NAME: neon-is-err-datum-reader
+  MODULE_NAME: calval_loader
+  IMAGE_NAME: neon-is-calval-loader
 
 jobs:
   build-push:
