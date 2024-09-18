@@ -1,12 +1,14 @@
 name: "Build-push_calval-loader"
 
 on:
-  push:
-    branches:
-      - 'master'
-    paths:
-      - 'modules/errored_datums_reader/*'
+  # push:
+  #   branches:
+  #     - 'master'
+  #   paths:
+  #     - 'modules/errored_datums_reader/*'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
+      tags:
+      - "calval_loader/v*.*.*"
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
