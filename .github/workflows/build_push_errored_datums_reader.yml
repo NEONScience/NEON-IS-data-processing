@@ -1,11 +1,11 @@
 name: "Build-push_calval-loader"
 
 on:
-  # push:
-  #   branches:
-  #     - 'master'
-    # paths:
-    #   - 'modules/calval_loader/*'
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'modules/calval_loader/*'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
