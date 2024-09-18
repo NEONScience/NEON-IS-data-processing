@@ -1,4 +1,4 @@
-name: "Build-push-update_errored_datums_reader"
+name: "Build-push-update_calval-loader"
 
 on:
   push:
