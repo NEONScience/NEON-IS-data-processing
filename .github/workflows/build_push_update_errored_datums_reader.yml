@@ -3,10 +3,10 @@ name: "Build-push-update_context-filter"
 on:
   push:
     branches:
-      - 'master'
-    tags:
-      - "context-filter/v*.*.*"
-  workflow_dispatch: {} # Allows trigger of workflow from web interface      
+      - 'choim-context-filter'
+    paths:
+      - 'modules/calval_loader/*'
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
   
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -51,5 +51,3 @@ jobs:
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
-
-            
