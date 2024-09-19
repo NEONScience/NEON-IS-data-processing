@@ -2,8 +2,8 @@ name: "Build-push-update_context-filter"
 
 on:
   push:
-    # branches:
-    #   - 'master'
+    branches:
+      - 'master'
     tags:
       - "context-filter/v*.*.*"
   workflow_dispatch: {} # Allows trigger of workflow from web interface      
