@@ -3,10 +3,7 @@
     "name": "waterQuality_exo2_buoyprofiling_context_filter"
   },
   "transform": {
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
-    "image": "quay.io/battelleecology/context_filter:28",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-context-filter:sha-3bc6a63",
     "cmd": [
       "/bin/bash"
     ],
