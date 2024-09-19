@@ -1,11 +1,11 @@
-name: "Build-push_errored_datums_reader"
+name: "Build-push_context-filter"
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'modules/errored_datums_reader/*'
+      - 'modules/context-filter/*'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,8 +22,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: errored_datums_reader
-  IMAGE_NAME: neon-is-err-datum-reader
+  MODULE_NAME: context_filter
+  IMAGE_NAME: neon-is-context-filter
 
 jobs:
   build-push:
@@ -40,7 +40,7 @@ jobs:
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Build push and update
+      - name: Build and push
         uses: ./.github/actions/build-push
         with:
             image-tag: "${short_sha}"
