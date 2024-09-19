@@ -433,8 +433,8 @@ plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
 print(Envelope)
 
-# Post-precip computation
-# Soft flag for max precip over the averaging interval
+# Post-precip computation 
+# Soft flag for max precip over 60-min
 flagsAgr$ExtremePrecipQF[strainGaugeDepthAgr$precipBulk > ExtremePrecipMax] <- 1
 # TODO: Consider adding detection limit flag for low precip (likely to be algorithm-induced)
 
