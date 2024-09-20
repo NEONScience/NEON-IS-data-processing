@@ -2,10 +2,10 @@ name: "Build-push-update_context_filter"
 
 on:
   push:
-    # branches:
-    #   - 'master'
-    tags:
-      - "context_filter/v*.*.*"
+    branches:
+      - 'master'
+
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
   
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
