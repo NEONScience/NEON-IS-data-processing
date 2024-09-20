@@ -1,11 +1,11 @@
-name: "Build-push-update_context-filter"
+name: "Build-push-update_context_filter"
 
 on:
   push:
     # branches:
     #   - 'master'
     tags:
-      - "context-filter/v*.*.*"
+      - "context_filter/v*.*.*"
   
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
