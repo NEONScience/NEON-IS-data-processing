@@ -200,28 +200,28 @@ input:
   - pfs:
       name: QUALITY_METRICS_PATH
       repo: groundwaterPhysical_qm_avg_inst_group_compute
-      glob: /(2016|2017|2018|2019)/(*)/(*)
+      glob: /(2016|2017|2018|2019|2020)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: groundwaterPhysical_stats_ucrt_group_and_compute
-      glob: /(2016|2017|2018|2019)/(*)/(*)
+      glob: /(2016|2017|2018|2019|2020)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: GROUP_PATH
       repo: groundwaterPhysical_group_path
-      glob: /(2016|2017|2018|2019)/(*)/(*)
+      glob: /(2016|2017|2018|2019|2020)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: SRF_PATH
       repo: groundwaterPhysical_srf_assignment
-      glob: /(2016|2017|2018|2019)/(*)/(*)
+      glob: /(2016|2017|2018|2019|2020)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
