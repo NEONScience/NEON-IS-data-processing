@@ -4,9 +4,7 @@ on:
   push:
     branches:
       - 'master'
-    tags:
-      - "array_parser/v*.*.*"
-      
+
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
