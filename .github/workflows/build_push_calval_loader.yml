@@ -1,4 +1,4 @@
-name: "Build-push_calval-loader"
+name: "Build-push_calval_loader"
 
 on:
   push:
