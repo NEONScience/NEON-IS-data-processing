@@ -1,15 +1,14 @@
-name: "Build-push_errored_datums_reader"
+name: "Build-push-update_array_parser"
 
 on:
   push:
-    branches:
-      - 'master'
-    paths:
-      - 'modules/errored_datums_reader/*'
-  workflow_dispatch: {} # Allows trigger of workflow from web interface
-
+    # branches:
+    #   - 'master'
+    tags:
+      - "array_parser/v*.*.*"
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # Use github and google registries
   GHCR_REGISTRY: ghcr.io
   GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
@@ -19,29 +18,34 @@ env:
   GHCR_NS: battelleecology
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  # IMAGE_NAME: ${{ github.repository }}
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: errored_datums_reader
-  IMAGE_NAME: neon-is-err-datum-reader
+  MODULE_NAME: array_parser
+  IMAGE_NAME: neon-is-array-parser
 
 jobs:
-  build-push:
+  build-push-update:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
         id-token: 'write'
+        pull-requests: 'write'
+
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
+          ref: 'master'
           fetch-depth: '0'
 
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
+      - name: Get semver
+        run:  echo "semver=$(git describe --tags --abbrev=0 | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+
       - name: Build push and update
-        uses: ./.github/actions/build-push
-        with:
-            image-tag: "${short_sha}"
-            
+        uses: ./.github/actions/build-push-update
