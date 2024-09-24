@@ -60,6 +60,7 @@ runs:
       - name: Update pipeline spec yamls
         shell: bash
         run: Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+        run: Rscript ./utilities/flow.img.updt.R "./pipe" ".json" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
 
       - name: Commit the pipeline yamls to a new PR
         shell: bash
