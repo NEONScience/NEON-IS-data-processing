@@ -16,11 +16,11 @@ arg <- base::commandArgs(trailingOnly = TRUE)
 
 # Run interatively without command line arguments
 if(length(arg) == 0){
-  pathBgn <- '~/R/NEON-IS-data-processing-homeDir/'
-  typeFile <- 'Dockerfile' # also, e.g. ".yaml"
-  imgBase <- "quay.io/battelleecology/neon-is-pack-stat-r" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
-  tagNew <- "v1.1.1"
-  ImgBld <- TRUE # Build,tag, push downstream module images and update pipeline specs?
+  pathBgn <- '~/R/NEON-IS-data-processing-homeDir/pipe/'
+  typeFile <- 'json' # also, e.g. 'Dockerfile' or ".yaml"
+  imgBase <- "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-context-filter" # repo and base name without the tag (e.g. quay.io/battelleecology/neon-is-base-r) 
+  tagNew <- "v3.0.0"
+  ImgBld <- FALSE # Build,tag, push downstream module images and update pipeline specs?
 } else {
   pathBgn <- arg[1]
   typeFile <- arg[2]
@@ -34,7 +34,8 @@ if(length(arg) == 0){
 setwd(pathBgn)
 imgGrep <- gsub(pattern='.',replacement='\\.',x=imgBase,fixed=TRUE)
 imgGrep <- gsub(pattern='/',replacement='\\/',x=imgGrep,fixed=TRUE)
-imgGrep <- paste0(imgGrep,'\\:\\S+')
+# imgGrep <- paste0(imgGrep,'\\:\\S+')
+imgGrep <- paste0(imgGrep,'\\:(*[^\\"])+')
 imgRepl <- paste0(imgBase,':',tagNew)
 
 # Find all of the indicated file type
