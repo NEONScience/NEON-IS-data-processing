@@ -143,7 +143,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   ThshChange = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking maximum consecutive points (n)']
   ChangeFactor = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking MAD']
   ChangeFactorEvap = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking window step - points.']
-  Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Range Threshold Soft Max']
+  Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Persistence (change)']
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
   

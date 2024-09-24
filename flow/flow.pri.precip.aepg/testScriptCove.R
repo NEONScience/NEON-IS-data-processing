@@ -7,15 +7,15 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/04/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
- DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
+ # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/06/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/10/19/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
@@ -26,15 +26,16 @@
 
 DirOutBase <- "/scratch/pfs/out_tb"
 DirSubCopy <- NULL
-WndwAgr <- '5 min'
-RangeSizeHour <-24
-Envelope <- 1.8
+WndwAgr <- '60 min'
+RangeSizeHour <-48
+Envelope <- 8
 ThshCountHour <- 15
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
 ChangeFactor <- 1
 ChangeFactorEvap <- 0.5
 Recharge <- 20
+ExtremePrecipMax <- 20
 
 # Start logging
 log <- NEONprocIS.base::def.log.init(Lvl='debug')
@@ -108,28 +109,33 @@ for (name in flagNames){
   qfs[[flagVar]][is.na(qfs[[flagVar]])] <- -1
 }
 
-  
-# Aggregate depth streams into a single depth.
-data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F))
 
-data$total_precipitation_depth <- data$total_gauge_weight*50
-data$total_precipitation_depth[is.na(data$strainGaugeDepth)] <- NA
+# Aggregate depth streams into a single depth.
+data$strain_gauge1_stability[is.na(data$strainGauge1Depth)] <- NA
+data$strain_gauge2_stability[is.na(data$strainGauge2Depth)] <- NA
+data$strain_gauge3_stability[is.na(data$strainGauge3Depth)] <- NA
+data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F),
+                               strainGaugeStability = base::rowSums(x=base::cbind(strain_gauge1_stability, strain_gauge2_stability, strain_gauge3_stability), na.rm = F)==3)
+data$strainGaugeDepth[data$strainGaugeStability == FALSE] <- NA
 
 # Do time averaging
 strainGaugeDepthAgr <- data %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
   dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
   dplyr::group_by(startDateTime,endDateTime) %>%
-  dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T))
-  # dplyr::summarise(strainGaugeDepth = mean(total_precipitation_depth, na.rm = T))
+  dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),
+                   strainGaugeStability = dplyr::if_else(all(is.na(strainGaugeStability)),NA,all(strainGaugeStability==TRUE, na.rm = T))) 
 
 
 # Aggregate flags
 flagsAgr <- strainGaugeDepthAgr %>% dplyr::select(startDateTime, endDateTime)
 flagsAgr$insuffDataQF <- 0
+flagsAgr$ExtremePrecipQF <- 0
+flagsAgr$DielNoiseQF <- 0
+flagsAgr$strainGaugeStabilityQF <- 0
+flagsAgr$strainGaugeStabilityQF[strainGaugeDepthAgr$strainGaugeStability == FALSE] <- 1 # Probably make informational flag b/c we removed unstable values
 
-# Decision process for aggregated data. How much data went into the time average? Flag or below threshold, or don't use in the smoothing algorithm.
-# Something like 25% of the average.
+
 
 # -------------- BEGIN EXPERIMENTAL ---------------
 
@@ -180,7 +186,9 @@ if(any(setNoRain)){
 # -------------- END EXPERIMENTAL ---------------
 
 
-# !!!! Do/add summarization of stability, temp stuff, flags (in different data frame) !!!!
+# !!!! Do/add summarization of stability, temp stuff (decide not to flag b/c not using temp compensation), flags (in different data frame) !!!!
+
+
 
 #adjust thresholds based on WndwAgr unit
 WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
@@ -375,6 +383,8 @@ for (i in 1:numRow){
     # bench <- raw_med_lastDay
     bench <- raw_min_lastDay
     precipType <- 'EvapAdj'
+    
+    # TODO: CONSIDER adding flagging for strong evaporation. Could also be informational flag.
 
   } else if ((bench - raw) > Recharge){
     # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
@@ -418,10 +428,17 @@ strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precip
 flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
 
 # df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4,7)],id.vars=c('startDateTime'))
-df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4)],id.vars=c('startDateTime'))
+df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGaugeDepth','bench')],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
 print(Envelope)
-# Post-precip computation
-# Hard and soft thresholds for max precip over the averaging interval
+
+# Post-precip computation 
+# Soft flag for max precip over 60-min
+flagsAgr$ExtremePrecipQF[strainGaugeDepthAgr$precipBulk > ExtremePrecipMax] <- 1
+# TODO: Consider adding detection limit flag for low precip (likely to be algorithm-induced)
+
 # Envelope == Massive --> Flag all the data
+if(Envelope > 10){
+  flagsAgr$DielNoiseQF <- 1
+}
