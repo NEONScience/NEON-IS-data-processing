@@ -2,9 +2,8 @@ name: "Build-push-update_date_gap_filler"
 
 on:
   push:
-    branches:
-      - 'master'
-  workflow_dispatch:
+    # branches:
+    #   - 'master'
     tags:
       - "date_gap_filler/v*.*.*"
 env:
