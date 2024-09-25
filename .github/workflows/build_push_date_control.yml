@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/date_gap_filler/*'
+      - 'modules/cron_daily_and_date_control/*'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
