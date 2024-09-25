@@ -3,7 +3,7 @@ name: "Build-push-update_date_gap_filler"
 on:
   push:
     branches:
-      - 'master'
+      - 'choim-date-gap-fill'
   workflow_dispatch:
     tags:
       - "date_gap_filler/v*.*.*"
