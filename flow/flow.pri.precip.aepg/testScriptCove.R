@@ -1,4 +1,4 @@
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2016/12/01/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
+#DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/09/01/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
@@ -7,10 +7,10 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/04/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/04/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
  # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/06/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2021/09/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
@@ -26,9 +26,9 @@ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/04/01/precip-weigh
 
 DirOutBase <- "/scratch/pfs/out_tb"
 DirSubCopy <- NULL
-WndwAgr <- '60 min'
-RangeSizeHour <-48
-Envelope <- 8
+WndwAgr <- '5 min'
+RangeSizeHour <- 24
+Envelope <- 1.8
 ThshCountHour <- 15
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
@@ -118,27 +118,70 @@ data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(s
                                strainGaugeStability = base::rowSums(x=base::cbind(strain_gauge1_stability, strain_gauge2_stability, strain_gauge3_stability), na.rm = F)==3)
 data$strainGaugeDepth[data$strainGaugeStability == FALSE] <- NA
 
+#if there are no heater streams add them in as NA
+if(!('internal_temperature' %in% names(data))){data$internal_temperature <- as.numeric(NA)}
+if(!('inlet_temperature' %in% names(data))){data$inlet_temperature <- as.numeric(NA)}
+if(!('orifice_heater_flag' %in% names(data))){data$orifice_heater_flag <- as.numeric(NA)}
+
 # Do time averaging
+
+#adjust thresholds based on WndwAgr unit
+WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
+if(stringr::str_detect(WndwAgr, 'min')) {
+  ThshCount <- ThshCountHour * (60/WndwAgrNumc)
+  rangeSize <- RangeSizeHour*(60/WndwAgrNumc)   #!!! POTENTIAL FOR MAKING AN INPUT VARIABLE !!!
+  if(WndwAgrNumc > 60 | WndwAgrNumc < 5){
+    log$fatal('averaging unit must be between 5 minutes and one hour')
+    stop()
+  }
+} else if ((stringr::str_detect(WndwAgr, 'hour')) ){
+  ThshCount <- ThshCountHour/WndwAgrNumc
+  rangeSize <- RangeSizeHour/WndwAgrNumc #account for evap in last 24 hours
+  if(WndwAgrNumc > 1 | WndwAgrNumc < (5/60)){
+    log$fatal('averaging unit must be between 5 minutes and one hour')
+    stop()
+  }
+} else {
+  log$fatal('averaging unit needs to be in minutes (min) or hours (hour)')
+  stop()
+}
+
+
 strainGaugeDepthAgr <- data %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
   dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
   dplyr::group_by(startDateTime,endDateTime) %>%
   dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),
-                   strainGaugeStability = dplyr::if_else(all(is.na(strainGaugeStability)),NA,all(strainGaugeStability==TRUE, na.rm = T))) 
+                   strainGaugeStability = dplyr::if_else(all(is.na(strainGaugeStability)),NA,all(strainGaugeStability==TRUE, na.rm = T)),
+                   inletTemperature = mean(inlet_temperature, na.rm = T),
+                   internalTemperature = mean(internal_temperature, na.rm = T), 
+                   orificeHeaterFlag = max(orifice_heater_flag, na.rm = F), #used to see if heater was on when temps were above heating threshold (heaterErrorQF)
+                   inletHeater1QM = round((length(which(orifice_heater_flag == 100))/dplyr::n())*100,0),
+                   inletHeater2QM = round((length(which(orifice_heater_flag == 110))/dplyr::n())*100,0), 
+                   inletHeater3QM = round((length(which(orifice_heater_flag == 111))/dplyr::n())*100,0),
+                   inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,0)) 
 
 
 # Aggregate flags
 flagsAgr <- strainGaugeDepthAgr %>% dplyr::select(startDateTime, endDateTime)
 flagsAgr$insuffDataQF <- 0
-flagsAgr$ExtremePrecipQF <- 0
-flagsAgr$DielNoiseQF <- 0
+flagsAgr$extremePrecipQF <- 0
+flagsAgr$dielNoiseQF <- 0
 flagsAgr$strainGaugeStabilityQF <- 0
 flagsAgr$strainGaugeStabilityQF[strainGaugeDepthAgr$strainGaugeStability == FALSE] <- 1 # Probably make informational flag b/c we removed unstable values
+flagsAgr$heaterErrorQF <- 0
+flagsAgr$evapDetectedQF <- 0
+
+#### should threshold probably
+#### what happens when there's no heater? 
+flagsAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > -6 & 
+                         strainGaugeDepthAgr$internalTemperature < 2 & 
+                         strainGaugeDepthAgr$inletTemperature < strainGaugeDepthAgr$internalTemperature] <- 1
+flagsAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > 6 & strainGaugeDepthAgr$orificeHeaterFlag > 0] <- 1
+flagsAgr$heaterErrorQF[is.na(strainGaugeDepthAgr$internalTemperature)|is.na(strainGaugeDepthAgr$inletTemperature)|is.na(strainGaugeDepthAgr$orificeHeaterFlag)] <- -1
 
 
-
-# -------------- BEGIN EXPERIMENTAL ---------------
-
+# Dynamic Envelope
 # Do computation of no-rain days in order to apply a dynamic envelope calculation
 # Require that there be no change in depth between the start and end of the day that is
 # greater than the pre-defined envelope
@@ -183,25 +226,6 @@ if(any(setNoRain)){
   }
 }
 
-# -------------- END EXPERIMENTAL ---------------
-
-
-# !!!! Do/add summarization of stability, temp stuff (decide not to flag b/c not using temp compensation), flags (in different data frame) !!!!
-
-
-
-#adjust thresholds based on WndwAgr unit
-WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
-if(stringr::str_detect(WndwAgr, 'min')) {
-  ThshCount <- ThshCountHour * (60/WndwAgrNumc)
-  rangeSize <- RangeSizeHour*(60/WndwAgrNumc)   #!!! POTENTIAL FOR MAKING AN INPUT VARIABLE !!!
-} else if ((stringr::str_detect(WndwAgr, 'hour')) ){
-  ThshCount <- ThshCountHour/WndwAgrNumc
-  rangeSize <- RangeSizeHour/WndwAgrNumc #account for evap in last 24 hours
-} else {
-  log$fatal('averaging unit needs to be in minutes (min) or hours (hour)')
-  stop()
-}
 
 #start counters
 rawCount <- 0
@@ -383,8 +407,7 @@ for (i in 1:numRow){
     # bench <- raw_med_lastDay
     bench <- raw_min_lastDay
     precipType <- 'EvapAdj'
-    
-    # TODO: CONSIDER adding flagging for strong evaporation. Could also be informational flag.
+    flagsAgr$evapDetectedQF[i:currRow] <- 1
 
   } else if ((bench - raw) > Recharge){
     # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
@@ -421,24 +444,56 @@ for (i in 1:numRow){
   }
 }
 
-# TESTING ONLY
 strainGaugeDepthAgr$precipBulk <- strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1)
 strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precipBulk < 0, 0, precipBulk))
 
 flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
+
+
+# Post-precip computation 
+# Soft flag for max precip over 60-min
+flagsAgr$extremePrecipQF[strainGaugeDepthAgr$precipBulk > ExtremePrecipMax] <- 1
+
+# Envelope == Massive --> Flag all the data
+if(Envelope > 10){
+  flagsAgr$dielNoiseQF <- 1
+}
+
+
+### outputs
+# qfs #raw resolution collection of flags as one variable rather than each strain gauge
+# flagsAgr is assessments currently at WndwAgr resolution, need to handle aggregation to hourly
+# strainGaugeDepthAgr needs aggregation to hourly, heaterQMs and precipBulk are outputs
+
+# flag logic for aggregations (flagsAgr dataset)
+# if any flag = 1 , flag = 1 for hour and day
+# if all flag = -1, flag = -1 for hour and day
+# else 0
+
+
+#does it feed into finalQF?
+    # yes 
+    # "insuffDataQF" 
+    # "extremePrecipQF"
+    # "dielNoiseQF" 
+    # "heaterErrorQF"
+
+    # no
+    # "strainGaugeStabilityQF"
+    # "evapDetectedQF"  
+    # "strainGaugeDepthNullQF"
+    # "strainGaugeDepthNullQF"
+    # "strainGaugeDepthGapQF" 
+    # "strainGaugeDepthRangeQF"
+    # "strainGaugeDepthStepQF"       
+    # "strainGaugeDepthSpikeQF"
+    # "strainGaugeDepthPersistenceQF" 
+
+
+#####TESTING ONLY #############
 
 # df <- data.table::melt(strainGaugeDepthAgr[,c(1,3,4,7)],id.vars=c('startDateTime'))
 df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGaugeDepth','bench')],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
 print(Envelope)
-
-# Post-precip computation 
-# Soft flag for max precip over 60-min
-flagsAgr$ExtremePrecipQF[strainGaugeDepthAgr$precipBulk > ExtremePrecipMax] <- 1
-# TODO: Consider adding detection limit flag for low precip (likely to be algorithm-induced)
-
-# Envelope == Massive --> Flag all the data
-if(Envelope > 10){
-  flagsAgr$DielNoiseQF <- 1
-}
