@@ -3,7 +3,7 @@
     "name": "exodissolvedoxygen_date_gap_filler"
   },
   "transform": {
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-gap-fill:v0.0.19",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-gap-fill:v1.0.0",
     "cmd": [
       "/bin/bash"
     ],
