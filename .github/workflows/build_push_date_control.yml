@@ -2,11 +2,10 @@ name: "Build-push_cron_daily_and_date_control"
 
 on:
   push:
-    branches:
-      - 'master'
-    paths:
-      - 'modules/cron_daily_and_date_control/*'
-  workflow_dispatch: {} # Allows trigger of workflow from web interface
+    # branches:
+    #   - 'master'
+    tags:
+      - "date_gap_filler/v*.*.*"
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
