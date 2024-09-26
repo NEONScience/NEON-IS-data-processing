@@ -144,16 +144,38 @@ wrap.precip.aepg.smooth <- function(DirIn,
   ChangeFactor = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking MAD']
   ChangeFactorEvap = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking window step - points.']
   Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Persistence (change)']
+  ExtremePrecipMax = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Range Threshold Soft Max']
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
-  
-  
-  
+  # Adjust thresholds based on WndwAgr unit
+  WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
+  if(stringr::str_detect(WndwAgr, 'min')) {
+    ThshCount <- ThshCountHour * (60/WndwAgrNumc) 
+    rangeSize <- RangeSizeHour*(60/WndwAgrNumc)   
+    
+    if(WndwAgrNumc > 60 | WndwAgrNumc < 5){
+      log$error('averaging unit must be between 5 minutes and one hour')
+      stop()
+    }
+  } else if ((stringr::str_detect(WndwAgr, 'hour')) ){
+    ThshCount <- ThshCountHour/WndwAgrNumc
+    rangeSize <- RangeSizeHour/WndwAgrNumc
+    
+    if(WndwAgrNumc > 1 | WndwAgrNumc < (5/60)){
+      log$error('averaging unit must be between 5 minutes and one hour')
+      stop()
+    }
+  } else {
+    log$error('averaging unit needs to be in minutes (min) or hours (hour)')
+    stop()
+  }
   
   # Take stock of our data files.
   # !! Try to make more generic, while excluding the manifest.txt file
   fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
-
+  fileFlagsPlau <- base::list.files(dirInFlags,pattern='Plausibility.parquet',full.names=FALSE)
+  fileFlagsCal <- base::list.files(dirInFlags,pattern='Cal.parquet',full.names=FALSE)
+  
   # Read the datasets 
   data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
                                             VarTime='readout_time',
@@ -161,119 +183,98 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                             Df=TRUE, 
                                             log=log)
   
-
+  flagsPlau <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFlagsPlau),
+                                                 VarTime='readout_time',
+                                                 RmvDupl=TRUE,
+                                                 Df=TRUE,
+                                                 log=log)
+  
+  flagsCal <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFlagsCal),
+                                                VarTime='readout_time',
+                                                RmvDupl=TRUE,
+                                                Df=TRUE,
+                                                log=log)
+  
+  flags <- dplyr::full_join(flagsPlau, flagsCal, by =  'readout_time')
   
   
-  # -------------- BEGIN EXPERIMENTAL ---------------
-  if(FALSE){
-    
-    # Attempt a daily fit, testing for high enough R2 and positive slope
-    # Note - could also apply this to the envelope, falling back on the pre-defined threshold if day(s) without rain cannot be determined
-    setNoRain <- NULL
-    timeDay <- lubridate::floor_date(as.POSIXct(data$readout_time, tz = 'UTC'),unit='day')
-    tempRegr <- data.frame(day=unique(timeDay),
-                           slopeTemp1=as.numeric(NA),
-                           rsq1=as.numeric(NA),
-                           slopeTemp2=as.numeric(NA),
-                           rsq2=as.numeric(NA),
-                           slopeTemp3=as.numeric(NA),
-                           rsq3=as.numeric(NA)
-    )
-    for (idxDay in unique(timeDay)){
-      try({
-        setDay <- timeDay == idxDay # row indices for this day
-        fit1 <- lm(strainGauge1Depth ~ strain_gauge1_temperature,data[setDay,],na.action="na.omit")
-        fit2 <- lm(strainGauge2Depth ~ strain_gauge2_temperature,data[setDay,],na.action="na.omit")
-        fit3 <- lm(strainGauge3Depth ~ strain_gauge3_temperature,data[setDay,],na.action="na.omit")
-        
-        idxOut <- tempRegr$day == idxDay
-        tempRegr$slopeTemp1[idxOut] <- fit1$coefficients[2]
-        tempRegr$rsq1[idxOut] <- summary(fit1)$r.squared
-        tempRegr$slopeTemp2[idxOut] <- fit2$coefficients[2]
-        tempRegr$rsq2[idxOut] <- summary(fit2)$r.squared
-        tempRegr$slopeTemp3[idxOut] <- fit3$coefficients[2]
-        tempRegr$rsq3[idxOut] <- summary(fit3)$r.squared
-      })
-    }
-    
-    # Keep only the excellent regressions
-    rsq_min <- 0.9 # minimum R-squared to accept regression
-    tempRegrKeep <- tempRegr
-    tempRegrKeep$slopeTemp1[tempRegrKeep$rsq1 < rsq_min] <- NA
-    tempRegrKeep$slopeTemp2[tempRegrKeep$rsq2 < rsq_min] <- NA
-    tempRegrKeep$slopeTemp3[tempRegrKeep$rsq3 < rsq_min] <- NA
-    
-    # Also require that there be no change in depth between the first and last hours of the day 
-    # that is greater than the pre-defined envelope
-    dataHourly <- data %>%
-      dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = 'hour')) %>%
-      dplyr::group_by(startDateTime) %>%
-      dplyr::summarise(strainGauge1Depth = median(strainGauge1Depth, na.rm = T),
-                       strainGauge2Depth = median(strainGauge2Depth, na.rm = T),
-                       strainGauge3Depth = median(strainGauge3Depth, na.rm = T))
-    dataDaily <- dataHourly %>%
-      dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'day')) %>%
-      dplyr::group_by(startDateTime) %>%
-      dplyr::summarise(strainGauge1DepthChg = tail(strainGauge1Depth,1)-head(strainGauge1Depth,1),
-                       strainGauge2DepthChg = tail(strainGauge2Depth,1)-head(strainGauge2Depth,1),
-                       strainGauge3DepthChg = tail(strainGauge3Depth,1)-head(strainGauge3Depth,1))
-    tempRegrKeep$slopeTemp1[is.na(dataDaily$strainGauge1DepthChg) | abs(dataDaily$strainGauge1DepthChg) > Envelope] <- NA
-    tempRegrKeep$slopeTemp2[is.na(dataDaily$strainGauge2DepthChg) | abs(dataDaily$strainGauge2DepthChg) > Envelope] <- NA
-    tempRegrKeep$slopeTemp3[is.na(dataDaily$strainGauge3DepthChg) | abs(dataDaily$strainGauge3DepthChg) > Envelope] <- NA  
-    
-    # Use the non-rain days identified by the sensor with the most accepted regressions
-    # Remove the temperature relationship
-    numDaysNoRain <- colSums(!is.na(tempRegrKeep))[c('slopeTemp1','slopeTemp2','slopeTemp3')]
-    if (any(numDaysNoRain > 0)){
-      
-      idxSensMax <- which.max(numDaysNoRain) # strain gauge to use
-      setNoRain <- !is.na(tempRegrKeep[[paste0('slopeTemp',idxSensMax)]]) # no-rain days
-      
-      # Average the slopes for the no-rain days for each sensor
-      # tempRegrNoRain <- colMeans(tempRegr[setNoRain,-1])
-      
-      # Average the slopes that meet the threshold R-squared
-      tempRegrNoRain <- colMeans(tempRegrKeep[,-1],na.rm=TRUE)
-      
-      # Remove the temp relationship
-      if(!is.na(tempRegrNoRain["slopeTemp1"])){
-        data$strainGauge1Depth <- data$strainGauge1Depth - tempRegrNoRain["slopeTemp1"]*data$strain_gauge1_temperature
-      }
-      if(!is.na(tempRegrNoRain["slopeTemp2"])){
-        data$strainGauge2Depth <- data$strainGauge2Depth - tempRegrNoRain["slopeTemp2"]*data$strain_gauge2_temperature
-      }
-      if(!is.na(tempRegrNoRain["slopeTemp3"])){
-        data$strainGauge3Depth <- data$strainGauge3Depth - tempRegrNoRain["slopeTemp3"]*data$strain_gauge3_temperature
-      }
-      
-    }
-    
+  #combine three gauges into one flagging variable. If any are 1 all flagged, any -1 all flagged, else not flagged
+  
+  flagNames <- names(flags)[grepl(unique(names(flags)), pattern = 'strainGauge')]
+  
+  flagNames <- unique(sub(pattern='strainGauge[1-3]Depth',replacement='',x=flagNames))
+  
+  qfs<- flags[, 'readout_time', drop = F]
+  for (name in flagNames){
+    flags_sub <- flags[,grepl(names(flags), pattern = name)]
+    flagVar <- paste0('strainGaugeDepth', name)
+    qfs[[flagVar]] <- NA
+    flag_0 <- rowSums(flags_sub == 0, na.rm = T)
+    qfs[[flagVar]][flag_0 == ncol(flags_sub)] <- 0
+    flag_1 <- rowSums(flags_sub == 1, na.rm = T)
+    qfs[[flagVar]][flag_1 >=1] <- 1
+    flags_neg1 <- rowSums(flags_sub == -1, na.rm = T)
+    qfs[[flagVar]][is.na(qfs[[flagVar]]) & flags_neg1 >=1] <- -1
+    qfs[[flagVar]][is.na(qfs[[flagVar]])] <- -1
   }
   
-  # -------------- END EXPERIMENTAL ---------------
+  # Aggregate depth streams into a single depth, and remove values where not all three are available/good
+  data$strain_gauge1_stability[is.na(data$strainGauge1Depth)] <- NA
+  data$strain_gauge2_stability[is.na(data$strainGauge2Depth)] <- NA
+  data$strain_gauge3_stability[is.na(data$strainGauge3Depth)] <- NA
+  data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, 
+                                                                                 strainGauge2Depth, 
+                                                                                 strainGauge3Depth), na.rm = F),
+                                 strainGaugeStability = base::rowSums(x=base::cbind(strain_gauge1_stability, 
+                                                                                    strain_gauge2_stability, 
+                                                                                    strain_gauge3_stability), na.rm = F)==3)
+  data$strainGaugeDepth[data$strainGaugeStability == FALSE] <- NA
+  
+  # if there are no heater streams add them in as NA
+  if(!('internal_temperature' %in% names(data))){data$internal_temperature <- as.numeric(NA)}
+  if(!('inlet_temperature' %in% names(data))){data$inlet_temperature <- as.numeric(NA)}
+  if(!('orifice_heater_flag' %in% names(data))){data$orifice_heater_flag <- as.numeric(NA)}
   
 
-  
-  
-  
-  # Aggregate depth streams into a single depth. 
-  data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F))  
-  
   # Do time averaging
   strainGaugeDepthAgr <- data %>%
     dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
     dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
     dplyr::group_by(startDateTime,endDateTime) %>%
     dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),
-                     strainGauge1DepthMean = mean(strainGauge1Depth, na.rm = T),
-                     strainGauge2DepthMean = mean(strainGauge2Depth, na.rm = T),
-                     strainGauge3DepthMean = mean(strainGauge3Depth, na.rm = T))
+                     strainGaugeStability = dplyr::if_else(all(is.na(strainGaugeStability)),NA,all(strainGaugeStability==TRUE, na.rm = T)),
+                     inletTemperature = mean(inlet_temperature, na.rm = T),
+                     internalTemperature = mean(internal_temperature, na.rm = T), 
+                     orificeHeaterFlag = max(orifice_heater_flag, na.rm = F), #used to see if heater was on when temps were above heating threshold (heaterErrorQF)
+                     inletHeater1QM = round((length(which(orifice_heater_flag == 100))/dplyr::n())*100,0),
+                     inletHeater2QM = round((length(which(orifice_heater_flag == 110))/dplyr::n())*100,0), 
+                     inletHeater3QM = round((length(which(orifice_heater_flag == 111))/dplyr::n())*100,0),
+                     inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,0)) 
+  
+  # Initialize time-aggregated flags
+  flagsAgr <- strainGaugeDepthAgr %>% dplyr::select(startDateTime, endDateTime)
+  flagsAgr$insuffDataQF <- 0
+  flagsAgr$extremePrecipQF <- 0
+  flagsAgr$dielNoiseQF <- 0
+  flagsAgr$strainGaugeStabilityQF <- 0
+  flagsAgr$strainGaugeStabilityQF[strainGaugeDepthAgr$strainGaugeStability == FALSE] <- 1 # Probably make informational flag b/c we removed unstable values
+  flagsAgr$heaterErrorQF <- 0
+  flagsAgr$evapDetectedQF <- 0
+  flagsAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > -6 & 
+                           strainGaugeDepthAgr$internalTemperature < 2 & 
+                           strainGaugeDepthAgr$inletTemperature < strainGaugeDepthAgr$internalTemperature] <- 1
+  flagsAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > 6 & strainGaugeDepthAgr$orificeHeaterFlag > 0] <- 1
+  flagsAgr$heaterErrorQF[is.na(strainGaugeDepthAgr$internalTemperature) | 
+                         is.na(strainGaugeDepthAgr$inletTemperature) | 
+                         is.na(strainGaugeDepthAgr$orificeHeaterFlag)] <- -1
   
   
   
-  # -------------- BEGIN EXPERIMENTAL ---------------
-  
-  # Use the average strain gauge depth to recompute days without rain
+
+  # Dynamic Envelope
+  # Do computation of no-rain days in order to apply a dynamic envelope calculation
+  # Require that there be no change in depth between the start and end of the day that is
+  # greater than the pre-defined envelope set in the thresholds
   dataHourly <- strainGaugeDepthAgr %>%
     dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, unit = 'hour')) %>%
     dplyr::group_by(startDateTime) %>%
@@ -315,28 +316,11 @@ wrap.precip.aepg.smooth <- function(DirIn,
     }
   }
   
-  # -------------- END EXPERIMENTAL ---------------
   
-  
-  # !!!! Do/add summarization of stability, temp stuff, flags (in different data frame) !!!!
-  
-  #adjust thresholds based on WndwAgr unit
-  WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
-  if(stringr::str_detect(WndwAgr, 'min')) {
-    ThshCount <- ThshCountHour * (60/WndwAgrNumc) 
-    rangeSize <- RangeSizeHour*(60/WndwAgrNumc)   #!!! POTENTIAL FOR MAKING AN INPUT VARIABLE !!!
-  } else if ((stringr::str_detect(WndwAgr, 'hour')) ){
-    ThshCount <- ThshCountHour/WndwAgrNumc
-    rangeSize <- RangeSizeHour/WndwAgrNumc #account for evap in last 24 hours
-  } else {
-    log$fatal('averaging unit needs to be in minutes (min) or hours (hour)')
-    stop()
-  }
-  
-  #start counters
+  # start counters for smoothing algorithm
   rawCount <- 0
   timeSincePrecip <- NA
-  currRow <- rangeSize #instead of 24 for hourly this will be how ever many rows encompass one day
+  currRow <- rangeSize 
   
   #initialize fields
   strainGaugeDepthAgr$bench <- as.numeric(NA)
@@ -350,8 +334,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
   skipping <- FALSE
   numRow <- nrow(strainGaugeDepthAgr)
   for (i in 1:numRow){
-    
-    #if(currRow == 865){stop()} 
     
     # Check for at least 1/2 a day of non-NA values. 
     # If not, get to the next point at which we have at least 1/2 day and start fresh
@@ -483,12 +465,12 @@ wrap.precip.aepg.smooth <- function(DirIn,
         
       }
         
-    # } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
     }
-    if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+    if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  
+      
       # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
       # back-adjust the benchmark to the Quant of the last day to avoid overestimating actual precip
-      # Under heavy evaporation, this has the effect of removing spurious precip, potentially also small real precip events
+
       bench <- raw_med_lastDay
       strainGaugeDepthAgr$bench[i:currRow] <- bench
       strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
@@ -510,9 +492,10 @@ wrap.precip.aepg.smooth <- function(DirIn,
       }
     } else if ((raw < bench) && (bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
       # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
-      # bench <- raw_med_lastDay
+
       bench <- raw_min_lastDay # Set to the min of the last day to better track evap
       precipType <- 'EvapAdj'
+      flagsAgr$evapDetectedQF[i:currRow] <- 1
       
     } else if ((bench - raw) > Recharge){
       # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
@@ -531,7 +514,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
         strainGaugeDepthAgr$bench[setAdj] <- strainGaugeDepthAgr$bench[idxSet]
         strainGaugeDepthAgr$precip[setAdj] <- strainGaugeDepthAgr$precip[idxSet]
         strainGaugeDepthAgr$precipType[setAdj] <- "ExcludeBeforeRecharge"
-        # !!!!!!!!!! CREATE INFORMATIONAL FLAG !!!!!!!!!!!
       }
 
     } 
@@ -540,6 +522,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     strainGaugeDepthAgr$bench[currRow] <- bench
     strainGaugeDepthAgr$precip[currRow] <- precip
     strainGaugeDepthAgr$precipType[currRow] <- precipType
+    
     #move to next row
     currRow <- currRow + 1
     
@@ -554,6 +537,29 @@ wrap.precip.aepg.smooth <- function(DirIn,
   strainGaugeDepthAgr$precipBulk <- as.numeric(strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1))
   strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precipBulk < 0, 0, precipBulk))
 
+  # Get rid of columns we don't need
+  strainGaugeDepthAgr <- strainGaugeDepthAgr[,c('startDateTime',
+                                                'endDateTime',
+                                                'strainGaugeDepth',
+                                                'orificeHeaterFlag',
+                                                'inletHeater1QM',
+                                                'inletHeater2QM',
+                                                'inletHeater3QM',
+                                                'inletHeaterNAQM',
+                                                'bench',
+                                                'precip',
+                                                'precipType',
+                                                'precipBulk')]
+  
+  # Post-precip computation 
+  flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
+  flagsAgr$extremePrecipQF[strainGaugeDepthAgr$precipBulk > ExtremePrecipMax] <- 1 # Soft flag for max precip over 60-min
+  
+  # Envelope == Massive --> Flag all the data
+  if(Envelope > 10){
+    flagsAgr$dielNoiseQF <- 1
+  }
+
   # For the central day and adjacent days on either side of the central day, output a file with the results. A later module will average output for each day
   dayOut <- InfoDirIn$time+as.difftime(c(-1,0,1),units='days')
   
@@ -564,33 +570,46 @@ wrap.precip.aepg.smooth <- function(DirIn,
     setOut <- strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
       strainGaugeDepthAgr$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
     strainGaugeDepthAgrIdx <- strainGaugeDepthAgr[setOut,]
+    flagsAgrIdx <- flagsAgr [setOut,]
     
     # Replace the date in the output path structure with the current date
     dirOutDataIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),
                          replacement=format(dayOutIdx,'%Y/%m/%d'),
                          x=dirOutData,
                          fixed=TRUE)
+    dirOutFlagsIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),
+                         replacement=format(dayOutIdx,'%Y/%m/%d'),
+                         x=dirOutFlags,
+                         fixed=TRUE)
     base::dir.create(dirOutDataIdx,recursive = TRUE)
-
+    base::dir.create(dirOutFlagsIdx,recursive = TRUE)
+    
     # Get the filename for this day
     nameFileIdx <- fileData[grepl(format(dayOutIdx,'%Y-%m-%d'),fileData)][1]
 
     if(!is.na(nameFileIdx)){
+      
       # Append the center date to the end of the file name to know where it came from
       nameFileIdxSplt <- base::strsplit(nameFileIdx,'.',fixed=TRUE)[[1]]
-      nameFileIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
+      nameFileDataIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
                                   '_from_',
                                   format(InfoDirIn$time,'%Y-%m-%d')),
                            utils::tail(nameFileIdxSplt,1))
-      nameFileOutIdx <- base::paste0(nameFileIdxSplt,collapse='.')
+      nameFileFlagsIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
+                                  '_flagsSmooth',
+                                  '_from_',
+                                  format(InfoDirIn$time,'%Y-%m-%d')),
+                           utils::tail(nameFileIdxSplt,1))
+      nameFileDataOutIdx <- base::paste0(nameFileDataIdxSplt,collapse='.')
+      nameFileFlagsOutIdx <- base::paste0(nameFileFlagsIdxSplt,collapse='.')
       
       # Write out the data to file
-      fileOutIdx <- fs::path(dirOutDataIdx,nameFileOutIdx)
-      
+      fileDataOutIdx <- fs::path(dirOutDataIdx,nameFileDataOutIdx)
+
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
           data = strainGaugeDepthAgrIdx,
-          NameFile = fileOutIdx,
+          NameFile = fileDataOutIdx,
           NameFileSchm=NULL,
           Schm=SchmData,
           log=log
@@ -599,7 +618,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
       if ('try-error' %in% base::class(rptWrte)) {
         log$error(base::paste0(
           'Cannot write output to ',
-          fileOutIdx,
+          fileDataOutIdx,
           '. ',
           attr(rptWrte, "condition")
         ))
@@ -607,27 +626,42 @@ wrap.precip.aepg.smooth <- function(DirIn,
       } else {
         log$info(base::paste0(
           'Wrote computed precipitation to file ',
-          fileOutIdx
+          fileDataOutIdx
+        ))
+      }
+      
+      # Write out the flags to file
+      fileFlagsOutIdx <- fs::path(dirOutFlagsIdx,nameFileFlagsOutIdx)
+      
+      rptWrte <-
+        base::try(NEONprocIS.base::def.wrte.parq(
+          data = flagsAgrIdx,
+          NameFile = fileFlagsOutIdx,
+          NameFileSchm=NULL,
+          Schm=NULL,
+          log=log
+        ),
+        silent = TRUE)
+      if ('try-error' %in% base::class(rptWrte)) {
+        log$error(base::paste0(
+          'Cannot write output to ',
+          fileFlagsOutIdx,
+          '. ',
+          attr(rptWrte, "condition")
+        ))
+        stop()
+      } else {
+        log$info(base::paste0(
+          'Wrote flags to file ',
+          fileFlagsOutIdx
         ))
       }
       
     } else {
-      log$warn(paste0(nameFileIdx,' is not able to be output because this data file was not found in the input.'))
+      log$warn(paste0(nameFileIdx,' and associated flags files are not able to be output because this data file was not found in the input.'))
     }
     
   }
-  
-  
-  # # Take stock of our flags files. 
-  # fileFlags<- base::list.files(dirInFlags,full.names=FALSE)
-  # 
-  # flags <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFlags),
-  #                                            VarTime='readout_time',
-  #                                            RmvDupl=TRUE,
-  #                                            Df=TRUE, 
-  #                                            log=log)
-  # 
-  
-  
+
   return()
 } 

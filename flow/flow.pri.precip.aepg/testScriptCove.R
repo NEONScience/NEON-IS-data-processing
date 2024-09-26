@@ -263,9 +263,8 @@ for (i in 1:numRow){
     # Skip until there is enough data
     skipping <- TRUE
     currRow <- currRow + 1
-    
 
-    #stop at end of data frame
+    # stop at end of data frame
     if (currRow == numRow){
       break()
     } else {
