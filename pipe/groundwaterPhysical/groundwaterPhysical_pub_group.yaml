@@ -38,13 +38,13 @@ parallelism_spec:
   constant: 2
 autoscaling: true
 resource_requests:
-  memory: 700M
+  memory: 1.8G
   cpu: 1
 resource_limits:
-  memory: 1.5G
-  cpu: 1.8
+  memory: 2.5G
+  cpu: 1.5
 sidecar_resource_requests:
-  memory: 3G
+  memory: 4G
   cpu: 1
 datum_set_spec:
   number: 1

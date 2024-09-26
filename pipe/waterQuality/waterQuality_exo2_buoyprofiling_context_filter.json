@@ -3,7 +3,7 @@
     "name": "waterQuality_exo2_buoyprofiling_context_filter"
   },
   "transform": {
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-context-filter:sha-3bc6a63",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-context-filter:v1.0.0",
     "cmd": [
       "/bin/bash"
     ],
