@@ -2,7 +2,7 @@
 pipeline:
   name: pressuretransducer_cron_daily_and_date_control
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:sha-7a9ba48
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v1.0.0
   cmd: ["/bin/bash"]
   env:
     # START_DATE and END_DATE indicate the date range (inclusive) to create the /Y/M/D folder structure
