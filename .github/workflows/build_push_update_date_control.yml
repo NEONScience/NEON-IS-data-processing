@@ -1,4 +1,4 @@
-name: "Build-push-update_cron_daily_and_date_control"
+name: "Build-push-update_date_control"
 
 on:
   push:
