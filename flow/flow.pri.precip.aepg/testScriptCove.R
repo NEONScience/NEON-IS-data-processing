@@ -460,6 +460,19 @@ if(Envelope > 10){
 }
 
 
+# Uncertainty to incorporate
+# depth uncertainty from cval
+# uncertainty due to averaging the three strain gauge measurements
+# averaging uncertainty 
+# diel noise uncertainty
+
+# Uncertainty to acknowledge only
+# Timing uncertainty due to algorithm & diel noise 
+# Evaporation
+
+
+
+
 ### outputs
 # qfs #raw resolution collection of flags as one variable rather than each strain gauge
 # flagsAgr is assessments currently at WndwAgr resolution, need to handle aggregation to hourly
