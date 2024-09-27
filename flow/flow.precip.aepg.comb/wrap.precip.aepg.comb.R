@@ -143,5 +143,57 @@ wrap.precip.aepg.comb <- function(DirIn,
     ))
   }
 
+  # Take stock of our flags files.
+  # !! Try to make more generic, while excluding the manifest.txt file
+  fileQf <- base::list.files(dirInFlags,pattern='.parquet',full.names=FALSE)
+  
+  # Read all files
+  qf <- base::lapply(fs::path(dirInFlags,fileQf),NEONprocIS.base::def.read.parq,log=log)
+  
+  # Using the 1st file as a starting point, average the precip values
+  for(idxFile in seq_len(length(qf))){
+    if(idxFile == 1){
+      qfOut <- qf[[idxFile]]
+    } else {
+      # Take the max flag value
+      for (idxCol in 3:ncol(qfOut)){
+        setChg <- (qf[[idxFile]][,idxCol]-qfOut[,idxCol]) > 0
+        qfOut[setChg,idxCol] <- qf[[idxFile]][setChg,idxCol]
+      }
+    }
+  }
+
+  # Lop off the _from_<date> in the filename 
+  nameFileQfOut <- sub(pattern='_from_[0-9]{4}-[0-9]{2}-[0-9]{2}',
+                     replacement='',
+                     x=fileQf[1])
+  
+  # Write out the data to file
+  fileQfOut <- fs::path(dirOutFlags,nameFileQfOut)
+  
+  rptWrte <-
+    base::try(NEONprocIS.base::def.wrte.parq(
+      data = qfOut,
+      NameFile = fileQfOut,
+      NameFileSchm=NULL,
+      Schm=NULL,
+      log=log
+    ),
+    silent = TRUE)
+  if ('try-error' %in% base::class(rptWrte)) {
+    log$error(base::paste0(
+      'Cannot write output to ',
+      fileQfOut,
+      '. ',
+      attr(rptWrte, "condition")
+    ))
+    stop()
+  } else {
+    log$info(base::paste0(
+      'Wrote precipitation flags to file ',
+      fileQfOut
+    ))
+  }
+  
   return()
 } 
