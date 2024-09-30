@@ -3,10 +3,7 @@
     "name": "waterQuality_exofdom_group_path"
   },
   "transform": {
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
-    "image": "quay.io/battelleecology/location_group_path:13",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:sha-40988f6",
     "cmd": [
       "/bin/bash"
     ],
