@@ -51,8 +51,8 @@ runs:
         id: build-and-push
         uses: docker/build-push-action@v5
         with:
-            context: ${{ env.MODULE_DIR }}
-            file: ${{ env.MODULE_DIR }}/${{ env.MODULE_NAME }}/Dockerfile
+            context: ./
+            file: ${{ env.MODULE_PATH }}/Dockerfile
             # push: ${{ github.event_name != 'pull_request' }}
             push: true
             tags: |
