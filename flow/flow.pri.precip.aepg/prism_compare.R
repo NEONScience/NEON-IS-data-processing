@@ -1,7 +1,7 @@
 ##some prism comps with output from smoothing function 
 # library(dplyr)
 
-site <- 'UNDE'
+site <- 'HARV'
 # dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_minEvap_15.5'
 # Div <- .75 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
 dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip'
@@ -10,11 +10,15 @@ Div <- 1 # compensates for difference in slope of 0.25 lower for NEON cal. Set t
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='[0-9].parquet',recursive=TRUE,full.names=TRUE)
 filesAll <- list.files(path=dirSmooth,pattern='[0-9].parquet',recursive=TRUE,full.names=TRUE) # Keep this second one. Needed to consistent get all years.
+filesFlagsAll <- list.files(path=dirSmooth,pattern='flagsSmooth.parquet',recursive=TRUE,full.names=TRUE) # Keep this second one. Needed to consistent get all years.
+filesFlagsAll <- list.files(path=dirSmooth,pattern='flagsSmooth.parquet',recursive=TRUE,full.names=TRUE) # Keep this second one. Needed to consistent get all years.
 ptrnSite <- paste0('*/precip-weighing_',site,'*')
 filesSite <- filesAll[grepl(pattern=ptrnSite,filesAll)]
+filesFlagsSite <- filesFlagsAll[grepl(pattern=ptrnSite,filesFlagsAll)]
 
 VarKeep=c('startDateTime','endDateTime','precipBulk','precipType')
 strainGaugeDepthAgr <- NEONprocIS.base::def.read.parq.ds(fileIn = filesSite,Var=VarKeep,VarTime='startDateTime',Df=TRUE)
+flagsAgr <- NEONprocIS.base::def.read.parq.ds(fileIn = filesFlagsSite,VarTime='startDateTime',Df=TRUE)
 
 ### pull in prism data
 # site <- stringr::str_extract(DirIn, pattern= '[A-Z]{4}')
