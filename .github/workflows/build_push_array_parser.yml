@@ -6,8 +6,8 @@ on:
       - 'master'
     paths:
       - 'modules/array_parser/*'
-  pull_request:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
+  pull_request:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
