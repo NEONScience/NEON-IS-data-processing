@@ -3,7 +3,7 @@ pipeline:
   name: tempSpecificDepthLakes_instantaneous_data_group
 transform:
 #  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-filt-join:sha-c0a0f78
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-filt-join:v1.0.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
