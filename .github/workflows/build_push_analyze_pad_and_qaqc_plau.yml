@@ -3,8 +3,7 @@ name: "Build-push_analyze_pad_and_qaqc_plau"
 on:
   push:
     branches:
-      - 'bp.anls.pad.qaqc.plau'
-      #- 'master'
+      - 'master'
       
     paths:
       - 'modules_combined/analyze_pad_and_qaqc_plau/*'
