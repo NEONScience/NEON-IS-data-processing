@@ -1,4 +1,4 @@
-name: "Build-push_cron_monthly_and_pub_control"
+name: "Build-push_pub_control"
 
 on:
   push:
