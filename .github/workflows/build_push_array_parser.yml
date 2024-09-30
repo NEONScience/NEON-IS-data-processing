@@ -6,8 +6,7 @@ on:
       - 'master'
     paths:
       - 'modules/array_parser/*'
-  pull_request:
-  
+
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

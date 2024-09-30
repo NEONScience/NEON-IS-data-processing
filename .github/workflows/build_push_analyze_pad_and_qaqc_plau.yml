@@ -9,8 +9,7 @@ on:
       - 'modules/padded_timeseries_analyzer/*'
       - 'modules/common/*'
       - 'flow/flow.qaqc.plau/*'
-  pull_request:
-      
+
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

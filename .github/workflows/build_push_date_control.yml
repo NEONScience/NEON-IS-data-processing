@@ -22,7 +22,7 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: cron_daily_and_date_control
+  MODULE_PATH: ./modules/cron_daily_and_date_control
   IMAGE_NAME: neon-is-date-cntl
 
 jobs:
