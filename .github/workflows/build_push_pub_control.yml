@@ -7,7 +7,6 @@ on:
     paths:
       - 'modules/cron_monthly_and_pub_control/*'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
-  pull_request:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
