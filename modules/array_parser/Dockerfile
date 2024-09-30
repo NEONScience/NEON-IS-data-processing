@@ -2,13 +2,13 @@
 #
 # This dockerfile will build the array parser module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t array_parser:latest -f array_parser/Dockerfile .
+# docker build -t array_parser:latest -f ./modules/array_parser/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
-ARG APP_DIR="array_parser"
-ARG COMMON_DIR="common"
+ARG APP_DIR="./modules/array_parser"
+ARG COMMON_DIR="./modules/common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
