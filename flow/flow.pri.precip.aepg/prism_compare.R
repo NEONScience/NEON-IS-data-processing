@@ -4,13 +4,12 @@
 site <- 'UNDE'
 # dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_minEvap_15.5'
 # Div <- .75 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
-dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_zeroCal'
-dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_postAdj'
+dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip'
 Div <- 1 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
 
 # Get list of applicable data files
-filesAll <- list.files(path=dirSmooth,pattern='parquet',recursive=TRUE,full.names=TRUE)
-filesAll <- list.files(path=dirSmooth,pattern='parquet',recursive=TRUE,full.names=TRUE) # Keep this second one. Needed to consistent get all years.
+filesAll <- list.files(path=dirSmooth,pattern='[0-9].parquet',recursive=TRUE,full.names=TRUE)
+filesAll <- list.files(path=dirSmooth,pattern='[0-9].parquet',recursive=TRUE,full.names=TRUE) # Keep this second one. Needed to consistent get all years.
 ptrnSite <- paste0('*/precip-weighing_',site,'*')
 filesSite <- filesAll[grepl(pattern=ptrnSite,filesAll)]
 
