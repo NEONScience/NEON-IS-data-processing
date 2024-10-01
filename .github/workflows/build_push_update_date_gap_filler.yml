@@ -23,7 +23,7 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: date_gap_filler
+  MODULE_PATH: ./modules/date_gap_filler
   IMAGE_NAME: neon-is-date-gap-fill
 
 jobs:

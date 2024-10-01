@@ -22,7 +22,7 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: filter_joiner
+  MODULE_PATH: ./modules/filter_joiner
   IMAGE_NAME: neon-is-filt-join
 
 jobs:
