@@ -13,10 +13,19 @@ transform:
   - "#!/bin/bash"
   - python3 -m logjam_loader.logjam_loader
 input:
-  pfs:
-    repo: troll_cron_daily_and_date_control_tick
-    glob: /*
-    empty_files: true
+  join:
+  - pfs:
+      repo: surfacewaterPhysical_cron_monthly_and_pub_control_tick
+      glob: /(*-*)-*
+      empty_files: true
+      joinOn: $1 # Join on YYYY-MM of monthly cron so that the actual day of the trigger can be different between the crons 
+      outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
+  - pfs:
+      repo: groundwaterPhysical_cron_monthly_and_pub_control_tick
+      glob: /(*-*)-*
+      empty_files: true
+      joinOn: $1 # Join on YYYY-MM of monthly cron so that the actual day of the trigger can be different between the crons 
+      outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
 autoscaling: true
 resource_requests:
   memory: 500M
