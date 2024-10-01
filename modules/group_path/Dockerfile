@@ -1,6 +1,6 @@
 ####
 #
-# This dockerfile will build the context filter module.
+# This dockerfile will build the group path module.
 # Example command (must be run from project root directory to include common path in Docker context):
 # docker build --no-cache -t group_path:latest -f ./modules/group_path/Dockerfile .
 #
