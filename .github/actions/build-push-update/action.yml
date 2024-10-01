@@ -42,8 +42,8 @@ runs:
         id: build-and-push
         uses: docker/build-push-action@v5
         with:
-            context: ./modules
-            file: ./modules/${{ env.MODULE_NAME }}/Dockerfile
+            context: ./
+            file: ${{ env.MODULE_PATH }}/Dockerfile
             push: ${{ github.event_name != 'pull_request' }}
             tags: ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
             labels: ${{ steps.meta.outputs.labels }}

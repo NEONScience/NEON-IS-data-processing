@@ -24,7 +24,7 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_NAME: errored_datums_reader
+  MODULE_PATH: ./modules/errored_datums_reader
   IMAGE_NAME: neon-is-err-datum-reader
 
 jobs:
