@@ -2,8 +2,6 @@
 pipeline:
   name: pqs1_data_source_trino
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-0a39870
   cmd:
   - sh
