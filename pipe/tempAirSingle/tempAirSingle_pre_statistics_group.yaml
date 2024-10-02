@@ -2,8 +2,8 @@
 pipeline:
   name: tempAirSingle_pre_statistics_group
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/filter_joiner:c0ce8112
+#  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-filt-join:v1.0.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -33,6 +33,12 @@ transform:
             glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/*/*/*/*/prt/*/uncertainty_coef/**
             # Join on location group (already joined below by day)
             join_indices: [6]
+        - path:
+            name: UNCERTAINTY_DATA_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/UNCERTAINTY_COEF_PATH/*/*/*/*/prt/*/uncertainty_data/**
+            # Join on context group
+            join_indices: [6]
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
@@ -41,7 +47,7 @@ input:
   join:
   - pfs:
       name: QAQC_BASIC_PATH
-      repo: tempAirSingle_qaqc_plausibility
+      repo: tempAirSingle_analyze_pad_and_qaqc_plau
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
@@ -53,7 +59,7 @@ input:
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: UNCERTAINTY_COEF_PATH
-      repo: tempAirSingle_prt_group_path
+      repo: tempAirSingle_group_path
       glob: /(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure this is false for LINK_TYPE=COPY

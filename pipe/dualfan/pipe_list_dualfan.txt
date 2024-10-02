@@ -1,7 +1,10 @@
-cron_daily_dualfan.yaml
-location_asset_dualfan.yaml
-data_source_dualfan_list_years.yaml
+dualfan_cron_daily_and_date_control.yaml
+dualfan_data_source_kafka.yaml
+dualfan_data_source_trino.yaml
+dualfan_location_asset.yaml
+dualfan_location_loader.yaml
 dualfan_location_asset_assignment.yaml
-dualfan_data_location_group.yaml
-dualfan_structure_repo_by_location.yaml
-dualfan_merge_data_by_location.yaml
+dualfan_location_active_dates_assignment.yaml
+dualfan_location_group_and_restructure.yaml
+
+

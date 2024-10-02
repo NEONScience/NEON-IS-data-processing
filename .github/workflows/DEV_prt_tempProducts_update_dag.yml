@@ -10,6 +10,8 @@ on:
       - 'pipe/tempSoil/pipe_list_tempSoil.txt'
       - 'pipe/tempSurfacewater/*.yaml'
       - 'pipe/tempSurfacewater/pipe_list_tempSurfacewater.txt'
+      - 'pipe/tempAirSingle/*.yaml'
+      - 'pipe/tempAirSingle/pipe_list_tempAirSingle.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 jobs:
