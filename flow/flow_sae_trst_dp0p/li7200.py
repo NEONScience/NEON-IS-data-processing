@@ -23,15 +23,8 @@ class Li7200(L0toL0p):
                     'diagnostic_value_2': 'diag02',
                     'cooler': 'potCool'}
 
-    drop_columns = ['date', 'time', 'co2_mass_density', 'h2o_mass_density', 'auxiliary_input_1',
-                    'auxiliary_input_2', 'auxiliary_input_3', 'auxiliary_input_4',
-                    'smart_flux_voltage_in', 'co2_mole_fraction', 'h2o_mole_fraction',
-                    'dew_point', 'average_temperature', 'average_signal_strength', 'delta_signal_strength',
-                    'measured_flow_rate', 'volumetric_flow_rate', 'flow_pressure', 'flow_power', 'flow_drive']
-
     def data_conversion(self, filename) -> pd.DataFrame:
         df = super().data_conversion(filename)
-        df.drop(columns=self.drop_columns, inplace=True)
 
         df['tempIn'] = df['temperature_inlet'].apply(lambda x: math.nan if math.isnan(x) else get_temp_kelvin(x)).astype('float32')
         del df['temperature_inlet']
@@ -44,14 +37,14 @@ class Li7200(L0toL0p):
         del df['pressure']
         df['presDiff'] = df['differential_pressure'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x)).astype('float32')
         del df['differential_pressure']
-        df['presAtm'] = df['absolute_pressure'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x)).astype('float32')
-        del df['absolute_pressure']
+        # df['presAtm'] = df['absolute_pressure'].apply(lambda x: math.nan if math.isnan(x) else get_pressure_pa(x)).astype('float32')
+        # del df['absolute_pressure']
         # data from presto don't have presAtm, need to get from presSum-presDiff
-        if df['presAtm'].isnull().all():
-            df['presAtm'] = df['presSum'] - df['presDiff']
+        # if df['presAtm'].isnull().all():
+        df['presAtm'] = df['presSum'] - df['presDiff']
 
-        df['densMoleH2o'] = df['h2o_concentration_density'].apply(lambda x: math.nan if math.isnan(x) else mmol_to_mol(x)).astype('float32')
-        del df['h2o_concentration_density']
+        df['densMoleH2o'] = df['h2o_molar_density'].apply(lambda x: math.nan if math.isnan(x) else mmol_to_mol(x)).astype('float32')
+        del df['h2o_molar_density']
         df['rtioMoleDryH2o'] = df['h2o_mole_fraction_dry'].apply(lambda x: math.nan if math.isnan(x) else mmol_to_mol(x)).astype('float32')
         del df['h2o_mole_fraction_dry']
 

@@ -73,7 +73,7 @@ input:
           name: LOCATION_PATH
           repo: li7200_location_active_dates_assignment
           # For full-scale daily processing, glob should be /li7200/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /li7200/((*/*/*)/(CFGLOC104711|CFGLOC106094|CFGLOC106528|CFGLOC106584|CFGLOC109366))
-          glob: /li7200/(*/*/*/(CFGLOC105209|CFGLOC106528|CFGLOC106584|CFGLOC108106|CFGLOC108320))
+          glob: /li7200/((*/*/*)/(CFGLOC105209|CFGLOC106528|CFGLOC106584|CFGLOC108106|CFGLOC108320))
           #glob: /li7200/(*/*/*)
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
           joinOn: $2
