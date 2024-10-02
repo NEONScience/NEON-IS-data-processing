@@ -1,12 +1,22 @@
-name: "Build-push-update_analyze_pad_and_qaqc_plau"
+name: "Build-push_level1_group_consolidate_srf"
 
 on:
   push:
-    tags:
-      - "analyze_pad_and_qaqc_plau/v*.*.*"
+    branches:
+      - 'master'
+    paths:
+      - 'modules_combined/level1_group_consolidate_srf/*'
+      - 'modules/level1_consolidate/*'
+      - 'modules/filter_joiner/*'
+      - 'modules/pub_workbook_loader/*'
+      - 'modules/common/*'
+      - 'modules/data_access/*'
+      - 'flow/flow.pub.tabl.srf/*'
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
+  pull_request:
+
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # Use github and google registries
   GHCR_REGISTRY: ghcr.io
   GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
@@ -16,34 +26,29 @@ env:
   GHCR_NS: battelleecology
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  # IMAGE_NAME: ${{ github.repository }}
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./modules_combined/analyze_pad_and_qaqc_plau
-  IMAGE_NAME: neon-is-ts-pad-anls-qaqc-plau
+  MODULE_PATH: ./modules_combined/level1_group_consolidate_srf
+  IMAGE_NAME: neon-is-levl1-grp-cons-srf
 
 jobs:
-  build-push-update:
+  build-push:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
         id-token: 'write'
-        pull-requests: 'write'
-
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
-          ref: 'master'
           fetch-depth: '0'
 
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
-
-      - name: Build push and update
-        uses: ./.github/actions/build-push-update
+      - name: Build and push
+        uses: ./.github/actions/build-push
+        with:
+            image-tag: "${short_sha}"
+            
