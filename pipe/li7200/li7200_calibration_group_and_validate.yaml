@@ -2,7 +2,7 @@
 pipeline:
   name: li7200_calibration_group_and_validate
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-3325e13
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v1.2.0
   cmd: ["/bin/bash"]
   cmd:
   - sh
