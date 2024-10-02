@@ -2,7 +2,7 @@
 pipeline:
   name: metone370380_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:sha-7e1f8b6
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.1.0
   cmd:
   - sh
   - "-c"
