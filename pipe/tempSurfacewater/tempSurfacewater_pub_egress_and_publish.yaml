@@ -2,8 +2,7 @@
 pipeline:
   name: tempSurfacewater_pub_egress_and_publish
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-egrs-publ:4178f7b8
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:sha-0ed4e80
   cmd:
   - sh
   - "-c"
