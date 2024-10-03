@@ -2,7 +2,7 @@
 pipeline:
   name: tempAirSingle_pub_egress_and_publish
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:sha-0ed4e80
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v3.1.1
   cmd:
   - sh
   - "-c"
