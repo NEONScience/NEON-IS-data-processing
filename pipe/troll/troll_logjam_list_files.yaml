@@ -28,14 +28,14 @@ input:
       outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.4
-resource_limits:
   memory: 1G
+  cpu: 1
+resource_limits:
+  memory: 1.5G
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 800M
-  cpu: 0.2
+  memory: 1G
+  cpu: 0.4
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
