@@ -4,13 +4,13 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2016/12/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/06/01/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
+DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/04/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
  # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
- DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2021/09/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+ # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2021/09/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
@@ -487,10 +487,10 @@ if(Envelope > 10){
     # yes 
     # "insuffDataQF" 
     # "extremePrecipQF"
-    # "dielNoiseQF" 
-    # "heaterErrorQF"
+    # "heaterErrorQF" - be more lenient. > 50% of aggregation interval
 
     # no
+    # "dielNoiseQF"     
     # "strainGaugeStabilityQF"
     # "evapDetectedQF"  
     # "strainGaugeDepthNullQF"
