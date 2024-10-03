@@ -3,10 +3,7 @@
     "name": "exophorp_date_gap_filler"
   },
   "transform": {
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
-    "image": "quay.io/battelleecology/date_gap_filler:10",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-gap-fill:v1.0.0",
     "cmd": [
       "/bin/bash"
     ],

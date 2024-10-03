@@ -2,11 +2,12 @@
 #
 # This dockerfile will build the group path module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build --no-cache -t group_path:latest -f group_path/Dockerfile .
+# docker build --no-cache -t group_path:latest -f ./modules/group_path/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
+ARG MODULE_DIR="./modules"
 ARG APP_DIR="group_path"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
@@ -14,8 +15,8 @@ ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
-COPY ${COMMON_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/common_requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${MODULE_DIR}/${COMMON_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/common_requirements.txt
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
@@ -36,7 +37,7 @@ RUN update-ca-trust && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
-COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser
