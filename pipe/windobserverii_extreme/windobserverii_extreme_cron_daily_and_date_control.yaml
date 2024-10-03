@@ -13,7 +13,7 @@ transform:
     OUT_PATH: /pfs/out
     START_DATE: "2024-01-31" # Inclusive
     #END_DATE: "2023-09-30" # Inclusive
-    SOURCE_TYPE: "windobserverii"
+    SOURCE_TYPE: "windobserverii_extreme"
   stdin:
   - "#!/bin/bash"
   - ./cron_daily_and_date_control/populate_site_dates.sh
