@@ -13,7 +13,6 @@ on:
       - 'modules/data_access/*'
       - 'flow/flow.pub.tabl.srf/*'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
-  pull_request:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
