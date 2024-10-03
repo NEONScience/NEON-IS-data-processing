@@ -2,7 +2,7 @@
 pipeline:
   name: relHumidity_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-8bb0775
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v3.1.1
   cmd:
   - sh
   - "-c"
