@@ -35,7 +35,7 @@ COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 
-# Build in the quality metrics module
+# Build in the stats (averaged and instantaneous) modules
 ARG MODULE_DIR="flow"
 ARG APP_DIR_1="flow.stat.basc"
 ARG APP_DIR_2="flow.data.comb.ts"
