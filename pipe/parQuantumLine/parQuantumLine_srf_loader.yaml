@@ -7,7 +7,7 @@ transform:
     GROUP_PREFIX: par-quantum-line_
     LOG_LEVEL: DEBUG
     OUT_PATH: /pfs/out
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:sha-6fefcc3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:v1.0.0
   # image_pull_secrets:
   #   - battelleecology-quay-read-all-pull-secret
   secrets:
