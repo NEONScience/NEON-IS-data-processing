@@ -3,7 +3,7 @@ pipeline:
   name: li7200_replace_macaddress_with_assetuid
 transform:
   # image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-mac-addr-to-asset-uid:sha-2a09c50
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-mac-addr-to-asset-uid:v1.30.0
   cmd:
   - sh
   - "-c"
