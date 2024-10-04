@@ -11,7 +11,6 @@ on:
       - 'flow/flow.kfka.comb/*'
       - 'flow/flow.troll.logfiles.fill/*'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
-  pull_request:
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
