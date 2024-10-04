@@ -85,7 +85,7 @@ transform:
   env:
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/windobserverii_extreme_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/windobserverii/windobserverii_extreme_streams.avsc"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/windobserverii/windobserverii_extreme.avsc"
     LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
