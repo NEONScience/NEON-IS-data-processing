@@ -2,8 +2,7 @@
 pipeline:
   name: tempSoil_stats_group_and_compute
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-stat-basc-grp:aa651ed4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:sha-2a1499c
   cmd:
   - sh
   - "-c"
