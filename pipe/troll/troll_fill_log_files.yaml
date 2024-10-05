@@ -2,7 +2,7 @@
 pipeline:
   name: troll_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-logs-group-fill:sha-e9fdce7
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-logs-group-fill:v1.0.0
   cmd:
   - sh
   - "-c"
