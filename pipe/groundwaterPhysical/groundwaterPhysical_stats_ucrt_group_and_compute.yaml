@@ -2,8 +2,7 @@
 pipeline:
   name: groundwaterPhysical_stats_ucrt_group_and_compute
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-troll-stat-ucrt-grp:c40ce4bf
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-stat-ucrt-grp:sha-f9bdc4e
   cmd:
   - sh
   - "-c"
