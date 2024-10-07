@@ -3,10 +3,7 @@
     "name": "waterQuality_exophorp_padded_timeseries_analyzer"
   },
   "transform": {
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
-    "image": "quay.io/battelleecology/padded_timeseries_analyzer:12",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-padded-ts-analyzer:sha-6401ac9",
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app" ],
     "env": {
