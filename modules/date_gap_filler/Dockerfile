@@ -2,11 +2,12 @@
 #
 # This dockerfile will build the date gap filler module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t date_gap_filler:latest -f date_gap_filler/Dockerfile .
+# docker build -t date_gap_filler:latest -f ./modules/date_gap_filler/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
+ARG MODULE_DIR="./modules"
 ARG APP_DIR="date_gap_filler"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
@@ -14,7 +15,7 @@ ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
@@ -34,7 +35,7 @@ RUN update-ca-trust && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
-COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser

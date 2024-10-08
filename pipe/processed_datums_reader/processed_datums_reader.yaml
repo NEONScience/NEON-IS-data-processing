@@ -38,11 +38,23 @@ input:
   - cron:
       name: tick
       spec: "@daily"
+      overwrite: true
   - pfs:
       name: PIPELINE_NAME_L1
       repo: level1_pipeline_list
       glob: "/level1_pipeline_list.txt"
 autoscaling: true
+resource_requests:
+  memory: 64M
+  cpu: 1.2
+resource_limits:
+  memory: 200M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 64M
+  cpu: 0.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -60,14 +72,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]

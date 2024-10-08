@@ -113,6 +113,8 @@
 #     Allow existing flags files to be passed through
 #   Cove Sturtevant (2024-07-10)
 #     Fix bug causing some flagged points not to be removed when rmv=TRUE
+#   Cove Sturevant (2024-09-25)
+#     Optimize performance 
 ##############################################################################################
 wrap.qaqc.plau <- function(DirIn,
                            DirOutBase,
@@ -166,22 +168,12 @@ wrap.qaqc.plau <- function(DirIn,
   # Load in the data files and string together. 
   # Note: The data files are simply loaded in and sorted. There is no checking whether there are missing files
   # or gaps. This should be done in previous steps, along with any desired regularization.
-  for (idxFileData in fileData){
-    # Load in data file
-    dataIdx  <- base::try(NEONprocIS.base::def.read.parq(NameFile=base::paste0(dirData,'/',idxFileData),log=log),silent=FALSE)
-    if(base::any(base::class(dataIdx) == 'try-error')){
-      log$error(base::paste0('File ', base::paste0(dirData,'/',idxFileData),' is unreadable.')) 
-      stop()
-    }
-    
-    # Initialize the data frame with the first data file
-    if(idxFileData == fileData[1]){
-      data <- dataIdx
-    } else {
-      data <- base::rbind(data,dataIdx)
-    }
-    
-  } # End for loop around reading data files
+  log$debug(base::paste0('Loading data files: ',paste0(fileData,collapse=',')))
+  data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirData,fileData),
+                                            VarTime='readout_time',
+                                            RmvDupl=FALSE,
+                                            Df=TRUE, # Retain as arrow_dplyr_query
+                                            log=log)
   
   # Check that the data has the terms we are planning to do QA/QC on
   valiData <-
@@ -196,8 +188,6 @@ wrap.qaqc.plau <- function(DirIn,
     stop()
   }
   
-  # Sort the data by readout_time
-  data <- data[base::order(data$readout_time),]
   dataOut <- data # initialize output
   
   # Read in the thresholds file (read first file only, there should only be 1)
@@ -231,8 +221,8 @@ wrap.qaqc.plau <- function(DirIn,
     thshIdxTerm <- thsh[thsh$term_name == idxTerm,]
     
     # Initialize the arguments for plausibility and spike testing (these are run by separate codes)
-    argsPlau <- base::list(data=base::subset(data,select=idxTerm),time=base::as.POSIXlt(data$readout_time))
-    argsSpk <- base::list(data=base::subset(data,select=idxTerm))
+    argsPlau <- base::list(data=data[,idxTerm,drop=FALSE],time=base::as.POSIXlt(data$readout_time))
+    argsSpk <- base::list(data=data[,idxTerm,drop=FALSE])
     
     # Argument(s) for null test
     if('null' %in% ParaTest[[idxTerm]]$test){
@@ -393,26 +383,31 @@ wrap.qaqc.plau <- function(DirIn,
     # Retain the output from the requested tests and order the flags in the order they came in from the arguments 
     # (so that it is apparent how the output schema should be ordered), and so we know which failed tests result in NA data.
     setTest <- base::unlist(base::lapply(ParaTest[[idxTerm]]$test, base::grep,x=mapNameQf$nameTest,fixed=TRUE))
-    qf[[idxTerm]] <- base::subset(x=qf[[idxTerm]],select=mapNameQf$nameQf[setTest])
+    qf[[idxTerm]] <- qf[[idxTerm]][,mapNameQf$nameQf[setTest],drop=FALSE]
     
     # Remove data (turn to NA) for failed test results if requested
-    dataOut[[idxTerm]][base::apply(X=base::subset(x=qf[[idxTerm]],select=ParaTest[[idxTerm]]$rmv),MARGIN=1,FUN=base::max,na.rm=TRUE) > 0] <- NA
+    if(any(ParaTest[[idxTerm]]$rmv)){
+      qfRmv <- qf[[idxTerm]][,ParaTest[[idxTerm]]$rmv,drop=FALSE] # pull out the qfs that cause data removal
+      qfRmv[qfRmv < 0 | is.na(qfRmv)] <- 0 # Ignore -1 values and NAs
+      setRmv <- base::rowSums(qfRmv,na.rm=TRUE) > 0
+      dataOut[[idxTerm]][setRmv] <- NA
+    }
     
     # prep the column names for final output (term name as prefix)
-    names(qf[[idxTerm]])<- base::paste0(base::paste(base::toupper(base::substr(mapNameQf$nameTest[setTest],1,1)),
+    names(qf[[idxTerm]])<- base::paste0(idxTerm,
+                                        base::paste(base::toupper(base::substr(mapNameQf$nameTest[setTest],1,1)),
                                                     base::substr(mapNameQf$nameTest[setTest],2,base::nchar(mapNameQf$nameTest[setTest])),sep=""),"QF")
   }
   
-  # Combine the output for all terms into a single data frame - this will insert the name of the term in the column name
-  qf <- base::do.call(base::cbind.data.frame, base::list(qf,stringsAsFactors=FALSE))
-  base::names(qf) <- base::sub(pattern='.',replacement='',x=base::names(qf),fixed=TRUE) # Get rid of the '.' between the term name and the flag name
-  
+  # Combine the output for all terms into a single data frame 
+  qf <- dplyr::bind_cols(qf)
+
   # Use as.integer in order to write out as integer with the avro schema
-  qf <- base::apply(X=qf,MARGIN=2,FUN=base::as.integer)
+  qf <- base::lapply(qf,base::as.integer)
   
   # Add in the time variable and any variables we want to copy into the flags files
-  qf <- base::cbind(data['readout_time'],qf,base::subset(data,select=VarAddFileQf))
-  
+  qf <- dplyr::bind_cols(data['readout_time'],qf,data[,VarAddFileQf])
+
   # Retain only the flags and data for the data date we are interested in
   setKeep <- qf$readout_time >= timeBgn & qf$readout_time < timeBgn+base::as.difftime(1,units='days')
   qf <- qf[setKeep,]
