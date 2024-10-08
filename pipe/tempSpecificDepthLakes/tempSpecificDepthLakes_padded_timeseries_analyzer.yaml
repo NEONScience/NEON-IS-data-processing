@@ -4,7 +4,7 @@ pipeline:
 transform:
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-padded-ts-analyzer:sha-6401ac9
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-padded-ts-analyzer:v1.0.0
   cmd:
   - /bin/bash
   stdin:
