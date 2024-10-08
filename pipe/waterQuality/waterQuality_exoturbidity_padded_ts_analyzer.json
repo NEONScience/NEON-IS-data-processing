@@ -3,7 +3,7 @@
     "name": "waterQuality_exoturbidity_padded_ts_analyzer"
   },
   "transform": {
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-padded-ts-analyzer:sha-6401ac9",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-padded-ts-analyzer:v1.0.0",
     "cmd": [ "/bin/bash" ],
     "stdin": [ "#!/bin/bash", "python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.app" ],
     "env": {
