@@ -39,7 +39,7 @@ transform:
     LOG_LEVEL: DEBUG
     # LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
-  union:
+#  union:
 #    - join:
 #      - pfs:
 #          name: DATA_PATH_TRINO
