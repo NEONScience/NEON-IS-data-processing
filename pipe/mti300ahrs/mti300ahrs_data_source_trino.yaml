@@ -52,7 +52,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # Example: /pfs/out/li191r/2023/01/01/12345/data/file.parquet
+      # Example: /pfs/out/mti300ahrs/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do
@@ -128,11 +128,8 @@ resource_limits:
   memory: 2.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 1.5G
+  memory: 3G
   cpu: 0.5
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
