@@ -3,10 +3,7 @@
     "name": "waterQuality_exodissolvedoxygen_timeseries_padder"
   },
   "transform": {
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
-    "image": "quay.io/battelleecology/timeseries_padder:34",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad:sha-b715f33",
     "cmd": [
       "/bin/bash"
     ],
