@@ -3,7 +3,7 @@
     "name": "calibration_exo_fix"
   },
   "transform": {
-      "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-path-order:sha-3de6cb9",
+      "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-path-order:v1.0.0",
       "cmd": [ "/bin/bash" ],
       "stdin": [ "#!/bin/bash", "python3 -m path_order.path_order_main" ],
       "env": {
