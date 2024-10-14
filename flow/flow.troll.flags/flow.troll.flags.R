@@ -50,7 +50,7 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='~/pfs/leveltroll500_fill_log_files')
+#' Sys.setenv(DIR_IN='~/pfs/troll_calibration_group_and_convert')
 #' Sys.setenv(FILE_SCHEMA_QF='~/pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific.avsc')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","FileSchmQf=$FILE_SCHEMA_QF")
