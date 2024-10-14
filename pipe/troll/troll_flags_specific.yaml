@@ -2,7 +2,7 @@
 pipeline:
   name: troll_flags_specific
 transform:
-  image: quay.io/battelleecology/neon-is-troll-flags-r:8f4e46e5
+  image: quay.io/battelleecology/neon-is-troll-flags-r:ad9cd8c08
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
@@ -13,13 +13,14 @@ transform:
       DirOut=/pfs/out
       DirErr=/pfs/out/errored_datums
       FileSchmQf=$SCHEMA_FLAGS
+      "DirSubCopy=uncertainty_data|uncertainty_coef"
   env:
     LOG_LEVEL: DEBUG
 input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: troll_fill_log_files
+      repo: troll_calibration_group_and_convert
       # /source_type/YYYY/MM/DD
       glob: /*/*/*/*/
   - pfs:
