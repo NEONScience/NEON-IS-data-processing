@@ -37,7 +37,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: troll_calibration_group_and_convert
+      repo: troll_flags_specific
       glob: /*/*/*/*/
   - pfs:
       name: FILE_SCHEMA_DATA_COND_CONV
