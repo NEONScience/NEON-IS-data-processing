@@ -2,9 +2,7 @@
 pipeline:
   name: mti300ahrs_thresh_select_ts_pad
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-thsh-slct-ts-pad:039a10a7
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.1.0
   cmd:
   - sh
   - "-c"
