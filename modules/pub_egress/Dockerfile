@@ -7,6 +7,7 @@
 ###
 FROM registry.access.redhat.com/ubi9/ubi-minimal
 
+ARG MODULE_DIR="./modules"
 ARG APP_DIR="pub_egress"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
@@ -18,7 +19,7 @@ ARG RCLONE_VERSION=v1.62.2
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY pub_egress/requirements.txt ${CONTAINER_APP_DIR}
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
@@ -46,7 +47,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; \
     else ARCHITECTURE=amd64; fi &&\
     rpm -Uvh "https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-${ARCHITECTURE}.rpm"
 
-COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser
