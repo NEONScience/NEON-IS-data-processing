@@ -84,13 +84,13 @@ input:
       joinOn: $1/$2/$3/$4
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 4
+  constant: 6
 autoscaling: true
 resource_requests:
-  memory: 2G
+  memory: 1G
   cpu: 3.5
 resource_limits:
-  memory: 3G
+  memory: 2G
   cpu: 4.5
 sidecar_resource_requests:
   memory: 3G
@@ -114,3 +114,4 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
+  
