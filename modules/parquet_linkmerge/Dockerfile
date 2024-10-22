@@ -7,6 +7,7 @@
 ###
 FROM registry.access.redhat.com/ubi9/ubi-minimal
 
+ARG MODULE_DIR="./modules"
 ARG APP_DIR="parquet_linkmerge"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src"
@@ -34,7 +35,7 @@ RUN update-ca-trust && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
-COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser
