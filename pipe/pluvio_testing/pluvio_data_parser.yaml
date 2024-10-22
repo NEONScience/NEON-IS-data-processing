@@ -3,7 +3,7 @@ pipeline:
 transform:
   image_pull_secrets:
     - battelleecology-quay-read-all-pull-secret
-  image: 'quay.io/battelleecology/pluvio_data_parser:vistest_5'
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-9c8f0d0
   cmd:
     - /bin/bash
   stdin:
