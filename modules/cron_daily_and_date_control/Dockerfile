@@ -2,17 +2,18 @@
 #
 # This dockerfile will build an image to run the cron_daily_and_date_control module.
 # Example command (run from modules/ directory in Docker context):
-# docker build --no-cache -t neon-is-date-cntl -f ./cron_daily_and_date_control/Dockerfile .
+# docker build --no-cache -t neon-is-date-cntl -f ./modules/cron_daily_and_date_control/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi:8.3
 
+ARG MODULE_DIR="./modules"
 ARG APP_DIR="cron_daily_and_date_control"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${APP_DIR}/populate_site_dates.sh ${CONTAINER_APP_DIR}/${APP_DIR}/populate_site_dates.sh
+COPY ${MODULE_DIR}/${APP_DIR}/populate_site_dates.sh ${CONTAINER_APP_DIR}/${APP_DIR}/populate_site_dates.sh
 
 RUN rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm  && \
     yum -y install jq && \

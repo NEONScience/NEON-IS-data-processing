@@ -2,9 +2,9 @@
 pipeline:
   name: pressureAir_group_path_ptb330a
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/group_path:ab8c0517
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.0
   cmd:
   - /bin/bash
   stdin:

@@ -8,9 +8,9 @@ transform:
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     ERR_PATH: /pfs/out/errored_datums
-  image: quay.io/battelleecology/group_loader:68b73fdc
-  image_pull_secrets:
-    - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-loader:v1.0.0
+  # image_pull_secrets:
+  #   - battelleecology-quay-read-all-pull-secret
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret

@@ -7,6 +7,7 @@
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
+ARG MODULE_DIR="./modules"
 ARG APP_DIR_1="pub_transformer"
 ARG APP_DIR_2="pub_workbook_loader"
 ARG COMMON_DIR="common"
@@ -17,10 +18,10 @@ ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${APP_DIR_1}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_1}/requirements.txt
-COPY ${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
-COPY ${COMMON_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${COMMON_DIR}/requirements.txt
-COPY ${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR_1}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_1}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
+COPY ${MODULE_DIR}/${COMMON_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${COMMON_DIR}/requirements.txt
+COPY ${MODULE_DIR}/${DATA_ACCESS_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}/requirements.txt
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
@@ -45,9 +46,9 @@ RUN update-ca-trust && \
     mkdir ${DATA_DIR} && \
     chown appuser:appuser -R ${DATA_DIR}
 
-COPY ${APP_DIR_1} ${CONTAINER_APP_DIR}/${APP_DIR_1}
-COPY ${APP_DIR_2} ${CONTAINER_APP_DIR}/${APP_DIR_2}
-COPY ${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
-COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${MODULE_DIR}/${APP_DIR_1} ${CONTAINER_APP_DIR}/${APP_DIR_1}
+COPY ${MODULE_DIR}/${APP_DIR_2} ${CONTAINER_APP_DIR}/${APP_DIR_2}
+COPY ${MODULE_DIR}/${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser

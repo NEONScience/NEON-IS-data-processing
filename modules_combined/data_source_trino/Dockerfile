@@ -2,10 +2,12 @@
 #
 # This dockerfile will build the combined trino converter and parquet linkmerge module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t data_source_trino:latest -f ./modules_combined/data_source_trino/Dockerfile .
+# docker build -t neon-is-data-src-trino:latest -f ./modules_combined/data_source_trino/Dockerfile .
 #
 ###
-FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:v3.3.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:v3.5.1
+
+
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="parquet_linkmerge"

@@ -2,8 +2,7 @@
 pipeline:
   name: groundwaterPhysical_pub_format_and_package
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:75c9d74d
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v3.1.1
   cmd:
   - sh
   - "-c"
@@ -127,14 +126,14 @@ parallelism_spec:
   constant: 6
 autoscaling: true
 resource_requests:
-  memory: 700M
+  memory: 400M
   cpu: 1
 resource_limits:
-  memory: 1.5G
-  cpu: 1.8
-sidecar_resource_requests:
-  memory: 3G
+  memory: 800M
   cpu: 1.2
+sidecar_resource_requests:
+  memory: 2.4G
+  cpu: 0.4
 datum_set_spec:
   number: 1
 scheduling_spec:

@@ -2,8 +2,7 @@
 pipeline:
   name: troll_logjam_list_files
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-logjam-loader:354779bc
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v1.0.0
   cmd: ["/bin/bash"]
   env:
     LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
@@ -13,20 +12,29 @@ transform:
   - "#!/bin/bash"
   - python3 -m logjam_loader.logjam_loader
 input:
-  pfs:
-    repo: troll_cron_daily_and_date_control_tick
-    glob: /*
-    empty_files: true
+  join:
+  - pfs:
+      repo: surfacewaterPhysical_cron_monthly_and_pub_control_tick
+      glob: /(*-*)-*
+      empty_files: true
+      joinOn: $1 # Join on YYYY-MM of monthly cron so that the actual day of the trigger can be different between the crons 
+      outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
+  - pfs:
+      repo: groundwaterPhysical_cron_monthly_and_pub_control_tick
+      glob: /(*-*)-*
+      empty_files: true
+      joinOn: $1 # Join on YYYY-MM of monthly cron so that the actual day of the trigger can be different between the crons 
+      outer_join: True # Run as soon as the first cron comes through, so the pub pipelines will wait
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.4
-resource_limits:
   memory: 1G
+  cpu: 1
+resource_limits:
+  memory: 1.5G
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 800M
-  cpu: 0.2
+  memory: 1G
+  cpu: 0.4
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

@@ -2,8 +2,7 @@
 pipeline:
   name: tempSurfacewater_qm_group_and_compute
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-qaqc-qm-grp:039a10a7
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.0.0
   cmd:
   - sh
   - "-c"

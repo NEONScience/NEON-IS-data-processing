@@ -2,9 +2,7 @@
 pipeline:
   name: dualfan_data_source_trino
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/data_source_trino:dbca925a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.1.0
   cmd:
   - sh
   - "-c"
@@ -54,7 +52,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # Example: /pfs/out/li191r/2023/01/01/12345/data/file.parquet
+      # Example: /pfs/out/dualfan/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do
@@ -88,7 +86,7 @@ transform:
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/dualfan_streams.yaml"
     GEN_SCHEMA_FILE: "/usr/src/app/schemas/dualfan/dualfan.avsc"
-    LOG_LEVEL: info
+    LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
     IN_PATH: /tmp/interimData
@@ -124,17 +122,14 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.7
-resource_limits:
-  memory: 2G
-  cpu: 1.5
-sidecar_resource_requests:
-  memory: 2.5G
-  cpu: 0.5
-sidecar_resource_limits:
-  memory: 5G
+  memory: 400M
   cpu: 1.2
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:
