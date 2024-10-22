@@ -51,34 +51,11 @@ def sensor_parse(df: pd.DataFrame, source_type: str, parse_field: str) -> pd.Dat
 
         out_df = pd.concat([df[keep_columns], extracted_df], axis=1)
         return out_df
-    if source_type.lower() == 'pluvio_raw':
-        extracted_df = df[parse_field].apply(lambda x: extract_pulvio_data(x, parser))
-        extracted_df = pd.json_normalize(extracted_df)
-
-        out_df = pd.concat([df[keep_columns], extracted_df], axis=1)
-        return out_df
-        
-        
-def extract_pluvio_data(input_string: str, name_mapping: dict):
-    # Split the input string by semicolons to get key-value pairs
-    raw_data = input_string.split(';')
-
-    # Create an empty dictionary
-    result_dict = {}
-
-    # Iterate through each pair
-    for key, index in name_mapping.items():
-        if index < len(raw_data):
-            # Add the key-value pair to the result_dict
-            result_dict[key] = raw_data[index].strip()  # Strip removes leading/trailing spaces
-    
-    return result_dict
-        
 
 
 def extract_and_rename(data_string: str, name_mapping: dict) -> Dict:
     # Regular expression to find all (name number) pairs
-    pattern = r'\((\w+)\s+([\d.]+)\)'
+    pattern = r'\((\w+)\s([\w\.\-:]+)\)'
 
     # Find all matches
     matches = re.findall(pattern, data_string)

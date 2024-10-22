@@ -9,9 +9,10 @@ parse_code_dict = {
         'CO2Raw': 'co2_raw',
         'H2ORaw': 'h2o_raw',
         'CO2D': 'co2_molar_density',
-        'H2OD': 'h2o_concentration_density',
+        'H2OD': 'h2o_molar_density',
         'Temp': 'temperature',
         'Pres': 'pressure',
+        'DPres': 'differential_pressure',
         'Cooler': 'cooler',
         'CO2MFd': 'co2_mole_fraction_dry',
         'H2OMFd': 'h2o_mole_fraction_dry',
@@ -23,7 +24,7 @@ parse_code_dict = {
         'H2OAWO': 'h2o_nonabsorbing_wavelength',
         'CO2AW': 'co2_absorbing_wavelength',
         'CO2AWO': 'co2_nonabsorbing_wavelength'
-    },
+},
     'g2131i_raw': {
         'presCavi': 1,
         'tempCavi': 2,
@@ -49,19 +50,5 @@ parse_code_dict = {
         'd18OWater': 10,
         'd2HWater': 11,
         'N2Flag': 13
-    },
-    'pluvio_raw': {
-        'intensity_rt': 0,
-        'accu_rt_nrt': 1,
-        'accu_nrt': 2,
-        'accu_total_nrt': 3,
-        'bucket_rt': 4,
-        'bucket_nrt': 5,
-        'cell_temperature': 6,
-        'heater_status': 7,
-        'sensorStatus': 8,
-        'electronics_temperature': 9,
-        'supply_voltage': 10,
-        'inletTemp': 11
     }
 }
