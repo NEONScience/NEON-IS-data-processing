@@ -2,7 +2,7 @@
 #
 # This dockerfile will build the parquet linkmerge module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build --no-cache -t parquet_linkmerge:latest -f parquet_linkmerge/Dockerfile .
+# docker build -t parquet_linkmerge:latest -f parquet_linkmerge/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
