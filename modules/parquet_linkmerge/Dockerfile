@@ -5,7 +5,7 @@
 # docker build -t parquet_linkmerge:latest -f parquet_linkmerge/Dockerfile .
 #
 ###
-FROM registry.access.redhat.com/ubi9/ubi-minimal
+FROM registry.access.redhat.com/ubi8/ubi-minimal
 
 ARG MODULE_DIR="./modules"
 ARG APP_DIR="parquet_linkmerge"
