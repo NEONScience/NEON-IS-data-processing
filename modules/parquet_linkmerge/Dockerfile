@@ -1,8 +1,8 @@
 ####
 #
-# This dockerfile will build the parquet linkmerge module.
+# This dockerfile will build the errored datums reader module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t parquet_linkmerge:latest -f parquet_linkmerge/Dockerfile .
+# docker build --no-cache -t errored_datums_reader:latest -f errored_datums_reader/Dockerfile .
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
@@ -10,7 +10,7 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal
 ARG MODULE_DIR="./modules"
 ARG APP_DIR="parquet_linkmerge"
 ARG COMMON_DIR="common"
-ARG CONTAINER_APP_DIR="/usr/src"
+ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
