@@ -2,10 +2,10 @@
 #
 # This dockerfile will build the parquet linkmerge module.
 # Example command (must be run from project root directory to include common path in Docker context):
-# docker build -t parquet_linkmerge:latest -f parquet_linkmerge/Dockerfile .
+# docker build --no-cache -t parquet_linkmerge:latest -f parquet_linkmerge/Dockerfile .
 #
 ###
-FROM registry.access.redhat.com/ubi9/ubi-minimal
+FROM registry.access.redhat.com/ubi8/ubi-minimal
 
 ARG MODULE_DIR="./modules"
 ARG APP_DIR="parquet_linkmerge"
@@ -23,11 +23,11 @@ RUN update-ca-trust && \
             shadow-utils \
             gcc \
             libzstd  \
-            python311 \
-            python311-pip \
-            python311-wheel \
-            python311-devel \
-            python311-setuptools && \
+            python39 \
+            python39-pip \
+            python39-wheel \
+            python39-devel \
+            python39-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
