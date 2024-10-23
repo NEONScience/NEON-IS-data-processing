@@ -23,11 +23,11 @@ RUN update-ca-trust && \
             shadow-utils \
             gcc \
             libzstd  \
-            python311 \
-            python311-pip \
-            python311-wheel \
-            python311-devel \
-            python311-setuptools && \
+            python39 \
+            python39-pip \
+            python39-wheel \
+            python39-devel \
+            python39-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
