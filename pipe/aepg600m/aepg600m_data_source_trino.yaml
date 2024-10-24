@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.1.0
   cmd:
   - sh
   - "-c"

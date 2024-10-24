@@ -2,9 +2,9 @@
 pipeline:
   name: processed_datums_reader
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/processed_datums_reader:0f746484
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-proc-datum-reader:v1.0.0
   
   cmd:
   - /bin/bash
@@ -38,11 +38,23 @@ input:
   - cron:
       name: tick
       spec: "@daily"
+      overwrite: true
   - pfs:
       name: PIPELINE_NAME_L1
       repo: level1_pipeline_list
       glob: "/level1_pipeline_list.txt"
 autoscaling: true
+resource_requests:
+  memory: 64M
+  cpu: 1.2
+resource_limits:
+  memory: 200M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 64M
+  cpu: 0.2
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -60,14 +72,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"64M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.5"
-    }
-  ]
