@@ -14,7 +14,7 @@ transform:
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH
     mkdir -p $OUT_PATH
-    # Run first module - filter-joiner (using environment variables below as input parameters)
+    # Run first module - date-gap-filler (using environment variables below as input parameters)
     python3 -m date_gap_filler.date_gap_filler_main
     # Run second module - regularize
     Rscript ./flow.rglr.R \
@@ -26,8 +26,8 @@ transform:
       WndwRglr=Cntr \
       IdxWndw=Clst \
       RptTimeWndw=FALSE \
-      DropNotNumc=FALSE
-      #"DirSubCopy=location"
+      DropNotNumc=FALSE \
+      "DirSubCopy=location"
     EOF
   env:
     # Environment variables for date gap filler
@@ -88,11 +88,11 @@ parallelism_spec:
   constant: 1
 autoscaling: true
 resource_requests:
-  memory: 5G
-  cpu: 2.5
+  memory: 4G
+  cpu: 2.0
 resource_limits:
   memory: 8G
-  cpu: 5
+  cpu: 4
 sidecar_resource_requests:
   memory: 4G
   cpu: 0.5

@@ -50,7 +50,7 @@ input:
 #      - pfs:
 #          name: MAP_PATH
 #          repo: li7200_assetuid_macaddress_map
-#          glob: /li7200_stcdd/(*)
+#          glob: /li7200/(*)
 #          joinOn: $1
 #    - join:
 #      - pfs:
@@ -62,7 +62,7 @@ input:
 #      - pfs:
 #          name: MAP_PATH
 #          repo: li7200_assetuid_macaddress_map
-#          glob: /li7200_stcdd/(*)
+#          glob: /li7200/(*)
 #          joinOn: $1
 # another option to join
   union:
@@ -74,7 +74,7 @@ input:
       - pfs:
           name: MAP_PATH
           repo: li7200_assetuid_macaddress_map
-          glob: /li7200_stcdd
+          glob: /li7200
     - cross:
       - pfs:
           name: DATA_PATH_KAFKA
