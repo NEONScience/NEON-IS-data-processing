@@ -1,7 +1,8 @@
 ##some prism comps with output from smoothing function 
 old = T
 if (old){
-dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_zeroCal/2023'
+  dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip'
+  
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='*.parquet',recursive=TRUE,full.names=TRUE)
@@ -15,7 +16,8 @@ slopes$rsq_prism_NEON_old <- NA
 
 
 }else{
-dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip_postAdj/'
+  dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip'
+  
 
 # Get list of applicable data files
 filesAll <- list.files(path=dirSmooth,pattern='*.parquet',recursive=TRUE,full.names=TRUE)
@@ -28,7 +30,7 @@ slopes$rsq_prism_NEON <- NA
 }
 
 #prism vs NEON
-for (site in slopes$sites){
+for (site in slopes$sites[2:25]){
     tryCatch (
       {
     ptrnSite <- paste0('*/precip-weighing_',site,'*')

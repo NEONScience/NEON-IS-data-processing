@@ -1,10 +1,10 @@
 ##some prism comps with output from smoothing function 
 # library(dplyr)
 
-site <- 'CPER'
+site <- 'GUAN'
 # dirSmooth <- '/scratch/pfs/precipWeighing_compute_precip_dynamic_minEvap_15.5'
 # Div <- .75 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
-dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip'
+dirSmooth <- '/scratch/pfs/precipWeighing_combine_precip/2023'
 Div <- 1 # compensates for difference in slope of 0.25 lower for NEON cal. Set to 1 for no compensation.
 
 # Get list of applicable data files
@@ -20,22 +20,36 @@ VarKeep=c('startDateTime','endDateTime','precipBulk','precipType')
 strainGaugeDepthAgr <- NEONprocIS.base::def.read.parq.ds(fileIn = filesSite,Var=VarKeep,VarTime='startDateTime',Df=TRUE)
 flagsAgr <- NEONprocIS.base::def.read.parq.ds(fileIn = filesFlagsSite,VarTime='startDateTime',Df=TRUE)
 
-### pull in prism data
+### pull in daymet data
 # site <- stringr::str_extract(DirIn, pattern= '[A-Z]{4}')
-prism_files <- list.files('/scratch/prism/current', full.names = T)
-prism_files <- list.files('/scratch/prism/current', full.names = T)
+daymet_files <- list.files('/scratch/daymet', full.names = T)
+daymet_files <- list.files('/scratch/daymet', full.names = T)
 
-file <- stringr::str_subset(prism_files, pattern = site)
-prism <- readr::read_csv(file)
+file <- stringr::str_subset(daymet_files, pattern = site)
+daymet <- readr::read_csv(file)
+daymet$datetime <- as.POSIXct(daymet$date/1000, origin = '1970-01-01')
+daymet$startDate <- as.Date(daymet$datetime)
+
+daymet <- daymet[,c('startDate','prcp')]
 
 #add flags to strainGaugeDepthAgr
 #consolidate flags to daily
 #remove if flagged
-
 strainGaugeDepthAgr <- full_join(strainGaugeDepthAgr, flagsAgr, by = c('startDateTime', 'endDateTime'))
 
+strainGaugeDepthAgr_daymet <- strainGaugeDepthAgr %>%
+  #daymet day is 12:00 UTC DATE - 24HR so adjust time window on NEON data to make comparison
+  mutate(startDateTime = startDateTime) %>%
+  mutate(startDate = lubridate::floor_date(startDateTime - 12*60*60, '1 day')) %>%
+  group_by(startDate) %>%
+  summarise(dailyPrecipNEON = sum(precipBulk))
+
 #removing data if any flagged for 3 key vars. 
+#flags_sub <- strainGaugeDepthAgr[,c('insuffDataQF','extremePrecipQF','dielNoiseQF', 'heaterErrorQF')]
+#flags_sub <- strainGaugeDepthAgr[,c('insuffDataQF','extremePrecipQF','dielNoiseQF')]
 flags_sub <- strainGaugeDepthAgr[,c('insuffDataQF','extremePrecipQF')]
+
+
 flagVar <- 'finalQFTest'
 strainGaugeDepthAgr[[flagVar]] <- NA
 flag_0 <- rowSums(flags_sub == 0, na.rm = T)
@@ -46,37 +60,35 @@ flags_neg1 <- rowSums(flags_sub == -1, na.rm = T)
 strainGaugeDepthAgr[[flagVar]][is.na(strainGaugeDepthAgr[[flagVar]]) & flags_neg1 >=1] <- -1
 strainGaugeDepthAgr[[flagVar]][is.na(strainGaugeDepthAgr[[flagVar]])] <- -1
 
-
-# strainGaugeDepthAgr_prism <- strainGaugeDepthAgrRglr %>%
-strainGaugeDepthAgr_prism <- strainGaugeDepthAgr %>%
-  #prism day is 12:00 UTC DATE - 24HR so adjust time window on NEON data to make comparison
-  mutate(startDateTime = startDateTime - 12*60*60) %>%
-  mutate(startDate = lubridate::floor_date(startDateTime, '1 day')) %>%
-  mutate(heaterErrorQF = case_when( heaterErrorQF == -1 ~ 0,
-                                    TRUE ~ heaterErrorQF)) %>% 
+strainGaugeDepthAgr_daymetQC <- strainGaugeDepthAgr %>%
+  #daymet day is 12:00 UTC DATE - 24HR so adjust time window on NEON data to make comparison
+  mutate(startDateTime = startDateTime) %>%
+  mutate(startDate = lubridate::floor_date(startDateTime - 12*60*60, '1 day'),
+         heaterErrorQF = case_when( heaterErrorQF == -1 ~ 0,
+                                    TRUE ~ heaterErrorQF)) %>%
   group_by(startDate) %>%
-  summarise(dailyPrecipNEON = sum(precipBulk)/Div,
-            maxFlag = max(finalQFTest, na.rm = T), 
+  summarise(dailyPrecipNEON = sum(precipBulk),
+            maxFlag = max(finalQFTest, na.rm = T),
             heaterFlag = sum(heaterErrorQF, na.rm = T)/n()) %>%
   mutate(startDate=as.Date(startDate)) %>% 
-  #filter(heaterFlag < 0.1) %>% 
-  filter(maxFlag < 1)
+  filter(maxFlag < 1) %>% 
+  filter(heaterFlag <= 0.5)
 
-
-dfpr <- dplyr::inner_join(strainGaugeDepthAgr_prism, prism, by = 'startDate')
-
+###################non QCd    
+dfpr <- dplyr::inner_join(strainGaugeDepthAgr_daymetQC, daymet, by = 'startDate')
 #trim first and last days of data set because comparison is likely skewed due to time shifts
 dfpr <- dfpr[2:(nrow(dfpr)-1), ]
 
-# Get rid of any rows in which either NEON or prism is NA
-setKeep <- !is.na(dfpr$dailyPrecipNEON) & !is.na(dfpr$ppt)
+# Get rid of any rows in which either NEON or daymet is NA
+setKeep <- !is.na(dfpr$dailyPrecipNEON) & !is.na(dfpr$prcp)
 dfpr <- dfpr[setKeep,]
 
+
 # Compute daily regression
-regrDaily <- lm(dailyPrecipNEON ~ ppt,dfpr)
+regrDaily <- lm(dailyPrecipNEON ~ prcp,dfpr)
 rsqDaily <- summary(regrDaily)$r.squared
-regrLine <- data.frame(x = c(0,max(dfpr$ppt,na.rm=TRUE)),
-                       y=c(regrDaily$coefficients[1],max(dfpr$ppt,na.rm=TRUE)*regrDaily$coefficients[2]+regrDaily$coefficients[1]))
+regrLine <- data.frame(x = c(0,max(dfpr$prcp,na.rm=TRUE)),
+                       y=c(regrDaily$coefficients[1],max(dfpr$prcp,na.rm=TRUE)*regrDaily$coefficients[2]+regrDaily$coefficients[1]))
 
 # Find calibration events
 setRecharge <- which(strainGaugeDepthAgr$precipType=="ExcludeBeforeRecharge")
@@ -108,17 +120,17 @@ for (i in seq_len(length(setCal))){
 }
 print(p)
 
-plotly::plot_ly(data=dfpr,x=~ppt,y=~dailyPrecipNEON, type = 'scatter', mode = 'markers', hoverinfo= 'text', text = format(dfpr$startDate,'%Y-%m-%d')) %>% 
+plotly::plot_ly(data=dfpr,x=~prcp,y=~dailyPrecipNEON, type = 'scatter', mode = 'markers', hoverinfo= 'text', text = format(dfpr$startDate,'%Y-%m-%d')) %>% 
 plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily'),
                showlegend = FALSE) %>%
   plotly::layout(shapes = list(
     list(
       type = "line", 
       x0 = 0, 
-      x1 = ~max(ppt, dailyPrecipNEON,na.rm=TRUE), 
+      x1 = ~max(prcp, dailyPrecipNEON,na.rm=TRUE), 
       xref = "x",
       y0 = 0, 
-      y1 = ~max(ppt, dailyPrecipNEON,na.rm=TRUE), 
+      y1 = ~max(prcp, dailyPrecipNEON,na.rm=TRUE), 
       yref = "y",
       line = list(color = "black")
     ),
@@ -134,8 +146,8 @@ plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily'),
     )
   )
 ) %>%
-  plotly::add_trace(x=~max(ppt, dailyPrecipNEON,na.rm=TRUE)*.75,
-                    y=~max(ppt, dailyPrecipNEON,na.rm=TRUE)*.25,
+  plotly::add_trace(x=~max(prcp, dailyPrecipNEON,na.rm=TRUE)*.75,
+                    y=~max(prcp, dailyPrecipNEON,na.rm=TRUE)*.25,
                     name = 'fit',
                     type = 'scatter',
                     mode = 'text',
@@ -150,7 +162,7 @@ plotly::layout(title = paste0('PRISM vs NEON at ', site,' - daily'),
 dfpr_week <- dfpr %>% 
   dplyr::mutate(week = lubridate::floor_date(startDate, 'week')) %>% 
   dplyr::group_by(week) %>% 
-  dplyr::summarise(prism = base::sum(ppt, na.rm = T),
+  dplyr::summarise(prism = base::sum(prcp, na.rm = T),
                    neon = base::sum(dailyPrecipNEON, na.rm = T))
 
 dfpr_week_long <- data.table::melt(dfpr_week,id.vars=c('week'))
@@ -185,7 +197,7 @@ plotly::plot_ly(data=dfpr_week,x=~prism,y=~neon, type = 'scatter', mode = 'marke
 dfpr_mnth <- dfpr %>% 
   dplyr::mutate(mnth = lubridate::floor_date(startDate, 'month')) %>% 
   dplyr::group_by(mnth) %>% 
-  dplyr::summarise(prism = base::sum(ppt, na.rm = T),
+  dplyr::summarise(prism = base::sum(prcp, na.rm = T),
                   neon = base::sum(dailyPrecipNEON, na.rm = T))
 
 dfpr_mnth_long <- data.table::melt(dfpr_mnth,id.vars=c('mnth'))
@@ -222,7 +234,7 @@ plotly::plot_ly(data=dfpr_mnth,x=~prism,y=~neon, type = 'scatter', mode = 'marke
 dfpr_year <- dfpr %>% 
   dplyr::mutate(year = lubridate::floor_date(startDate, 'year')) %>% 
   dplyr::group_by(year) %>% 
-  dplyr::summarise(prism = base::sum(ppt, na.rm = T),
+  dplyr::summarise(prism = base::sum(prcp, na.rm = T),
                    neon = base::sum(dailyPrecipNEON, na.rm = T))
 
 dfpr_year_long <- data.table::melt(dfpr_year,id.vars=c('year'))
