@@ -1,12 +1,9 @@
 {
   "pipeline": {
-    "name": "waterQuality_exoconductivity_uncertainty"
+    "name": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-dir-filt:sha-c6568cd"
   },
   "transform": {
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
-    "image": "quay.io/battelleecology/directory_filter:22",
+    "image": "_exo2_locati",
     "cmd": [
       "/bin/bash"
     ],
