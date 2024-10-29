@@ -29,7 +29,7 @@ def write_file(out_path: Path,
     :param workbook: The publication workbook for the data product being published.
     :param timestamp: The timestamp to include in the filename.
     :param science_review_file: An object containing the science review file Path and term names.
-    :param database: A class with functions for reading from the database.
+    :param database: A class with functions for reading from the database. 
     """
     filename = get_filename(file_metadata.path_elements, timestamp=timestamp, file_type='variables', extension='csv')
     path = Path(out_path, filename)
