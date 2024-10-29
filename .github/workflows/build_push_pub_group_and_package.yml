@@ -5,15 +5,15 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/pub_group_and_package/*'
-      - 'modules/pub_grouper/*'
-      - 'modules/pub_transformer/*'
-      - 'modules/pub_workbook_loader/*'
-      - 'modules/pub_packager/*'
-      - 'modules/pub_files/*'
-      - 'modules/os_table_loader/*'
-      - 'modules/common/*'
-      - 'modules/data_access/*'
+      - 'modules_combined/pub_group_and_package/**'
+      - 'modules/pub_grouper/**'
+      - 'modules/pub_transformer/**'
+      - 'modules/pub_workbook_loader/**'
+      - 'modules/pub_packager/**'
+      - 'modules/pub_files/**'
+      - 'modules/os_table_loader/**'
+      - 'modules/common/**'
+      - 'modules/data_access/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
