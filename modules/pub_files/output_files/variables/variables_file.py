@@ -45,7 +45,7 @@ def write_file(out_path: Path,
 
 def write_rows(writer, rows: List[WorkbookRow]) -> None:
     for row in rows:
-        table_name = row.table_name
+        table_name = row.table_name.replace('_pub', '')
         field_name = row.field_name
         description = row.description
         data_type = row.data_type_code
