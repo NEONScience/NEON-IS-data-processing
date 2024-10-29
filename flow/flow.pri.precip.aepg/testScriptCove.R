@@ -9,28 +9,31 @@
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/04/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
- # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
- # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2021/09/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2021/09/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+  DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/12/15/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/10/19/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/04/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/10/12/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+  # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/10/12/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/04/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
-DirOutBase <- "/scratch/pfs/out_tb"
+DirOutBase <- "/scratch/pfs/out_Cove"
 DirSubCopy <- NULL
 WndwAgr <- '60 min'
-RangeSizeHour <- 72
-Envelope <- 17
-ThshCountHour <- 15
+RangeSizeHour <- 24
+Envelope <- 1
+# WndwAgr <- '60 min'
+# RangeSizeHour <- 72
+# Envelope <- 30
+ThshCountHour <- 17 
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
 ChangeFactor <- 1
