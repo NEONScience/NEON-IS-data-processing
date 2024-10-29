@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/location_loader/*'
+      - 'modules/location_loader/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

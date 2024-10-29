@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/processed_datums_reader/*'
+      - 'modules/processed_datums_reader/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

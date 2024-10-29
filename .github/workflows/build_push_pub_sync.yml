@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/pub_sync/*'
+      - 'modules/pub_sync/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

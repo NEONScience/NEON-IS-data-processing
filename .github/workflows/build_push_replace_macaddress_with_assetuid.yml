@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/replace_macaddress_with_assetuid/*'
+      - 'modules/replace_macaddress_with_assetuid/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
