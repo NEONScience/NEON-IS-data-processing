@@ -37,7 +37,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: troll_calibration_group_and_convert
+      repo: troll_flags_specific
       glob: /*/*/*/*/
   - pfs:
       name: FILE_SCHEMA_DATA_COND_CONV
@@ -48,16 +48,16 @@ input:
       repo: troll_avro_schemas
       glob: /troll_shared/flags_troll_specific_temp.avsc
 parallelism_spec:
-  constant: 4
+  constant: 6
 autoscaling: true
 resource_requests:
-  memory: 800M
+  memory: 600M
   cpu: 1.2
 resource_limits:
-  memory: 1G
+  memory: 800M
   cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 0.5
 datum_set_spec:
   number: 1
@@ -78,3 +78,4 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
+  

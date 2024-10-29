@@ -63,8 +63,9 @@
 #' # Not run
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' SchmQfOut <- base::paste0(base::readLines('~/pfs/troll_shared_avro_schemas/troll_shared/flags_troll_specific.avsc'),collapse='')
-#' wrap.troll.flags <- function(DirIn="~/pfs/aquatroll200_data_source_trino/aquatroll200/2020/01/02/10721",
+#' wrap.troll.flags <- function(DirIn="~/pfs/troll_calibration_group_and_convert/leveltroll500/2024/08/12/21113",
 #'                               DirOutBase="~/pfs/out",
+#'                               SchmDataOut=NULL,
 #'                               SchmQf=SchmQfOut,
 #'                               DirSubCopy=NULL,
 #'                               log=log)
@@ -128,8 +129,8 @@ wrap.troll.flags <- function(DirIn,
   
   #create zero pressure flag; default all flags to -1 then change them as the test can be performed
   trollData$zeroPressureQF <- -1
-  trollData$zeroPressureQF[trollData$pressure>0]<-0
-  trollData$zeroPressureQF[trollData$pressure<=0]<-1
+  trollData$zeroPressureQF[trollData$pressure>0.1]<-0
+  trollData$zeroPressureQF[trollData$pressure<=0.1]<-1
   #trollData$pressure[trollData$zeroPressureQF==1]<-NA
   source_id<-trollData$source_id[1]
   

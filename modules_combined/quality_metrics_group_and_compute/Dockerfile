@@ -1,4 +1,5 @@
-# Dockerfile for NEON IS Data Processing - Quality metrics and final quality flag module combined with filter-joiner
+# Dockerfile for NEON IS Data Processing - Quality metrics and final quality flag module 
+# (both averaged and instantaneous quality metrics combined with filter-joiner) 
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-qaqc-qm-grp -f ./modules_combined/quality_metrics_group_and_compute/Dockerfile .
 
@@ -36,19 +37,24 @@ COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 # Build in the quality metrics module
 ARG MODULE_DIR="flow"
-ARG APP_DIR="flow.qaqc.qm"
+ARG APP_DIR_1="flow.qaqc.qm"
+ARG APP_DIR_2="flow.qaqc.qm.dp0p"
 
 # Copy the lockfile and restore known working versions of R dependency packages
-COPY ./${MODULE_DIR}/${APP_DIR}/renv.lock ./renv.lock
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
+COPY ./${MODULE_DIR}/${APP_DIR_1}/renv.lock ./renv.lock.1
+RUN R -e 'renv::restore(lockfile="./renv.lock.1")'
+COPY ./${MODULE_DIR}/${APP_DIR_2}/renv.lock ./renv.lock.2
+RUN R -e 'renv::restore(lockfile="./renv.lock.2")'
 
 # Create app user
 RUN groupadd appuser && \
     useradd appuser -g appuser
 
 # Copy in application code
-COPY ./${MODULE_DIR}/${APP_DIR}/wrap.qaqc.qm.R .
-COPY ./${MODULE_DIR}/${APP_DIR}/flow.qaqc.qm.R .
+COPY ./${MODULE_DIR}/${APP_DIR_1}/wrap.qaqc.qm.R .
+COPY ./${MODULE_DIR}/${APP_DIR_1}/flow.qaqc.qm.R .
+COPY ./${MODULE_DIR}/${APP_DIR_2}/wrap.qaqc.qm.dp0p.R .
+COPY ./${MODULE_DIR}/${APP_DIR_2}/flow.qaqc.qm.dp0p.R .
 
 # Run as app user
 USER appuser

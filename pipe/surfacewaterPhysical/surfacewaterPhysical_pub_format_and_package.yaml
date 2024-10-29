@@ -2,8 +2,7 @@
 pipeline:
   name: surfacewaterPhysical_pub_format_and_package
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-is-pub-grp-pack:75c9d74d
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v3.1.2
   cmd:
   - sh
   - "-c"
