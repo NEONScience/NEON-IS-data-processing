@@ -2,7 +2,7 @@
 pipeline:
   name: tempSurfacewater_pub_group_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v3.1.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v1.0.1
   cmd:
   - sh
   - "-c"
