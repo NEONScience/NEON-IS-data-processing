@@ -447,7 +447,8 @@ for (i in 1:numRow){
   }
 }
 
-strainGaugeDepthAgr$precipBulk <- strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1)
+c(diff(strainGaugeDepthAgr$bench),as.numeric(NA))
+strainGaugeDepthAgr$precipBulk <- c(diff(strainGaugeDepthAgr$bench),as.numeric(NA))
 strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precipBulk < 0, 0, precipBulk))
 
 flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1

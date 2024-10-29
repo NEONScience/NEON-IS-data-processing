@@ -310,7 +310,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
   strainGaugeDepthAgr[[nameVarPrecipType]] <- varPrecipType
   
   # Compute precip
-  strainGaugeDepthAgr[[nameVarPrecipBulk]] <- varBench - lag(varBench, 1)
+  strainGaugeDepthAgr[[nameVarPrecipBulk]] <- c(diff(varBench),as.numeric(NA))
   strainGaugeDepthAgr[[nameVarPrecipBulk]][strainGaugeDepthAgr[[nameVarPrecipBulk]] < 0] <- 0
   
 } # End loop around surrogates
@@ -320,6 +320,7 @@ plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
 # Compute the uncertainty in precip based on the variability in computed benchmark of the surrogates
 # The uncertainty of a sum or difference is equal to their individual uncertainties added in quadrature.
+nameVar <- names(strainGaugeDepthAgr)
 nameVarBenchS <- nameVar[grepl('benchS[0-9]',nameVar)]
 strainGaugeDepthAgr$benchS_std <- matrixStats::rowSds(as.matrix(strainGaugeDepthAgr[,nameVarBenchS]))
 strainGaugeDepthAgr$precipS_std <- sqrt(strainGaugeDepthAgr$benchS_std^2 + lag(strainGaugeDepthAgr$benchS_std, 1)^2)
@@ -327,11 +328,30 @@ strainGaugeDepthAgr$precipS_u95 <- strainGaugeDepthAgr$precipS_std*2
 df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','precipBulk','precipS_u95')],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
-# Report total precip, and add uncertainties for the central day in quadrature
+# Report total precip, and compute uncertainty for the central day
+# We can use the same equation here, adding the uncertainties for the start and
+# end of the day in quadrature, with the caveat that the benchmark does not drop 
+# over the course of the day. If this occurs we need to compute for each leg of 
+# a flat or increasing benchmark, summing the legs in quadrature
 dayOut <- InfoDirIn$time
-setOut <- strainGaugeDepthAgr$startDateTime >= dayOut & 
-  strainGaugeDepthAgr$startDateTime < (dayOut + as.difftime(1,units='days'))
-UcrtDay <- sqrt(sum(strainGaugeDepthAgr$precipS_std[setOut]^2))
+setDayUcrt <- which(strainGaugeDepthAgr$startDateTime >= dayOut & 
+  strainGaugeDepthAgr$startDateTime <= (dayOut + as.difftime(1,units='days'))) # include first point of next day, because that is the point from which the difference is taken
+setOut <- which(strainGaugeDepthAgr$startDateTime >= dayOut & 
+  strainGaugeDepthAgr$startDateTime < (dayOut + as.difftime(1,units='days')))
+
+# Compute uncertainty for each differencing leg (i.e. period of same or increasing benchmark)
+benchDiff <- diff(strainGaugeDepthAgr$bench[setDayUcrt])
+setBrk <- c(0,which(is.na(benchDiff) | benchDiff < 0),length(setDayUcrt))
+ucrtDayBrk <- rep(0,length(setBrk)-1)
+for (idxBrk in seq_len(length(setBrk)-1)){
+  idxLegBgn <- setDayUcrt[setBrk[idxBrk]+1]
+  idxLegEnd <- setDayUcrt[setBrk[idxBrk+1]]
+  if((idxLegEnd-idxLegBgn) == 0){
+    next
+  }
+  ucrtDayBrk[idxBrk] <- sqrt(strainGaugeDepthAgr$precipS_std[idxLegBgn]^2 + strainGaugeDepthAgr$precipS_std[idxLegEnd]^2)
+}
+UcrtDay <- sqrt(sum(ucrtDayBrk^2))
 PrecipDay <- sum(strainGaugeDepthAgr$precipBulk[setOut])
 print(paste0('precip sum for ', dayOut, ': ',round(PrecipDay,1), ' mm +- ',round(UcrtDay,1), ' mm (std)'))
 
