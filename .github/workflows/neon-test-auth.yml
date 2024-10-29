@@ -1,7 +1,12 @@
-name: "Test Google SA Auth"
+name: "Build-push_raw_data_parser"
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'modules/raw_data_parser/*'
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -9,43 +14,34 @@ env:
   GHCR_REGISTRY: ghcr.io
   GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
   GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
+  GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
+  GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
   GHCR_NS: battelleecology
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  # IMAGE_NAME: ${{ github.repository }}
-  # Get just the repo name from the event
+  # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
-    
+  # IS module name
+  MODULE_PATH: ./modules/raw_data_parser
+  IMAGE_NAME: neon-is-raw-data-parse
+
 jobs:
-  deploy:
+  build-push:
     runs-on: ubuntu-latest
-    permissions: # Read more at : https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
         contents: 'write'
         id-token: 'write'
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4.1.4
-
-      - name: "Checkout Branch"
-        uses: peterjgrainger/action-create-branch@v2.2.0
+        uses: "actions/checkout@v4.1.4"
         with:
-          branch: 'liz-testings'
-          sha: '${{ github.event.pull_request.head.sha }}'
+          fetch-depth: '0'
 
-      - name: "Get short SHA"
+      - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-   
-      - name: "Test Auth"
-        uses: ./.github/actions/test-auth
-        with: 
-           image-tag: "${short_sha}"
 
-      - name: "GOOGLE AUTH"
-        id: "auth"
-        uses: "google-github-actions/auth@v2"
+      - name: Build and push
+        uses: ./.github/actions/build-push
         with:
-            workload_identity_provider: "${{ vars.SHARED_WIF_PROVIDER }}"
-            service_account: "${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}"
-
-
+            image-tag: "${short_sha}"
+            
