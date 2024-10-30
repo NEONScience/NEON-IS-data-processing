@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/timeseries_padder/*'
+      - 'modules/timeseries_padder/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

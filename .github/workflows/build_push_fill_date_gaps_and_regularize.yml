@@ -5,10 +5,10 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/fill_date_gaps_and_regularize/*'
-      - 'modules/date_gap_filler/*'
-      - 'modules/common/*'
-      - 'flow/flow.rglr/*'
+      - 'modules_combined/fill_date_gaps_and_regularize/**'
+      - 'modules/date_gap_filler/**'
+      - 'modules/common/**'
+      - 'flow/flow.rglr/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

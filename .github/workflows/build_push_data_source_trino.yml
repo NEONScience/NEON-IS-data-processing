@@ -5,9 +5,9 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/data_source_trino/*'
-      - 'modules/parquet_linkmerge/*'
-      - 'modules/common/*'
+      - 'modules_combined/data_source_trino/**'
+      - 'modules/parquet_linkmerge/**'
+      - 'modules/common/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

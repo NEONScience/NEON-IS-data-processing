@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/pub_transformer/*'
+      - 'modules/pub_transformer/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
