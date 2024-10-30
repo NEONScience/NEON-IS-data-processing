@@ -29,33 +29,33 @@ env:
   IMAGE_NAME: neon-is-pack-base-r
 
 jobs:
-  git-clone:
-    - uses: actions/checkout@v4
-      with:
-      # Repository name with owner. For example, actions/checkout
-      # Default: ${{ github.repository }}
-      repository: 'https://github.battelleecology.org/BattelleEcology/avro.git'
-  
-      # The branch, tag or SHA to checkout. When checking out the repository that
-      # triggered a workflow, this defaults to the reference or SHA for that event.
-      # Otherwise, uses the default branch.
-      ref: 'release-1.10.0'
-  
-    # SSH key used to fetch the repository. The SSH key is configured with the local
-    # git config, which enables your scripts to run authenticated git commands. The
-    # post-job step removes the SSH key.
-    #
-    # We recommend using a service account with the least permissions necessary.
-    #
-    # [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
-    ssh-key: ${{ secrets.BE_GITHUB_KEY }}
-      
   build-push:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
         id-token: 'write'
     steps:
+        - name: "Clone avro"
+          uses: actions/checkout@v4
+          with:
+          # Repository name with owner. For example, actions/checkout
+          # Default: ${{ github.repository }}
+          repository: 'https://github.battelleecology.org/BattelleEcology/avro.git'
+      
+          # The branch, tag or SHA to checkout. When checking out the repository that
+          # triggered a workflow, this defaults to the reference or SHA for that event.
+          # Otherwise, uses the default branch.
+          ref: 'release-1.10.0'
+      
+        # SSH key used to fetch the repository. The SSH key is configured with the local
+        # git config, which enables your scripts to run authenticated git commands. The
+        # post-job step removes the SSH key.
+        #
+        # We recommend using a service account with the least permissions necessary.
+        #
+        # [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+        ssh-key: ${{ secrets.BE_GITHUB_KEY }}
+          
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
