@@ -5,10 +5,7 @@
 
 
 # Use a multi-stage build to obscure the value of GITHUB_PAT used to install private repos
-FROM rocker/rstudio as intermediate
-
-# maintainer handle
-MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
+# FROM rocker/rstudio as intermediate
 
 # Install R avro support - NOTE: Currently the repo is private and requires
 # Sys.setenv(GITHUB_PAT_BE = "MyAccessToken") to be assigned in R. 
@@ -17,11 +14,11 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 # clone the repo in this intermediate build, then copy the relevant package 
 # into the final build and install from there. To pass in the environment variable holding the token,
 # use: docker build --build-arg auth_token=$GITHUB_PAT ...
-ARG auth_token_be
-ENV GITHUB_PAT_BE=$auth_token_be
+#ARG auth_token_be
+#ENV GITHUB_PAT_BE=$auth_token_be
 
-# Install R AVRO library (super developmental version at present)
-RUN git clone -b master https://$GITHUB_PAT_BE@github.battelleecology.org/BattelleEcology/avro.git
+# Install R AVRO library 
+# RUN git clone -b release-1.10.0 https://$GITHUB_PAT_BE@github.battelleecology.org/BattelleEcology/avro.git
 
 # Now make the final build, which will leave behind our access token
 # Start with stable R version - note that this must match the R version in any renv.lock file in order
@@ -29,7 +26,7 @@ RUN git clone -b master https://$GITHUB_PAT_BE@github.battelleecology.org/Battel
 FROM rocker/r-ver:4.1.3
 
 # copy the avro repo from the previous image
-COPY --from=intermediate /avro/ /avro/
+COPY ./avro/ /avro/
 
 # Copy ravro.so to root directory
 COPY ./ravro.so /ravro.so
