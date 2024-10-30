@@ -3,10 +3,7 @@
     "name": "data_source_year_exophorp_linkmerge"
   },
   "transform": {
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
-    "image": "quay.io/battelleecology/parquet_linkmerge:16",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-parquet-linkmerge:sha-b6dd234",
     "cmd": [
       "bash"
     ],
