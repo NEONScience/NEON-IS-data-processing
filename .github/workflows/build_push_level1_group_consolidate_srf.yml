@@ -5,13 +5,13 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/level1_group_consolidate_srf/*'
-      - 'modules/level1_consolidate/*'
-      - 'modules/filter_joiner/*'
-      - 'modules/pub_workbook_loader/*'
-      - 'modules/common/*'
-      - 'modules/data_access/*'
-      - 'flow/flow.pub.tabl.srf/*'
+      - 'modules_combined/level1_group_consolidate_srf/**'
+      - 'modules/level1_consolidate/**'
+      - 'modules/filter_joiner/**'
+      - 'modules/pub_workbook_loader/**'
+      - 'modules/common/**'
+      - 'modules/data_access/**'
+      - 'flow/flow.pub.tabl.srf/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

@@ -45,7 +45,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=array_parser/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update

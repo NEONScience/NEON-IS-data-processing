@@ -5,11 +5,11 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/troll_logs_group_and_fill/*'
-      - 'modules/filter_joiner/*'
-      - 'modules/common/*'
-      - 'flow/flow.kfka.comb/*'
-      - 'flow/flow.troll.logfiles.fill/*'
+      - 'modules_combined/troll_logs_group_and_fill/**'
+      - 'modules/filter_joiner/**'
+      - 'modules/common/**'
+      - 'flow/flow.kfka.comb/**'
+      - 'flow/flow.troll.logfiles.fill/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
