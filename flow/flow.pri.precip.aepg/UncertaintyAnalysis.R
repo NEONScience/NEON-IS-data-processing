@@ -3,18 +3,17 @@ library(dplyr)
 # NOTE: testScriptCove must be (re)run before each run of this script
 
 
-# Reset bench to zero (no rain)
-strainGaugeDepthAgr$bench <- strainGaugeDepthAgr$bench[1]
-
 # Add in artificial rain
 numData <- nrow(strainGaugeDepthAgr)
 precipAdd <- rep(0,numData)
-timeAdd <- as.POSIXct("2022-04-01 12:00:00",tz='GMT')
+timeAdd <- as.POSIXct("2022-10-12 12:00:00",tz='GMT')
 # timeAdd <- as.POSIXct("2022-10-12 12:00:00",tz='GMT')
-# timeAdd <- as.POSIXct("2022-10-12 12:00:00",tz='GMT') + as.difftime(c(-5:5),units='hours')
+timeAdd <- as.POSIXct("2022-10-12 12:00:00",tz='GMT') + as.difftime(c(-5:5),units='hours')
 idxAdd <- strainGaugeDepthAgr$startDateTime %in% timeAdd # logical indices of time points to add rain
-precipAdd[idxAdd] <- 1 # Add this amount of precip at the time points indicated
+precipAdd[idxAdd] <- .2 # Add this amount of precip at the time points indicated
 benchAdd <- cumsum(precipAdd)
+# Add precip
+# strainGaugeDepthAgr$bench <- strainGaugeDepthAgr$bench[1] # Reset bench to start (no rain)
 # strainGaugeDepthAgr$strainGaugeDepth = strainGaugeDepthAgr$strainGaugeDepth + benchAdd
 # strainGaugeDepthAgr$bench <- strainGaugeDepthAgr$bench+benchAdd
 
@@ -44,9 +43,27 @@ surrFill <- iaaft(x=depthMinusBench[setNotNa],N=nSurr)
 surr <- matrix(NA,nrow=numData,ncol=nSurr)
 surr[setNotNa,] <- surrFill
 
+# Pre-allocate additional variables
+nameVarBenchS <- paste0('benchS',seq_len(nSurr))
+nameVarDepthS <- paste0('strainGaugeDepthS',seq_len(nSurr))
+nameVarPrecipS <- paste0('precipS',seq_len(nSurr))
+nameVarPrecipTypeS <- paste0('precipTypeS',seq_len(nSurr))
+nameVarPrecipBulkS <- paste0('precipBulkS',seq_len(nSurr))
+strainGaugeDepthAgr[,nameVarBenchS] <- as.numeric(NA)
+strainGaugeDepthAgr[,nameVarDepthS] <- strainGaugeDepthAgr$bench + surr    # Add the surrogates to the benchmark
+strainGaugeDepthAgr[,c(nameVarPrecipS)] <- FALSE
+strainGaugeDepthAgr[,nameVarPrecipTypeS] <- as.character(NA)
+strainGaugeDepthAgr[,nameVarPrecipBulkS] <- as.numeric(NA)
+
+# Testing performance
+strainGaugeDepthAgr$benchTest <- as.numeric(NA)
+strainGaugeDepthAgr$precipTest <- FALSE
+strainGaugeDepthAgr$precipTypeTest <- as.character(NA)
+
 # Take the benchmark and add on the surrogate variability
 for(idxSurr in c(0,seq_len(nSurr))){
-  
+# for(idxSurr in c(0)){
+
   if (idxSurr == 0){
     message(paste0('Rerunning original timeseries with synthetic precip'))
     nameVarDepth <- 'strainGaugeDepth'
@@ -55,7 +72,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
     nameVarPrecipType <- 'precipType'
     nameVarPrecipBulk <- 'precipBulk'
       
-    strainGaugeDepthS <- strainGaugeDepthAgr$strainGaugeDepth + benchAdd
+    strainGaugeDepthS <- strainGaugeDepthAgr$strainGaugeDepth
     
   } else {
     message(paste0('Running Surrogate ',idxSurr))
@@ -65,28 +82,25 @@ for(idxSurr in c(0,seq_len(nSurr))){
     nameVarPrecipType <- paste0('precipTypeS',idxSurr)
     nameVarPrecipBulk <- paste0('precipBulkS',idxSurr)
     
-    # Add the surrogates to the benchmark
-    strainGaugeDepthS <- strainGaugeDepthAgr$bench + surr[,idxSurr]
+    strainGaugeDepthS <- strainGaugeDepthAgr[[nameVarDepth]]
     
   }  
   
-  #initialize fields
-  strainGaugeDepthAgr[[nameVarDepth]] <- strainGaugeDepthS
-  strainGaugeDepthAgr[[nameVarBench]] <- NA
-  strainGaugeDepthAgr[[nameVarPrecip]] <- FALSE #add TRUE when rain detected
-  strainGaugeDepthAgr[[nameVarPrecipType]] <- FALSE #add TRUE when rain detected
 
-
-  
   #start counters
   rawCount <- 0
   timeSincePrecip <- NA
   currRow <- rangeSize #instead of 24 for hourly this will be how ever many rows encompass one day
   
-  #initialize fields
+  #initialize fields. 
   strainGaugeDepthAgr[[nameVarBench]] <- NA
   strainGaugeDepthAgr[[nameVarBench]][1:currRow] <-  stats::quantile(strainGaugeDepthS[1:currRow],Quant,na.rm=TRUE)
   
+  # Use standalone variables when running through the loop for speed
+  varBench <- strainGaugeDepthAgr[[nameVarBench]]
+  varPrecip <- strainGaugeDepthAgr[[nameVarPrecip]]
+  varPrecipType <- strainGaugeDepthAgr[[nameVarPrecipType]]
+    
   ##loop through data to establish benchmarks
   skipping <- FALSE
   numRow <- nrow(strainGaugeDepthAgr)
@@ -104,7 +118,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
       
       if(length(idxEnd) > 0){
         # Remove the benchmark extending into the gap
-        strainGaugeDepthAgr[[nameVarBench]][(idxEnd+1):currRow] <- NA
+        varBench[(idxEnd+1):currRow] <- NA
       }
       
       # Skip until there is enough data
@@ -125,7 +139,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
       idxBgnNext <- setEval[head(which(!is.na(strainGaugeDepthS[setEval])),1)]
       
       # Re-establish the benchmark
-      strainGaugeDepthAgr[[nameVarBench]][idxBgnNext:currRow] <- stats::quantile(strainGaugeDepthS[idxBgnNext:currRow],Quant,na.rm=TRUE)
+      varBench[idxBgnNext:currRow] <- stats::quantile(strainGaugeDepthS[idxBgnNext:currRow],Quant,na.rm=TRUE)
       timeSincePrecip <- NA
       skipping <- FALSE
     }
@@ -136,11 +150,11 @@ for(idxSurr in c(0,seq_len(nSurr))){
     }
     
     # #establish nth min/max of range
-    recentPrecip <- base::any(strainGaugeDepthAgr[[nameVarPrecip]][i:currRow])
+    recentPrecip <- base::any(varPrecip[i:currRow])
     
     
     #establish benchmark
-    bench <- strainGaugeDepthAgr[[nameVarBench]][currRow-1]
+    bench <- varBench[currRow-1]
     raw <- strainGaugeDepthS[currRow]
     precip <- FALSE
     precipType <- NA
@@ -177,7 +191,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
         # SHOULD WE RESET THE rawCount HERE???
         # rawCount <- 0
         
-      } else if (grepl('volumeThresh',x=strainGaugeDepthAgr[[nameVarPrecipType]][currRow-1]) && rawChange > ThshChange){
+      } else if (grepl('volumeThresh',x=varPrecipType[currRow-1]) && rawChange > ThshChange){
         # Or, if is has been raining with the volume threshold and the precip depth continues to increase
         #   above the expected instrument sensitivity, continue to say it is raining.
         bench <- raw # Update the benchmark for the next data point
@@ -205,14 +219,14 @@ for(idxSurr in c(0,seq_len(nSurr))){
           rawIdx <- ifelse(is.na(rawIdx), benchNext, rawIdx)
           if(rawIdx < benchNext){
             benchNext <- rawIdx
-            strainGaugeDepthAgr[[nameVarBench]][idx] <- rawIdx
+            varBench[idx] <- rawIdx
           } else {
-            strainGaugeDepthAgr[[nameVarBench]][idx] <- benchNext
+            varBench[idx] <- benchNext
           }
           
           # Record rain stats
-          strainGaugeDepthAgr[[nameVarPrecip]][idx] <- precip
-          strainGaugeDepthAgr[[nameVarPrecipType]][idx] <- 'ThshCountBackFilledToStart'
+          varPrecip[idx] <- precip
+          varPrecipType[idx] <- 'ThshCountBackFilledToStart'
         }
         
       } else if (rawCount >= ThshCount){
@@ -224,25 +238,25 @@ for(idxSurr in c(0,seq_len(nSurr))){
       }
       # } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
     } 
-    if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr[[nameVarBench]][i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+    if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (varBench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
       
       # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
       # back-adjust the benchmark to the median of the last day to avoid overestimating actual precip
       
       bench <- raw_med_lastDay
-      strainGaugeDepthAgr[[nameVarBench]][i:currRow] <- bench
-      strainGaugeDepthAgr[[nameVarPrecipType]][i:currRow] <- "postPrecipAdjToMedNextDay"
+      varBench[i:currRow] <- bench
+      varPrecipType[i:currRow] <- "postPrecipAdjToMedNextDay"
       
       idxBgn <- i-1
       keepGoing <- TRUE
       while(keepGoing == TRUE) {
         
-        if(is.na(strainGaugeDepthAgr[[nameVarPrecip]][idxBgn]) || strainGaugeDepthAgr[[nameVarPrecip]][idxBgn] == FALSE){
+        if(is.na(varPrecip[idxBgn]) || varPrecip[idxBgn] == FALSE){
           # Stop if we are past the point where the precip started
           keepGoing <- FALSE
-        } else if(strainGaugeDepthAgr[[nameVarBench]][idxBgn] > bench){
-          strainGaugeDepthAgr[[nameVarBench]][idxBgn] <- bench
-          strainGaugeDepthAgr[[nameVarPrecipType]][idxBgn] <- paste0(strainGaugeDepthAgr[[nameVarPrecipType]][idxBgn],"BackAdjToMedNextDay")
+        } else if(varBench[idxBgn] > bench){
+          varBench[idxBgn] <- bench
+          varPrecipType[idxBgn] <- paste0(varPrecipType[idxBgn],"BackAdjToMedNextDay")
           idxBgn <- idxBgn - 1
         } else {
           keepGoing <- FALSE
@@ -264,57 +278,82 @@ for(idxSurr in c(0,seq_len(nSurr))){
         strainGaugeDepthAgr$startDateTime < strainGaugeDepthAgr$startDateTime[currRow]
       idxSet <- head(which(setAdj),1) - 1
       if (idxSet < 1){
-        strainGaugeDepthAgr[[nameVarBench]][setAdj] <- NA
-        strainGaugeDepthAgr[[nameVarPrecip]][setAdj] <- NA
-        strainGaugeDepthAgr[[nameVarPrecipType]][setAdj] <- NA
+        varBench[setAdj] <- NA
+        varPrecip[setAdj] <- NA
+        varPrecipType[setAdj] <- NA
       } else {
-        strainGaugeDepthAgr[[nameVarBench]][setAdj] <- strainGaugeDepthAgr[[nameVarBench]][idxSet]
-        strainGaugeDepthAgr[[nameVarPrecip]][setAdj] <- strainGaugeDepthAgr[[nameVarPrecip]][idxSet]
-        strainGaugeDepthAgr[[nameVarPrecipType]][setAdj] <- "ExcludeBeforeRecharge"
+        varBench[setAdj] <- varBench[idxSet]
+        varPrecip[setAdj] <- varPrecip[idxSet]
+        varPrecipType[setAdj] <- "ExcludeBeforeRecharge"
       }
       
     }
     
     #update in the data
-    strainGaugeDepthAgr[[nameVarBench]][currRow] <- bench
-    strainGaugeDepthAgr[[nameVarPrecip]][currRow] <- precip
-    strainGaugeDepthAgr[[nameVarPrecipType]][currRow] <- precipType
+    varBench[currRow] <- bench
+    varPrecip[currRow] <- precip
+    varPrecipType[currRow] <- precipType
+
     #move to next row
     currRow <- currRow + 1
     
     #stop at end of data frame
     if (currRow == nrow(strainGaugeDepthAgr)){
-      strainGaugeDepthAgr[[nameVarBench]][currRow] <- bench
+      varBench[currRow] <- bench
       break()
     }
   }
   
-  strainGaugeDepthAgr[[nameVarPrecipBulk]] <- strainGaugeDepthAgr[[nameVarBench]] - lag(strainGaugeDepthAgr[[nameVarBench]], 1)
+  # Reassign outputs
+  strainGaugeDepthAgr[[nameVarBench]] <- varBench
+  strainGaugeDepthAgr[[nameVarPrecip]] <- varPrecip 
+  strainGaugeDepthAgr[[nameVarPrecipType]] <- varPrecipType
+  
+  # Compute precip
+  strainGaugeDepthAgr[[nameVarPrecipBulk]] <- c(diff(varBench),as.numeric(NA))
   strainGaugeDepthAgr[[nameVarPrecipBulk]][strainGaugeDepthAgr[[nameVarPrecipBulk]] < 0] <- 0
   
 } # End loop around surrogates
 
-df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGaugeDepth','bench',paste0('benchS',seq_len(nSurr)))],id.vars=c('startDateTime'))
-plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
-
 df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGaugeDepth',paste0('strainGaugeDepthS',seq_len(nSurr)),'bench',paste0('benchS',seq_len(nSurr)))],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
-
-# Compute the uncertainty in precip based on the variability in computed precip of the surrogates
-nameVar <- names(strainGaugeDepthAgr)
-nameVarPrecipBulkS <- nameVar[grepl('precipBulkS',nameVar)]
-strainGaugeDepthAgr$precipBulkS_std <- matrixStats::rowSds(as.matrix(strainGaugeDepthAgr[,nameVarPrecipBulkS]))
-df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','precipBulk','precipBulkS_std')],id.vars=c('startDateTime'))
-plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
-
 # Compute the uncertainty in precip based on the variability in computed benchmark of the surrogates
+# The uncertainty of a sum or difference is equal to their individual uncertainties added in quadrature.
+nameVar <- names(strainGaugeDepthAgr)
 nameVarBenchS <- nameVar[grepl('benchS[0-9]',nameVar)]
 strainGaugeDepthAgr$benchS_std <- matrixStats::rowSds(as.matrix(strainGaugeDepthAgr[,nameVarBenchS]))
-df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','precipBulk','benchS_std')],id.vars=c('startDateTime'))
+strainGaugeDepthAgr$precipS_std <- sqrt(strainGaugeDepthAgr$benchS_std^2 + lag(strainGaugeDepthAgr$benchS_std, 1)^2)
+strainGaugeDepthAgr$precipS_u95 <- strainGaugeDepthAgr$precipS_std*2
+df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','precipBulk','precipS_u95')],id.vars=c('startDateTime'))
 plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
 
+# Report total precip, and compute uncertainty for the central day
+# We can use the same equation here, adding the uncertainties for the start and
+# end of the day in quadrature, with the caveat that the benchmark does not drop 
+# over the course of the day. If this occurs we need to compute for each leg of 
+# a flat or increasing benchmark, summing the legs in quadrature
+dayOut <- InfoDirIn$time
+setDayUcrt <- which(strainGaugeDepthAgr$startDateTime >= dayOut & 
+  strainGaugeDepthAgr$startDateTime <= (dayOut + as.difftime(1,units='days'))) # include first point of next day, because that is the point from which the difference is taken
+setOut <- which(strainGaugeDepthAgr$startDateTime >= dayOut & 
+  strainGaugeDepthAgr$startDateTime < (dayOut + as.difftime(1,units='days')))
 
+# Compute uncertainty for each differencing leg (i.e. period of same or increasing benchmark)
+benchDiff <- diff(strainGaugeDepthAgr$bench[setDayUcrt])
+setBrk <- c(0,which(is.na(benchDiff) | benchDiff < 0),length(setDayUcrt))
+ucrtDayBrk <- rep(0,length(setBrk)-1)
+for (idxBrk in seq_len(length(setBrk)-1)){
+  idxLegBgn <- setDayUcrt[setBrk[idxBrk]+1]
+  idxLegEnd <- setDayUcrt[setBrk[idxBrk+1]]
+  if((idxLegEnd-idxLegBgn) == 0){
+    next
+  }
+  ucrtDayBrk[idxBrk] <- sqrt(strainGaugeDepthAgr$precipS_std[idxLegBgn]^2 + strainGaugeDepthAgr$precipS_std[idxLegEnd]^2)
+}
+UcrtDay <- sqrt(sum(ucrtDayBrk^2))
+PrecipDay <- sum(strainGaugeDepthAgr$precipBulk[setOut])
+print(paste0('precip sum for ', dayOut, ': ',round(PrecipDay,1), ' mm +- ',round(UcrtDay,1), ' mm (std)'))
 
 
 
