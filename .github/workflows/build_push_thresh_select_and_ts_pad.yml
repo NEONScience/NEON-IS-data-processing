@@ -5,10 +5,10 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/thresh_select_and_ts_pad/*'
-      - 'modules/timeseries_padder/*'
-      - 'modules/common/*'
-      - 'flow/flow.thsh.slct/*'
+      - 'modules_combined/thresh_select_and_ts_pad/**'
+      - 'modules/timeseries_padder/**'
+      - 'modules/common/**'
+      - 'flow/flow.thsh.slct/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

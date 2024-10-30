@@ -5,12 +5,12 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/pub_egress_and_publish/*'
-      - 'modules/pub_egress/*'
-      - 'modules/pub_uploader/*'
-      - 'modules/pub_sync/*'
-      - 'modules/common/*'
-      - 'modules/data_access/*'
+      - 'modules_combined/pub_egress_and_publish/**'
+      - 'modules/pub_egress/**'
+      - 'modules/pub_uploader/**'
+      - 'modules/pub_sync/**'
+      - 'modules/common/**'
+      - 'modules/data_access/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

@@ -5,11 +5,11 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/stats_group_and_compute/*'
-      - 'modules/filter_joiner/*'
-      - 'modules/common/*'
-      - 'flow/flow.stat.basc/*'
-      - 'flow/flow.data.comb.ts/*'
+      - 'modules_combined/stats_group_and_compute/**'
+      - 'modules/filter_joiner/**'
+      - 'modules/common/**'
+      - 'flow/flow.stat.basc/**'
+      - 'flow/flow.data.comb.ts/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

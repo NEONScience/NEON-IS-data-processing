@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/directory_filter/*'
+      - 'modules/directory_filter/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
