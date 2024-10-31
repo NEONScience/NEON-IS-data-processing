@@ -35,9 +35,6 @@ jobs:
         contents: 'write'
         id-token: 'write'
     steps:
-      - name: Test
-        run: echo "${{ github.repository }}" 
-        
       - name: "Clone avro"
         uses: actions/checkout@v4
         with:
@@ -70,6 +67,11 @@ jobs:
           # the input `ssh-known-hosts` to configure additional hosts.
           # Default: true
           ssh-strict: 'false'
+          
+          # The user to use when connecting to the remote SSH host. By default 'git' is
+          # used.
+          # Default: git
+          ssh-user: 'csturtevant@battelleecology.org'
           
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
