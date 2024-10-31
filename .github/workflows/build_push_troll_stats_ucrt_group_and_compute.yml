@@ -5,11 +5,11 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/troll_stats_ucrt_group_and_compute/*'
-      - 'modules/filter_joiner/*'
-      - 'modules/common/*'
-      - 'flow/flow.stat.basc/*'
-      - 'flow/flow.troll.uncertainty/*'
+      - 'modules_combined/troll_stats_ucrt_group_and_compute/**'
+      - 'modules/filter_joiner/**'
+      - 'modules/common/**'
+      - 'flow/flow.stat.basc/**'
+      - 'flow/flow.troll.uncertainty/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

@@ -5,16 +5,17 @@
 # docker build -t parquet_linkmerge:latest -f parquet_linkmerge/Dockerfile .
 #
 ###
-FROM registry.access.redhat.com/ubi9/ubi-minimal
+FROM registry.access.redhat.com/ubi8/ubi-minimal
 
+ARG MODULE_DIR="./modules"
 ARG APP_DIR="parquet_linkmerge"
 ARG COMMON_DIR="common"
-ARG CONTAINER_APP_DIR="/usr/src"
+ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
@@ -22,11 +23,11 @@ RUN update-ca-trust && \
             shadow-utils \
             gcc \
             libzstd  \
-            python311 \
-            python311-pip \
-            python311-wheel \
-            python311-devel \
-            python311-setuptools && \
+            python39 \
+            python39-pip \
+            python39-wheel \
+            python39-devel \
+            python39-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
@@ -34,7 +35,7 @@ RUN update-ca-trust && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
-COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 USER appuser

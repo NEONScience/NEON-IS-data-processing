@@ -1,0 +1,63 @@
+---
+pipeline:
+  name: mti300ahrs_kafka_combiner
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.1.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    # Run kafka combiner
+    Rscript ./flow.kfka.comb.R \
+        DirIn=$KAFKA_UNMERGED_DATA \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        FileSchmL0=$FILE_SCHEMA_L0
+    EOF
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_L0
+      repo: mti300ahrs_avro_schemas
+      glob: /mti300ahrs/mti300ahrs.avsc
+  - pfs:
+      name: KAFKA_UNMERGED_DATA
+      repo: mti300ahrs_data_source_kafka
+      glob: /mti300ahrs/(*)/(*)/(*)/(*)
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 20
+autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 1.5
+resource_limits:
+  memory: 2.5G
+  cpu: 4
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

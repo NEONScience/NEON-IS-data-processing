@@ -19,6 +19,7 @@ transform:
     mkdir -p /tmp/pfs/padded_analyzer
     # Run first module - padded_timeseries_analyzer
     python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output) 
     rm -r -f /tmp/pfs/padded_analyzer 
@@ -61,13 +62,13 @@ input:
       repo: mti300ahrs_avro_schemas
       glob: /mti300ahrs/flags_plausibility_mti300ahrs.avsc
 parallelism_spec:
-  constant: 4
+  constant: 40
 autoscaling: true
 resource_requests:
-  memory: 20G
+  memory: 5G
   cpu: 1.5
 resource_limits:
-  memory: 25G
+  memory: 10G
   cpu: 2.5
 sidecar_resource_requests:
   memory: 4G

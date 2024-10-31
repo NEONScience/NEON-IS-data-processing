@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/level1_consolidate/*'
+      - 'modules/level1_consolidate/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
