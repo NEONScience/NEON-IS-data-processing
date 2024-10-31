@@ -104,13 +104,13 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: troll_calibration_assignment
-        glob: /(*)/(*)/(*)/(*)
+        glob: /(*)/(2016|2017|2018)/(*)/(*)
         joinOn: $1/$2/$3/$4
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH
         repo: troll_fill_log_files
-        glob: /(*)/(*)/(*)/(*)
+        glob: /(*)/(2016|2017|2018)/(*)/(*)
         joinOn: $1/$2/$3/$4
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
