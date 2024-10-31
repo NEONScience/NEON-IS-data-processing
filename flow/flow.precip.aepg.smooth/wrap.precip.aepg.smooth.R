@@ -219,16 +219,16 @@ wrap.precip.aepg.smooth <- function(DirIn,
   }
   
   # Aggregate depth streams into a single depth, and remove values where not all three are available/good
-  data$strain_gauge1_stability[is.na(data$strainGauge1Depth)] <- NA
-  data$strain_gauge2_stability[is.na(data$strainGauge2Depth)] <- NA
-  data$strain_gauge3_stability[is.na(data$strainGauge3Depth)] <- NA
+  data$strain_gauge1_stability[is.na(data$strainGauge1Depth)] <- as.numeric(NA)
+  data$strain_gauge2_stability[is.na(data$strainGauge2Depth)] <- as.numeric(NA)
+  data$strain_gauge3_stability[is.na(data$strainGauge3Depth)] <- as.numeric(NA)
   data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, 
                                                                                  strainGauge2Depth, 
                                                                                  strainGauge3Depth), na.rm = F),
                                  strainGaugeStability = base::rowSums(x=base::cbind(strain_gauge1_stability, 
                                                                                     strain_gauge2_stability, 
                                                                                     strain_gauge3_stability), na.rm = F)==3)
-  data$strainGaugeDepth[data$strainGaugeStability == FALSE] <- NA
+  data$strainGaugeDepth[data$strainGaugeStability == FALSE] <- as.numeric(NA)
   
   # if there are no heater streams add them in as NA
   if(!('internal_temperature' %in% names(data))){data$internal_temperature <- as.numeric(NA)}
@@ -242,7 +242,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
     dplyr::group_by(startDateTime,endDateTime) %>%
     dplyr::summarise(strainGaugeDepth = mean(strainGaugeDepth, na.rm = T),
-                     strainGaugeStability = dplyr::if_else(all(is.na(strainGaugeStability)),NA,all(strainGaugeStability==TRUE, na.rm = T)),
+                     strainGaugeStability = dplyr::if_else(all(is.na(strainGaugeStability)),as.numeric(NA),all(strainGaugeStability==TRUE, na.rm = T)),
                      inletTemperature = mean(inlet_temperature, na.rm = T),
                      internalTemperature = mean(internal_temperature, na.rm = T), 
                      orificeHeaterFlag = max(orifice_heater_flag, na.rm = F), #used to see if heater was on when temps were above heating threshold (heaterErrorQF)
@@ -257,7 +257,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   flagsAgr$extremePrecipQF <- 0
   flagsAgr$dielNoiseQF <- 0
   flagsAgr$strainGaugeStabilityQF <- 0
-  flagsAgr$strainGaugeStabilityQF[strainGaugeDepthAgr$strainGaugeStability == FALSE] <- 1 # Probably make informational flag b/c we removed unstable values
+  flagsAgr$strainGaugeStabilityQF[strainGaugeDepthAgr$strainGaugeStability == FALSE] <- 1 
   flagsAgr$heaterErrorQF <- 0
   flagsAgr$evapDetectedQF <- 0
   flagsAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > -6 & 
@@ -317,242 +317,290 @@ wrap.precip.aepg.smooth <- function(DirIn,
   }
   
   
-  # start counters for smoothing algorithm
-  rawCount <- 0
-  timeSincePrecip <- NA
-  currRow <- rangeSize 
-  
   #initialize fields
   strainGaugeDepthAgr$bench <- as.numeric(NA)
-  strainGaugeDepthAgr$precip <- FALSE #add TRUE when rain detected
+  strainGaugeDepthAgr$precip <- FALSE # TRUE when rain detected
   strainGaugeDepthAgr$precipType <- as.character(NA)
+  strainGaugeDepthAgr$bench <- as.numeric(NA)
   
-  #!!! Needs logic for NA start
-  strainGaugeDepthAgr$bench[1:currRow] <-  stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[1:currRow],Quant,na.rm=TRUE)
-  
-  ##loop through data to establish benchmarks 
-  skipping <- FALSE
+  # Initialize & pre-allocate surrogate data for uncertainty analysis
   numRow <- nrow(strainGaugeDepthAgr)
-  for (i in 1:numRow){
+  nSurr <- 30
+  surr <- matrix(as.numeric(NA),nrow=numRow,ncol=nSurr)
+  nameVarDepthS <- paste0('strainGaugeDepthS',seq_len(nSurr))
+  nameVarBenchS <- paste0('benchS',seq_len(nSurr))
+  nameVarPrecipS <- paste0('precipS',seq_len(nSurr))
+  nameVarPrecipTypeS <- paste0('precipTypeS',seq_len(nSurr))
+  nameVarPrecipBulkS <- paste0('precipBulkS',seq_len(nSurr))
+  strainGaugeDepthAgr[,nameVarDepthS] <- as.numeric(NA)
+  strainGaugeDepthAgr[,nameVarBenchS] <- as.numeric(NA)
+  strainGaugeDepthAgr[,c(nameVarPrecipS)] <- FALSE
+  strainGaugeDepthAgr[,nameVarPrecipTypeS] <- as.character(NA)
+  strainGaugeDepthAgr[,nameVarPrecipBulkS] <- as.numeric(NA)
+
+  for(idxSurr in c(0,seq_len(nSurr))){
     
-    # Check for at least 1/2 a day of non-NA values. 
-    # If not, get to the next point at which we have at least 1/2 day and start fresh
-    if(base::sum(base::is.na(strainGaugeDepthAgr$strainGaugeDepth[i:currRow])) > .5*rangeSize){
+    if (idxSurr == 0){
+      message(paste0('Running original timeseries'))
+      nameVarDepth <- 'strainGaugeDepth'
+      nameVarBench <- 'bench'
+      nameVarPrecip <- 'precip'
+      nameVarPrecipType <- 'precipType'
+      nameVarPrecipBulk <- 'precipBulk'
       
-      # Find the last non-NA value 
-      setEval <- i:currRow
-      idxEnd <- setEval[tail(which(!is.na(strainGaugeDepthAgr$strainGaugeDepth[setEval])),1)]
+      strainGaugeDepthS <- strainGaugeDepthAgr$strainGaugeDepth
       
-      if(length(idxEnd) > 0){
-        # Remove the benchmark extending into the gap
-        strainGaugeDepthAgr$bench[(idxEnd+1):currRow] <- NA
+    } else {
+      message(paste0('Running Surrogate ',idxSurr))
+      nameVarDepth <- paste0('strainGaugeDepthS',idxSurr)
+      nameVarBench <- paste0('benchS',idxSurr)
+      nameVarPrecip <- paste0('precipS',idxSurr)
+      nameVarPrecipType <- paste0('precipTypeS',idxSurr)
+      nameVarPrecipBulk <- paste0('precipBulkS',idxSurr)
+      
+      # If this is the first surrogate, create them
+      if(idxSurr == 1){
+        depthMinusBench <- strainGaugeDepthAgr$strainGaugeDepth - strainGaugeDepthAgr$bench # remove the computed benchmark
+        setNotNa <- !is.na(depthMinusBench) # Remove all NA
+        surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
+        strainGaugeDepthAgr[setNotNa,nameVarDepthS] <- strainGaugeDepthAgr$bench + surrFill    # Add the surrogates to the benchmark
       }
       
-      # Skip until there is enough data
-      skipping <- TRUE
-      currRow <- currRow + 1
-
-      #stop at end of data frame
-      if (currRow == numRow){
-        break()
-      } else {
-        next
+      strainGaugeDepthS <- strainGaugeDepthAgr[[nameVarDepth]]
+      
+    }  
+    
+    # Use standalone variables when running through the loop for speed
+    varBench <- strainGaugeDepthAgr[[nameVarBench]]
+    varPrecip <- strainGaugeDepthAgr[[nameVarPrecip]]
+    varPrecipType <- strainGaugeDepthAgr[[nameVarPrecipType]]
+    startDateTime <- strainGaugeDepthAgr$startDateTime
+  
+    # start counters for smoothing algorithm
+    rawCount <- 0
+    timeSincePrecip <- NA
+    currRow <- rangeSize 
+    
+    #initialize fields. 
+    varBench[1:currRow] <-  stats::quantile(strainGaugeDepthS[1:currRow],Quant,na.rm=TRUE)
+    
+    ##loop through data to establish benchmarks 
+    skipping <- FALSE
+    for (i in 1:numRow){
+      
+      # Check for at least 1/2 a day of non-NA values. 
+      # If not, get to the next point at which we have at least 1/2 day and start fresh
+      if(base::sum(base::is.na(strainGaugeDepthS[i:currRow])) > .5*rangeSize){
+        
+        # Find the last non-NA value 
+        setEval <- i:currRow
+        idxEnd <- setEval[tail(which(!is.na(strainGaugeDepthS[setEval])),1)]
+        
+        if(length(idxEnd) > 0){
+          # Remove the benchmark extending into the gap
+          varBench[(idxEnd+1):currRow] <- NA
+        }
+        
+        # Skip until there is enough data
+        skipping <- TRUE
+        currRow <- currRow + 1
+  
+        #stop at end of data frame
+        if (currRow == numRow){
+          break()
+        } else {
+          next
+        }
+        
+      } else if (skipping) {
+        
+        # Find the first non-NA value to begin at
+        setEval <- i:currRow
+        idxBgnNext <- setEval[head(which(!is.na(strainGaugeDepthS[setEval])),1)]
+        
+        # Re-establish the benchmark
+        varBench[idxBgnNext:currRow] <- stats::quantile(strainGaugeDepthS[idxBgnNext:currRow],Quant,na.rm=TRUE)
+        timeSincePrecip <- NA
+        skipping <- FALSE
       }
       
-    } else if (skipping) {
       
-      # Find the first non-NA value to begin at
-      setEval <- i:currRow
-      idxBgnNext <- setEval[head(which(!is.na(strainGaugeDepthAgr$strainGaugeDepth[setEval])),1)]
-      
-      # Re-establish the benchmark
-      strainGaugeDepthAgr$bench[idxBgnNext:currRow] <- stats::quantile(strainGaugeDepthAgr$strainGaugeDepth[idxBgnNext:currRow],Quant,na.rm=TRUE)
-      timeSincePrecip <- NA
-      skipping <- FALSE
-    }
-    
-    
-    if(!is.na(timeSincePrecip)){
-      timeSincePrecip <- timeSincePrecip + 1
-    }
-    
-    # #establish nth min/max of range
-    recentPrecip <- base::any(strainGaugeDepthAgr$precip[i:currRow])
-    
+      if(!is.na(timeSincePrecip)){
+        timeSincePrecip <- timeSincePrecip + 1
+      }
+      recentPrecip <- base::any(varPrecip[i:currRow])
 
-    #establish benchmark
-    bench <- strainGaugeDepthAgr$bench[currRow-1]
-    raw <- strainGaugeDepthAgr$strainGaugeDepth[currRow]
-    precip <- FALSE
-    precipType <- NA
-    
-    # missing data handling
-    # !!!! THIS NEEDS ATTENTION. If the initial benchmark creation was NA then this may still be a problem. 
-    # If the current depth value is NA, set it to the benchmark
-    raw <- ifelse(is.na(raw), bench, raw) 
-    
-    #how many measurements in a row has raw been >= bench?
-    if (raw >= bench){
-      rawCount <- rawCount + 1
-    }else{
-      rawCount <- 0
-    }
-    
-    # Compute median over last range size (i.e. 1 day)
-    # !!! Write a note about what we're going to use this for. !!!
-    raw_med_lastDay <- quantile(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],Quant,na.rm=TRUE)
-    raw_min_lastDay <- min(strainGaugeDepthAgr$strainGaugeDepth[i:currRow],na.rm=TRUE)
-    
-    
-    # if precip total increased check to if any precip triggers are reached
-    if (raw > bench){
-      rawChange <- raw - bench
+      #establish benchmark
+      bench <- varBench[currRow-1]
+      raw <- strainGaugeDepthS[currRow]
+      precip <- FALSE
+      precipType <- NA
       
-      if ((rawChange > (ChangeFactor * Envelope) & rawChange > ThshChange )){ 
-        # If change was bigger than 90% of diel range of noise in the data and also 
-        #   greater than the expected instrument sensitivity to rain, then it rained!
-        bench <- raw # Update the benchmark for the next data point
-        precip <- TRUE 
-        timeSincePrecip <- 0
-        precipType <- 'volumeThresh'
-        # SHOULD WE RESET THE rawCount HERE???
-        # rawCount <- 0
+      # missing data handling
+      raw <- ifelse(is.na(raw), bench, raw) 
+      
+      #how many measurements in a row has raw been >= bench?
+      if (raw >= bench){
+        rawCount <- rawCount + 1
+      }else{
+        rawCount <- 0
+      }
+      
+      # Compute the selected quantile over last range size (i.e. 1 day)
+      # This will be used for correcting overactive benchmark changes
+      raw_med_lastDay <- quantile(strainGaugeDepthS[i:currRow],Quant,na.rm=TRUE)
+      raw_min_lastDay <- min(strainGaugeDepthS[i:currRow],na.rm=TRUE)
+      
+      
+      # if precip total increased check to if any precip triggers are reached
+      if (raw > bench){
+        rawChange <- raw - bench
         
-      } else if (grepl('volumeThresh',x=strainGaugeDepthAgr$precipType[currRow-1]) && rawChange > ThshChange){
-        # Or, if is has been raining with the volume threshold and the precip depth continues to increase 
-        #   above the expected instrument sensitivity, continue to say it is raining.
-        bench <- raw # Update the benchmark for the next data point
-        precip <- TRUE
-        timeSincePrecip <- 0
-        precipType <- 'volumeThreshContinued'
-        # SHOULD WE RESET THE rawCount HERE???
-        # rawCount <- 0
-        
-      } else if (rawCount == ThshCount){
-        
-        # Or, if the precip depth has been above the benchmark for exactly the time threshold 
-        #   considered for drizzle (ThshCount), say that it rained (i.e. drizzle), and 
-        #   continue to count.
-        bench <- raw # Update the benchmark for the next data point
-        precip <- TRUE
-        timeSincePrecip <- 0
-        precipType <- 'ThshCount'
-        
-        # Now go back to the start of the drizzle and set the bench to increasing 
-        #   raw values and continue to count.
-        benchNext <- bench
-        for (idx in (currRow-1):(currRow-ThshCount+2)) {
-          rawIdx <- strainGaugeDepthAgr$strainGaugeDepth[idx]
-          rawIdx <- ifelse(is.na(rawIdx), benchNext, rawIdx) 
-          if(rawIdx < benchNext){
-            benchNext <- rawIdx
-            strainGaugeDepthAgr$bench[idx] <- rawIdx
-          } else {
-            strainGaugeDepthAgr$bench[idx] <- benchNext
+        if ((rawChange > (ChangeFactor * Envelope) & rawChange > ThshChange )){ 
+          # If change was bigger than the diel range of noise (envelope) in the data and also 
+          #   greater than the expected instrument sensitivity to rain, then it rained!
+          bench <- raw # Update the benchmark for the next data point
+          precip <- TRUE 
+          timeSincePrecip <- 0
+          precipType <- 'volumeThresh'
+  
+        } else if (grepl('volumeThresh',x=varPrecipType[currRow-1]) && rawChange > ThshChange){
+          # Or, if is has been raining with the volume threshold and the precip depth continues to increase 
+          #   above the expected instrument sensitivity, continue to say it is raining.
+          bench <- raw # Update the benchmark for the next data point
+          precip <- TRUE
+          timeSincePrecip <- 0
+          precipType <- 'volumeThreshContinued'
+  
+        } else if (rawCount == ThshCount){
+          
+          # Or, if the precip depth has been above the benchmark for exactly the time threshold 
+          #   considered for drizzle (ThshCount), say that it rained (i.e. drizzle), and 
+          #   continue to count.
+          bench <- raw # Update the benchmark for the next data point
+          precip <- TRUE
+          timeSincePrecip <- 0
+          precipType <- 'ThshCount'
+          
+          # Now go back to the start of the drizzle and set the bench to increasing
+          #   raw values and continue to count.
+          benchNext <- bench
+          for (idx in (currRow-1):(currRow-ThshCount+2)) {
+            rawIdx <- strainGaugeDepthS[idx]
+            rawIdx <- ifelse(is.na(rawIdx), benchNext, rawIdx)
+            if(rawIdx < benchNext){
+              benchNext <- rawIdx
+              varBench[idx] <- rawIdx
+            } else {
+              varBench[idx] <- benchNext
+            }
+            
+            # Record rain stats
+            varPrecip[idx] <- precip
+            varPrecipType[idx] <- 'ThshCountBackFilledToStart'
           }
           
-          # Record rain stats
-          strainGaugeDepthAgr$precip[idx] <- precip
-          strainGaugeDepthAgr$precipType[idx] <- 'ThshCountBackFilledToStart'
+        } else if (rawCount >= ThshCount){
+          # Or, if it continues to drizzle and raw is continuing to rise, keep saying that it's raining
+          bench <- raw 
+          precip <- TRUE
+          timeSincePrecip <- 0
+          precipType <- 'ThshCount'
+        }
+      }
+      if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (varBench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
+        
+        # Exactly one rangeSize after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
+        # back-adjust the benchmark to the Quant of the last day to avoid overestimating actual precip
+  
+        bench <- raw_med_lastDay
+        varBench[i:currRow] <- bench
+        varPrecipType[i:currRow] <- "postPrecipAdjToMedNextDay"
+        
+        idxBgn <- i-1
+        keepGoing <- TRUE
+        while(keepGoing == TRUE) {
+  
+          if(is.na(varPrecip[idxBgn]) || varPrecip[idxBgn] == FALSE){
+            # Stop if we are past the point where the precip started
+            keepGoing <- FALSE
+          } else if(varBench[idxBgn] > bench){
+            varBench[idxBgn] <- bench
+            varPrecipType[idxBgn] <- paste0(varPrecipType[idxBgn],"BackAdjToMedNextDay")
+            idxBgn <- idxBgn - 1
+          } else {
+            keepGoing <- FALSE
+          }
+        }
+      } else if ((raw < bench) && (bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
+        # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
+  
+        bench <- raw_min_lastDay # Set to the min of the last day to better track evap
+        precipType <- 'EvapAdj'
+        if(idxSurr == 0){
+          flagsAgr$evapDetectedQF[i:currRow] <- 1
         }
         
-      } else if (rawCount >= ThshCount){
-        # Or, if it continues to drizzle and raw is continuing to rise, keep saying that it's raining
-        bench <- raw 
-        precip <- TRUE
-        timeSincePrecip <- 0
-        precipType <- 'ThshCount'
+      } else if ((bench - raw) > Recharge){
+        # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
+        bench <- raw
         
-      }
-        
-    }
-    if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  
-      
-      # Exactly one day after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
-      # back-adjust the benchmark to the Quant of the last day to avoid overestimating actual precip
-
-      bench <- raw_med_lastDay
-      strainGaugeDepthAgr$bench[i:currRow] <- bench
-      strainGaugeDepthAgr$precipType[i:currRow] <- "postPrecipAdjToMedNextDay"
-
-      idxBgn <- i-1
-      keepGoing <- TRUE
-      while(keepGoing == TRUE) {
-
-        if(is.na(strainGaugeDepthAgr$precip[idxBgn]) || strainGaugeDepthAgr$precip[idxBgn] == FALSE){
-          # Stop if we are past the point where the precip started
-          keepGoing <- FALSE
-        } else if(strainGaugeDepthAgr$bench[idxBgn] > bench){
-          strainGaugeDepthAgr$bench[idxBgn] <- bench
-          strainGaugeDepthAgr$precipType[idxBgn] <- paste0(strainGaugeDepthAgr$precipType[idxBgn],"BackAdjToMedNextDay")
-          idxBgn <- idxBgn - 1
+        # Get rid of a couple hours before the recharge. This is when calibrations are occuring and strain gauges are being replaced.
+        # Set the benchmark constant to the point 2 hours before the recharge
+        setAdj <- startDateTime > (startDateTime[currRow] - as.difftime(3,units='hours')) &
+          startDateTime < startDateTime[currRow]
+        idxSet <- head(which(setAdj),1) - 1
+        if (idxSet < 1){
+          varBench[setAdj] <- NA
+          varPrecip[setAdj] <- NA
+          varPrecipType[setAdj] <- NA
         } else {
-          keepGoing <- FALSE
+          varBench[setAdj] <- varBench[idxSet]
+          varPrecip[setAdj] <- varPrecip[idxSet]
+          varPrecipType[setAdj] <- "ExcludeBeforeRecharge"
         }
-      }
-    } else if ((raw < bench) && (bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
-      # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
-
-      bench <- raw_min_lastDay # Set to the min of the last day to better track evap
-      precipType <- 'EvapAdj'
-      flagsAgr$evapDetectedQF[i:currRow] <- 1
+        
+      } 
       
-    } else if ((bench - raw) > Recharge){
-      # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
-      bench <- raw
+      #update in the data
+      varBench[currRow] <- bench
+      varPrecip[currRow] <- precip
+      varPrecipType[currRow] <- precipType
       
-      # Get rid of a couple hours before the recharge. This is when calibrations are occuring and strain gauges are being replaced.
-      # Set the benchmark constant to the point 2 hours before the recharge
-      setAdj <- strainGaugeDepthAgr$startDateTime > (strainGaugeDepthAgr$startDateTime[currRow] -as.difftime(3,units='hours')) &
-        strainGaugeDepthAgr$startDateTime < strainGaugeDepthAgr$startDateTime[currRow]
-      idxSet <- head(which(setAdj),1) - 1
-      if (idxSet < 1){
-        strainGaugeDepthAgr$bench[setAdj] <- as.numeric(NA)
-        strainGaugeDepthAgr$precip[setAdj] <- as.logical(NA)
-        strainGaugeDepthAgr$precipType[setAdj] <- as.character(NA)
-      } else {
-        strainGaugeDepthAgr$bench[setAdj] <- strainGaugeDepthAgr$bench[idxSet]
-        strainGaugeDepthAgr$precip[setAdj] <- strainGaugeDepthAgr$precip[idxSet]
-        strainGaugeDepthAgr$precipType[setAdj] <- "ExcludeBeforeRecharge"
+      #move to next row
+      currRow <- currRow + 1
+      
+      #stop at end of data frame
+      if (currRow == numRow){
+        varBench[currRow] <- bench
+        break()
       }
-
-    } 
-    
-    #update in the data
-    strainGaugeDepthAgr$bench[currRow] <- bench
-    strainGaugeDepthAgr$precip[currRow] <- precip
-    strainGaugeDepthAgr$precipType[currRow] <- precipType
-    
-    #move to next row
-    currRow <- currRow + 1
-    
-    #stop at end of data frame
-    if (currRow == nrow(strainGaugeDepthAgr)){
-      strainGaugeDepthAgr$bench[currRow] <- bench
-      break()
     }
-  }
 
-  # Compute precip
-  strainGaugeDepthAgr$precipBulk <- as.numeric(strainGaugeDepthAgr$bench - lag(strainGaugeDepthAgr$bench, 1))
-  strainGaugeDepthAgr <- strainGaugeDepthAgr %>% mutate(precipBulk = ifelse(precipBulk < 0, 0, precipBulk))
-
-  # Get rid of columns we don't need
-  strainGaugeDepthAgr <- strainGaugeDepthAgr[,c('startDateTime',
-                                                'endDateTime',
-                                                'strainGaugeDepth',
-                                                'orificeHeaterFlag',
-                                                'inletHeater1QM',
-                                                'inletHeater2QM',
-                                                'inletHeater3QM',
-                                                'inletHeaterNAQM',
-                                                'bench',
-                                                'precip',
-                                                'precipType',
-                                                'precipBulk')]
+    # Reassign outputs
+    strainGaugeDepthAgr[[nameVarBench]] <- varBench
+    strainGaugeDepthAgr[[nameVarPrecip]] <- varPrecip 
+    strainGaugeDepthAgr[[nameVarPrecipType]] <- varPrecipType
+    
+    # Compute precip
+    strainGaugeDepthAgr[[nameVarPrecipBulk]] <- c(diff(varBench),as.numeric(NA))
+    strainGaugeDepthAgr[[nameVarPrecipBulk]][strainGaugeDepthAgr[[nameVarPrecipBulk]] < 0] <- 0
+    strainGaugeDepthAgr[[nameVarPrecipType]] <- c(strainGaugeDepthAgr[[nameVarPrecipType]][2:numRow],as.numeric(NA)) # Shift precip type to align with precip
+    
+  } # End loop around surrogates
+  
+  # Compute the uncertainty in precip based on the variability in computed benchmark of the surrogates
+  # The uncertainty of a sum or difference is equal to their individual uncertainties added in quadrature.
+  nameVar <- names(strainGaugeDepthAgr)
+  nameVarBenchS <- nameVar[grepl('benchS[0-9]',nameVar)]
+  strainGaugeDepthAgr$benchS_std <- matrixStats::rowSds(as.matrix(strainGaugeDepthAgr[,nameVarBenchS]))
+  strainGaugeDepthAgr$precipS_std <- sqrt(strainGaugeDepthAgr$benchS_std^2 + lag(strainGaugeDepthAgr$benchS_std, 1)^2)
+  strainGaugeDepthAgr$precipBulk_u95 <- strainGaugeDepthAgr$precipS_std*2
+  
   
   # Post-precip computation 
   flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
+  # Soft flag for max precip over 60-min - NEED TO MOVE THIS AFTER AGGREGATE TO HOURLY
   flagsAgr$extremePrecipQF[strainGaugeDepthAgr$precipBulk > ExtremePrecipMax] <- 1 # Soft flag for max precip over 60-min
   
   # Envelope == Massive --> Flag all the data
@@ -560,17 +608,63 @@ wrap.precip.aepg.smooth <- function(DirIn,
     flagsAgr$dielNoiseQF <- 1
   }
 
+  
+  
+  # AGGREGATE TO HOURLY
+  
+  
+  
   # For the central day and adjacent days on either side of the central day, output a file with the results. A later module will average output for each day
+  # Report total precip, and compute uncertainty for the central day
+  # We can use the same equation here, adding the uncertainties for the start and
+  # end of the day in quadrature, with the caveat that the benchmark does not drop 
+  # over the course of the day. If this occurs we need to compute for each leg of 
+  # a flat or increasing benchmark, summing the legs in quadrature
   dayOut <- InfoDirIn$time+as.difftime(c(-1,0,1),units='days')
   
   for(idxDayOut in seq_len(length(dayOut))){
     
     dayOutIdx <- dayOut[idxDayOut]
     # Get the records for this date
+    setDayUcrt <- which(strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
+                          strainGaugeDepthAgr$startDateTime <= (dayOutIdx + as.difftime(1,units='days'))) # include first point of next day, because that is the point from which the difference is taken
     setOut <- strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
       strainGaugeDepthAgr$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
-    strainGaugeDepthAgrIdx <- strainGaugeDepthAgr[setOut,]
+    
+    # Compute uncertainty for each differencing leg (i.e. period of same or increasing benchmark)
+    benchDiff <- diff(strainGaugeDepthAgr$bench[setDayUcrt])
+    setBrk <- c(0,which(is.na(benchDiff) | benchDiff < 0),length(setDayUcrt))
+    ucrtDayBrk <- rep(0,length(setBrk)-1)
+    for (idxBrk in seq_len(length(setBrk)-1)){
+      idxLegBgn <- setDayUcrt[setBrk[idxBrk]+1]
+      idxLegEnd <- setDayUcrt[setBrk[idxBrk+1]]
+      if((idxLegEnd-idxLegBgn) == 0){
+        next
+      }
+      ucrtDayBrk[idxBrk] <- sqrt(strainGaugeDepthAgr$precipS_std[idxLegBgn]^2 + strainGaugeDepthAgr$precipS_std[idxLegEnd]^2)
+    }
+    UcrtDay <- sqrt(sum(ucrtDayBrk^2))
+    PrecipDay <- sum(strainGaugeDepthAgr$precipBulk[setOut])
+    
+    # CREATE DAILY OUTPUT
+    
+    
+    # Constrain to desired output - ADD UNCERTAINTY
+    strainGaugeDepthAgrIdx <- strainGaugeDepthAgrIdx[setOut,c('startDateTime',
+                                                        'endDateTime',
+                                                        'strainGaugeDepth',
+                                                        'orificeHeaterFlag',
+                                                        'inletHeater1QM',
+                                                        'inletHeater2QM',
+                                                        'inletHeater3QM',
+                                                        'inletHeaterNAQM',
+                                                        'bench',
+                                                        'precip',
+                                                        'precipType',
+                                                        'precipBulk',
+                                                        'precipBulk_u95')]
     flagsAgrIdx <- flagsAgr [setOut,]
+    
     
     # Replace the date in the output path structure with the current date
     dirOutDataIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),

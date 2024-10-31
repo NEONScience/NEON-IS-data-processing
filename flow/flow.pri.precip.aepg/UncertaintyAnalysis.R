@@ -35,11 +35,11 @@ benchAdd <- cumsum(precipAdd)
 # iterations is reached. 
 # surr <- iaaft(x=strainGaugeDepthAgr$strainGaugeDepth)
 depthMinusBench <- strainGaugeDepthAgr$strainGaugeDepth - strainGaugeDepthAgr$bench
-nSurr <- 10
+nSurr <- 30
 
 # Remove all NA
 setNotNa <- !is.na(depthMinusBench)
-surrFill <- iaaft(x=depthMinusBench[setNotNa],N=nSurr)
+surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
 surr <- matrix(NA,nrow=numData,ncol=nSurr)
 surr[setNotNa,] <- surrFill
 
@@ -160,8 +160,6 @@ for(idxSurr in c(0,seq_len(nSurr))){
     precipType <- NA
     
     # missing data handling
-    # !!!! THIS NEEDS ATTENTION. If the initial benchmark creation was NA then this may still be a problem.
-    # If the current depth value is NA, set it to the benchmark
     raw <- ifelse(is.na(raw), bench, raw)
     
     #how many measurements in a row has raw been >= bench?
@@ -188,9 +186,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
         precip <- TRUE
         timeSincePrecip <- 0
         precipType <- 'volumeThresh'
-        # SHOULD WE RESET THE rawCount HERE???
-        # rawCount <- 0
-        
+
       } else if (grepl('volumeThresh',x=varPrecipType[currRow-1]) && rawChange > ThshChange){
         # Or, if is has been raining with the volume threshold and the precip depth continues to increase
         #   above the expected instrument sensitivity, continue to say it is raining.
@@ -198,9 +194,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
         precip <- TRUE
         timeSincePrecip <- 0
         precipType <- 'volumeThreshContinued'
-        # SHOULD WE RESET THE rawCount HERE???
-        # rawCount <- 0
-        
+
       } else if (rawCount == ThshCount){
         
         # Or, if the precip depth has been above the benchmark for exactly the time threshold
@@ -236,7 +230,6 @@ for(idxSurr in c(0,seq_len(nSurr))){
         timeSincePrecip <- 0
         precipType <- 'ThshCount'
       }
-      # } else if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (strainGaugeDepthAgr$bench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
     } 
     if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (varBench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
       
@@ -312,6 +305,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
   # Compute precip
   strainGaugeDepthAgr[[nameVarPrecipBulk]] <- c(diff(varBench),as.numeric(NA))
   strainGaugeDepthAgr[[nameVarPrecipBulk]][strainGaugeDepthAgr[[nameVarPrecipBulk]] < 0] <- 0
+  strainGaugeDepthAgr[[nameVarPrecipType]] <- c(strainGaugeDepthAgr[[nameVarPrecipType]][2:numRow],as.numeric(NA)) # Shift precip type to align with precip
   
 } # End loop around surrogates
 
