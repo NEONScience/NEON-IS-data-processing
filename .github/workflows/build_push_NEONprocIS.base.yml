@@ -71,7 +71,7 @@ jobs:
           # The user to use when connecting to the remote SSH host. By default 'git' is
           # used.
           # Default: git
-          ssh-user: 'csturtevant@battelleecology.org'
+          # ssh-user: 'csturtevant@battelleecology.org'
           
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
