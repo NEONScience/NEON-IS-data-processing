@@ -41,10 +41,16 @@ jobs:
       - name: "Clone avro"
         uses: actions/checkout@v4
         with:
+          # The base URL for the GitHub instance that you are trying to clone from, will use
+          # environment defaults to fetch from the same instance that the workflow is
+          # running from unless specified. Example URLs are https://github.com or
+          # https://my-ghes-server.example.com
+          github-server-url: 'https://github.battelleecology.org'
+          
           # Repository name with owner. For example, actions/checkout
           # Default: ${{ github.repository }}
-          repository: 'https://github.battelleecology.org/BattelleEcology/avro.git'
-      
+          repository: 'BattelleEcology/avro'
+          
           # The branch, tag or SHA to checkout. When checking out the repository that
           # triggered a workflow, this defaults to the reference or SHA for that event.
           # Otherwise, uses the default branch.
