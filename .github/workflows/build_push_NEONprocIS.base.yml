@@ -42,7 +42,7 @@ jobs:
           # environment defaults to fetch from the same instance that the workflow is
           # running from unless specified. Example URLs are https://github.com or
           # https://my-ghes-server.example.com
-          github-server-url: 'https://github.battelleecology.org'
+          # github-server-url: 'https://github.battelleecology.org'
           
           # Repository name with owner. For example, actions/checkout
           # Default: ${{ github.repository }}
