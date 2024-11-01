@@ -245,11 +245,11 @@ wrap.precip.aepg.smooth <- function(DirIn,
                      strainGaugeStability = dplyr::if_else(all(is.na(strainGaugeStability)),as.numeric(NA),all(strainGaugeStability==TRUE, na.rm = T)),
                      inletTemperature = mean(inlet_temperature, na.rm = T),
                      internalTemperature = mean(internal_temperature, na.rm = T), 
-                     orificeHeaterFlag = max(orifice_heater_flag, na.rm = F), #used to see if heater was on when temps were above heating threshold (heaterErrorQF)
-                     inletHeater1QM = round((length(which(orifice_heater_flag == 100))/dplyr::n())*100,0),
-                     inletHeater2QM = round((length(which(orifice_heater_flag == 110))/dplyr::n())*100,0), 
-                     inletHeater3QM = round((length(which(orifice_heater_flag == 111))/dplyr::n())*100,0),
-                     inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,0)) 
+                     orificeHeaterFlag = max(orifice_heater_flag, na.rm = T), #used to see if heater was on when temps were above heating threshold (heaterErrorQF)
+                     inletHeater1QM = round((length(which(orifice_heater_flag == 100))/dplyr::n())*100,1),
+                     inletHeater2QM = round((length(which(orifice_heater_flag == 110))/dplyr::n())*100,1), 
+                     inletHeater3QM = round((length(which(orifice_heater_flag == 111))/dplyr::n())*100,1),
+                     inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,1)) 
   
   # Initialize time-aggregated flags
   flagsAgr <- strainGaugeDepthAgr %>% dplyr::select(startDateTime, endDateTime)
@@ -257,6 +257,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   flagsAgr$extremePrecipQF <- 0
   flagsAgr$dielNoiseQF <- 0
   flagsAgr$strainGaugeStabilityQF <- 0
+  flagsAgr$strainGaugeStabilityQF[is.na(strainGaugeDepthAgr$strainGaugeStability)] <- -1 
   flagsAgr$strainGaugeStabilityQF[strainGaugeDepthAgr$strainGaugeStability == FALSE] <- 1 
   flagsAgr$heaterErrorQF <- 0
   flagsAgr$evapDetectedQF <- 0
@@ -362,6 +363,10 @@ wrap.precip.aepg.smooth <- function(DirIn,
       if(idxSurr == 1){
         depthMinusBench <- strainGaugeDepthAgr$strainGaugeDepth - strainGaugeDepthAgr$bench # remove the computed benchmark
         setNotNa <- !is.na(depthMinusBench) # Remove all NA
+        if(sum(setNotNa) == 0){
+          log$debug(paste0('All benchmarks for datum ',DirIn, ' are NA. Skipping surrogate testing.'))
+          break
+        }
         surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
         strainGaugeDepthAgr[setNotNa,nameVarDepthS] <- strainGaugeDepthAgr$bench + surrFill    # Add the surrogates to the benchmark
       }
@@ -599,10 +604,16 @@ wrap.precip.aepg.smooth <- function(DirIn,
   flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
 
   # Envelope == Massive --> Flag all the data
-  if(Envelope > 10){
+  if(all(flagsAgr$insuffDataQF == 1)){
+    flagsAgr$dielNoiseQF <- -1
+  } else if(Envelope > 10){
     flagsAgr$dielNoiseQF <- 1
   }
 
+  # Clean up flag logic for NA data
+  flagsAgr$evapDetectedQF[flagsAgr$insuffDataQF == 1] <- -1
+  flagsAgr$extremePrecipQF[flagsAgr$insuffDataQF == 1] <- -1
+  
   # Join flagsAgr into strainGaugeDepthAgr
   strainGaugeDepthAgr <- dplyr::full_join(strainGaugeDepthAgr, flagsAgr, by = c('startDateTime', 'endDateTime'))
   
@@ -613,7 +624,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
     group_by(startDateTime,endDateTime) %>%
     summarise(
       precipBulk = sum(precipBulk),
-      strainGaugeStabilityQF = max(strainGaugeStabilityQF, na.rm = T),
+      insuffDataQF = max(insuffDataQF, na.rm = T),
+      extremePrecipQF = max(extremePrecipQF, na.rm = T),
       heaterErrorQF = ifelse(all(is.na(heaterErrorQF)),
                              -1,
                              ifelse(sum(heaterErrorQF==1, na.rm=T) >= 0.5*dplyr::n(),
@@ -621,10 +633,14 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                     ifelse(all(heaterErrorQF==-1),
                                            -1,
                                            0))),
-      dielNoiseQF = max(dielNoiseQF, na.rm = T),
-      extremePrecipQF = max(extremePrecipQF, na.rm = T),
-      insuffDataQF = max(insuffDataQF, na.rm = T),
-      evapDetectedQF = max(evapDetectedQF, na.rm = T))
+      dielNoiseQF = max(dielNoiseQF, na.rm = T), # Just a placeholder. Computed below.
+      strainGaugeStabilityQF = max(strainGaugeStabilityQF, na.rm = T),
+      evapDetectedQF = max(evapDetectedQF, na.rm = T),
+      inletHeater1QM = mean(inletHeater1QM, na.rm = T),
+      inletHeater2QM = mean(inletHeater2QM, na.rm = T),
+      inletHeater3QM = mean(inletHeater3QM, na.rm = T),
+      inletHeaterNAQM = mean(inletHeaterNAQM, na.rm = T),
+    )
   # Flag for max precip over 60-min - based on hourly totals
   statsAgrHour$extremePrecipQF[statsAgrHour$precipBulk > ExtremePrecipMax] <- 1
   
@@ -641,7 +657,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
     mutate(endDate = lubridate::ceiling_date(endDateTime, '1 day')) %>%
     group_by(startDate,endDate) %>%
     summarise(precipBulk = sum(precipBulk),
-              strainGaugeStabilityQF = max(strainGaugeStabilityQF, na.rm = T),
+              insuffDataQF = max(insuffDataQF, na.rm = T),
+              extremePrecipQF = max(extremePrecipQF, na.rm = T),
               heaterErrorQF = ifelse(all(is.na(heaterErrorQF)),
                                      -1,
                                      ifelse(sum(heaterErrorQF==1, na.rm=T) >= 0.5*dplyr::n(),
@@ -649,10 +666,14 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                             ifelse(all(heaterErrorQF==-1),
                                                    -1,
                                                    0))),
-              dielNoiseQF = max(dielNoiseQF, na.rm = T),
-              extremePrecipQF = max(extremePrecipQF, na.rm = T),
-              insuffDataQF = max(insuffDataQF, na.rm = T),
-              evapDetectedQF = max(evapDetectedQF, na.rm = T))
+              dielNoiseQF = max(dielNoiseQF, na.rm = T), # Just a placeholder. Computed below.
+              strainGaugeStabilityQF = max(strainGaugeStabilityQF, na.rm = T),
+              evapDetectedQF = max(evapDetectedQF, na.rm = T),
+              inletHeater1QM = mean(inletHeater1QM, na.rm = T),
+              inletHeater2QM = mean(inletHeater2QM, na.rm = T),
+              inletHeater3QM = mean(inletHeater3QM, na.rm = T),
+              inletHeaterNAQM = mean(inletHeaterNAQM, na.rm = T),
+    )
   statsAgrDay$finalQF <- 0
   flags_sub <- statsAgrDay[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
   flag_1 <- rowSums(flags_sub == 1, na.rm = T) 
