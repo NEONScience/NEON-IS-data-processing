@@ -101,14 +101,14 @@ wrap.precip.aepg.smooth <- function(DirIn,
   dirThsh <- base::paste0(DirIn,'/threshold')
   fileThsh <- base::dir(dirThsh)
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
-  dirOutData <- fs::path(dirOut,'data')
-  dirOutFlags <- fs::path(dirOut,'flags')
+  dirOutQf <- fs::path(dirOut,'flags')
+  dirOutQf <- fs::path(dirOut,'stats')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,
-                                DirSub = c('data','flags'),
+                                DirSub = c('stats','flags'),
                                 log = log)
   
   # Copy with a symbolic link the desired subfolders 
-  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('data','flags')))
+  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('stats','flags')))
   if(base::length(DirSubCopy) > 0){
 
     NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
@@ -538,7 +538,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
         bench <- raw_min_lastDay # Set to the min of the last day to better track evap
         precipType <- 'EvapAdj'
         if(idxSurr == 0){
-          flagsAgr$evapDetectedQF[i:currRow] <- 1
+          flagsAgr$evapDetectedQF[currRow] <- 1
         }
         
       } else if ((bench - raw) > Recharge){
@@ -589,94 +589,140 @@ wrap.precip.aepg.smooth <- function(DirIn,
     
   } # End loop around surrogates
   
-  # Compute the uncertainty in precip based on the variability in computed benchmark of the surrogates
+  # Compute the variability in computed benchmark of the surrogates
   # The uncertainty of a sum or difference is equal to their individual uncertainties added in quadrature.
   nameVar <- names(strainGaugeDepthAgr)
   nameVarBenchS <- nameVar[grepl('benchS[0-9]',nameVar)]
   strainGaugeDepthAgr$benchS_std <- matrixStats::rowSds(as.matrix(strainGaugeDepthAgr[,nameVarBenchS]))
-  strainGaugeDepthAgr$precipS_std <- sqrt(strainGaugeDepthAgr$benchS_std^2 + lag(strainGaugeDepthAgr$benchS_std, 1)^2)
-  strainGaugeDepthAgr$precipBulk_u95 <- strainGaugeDepthAgr$precipS_std*2
-  
-  
+
   # Post-precip computation 
   flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
-  # Soft flag for max precip over 60-min - NEED TO MOVE THIS AFTER AGGREGATE TO HOURLY
-  flagsAgr$extremePrecipQF[strainGaugeDepthAgr$precipBulk > ExtremePrecipMax] <- 1 # Soft flag for max precip over 60-min
-  
+
   # Envelope == Massive --> Flag all the data
   if(Envelope > 10){
     flagsAgr$dielNoiseQF <- 1
   }
 
+  # Join flagsAgr into strainGaugeDepthAgr
+  strainGaugeDepthAgr <- dplyr::full_join(strainGaugeDepthAgr, flagsAgr, by = c('startDateTime', 'endDateTime'))
+  
+  # Aggregate to the hour
+  statsAgrHour <- strainGaugeDepthAgr %>%
+    mutate(startDateTime = lubridate::floor_date(startDateTime, '1 hour')) %>%
+    mutate(endDateTime = lubridate::ceiling_date(endDateTime, '1 hour')) %>%
+    group_by(startDateTime,endDateTime) %>%
+    summarise(
+      precipBulk = sum(precipBulk),
+      strainGaugeStabilityQF = max(strainGaugeStabilityQF, na.rm = T),
+      heaterErrorQF = ifelse(all(is.na(heaterErrorQF)),
+                             -1,
+                             ifelse(sum(heaterErrorQF==1, na.rm=T) >= 0.5*dplyr::n(),
+                                    1,
+                                    ifelse(all(heaterErrorQF==-1),
+                                           -1,
+                                           0))),
+      dielNoiseQF = max(dielNoiseQF, na.rm = T),
+      extremePrecipQF = max(extremePrecipQF, na.rm = T),
+      insuffDataQF = max(insuffDataQF, na.rm = T),
+      evapDetectedQF = max(evapDetectedQF, na.rm = T))
+  # Flag for max precip over 60-min - based on hourly totals
+  statsAgrHour$extremePrecipQF[statsAgrHour$precipBulk > ExtremePrecipMax] <- 1
+  
+  # Compute hourly final quality flag
+  statsAgrHour$finalQF <- 0
+  flags_sub <- statsAgrHour[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+  flag_1 <- rowSums(flags_sub == 1, na.rm = T) 
+  statsAgrHour$finalQF[flag_1 >=1] <- 1 
   
   
-  # AGGREGATE TO HOURLY
+  # Aggregate to the day
+  statsAgrDay <- statsAgrHour %>%
+    mutate(startDate = lubridate::floor_date(startDateTime, '1 day')) %>%
+    mutate(endDate = lubridate::ceiling_date(endDateTime, '1 day')) %>%
+    group_by(startDate,endDate) %>%
+    summarise(precipBulk = sum(precipBulk),
+              strainGaugeStabilityQF = max(strainGaugeStabilityQF, na.rm = T),
+              heaterErrorQF = ifelse(all(is.na(heaterErrorQF)),
+                                     -1,
+                                     ifelse(sum(heaterErrorQF==1, na.rm=T) >= 0.5*dplyr::n(),
+                                            1,
+                                            ifelse(all(heaterErrorQF==-1),
+                                                   -1,
+                                                   0))),
+              dielNoiseQF = max(dielNoiseQF, na.rm = T),
+              extremePrecipQF = max(extremePrecipQF, na.rm = T),
+              insuffDataQF = max(insuffDataQF, na.rm = T),
+              evapDetectedQF = max(evapDetectedQF, na.rm = T))
+  statsAgrDay$finalQF <- 0
+  flags_sub <- statsAgrDay[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+  flag_1 <- rowSums(flags_sub == 1, na.rm = T) 
+  statsAgrDay$finalQF[flag_1 >=1] <- 1 
   
   
-  
-  # For the central day and adjacent days on either side of the central day, output a file with the results. A later module will average output for each day
-  # Report total precip, and compute uncertainty for the central day
+  # Aggregate uncertainty to the hour and day
+  # Report daily precip, and uncertainty for the central day
   # We can use the same equation here, adding the uncertainties for the start and
   # end of the day in quadrature, with the caveat that the benchmark does not drop 
-  # over the course of the day. If this occurs we need to compute for each leg of 
+  # over the course of the hour/day. If this occurs we need to compute for each leg of 
   # a flat or increasing benchmark, summing the legs in quadrature
+  
+  # Hourly
+  hours <- seq.POSIXt(from=strainGaugeDepthAgr$startDateTime[1],to=strainGaugeDepthAgr$startDateTime[numRow],by='hour')
+  ucrtAgrHour <- lapply(hours,FUN=function(hourIdx){
+    setUcrt <- which(strainGaugeDepthAgr$startDateTime >= hourIdx & 
+                       strainGaugeDepthAgr$startDateTime <= (hourIdx + as.difftime(1,units='hours'))) # include first point of next day, because that is the point from which the difference is taken
+    ucrtAgr <- def.ucrt.agr.precip.bench(strainGaugeDepthAgr$bench[setUcrt],strainGaugeDepthAgr$benchS_std[setUcrt])
+    return(ucrtAgr)
+  })
+  statsAgrHour$ucrtExp <- 2*unlist(ucrtAgrHour)
+  
+  # Daily
+  days <- seq.POSIXt(from=strainGaugeDepthAgr$startDateTime[1],to=strainGaugeDepthAgr$startDateTime[numRow],by='day')
+  ucrtAgrDay <- lapply(days,FUN=function(dayIdx){
+    setUcrt <- which(strainGaugeDepthAgr$startDateTime >= dayIdx & 
+                       strainGaugeDepthAgr$startDateTime <= (dayIdx + as.difftime(1,units='days'))) # include first point of next day, because that is the point from which the difference is taken
+    ucrtAgr <- def.ucrt.agr.precip.bench(strainGaugeDepthAgr$bench[setUcrt],strainGaugeDepthAgr$benchS_std[setUcrt])
+    return(ucrtAgr)
+  })
+  statsAgrDay$ucrtExp <- 2*unlist(ucrtAgrDay)
+  
+  
+  
+  
+  # For the central day and adjacent days on either side of the central day, output the results. 
+  # A later module will average output for each day
   dayOut <- InfoDirIn$time+as.difftime(c(-1,0,1),units='days')
   
   for(idxDayOut in seq_len(length(dayOut))){
     
     dayOutIdx <- dayOut[idxDayOut]
+    
     # Get the records for this date
-    setDayUcrt <- which(strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
-                          strainGaugeDepthAgr$startDateTime <= (dayOutIdx + as.difftime(1,units='days'))) # include first point of next day, because that is the point from which the difference is taken
-    setOut <- strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
+    setOutFreqOrig <- strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
       strainGaugeDepthAgr$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
-    
-    # Compute uncertainty for each differencing leg (i.e. period of same or increasing benchmark)
-    benchDiff <- diff(strainGaugeDepthAgr$bench[setDayUcrt])
-    setBrk <- c(0,which(is.na(benchDiff) | benchDiff < 0),length(setDayUcrt))
-    ucrtDayBrk <- rep(0,length(setBrk)-1)
-    for (idxBrk in seq_len(length(setBrk)-1)){
-      idxLegBgn <- setDayUcrt[setBrk[idxBrk]+1]
-      idxLegEnd <- setDayUcrt[setBrk[idxBrk+1]]
-      if((idxLegEnd-idxLegBgn) == 0){
-        next
-      }
-      ucrtDayBrk[idxBrk] <- sqrt(strainGaugeDepthAgr$precipS_std[idxLegBgn]^2 + strainGaugeDepthAgr$precipS_std[idxLegEnd]^2)
-    }
-    UcrtDay <- sqrt(sum(ucrtDayBrk^2))
-    PrecipDay <- sum(strainGaugeDepthAgr$precipBulk[setOut])
-    
-    # CREATE DAILY OUTPUT
+    setOutHour <- statsAgrHour$startDateTime >= dayOutIdx & 
+      statsAgrHour$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
+    setOutDay <- statsAgrDay$startDateTime >= dayOutIdx & 
+      statsAgrDay$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
     
     
-    # Constrain to desired output - ADD UNCERTAINTY
-    strainGaugeDepthAgrIdx <- strainGaugeDepthAgrIdx[setOut,c('startDateTime',
-                                                        'endDateTime',
-                                                        'strainGaugeDepth',
-                                                        'orificeHeaterFlag',
-                                                        'inletHeater1QM',
-                                                        'inletHeater2QM',
-                                                        'inletHeater3QM',
-                                                        'inletHeaterNAQM',
-                                                        'bench',
-                                                        'precip',
-                                                        'precipType',
-                                                        'precipBulk',
-                                                        'precipBulk_u95')]
-    flagsAgrIdx <- flagsAgr [setOut,]
+    # Filter the data for this output day
+    statsAgrHourIdx <- statsAgrHour[setOutHour,]
+    statsAgrDayIdx <- statsAgrDay[setOutDay,]
+    qfIdx <- qfs [setOutFreqOrig,]
     
     
     # Replace the date in the output path structure with the current date
-    dirOutDataIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),
+    dirOutStatIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),
                          replacement=format(dayOutIdx,'%Y/%m/%d'),
-                         x=dirOutData,
+                         x=dirOutStat,
                          fixed=TRUE)
-    dirOutFlagsIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),
+    dirOutQfIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),
                          replacement=format(dayOutIdx,'%Y/%m/%d'),
-                         x=dirOutFlags,
+                         x=dirOutQf,
                          fixed=TRUE)
-    base::dir.create(dirOutDataIdx,recursive = TRUE)
-    base::dir.create(dirOutFlagsIdx,recursive = TRUE)
+    base::dir.create(dirOutStatIdx,recursive = TRUE)
+    base::dir.create(dirOutQfIdx,recursive = TRUE)
     
     # Get the filename for this day
     nameFileIdx <- fileData[grepl(format(dayOutIdx,'%Y-%m-%d'),fileData)][1]
@@ -685,25 +731,33 @@ wrap.precip.aepg.smooth <- function(DirIn,
       
       # Append the center date to the end of the file name to know where it came from
       nameFileIdxSplt <- base::strsplit(nameFileIdx,'.',fixed=TRUE)[[1]]
-      nameFileDataIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
+      nameFileStatIdxSplt060 <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
+                                      '_stats_060',
                                   '_from_',
                                   format(InfoDirIn$time,'%Y-%m-%d')),
                            utils::tail(nameFileIdxSplt,1))
+      nameFileStatIdxSplt01D <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
+                                         '_stats_01D',
+                                         '_from_',
+                                         format(InfoDirIn$time,'%Y-%m-%d')),
+                                  utils::tail(nameFileIdxSplt,1))
       nameFileFlagsIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
                                   '_flagsSmooth',
                                   '_from_',
                                   format(InfoDirIn$time,'%Y-%m-%d')),
                            utils::tail(nameFileIdxSplt,1))
-      nameFileDataOutIdx <- base::paste0(nameFileDataIdxSplt,collapse='.')
-      nameFileFlagsOutIdx <- base::paste0(nameFileFlagsIdxSplt,collapse='.')
+      nameFileStatOut060Idx <- base::paste0(nameFileStatIdxSplt060,collapse='.')
+      nameFileStatOut01DIdx <- base::paste0(nameFileStatIdxSplt01D,collapse='.')
+      nameFileQfOutIdx <- base::paste0(nameFileFlagsIdxSplt,collapse='.')
       
       # Write out the data to file
-      fileDataOutIdx <- fs::path(dirOutDataIdx,nameFileDataOutIdx)
-
+      fileStatOut060Idx <- fs::path(dirOutStatIdx,nameFileStatOut060Idx)
+      fileStatOut01DIdx <- fs::path(dirOutStatIdx,nameFileStatOut01DIdx)
+      
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
-          data = strainGaugeDepthAgrIdx,
-          NameFile = fileDataOutIdx,
+          data = statsAgrHourIdx,
+          NameFile = fileStatOut060Idx,
           NameFileSchm=NULL,
           Schm=SchmData,
           log=log
@@ -712,25 +766,49 @@ wrap.precip.aepg.smooth <- function(DirIn,
       if ('try-error' %in% base::class(rptWrte)) {
         log$error(base::paste0(
           'Cannot write output to ',
-          fileDataOutIdx,
+          fileStatOut060Idx,
           '. ',
           attr(rptWrte, "condition")
         ))
         stop()
       } else {
         log$info(base::paste0(
-          'Wrote computed precipitation to file ',
-          fileDataOutIdx
+          'Wrote hourly precipitation to file ',
+          fileStatOut060Idx
+        ))
+      }
+
+      rptWrte <-
+        base::try(NEONprocIS.base::def.wrte.parq(
+          data = statsAgrDayIdx,
+          NameFile = fileStatOut01DIdx,
+          NameFileSchm=NULL,
+          Schm=SchmData,
+          log=log
+        ),
+        silent = TRUE)
+      if ('try-error' %in% base::class(rptWrte)) {
+        log$error(base::paste0(
+          'Cannot write output to ',
+          fileStatOut01DIdx,
+          '. ',
+          attr(rptWrte, "condition")
+        ))
+        stop()
+      } else {
+        log$info(base::paste0(
+          'Wrote daily precipitation to file ',
+          fileStatOut01DIdx
         ))
       }
       
       # Write out the flags to file
-      fileFlagsOutIdx <- fs::path(dirOutFlagsIdx,nameFileFlagsOutIdx)
+      FileQfOutIdx <- fs::path(dirOutQfIdx,nameFileQfOutIdx)
       
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
-          data = flagsAgrIdx,
-          NameFile = fileFlagsOutIdx,
+          data = qfIdx,
+          NameFile = FileQfOutIdx,
           NameFileSchm=NULL,
           Schm=NULL,
           log=log
@@ -739,7 +817,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
       if ('try-error' %in% base::class(rptWrte)) {
         log$error(base::paste0(
           'Cannot write output to ',
-          fileFlagsOutIdx,
+          FileQfOutIdx,
           '. ',
           attr(rptWrte, "condition")
         ))
@@ -747,7 +825,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
       } else {
         log$info(base::paste0(
           'Wrote flags to file ',
-          fileFlagsOutIdx
+          FileQfOutIdx
         ))
       }
       

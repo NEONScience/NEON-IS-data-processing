@@ -1,39 +1,41 @@
 rm(list=setdiff(ls(),c('arg','log')))
+source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.ucrt.agr.precip.bench.R')
 #DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/09/01/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2016/12/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/06/01/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/12/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/03/01/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/12/01/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2016/12/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/06/01/precip-weighing_GUAN900000/aepg600m/CFGLOC104412"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/12/01/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/12/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/08/30/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2023/04/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2021/09/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
-  DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/12/15/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/10/19/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2017/03/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
-  # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/10/12/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2022/04/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother_P0/2018/12/01/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/04/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2021/09/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+  # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/12/15/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/10/19/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/03/01/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/03/01/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
+  # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/10/12/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+DirIn <-   "/scratch/pfs/precipWeighing_ts_pad_smoother/2021/06/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
 DirOutBase <- "/scratch/pfs/out_Cove"
 DirSubCopy <- NULL
-WndwAgr <- '60 min'
-RangeSizeHour <- 24
-Envelope <- 1
 # WndwAgr <- '60 min'
-# RangeSizeHour <- 72
-# Envelope <- 30
+# RangeSizeHour <- 24
+# Envelope <- 1
+WndwAgr <- '60 min'
+RangeSizeHour <- 72
+Envelope <- 30
 ThshCountHour <- 17 
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
@@ -266,6 +268,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
     strainGaugeDepthS <- strainGaugeDepthAgr$strainGaugeDepth
     
   } else {
+    
     message(paste0('Running Surrogate ',idxSurr))
     nameVarDepth <- paste0('strainGaugeDepthS',idxSurr)
     nameVarBench <- paste0('benchS',idxSurr)
@@ -277,6 +280,10 @@ for(idxSurr in c(0,seq_len(nSurr))){
     if(idxSurr == 1){
       depthMinusBench <- strainGaugeDepthAgr$strainGaugeDepth - strainGaugeDepthAgr$bench # remove the computed benchmark
       setNotNa <- !is.na(depthMinusBench) # Remove all NA
+      if(sum(setNotNa) == 0){
+        message('All benchmarks are NA. Skipping surrogate testing.')
+        break
+      }
       surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
       strainGaugeDepthAgr[setNotNa,nameVarDepthS] <- strainGaugeDepthAgr$bench + surrFill    # Add the surrogates to the benchmark
     }
@@ -455,7 +462,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
       bench <- raw_min_lastDay
       precipType <- 'EvapAdj'
       if(idxSurr == 0){
-        flagsAgr$evapDetectedQF[i:currRow] <- 1
+        flagsAgr$evapDetectedQF[currRow] <- 1
       }
   
     } else if ((bench - raw) > Recharge){
@@ -513,44 +520,104 @@ nameVar <- names(strainGaugeDepthAgr)
 nameVarBenchS <- nameVar[grepl('benchS[0-9]',nameVar)]
 strainGaugeDepthAgr$benchS_std <- matrixStats::rowSds(as.matrix(strainGaugeDepthAgr[,nameVarBenchS]))
 strainGaugeDepthAgr$precipS_std <- sqrt(strainGaugeDepthAgr$benchS_std^2 + lag(strainGaugeDepthAgr$benchS_std, 1)^2)
+strainGaugeDepthAgr$precipS_std <- c(strainGaugeDepthAgr$precipS_std[2:numRow],NA)
 strainGaugeDepthAgr$precipS_u95 <- strainGaugeDepthAgr$precipS_std*2
 
-# Report total precip, and compute uncertainty for the central day
-# We can use the same equation here, adding the uncertainties for the start and
-# end of the day in quadrature, with the caveat that the benchmark does not drop 
-# over the course of the day. If this occurs we need to compute for each leg of 
-# a flat or increasing benchmark, summing the legs in quadrature
-dayOut <- InfoDirIn$time
-setDayUcrt <- which(strainGaugeDepthAgr$startDateTime >= dayOut & 
-                      strainGaugeDepthAgr$startDateTime <= (dayOut + as.difftime(1,units='days'))) # include first point of next day, because that is the point from which the difference is taken
-setOut <- which(strainGaugeDepthAgr$startDateTime >= dayOut & 
-                  strainGaugeDepthAgr$startDateTime < (dayOut + as.difftime(1,units='days')))
 
-# Compute uncertainty for each differencing leg (i.e. period of same or increasing benchmark)
-benchDiff <- diff(strainGaugeDepthAgr$bench[setDayUcrt])
-setBrk <- c(0,which(is.na(benchDiff) | benchDiff < 0),length(setDayUcrt))
-ucrtDayBrk <- rep(0,length(setBrk)-1)
-for (idxBrk in seq_len(length(setBrk)-1)){
-  idxLegBgn <- setDayUcrt[setBrk[idxBrk]+1]
-  idxLegEnd <- setDayUcrt[setBrk[idxBrk+1]]
-  if((idxLegEnd-idxLegBgn) == 0){
-    next
-  }
-  ucrtDayBrk[idxBrk] <- sqrt(strainGaugeDepthAgr$precipS_std[idxLegBgn]^2 + strainGaugeDepthAgr$precipS_std[idxLegEnd]^2)
-}
-UcrtDay <- sqrt(sum(ucrtDayBrk^2))
-PrecipDay <- sum(strainGaugeDepthAgr$precipBulk[setOut])
-
-
-# Compute post-precip quality flags
+# Compute post-precip quality flags (same frequency as original settings)
 flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
-# Soft flag for max precip over 60-min - NEED TO MOVE THIS AFTER AGGREGATE TO HOURLY
-flagsAgr$extremePrecipQF[strainGaugeDepthAgr$precipBulk > ExtremePrecipMax] <- 1
 
 # Envelope == Massive --> Flag all the data
 if(Envelope > 10){
   flagsAgr$dielNoiseQF <- 1
 }
+
+
+# Join flagsAgr into strainGaugeDepthAgr
+strainGaugeDepthAgr <- dplyr::full_join(strainGaugeDepthAgr, flagsAgr, by = c('startDateTime', 'endDateTime'))
+
+# Aggregate to the hour
+statsAgrHour <- strainGaugeDepthAgr %>%
+    mutate(startDateTime = lubridate::floor_date(startDateTime, '1 hour')) %>%
+    mutate(endDateTime = lubridate::ceiling_date(endDateTime, '1 hour')) %>%
+    group_by(startDateTime,endDateTime) %>%
+    summarise(
+              precipBulk = sum(precipBulk),
+              strainGaugeStabilityQF = max(strainGaugeStabilityQF, na.rm = T),
+              heaterErrorQF = ifelse(all(is.na(heaterErrorQF)),
+                                     -1,
+                                     ifelse(sum(heaterErrorQF==1, na.rm=T) >= 0.5*dplyr::n(),
+                                            1,
+                                            ifelse(all(heaterErrorQF==-1),
+                                                   -1,
+                                                   0))),
+              dielNoiseQF = max(dielNoiseQF, na.rm = T),
+              extremePrecipQF = max(extremePrecipQF, na.rm = T),
+              insuffDataQF = max(insuffDataQF, na.rm = T),
+              evapDetectedQF = max(evapDetectedQF, na.rm = T))
+# Flag for max precip over 60-min - based on hourly totals
+statsAgrHour$extremePrecipQF[statsAgrHour$precipBulk > ExtremePrecipMax] <- 1
+
+# Compute hourly final quality flag
+statsAgrHour$finalQF <- 0
+flags_sub <- statsAgrHour[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+flag_1 <- rowSums(flags_sub == 1, na.rm = T) 
+statsAgrHour$finalQF[flag_1 >=1] <- 1 
+
+
+# Aggregate to the day
+statsAgrDay <- statsAgrHour %>%
+  mutate(startDate = lubridate::floor_date(startDateTime, '1 day')) %>%
+  mutate(endDate = lubridate::ceiling_date(endDateTime, '1 day')) %>%
+  group_by(startDate,endDate) %>%
+  summarise(precipBulk = sum(precipBulk),
+            strainGaugeStabilityQF = max(strainGaugeStabilityQF, na.rm = T),
+            heaterErrorQF = ifelse(all(is.na(heaterErrorQF)),
+                                   -1,
+                                   ifelse(sum(heaterErrorQF==1, na.rm=T) >= 0.5*dplyr::n(),
+                                          1,
+                                          ifelse(all(heaterErrorQF==-1),
+                                                 -1,
+                                                 0))),
+            dielNoiseQF = max(dielNoiseQF, na.rm = T),
+            extremePrecipQF = max(extremePrecipQF, na.rm = T),
+            insuffDataQF = max(insuffDataQF, na.rm = T),
+            evapDetectedQF = max(evapDetectedQF, na.rm = T))
+statsAgrDay$finalQF <- 0
+flags_sub <- statsAgrDay[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+flag_1 <- rowSums(flags_sub == 1, na.rm = T) 
+statsAgrDay$finalQF[flag_1 >=1] <- 1 
+
+
+# Aggregate uncertainty to the hour and day
+# Report daily precip, and uncertainty for the central day
+# We can use the same equation here, adding the uncertainties for the start and
+# end of the day in quadrature, with the caveat that the benchmark does not drop 
+# over the course of the hour/day. If this occurs we need to compute for each leg of 
+# a flat or increasing benchmark, summing the legs in quadrature
+
+# Hourly
+hours <- seq.POSIXt(from=strainGaugeDepthAgr$startDateTime[1],to=strainGaugeDepthAgr$startDateTime[numRow],by='hour')
+ucrtAgrHour <- lapply(hours,FUN=function(hourIdx){
+  setUcrt <- which(strainGaugeDepthAgr$startDateTime >= hourIdx & 
+                     strainGaugeDepthAgr$startDateTime <= (hourIdx + as.difftime(1,units='hours'))) # include first point of next day, because that is the point from which the difference is taken
+  ucrtAgr <- def.ucrt.agr.precip.bench(strainGaugeDepthAgr$bench[setUcrt],strainGaugeDepthAgr$benchS_std[setUcrt])
+  return(ucrtAgr)
+})
+statsAgrHour$ucrtExp <- 2*unlist(ucrtAgrHour)
+
+# Daily
+days <- seq.POSIXt(from=strainGaugeDepthAgr$startDateTime[1],to=strainGaugeDepthAgr$startDateTime[numRow],by='day')
+ucrtAgrDay <- lapply(days,FUN=function(dayIdx){
+  setUcrt <- which(strainGaugeDepthAgr$startDateTime >= dayIdx & 
+                   strainGaugeDepthAgr$startDateTime <= (dayIdx + as.difftime(1,units='days'))) # include first point of next day, because that is the point from which the difference is taken
+  ucrtAgr <- def.ucrt.agr.precip.bench(strainGaugeDepthAgr$bench[setUcrt],strainGaugeDepthAgr$benchS_std[setUcrt])
+  return(ucrtAgr)
+})
+statsAgrDay$ucrtExp <- 2*unlist(ucrtAgrDay)
+
+
+  
 
 
 
@@ -586,10 +653,19 @@ if(Envelope > 10){
 
 #####TESTING ONLY #############
 df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','strainGaugeDepth',paste0('strainGaugeDepthS',seq_len(nSurr)),'bench',paste0('benchS',seq_len(nSurr)))],id.vars=c('startDateTime'))
-plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
+plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines') %>%
+  plotly::layout(title=WndwAgr)
 
 df <- data.table::melt(strainGaugeDepthAgr[,c('startDateTime','precipBulk','precipS_u95')],id.vars=c('startDateTime'))
-plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines')
+plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines') %>%
+  plotly::layout(title=WndwAgr)
+
+df <- data.table::melt(statsAgrHour[,c('startDateTime','precipBulk','ucrtExp')],id.vars=c('startDateTime'))
+plotly::plot_ly(data=df,x=~startDateTime,y=~value,color=~variable,mode='lines') %>%
+  plotly::layout(title='Hourly')
+
+df <- data.table::melt(statsAgrDay[,c('startDate','precipBulk','ucrtExp')],id.vars=c('startDate'))
+plotly::plot_ly(data=df,x=~startDate,y=~value,color=~variable,mode='lines')  %>%
+  plotly::layout(title='Daily')
 
 print(paste0('Envelope: ',round(Envelope,2)))
-print(paste0('precip sum for ', dayOut, ': ',round(PrecipDay,1), ' mm +- ',round(UcrtDay,1), ' mm (std)'))

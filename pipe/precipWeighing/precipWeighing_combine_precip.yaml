@@ -28,7 +28,7 @@ output_branch: master
 input:
   pfs:
     name: DIR_IN
-    repo: precipWeighing_compute_precip_dynamic
+    repo: precipWeighing_compute_precip
     glob: /*/*/*
 parallelism_spec:
   constant: 5
