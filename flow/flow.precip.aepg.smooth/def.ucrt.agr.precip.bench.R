@@ -43,7 +43,7 @@ def.ucrt.agr.precip.bench <- function(bench,ucrtBench){
   # Compute uncertainty for each differencing leg (i.e. period of same or increasing benchmark)
   benchDiff <- diff(bench)
   setBrk <- c(0,which(is.na(benchDiff) | benchDiff < 0),length(bench))
-  ucrtBrk <- rep(0,length(setBrk)-1)
+  ucrtBrk <- rep(as.numeric(NA),length(setBrk)-1)
   for (idxBrk in seq_len(length(setBrk)-1)){
     idxLegBgn <- setBrk[idxBrk]+1
     idxLegEnd <- setBrk[idxBrk+1]
@@ -52,7 +52,50 @@ def.ucrt.agr.precip.bench <- function(bench,ucrtBench){
     }
     ucrtBrk[idxBrk] <- sqrt(ucrtBench[idxLegBgn]^2 + ucrtBench[idxLegEnd]^2)
   }
-  ucrtAgr <- sqrt(sum(ucrtBrk^2))
+  if(all(is.na(ucrtBrk))){
+    ucrtAgr <- as.numeric(NA)
+  } else {
+    ucrtAgr <- sqrt(sum(ucrtBrk^2,na.rm=T))
+  }
+
+  # Add in uncertainty for continuous periods of decreasing benchmark, in which we set the precip
+  # to zero but there is still uncertainty
+  setBrk <- c(which(benchDiff < 0))
+  if(length(setBrk) > 0){
+    ucrtBrk <- rep(as.numeric(NA),length(setBrk))
+    setBrk <- unique(c(setBrk,setBrk+1)) 
+    numBrk <- length(setBrk)
+    idxBrk <- 1 # initialize
+    idxLegBgn <- setBrk[idxBrk] # intitialize
+    while(idxBrk < numBrk){
+      idxLegEnd <- setBrk[idxBrk+1] # Potential end point of the continuous sequence of declines
+      
+      # Check if there are more declines
+      if (idxBrk+2 > numBrk){
+        # We're done completely. Record uncertainty below and stop
+        idxBrk <- idxBrk + 2
+        
+      } else if (diff(setBrk[idxBrk+c(1,2)]) == 1){
+        # Still the same sequence, continue
+        idxBrk <- idxBrk + 1
+        next
+        
+      } else if (diff(setBrk[idxBrk+c(1,2)]) > 1){
+        # We're at the end of a continuous sequence of declines. Record uncertainty below and reset
+
+        idxLegBgn <- setBrk[idxBrk+2] 
+        idxBrk <- idxBrk + 2
+        
+      }
+
+      # Record uncertainty for this leg
+      ucrtBrk[idxBrk] <- sqrt(ucrtBench[idxLegBgn]^2 + ucrtBench[idxLegEnd]^2)
+    }
+    
+    # Combine uncertainty with above
+    ucrtAgr <- sqrt(sum(ucrtAgr^2, sum(ucrtBrk^2,na.rm=T),na.rm=T))
+    
+  }
   
   return(ucrtAgr)
 }
