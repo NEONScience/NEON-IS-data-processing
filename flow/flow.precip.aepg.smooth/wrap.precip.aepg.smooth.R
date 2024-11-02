@@ -102,7 +102,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   fileThsh <- base::dir(dirThsh)
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutQf <- fs::path(dirOut,'flags')
-  dirOutQf <- fs::path(dirOut,'stats')
+  dirOutStat <- fs::path(dirOut,'stats')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,
                                 DirSub = c('stats','flags'),
                                 log = log)
@@ -342,7 +342,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   for(idxSurr in c(0,seq_len(nSurr))){
     
     if (idxSurr == 0){
-      message(paste0('Running original timeseries'))
+      log$debug(paste0('Running original timeseries for datum ',DirIn))
       nameVarDepth <- 'strainGaugeDepth'
       nameVarBench <- 'bench'
       nameVarPrecip <- 'precip'
@@ -352,7 +352,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
       strainGaugeDepthS <- strainGaugeDepthAgr$strainGaugeDepth
       
     } else {
-      message(paste0('Running Surrogate ',idxSurr))
+      log$debug(paste0('Running Surrogate ',idxSurr, ' for datum ',DirIn))
       nameVarDepth <- paste0('strainGaugeDepthS',idxSurr)
       nameVarBench <- paste0('benchS',idxSurr)
       nameVarPrecip <- paste0('precipS',idxSurr)
@@ -723,8 +723,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
       strainGaugeDepthAgr$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
     setOutHour <- statsAgrHour$startDateTime >= dayOutIdx & 
       statsAgrHour$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
-    setOutDay <- statsAgrDay$startDateTime >= dayOutIdx & 
-      statsAgrDay$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
+    setOutDay <- statsAgrDay$startDate >= dayOutIdx & 
+      statsAgrDay$startDate < (dayOutIdx + as.difftime(1,units='days'))
     
     
     # Filter the data for this output day
