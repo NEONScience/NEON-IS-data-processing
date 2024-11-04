@@ -61,19 +61,12 @@ jobs:
           # We recommend using a service account with the least permissions necessary.
           #
           # [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+          # Note: when generating the key, use the following: ssh-keygen -t ed25519 -C "git@github.com"
           ssh-key: ${{ secrets.BE_GITHUB_KEY }}
           
-          # Whether to perform strict host key checking. When true, adds the options
-          # `StrictHostKeyChecking=yes` and `CheckHostIP=no` to the SSH command line. Use
-          # the input `ssh-known-hosts` to configure additional hosts.
-          # Default: true
-          # ssh-strict: 'false'
+          # Relative path under $GITHUB_WORKSPACE to place the repository
+          # path: ''
           
-          # The user to use when connecting to the remote SSH host. By default 'git' is
-          # used. 
-          # Default: git
-          # Note: when generating the key, use the following: ssh-keygen -t ed25519 -C "git@github.com"
-
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
@@ -81,6 +74,12 @@ jobs:
 
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Echo workspace path
+        run: echo $GITHUB_WORKSPACE
+
+      - name: Echo current dir
+        run: pwd
 
       - name: List current directory
         run: dir
