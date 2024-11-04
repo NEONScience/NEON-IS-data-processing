@@ -18,9 +18,9 @@ RUN groupadd app && \
     useradd app -g app
 WORKDIR /home/app
 
-# Copy in calibration workflow
+# Copy in workflow
+COPY ./def.ucrt.agr.precip.bench.R .
 COPY ./wrap.precip.aepg.smooth.R .
-COPY ./wrap.precip.aepg.smooth_Belfort_depth.R .
 COPY ./flow.precip.aepg.smooth.R .
 
 # Run as app user
