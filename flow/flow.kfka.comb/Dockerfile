@@ -3,7 +3,12 @@
 # docker build --no-cache -t neon-is-kfka-comb-r ~/R/NEON-IS-data-processing/flow/flow.kfka.comb/
 
 # Start with the pub package image. 
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
+# FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
+
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.4.7
+
+ARG FLOW_DIR="./flow"
+ARG APP_DIR="flow.kfka.comb"
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -19,8 +24,8 @@ RUN groupadd app && \
 WORKDIR /home/app
 
 # Copy in application code
-COPY ./wrap.kfka.comb.R .
-COPY ./flow.kfka.comb.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.kfka.comb.R .
+COPY ${FLOW_DIR}/${APP_DIR}/flow.kfka.comb.R .
 
 # Run as app user
 RUN chown app:app -R /home/app
