@@ -87,6 +87,9 @@ jobs:
       - name: List backout directory 
         run: dir ../
 
+      - name: List backout directory 
+        run: dir ../../
+
       - name: Build and push
         uses: ./.github/actions/build-push
         with:
