@@ -65,7 +65,7 @@ jobs:
           ssh-key: ${{ secrets.BE_GITHUB_KEY }}
           
           # Relative path under $GITHUB_WORKSPACE to place the repository
-          path: './TESING'
+          path: '../TESING'
           
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
