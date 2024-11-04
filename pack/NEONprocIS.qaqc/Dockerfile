@@ -2,11 +2,11 @@
 # Example command (run from project parent directory to include pack/ path in Docker context):
 # docker build --no-cache -t neon-is-pack-qaqc-r ./pack/NEONprocIS.qaqc
 # Example command when accessing private eddy4R repo
-# docker build --build-arg auth_token=$GITHUB_PAT --no-cache -t neon-is-pack-qaqc-r ./pack/NEONprocIS.qaqc
+# docker build --build-arg auth_token=$GITHUB_PAT --no-cache -t neon-is-pack-qaqc-r -f ./pack/NEONprocIS.qaqc/Dockerfile .
 
 
 # Start with the neon-is-base-r image. # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base & eddy4R.qaqc
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4 as intermediate
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.4.7 as intermediate
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -29,7 +29,7 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 #RUN git clone -b deve https://github.com/NEONScience/eddy4R.git
 
 # Now make the final build, which will leave behind our access token
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.4.7
 
 # copy the eddy4R.base package from the previous image (comment this out if the eddy4R packages are listed in the renv.lock file)
 #COPY --from=intermediate /eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
@@ -41,7 +41,7 @@ FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
 
 
 # copy the NEONprocIS.qaqc package from local
-COPY ./ /pack/NEONprocIS.qaqc/
+COPY ./pack/NEONprocIS.qaqc/ /pack/NEONprocIS.qaqc/
 
 
 
