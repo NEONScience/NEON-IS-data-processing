@@ -126,7 +126,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
   # !!!!!!!!!!!! LOTS OF FUDGING HERE FOR TESTING. CORRECT WHEN FINAL THRESHOLDS ARE CREATED !!!!!!!!!!!!!!!!!!!
   # Verify that the term(s) needed in the input parameters are included in the threshold files
-  termTest <- "priPrecipBulk"
+  termTest <- "precipTotal"
   exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
   if(base::sum(exstThsh) != base::length(termTest)){
     log$error(base::paste0('Thresholds for term(s): ',base::paste(termTest[!exstThsh],collapse=','),' do not exist in the thresholds file. Cannot proceed.')) 

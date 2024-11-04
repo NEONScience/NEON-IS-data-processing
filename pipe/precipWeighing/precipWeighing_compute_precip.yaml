@@ -18,8 +18,7 @@ transform:
     Rscript ./flow.precip.aepg.smooth.R \
       DirIn=$DIR_IN \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums \
-      FileSchmData=$FILE_SCHEMA_DATA
+      DirErr=/pfs/out/errored_datums
     EOF
   env:
     OUT_PATH: /pfs/out
