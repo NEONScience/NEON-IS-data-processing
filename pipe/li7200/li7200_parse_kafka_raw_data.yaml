@@ -2,8 +2,8 @@
 pipeline:
   name: li7200_parse_kafka_raw_data
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/raw-data-parser:4
+#  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-raw-data-parse:v1.4.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
