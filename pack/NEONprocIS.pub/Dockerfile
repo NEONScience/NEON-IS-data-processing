@@ -1,6 +1,6 @@
 # Dockerfile for NEON IS Data Processing - Publication package
 # Example command (run from project parent directory to include pack/ path in Docker context):
-# docker build --no-cache -t neon-is-pack-pub-r ./pack/NEONprocIS.pub
+# docker build --no-cache -t neon-is-pack-pub-r -f ./pack/NEONprocIS.pub .
 
 
 # Start with the neon-is-base-r image. 
@@ -10,7 +10,7 @@ FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 
 # copy the NEONprocIS.pub package from local
-COPY ./ /pack/NEONprocIS.pub/
+COPY ./pack/NEONprocIS.pub/ /pack/NEONprocIS.pub/
 
 # Install devtools & renv (package manager), restore from specific versions of dependencies, install NEONprocIS.pub from local, and clean up afterwards. 
 RUN R -e 'renv::restore(lockfile="pack/NEONprocIS.pub/renv.lock")' && \

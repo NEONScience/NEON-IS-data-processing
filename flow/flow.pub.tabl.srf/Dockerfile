@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Create pub tables and apply srf
 
 # Start with the pub package image. 
-FROM quay.io/battelleecology/neon-is-pack-pub-r:v1.0.2-aa651ed4
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:sha-d360313
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
