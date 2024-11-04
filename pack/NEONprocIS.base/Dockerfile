@@ -93,7 +93,7 @@ RUN apt-get update \
 
 
 # Copy the NEONprocIS.base package from local
-COPY ./ /pack/NEONprocIS.base/
+COPY ./pack/NEONprocIS.base/ /pack/NEONprocIS.base/
 
 # Install devtools & renv (package manager), restore from specific versions of dependencies, install NEONprocIS.base from local, and clean up afterwards. 
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
