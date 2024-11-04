@@ -4,7 +4,7 @@
 # docker build -t neon-is-stat-basc-grp -f ./modules_combined/stats_group_and_compute/Dockerfile .
 
 # Start with the base image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-stat-r:sha-7cd2590
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-stat-r:v1.0.0
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
