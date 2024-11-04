@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "name": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-dir-filt:sha-c6568cd"
+    "name": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-dir-filt:v1.0.0"
   },
   "transform": {
     "image": "_exo2_locati",
