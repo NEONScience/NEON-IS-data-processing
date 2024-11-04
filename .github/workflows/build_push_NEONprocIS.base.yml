@@ -52,7 +52,7 @@ jobs:
           # triggered a workflow, this defaults to the reference or SHA for that event.
           # Otherwise, uses the default branch.
           #ref: 'release-1.10.0'
-          # fetch-depth: '0'
+          #fetch-depth: '0'
           
           # SSH key used to fetch the repository. The SSH key is configured with the local
           # git config, which enables your scripts to run authenticated git commands. The
