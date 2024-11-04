@@ -3,7 +3,7 @@
     "name": "waterQuality_sunav2"
   },
   "transform": {
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-dir-filt:sha-c6568cd",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-dir-filt:v1.0.0",
     "cmd": [
       "/bin/bash"
     ],
