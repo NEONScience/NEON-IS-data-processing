@@ -65,6 +65,9 @@ runs:
           IFS=$'\n\t'
           Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
           Rscript ./utilities/flow.img.updt.R "./pipe" ".json" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+          Rscript ./utilities/flow.img.updt.R "./flow" "Dockerfile" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+          Rscript ./utilities/flow.img.updt.R "./modules" "Dockerfile" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+          Rscript ./utilities/flow.img.updt.R "./modules_combined" "Dockerfile" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
 
       - name: Commit the pipeline yamls to a new PR
         shell: bash
