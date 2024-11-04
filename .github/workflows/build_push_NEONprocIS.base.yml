@@ -51,7 +51,7 @@ jobs:
           # The branch, tag or SHA to checkout. When checking out the repository that
           # triggered a workflow, this defaults to the reference or SHA for that event.
           # Otherwise, uses the default branch.
-          #ref: 'release-1.10.0'
+          ref: 'release-1.10.0'
           #fetch-depth: '0' 
           
           # SSH key used to fetch the repository. The SSH key is configured with the local
@@ -70,10 +70,10 @@ jobs:
           # ssh-strict: 'false'
           
           # The user to use when connecting to the remote SSH host. By default 'git' is
-          # used.
+          # used. 
           # Default: git
-          # ssh-user: 'csturtevant@battelleecology.org'
-          
+          # Note: when generating the key, use the following: ssh-keygen -t ed25519 -C "git@github.com"
+
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
