@@ -1,8 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Base image
 # Example command (run from project parent directory to include pack/ path in Docker context):
 # export GITHUB_PAT_BE=<github.battelleecology.org token>
-# docker build --build-arg auth_token_be=$GITHUB_PAT_BE --no-cache -t neon-is-base-r ./pack/NEONprocIS.base
-
+# docker build --build-arg auth_token_be=$GITHUB_PAT_BE --no-cache -t neon-is-base-r -f ./pack/NEONprocIS.base/Dockerfile .
 
 # Use a multi-stage build to obscure the value of GITHUB_PAT used to install private repos
 # FROM rocker/rstudio as intermediate
@@ -25,11 +24,11 @@
 # to correctly install Bioconductor packages
 FROM rocker/r-ver:4.1.3
 
-# copy the avro repo from the previous image
+# copy the avro repo from the previous image, or clone the repo into the project root directory prior to running (e.g. via github actions)
 COPY ./avro/ /avro/
 
 # Copy ravro.so to root directory
-COPY ./ravro.so /ravro.so
+COPY ./pack/NEONprocIS.base/ravro.so /ravro.so
 
 # Environment variables for arrow package
 ENV LIBARROW_BINARY=true

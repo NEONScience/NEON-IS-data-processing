@@ -40,6 +40,8 @@ jobs:
         with:
           fetch-depth: '0'
 
+        # Note: must clone other repos AFTER checking out the repo where the action is run from. 
+        # Otherwise, previously cloned repos are removed.
       - name: "Clone avro"
         uses: actions/checkout@v4
         with:
@@ -75,20 +77,11 @@ jobs:
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Echo workspace path
-        run: echo $GITHUB_WORKSPACE
-
       - name: Echo current dir
         run: pwd
 
       - name: List current directory
         run: dir
-
-      - name: List backout directory 
-        run: dir ../
-
-      - name: List backout directory 
-        run: dir ../../
 
       - name: Build and push
         uses: ./.github/actions/build-push
