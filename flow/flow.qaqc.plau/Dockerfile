@@ -3,7 +3,7 @@
 # docker build --no-cache -t neon-is-qaqc-plau-r <path to this directory>
 
 # Start with the neon-is-pack-qaqc-r image. 
-FROM quay.io/battelleecology/neon-is-pack-qaqc-r:v1.1.6-039a10a7
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:sha-9dc688c
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
