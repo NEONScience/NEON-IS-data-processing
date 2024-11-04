@@ -51,8 +51,9 @@ jobs:
           # The branch, tag or SHA to checkout. When checking out the repository that
           # triggered a workflow, this defaults to the reference or SHA for that event.
           # Otherwise, uses the default branch.
-          ref: 'release-1.10.0'
-      
+          #ref: 'release-1.10.0'
+          # fetch-depth: '0'
+          
           # SSH key used to fetch the repository. The SSH key is configured with the local
           # git config, which enables your scripts to run authenticated git commands. The
           # post-job step removes the SSH key.
@@ -66,7 +67,7 @@ jobs:
           # `StrictHostKeyChecking=yes` and `CheckHostIP=no` to the SSH command line. Use
           # the input `ssh-known-hosts` to configure additional hosts.
           # Default: true
-          ssh-strict: 'false'
+          # ssh-strict: 'false'
           
           # The user to use when connecting to the remote SSH host. By default 'git' is
           # used.
