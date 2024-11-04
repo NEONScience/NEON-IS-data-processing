@@ -1,4 +1,4 @@
-name: "Build-push_NEONprocIS.base"
+name: "Build-push_NEONprocIS.cal"
 
 on:
   push:
