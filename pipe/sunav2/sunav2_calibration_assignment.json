@@ -12,10 +12,7 @@
       "FileYear=$FILE_YEAR",
       "PadDay=-1|1"
     ],
-    "image": "quay.io/battelleecology/neon-is-cal-asgn-r:v1.0.6",
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:sha-9890bf8",
     "env": {
       "LOG_LEVEL": "INFO"
     }
