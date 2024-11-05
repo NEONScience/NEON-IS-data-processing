@@ -368,7 +368,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           break
         }
         surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
-        strainGaugeDepthAgr[setNotNa,nameVarDepthS] <- strainGaugeDepthAgr$bench + surrFill    # Add the surrogates to the benchmark
+        strainGaugeDepthAgr[setNotNa,nameVarDepthS] <- strainGaugeDepthAgr$bench[setNotNa] + surrFill    # Add the surrogates to the benchmark
       }
       
       strainGaugeDepthS <- strainGaugeDepthAgr[[nameVarDepth]]

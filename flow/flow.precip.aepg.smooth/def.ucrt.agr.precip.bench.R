@@ -63,7 +63,7 @@ def.ucrt.agr.precip.bench <- function(bench,ucrtBench){
   setBrk <- c(which(benchDiff < 0))
   if(length(setBrk) > 0){
     ucrtBrk <- rep(as.numeric(NA),length(setBrk))
-    setBrk <- unique(c(setBrk,setBrk+1)) 
+    setBrk <- sort(unique(c(setBrk,setBrk+1)))
     numBrk <- length(setBrk)
     idxBrk <- 1 # initialize
     idxLegBgn <- setBrk[idxBrk] # intitialize
