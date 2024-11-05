@@ -72,17 +72,17 @@ wrap.precip.aepg.comb <- function(DirIn,
 
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
-  dirInData <- fs::path(DirIn,'data')
+  dirInStats <- fs::path(DirIn,'stats')
   dirInFlags <- fs::path(DirIn,'flags')
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
-  dirOutData <- fs::path(dirOut,'data')
+  dirOutStats <- fs::path(dirOut,'stats')
   dirOutFlags <- fs::path(dirOut,'flags')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,
-                                DirSub = c('data','flags'),
+                                DirSub = c('stats','flags'),
                                 log = log)
   
   # Copy with a symbolic link the desired subfolders 
-  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('data','flags')))
+  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('stats','flags')))
   if(base::length(DirSubCopy) > 0){
 
     NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
@@ -92,36 +92,36 @@ wrap.precip.aepg.comb <- function(DirIn,
   }    
   
 
-  # Take stock of our data files.
+  # Take stock of our stats files.
   # !! Try to make more generic, while excluding the manifest.txt file
-  fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
+  fileStats <- base::list.files(dirInStats,pattern='.parquet',full.names=FALSE)
 
   # Read all files
-  data <- base::lapply(fs::path(dirInData,fileData),NEONprocIS.base::def.read.parq,log=log)
+  stats <- base::lapply(fs::path(dirInStats,fileStats),NEONprocIS.base::def.read.parq,log=log)
     
   # Using the 1st file as a starting point, average the precip values
-  dataOut <- data[[1]]
-  dataOut$bench <- as.numeric(NA)
-  dataOut$precipType <- as.character(NA)
-  dataOut$precipBulk <- rowMeans(do.call(cbind,
-                                     base::lapply(data,FUN=function(dataIdx){dataIdx$precipBulk})
+  statsOut <- stats[[1]]
+  statsOut$bench <- as.numeric(NA)
+  statsOut$precipType <- as.character(NA)
+  statsOut$precipBulk <- rowMeans(do.call(cbind,
+                                     base::lapply(stats,FUN=function(statsIdx){statsIdx$precipBulk})
                                      ),
                               na.rm=TRUE
   )
-  dataOut$precip <- dataOut$precipBulk > 0
-  dataOut$precip[is.na(dataOut$precip)] <- FALSE
+  statsOut$precip <- statsOut$precipBulk > 0
+  statsOut$precip[is.na(statsOut$precip)] <- FALSE
   
   # Lop off the _from_<date> in the filename 
   nameFileOut <- sub(pattern='_from_[0-9]{4}-[0-9]{2}-[0-9]{2}',
                      replacement='',
-                     x=fileData[1])
+                     x=fileStats[1])
   
-  # Write out the data to file
-  fileOut <- fs::path(dirOutData,nameFileOut)
+  # Write out the stats to file
+  fileOut <- fs::path(dirOutStats,nameFileOut)
       
   rptWrte <-
     base::try(NEONprocIS.base::def.wrte.parq(
-      data = dataOut,
+      data = statsOut,
       NameFile = fileOut,
       NameFileSchm=NULL,
       Schm=NULL,
@@ -168,7 +168,7 @@ wrap.precip.aepg.comb <- function(DirIn,
                      replacement='',
                      x=fileQf[1])
   
-  # Write out the data to file
+  # Write out the stats to file
   fileQfOut <- fs::path(dirOutFlags,nameFileQfOut)
   
   rptWrte <-
