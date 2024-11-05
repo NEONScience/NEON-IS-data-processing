@@ -26,7 +26,7 @@ transform:
       "TermCtxt1=strainGauge1Depth|precipitation|weighing" \
       "TermCtxt2=strainGauge2Depth|precipitation|weighing" \
       "TermCtxt3=strainGauge3Depth|precipitation|weighing" \
-      "TermCtxt4=priPrecipBulk|precipitation|weighing" \
+      "TermCtxt4=precipTotal|precipitation|weighing" \
       "DirSubCopy=location|data|flags"
       
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)

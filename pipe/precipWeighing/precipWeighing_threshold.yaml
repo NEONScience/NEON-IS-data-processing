@@ -12,7 +12,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
-    TERM: strainGauge1Depth|strainGauge2Depth|strainGauge3Depth|priPrecipBulk
+    TERM: strainGauge1Depth|strainGauge2Depth|strainGauge3Depth|precipTotal
     # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: precipitation|weighing
   secrets:
