@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-precip-aepg-smooth-r:b6d9ce75
+  image: quay.io/battelleecology/neon-is-precip-aepg-smooth-r:ad307962
   cmd:
   - sh
   - "-c"
@@ -23,7 +23,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
-    PARALLELIZATION_INTERNAL: '3'
+    PARALLELIZATION_INTERNAL: '5'
 output_branch: master
 input:
   cross:
@@ -39,13 +39,13 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 3.3
+  memory: 3.5G
+  cpu: 5.5
 resource_limits:
-  memory: 3G
-  cpu: 4.5
+  memory: 4G
+  cpu: 6
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 0.3
 datum_set_spec:
   number: 1
