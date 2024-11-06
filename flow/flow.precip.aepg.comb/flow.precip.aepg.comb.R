@@ -31,15 +31,15 @@
 #' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor. \cr
 #'
 #' Nested within the path for each source ID is (at a minimum) the folder:
-#'         /data
+#'         /stats
 #'         /flags
-#' The data/flags folders holds any number of daily data/flags files padded around the yyyy/mm/dd in the input path.
+#' The stats/flags folders holds any number of daily stats/flags files padded around the yyyy/mm/dd in the input path.
 #' #' 
 #' For example:
-#' Input path = /scratch/pfs/aepg600m_calibration_group_and_convert/aepg600m_heated/2023/01/01/17777/data/ with nested file:
+#' Input path = /scratch/pfs/aepg600m_calibration_group_and_convert/aepg600m_heated/2023/01/01/17777/stats/ with nested file:
 #'    aepg600m_heated_17777_2023-01-01.parquet
 #'
-#' There may be other folders at the same level as the data directory. They are ignored and not passed 
+#' There may be other folders at the same level as the stats directory. They are ignored and not passed 
 #' to the output unless indicated in SubDirCopy.
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
@@ -48,30 +48,7 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "FileSchmData=value" (optional), where value is the full path to schema for the aggregated data 
-#' output by this workflow. If not input, a schema will be automatically crafted. 
-#' The output is ordered as follows:
-#' readout_time
-#' gauge_depth_average: average of the 3 individual calibrated gauge depths 
-#' gauge_depth_range: maximum difference among the 3 individual strain gauge depths
-#' orifice_temp
-#' inlet_temp
-#' Ensure that any schema input here matches the column order of the auto-generated schema, 
-#' simply making any desired changes to column names.
-#'
-#' 5. "FileSchmQf=value" (optional), where value is the full path to schema for quality flags
-#' output by this workflow. If not input, the schema will be created automatically.
-#' The output  is ordered as follows:
-#' readout_time
-#' orificeHeaterQF
-#' stabilityQF
-#' ENSURE THAT ANY
-#' OUTPUT SCHEMA MATCHES THIS ORDER, otherwise the columns will be mislabeled. If no schema is input, default column
-#' names other than "readout_time" are a combination of the term, '_', and the flag name ('QfExpi' or 'QfSusp').
-#' For example, for terms 'resistance' and 'voltage' each having calibration information. The default column naming
-#' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
-#'
-#' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 4. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the data folder that are to be copied with a
 #' symbolic link to the output path. May NOT include 'data'. 
 #'
@@ -136,8 +113,7 @@ Para <-
                      "DirErr" 
                      ),
     NameParaOptn = c(
-                     "DirSubCopy",
-                     "FileSchmData"
+                     "DirSubCopy"
                      ),
     log = log
   )
@@ -147,17 +123,6 @@ Para <-
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-
-# Retrieve output schema for data
-FileSchmData <- Para$FileSchmData
-log$debug(base::paste0('Output schema for bulk precipitation: ',base::paste0(FileSchmData,collapse=',')))
-
-# Read in the schema 
-if(base::is.null(FileSchmData) || FileSchmData == 'NA'){
-  SchmData <- NULL
-} else {
-  SchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
-}
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
@@ -191,7 +156,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.precip.aepg.comb(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmData=SchmData,
         DirSubCopy=DirSubCopy,
         log=log
         ),

@@ -59,7 +59,6 @@
 ##############################################################################################
 wrap.precip.aepg.comb <- function(DirIn,
                                     DirOutBase,
-                                    SchmData=NULL,
                                     DirSubCopy=NULL,
                                     log=NULL
 ){
@@ -93,9 +92,9 @@ wrap.precip.aepg.comb <- function(DirIn,
   
 
   # Take stock of our stats files.
-  # !! Try to make more generic, while excluding the manifest.txt file
-  fileStats <- base::list.files(dirInStats,pattern='.parquet',full.names=FALSE)
-
+  fileStats060 <- base::list.files(dirInStats,pattern='stats_060',full.names=FALSE) # 60-min output
+  fileStats01D <- base::list.files(dirInStats,pattern='stats_01D',full.names=FALSE) # 
+  
   # Read all files
   stats <- base::lapply(fs::path(dirInStats,fileStats),NEONprocIS.base::def.read.parq,log=log)
     
