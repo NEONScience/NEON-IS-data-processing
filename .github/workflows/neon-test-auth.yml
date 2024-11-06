@@ -48,3 +48,4 @@ jobs:
             workload_identity_provider: "${{ vars.SHARED_WIF_PROVIDER }}"
             service_account: "${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}"
 
+
