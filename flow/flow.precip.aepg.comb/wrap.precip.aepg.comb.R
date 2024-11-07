@@ -72,16 +72,14 @@ wrap.precip.aepg.comb <- function(DirIn,
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirInStats <- fs::path(DirIn,'stats')
-  dirInFlags <- fs::path(DirIn,'flags')
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutStats <- fs::path(dirOut,'stats')
-  dirOutFlags <- fs::path(dirOut,'flags')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,
-                                DirSub = c('stats','flags'),
+                                DirSub = c('stats'),
                                 log = log)
   
   # Copy with a symbolic link the desired subfolders 
-  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('stats','flags')))
+  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('stats')))
   if(base::length(DirSubCopy) > 0){
 
     NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
@@ -91,108 +89,80 @@ wrap.precip.aepg.comb <- function(DirIn,
   }    
   
 
-  # Take stock of our stats files.
-  fileStats060 <- base::list.files(dirInStats,pattern='stats_060',full.names=FALSE) # 60-min output
-  fileStats01D <- base::list.files(dirInStats,pattern='stats_01D',full.names=FALSE) # 
-  
-  # Read all files
-  stats <- base::lapply(fs::path(dirInStats,fileStats),NEONprocIS.base::def.read.parq,log=log)
+  # Loop through each aggregation interval
+  for (tmiIdx in c('060','01D')){
+    # Take stock of our files.
+    fileStats <- base::list.files(dirInStats,pattern=paste0('stats_',tmiIdx),full.names=FALSE) 
+
+    # Read stats files
+    stats <- base::lapply(fs::path(dirInStats,fileStats),NEONprocIS.base::def.read.parq,log=log)
     
-  # Using the 1st file as a starting point, average the precip values
-  statsOut <- stats[[1]]
-  statsOut$bench <- as.numeric(NA)
-  statsOut$precipType <- as.character(NA)
-  statsOut$precipBulk <- rowMeans(do.call(cbind,
-                                     base::lapply(stats,FUN=function(statsIdx){statsIdx$precipBulk})
-                                     ),
-                              na.rm=TRUE
-  )
-  statsOut$precip <- statsOut$precipBulk > 0
-  statsOut$precip[is.na(statsOut$precip)] <- FALSE
-  
-  # Lop off the _from_<date> in the filename 
-  nameFileOut <- sub(pattern='_from_[0-9]{4}-[0-9]{2}-[0-9]{2}',
-                     replacement='',
-                     x=fileStats[1])
-  
-  # Write out the stats to file
-  fileOut <- fs::path(dirOutStats,nameFileOut)
-      
-  rptWrte <-
-    base::try(NEONprocIS.base::def.wrte.parq(
-      data = statsOut,
-      NameFile = fileOut,
-      NameFileSchm=NULL,
-      Schm=NULL,
-      log=log
-    ),
-    silent = TRUE)
-  if ('try-error' %in% base::class(rptWrte)) {
-    log$error(base::paste0(
-      'Cannot write output to ',
-      fileOut,
-      '. ',
-      attr(rptWrte, "condition")
-    ))
-    stop()
-  } else {
-    log$info(base::paste0(
-      'Wrote averaged precipitation to file ',
-      fileOut
-    ))
-  }
-
-  # Take stock of our flags files.
-  # !! Try to make more generic, while excluding the manifest.txt file
-  fileQf <- base::list.files(dirInFlags,pattern='.parquet',full.names=FALSE)
-  
-  # Read all files
-  qf <- base::lapply(fs::path(dirInFlags,fileQf),NEONprocIS.base::def.read.parq,log=log)
-  
-  # Using the 1st file as a starting point, average the precip values
-  for(idxFile in seq_len(length(qf))){
-    if(idxFile == 1){
-      qfOut <- qf[[idxFile]]
+    # Using the 1st file as a starting point, average the precip values and take max flag values
+    statsOut <- stats[[1]]
+    statsOut$precipBulk <- rowMeans(
+      do.call(cbind,
+              base::lapply(stats,FUN=function(statsIdx){statsIdx$precipBulk})
+              ),na.rm=TRUE
+    )
+    statsOut$ucrtExp <- rowMeans(
+      do.call(cbind,
+              base::lapply(stats,FUN=function(statsIdx){statsIdx$ucrtExp})
+      ),na.rm=TRUE
+    )
+    statsOut$insuffDataQF <- matrixStats::rowMaxs(
+      do.call(cbind,
+              base::lapply(stats,FUN=function(statsIdx){statsIdx$insuffDataQF})
+              ), na.rm=TRUE
+    )
+    statsOut$dielNoiseQF <- matrixStats::rowMaxs(
+      do.call(cbind,
+              base::lapply(stats,FUN=function(statsIdx){statsIdx$dielNoiseQF})
+      ), na.rm=TRUE
+    )
+    statsOut$evapDetectedQF <- matrixStats::rowMaxs(
+      do.call(cbind,
+              base::lapply(stats,FUN=function(statsIdx){statsIdx$evapDetectedQF})
+      ), na.rm=TRUE
+    )
+    statsOut$finalQF <- matrixStats::rowMaxs(
+      do.call(cbind,
+              base::lapply(stats,FUN=function(statsIdx){statsIdx$finalQF})
+      ), na.rm=TRUE
+    )
+    
+    # Lop off the _from_<date> in the filename 
+    nameFileOut <- sub(pattern='_from_[0-9]{4}-[0-9]{2}-[0-9]{2}',
+                       replacement='',
+                       x=fileStats[1])
+    
+    # Write out the stats to file
+    fileOut <- fs::path(dirOutStats,nameFileOut)
+    
+    rptWrte <-
+      base::try(NEONprocIS.base::def.wrte.parq(
+        data = statsOut,
+        NameFile = fileOut,
+        NameFileSchm=NULL,
+        Schm=NULL,
+        log=log
+      ),
+      silent = TRUE)
+    if ('try-error' %in% base::class(rptWrte)) {
+      log$error(base::paste0(
+        'Cannot write output to ',
+        fileOut,
+        '. ',
+        attr(rptWrte, "condition")
+      ))
+      stop()
     } else {
-      # Take the max flag value
-      for (idxCol in 3:ncol(qfOut)){
-        setChg <- (qf[[idxFile]][,idxCol]-qfOut[,idxCol]) > 0
-        qfOut[setChg,idxCol] <- qf[[idxFile]][setChg,idxCol]
-      }
+      log$info(base::paste0(
+        'Wrote averaged precipitation to file ',
+        fileOut
+      ))
     }
-  }
+    
+  } # End loop over aggregation interval
 
-  # Lop off the _from_<date> in the filename 
-  nameFileQfOut <- sub(pattern='_from_[0-9]{4}-[0-9]{2}-[0-9]{2}',
-                     replacement='',
-                     x=fileQf[1])
-  
-  # Write out the stats to file
-  fileQfOut <- fs::path(dirOutFlags,nameFileQfOut)
-  
-  rptWrte <-
-    base::try(NEONprocIS.base::def.wrte.parq(
-      data = qfOut,
-      NameFile = fileQfOut,
-      NameFileSchm=NULL,
-      Schm=NULL,
-      log=log
-    ),
-    silent = TRUE)
-  if ('try-error' %in% base::class(rptWrte)) {
-    log$error(base::paste0(
-      'Cannot write output to ',
-      fileQfOut,
-      '. ',
-      attr(rptWrte, "condition")
-    ))
-    stop()
-  } else {
-    log$info(base::paste0(
-      'Wrote precipitation flags to file ',
-      fileQfOut
-    ))
-  }
-  
   return()
 } 
