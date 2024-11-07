@@ -13,7 +13,7 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       Arry=TRUE
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:sha-9890bf8
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v1.0.6
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
