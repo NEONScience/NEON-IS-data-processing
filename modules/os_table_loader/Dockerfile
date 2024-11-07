@@ -7,6 +7,7 @@
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
+ARG MODULE_DIR="./modules"
 ARG APP_DIR="os_table_loader"
 ARG COMMON_DIR="common"
 ARG DATA_ACCESS_DIR="data_access"
@@ -17,7 +18,7 @@ ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
@@ -37,10 +38,10 @@ RUN update-ca-trust && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
-COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
-COPY ${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
-COPY ${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
-COPY ${PUB_FILES_DIR} ${CONTAINER_APP_DIR}/${PUB_FILES_DIR}
-COPY ${PUB_WORKBOOK_LOADER_DIR} ${CONTAINER_APP_DIR}/${PUB_WORKBOOK_LOADER_DIR}
+COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
+COPY ${MODULE_DIR}/${DATA_ACCESS_DIR} ${CONTAINER_APP_DIR}/${DATA_ACCESS_DIR}
+COPY ${MODULE_DIR}/${PUB_FILES_DIR} ${CONTAINER_APP_DIR}/${PUB_FILES_DIR}
+COPY ${MODULE_DIR}/${PUB_WORKBOOK_LOADER_DIR} ${CONTAINER_APP_DIR}/${PUB_WORKBOOK_LOADER_DIR}
 
 USER appuser

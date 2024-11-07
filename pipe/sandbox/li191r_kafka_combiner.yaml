@@ -9,9 +9,9 @@ transform:
   - DirOut=/pfs/out
   - DirErr=/pfs/out/errored_datums
   - FileSchmL0=$FILE_SCHEMA_L0
-  image: quay.io/battelleecology/neon-is-kfka-comb-r:aa651ed4
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-comb:sha-122cc5c
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
 input:
