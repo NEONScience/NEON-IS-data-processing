@@ -1,0 +1,141 @@
+---
+pipeline:
+  name: mti300ahrs_data_location_group
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.1.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Detect if we have data coming from Kafka or trino
+    # Note that we run the filter-joiner in sequential if statements rather than an elif statement ...
+    # ... so that if there is any overlap in sensor data coming from both Kafka and Trino on the same day, the ...
+    # ... trino data wins (filter joiner will not copy a file if it is already in the destination). This scenario ...
+    # ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka ...
+    # ... retention period for data that have already been loaded from Trino. In normal operations this scenario ...
+    # ... should not arise because the only data coming into Pachyderm will be coming from Kafka. ...
+    # ... When a conflict does arise, the Trino data will take precedence, which is fine because the ...
+    # ... conflict arose because data for the same sensor and day were in both locations.
+    ## Run first module - filter-joiner (using environment variables below as input parameters)
+    ##python3 -m filter_joiner.filter_joiner_main
+    if [ ${DATA_PATH_TRINO+x} ]; then 
+      # Data from trino. 
+      # Set CONFIG for filter-joiner to the trino version and run filter joiner
+      export CONFIG=$CONFIG_TRINO
+      python3 -m filter_joiner.filter_joiner_main
+    fi  
+    if [ ${DATA_PATH_KAFKA+x} ]; then 
+      # Data from kafka. 
+      # Set CONFIG for filter-joiner to the kafka version and run filter joiner
+      export CONFIG=$CONFIG_KAFKA
+      python3 -m filter_joiner.filter_joiner_main
+    fi
+    EOF
+  env:
+    # Environment variables for filter-joiner
+    # There are two configs here, CONFIG_KAFKA is when data comes from kafka, CONFIG_TRINO is when data comes from trino. 
+    # The engironment variable CONFIG is set to the appropriate one as detected in the bash script above
+    CONFIG_TRINO: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and locations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_TRINO
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_TRINO/mti300ahrs/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/mti300ahrs/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    CONFIG_KAFKA: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_KAFKA
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_KAFKA/mti300ahrs/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/mti300ahrs/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK # options are COPY or SYMLINK. Use COPY for combined module.
+input:
+  union:
+    - join:
+      - pfs:
+          name: DATA_PATH_TRINO
+          repo: mti300ahrs_data_source_trino
+          glob: /mti300ahrs/(*)/(*)/(*)/(*)
+          joinOn: $1/$2/$3/$4
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      - pfs:
+          name: LOCATION_PATH
+          repo: mti300ahrs_location_asset_assignment
+          glob: /mti300ahrs/(*)/(*)/(*)/(*)
+          joinOn: $1/$2/$3/$4
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - join:
+      - pfs:
+          name: DATA_PATH_KAFKA
+          repo: mti300ahrs_kafka_combiner
+          glob: /mti300ahrs/(*)/(*)/(*)/(*)
+          joinOn: $1/$2/$3/$4
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      - pfs:
+          name: LOCATION_PATH
+          repo: mti300ahrs_location_asset_assignment
+          glob: /mti300ahrs/(*)/(*)/(*)/(*)
+          joinOn: $1/$2/$3/$4
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 20
+autoscaling: true
+resource_requests:
+  memory: 300M
+  cpu: 0.5
+resource_limits:
+  memory: 1G
+  cpu: 1
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

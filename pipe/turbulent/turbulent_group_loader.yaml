@@ -24,10 +24,16 @@ input:
     empty_files: true
     glob: /*
     repo: li7200_cron_daily_and_date_control_tick
-resource_requests:
-  cpu: 1.5
-  memory: 300M
 autoscaling: true
+resource_requests:
+  memory: 300M
+  cpu: 1.5
+resource_limits:
+  memory: 600M
+  cpu: 2.5
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

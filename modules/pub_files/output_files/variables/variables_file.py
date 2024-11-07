@@ -29,7 +29,7 @@ def write_file(out_path: Path,
     :param workbook: The publication workbook for the data product being published.
     :param timestamp: The timestamp to include in the filename.
     :param science_review_file: An object containing the science review file Path and term names.
-    :param database: A class with functions for reading from the database.
+    :param database: A class with functions for reading from the database. 
     """
     filename = get_filename(file_metadata.path_elements, timestamp=timestamp, file_type='variables', extension='csv')
     path = Path(out_path, filename)
@@ -45,7 +45,7 @@ def write_file(out_path: Path,
 
 def write_rows(writer, rows: List[WorkbookRow]) -> None:
     for row in rows:
-        table_name = row.table_name
+        table_name = row.table_name.replace('_pub', '')
         field_name = row.field_name
         description = row.description
         data_type = row.data_type_code

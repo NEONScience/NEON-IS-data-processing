@@ -2,8 +2,8 @@
 pipeline:
   name: mti300ahrs_l0p_data
 transform:
-  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: quay.io/battelleecology/neon-sae-trst-dp0p:4178f7b8
+#  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sae-trst-dp0p:v1.0.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -20,12 +20,15 @@ input:
     name: IN_PATH
     repo: mti300ahrs_fill_date_gaps_and_regularize
     glob: /mti300ahrs/(*)/(*)/(*)
-parallelism_spec:
-  constant: 3
-resource_requests:
-  memory: 2.5G
-  cpu: 1
 autoscaling: true
+parallelism_spec:
+  constant: 6
+resource_requests:
+  memory: 2G
+  cpu: 1
+resource_limits:
+  memory: 4G
+  cpu: 3
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

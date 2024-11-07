@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/array_parser/*'
+      - 'modules/array_parser/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
