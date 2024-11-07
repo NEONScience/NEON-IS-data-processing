@@ -74,7 +74,7 @@ input:
       repo: aepg600m_site_list
       glob: /site-list-nonheated-trino.json
 resource_requests:
-  memory: 5100M
+  memory: 500M
   cpu: 1.5
 resource_limits:
   memory: 800M
