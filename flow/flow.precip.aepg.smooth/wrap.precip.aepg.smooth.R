@@ -97,7 +97,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirInData <- fs::path(DirIn,'data')
-  dirInFlags <- fs::path(DirIn,'flags')
+  dirInQf <- fs::path(DirIn,'flags')
   dirThsh <- base::paste0(DirIn,'/threshold')
   fileThsh <- base::dir(dirThsh)
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
@@ -173,8 +173,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
   # Take stock of our data files.
   # !! Try to make more generic, while excluding the manifest.txt file
   fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
-  fileFlagsPlau <- base::list.files(dirInFlags,pattern='Plausibility.parquet',full.names=FALSE)
-  fileFlagsCal <- base::list.files(dirInFlags,pattern='Cal.parquet',full.names=FALSE)
+  fileQfPlau <- base::list.files(dirInQf,pattern='Plausibility.parquet',full.names=FALSE)
+  fileQfCal <- base::list.files(dirInQf,pattern='Cal.parquet',full.names=FALSE)
   
   # Read the datasets 
   data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
@@ -183,39 +183,39 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                             Df=TRUE, 
                                             log=log)
   
-  flagsPlau <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFlagsPlau),
+  qfPlau <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInQf,fileQfPlau),
                                                  VarTime='readout_time',
                                                  RmvDupl=TRUE,
                                                  Df=TRUE,
                                                  log=log)
   
-  flagsCal <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFlagsCal),
+  qfCal <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInQf,fileQfCal),
                                                 VarTime='readout_time',
                                                 RmvDupl=TRUE,
                                                 Df=TRUE,
                                                 log=log)
   
-  flags <- dplyr::full_join(flagsPlau, flagsCal, by =  'readout_time')
+  qf <- dplyr::full_join(qfPlau, qfCal, by =  'readout_time')
   
   
   #combine three gauges into one flagging variable. If any are 1 all flagged, any -1 all flagged, else not flagged
   
-  flagNames <- names(flags)[grepl(unique(names(flags)), pattern = 'strainGauge')]
+  qfNames <- names(qf)[grepl(unique(names(qf)), pattern = 'strainGauge')]
   
-  flagNames <- unique(sub(pattern='strainGauge[1-3]Depth',replacement='',x=flagNames))
+  qfNames <- unique(sub(pattern='strainGauge[1-3]Depth',replacement='',x=qfNames))
   
-  qfs<- flags[, 'readout_time', drop = F]
-  for (name in flagNames){
-    flags_sub <- flags[,grepl(names(flags), pattern = name)]
-    flagVar <- paste0('strainGaugeDepth', name)
-    qfs[[flagVar]] <- NA
-    flag_0 <- rowSums(flags_sub == 0, na.rm = T)
-    qfs[[flagVar]][flag_0 == ncol(flags_sub)] <- 0
-    flag_1 <- rowSums(flags_sub == 1, na.rm = T)
-    qfs[[flagVar]][flag_1 >=1] <- 1
-    flags_neg1 <- rowSums(flags_sub == -1, na.rm = T)
-    qfs[[flagVar]][is.na(qfs[[flagVar]]) & flags_neg1 >=1] <- -1
-    qfs[[flagVar]][is.na(qfs[[flagVar]])] <- -1
+  qfs<- qf[, 'readout_time', drop = F]
+  for (name in qfNames){
+    qf_sub <- qf[,grepl(names(qf), pattern = name)]
+    qfVar <- paste0('strainGaugeDepth', name)
+    qfs[[qfVar]] <- NA
+    qf_0 <- rowSums(qf_sub == 0, na.rm = T)
+    qfs[[qfVar]][qf_0 == ncol(qf_sub)] <- 0
+    qf_1 <- rowSums(qf_sub == 1, na.rm = T)
+    qfs[[qfVar]][qf_1 >=1] <- 1
+    qf_neg1 <- rowSums(qf_sub == -1, na.rm = T)
+    qfs[[qfVar]][is.na(qfs[[qfVar]]) & qf_neg1 >=1] <- -1
+    qfs[[qfVar]][is.na(qfs[[qfVar]])] <- -1
   }
   
   # Aggregate depth streams into a single depth, and remove values where not all three are available/good
@@ -252,20 +252,20 @@ wrap.precip.aepg.smooth <- function(DirIn,
                      inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,1)) 
   
   # Initialize time-aggregated flags
-  flagsAgr <- strainGaugeDepthAgr %>% dplyr::select(startDateTime, endDateTime)
-  flagsAgr$insuffDataQF <- 0
-  flagsAgr$extremePrecipQF <- 0
-  flagsAgr$dielNoiseQF <- 0
-  flagsAgr$strainGaugeStabilityQF <- 0
-  flagsAgr$strainGaugeStabilityQF[is.na(strainGaugeDepthAgr$strainGaugeStability)] <- -1 
-  flagsAgr$strainGaugeStabilityQF[strainGaugeDepthAgr$strainGaugeStability == FALSE] <- 1 
-  flagsAgr$heaterErrorQF <- 0
-  flagsAgr$evapDetectedQF <- 0
-  flagsAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > -6 & 
+  qfAgr <- strainGaugeDepthAgr %>% dplyr::select(startDateTime, endDateTime)
+  qfAgr$insuffDataQF <- 0
+  qfAgr$extremePrecipQF <- 0
+  qfAgr$dielNoiseQF <- 0
+  qfAgr$strainGaugeStabilityQF <- 0
+  qfAgr$strainGaugeStabilityQF[is.na(strainGaugeDepthAgr$strainGaugeStability)] <- -1 
+  qfAgr$strainGaugeStabilityQF[strainGaugeDepthAgr$strainGaugeStability == FALSE] <- 1 
+  qfAgr$heaterErrorQF <- 0
+  qfAgr$evapDetectedQF <- 0
+  qfAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > -6 & 
                            strainGaugeDepthAgr$internalTemperature < 2 & 
                            strainGaugeDepthAgr$inletTemperature < strainGaugeDepthAgr$internalTemperature] <- 1
-  flagsAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > 6 & strainGaugeDepthAgr$orificeHeaterFlag > 0] <- 1
-  flagsAgr$heaterErrorQF[is.na(strainGaugeDepthAgr$internalTemperature) | 
+  qfAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > 6 & strainGaugeDepthAgr$orificeHeaterFlag > 0] <- 1
+  qfAgr$heaterErrorQF[is.na(strainGaugeDepthAgr$internalTemperature) | 
                          is.na(strainGaugeDepthAgr$inletTemperature) | 
                          is.na(strainGaugeDepthAgr$orificeHeaterFlag)] <- -1
   
@@ -543,7 +543,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
         bench <- raw_min_lastDay # Set to the min of the last day to better track evap
         precipType <- 'EvapAdj'
         if(idxSurr == 0){
-          flagsAgr$evapDetectedQF[currRow] <- 1
+          qfAgr$evapDetectedQF[currRow] <- 1
         }
         
       } else if ((bench - raw) > Recharge){
@@ -601,21 +601,21 @@ wrap.precip.aepg.smooth <- function(DirIn,
   strainGaugeDepthAgr$benchS_std <- matrixStats::rowSds(as.matrix(strainGaugeDepthAgr[,nameVarBenchS]))
 
   # Post-precip computation 
-  flagsAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
+  qfAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
 
   # Envelope == Massive --> Flag all the data
-  if(all(flagsAgr$insuffDataQF == 1)){
-    flagsAgr$dielNoiseQF <- -1
+  if(all(qfAgr$insuffDataQF == 1)){
+    qfAgr$dielNoiseQF <- -1
   } else if(Envelope > 10){
-    flagsAgr$dielNoiseQF <- 1
+    qfAgr$dielNoiseQF <- 1
   }
 
   # Clean up flag logic for NA data
-  flagsAgr$evapDetectedQF[flagsAgr$insuffDataQF == 1] <- -1
-  flagsAgr$extremePrecipQF[flagsAgr$insuffDataQF == 1] <- -1
+  qfAgr$evapDetectedQF[qfAgr$insuffDataQF == 1] <- -1
+  qfAgr$extremePrecipQF[qfAgr$insuffDataQF == 1] <- -1
   
   # Join flagsAgr into strainGaugeDepthAgr
-  strainGaugeDepthAgr <- dplyr::full_join(strainGaugeDepthAgr, flagsAgr, by = c('startDateTime', 'endDateTime'))
+  strainGaugeDepthAgr <- dplyr::full_join(strainGaugeDepthAgr, qfAgr, by = c('startDateTime', 'endDateTime'))
   
   # Aggregate to the hour
   statsAgrHour <- strainGaugeDepthAgr %>%
@@ -646,9 +646,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
   # Compute hourly final quality flag
   statsAgrHour$finalQF <- 0
-  flags_sub <- statsAgrHour[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
-  flag_1 <- rowSums(flags_sub == 1, na.rm = T) 
-  statsAgrHour$finalQF[flag_1 >=1] <- 1 
+  qf_sub <- statsAgrHour[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+  qf_1 <- rowSums(qf_sub == 1, na.rm = T) 
+  statsAgrHour$finalQF[qf_1 >=1] <- 1 
   
   
   # Aggregate to the day
@@ -675,9 +675,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
               inletHeaterNAQM = mean(inletHeaterNAQM, na.rm = T),
     )
   statsAgrDay$finalQF <- 0
-  flags_sub <- statsAgrDay[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
-  flag_1 <- rowSums(flags_sub == 1, na.rm = T) 
-  statsAgrDay$finalQF[flag_1 >=1] <- 1 
+  qf_sub <- statsAgrDay[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+  qf_1 <- rowSums(qf_sub == 1, na.rm = T) 
+  statsAgrDay$finalQF[qf_1 >=1] <- 1 
   
   
   # Aggregate uncertainty to the hour and day
@@ -730,7 +730,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
     # Filter the data for this output day
     statsAgrHourIdx <- statsAgrHour[setOutHour,]
     statsAgrDayIdx <- statsAgrDay[setOutDay,]
-    qfIdx <- qfs [setOutFreqOrig,]
     
     
     # Replace the date in the output path structure with the current date
@@ -738,13 +737,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
                          replacement=format(dayOutIdx,'%Y/%m/%d'),
                          x=dirOutStat,
                          fixed=TRUE)
-    dirOutQfIdx <- sub(pattern=format(InfoDirIn$time,'%Y/%m/%d'),
-                         replacement=format(dayOutIdx,'%Y/%m/%d'),
-                         x=dirOutQf,
-                         fixed=TRUE)
     base::dir.create(dirOutStatIdx,recursive = TRUE)
-    base::dir.create(dirOutQfIdx,recursive = TRUE)
-    
+
     # Get the filename for this day
     nameFileIdx <- fileData[grepl(format(dayOutIdx,'%Y-%m-%d'),fileData)][1]
 
@@ -762,14 +756,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                          '_from_',
                                          format(InfoDirIn$time,'%Y-%m-%d')),
                                   utils::tail(nameFileIdxSplt,1))
-      nameFileFlagsIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
-                                  '_flagsSmooth',
-                                  '_from_',
-                                  format(InfoDirIn$time,'%Y-%m-%d')),
-                           utils::tail(nameFileIdxSplt,1))
       nameFileStatOut060Idx <- base::paste0(nameFileStatIdxSplt060,collapse='.')
       nameFileStatOut01DIdx <- base::paste0(nameFileStatIdxSplt01D,collapse='.')
-      nameFileQfOutIdx <- base::paste0(nameFileFlagsIdxSplt,collapse='.')
       
       # Write out the data to file
       fileStatOut060Idx <- fs::path(dirOutStatIdx,nameFileStatOut060Idx)
@@ -823,36 +811,48 @@ wrap.precip.aepg.smooth <- function(DirIn,
         ))
       }
       
-      # Write out the flags to file
-      FileQfOutIdx <- fs::path(dirOutQfIdx,nameFileQfOutIdx)
-      
-      rptWrte <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-          data = qfIdx,
-          NameFile = FileQfOutIdx,
-          NameFileSchm=NULL,
-          Schm=NULL,
-          log=log
-        ),
-        silent = TRUE)
-      if ('try-error' %in% base::class(rptWrte)) {
-        log$error(base::paste0(
-          'Cannot write output to ',
-          FileQfOutIdx,
-          '. ',
-          attr(rptWrte, "condition")
-        ))
-        stop()
+      # Write out the flags to file. We only need the central day.
+      if(idxDayOut == 2){
+        qfIdx <- qfs[setOutFreqOrig,]
+        base::dir.create(dirOutQf,recursive = TRUE)
+        nameFileQfIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
+                                         '_flagsSmooth'),
+                                  utils::tail(nameFileIdxSplt,1))
+        nameFileQfOutIdx <- base::paste0(nameFileQfIdxSplt,collapse='.')
+        
+        
+        
+        FileQfOutIdx <- fs::path(dirOutQfIdx,nameFileQfOutIdx)
+        
+        rptWrte <-
+          base::try(NEONprocIS.base::def.wrte.parq(
+            data = qfIdx,
+            NameFile = FileQfOutIdx,
+            NameFileSchm=NULL,
+            Schm=NULL,
+            log=log
+          ),
+          silent = TRUE)
+        if ('try-error' %in% base::class(rptWrte)) {
+          log$error(base::paste0(
+            'Cannot write output to ',
+            FileQfOutIdx,
+            '. ',
+            attr(rptWrte, "condition")
+          ))
+          stop()
+        } else {
+          log$info(base::paste0(
+            'Wrote flags to file ',
+            FileQfOutIdx
+          ))
+        }
+        
       } else {
-        log$info(base::paste0(
-          'Wrote flags to file ',
-          FileQfOutIdx
-        ))
+        log$warn(paste0(nameFileIdx,' and associated flags files are not able to be output because this data file was not found in the input.'))
+      }        
       }
-      
-    } else {
-      log$warn(paste0(nameFileIdx,' and associated flags files are not able to be output because this data file was not found in the input.'))
-    }
+
     
   }
 
