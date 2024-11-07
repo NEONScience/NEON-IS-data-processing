@@ -719,8 +719,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
     dayOutIdx <- dayOut[idxDayOut]
     
     # Get the records for this date
-    setOutFreqOrig <- strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
-      strainGaugeDepthAgr$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
     setOutHour <- statsAgrHour$startDateTime >= dayOutIdx & 
       statsAgrHour$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
     setOutDay <- statsAgrDay$startDate >= dayOutIdx & 
@@ -813,7 +811,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
       
       # Write out the flags to file. We only need the central day.
       if(idxDayOut == 2){
-        qfIdx <- qfs[setOutFreqOrig,]
+        setOutQf <- qfs$readout_time >= dayOutIdx & 
+          qfs$readout_time < (dayOutIdx + as.difftime(1,units='days'))
+        qfIdx <- qfs[setOutQf,]
         base::dir.create(dirOutQf,recursive = TRUE)
         nameFileQfIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
                                          '_flagsSmooth'),
@@ -822,7 +822,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
         
         
         
-        FileQfOutIdx <- fs::path(dirOutQfIdx,nameFileQfOutIdx)
+        FileQfOutIdx <- fs::path(dirOutQf,nameFileQfOutIdx)
         
         rptWrte <-
           base::try(NEONprocIS.base::def.wrte.parq(
@@ -847,13 +847,12 @@ wrap.precip.aepg.smooth <- function(DirIn,
             FileQfOutIdx
           ))
         }
-        
-      } else {
-        log$warn(paste0(nameFileIdx,' and associated flags files are not able to be output because this data file was not found in the input.'))
-      }        
       }
+        
+    } else {
+      log$warn(paste0(nameFileIdx,' and associated flags files are not able to be output because this data file was not found in the input.'))
+    }        
 
-    
   }
 
   return()
