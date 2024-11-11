@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/threshold_loader/*'
+      - 'modules/threshold_loader/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

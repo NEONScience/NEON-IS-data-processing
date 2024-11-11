@@ -30,6 +30,10 @@ if(length(arg) == 0){
   
 }
 
+# Default image build to false if not specified
+if (is.na(ImgBld)){
+  ImgBld <- FALSE
+}
 
 setwd(pathBgn)
 imgGrep <- gsub(pattern='.',replacement='\\.',x=imgBase,fixed=TRUE)

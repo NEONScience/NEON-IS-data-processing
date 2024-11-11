@@ -5,11 +5,11 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/calibration_group_and_convert/*'
-      - 'modules/filter_joiner/*'
-      - 'modules/common/*'
-      - 'flow/flow.kfka.comb/*'
-      - 'flow/flow.cal.conv/*'
+      - 'modules_combined/calibration_group_and_convert/**'
+      - 'modules/filter_joiner/**'
+      - 'modules/common/**'
+      - 'flow/flow.kfka.comb/**'
+      - 'flow/flow.cal.conv/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

@@ -5,12 +5,12 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules_combined/location_group_and_restructure/*'
-      - 'modules/filter_joiner/*'
-      - 'modules/common/*'
-      - 'flow/flow.kfka.comb/*'
-      - 'flow/flow.loc.repo.strc/*'
-      - 'flow/flow.loc.data.trnc.comb/*'
+      - 'modules_combined/location_group_and_restructure/**'
+      - 'modules/filter_joiner/**'
+      - 'modules/common/**'
+      - 'flow/flow.kfka.comb/**'
+      - 'flow/flow.loc.repo.strc/**'
+      - 'flow/flow.loc.data.trnc.comb/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
