@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/filter_joiner/*'
+      - 'modules/filter_joiner/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:

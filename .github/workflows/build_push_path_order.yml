@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'modules/path_order/*'
+      - 'modules/path_order/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
