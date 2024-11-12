@@ -200,7 +200,7 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
             
         # Write manifest for each product
         for product in visibility_by_file.keys():
-            output_path = os.path.join(out_path, product, year_index, month_index, site, day_index)
+            output_path = os.path.join(out_path, product, year, month, site, day)
             write_manifest(output_path, has_data_by_file[product], visibility_by_file[product])
 
 
