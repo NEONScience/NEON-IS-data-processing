@@ -82,6 +82,9 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
         
             # construct output path
             site = group_data["features"][0]["site"]
+            year = data_path_parts[year_index]
+            month = data_path_parts[month_index]
+            day = data_path_parts[day_index]
 
             # Get additional group properties
             domain = group_data["features"][0]["domain"]
@@ -93,7 +96,7 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
             group_data_path = os.path.join(data_path, group)
             data_files = os.listdir(group_data_path)
         
-            output_path = os.path.join(out_path, product, year_index, month_index, site, day_index)
+            output_path = os.path.join(out_path, product, year, month, site, day)
     
             # Find the relevant workbook
             workbook_index = [workbook_products.index(i) for i in workbook_products if i == 'NEON.DOM.SITE.'+product]
