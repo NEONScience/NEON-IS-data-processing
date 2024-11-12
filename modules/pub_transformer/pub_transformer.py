@@ -15,7 +15,7 @@ from common.err_datum import err_datum_path
 log = get_logger()
 
 
-def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, product_index: int, year_index: int, data_type_index: int, group_metadata_dir: str, data_path_parse_index: int) -> None:
+def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, product_index: int, year_index: int, month_index: int, day_index: int, data_type_index: int, group_metadata_dir: str, data_path_parse_index: int) -> None:
     """
     :param product_index: index of product in data path
     :param year_index: index of year in data path
