@@ -53,12 +53,12 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
         # processing timestamp
         timestamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
         # get the package path prefix and date field
-        for path in data_path.rglob(publoc+'/*'):
+        for path in data_path.rglob(publoc+'/*/*'):
             if path.is_file():
                 # Get one full path
                 break
         (path_prefix, date_field) = get_package_prefix(path, product_index, publoc_index, date_index, date_index_length)
-        for path in data_path.rglob(publoc+'/*'):
+        for path in data_path.rglob(publoc+'/*/*'):
             try:
                 if path.is_file():
                     file = os.path.basename(path)
