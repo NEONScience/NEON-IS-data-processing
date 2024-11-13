@@ -16,7 +16,7 @@
       "ColKeep=readout_time|readout_time|chlorophyll|chlorophyll_ucrtExpn",
       "NameFileSufx=_basicStats_100"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-comb-ts:sha-d78c309",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-comb-ts:v1.1.0",
     "env": {
       "LOG_LEVEL": "INFO"
     }
