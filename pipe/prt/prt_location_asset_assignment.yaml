@@ -13,7 +13,7 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=asset
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:aa651ed4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:sha-eca53ca
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:

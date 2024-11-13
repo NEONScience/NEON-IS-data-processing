@@ -12,10 +12,7 @@
       "FileYear=$FILE_YEAR",
       "TypeFile=namedLocation"
     ],
-    "image": "quay.io/battelleecology/neon-is-loc-grp-asgn-r:v1.0.5",
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:sha-eca53ca",
     "env": {
       "LOG_LEVEL": "INFO"
     }
