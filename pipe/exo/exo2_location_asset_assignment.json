@@ -12,7 +12,7 @@
       "FileYear=$FILE_YEAR",
       "TypeFile=asset"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:sha-eca53ca",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.1.0",
     "env": {
       "LOG_LEVEL": "INFO"
     }
