@@ -13,9 +13,9 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=namedLocation
-  image: quay.io/battelleecology/neon-is-loc-grp-asgn-r:aa651ed4
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.1.0
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
 input:
