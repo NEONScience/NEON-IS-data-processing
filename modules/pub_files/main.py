@@ -117,7 +117,7 @@ def get_timestamp() -> datetime:
 def get_location_path(datum_path: Path, location_base_path: Tuple[str], path_parse_index: int) -> Path:
     """Returns a valid path to the directory with location information for this particular site-year-month datum."""
     datum_parts: PathParts = parse_path(datum_path, path_parse_index)
-    for location_path in Path(*location_base_path,datum_parts.product,datum_parts.year,datum_parts.month,datum_parts.site).rglob('/'):
+    for location_path in Path(*location_base_path,datum_parts.product,datum_parts.year,datum_parts.month,datum_parts.site).rglob('*'):
         # One is all we need
         break
     return location_path
