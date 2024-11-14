@@ -1,11 +1,11 @@
-name: "Build-push_pub_uploader"
+name: "Build-push_flow.cal.conv"
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'modules/pub_uploader/**'
+      - 'flow/flow.cal.conv/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,8 +22,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./modules/pub_uploader
-  IMAGE_NAME: neon-is-pub-upload
+  MODULE_PATH: ./flow/flow.cal.conv
+  IMAGE_NAME: neon-is-cal-conv
 
 jobs:
   build-push:

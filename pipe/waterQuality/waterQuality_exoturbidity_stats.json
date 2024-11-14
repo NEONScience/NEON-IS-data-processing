@@ -16,10 +16,7 @@
       "ColKeep=readout_time|readout_time|turbidity|turbidity_ucrtExpn",
       "NameFileSufx=_basicStats_100"
     ],
-    "image": "quay.io/battelleecology/neon-is-data-comb-ts-r:v1.0.2",
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-comb-ts:v1.1.0",
     "env": {
       "LOG_LEVEL": "INFO"
     }
