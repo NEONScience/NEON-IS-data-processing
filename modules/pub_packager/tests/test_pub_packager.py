@@ -25,13 +25,13 @@ class PubPackagerTest(TestCase):
         self.out_path = Path(self.temp_dir_name, 'outputs')
         self.output_path = Path(self.out_path, 'DP1.00066.001/CPER/2019/05')
         self.data_file_1 = Path(self.data_path,
-                                '24/CPER/NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05-24.basic.csv')
+                                'CPER/24/NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05-24.basic.csv')
         self.data_file_2 = Path(self.data_path,
-                                '25/CPER/NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05-25.basic.csv')
-        self.manifest_file_1 = Path(self.data_path,'24/CPER/manifest.csv')
-        self.manifest_file_2 = Path(self.data_path,'25/CPER/manifest.csv')
-        os.makedirs(Path(self.data_path, '24','CPER'))
-        os.makedirs(Path(self.data_path, '25','CPER'))
+                                'CPER/25/NEON.D10.CPER.DP1.00066.001.001.000.001.ST_1_minute.2019-05-25.basic.csv')
+        self.manifest_file_1 = Path(self.data_path,'CPER/24/manifest.csv')
+        self.manifest_file_2 = Path(self.data_path,'CPER/25/manifest.csv')
+        os.makedirs(Path(self.data_path,'CPER', '24'))
+        os.makedirs(Path(self.data_path,'CPER', '25'))
         with open(self.data_file_1, 'w') as f:
             f.write('2019-05-24T00:00:00Z,2019-05-24T00:01:00Z,27.32,27.316,27.324,9.7e-06,6,0.1483,0.001271,0\n')
             f.write('2019-05-24T00:01:00Z,2019-05-24T00:02:00Z,24.245,24.239,24.249,1.25e-05,6,0.1469,0.001443,0')

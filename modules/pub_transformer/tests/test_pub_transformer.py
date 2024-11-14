@@ -24,9 +24,9 @@ class PubTransformerTest(TestCase):
         self.temp_dir = TempDirectory()
         self.temp_dir_name = self.temp_dir.path
         self.input_path = Path(self.temp_dir_name, "repo/inputs")
-        self.data_path = Path(self.input_path, "DP1.00066.001/2019/05/24/CPER")
+        self.data_path = Path(self.input_path, "DP1.00066.001/2019/05/CPER/24")
         self.out_path = Path(self.temp_dir_name, "outputs")
-        self.output_path = Path(self.out_path, "DP1.00066.001/2019/05/24/CPER")
+        self.output_path = Path(self.out_path, "DP1.00066.001/2019/05/CPER/24")
         self.group = "par-quantum-line_CPER001000"
         self.workbook_path = Path(self.input_path, 'workbooks')
         self.workbook_file_path = Path(self.workbook_path, 'workbook.csv')
@@ -37,6 +37,8 @@ class PubTransformerTest(TestCase):
         os.makedirs(Path(self.data_path, 'data', self.group))
         self.product_index = self.data_file.parts.index("DP1.00066.001")
         self.year_index = self.data_path.parts.index("2019")
+        self.month_index = self.data_path.parts.index("05")
+        self.day_index = self.data_path.parts.index("24")
         self.data_type_index = self.data_file.parts.index("data")
         self.group_metadata_dir = "group"
         self.data_path_parse_index = self.product_index
@@ -102,6 +104,8 @@ class PubTransformerTest(TestCase):
                       workbook_path=self.workbook_path,
                       product_index=self.product_index,
                       year_index=self.year_index,
+                      month_index=self.month_index,
+                      day_index=self.day_index,
                       data_type_index=self.data_type_index,
                       group_metadata_dir=self.group_metadata_dir,
                       data_path_parse_index=self.data_path_parse_index)
@@ -114,6 +118,8 @@ class PubTransformerTest(TestCase):
         os.environ["OUT_PATH"] = str(self.out_path)
         os.environ["PRODUCT_INDEX"] = str(self.product_index)
         os.environ["YEAR_INDEX"] = str(self.year_index)
+        os.environ["MONTH_INDEX"] = str(self.month_index)
+        os.environ["DAY_INDEX"] = str(self.day_index)
         os.environ["DATA_TYPE_INDEX"] = str(self.data_type_index)
         os.environ["GROUP_METADATA_DIR"] = str(self.group_metadata_dir)
         os.environ["DATA_PATH_PARSE_INDEX"] = str(self.data_path_parse_index)
