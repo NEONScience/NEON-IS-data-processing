@@ -101,7 +101,7 @@ transform:
 input:
   pfs:
     name: GROUPED_PATH
-    repo: relHumidity_pub_group
+    repo: tempSoil_pub_group
     # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unneccesary republication.
     # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
     glob: /*/*/*/*
