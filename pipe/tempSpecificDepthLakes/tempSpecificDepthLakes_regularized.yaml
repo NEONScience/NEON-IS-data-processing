@@ -15,9 +15,9 @@ transform:
   - RptTimeWndw=TRUE
   - DropNotNumc=FALSE
   - DirSubCopy=uncertainty_coef|location
-  image: quay.io/battelleecology/neon-is-rglr-r:aa651ed4
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-rglr:sha-f46e0c2
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '1'
