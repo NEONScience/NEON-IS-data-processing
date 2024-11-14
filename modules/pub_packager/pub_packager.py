@@ -88,7 +88,7 @@ def pub_package(*, data_path, out_path, err_path, product_index: int, publoc_ind
             for file in package_files[package_file]:
                 dataDir_routed = Path(file).parent
                 try:
-                    data = pd.read_csv(file)
+                    data = pd.read_csv(file,dtype='str') # dtype='str' Preserves formatting applied in transformer module
                     mode = 'a'
                     write_header = False
                     if is_first_file:
