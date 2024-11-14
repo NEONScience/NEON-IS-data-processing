@@ -18,7 +18,7 @@ transform:
     mkdir $OUT_PATH_TRANSFORMER
     mkdir $OUT_PATH_PACKAGER
 
-    # Set some environment variables for the second module
+    # Set some environment variables for the pub transformer module
     export DATA_PATH=$GROUPED_PATH
     export OUT_PATH=$OUT_PATH_TRANSFORMER
     
@@ -109,15 +109,15 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 400M
-  cpu: 1
+  cpu: 1.2
 resource_limits:
   memory: 800M
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 2.4G
+  memory: 2G
   cpu: 0.4
 datum_set_spec:
-  number: 1
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
