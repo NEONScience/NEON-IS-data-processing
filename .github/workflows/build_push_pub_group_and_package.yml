@@ -48,7 +48,7 @@ jobs:
       - name: Get short SHA
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "short_sha=$(short_sha)"
+          echo "short_sha=$GITHUB_ENV"
 
       - name: Build and push
         uses: ./.github/actions/build-push
