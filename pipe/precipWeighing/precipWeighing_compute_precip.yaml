@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighing_compute_precip
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-smooth:sha-384c6c8
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-smooth:sha-ad8d282
   cmd:
   - sh
   - "-c"
@@ -16,7 +16,8 @@ transform:
     Rscript ./flow.precip.aepg.smooth.R \
       DirIn=$DIR_IN \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums
+      DirErr=/pfs/out/errored_datums \
+      FileSchmStat=$FILE_SCHEMA_STATS
     EOF
   env:
     OUT_PATH: /pfs/out
@@ -30,9 +31,9 @@ input:
       repo: precipWeighing_ts_pad_smoother
       glob: /*/*/*
   - pfs:
-      name: FILE_SCHEMA_DATA
+      name: FILE_SCHEMA_STATS
       repo: precipWeighing_avro_schemas
-      glob: /precipWeighing/precipWeighing_precip_output.avsc
+      glob: /precipWeighing/precipWeighing_dp01_stats_aepg.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true
