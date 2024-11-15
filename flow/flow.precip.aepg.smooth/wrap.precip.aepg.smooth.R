@@ -42,6 +42,18 @@
 #' 
 #' @param Recharge Numeric value. If raw data drops by much or more, assume it is a bucket empty/recalibration
 
+#' @param SchmStat (Optional). A json-formatted character string containing the schema for the output precipitation 
+#' statistics and quality flags. May be NULL (default), 
+#' in which case the  the variable names will be automatically determined.  
+#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THE ORDER OF THE OUTPUT. 
+#' Otherwise, they will be labeled incorrectly.
+
+#' @param SchmQfGage (Optional). A json-formatted character string containing the schema for the aggregated 
+#' strain gauge flags. May be NULL (default), 
+#' in which case the  the variable names will be automatically determined.  
+#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THE ORDER OF THE OUTPUT. 
+#' Otherwise, they will be labeled incorrectly.
+
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the data folder(s) in the input path that are to be copied with a symbolic link to the 
 #' output path (i.e. carried through as-is). Note that the 'data' directory is automatically
@@ -74,7 +86,8 @@
 ##############################################################################################
 wrap.precip.aepg.smooth <- function(DirIn,
                                     DirOutBase,
-                                    SchmData=NULL,
+                                    SchmStat=NULL,
+                                    SchmQfGage=NULL,
                                     # WndwAgr = '5 min',
                                     # RangeSizeHour = 24, #  Period of evaluation (e.g. 24 for 1 day)
                                     # Envelope = 3,
@@ -695,7 +708,11 @@ wrap.precip.aepg.smooth <- function(DirIn,
     ucrtAgr <- def.ucrt.agr.precip.bench(strainGaugeDepthAgr$bench[setUcrt],strainGaugeDepthAgr$benchS_std[setUcrt])
     return(ucrtAgr)
   })
-  statsAgrHour$ucrtExp <- 2*unlist(ucrtAgrHour)
+  statsAgrHour$precipBulkExpUncert <- 2*unlist(ucrtAgrHour)
+  statsAgrHour <- statsAgrHour[,c("startDateTime","endDateTime","precipBulk","precipBulkExpUncert","insuffDataQF",
+                                  "extremePrecipQF","heaterErrorQF","dielNoiseQF","strainGaugeStabilityQF",
+                                  "evapDetectedQF","inletHeater1QM","inletHeater2QM","inletHeater3QM",
+                                  "inletHeaterNAQM","finalQF")]
   
   # Daily
   days <- seq.POSIXt(from=strainGaugeDepthAgr$startDateTime[1],to=strainGaugeDepthAgr$startDateTime[numRow],by='day')
@@ -705,7 +722,11 @@ wrap.precip.aepg.smooth <- function(DirIn,
     ucrtAgr <- def.ucrt.agr.precip.bench(strainGaugeDepthAgr$bench[setUcrt],strainGaugeDepthAgr$benchS_std[setUcrt])
     return(ucrtAgr)
   })
-  statsAgrDay$ucrtExp <- 2*unlist(ucrtAgrDay)
+  statsAgrDay$precipBulkExpUncert <- 2*unlist(ucrtAgrDay)
+  statsAgrDay <- statsAgrDay[,c("startDateTime","endDateTime","precipBulk","precipBulkExpUncert","insuffDataQF",
+                                "extremePrecipQF","heaterErrorQF","dielNoiseQF","strainGaugeStabilityQF",
+                                "evapDetectedQF","inletHeater1QM","inletHeater2QM","inletHeater3QM",
+                                "inletHeaterNAQM","finalQF")]
   
   
   
@@ -766,7 +787,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           data = statsAgrHourIdx,
           NameFile = fileStatOut060Idx,
           NameFileSchm=NULL,
-          Schm=SchmData,
+          Schm=SchmStat,
           log=log
         ),
         silent = TRUE)
@@ -790,7 +811,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           data = statsAgrDayIdx,
           NameFile = fileStatOut01DIdx,
           NameFileSchm=NULL,
-          Schm=SchmData,
+          Schm=SchmStat,
           log=log
         ),
         silent = TRUE)
@@ -829,7 +850,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
             data = qfIdx,
             NameFile = FileQfOutIdx,
             NameFileSchm=NULL,
-            Schm=NULL,
+            Schm=SchmQfGage,
             log=log
           ),
           silent = TRUE)

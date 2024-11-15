@@ -104,9 +104,9 @@ wrap.precip.aepg.comb <- function(DirIn,
               base::lapply(stats,FUN=function(statsIdx){statsIdx$precipBulk})
               ),na.rm=TRUE
     )
-    statsOut$ucrtExp <- rowMeans(
+    statsOut$precipBulkExpUncert <- rowMeans(
       do.call(cbind,
-              base::lapply(stats,FUN=function(statsIdx){statsIdx$ucrtExp})
+              base::lapply(stats,FUN=function(statsIdx){statsIdx$precipBulkExpUncert})
       ),na.rm=TRUE
     )
     statsOut$insuffDataQF <- matrixStats::rowMaxs(
