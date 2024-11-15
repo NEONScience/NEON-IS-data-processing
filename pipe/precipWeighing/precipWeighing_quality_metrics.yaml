@@ -11,30 +11,39 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    # Run second module - quality metrics
+    # Run quality metrics module for hourly aggregation
     Rscript ./flow.qaqc.qm.R \
       DirIn=$QAQC_PLAUSIBILITY_PATH \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "WndwAgr=060|01D"
+      FileSchmQm=$FILE_SCHEMA_QM_HOURLY \
+      "WndwAgr=060"
+      
+    # Run quality metrics module for daily aggregation
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=$QAQC_PLAUSIBILITY_PATH \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_DAILY \
+      "WndwAgr=01D"
     EOF
   env:
     LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
 input:
-  pfs:
-    name: QAQC_PLAUSIBILITY_PATH
-    repo: precipWeighing_combine_precip
-    glob: /*/*/*
-  # cross:
-  # - pfs:
-  #     name: FILE_SCHEMA_QM
-  #     repo: precipWeighing_avro_schemas
-  #     glob: /precipWeighing/precipWeighing_dp01_quality_metrics.avsc
-  # - pfs:
-  #     name: QAQC_PLAUSIBILITY_PATH
-  #     repo: precipWeighing_combine_precip
-  #     glob: /*/*/*
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_QM_HOURLY
+      repo: precipWeighing_avro_schemas
+      glob: /precipWeighing/precipWeighing_dp01_quality_metrics_hourly_aepg.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM_DAILY
+      repo: precipWeighing_avro_schemas
+      glob: /precipWeighing/precipWeighing_dp01_quality_metrics_daily_aepg.avsc
+  - pfs:
+      name: QAQC_PLAUSIBILITY_PATH
+      repo: precipWeighing_combine_precip
+      glob: /*/*/*
 parallelism_spec:
   constant: 5
 autoscaling: true
