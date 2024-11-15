@@ -2,9 +2,9 @@
 pipeline:
   name: precipWeighing_combine_precip
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-precip-aepg-comb-r:4d165c82
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-comb:sha-9fef35a
   cmd:
   - sh
   - "-c"
