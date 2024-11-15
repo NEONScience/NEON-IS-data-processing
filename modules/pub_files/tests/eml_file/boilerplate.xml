@@ -24,11 +24,18 @@
             </personnel>
             <abstract>
                 <para>The National Ecological Observatory Network is a program sponsored by the National Science Foundation and cooperatively managed by Battelle.</para>
-                <para>NEON's mission is to design, implement, and operate continental-scale research infrastructure to open new horizons in ecological science and education, and to enable ecological analyses and forecasts for the benefit of society.</para>
+                <para>NEON's mission is to collect and freely share critical ecological data, samples, and infrastructure with researchers and the public to advance understanding of ecological processes and inform the sustainable management of U.S. ecosystems.</para>
             </abstract>
             <funding>
                 <para>NEON is funded by several National Science Foundation (NSF) awards.</para>
             </funding>
+            <award>
+                <funderName>National Science Foundation</funderName>
+                <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
+                <awardNumber>2217817</awardNumber>
+                <title>NEON Operations and Maintenance: Evolving from a Strong Foundation</title>
+                <awardUrl>https://www.nsf.gov/awardsearch/showAward?AWD_ID=2217817</awardUrl>
+            </award> 
             <award>
                 <funderName>National Science Foundation</funderName>
                 <funderIdentifier>https://ror.org/021nxhr62</funderIdentifier>
@@ -109,10 +116,19 @@
         </project>
         <intellectualRights>
             <para>NEON Data Usage and Citation Policy</para>
-            <para>Copyright © 2021 National Ecological Observatory Network</para>
-            <para>Permission is hereby granted, free of charge, to any person or organization obtaining a copy of the NEON Observatory data products, associated software and accompanying documentation covered by this license (the "NEON Data Products") to use, reproduce, display, distribute, publish, execute, and transmit the NEON Data Products, and to prepare derivative works of the NEON Data Products, and to permit third-parties to whom the NEON Data Products are furnished to do so, all subject to the following:</para>
-            <para>The copyright notices in the NEON Data Products and this entire statement, including the above copyright statement, license grant, this restriction and the following disclaimer, must be included in all copies of the NEON Data Products, in whole or in part, and all derivative works of the Data Products.</para>
-            <para>The NEON data products are provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, title and non-infringement. In no event shall the copyright holders or anyone distributing the neon data products be liable for any damages or other liability, whether in contract, tort or otherwise, arising from, out of or in connection with the NEON data products.</para>
+            <para>Copyright © 2024 National Ecological Observatory Network</para>
+            <para>In most countries, data and facts are not copyrightable. By putting NEON data into the public domain, we encourage broad use, particularly in scientific analyses and data aggregations. However, please be mindful of the following scholarly norms:
+	        <list type="bullet">
+		    <item>
+		        <description>NEON data should be used in a way that is mindful of the limitations of the data, using the documentation associated with the data packages as a guide.
+			</description>
+		    </item>
+		    <item>
+		        <description>Unlike most scientific data, NEON data is not associated with individual authors; rather, the ‘author’ of data produced by the Observatory is NEON itself. Attributions and citations should be made to NEON for any use of the data.
+			</description>
+		    </item>
+		</list>
+	    </para>        
         </intellectualRights>
         <distribution>
             <online>

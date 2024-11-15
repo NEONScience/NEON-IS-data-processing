@@ -12,10 +12,7 @@
       "DirSubCombData=data",
       "DirSubCopy=location|calibration"
     ],
-    "image": "quay.io/battelleecology/neon-is-loc-data-trnc-comb-r:v1.0.2",
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-data-trnc-comb:v1.1.0",
     "env": {
       "LOG_LEVEL": "INFO",
       "PARALLELIZATION_INTERNAL": "1"
