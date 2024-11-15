@@ -42,7 +42,7 @@ input:
       glob: /precipWeighing/precipWeighing_dp01_quality_metrics_daily_aepg.avsc
   - pfs:
       name: QAQC_PLAUSIBILITY_PATH
-      repo: precipWeighing_combine_precip
+      repo: precipWeighing_compute_precip
       glob: /*/*/*
 parallelism_spec:
   constant: 5
