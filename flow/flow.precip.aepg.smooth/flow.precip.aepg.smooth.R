@@ -51,7 +51,7 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "FileSchmStat=value" (optional), where value is the full path to schema for the aggregated data 
+#' 4. "FileSchmStatHour=value" (optional), where value is the full path to schema for the hourly aggregated data 
 #' output by this workflow. If not input, a schema will be automatically crafted. 
 #' The output is ordered as follows:
 #' startDateTime
@@ -72,7 +72,12 @@
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.
 #'
-#' 5. "FileSchmQfGage=value" (optional), where value is the full path to output schema for the quality flags
+#' 5. "FileSchmStatDay=value" (optional), where value is the full path to schema for the daily aggregated data 
+#' output by this workflow. The columns are the same as the hourly output, except that startDate and endDate 
+#' are the timestamp columns (instead of startDateTime and endDateTime). If not input, a schema will be 
+#' automatically crafted. 
+#'
+#' 6. "FileSchmQfGage=value" (optional), where value is the full path to output schema for the quality flags
 #' representing the results of quality tests run on the individual strain gauge measurements. These quality flags
 #' are aggregated across the three strain gauges such that a single flag is output for each test (instead of 
 #' one quality flag for each strain gauge). If not input, a schema will be automatically crafted. 
@@ -149,7 +154,8 @@ Para <-
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
-                     "FileSchmStat",
+                     "FileSchmStatHour",
+                     "FileSchmStatDay",
                      "FileSchmQfGage"
                      ),
     log = log
@@ -161,15 +167,26 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-# Retrieve output schema for stats
-FileSchmStat <- Para$FileSchmStat
-log$debug(base::paste0('Output schema for bulk precipitation stats: ',base::paste0(FileSchmStat,collapse=',')))
+# Retrieve output schema for hourly stats
+FileSchmStatHour <- Para$FileSchmStatHour
+log$debug(base::paste0('Output schema for hourly bulk precipitation stats: ',base::paste0(FileSchmStatHour,collapse=',')))
 
 # Read in the schema 
-if(base::is.null(FileSchmStat) || FileSchmStat == 'NA'){
-  SchmStat <- NULL
+if(base::is.null(FileSchmStatHour) || FileSchmStatHour == 'NA'){
+  SchmStatHour <- NULL
 } else {
-  SchmStat <- base::paste0(base::readLines(FileSchmStat),collapse='')
+  SchmStatHour <- base::paste0(base::readLines(FileSchmStatHour),collapse='')
+}
+
+# Retrieve output schema for daily stats
+FileSchmStatDay <- Para$FileSchmStatDay
+log$debug(base::paste0('Output schema for bulk precipitation stats: ',base::paste0(FileSchmStatDay,collapse=',')))
+
+# Read in the schema 
+if(base::is.null(FileSchmStatDay) || FileSchmStatDay == 'NA'){
+  SchmStatDay <- NULL
+} else {
+  SchmStatDay <- base::paste0(base::readLines(FileSchmStatDay),collapse='')
 }
 
 # Retrieve output schema for strain gauge quality flags
@@ -215,7 +232,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.precip.aepg.smooth(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmStat=SchmStat,
+        SchmStatHour=SchmStatHour,
+        SchmStatDay=SchmStatDay,
         SchmQfGage=SchmQfGage,
         DirSubCopy=DirSubCopy,
         log=log

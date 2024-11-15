@@ -42,8 +42,14 @@
 #' 
 #' @param Recharge Numeric value. If raw data drops by much or more, assume it is a bucket empty/recalibration
 
-#' @param SchmStat (Optional). A json-formatted character string containing the schema for the output precipitation 
-#' statistics and quality flags. May be NULL (default), 
+#' @param SchmStatHour (Optional). A json-formatted character string containing the schema for the hourly 
+#' output precipitation statistics and quality flags. May be NULL (default), 
+#' in which case the  the variable names will be automatically determined.  
+#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THE ORDER OF THE OUTPUT. 
+#' Otherwise, they will be labeled incorrectly.
+
+#' @param SchmStatDay (Optional). A json-formatted character string containing the schema for the daily 
+#' output precipitation statistics and quality flags. May be NULL (default), 
 #' in which case the  the variable names will be automatically determined.  
 #' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THE ORDER OF THE OUTPUT. 
 #' Otherwise, they will be labeled incorrectly.
@@ -86,7 +92,8 @@
 ##############################################################################################
 wrap.precip.aepg.smooth <- function(DirIn,
                                     DirOutBase,
-                                    SchmStat=NULL,
+                                    SchmStatHour=NULL,
+                                    SchmStatDay=NULL,
                                     SchmQfGage=NULL,
                                     # WndwAgr = '5 min',
                                     # RangeSizeHour = 24, #  Period of evaluation (e.g. 24 for 1 day)
@@ -666,9 +673,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
   # Aggregate to the day
   statsAgrDay <- statsAgrHour %>%
-    mutate(startDate = lubridate::floor_date(startDateTime, '1 day')) %>%
-    mutate(endDate = lubridate::ceiling_date(endDateTime, '1 day')) %>%
-    group_by(startDate,endDate) %>%
+    mutate(date = lubridate::floor_date(startDateTime, '1 day')) %>%
+    group_by(date) %>%
     summarise(precipBulk = sum(precipBulk),
               insuffDataQF = max(insuffDataQF, na.rm = T),
               extremePrecipQF = max(extremePrecipQF, na.rm = T),
@@ -723,7 +729,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     return(ucrtAgr)
   })
   statsAgrDay$precipBulkExpUncert <- 2*unlist(ucrtAgrDay)
-  statsAgrDay <- statsAgrDay[,c("startDateTime","endDateTime","precipBulk","precipBulkExpUncert","insuffDataQF",
+  statsAgrDay <- statsAgrDay[,c("date","precipBulk","precipBulkExpUncert","insuffDataQF",
                                 "extremePrecipQF","heaterErrorQF","dielNoiseQF","strainGaugeStabilityQF",
                                 "evapDetectedQF","inletHeater1QM","inletHeater2QM","inletHeater3QM",
                                 "inletHeaterNAQM","finalQF")]
@@ -742,8 +748,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
     # Get the records for this date
     setOutHour <- statsAgrHour$startDateTime >= dayOutIdx & 
       statsAgrHour$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
-    setOutDay <- statsAgrDay$startDate >= dayOutIdx & 
-      statsAgrDay$startDate < (dayOutIdx + as.difftime(1,units='days'))
+    setOutDay <- statsAgrDay$date >= dayOutIdx & 
+      statsAgrDay$date < (dayOutIdx + as.difftime(1,units='days'))
     
     
     # Filter the data for this output day
@@ -787,7 +793,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           data = statsAgrHourIdx,
           NameFile = fileStatOut060Idx,
           NameFileSchm=NULL,
-          Schm=SchmStat,
+          Schm=SchmStatHour,
           log=log
         ),
         silent = TRUE)
@@ -811,7 +817,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           data = statsAgrDayIdx,
           NameFile = fileStatOut01DIdx,
           NameFileSchm=NULL,
-          Schm=SchmStat,
+          Schm=SchmStatDay,
           log=log
         ),
         silent = TRUE)
