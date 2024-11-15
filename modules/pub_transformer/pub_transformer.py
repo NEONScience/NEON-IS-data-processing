@@ -15,10 +15,12 @@ from common.err_datum import err_datum_path
 log = get_logger()
 
 
-def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, product_index: int, year_index: int, data_type_index: int, group_metadata_dir: str, data_path_parse_index: int) -> None:
+def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, product_index: int, year_index: int, month_index: int, day_index: int, data_type_index: int, group_metadata_dir: str, data_path_parse_index: int) -> None:
     """
     :param product_index: index of product in data path
     :param year_index: index of year in data path
+    :param month_index: index of month in data path
+    :param day_index: index of day in data path
     :param data_type_index: index of data & metadata directories in data path. Group metadata directory must be at this index.
     :param group_metadata_dir: directory name with group metadata (e.g. "group")
     :param data_path_parse_index: for the path given in data_path, recursively process all /year/month/day/group datums starting from this index (e.g. for the path just given, a data_path_parse_index of 2 would start at the day path)
@@ -62,7 +64,7 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
         
         # get datum date
         data_path_parts = data_path.parts
-        formatted_date = '-'.join(data_path_parts[year_index:year_index+3])
+        formatted_date = '-'.join(data_path_parts[i] for i in [year_index,month_index,day_index])
         
         # has data by output file
         has_data_by_file = {}
@@ -80,8 +82,10 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
         
             # construct output path
             site = group_data["features"][0]["site"]
-            day_path = os.path.sep.join(data_path_parts[year_index:year_index+3])
-            
+            year = data_path_parts[year_index]
+            month = data_path_parts[month_index]
+            day = data_path_parts[day_index]
+
             # Get additional group properties
             domain = group_data["features"][0]["domain"]
             hor = group_data["features"][0]["HOR"]
@@ -92,7 +96,7 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
             group_data_path = os.path.join(data_path, group)
             data_files = os.listdir(group_data_path)
         
-            output_path = os.path.join(out_path, product, day_path, site)
+            output_path = os.path.join(out_path, product, year, month, site, day)
     
             # Find the relevant workbook
             workbook_index = [workbook_products.index(i) for i in workbook_products if i == 'NEON.DOM.SITE.'+product]
@@ -196,7 +200,7 @@ def pub_transform(*, data_path: Path, out_path: Path, workbook_path: Path, produ
             
         # Write manifest for each product
         for product in visibility_by_file.keys():
-            output_path = os.path.join(out_path, product, day_path, site)
+            output_path = os.path.join(out_path, product, year, month, site, day)
             write_manifest(output_path, has_data_by_file[product], visibility_by_file[product])
 
 

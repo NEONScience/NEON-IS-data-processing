@@ -17,6 +17,8 @@ def main() -> None:
     workbook_path: Path = env.path('WORKBOOK_PATH')
     product_index: int = env.int('PRODUCT_INDEX')
     year_index: int = env.int('YEAR_INDEX')
+    month_index: int = env.int('MONTH_INDEX')
+    day_index: int = env.int('DAY_INDEX')
     data_type_index: int = env.int('DATA_TYPE_INDEX')
     group_metadata_dir: str = env.str('GROUP_METADATA_DIR')
     data_path_parse_index: int = env.int('DATA_PATH_PARSE_INDEX')
@@ -26,6 +28,8 @@ def main() -> None:
                   workbook_path=workbook_path,
                   product_index=product_index,
                   year_index=year_index,
+                  month_index=month_index,
+                  day_index=day_index,
                   data_type_index=data_type_index,
                   group_metadata_dir=group_metadata_dir,
                   data_path_parse_index=data_path_parse_index)

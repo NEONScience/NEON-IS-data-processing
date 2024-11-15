@@ -3,7 +3,7 @@ pipeline:
   name: groundwaterPhysical_pub_group
 transform:
 #  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-group:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.0.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -14,9 +14,9 @@ transform:
     LOG_LEVEL: INFO
     OUT_PATH: "/pfs/out"
     ERR_PATH_GROUPER: "pfs/out/errored_datums"
-    YEAR_INDEX: '3' # Also shared with pub_transform
+    YEAR_INDEX: '3' 
     GROUP_INDEX: '6'
-    DATA_TYPE_INDEX: '7' # Also shared with pub_transform
+    DATA_TYPE_INDEX: '7' 
     GROUP_METADATA_DIR: group 
     PUBLOC_KEY: site
     LINK_TYPE: SYMLINK
@@ -35,14 +35,14 @@ input:
       joinOn: $1
       empty_files: true
 parallelism_spec:
-  constant: 2
+  constant: 4
 autoscaling: true
 resource_requests:
   memory: 1.8G
-  cpu: 1
+  cpu: 1.2
 resource_limits:
   memory: 2.5G
-  cpu: 1.5
+  cpu: 1.2
 sidecar_resource_requests:
   memory: 4G
   cpu: 1
