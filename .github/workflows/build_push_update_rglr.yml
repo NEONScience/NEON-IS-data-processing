@@ -5,7 +5,7 @@ on:
     # branches:
     #   - 'master'
     tags:
-      - "flow.srf.rglr/v*.*.*"
+      - "flow.rglr/v*.*.*"
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
