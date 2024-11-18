@@ -6,7 +6,7 @@
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.6
 
 ARG FLOW_DIR="./flow"
-ARG APP_DIR="flow.plau"
+ARG APP_DIR="flow.qaqc.plau"
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
