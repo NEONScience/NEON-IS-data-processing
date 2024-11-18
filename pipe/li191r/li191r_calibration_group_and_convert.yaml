@@ -11,11 +11,13 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/kafka_merged
     rm -rf $OUT_PATH
     mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
     mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    
     # Detect if we have data coming from Kafka or trino
     # Note that we run the filter-joiner in sequential if statements rather than an elif statement ...
     # ... so that if there is any overlap in sensor data coming from both Kafka and Trino on the same day, the ...
@@ -43,6 +45,7 @@ transform:
       export CONFIG=$CONFIG_KAFKA
       python3 -m filter_joiner.filter_joiner_main
     fi  
+    
     # Run calibration conversion module
     Rscript ./flow.cal.conv.R  \
       DirIn=/tmp/pfs/filter_joined \

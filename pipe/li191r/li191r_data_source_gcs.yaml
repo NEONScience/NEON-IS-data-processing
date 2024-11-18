@@ -1,24 +1,45 @@
 ---
 pipeline:
-  name: li191r_l0_data_loader
+  name: li191r_data_source_gcs
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   image: quay.io/battelleecology/l0_data_loader:via3
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m l0_data_loader.l0_data_loader
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Get today's date for evaluating kafka data retention period
+    date_today=$(date -u +%Y-%m-%d)
+    kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    
+    # Get data from GCS bucket
+    echo "Processing $import_trigger"
+    p=${import_trigger#/pfs}
+    IFS="/"; arr=($p); unset IFS;
+    year=${arr[3]}
+    month=${arr[4]}
+    day=${arr[5]}
+    if [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]
+    then
+      echo "Extracting $year/$month/$day for $SOURCE_TYPE from GCS"
+      python3 -m l0_data_loader.l0_data_loader
+    else
+      echo "$year/$month/$day is within the Kafka retention period and should be loaded from Kafka. Skipping..."
+      continue
+    fi
+
+    EOF
   env:
-    # Environment variables for data conversion step
     LOG_LEVEL: INFO
-    REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
-    # Environment variables for linkmerge step
-    IN_PATH: /tmp/interimData
     OUT_PATH: /pfs/out
-    # Environment variables for bash code
     SOURCE_TYPE: 'li191r'
+    KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: l0-bucket
     env_var: BUCKET_NAME
@@ -27,6 +48,7 @@ input:
   pfs:
     name: import_trigger
     repo: li191r_cron_daily_and_date_control
+    # Glob must be daily
     glob: "/li191r/*/*/*"
 output_branch: master
 parallelism_spec:
@@ -34,12 +56,12 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 800M
-  cpu: 2
+  cpu: 1.2
 resource_limits:
   memory: 2G
-  cpu: 2
+  cpu: 1.5
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 0.5
 datum_set_spec:
   number: 1

@@ -11,12 +11,15 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     interimDir="/tmp/interimData"
     rm -rf $interimDir
+    
     # Get today's date for evaluating kafka data retention period
     date_today=$(date -u +%Y-%m-%d)
     kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    
     # Run first module - data_source_site (pull data from database by site)
     # Split data source path
     for path in $(find -L $import_trigger -type f); do
@@ -37,6 +40,7 @@ transform:
         echo "$year/$month/$day/$site is indicated to be streaming from Kafka. Skipping..."
         continue
       fi
+      
       echo "Extracting data from Trino for $year/$month/$day/$site"
       export GEN_DATE=$year-$month-$day
       export GEN_SITE_NAME=$site
@@ -44,9 +48,12 @@ transform:
       export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
       mkdir -p $GEN_OUTPUT_DIR
       /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second
+      
     done
+    
     # Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day
     python3 -m parquet_linkmerge.parquet_linkmerge_main
+    
     # Export L0 data to bucket
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
