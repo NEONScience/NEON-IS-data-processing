@@ -50,8 +50,8 @@ input:
   cross:
   - pfs:
       name: DATA_PATH
-      repo: precipWeighing_thresh_select_ts_pad
-      glob: /2024/06/*
+      repo: precipWeighing_thresh_select_ts_pad_qaqc
+      glob: /*/*/*
   - pfs:
       name: SCHEMA_FLAGS
       repo: precipWeighing_avro_schemas

@@ -46,7 +46,7 @@ input:
         # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
         name: LOCATION_FOCUS_PATH
         repo: aepg600m_fill_date_gaps_and_regularize
-        glob: /*/(*/*/*)
+        glob: /*/(2024/06/*)
         joinOn: $1
 #    - pfs:
 #        # Any/all repos in L1+ dependency group focus name must be named GROUP_FOCUS_PATH

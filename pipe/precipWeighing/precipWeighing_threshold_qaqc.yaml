@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: precipWeighing_threshold
+  name: precipWeighing_threshold_qaqc
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-threshold-loader:v1.0.0
   cmd:
@@ -12,7 +12,7 @@ transform:
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
-    TERM: strainGauge1Depth|strainGauge2Depth|strainGauge3Depth|precipTotal
+    TERM: strainGauge1Depth|strainGauge2Depth|strainGauge3Depth
     # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
     CTXT: precipitation|weighing
   secrets:

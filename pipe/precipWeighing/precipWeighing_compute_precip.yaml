@@ -29,7 +29,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: precipWeighing_ts_pad_smoother
+      repo: precipWeighing_thresh_select_ts_pad_smoother
       glob: /*/*/*
   - pfs:
       name: FILE_SCHEMA_STATS_HOURLY

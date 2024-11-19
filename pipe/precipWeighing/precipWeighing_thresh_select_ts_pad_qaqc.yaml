@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: precipWeighing_thresh_select_ts_pad
+  name: precipWeighing_thresh_select_ts_pad_qaqc
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.1.0
   cmd:
@@ -26,7 +26,6 @@ transform:
       "TermCtxt1=strainGauge1Depth|precipitation|weighing" \
       "TermCtxt2=strainGauge2Depth|precipitation|weighing" \
       "TermCtxt3=strainGauge3Depth|precipitation|weighing" \
-      "TermCtxt4=precipTotal|precipitation|weighing" \
       "DirSubCopy=location|data|flags"
       
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
@@ -53,7 +52,7 @@ input:
       glob: /*/*/*
   - pfs:
       name: FILE_THRESHOLDS
-      repo: precipWeighing_threshold
+      repo: precipWeighing_threshold_qaqc
       glob: /thresholds.json
 parallelism_spec:
   constant: 5

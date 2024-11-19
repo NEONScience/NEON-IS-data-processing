@@ -95,15 +95,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                     SchmStatHour=NULL,
                                     SchmStatDay=NULL,
                                     SchmQfGage=NULL,
-                                    # WndwAgr = '5 min',
-                                    # RangeSizeHour = 24, #  Period of evaluation (e.g. 24 for 1 day)
-                                    # Envelope = 3,
-                                    # ThshCountHour = 15,
-                                    # Quant = 0.5, # Where is the benchmark set (quantile) within the envelope (diel variation)
-                                    # ThshChange = 0.2,
-                                    # ChangeFactor = 1,
-                                    # ChangeFactorEvap = 0.5,
-                                    # Recharge = 20, #if raw data was this much less than bench mark likely a bucket empty/recalibration (original was 25)
                                     DirSubCopy=NULL,
                                     log=NULL
 ){
@@ -144,9 +135,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
   }
   thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile=base::paste0(dirThsh,'/',fileThsh)))
   
-  # !!!!!!!!!!!! LOTS OF FUDGING HERE FOR TESTING. CORRECT WHEN FINAL THRESHOLDS ARE CREATED !!!!!!!!!!!!!!!!!!!
   # Verify that the term(s) needed in the input parameters are included in the threshold files
-  termTest <- "precipTotal"
+  termTest <- "precipBulk"
   exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
   if(base::sum(exstThsh) != base::length(termTest)){
     log$error(base::paste0('Thresholds for term(s): ',base::paste(termTest[!exstThsh],collapse=','),' do not exist in the thresholds file. Cannot proceed.')) 
@@ -155,18 +145,17 @@ wrap.precip.aepg.smooth <- function(DirIn,
   # Assign thresholds
   thshIdxTerm <- thsh[thsh$term_name == termTest,]
 
-  WndwAgr = thshIdxTerm$string_value[thshIdxTerm$threshold_name == 'Despiking Method']
-  RangeSizeHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Step Test value']
-  Envelope = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking maximum (%) missing points per window']
-  ThshCountHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Range Threshold Hard Max']
-  Quant = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking window size - points']
-  ThshChange = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking maximum consecutive points (n)']
-  ChangeFactor = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking MAD']
-  ChangeFactorEvap = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking window step - points.']
-  Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Persistence (change)']
-  ExtremePrecipMax = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Range Threshold Soft Max']
-  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  
+  WndwAgr = thshIdxTerm$string_value[thshIdxTerm$threshold_name == 'WndwAgr']
+  RangeSizeHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'RangeSizeHour']
+  Envelope = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Envelope']
+  ThshCountHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ThshCountHour']
+  Quant = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Quant']
+  ThshChange = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ThshChange']
+  ChangeFactor = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ChangeFactor']
+  ChangeFactorEvap = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ChangeFactorEvap']
+  Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Recharge']
+  ExtremePrecipMax = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ExtremePrecipMax']
+
   # Adjust thresholds based on WndwAgr unit
   WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
   if(stringr::str_detect(WndwAgr, 'min')) {
