@@ -1,11 +1,11 @@
-name: "Build-push-update_flow.plau"
+name: "Build-push-update_flow.qaqc.plau"
 
 on:
   push:
     # branches:
     #   - 'master'
     tags:
-      - "flow.plau/v*.*.*"
+      - "flow.qaqc.plau/v*.*.*"
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -23,8 +23,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./flow/flow.plau
-  IMAGE_NAME: neon-is-plau
+  MODULE_PATH: ./flow/flow.qaqc.plau
+  IMAGE_NAME: neon-is-qaqc-plau
 
 jobs:
   build-push-update:
@@ -45,7 +45,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 --match=flow.plau/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=flow.qaqc.plau/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
