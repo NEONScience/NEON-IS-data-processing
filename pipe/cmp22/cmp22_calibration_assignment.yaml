@@ -1,18 +1,18 @@
 ---
 pipeline:
-  name: tempSurfacewater_srf_assignment
+  name: cmp22_calibration_assignment
 transform:
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
   - Rscript
-      ./flow.srf.asgn.R
+      ./flow.cal.asgn.R
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-asgn:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v1.0.6
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
@@ -21,11 +21,11 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: tempSurfacewater_srf_loader
-      glob: /*
+      repo: cmp22_calibration_loader
+      glob: /cmp22/*
   - pfs:
       name: FILE_YEAR
-      repo: prt_cron_daily_and_date_control
+      repo: cmp22_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
   constant: 2
@@ -34,13 +34,13 @@ resource_requests:
   memory: 200M
   cpu: 0.8
 resource_limits:
-  memory: 800M
+  memory: 600M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 1G
-  cpu: 0.2
+  memory: 3G
+  cpu: 1
 datum_set_spec:
-  number: 10
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
