@@ -21,13 +21,25 @@ transform:
     # Detect if we have data coming from Kafka or the archive
     # Note that we run the filter-joiner in sequential if statements rather than an elif statement
     # ... so that if there is any overlap in sensor data coming from both Kafka and the archive on the same day, the
-    # ... archive data wins (filter joiner will not copy a file if it is already in the destination). This scenario
+    # ... kafka data wins (filter joiner will not copy a file if it is already in the destination). This scenario
     # ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka
-    # ... retention period for data that have already been loaded from the archive. In normal operations this scenario
-    # ... should not arise because the only data coming into Pachyderm will be coming from Kafka.
-    # ... When a conflict does arise, the archive data will take precedence, which is fine because the
-    # ... conflict arose because data for the same sensor and day were in both locations.
+    # ... retention period for data that have already been loaded from the archive. 
+    # ... When a conflict does arise, the kafka data will take precedence, assuming that it is the latest 
+    # ... and greatest. 
     
+    if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
+      # Data from kafka. 
+      
+      # Run kafka combiner
+      Rscript ./flow.kfka.comb.R \
+          DirIn=$KAFKA_UNMERGED_DATA \
+          DirOut=/tmp/kafka_merged \
+          DirErr=/pfs/out/errored_datums \
+          FileSchmL0=$FILE_SCHEMA_L0
+      
+      # Run filter joiner
+      python3 -m filter_joiner.filter_joiner_main
+    fi  
     if [ ${DATA_PATH_ARCHIVE+x} ]; then 
       # Data from the archive. 
       
@@ -41,19 +53,6 @@ transform:
           DirErr=/pfs/out/errored_datums \
           FileSchmL0=$FILE_SCHEMA_L0
           
-      # Run filter joiner
-      python3 -m filter_joiner.filter_joiner_main
-    fi  
-    if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
-      # Data from kafka. 
-      
-      # Run kafka combiner
-      Rscript ./flow.kfka.comb.R \
-          DirIn=$KAFKA_UNMERGED_DATA \
-          DirOut=/tmp/kafka_merged \
-          DirErr=/pfs/out/errored_datums \
-          FileSchmL0=$FILE_SCHEMA_L0
-      
       # Run filter joiner
       python3 -m filter_joiner.filter_joiner_main
     fi  
