@@ -35,7 +35,7 @@ transform:
       "TermTest1=strainGauge1Depth:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
       "TermTest2=strainGauge2Depth:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
       "TermTest3=strainGauge3Depth:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
-      "DirSubCopy=flags|threshold"
+      "DirSubCopy=flags|location"
 
     EOF
   env:

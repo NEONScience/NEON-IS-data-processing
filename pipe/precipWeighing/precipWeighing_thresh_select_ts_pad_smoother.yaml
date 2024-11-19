@@ -23,7 +23,7 @@ transform:
       DirOut=/tmp/threshold_select \
       DirErr=/pfs/out/errored_datums \
       FileThsh=$FILE_THRESHOLDS \
-      "TermCtxt4=precipBulk|precipitation|weighing" \
+      "TermCtxt1=precipBulk|precipitation|weighing" \
       "DirSubCopy=data|flags"
       
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
