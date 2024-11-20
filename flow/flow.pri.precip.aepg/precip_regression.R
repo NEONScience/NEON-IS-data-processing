@@ -29,7 +29,7 @@ for (site in slopes$sites){
     
     ### pull in prism data
     # site <- stringr::str_extract(DirIn, pattern= '[A-Z]{4}')
-    prism_files <- list.files('/scratch/prism', full.names = T)
+    prism_files <- list.files('/scratch/prism/current', full.names = T)
     
     file <- stringr::str_subset(prism_files, pattern = site)
     prism <- readr::read_csv(file)

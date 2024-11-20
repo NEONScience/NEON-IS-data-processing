@@ -69,17 +69,20 @@ for (site in flagChk$sites[2:25]){
         
         qc_percents <- strainGaugeDepthAgr %>%
           #prism day is 12:00 UTC DATE - 24HR so adjust time window on NEON data to make comparison
-          mutate(startDateTime = startDateTime - 12*60*60) %>%
+          #mutate(startDateTime = startDateTime - 12*60*60) %>%
           mutate(startDate = lubridate::floor_date(startDateTime, '1 day')) %>%
           group_by(startDate) %>%
           summarise(dailyPrecipNEON = sum(precipBulk),
-                    maxFlag = min(finalQFTest, na.rm = T),
-                    maxNoDiel = min(finalQFTestnoDiel, na.rm = T),
-                    maxNoHeater = min(finalQFTestnoHeater, na.rm = T),
-                    HeaterFlag = min(heaterErrorQF, na.rm = T),
-                    dielFlag = min(dielNoiseQF, na.rm = T),
-                    exPFlag = min(extremePrecipQF, na.rm = T),
-                    insuffFlag = min(insuffDataQF, na.rm = T)) %>%
+                    maxFlag = max(finalQFTest, na.rm = T),
+                    maxNoDiel = max(finalQFTestnoDiel, na.rm = T),
+                    maxNoHeater = max(finalQFTestnoHeater, na.rm = T),
+                    HeaterFlag = max(heaterErrorQF, na.rm = T),
+                    dielFlag = max(dielNoiseQF, na.rm = T),
+                    exPFlag = max(extremePrecipQF, na.rm = T),
+                    insuffFlag = max(insuffDataQF, na.rm = T))
+        
+        
+        %>%
           mutate(startDate=as.Date(startDate)) %>% 
           summarise(perc_flagged = (length(which(maxFlag == -1))/dplyr::n())*100, 
                     perc_flagged_noDiel = (length(which(maxNoDiel == -1))/dplyr::n())*100, 
