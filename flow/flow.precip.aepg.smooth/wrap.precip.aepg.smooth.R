@@ -42,6 +42,24 @@
 #' 
 #' @param Recharge Numeric value. If raw data drops by much or more, assume it is a bucket empty/recalibration
 
+#' @param SchmStatHour (Optional). A json-formatted character string containing the schema for the hourly 
+#' output precipitation statistics and quality flags. May be NULL (default), 
+#' in which case the  the variable names will be automatically determined.  
+#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THE ORDER OF THE OUTPUT. 
+#' Otherwise, they will be labeled incorrectly.
+
+#' @param SchmStatDay (Optional). A json-formatted character string containing the schema for the daily 
+#' output precipitation statistics and quality flags. May be NULL (default), 
+#' in which case the  the variable names will be automatically determined.  
+#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THE ORDER OF THE OUTPUT. 
+#' Otherwise, they will be labeled incorrectly.
+
+#' @param SchmQfGage (Optional). A json-formatted character string containing the schema for the aggregated 
+#' strain gauge flags. May be NULL (default), 
+#' in which case the  the variable names will be automatically determined.  
+#' ENSURE THAT ANY PROVIDED OUTPUT SCHEMA MATCHES THE ORDER OF THE OUTPUT. 
+#' Otherwise, they will be labeled incorrectly.
+
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the data folder(s) in the input path that are to be copied with a symbolic link to the 
 #' output path (i.e. carried through as-is). Note that the 'data' directory is automatically
@@ -74,16 +92,9 @@
 ##############################################################################################
 wrap.precip.aepg.smooth <- function(DirIn,
                                     DirOutBase,
-                                    SchmData=NULL,
-                                    # WndwAgr = '5 min',
-                                    # RangeSizeHour = 24, #  Period of evaluation (e.g. 24 for 1 day)
-                                    # Envelope = 3,
-                                    # ThshCountHour = 15,
-                                    # Quant = 0.5, # Where is the benchmark set (quantile) within the envelope (diel variation)
-                                    # ThshChange = 0.2,
-                                    # ChangeFactor = 1,
-                                    # ChangeFactorEvap = 0.5,
-                                    # Recharge = 20, #if raw data was this much less than bench mark likely a bucket empty/recalibration (original was 25)
+                                    SchmStatHour=NULL,
+                                    SchmStatDay=NULL,
+                                    SchmQfGage=NULL,
                                     DirSubCopy=NULL,
                                     log=NULL
 ){
@@ -124,9 +135,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
   }
   thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile=base::paste0(dirThsh,'/',fileThsh)))
   
-  # !!!!!!!!!!!! LOTS OF FUDGING HERE FOR TESTING. CORRECT WHEN FINAL THRESHOLDS ARE CREATED !!!!!!!!!!!!!!!!!!!
   # Verify that the term(s) needed in the input parameters are included in the threshold files
-  termTest <- "precipTotal"
+  termTest <- "precipBulk"
   exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
   if(base::sum(exstThsh) != base::length(termTest)){
     log$error(base::paste0('Thresholds for term(s): ',base::paste(termTest[!exstThsh],collapse=','),' do not exist in the thresholds file. Cannot proceed.')) 
@@ -135,18 +145,17 @@ wrap.precip.aepg.smooth <- function(DirIn,
   # Assign thresholds
   thshIdxTerm <- thsh[thsh$term_name == termTest,]
 
-  WndwAgr = thshIdxTerm$string_value[thshIdxTerm$threshold_name == 'Despiking Method']
-  RangeSizeHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Step Test value']
-  Envelope = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking maximum (%) missing points per window']
-  ThshCountHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Range Threshold Hard Max']
-  Quant = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking window size - points']
-  ThshChange = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking maximum consecutive points (n)']
-  ChangeFactor = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking MAD']
-  ChangeFactorEvap = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Despiking window step - points.']
-  Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Persistence (change)']
-  ExtremePrecipMax = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Range Threshold Soft Max']
-  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  
+  WndwAgr = thshIdxTerm$string_value[thshIdxTerm$threshold_name == 'WndwAgr']
+  RangeSizeHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'RangeSizeHour']
+  Envelope = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Envelope']
+  ThshCountHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ThshCountHour']
+  Quant = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Quant']
+  ThshChange = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ThshChange']
+  ChangeFactor = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ChangeFactor']
+  ChangeFactorEvap = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ChangeFactorEvap']
+  Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Recharge']
+  ExtremePrecipMax = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ExtremePrecipMax']
+
   # Adjust thresholds based on WndwAgr unit
   WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
   if(stringr::str_detect(WndwAgr, 'min')) {
@@ -653,9 +662,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
   # Aggregate to the day
   statsAgrDay <- statsAgrHour %>%
-    mutate(startDate = lubridate::floor_date(startDateTime, '1 day')) %>%
-    mutate(endDate = lubridate::ceiling_date(endDateTime, '1 day')) %>%
-    group_by(startDate,endDate) %>%
+    mutate(date = lubridate::floor_date(startDateTime, '1 day')) %>%
+    group_by(date) %>%
     summarise(precipBulk = sum(precipBulk),
               insuffDataQF = max(insuffDataQF, na.rm = T),
               extremePrecipQF = max(extremePrecipQF, na.rm = T),
@@ -695,7 +703,11 @@ wrap.precip.aepg.smooth <- function(DirIn,
     ucrtAgr <- def.ucrt.agr.precip.bench(strainGaugeDepthAgr$bench[setUcrt],strainGaugeDepthAgr$benchS_std[setUcrt])
     return(ucrtAgr)
   })
-  statsAgrHour$ucrtExp <- 2*unlist(ucrtAgrHour)
+  statsAgrHour$precipBulkExpUncert <- 2*unlist(ucrtAgrHour)
+  statsAgrHour <- statsAgrHour[,c("startDateTime","endDateTime","precipBulk","precipBulkExpUncert","insuffDataQF",
+                                  "extremePrecipQF","heaterErrorQF","dielNoiseQF","strainGaugeStabilityQF",
+                                  "evapDetectedQF","inletHeater1QM","inletHeater2QM","inletHeater3QM",
+                                  "inletHeaterNAQM","finalQF")]
   
   # Daily
   days <- seq.POSIXt(from=strainGaugeDepthAgr$startDateTime[1],to=strainGaugeDepthAgr$startDateTime[numRow],by='day')
@@ -705,7 +717,11 @@ wrap.precip.aepg.smooth <- function(DirIn,
     ucrtAgr <- def.ucrt.agr.precip.bench(strainGaugeDepthAgr$bench[setUcrt],strainGaugeDepthAgr$benchS_std[setUcrt])
     return(ucrtAgr)
   })
-  statsAgrDay$ucrtExp <- 2*unlist(ucrtAgrDay)
+  statsAgrDay$precipBulkExpUncert <- 2*unlist(ucrtAgrDay)
+  statsAgrDay <- statsAgrDay[,c("date","precipBulk","precipBulkExpUncert","insuffDataQF",
+                                "extremePrecipQF","heaterErrorQF","dielNoiseQF","strainGaugeStabilityQF",
+                                "evapDetectedQF","inletHeater1QM","inletHeater2QM","inletHeater3QM",
+                                "inletHeaterNAQM","finalQF")]
   
   
   
@@ -719,12 +735,10 @@ wrap.precip.aepg.smooth <- function(DirIn,
     dayOutIdx <- dayOut[idxDayOut]
     
     # Get the records for this date
-    setOutFreqOrig <- strainGaugeDepthAgr$startDateTime >= dayOutIdx & 
-      strainGaugeDepthAgr$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
     setOutHour <- statsAgrHour$startDateTime >= dayOutIdx & 
       statsAgrHour$startDateTime < (dayOutIdx + as.difftime(1,units='days'))
-    setOutDay <- statsAgrDay$startDate >= dayOutIdx & 
-      statsAgrDay$startDate < (dayOutIdx + as.difftime(1,units='days'))
+    setOutDay <- statsAgrDay$date >= dayOutIdx & 
+      statsAgrDay$date < (dayOutIdx + as.difftime(1,units='days'))
     
     
     # Filter the data for this output day
@@ -768,7 +782,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           data = statsAgrHourIdx,
           NameFile = fileStatOut060Idx,
           NameFileSchm=NULL,
-          Schm=SchmData,
+          Schm=SchmStatHour,
           log=log
         ),
         silent = TRUE)
@@ -792,7 +806,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           data = statsAgrDayIdx,
           NameFile = fileStatOut01DIdx,
           NameFileSchm=NULL,
-          Schm=SchmData,
+          Schm=SchmStatDay,
           log=log
         ),
         silent = TRUE)
@@ -813,7 +827,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
       
       # Write out the flags to file. We only need the central day.
       if(idxDayOut == 2){
-        qfIdx <- qfs[setOutFreqOrig,]
+        setOutQf <- qfs$readout_time >= dayOutIdx & 
+          qfs$readout_time < (dayOutIdx + as.difftime(1,units='days'))
+        qfIdx <- qfs[setOutQf,]
         base::dir.create(dirOutQf,recursive = TRUE)
         nameFileQfIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
                                          '_flagsSmooth'),
@@ -822,14 +838,14 @@ wrap.precip.aepg.smooth <- function(DirIn,
         
         
         
-        FileQfOutIdx <- fs::path(dirOutQfIdx,nameFileQfOutIdx)
+        FileQfOutIdx <- fs::path(dirOutQf,nameFileQfOutIdx)
         
         rptWrte <-
           base::try(NEONprocIS.base::def.wrte.parq(
             data = qfIdx,
             NameFile = FileQfOutIdx,
             NameFileSchm=NULL,
-            Schm=NULL,
+            Schm=SchmQfGage,
             log=log
           ),
           silent = TRUE)
@@ -847,13 +863,12 @@ wrap.precip.aepg.smooth <- function(DirIn,
             FileQfOutIdx
           ))
         }
-        
-      } else {
-        log$warn(paste0(nameFileIdx,' and associated flags files are not able to be output because this data file was not found in the input.'))
-      }        
       }
+        
+    } else {
+      log$warn(paste0(nameFileIdx,' and associated flags files are not able to be output because this data file was not found in the input.'))
+    }        
 
-    
   }
 
   return()

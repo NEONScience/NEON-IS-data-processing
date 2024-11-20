@@ -91,7 +91,7 @@ def pub_group(*, data_path: Path, out_path: Path, err_path: Path,
                 data = parts[data_type_index+1:]
 
                 for product in products:
-                    new_path = out_path.joinpath(product,year,month,day,publoc,data_type,group,*data)
+                    new_path = out_path.joinpath(product,year,month,publoc,day,data_type,group,*data)
                     new_path.parent.mkdir(parents=True, exist_ok=True)
                     if not new_path.exists():
                         if symlink:

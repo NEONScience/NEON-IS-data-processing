@@ -51,28 +51,42 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "FileSchmData=value" (optional), where value is the full path to schema for the aggregated data 
+#' 4. "FileSchmStatHour=value" (optional), where value is the full path to schema for the hourly aggregated data 
 #' output by this workflow. If not input, a schema will be automatically crafted. 
 #' The output is ordered as follows:
-#' readout_time
-#' gauge_depth_average: average of the 3 individual calibrated gauge depths 
-#' gauge_depth_range: maximum difference among the 3 individual strain gauge depths
-#' orifice_temp
-#' inlet_temp
+#' startDateTime
+#' endDateTime
+#' precipBulk
+#' precipBulkExpUncert
+#' insuffDataQF
+#' extremePrecipQF
+#' heaterErrorQF
+#' dielNoiseQF
+#' strainGaugeStabilityQF
+#' evapDetectedQF
+#' inletHeater1QM
+#' inletHeater2QM
+#' inletHeater3QM
+#' inletHeaterNAQM
+#' finalQF
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.
 #'
-#' 5. "FileSchmQf=value" (optional), where value is the full path to schema for quality flags
-#' output by this workflow. If not input, the schema will be created automatically.
-#' The output  is ordered as follows:
+#' 5. "FileSchmStatDay=value" (optional), where value is the full path to schema for the daily aggregated data 
+#' output by this workflow. The columns are the same as the hourly output, except that startDate and endDate 
+#' are the timestamp columns (instead of startDateTime and endDateTime). If not input, a schema will be 
+#' automatically crafted. 
+#'
+#' 6. "FileSchmQfGage=value" (optional), where value is the full path to output schema for the quality flags
+#' representing the results of quality tests run on the individual strain gauge measurements. These quality flags
+#' are aggregated across the three strain gauges such that a single flag is output for each test (instead of 
+#' one quality flag for each strain gauge). If not input, a schema will be automatically crafted. 
+#' The output is ordered as follows:
 #' readout_time
-#' orificeHeaterQF
-#' stabilityQF
-#' ENSURE THAT ANY
-#' OUTPUT SCHEMA MATCHES THIS ORDER, otherwise the columns will be mislabeled. If no schema is input, default column
-#' names other than "readout_time" are a combination of the term, '_', and the flag name ('QfExpi' or 'QfSusp').
-#' For example, for terms 'resistance' and 'voltage' each having calibration information. The default column naming
-#' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
+#' all quality flags output by the plausibility module (retaining the same order)
+#' all quality flags output by the calibration module (retaining the same order)
+#' Ensure that any schema input here matches the column order of the auto-generated schema, 
+#' simply making any desired changes to column names.
 #'
 #' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the data folder that are to be copied with a
@@ -140,7 +154,9 @@ Para <-
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
-                     "FileSchmData"
+                     "FileSchmStatHour",
+                     "FileSchmStatDay",
+                     "FileSchmQfGage"
                      ),
     log = log
   )
@@ -151,15 +167,37 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-# Retrieve output schema for data
-FileSchmData <- Para$FileSchmData
-log$debug(base::paste0('Output schema for bulk precipitation: ',base::paste0(FileSchmData,collapse=',')))
+# Retrieve output schema for hourly stats
+FileSchmStatHour <- Para$FileSchmStatHour
+log$debug(base::paste0('Output schema for hourly bulk precipitation stats: ',base::paste0(FileSchmStatHour,collapse=',')))
 
 # Read in the schema 
-if(base::is.null(FileSchmData) || FileSchmData == 'NA'){
-  SchmData <- NULL
+if(base::is.null(FileSchmStatHour) || FileSchmStatHour == 'NA'){
+  SchmStatHour <- NULL
 } else {
-  SchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
+  SchmStatHour <- base::paste0(base::readLines(FileSchmStatHour),collapse='')
+}
+
+# Retrieve output schema for daily stats
+FileSchmStatDay <- Para$FileSchmStatDay
+log$debug(base::paste0('Output schema for bulk precipitation stats: ',base::paste0(FileSchmStatDay,collapse=',')))
+
+# Read in the schema 
+if(base::is.null(FileSchmStatDay) || FileSchmStatDay == 'NA'){
+  SchmStatDay <- NULL
+} else {
+  SchmStatDay <- base::paste0(base::readLines(FileSchmStatDay),collapse='')
+}
+
+# Retrieve output schema for strain gauge quality flags
+FileSchmQfGage <- Para$FileSchmQfGage
+log$debug(base::paste0('Output schema for aggregated strain gauge quality flags: ',base::paste0(FileSchmQfGage,collapse=',')))
+
+# Read in the schema 
+if(base::is.null(FileSchmQfGage) || FileSchmQfGage == 'NA'){
+  SchmQfGage <- NULL
+} else {
+  SchmQfGage <- base::paste0(base::readLines(FileSchmQfGage),collapse='')
 }
 
 # Retrieve optional subdirectories to copy over
@@ -194,7 +232,9 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.precip.aepg.smooth(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmData=SchmData,
+        SchmStatHour=SchmStatHour,
+        SchmStatDay=SchmStatDay,
+        SchmQfGage=SchmQfGage,
         DirSubCopy=DirSubCopy,
         log=log
         ),
