@@ -3,7 +3,7 @@ fileAdd <- './utilities/vignettes/schedulingSpec.yaml'
 yamlAdd <- readLines(fileAdd)
 
 # Folder with yaml files to edit
-dirEdit <- './pipe/l0_data_loader'
+dirEdit <- './pipe/l0_gcs_loader'
 
 #list all the files in the folder
 file <- list.files(dirEdit,pattern = ".yaml",full.names = T, recursive = FALSE)
