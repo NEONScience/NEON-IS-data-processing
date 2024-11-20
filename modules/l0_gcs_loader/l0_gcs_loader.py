@@ -9,7 +9,7 @@ from datetime import datetime
 from google.cloud import storage
 
 
-def l0_data_loader() -> None:
+def l0_gcs_loader() -> None:
 
     env = environs.Env()
     ingest_bucket_name = env.str('BUCKET_NAME')
@@ -47,4 +47,4 @@ def l0_data_loader() -> None:
                 l0_data_file.write(blob.download_as_string())
                 l0_data_file.close()
 if __name__ == '__main__':
-    l0_data_loader()
+    l0_gcs_loader()

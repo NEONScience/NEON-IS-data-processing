@@ -1,0 +1,84 @@
+---
+pipeline:
+  name: li191r_data_source_gcs
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-gcs-loader:v1.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Get today's date for evaluating kafka data retention period
+    date_today=$(date -u +%Y-%m-%d)
+    kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    
+    # Get data from GCS bucket
+    echo "Processing $import_trigger"
+    p=${import_trigger#/pfs}
+    IFS="/"; arr=($p); unset IFS;
+    year=${arr[3]}
+    month=${arr[4]}
+    day=${arr[5]}
+    if [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]
+    then
+      echo "Extracting $year/$month/$day for $SOURCE_TYPE from GCS"
+      python3 -m l0_gcs_loader.l0_gcs_loader
+    else
+      echo "$year/$month/$day is within the Kafka retention period and should be loaded from Kafka. Skipping..."
+      continue
+    fi
+
+    EOF
+  env:
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+    SOURCE_TYPE: 'li191r'
+    KAFKA_RETENTION_DAYS: "15"
+  secrets:
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
+input:
+  pfs:
+    name: import_trigger
+    repo: li191r_cron_daily_and_date_control
+    # Glob must be daily
+    glob: "/li191r/*/*/*"
+output_branch: master
+parallelism_spec:
+  constant: 1
+autoscaling: true
+resource_requests:
+  memory: 800M
+  cpu: 1.2
+resource_limits:
+  memory: 2G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

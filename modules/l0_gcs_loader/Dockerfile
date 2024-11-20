@@ -1,18 +1,18 @@
 ####
-# This dockerfile will build the l0_data_loader repo loader module.
+# This dockerfile will build the l0_gcs_loader repo loader module.
 # Example command (must be run from project root directory(from the modules folder) to include common path in Docker context):
-# docker build --no-cache -t l0_data_loader:latest -f l0_data_loader/Dockerfile .
+# docker build --no-cache -t l0_gcs_loader:latest -f l0_gcs_loader/Dockerfile .
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 
 ARG MODULE_DIR="modules"
-ARG APP_DIR="l0_data_loader"
+ARG APP_DIR="l0_gcs_loader"
 ARG CONTAINER_APP_DIR="/usr/src"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
 
-COPY ${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt
+COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/app-requirements.txt
 
 RUN update-ca-trust && \
     microdnf update -y --disableplugin=subscription-manager && \
@@ -32,6 +32,6 @@ RUN update-ca-trust && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
-COPY ${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
+COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 
 USER appuser
