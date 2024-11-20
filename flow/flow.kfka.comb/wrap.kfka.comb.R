@@ -70,6 +70,8 @@
 #     Initial creation
 #   Cove Sturtevant (2023-11-13)
 #     add option to remove duplicated rows
+#   Cove Sturtevant (2024-11-18)
+#     finesse removal of kafka offsets in the file name to only remove if they are present
 ##############################################################################################
 wrap.kfka.comb <- function(DirIn,
                            DirOutBase,
@@ -113,11 +115,13 @@ wrap.kfka.comb <- function(DirIn,
   # Take stock of our data files. 
   fileData <- base::list.files(dirInData,full.names=FALSE)
  
-  # Output filename is the input filename minus the kafka offsets
-  nameFileSplt <- base::strsplit(fileData[1],'_')[[1]]
+  # Output filename is the input filename minus the kafka offsets that come after the date string
+  fileDataSub <- base::sub(pattern='.parquet',replacement='',x=fileData[1])
+  nameFileSplt <- base::strsplit(fileDataSub,'_')[[1]]
+  idxDate <- base::which(base::grepl(pattern='[1-2][0-9]{3}-[0-1][0-9]-[0-3][0-9]',x=nameFileSplt))
   nameFileOut <- base::paste0(
     base::paste0(
-      utils::head(x=nameFileSplt,n=-2),
+      utils::head(x=nameFileSplt,n=idxDate),
       collapse='_'),
     '.parquet')
   
