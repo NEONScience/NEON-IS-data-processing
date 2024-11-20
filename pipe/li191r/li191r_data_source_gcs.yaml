@@ -52,16 +52,16 @@ input:
     glob: "/li191r/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 1
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 800M
-  cpu: 1.2
+  memory: 400M
+  cpu: 0.5
 resource_limits:
-  memory: 2G
+  memory: 800M
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 2G
+  memory: 2.4G
   cpu: 0.5
 datum_set_spec:
   number: 1
