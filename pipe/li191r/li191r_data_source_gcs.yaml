@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-gcs-loader:sha-b264efb
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-gcs-loader:v1.0.0
   cmd:
   - sh
   - "-c"
