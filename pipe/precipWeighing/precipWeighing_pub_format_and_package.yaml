@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighing_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-54e22d3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-bbae305
   cmd:
   - sh
   - "-c"

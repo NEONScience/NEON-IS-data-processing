@@ -206,7 +206,7 @@ input:
   - pfs:
       name: GROUP_PATH
       repo: precipWeighing_group_path
-      glob: /(2024/06/*)
+      glob: /(*/*/*)
       joinOn: $1
       outer_join: true # Need outer join to pull in with or without SRFs
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
