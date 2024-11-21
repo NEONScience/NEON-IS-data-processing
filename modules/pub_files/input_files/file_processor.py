@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from pathlib import Path
 from typing import Tuple, List, Dict, NamedTuple
 from dateutil.relativedelta import relativedelta
@@ -116,7 +116,7 @@ def sort_files(in_path: Path) -> Tuple[Dict[str, List[Path]], Path]:
     return package_data_files, manifest_path
 
 
-def get_file_time_span(path: Path, workbook: PublicationWorkbook,table_name) -> Tuple[datetime, datetime]:
+def get_file_time_span(path: Path, workbook: PublicationWorkbook,table_name) -> Tuple[datetime.datetime, datetime.datetime]:
     """Return the start and end time for a data file's data."""
     data_frame = pandas.read_csv(path)
     min_time = data_frame.loc[0][0]  # First row, first element is the earliest start time.
