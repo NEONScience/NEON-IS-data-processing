@@ -1,6 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from typing import Tuple, List, Dict, NamedTuple
+from dateutil.relativedelta import relativedelta
 
 import pandas
 
@@ -51,7 +52,7 @@ def process_files(in_path: Path, out_path: Path, relative_path_index: int,
                                        description=file_description,
                                        line_count=get_file_line_count(path),
                                        data_product_name=filename_parts.data_product_name))
-            file_min_time, file_max_time = get_file_time_span(path)
+            file_min_time, file_max_time = get_file_time_span(path,workbook,filename_parts.table_name)
             if is_first_file:
                 min_package_time = file_min_time
                 max_package_time = file_max_time
@@ -115,11 +116,53 @@ def sort_files(in_path: Path) -> Tuple[Dict[str, List[Path]], Path]:
     return package_data_files, manifest_path
 
 
-def get_file_time_span(path: Path) -> Tuple[datetime, datetime]:
+def get_file_time_span(path: Path, workbook: PublicationWorkbook,table_name) -> Tuple[datetime, datetime]:
     """Return the start and end time for a data file's data."""
     data_frame = pandas.read_csv(path)
     min_time = data_frame.loc[0][0]  # First row, first element is the earliest start time.
-    max_time = data_frame.iloc[-1].tolist()[1]  # Last row, second element is the latest end time.
+    max_time = data_frame.iloc[-1].tolist()[1]  # Last row, second element is typically the latest end time.
     file_min_time = date_formatter.to_datetime(min_time)
-    file_max_time = date_formatter.to_datetime(max_time)
+    
+    # Typically pub files have an startDateTime and an endDateTime, but e.g. daily files may only have a date field
+    if isinstance(max_time,str):
+        file_max_time = date_formatter.to_datetime(max_time)
+    else: 
+        # Get  the last start time of the file
+        last_min_time = data_frame.iloc[-1,0]
+        file_last_min_time = date_formatter.to_datetime(last_min_time)
+        
+        # Get the timing index from the pub workbook. It's the last field in the full DP ID
+        workbookDf=pd.DataFrame(workbook.rows) # Turn to dataframe
+        dp_ids_table = workbookDf.dp_number[
+            (workbookDf.table_name == table_name) & 
+            (workbookDf.dp_number != None)]
+        tmi=dp_ids_table.iloc[-1].split('.')[-1] # Grab a timing index
+        
+        # Interpret the timing index. 
+        mins = 0
+        hours = 0
+        days = 0
+        mons = 0
+        yrs = 0
+        if tmi[-1] in ('H','D','M','Y'):
+            # First two characters are the quantity, last character is the unit (day, month, year)
+            unit = tmi[-1]
+            quant = int(tmi[0:2])
+            if unit == 'H':
+                hours = quant
+            elif unit == 'D':
+                days = quant
+            elif unit == 'M':
+                mons = quant
+            elif unit == 'Y':
+                yrs = quant
+            
+        else:
+            # TMI in minutes
+            mins = int(tmi)
+        
+        # Add the interval specified by the timing index to the last start time
+        file_max_time = file_last_min_time + relativedelta(years=yrs,months=mons) + datetime.timedelta(days=days, hours=hours, minutes=mins) 
+
+    
     return file_min_time, file_max_time
