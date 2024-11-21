@@ -12,7 +12,7 @@
       "FileSchmQf=$SCHEMA_FLAGS",
       "TermTest1=turbidity:null|gap|range|step|spike|persistence"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau:sha-b200fad",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau:v1.1.0",
     "env": {
       "LOG_LEVEL": "INFO"
     }
