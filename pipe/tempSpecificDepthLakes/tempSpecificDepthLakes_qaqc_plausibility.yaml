@@ -22,9 +22,9 @@ transform:
   - TermTest10=depth9WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - TermTest11=depth10WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - DirSubCopy=uncertainty_data|flags|uncertainty_coef
-  image: quay.io/battelleecology/neon-is-qaqc-plau-r:654d6563
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau:sha-b200fad
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
