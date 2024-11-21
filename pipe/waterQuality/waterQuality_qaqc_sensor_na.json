@@ -12,7 +12,7 @@
       "DirTypeSrc=exoconductivity|exodissolvedoxygen|exophorp|exototalalgae|exoturbidity",
       "DirSubAply=uncertainty_data"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wq-sens-na:sha-26c4220",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wq-sens-na:v1.0.2",
     "env": {
       "LOG_LEVEL": "INFO"
     }
