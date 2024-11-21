@@ -132,7 +132,7 @@ def get_file_time_span(path: Path, workbook: PublicationWorkbook,table_name) -> 
         file_last_min_time = date_formatter.to_datetime(last_min_time)
         
         # Get the timing index from the pub workbook. It's the last field in the full DP ID
-        workbookDf=pd.DataFrame(workbook.rows) # Turn to dataframe
+        workbookDf=pandas.DataFrame(workbook.rows) # Turn to dataframe
         dp_ids_table = workbookDf.dp_number[
             (workbookDf.table_name == table_name) & 
             (workbookDf.dp_number != None)]
