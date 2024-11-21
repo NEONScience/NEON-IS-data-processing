@@ -16,7 +16,7 @@
       "GrpQfBetaIgnr1=sensorDepth:sensorDepthNullQF|sensorNAQF",
       "Tmi=100"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-dp0p:sha-bd72cef",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-dp0p:v1.1.0",
     "env": {
       "LOG_LEVEL": "DEBUG"
     }
