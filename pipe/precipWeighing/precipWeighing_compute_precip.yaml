@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighing_compute_precip
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-smooth:sha-2280926
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-smooth:sha-4c25ffc
   cmd:
   - sh
   - "-c"
@@ -17,7 +17,7 @@ transform:
       DirIn=$DIR_IN \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      FileSchmStatHour=$FILE_SCHEMA_STATS_HOURLY
+      FileSchmStatHour=$FILE_SCHEMA_STATS_HOURLY \
       FileSchmStatDay=$FILE_SCHEMA_STATS_DAILY
     EOF
   env:
