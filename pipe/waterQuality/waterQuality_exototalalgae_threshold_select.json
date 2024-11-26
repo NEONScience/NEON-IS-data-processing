@@ -13,10 +13,7 @@
       "TermCtxt1=chlorophyll|water-quality",
       "DirSubCopy=location"
     ],
-    "image": "quay.io/battelleecology/neon-is-thsh-slct-r:v1.0.2",
-    "image_pull_secrets": [
-      "battelleecology-quay-read-all-pull-secret"
-    ],
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct:sha-3bcd5ff",
     "env": {
       "LOG_LEVEL": "DEBUG"
     }
