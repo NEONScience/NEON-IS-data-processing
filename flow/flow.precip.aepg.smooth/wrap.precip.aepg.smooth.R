@@ -372,12 +372,21 @@ wrap.precip.aepg.smooth <- function(DirIn,
       if(idxSurr == 1){
         depthMinusBench <- strainGaugeDepthAgr$strainGaugeDepth - strainGaugeDepthAgr$bench # remove the computed benchmark
         setNotNa <- !is.na(depthMinusBench) # Remove all NA
+
+        # Remove rangeSize amount of data at beginning and end of timeseries, which can have untracked changes in benchmark that corrupt the surrogates
+        setNotNa[1:rangeSize] <- FALSE 
+        setNotNa[(numRow-rangeSize+1):numRow] <- FALSE
+        
         if(sum(setNotNa) == 0){
           log$debug(paste0('All benchmarks for datum ',DirIn, ' are NA. Skipping surrogate testing.'))
           break
         }
         surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
         strainGaugeDepthAgr[setNotNa,nameVarDepthS] <- strainGaugeDepthAgr$bench[setNotNa] + surrFill    # Add the surrogates to the benchmark
+        
+        # Backfill rangeSize amount of data at beginning and end of timeseries to the original strain gauge depth to form a complete timeseries
+        strainGaugeDepthAgr[1:rangeSize,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[1:rangeSize] 
+        strainGaugeDepthAgr[(numRow-rangeSize+1):numRow,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[(numRow-rangeSize+1):numRow] 
       }
       
       strainGaugeDepthS <- strainGaugeDepthAgr[[nameVarDepth]]
