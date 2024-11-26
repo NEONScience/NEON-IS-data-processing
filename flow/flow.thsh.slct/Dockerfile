@@ -4,7 +4,7 @@
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.6
 
 ARG FLOW_DIR="./flow"
-ARG APP_DIR="flow.thsc.slct"
+ARG APP_DIR="flow.thsh.slct"
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
