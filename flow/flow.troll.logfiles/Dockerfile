@@ -3,15 +3,18 @@
 # Start with the neon-is-base-r image.
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.4.7
 
+ARG FLOW_DIR="./flow"
+ARG APP_DIR="flow.troll.logfiles"
+
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
 
 # Copy the lockfile and restore known working versions of R dependency packages
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./renv.lock /renv.lock
+COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in troll flag workflow
-COPY ./flow.troll.logfiles.R .
-COPY ./wrap.troll.logfiles.R .
+COPY ${FLOW_DIR}/${APP_DIR}/flow.troll.logfiles.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.troll.logfiles.R .
 
