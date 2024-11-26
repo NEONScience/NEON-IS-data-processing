@@ -2,7 +2,7 @@ rm(list=setdiff(ls(),c('arg','log')))
 source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.ucrt.agr.precip.bench.R')
 #DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/09/01/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/29/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/29/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/03/01/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/12/01/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2016/12/01/precip-weighing_CPER900000/aepg600m_heated/CFGLOC101864"
@@ -13,7 +13,7 @@ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/29/precip-weighing
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/04/01/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2021/09/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
+DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/10/01/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
   # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/12/15/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
@@ -31,12 +31,12 @@ DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/03/29/precip-weighing
 
 DirOutBase <- "/scratch/pfs/out_Cove"
 DirSubCopy <- NULL
-WndwAgr <- '5 min'
-RangeSizeHour <- 24
-Envelope <- 3
-# WndwAgr <- '60 min'
-# RangeSizeHour <- 72
-# Envelope <- 30
+# WndwAgr <- '5 min'
+# RangeSizeHour <- 24
+# Envelope <- 3
+WndwAgr <- '60 min'
+RangeSizeHour <- 72
+Envelope <- 30
 ThshCountHour <- 15 
 Quant <- 0.5 # Where is the benchmark set (quantile) within the envelope (diel variation)
 ThshChange <- 0.2
@@ -282,12 +282,21 @@ for(idxSurr in c(0,seq_len(nSurr))){
     if(idxSurr == 1){
       depthMinusBench <- strainGaugeDepthAgr$strainGaugeDepth - strainGaugeDepthAgr$bench # remove the computed benchmark
       setNotNa <- !is.na(depthMinusBench) # Remove all NA
+      
+      # Remove rangeSize amount of data at beginning and end of timeseries, which can have untracked changes in benchmark that corrupt the surrogates
+      setNotNa[1:rangeSize] <- FALSE 
+      setNotNa[(numRow-rangeSize+1):numRow] <- FALSE
+      
       if(sum(setNotNa) == 0){
         message('All benchmarks are NA. Skipping surrogate testing.')
         break
       }
       surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
       strainGaugeDepthAgr[setNotNa,nameVarDepthS] <- strainGaugeDepthAgr$bench[setNotNa] + surrFill    # Add the surrogates to the benchmark
+
+      # Backfill rangeSize amount of data at beginning and end of timeseries to the original strain gauge depth to form a complete timeseries
+      strainGaugeDepthAgr[1:rangeSize,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[1:rangeSize] 
+      strainGaugeDepthAgr[(numRow-rangeSize+1):numRow,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[(numRow-rangeSize+1):numRow] 
     }
     
     strainGaugeDepthS <- strainGaugeDepthAgr[[nameVarDepth]]
