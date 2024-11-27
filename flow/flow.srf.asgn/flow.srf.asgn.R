@@ -74,6 +74,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2023-01-26)
 #     original creation, refactored from flow.loc.grp.asgn
+#   Cove Sturtevant (2024-11-27)
+#     Allow good records to pass through, while removing bad records and routing to errored datums
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -153,7 +155,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
           call.stack=call.stack,
           DirDatm=idxDirIn,
           DirErrBase=Para$DirErr,
-          RmvDatmOut=TRUE,
+          RmvDatmOut=FALSE, # Set to FALSE so that good SRF records make it through
           DirOutBase=Para$DirOut,
           log=log
         )

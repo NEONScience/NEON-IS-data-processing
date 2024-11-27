@@ -65,6 +65,8 @@
 #     incorporate IS default processing start date
 #   Cove Sturtevant (2022-11-22)
 #     Add option for group files
+#   Cove Sturtevant (2024-11-27)
+#     Allow good records to pass through, while removing bad records and routing to errored datums
 ##############################################################################################
 wrap.loc.grp.asgn <- function(DirIn,
                           DirOutBase,
@@ -85,6 +87,8 @@ wrap.loc.grp.asgn <- function(DirIn,
     log$fatal("TypeFile must be either 'asset', 'namedLocation', or 'group'. See documentation.")
     stop()
   }
+  
+  flagErr <- FALSE # Intialize trigger for indicating that at least one failure has occurred
   
   # Directory listing of files for this datum
   file <- base::dir(DirIn)
@@ -216,13 +220,37 @@ wrap.loc.grp.asgn <- function(DirIn,
           if (timeEndIdxRow == timeAsgn$timeEnd[idxRow]){
             timeEndIdxRow <- timeEndIdxRow-base::as.difftime(1,units='days')
           }
-          base::seq.POSIXt(from=timeBgnIdxRow,
-                           to=timeEndIdxRow,
-                           by='day')
-        
+          # Allow good records to pass through, while removing bad records and routing to errored datums
+          tryCatch(
+            rpt <- base::seq.POSIXt(from=timeBgnIdxRow,
+                                    to=timeEndIdxRow,
+                                    by='day'
+            ),
+            # If errored, return NULL
+            error=function(err) {
+              log$error(base::paste0('Bad time range for SRF ID ',
+                                     srf$id[idxRow],
+                                     '. Datum ',
+                                     DirIn,
+                                     ' will be routed to errored datums but good SRFs will still be assigned.'
+              )
+              )
+              rpt <- NULL
+            }
+          )
       }
     )
+    
+    # Mark errors for routing to errored datums
+    if(base::any(base::unlist(base::lapply(ts,base::is.null)))){
+      flagErr <- TRUE
+    }
+
     ts <- base::unique(base::do.call(c,ts)) # unlist
+    # Skip if no unerrored time ranges
+    if(base::length(ts) == 0){
+      next
+    }
     base::attr(ts,'tzone') <- base::attr(TimeBgn,'tzone') # Re-assign time zone, which was stripped in unlisting
     tsChar <- base::unique(format(ts,format='%Y/%m/%d')) # Format as year/month/day repo structure and get rid of duplicates
     
@@ -274,7 +302,11 @@ wrap.loc.grp.asgn <- function(DirIn,
   } # End loop around files
   
   
-
+  # Return error if a failure occurred
+  if(flagErr == TRUE){
+    stop()
+  }
+  
   return()
 
 } # End function
