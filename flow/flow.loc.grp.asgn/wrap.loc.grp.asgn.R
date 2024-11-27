@@ -242,15 +242,20 @@ wrap.loc.grp.asgn <- function(DirIn,
     )
     
     # Mark errors for routing to errored datums
-    if(base::any(base::unlist(base::lapply(ts,base::is.null)))){
+    setErr <- base::unlist(base::lapply(ts,base::is.null))
+    if(base::any(setErr)){
       flagErr <- TRUE
+      
+      # Remove errors
+      ts <- ts[!setErr]
+      
+      # Skip if no unerrored time ranges
+      if(base::length(ts) == 0){
+        next
+      }
     }
-
+    
     ts <- base::unique(base::do.call(c,ts)) # unlist
-    # Skip if no unerrored time ranges
-    if(base::length(ts) == 0){
-      next
-    }
     base::attr(ts,'tzone') <- base::attr(TimeBgn,'tzone') # Re-assign time zone, which was stripped in unlisting
     tsChar <- base::unique(format(ts,format='%Y/%m/%d')) # Format as year/month/day repo structure and get rid of duplicates
     
