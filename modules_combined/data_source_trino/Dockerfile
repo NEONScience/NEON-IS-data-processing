@@ -5,7 +5,7 @@
 # docker build -t neon-is-data-src-trino:latest -f ./modules_combined/data_source_trino/Dockerfile .
 #
 ###
-FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:sha-ce57eec
+FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:v3.5.5
 
 
 ARG MODULE_DIR="modules"
