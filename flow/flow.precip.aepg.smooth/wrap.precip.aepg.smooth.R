@@ -1,47 +1,31 @@
 ##############################################################################################
-#' @title Compute average depth of individual strain gauges, smooth, and compute precipitation for Belfort AEPG600m sensor
+#' @title Compute precipitation from collector depths reported by the Belfort AEPG 600m 
+#' precipitation collector 
 
 #' @author
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
 
-#' @description Wrapper function. Compute average depth related QC for 
-#' Belfort AEPG600m sensor, then apply smoothing algorithm of the average depth over multiple days and
-#' compute precipitation. 
-#' 
+#' @description Wrapper function. Aggregate and smooth strain gauge depth data reported by the 
+#' #' Belfort AEPG 600m weighing gauge sensor, and compute precipitation. Uncertainty estimates
+#' are produced via a Monte Carlo approach using IAAFT surrogate data. 
 
 #' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/location-id, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
 #' the 4-digit year, 2-digit month, and' 2-digit day. The location-id is the unique identifier of the location. \cr
 #'
-#' Nested within this path is the folder:
+#' Nested within this path are (at a minimum) the folders:
 #'         /data
+#'         /flags
 #'         /threshold
-#' The data folder holds any number of data files from kafka with the naming format:
+#' The data folder holds a single data file with strain gauge depth data, named in the convention:
 #' SOURCETYPE_LOCATIONID_YYYY-MM-DD.parquet
 #' 
-#' For example:
-#' Input path = /scratch/pfs/li191r_data_source_kafka/li191r/2023/03/01/11346/data/ with nested file:
-#'    li191r_11346_2023-03-05_13275082_13534222.parquet
-#'    li191r_11346_2023-03-05_13534225_13534273.parquet
+#' The flags folder holds...
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
-#' @param WndwAgr Difftime value. The aggregation interval for which to smooth the data prior to precip calc. 
-#' 
-#' @param ThshCountHour Numeric value. How many hours does precip need to be increasing to be considered valid?
-#' 
-#' @param Envelope Numeric value. Daily noise range of precipitation depth
-#' 
-#' @param ThshChange Numeric value. Expected sensitivity of instrument between individual points
-#' 
-#' @param ChangeFactor Numeric fraction by which Envelope is multiplied to determine if change in depth is precipitation, default is 0.9
-#' 
-#' @param ChangeFactorEvap Numeric fraction by which Envelope is multiplied to determine when a negative change in depth is considered evaporation, and the benchmark moved down accordingly. Default is 0.5
-#' 
-#' @param Recharge Numeric value. If raw data drops by much or more, assume it is a bucket empty/recalibration
-
 #' @param SchmStatHour (Optional). A json-formatted character string containing the schema for the hourly 
 #' output precipitation statistics and quality flags. May be NULL (default), 
 #' in which case the  the variable names will be automatically determined.  
@@ -393,217 +377,26 @@ wrap.precip.aepg.smooth <- function(DirIn,
       
     }  
     
-    # Use standalone variables when running through the loop for speed
-    varBench <- strainGaugeDepthAgr[[nameVarBench]]
-    varPrecip <- strainGaugeDepthAgr[[nameVarPrecip]]
-    varPrecipType <- strainGaugeDepthAgr[[nameVarPrecipType]]
-    startDateTime <- strainGaugeDepthAgr$startDateTime
-  
-    # start counters for smoothing algorithm
-    rawCount <- 0
-    timeSincePrecip <- NA
-    currRow <- rangeSize 
-    
-    #initialize fields. 
-    varBench[1:currRow] <-  stats::quantile(strainGaugeDepthS[1:currRow],Quant,na.rm=TRUE)
-    
-    ##loop through data to establish benchmarks 
-    skipping <- FALSE
-    for (i in 1:numRow){
-      
-      # Check for at least 1/2 a day of non-NA values. 
-      # If not, get to the next point at which we have at least 1/2 day and start fresh
-      if(base::sum(base::is.na(strainGaugeDepthS[i:currRow])) > .5*rangeSize){
-        
-        # Find the last non-NA value 
-        setEval <- i:currRow
-        idxEnd <- setEval[tail(which(!is.na(strainGaugeDepthS[setEval])),1)]
-        
-        if(length(idxEnd) > 0){
-          # Remove the benchmark extending into the gap
-          varBench[(idxEnd+1):currRow] <- NA
-        }
-        
-        # Skip until there is enough data
-        skipping <- TRUE
-        currRow <- currRow + 1
-  
-        #stop at end of data frame
-        if (currRow == numRow){
-          break()
-        } else {
-          next
-        }
-        
-      } else if (skipping) {
-        
-        # Find the first non-NA value to begin at
-        setEval <- i:currRow
-        idxBgnNext <- setEval[head(which(!is.na(strainGaugeDepthS[setEval])),1)]
-        
-        # Re-establish the benchmark
-        varBench[idxBgnNext:currRow] <- stats::quantile(strainGaugeDepthS[idxBgnNext:currRow],Quant,na.rm=TRUE)
-        timeSincePrecip <- NA
-        skipping <- FALSE
-      }
-      
-      
-      if(!is.na(timeSincePrecip)){
-        timeSincePrecip <- timeSincePrecip + 1
-      }
-      recentPrecip <- base::any(varPrecip[i:currRow])
-
-      #establish benchmark
-      bench <- varBench[currRow-1]
-      raw <- strainGaugeDepthS[currRow]
-      precip <- FALSE
-      precipType <- NA
-      
-      # missing data handling
-      raw <- ifelse(is.na(raw), bench, raw) 
-      
-      #how many measurements in a row has raw been >= bench?
-      if (raw >= bench){
-        rawCount <- rawCount + 1
-      }else{
-        rawCount <- 0
-      }
-      
-      # Compute the selected quantile over last range size (i.e. 1 day)
-      # This will be used for correcting overactive benchmark changes
-      raw_med_lastDay <- quantile(strainGaugeDepthS[i:currRow],Quant,na.rm=TRUE)
-      raw_min_lastDay <- min(strainGaugeDepthS[i:currRow],na.rm=TRUE)
-      
-      
-      # if precip total increased check to if any precip triggers are reached
-      if (raw > bench){
-        rawChange <- raw - bench
-        
-        if ((rawChange > (ChangeFactor * Envelope) & rawChange > ThshChange )){ 
-          # If change was bigger than the diel range of noise (envelope) in the data and also 
-          #   greater than the expected instrument sensitivity to rain, then it rained!
-          bench <- raw # Update the benchmark for the next data point
-          precip <- TRUE 
-          timeSincePrecip <- 0
-          precipType <- 'volumeThresh'
-  
-        } else if (grepl('volumeThresh',x=varPrecipType[currRow-1]) && rawChange > ThshChange){
-          # Or, if is has been raining with the volume threshold and the precip depth continues to increase 
-          #   above the expected instrument sensitivity, continue to say it is raining.
-          bench <- raw # Update the benchmark for the next data point
-          precip <- TRUE
-          timeSincePrecip <- 0
-          precipType <- 'volumeThreshContinued'
-  
-        } else if (rawCount == ThshCount){
-          
-          # Or, if the precip depth has been above the benchmark for exactly the time threshold 
-          #   considered for drizzle (ThshCount), say that it rained (i.e. drizzle), and 
-          #   continue to count.
-          bench <- raw # Update the benchmark for the next data point
-          precip <- TRUE
-          timeSincePrecip <- 0
-          precipType <- 'ThshCount'
-          
-          # Now go back to the start of the drizzle and set the bench to increasing
-          #   raw values and continue to count.
-          benchNext <- bench
-          for (idx in (currRow-1):(currRow-ThshCount+2)) {
-            rawIdx <- strainGaugeDepthS[idx]
-            rawIdx <- ifelse(is.na(rawIdx), benchNext, rawIdx)
-            if(rawIdx < benchNext){
-              benchNext <- rawIdx
-              varBench[idx] <- rawIdx
-            } else {
-              varBench[idx] <- benchNext
-            }
-            
-            # Record rain stats
-            varPrecip[idx] <- precip
-            varPrecipType[idx] <- 'ThshCountBackFilledToStart'
-          }
-          
-        } else if (rawCount >= ThshCount){
-          # Or, if it continues to drizzle and raw is continuing to rise, keep saying that it's raining
-          bench <- raw 
-          precip <- TRUE
-          timeSincePrecip <- 0
-          precipType <- 'ThshCount'
-        }
-      }
-      if (!is.na(timeSincePrecip) && timeSincePrecip == rangeSize && raw > (varBench[i-1]-Recharge)){  # Maybe use Envelope instead of Recharge?
-        
-        # Exactly one rangeSize after rain ends, and if the depth hasn't dropped precipitously (as defined by the Recharge threshold),
-        # back-adjust the benchmark to the Quant of the last day to avoid overestimating actual precip
-  
-        bench <- raw_med_lastDay
-        varBench[i:currRow] <- bench
-        varPrecipType[i:currRow] <- "postPrecipAdjToMedNextDay"
-        
-        idxBgn <- i-1
-        keepGoing <- TRUE
-        while(keepGoing == TRUE) {
-  
-          if(is.na(varPrecip[idxBgn]) || varPrecip[idxBgn] == FALSE){
-            # Stop if we are past the point where the precip started
-            keepGoing <- FALSE
-          } else if(varBench[idxBgn] > bench){
-            varBench[idxBgn] <- bench
-            varPrecipType[idxBgn] <- paste0(varPrecipType[idxBgn],"BackAdjToMedNextDay")
-            idxBgn <- idxBgn - 1
-          } else {
-            keepGoing <- FALSE
-          }
-        }
-      } else if ((raw < bench) && (bench-raw_med_lastDay) > ChangeFactorEvap*Envelope && !recentPrecip){
-        # If it hasn't rained in at least 1 day, check for evaporation & reset benchmark if necessary
-  
-        bench <- raw_min_lastDay # Set to the min of the last day to better track evap
-        precipType <- 'EvapAdj'
-        if(idxSurr == 0){
-          qfAgr$evapDetectedQF[currRow] <- 1
-        }
-        
-      } else if ((bench - raw) > Recharge){
-        # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
-        bench <- raw
-        
-        # Get rid of a couple hours before the recharge. This is when calibrations are occuring and strain gauges are being replaced.
-        # Set the benchmark constant to the point 2 hours before the recharge
-        setAdj <- startDateTime > (startDateTime[currRow] - as.difftime(3,units='hours')) &
-          startDateTime < startDateTime[currRow]
-        idxSet <- head(which(setAdj),1) - 1
-        if (idxSet < 1){
-          varBench[setAdj] <- NA
-          varPrecip[setAdj] <- NA
-          varPrecipType[setAdj] <- NA
-        } else {
-          varBench[setAdj] <- varBench[idxSet]
-          varPrecip[setAdj] <- varPrecip[idxSet]
-          varPrecipType[setAdj] <- "ExcludeBeforeRecharge"
-        }
-        
-      } 
-      
-      #update in the data
-      varBench[currRow] <- bench
-      varPrecip[currRow] <- precip
-      varPrecipType[currRow] <- precipType
-      
-      #move to next row
-      currRow <- currRow + 1
-      
-      #stop at end of data frame
-      if (currRow == numRow){
-        varBench[currRow] <- bench
-        break()
-      }
-    }
+    # Run the smoothing algorithm
+    precipSmooth <- def.precip.depth.smooth(dateTime=strainGaugeDepthAgr$startDateTime,
+                                            gaugeDepth=strainGaugeDepthS,
+                                            RangeSize=rangeSize,
+                                            Quant=Quant,
+                                            ThshCount=ThshCount,
+                                            Envelope=Envelope,
+                                            ThshChange=ThshChange,
+                                            ChangeFactor=ChangeFactor,
+                                            ChangeFactorEvap=ChangeFactorEvap,
+                                            Recharge=Recharge)
 
     # Reassign outputs
-    strainGaugeDepthAgr[[nameVarBench]] <- varBench
-    strainGaugeDepthAgr[[nameVarPrecip]] <- varPrecip 
-    strainGaugeDepthAgr[[nameVarPrecipType]] <- varPrecipType
+    strainGaugeDepthAgr[[nameVarBench]] <- precipSmooth$bench
+    strainGaugeDepthAgr[[nameVarPrecip]] <- precipSmooth$precip 
+    strainGaugeDepthAgr[[nameVarPrecipType]] <- precipSmooth$precipType
+    if(nameVarBench == 'bench'){
+      # Only save evapDetectedQF if we processed the original data
+      qfAgr$evapDetectedQF <- precipSmooth$evapDetectedQF
+    }
     
     # Compute precip
     strainGaugeDepthAgr[[nameVarPrecipBulk]] <- c(diff(varBench),as.numeric(NA))
