@@ -57,9 +57,19 @@ def.dir.in <- function(DirBgn,nameDirSub,log=NULL){
   # If there are no subdirectories expected in the datum directory, then each terminal directory is a datum
   if(base::length(nameDirSub) == 0){
     # Find the ones that dont nest in anything else
-    setMtch <- base::unlist(base::lapply(dirAll,FUN=function(idxDir){
-      base::sum(base::grepl(pattern=idxDir,x=dirAll,fixed=FALSE))==1
-    }))
+    setMtch <- base::unlist(
+      base::lapply(dirAllSplt,FUN=function(idxDirSplt){
+        base::sum(
+          base::unlist(
+            base::lapply(dirAllSplt,FUN=function(idxDirAllSplt){
+              base::all(
+                idxDirSplt %in% idxDirAllSplt
+                )
+            })
+          )
+        ) <= 1
+      })
+    )
     DirIn <- base::unique(dirAll[setMtch])
     
   } else {
