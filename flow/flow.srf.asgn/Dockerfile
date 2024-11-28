@@ -3,7 +3,7 @@
 # docker build -t neon-is-srf-asgn-r .
 
 # Start with the base image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:v1.0.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:sha-f9cd4ba
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.srf.asgn"
