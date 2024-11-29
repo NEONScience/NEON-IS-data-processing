@@ -2,7 +2,7 @@
 pipeline:
   name: tempSpecificDepthLakes_statistics
 transform:
-  image: quay.io/battelleecology/neon-is-stat-basc-r:aa651ed4
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc:v1.1.0
   cmd:
   - Rscript
   - ./flow.stat.basc.R
@@ -24,8 +24,8 @@ transform:
   env:
     LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '1' # Parallelization within R. If increased, adjust resource requests appropriately.
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
 input:
   pfs:
     name: DIR_IN
