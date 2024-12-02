@@ -13,7 +13,7 @@
       "TermCtxt1=fDOM|water-quality",
       "DirSubCopy=location"
     ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct:sha-3bcd5ff",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct:v1.1.0",
     "env": {
       "LOG_LEVEL": "DEBUG"
     }

@@ -3,7 +3,7 @@
 # docker build --no-cache -t neon-is-precip-aepg-smooth-r <path to this directory>
 
 # Start with the neon-is-precip-aepg-smooth-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.6
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.7
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.precip.aepg.smooth"
