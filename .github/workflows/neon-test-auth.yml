@@ -1,11 +1,11 @@
-name: "Build-push_flow.troll.ucrt"
+name: "Build-push_flow.troll.uncertainty"
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'flow/flow.troll.ucrt/**'
+      - 'flow/flow.troll.uncertainty/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,7 +22,7 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./flow/flow.troll.ucrt
+  MODULE_PATH: ./flow/flow.troll.uncertainty
   IMAGE_NAME: neon-is-troll-ucrt
 
 jobs:
