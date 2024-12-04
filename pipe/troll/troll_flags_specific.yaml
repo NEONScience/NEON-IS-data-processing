@@ -2,7 +2,7 @@
 pipeline:
   name: troll_flags_specific
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-flags:sha-5585d39
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-flags:v1.0.0
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   cmd: ["/bin/bash"]
