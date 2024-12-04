@@ -23,7 +23,7 @@ env:
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
   MODULE_PATH: ./flow/flow.tsdl.comb.splt
-  IMAGE_NAME: neon-is-tsd-comb-splt
+  IMAGE_NAME: neon-is-tsdl-comb-splt
 
 jobs:
   build-push:
