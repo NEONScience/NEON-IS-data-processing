@@ -1,4 +1,4 @@
-name: "Build-push-update_flow.troll.logfilesuncertainty"
+name: "Build-push-update_flow.troll.uncertainty"
 
 on:
   push:
