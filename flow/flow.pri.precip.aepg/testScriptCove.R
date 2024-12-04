@@ -1,7 +1,7 @@
 rm(list=setdiff(ls(),c('arg','log')))
 source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.ucrt.agr.precip.bench.R')
-#DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/09/01/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
-DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
+ DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/10/16/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
+# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/03/01/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/12/01/precip-weighing_CLBJ900000/aepg600m_heated/CFGLOC105127"
