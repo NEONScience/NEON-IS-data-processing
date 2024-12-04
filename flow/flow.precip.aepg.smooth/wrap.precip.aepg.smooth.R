@@ -506,6 +506,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     return(ucrtAgr)
   })
   statsAgrHour$precipBulkExpUncert <- 2*unlist(ucrtAgrHour)
+  statsAgrHour$precipBulkExpUncert[is.na(statsAgrHour$precipBulk)] <- as.numeric(NA) # last value will always be NA because we don't have the start of the next day
   statsAgrHour <- statsAgrHour[,c("startDateTime","endDateTime","precipBulk","precipBulkExpUncert","insuffDataQF",
                                   "extremePrecipQF","heaterErrorQF","dielNoiseQF","strainGaugeStabilityQF",
                                   "evapDetectedQF","inletHeater1QM","inletHeater2QM","inletHeater3QM",
@@ -520,6 +521,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     return(ucrtAgr)
   })
   statsAgrDay$precipBulkExpUncert <- 2*unlist(ucrtAgrDay)
+  statsAgrDay$precipBulkExpUncert[is.na(statsAgrDay$precipBulk)] <- as.numeric(NA) # last value will always be NA because we don't have the start of the next day
   statsAgrDay <- statsAgrDay[,c("date","precipBulk","precipBulkExpUncert","insuffDataQF",
                                 "extremePrecipQF","heaterErrorQF","dielNoiseQF","strainGaugeStabilityQF",
                                 "evapDetectedQF","inletHeater1QM","inletHeater2QM","inletHeater3QM",
