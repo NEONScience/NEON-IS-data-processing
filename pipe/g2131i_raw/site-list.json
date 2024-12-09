@@ -1,10 +1,10 @@
 [
 	{
 	"site" : "ABBY",
-	"kafka_start_date" : "2023-05-24"
+	"kafka_start_date" : "2024-12-04"
 	},
 	{
 	"site" : "CPER",
-	"kafka_start_date" : "2023-05-24"
+	"kafka_start_date" : "2024-12-07"
 	}
 ]
