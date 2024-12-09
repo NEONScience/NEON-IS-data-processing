@@ -2,7 +2,7 @@
 pipeline:
   name: g2131i_raw_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v3.3.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-fcba661
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -14,13 +14,13 @@ transform:
     DAY_INDEX: "7"
     KAFKA_RETENTION_DAYS: "15"
   secrets:
-  - name: pachyderm-kafka-auth
+  - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_USER
     key: KAFKA_USER
-  - name: pachyderm-kafka-auth
+  - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_PASSWORD
     key: KAFKA_PASSWORD
-  - name: pachyderm-kafka-auth
+  - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
   - name: l0-bucket
@@ -69,7 +69,7 @@ transform:
       echo "Extracting $date_str kafka data for $site"
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only noncurrent --consumer client.rack=$zone
     done
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
@@ -87,7 +87,7 @@ transform:
         fday="${BASH_REMATCH[4]}"
         fsourceid="${BASH_REMATCH[5]}"
         fname="${BASH_REMATCH[6]}"
-        outdir="${linkdir}/v1/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        outdir="${linkdir}/picarro_restream/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
         mkdir -p "${outdir}"
         ln -s "${f}" "${outdir}/${fname}"
       done
@@ -110,9 +110,9 @@ input:
     name: import_trigger
     repo: g2131i_raw_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/g2131i_raw/*/*/*"
+    glob: "/g2131i_raw/*/*/*/*"
 parallelism_spec:
-  constant: 10
+  constant: 1
 autoscaling: true
 resource_requests:
   memory: 300M
