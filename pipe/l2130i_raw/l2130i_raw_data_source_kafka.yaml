@@ -110,7 +110,7 @@ input:
     name: import_trigger
     repo: l2130i_raw_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/l2130i_raw/*/*/*"
+    glob: "/l2130i_raw/*/*/*/*"
 parallelism_spec:
   constant: 10
 autoscaling: true
