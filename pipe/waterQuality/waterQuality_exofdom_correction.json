@@ -11,7 +11,7 @@
       "FileSchmData=$SCHEMA_DATA",
       "FileSchmQf=$SCHEMA_FLAGS"
       ],
-    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wq-fdom-corr:sha-e0842c7",
+    "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-wq-fdom-corr:v1.0.2",
     "env": {
       "LOG_LEVEL": "DEBUG"
     }  
