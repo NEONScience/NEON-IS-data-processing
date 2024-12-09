@@ -1,6 +1,6 @@
 rm(list=setdiff(ls(),c('arg','log')))
 source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.ucrt.agr.precip.bench.R')
- DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/10/16/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
+ # DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/10/16/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/03/01/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
@@ -18,7 +18,7 @@ source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.ucr
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2020/06/01/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/10/19/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
+DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2022/10/24/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/03/01/precip-weighing_WOOD900000/aepg600m_heated/CFGLOC107003"
   # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/19/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/10/12/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
@@ -117,7 +117,6 @@ for (name in flagNames){
   qfs[[flagVar]][is.na(qfs[[flagVar]])] <- -1
 }
 
-
 # Aggregate depth streams into a single depth.
 data$strain_gauge1_stability[is.na(data$strainGauge1Depth)] <- NA
 data$strain_gauge2_stability[is.na(data$strainGauge2Depth)] <- NA
@@ -154,6 +153,9 @@ if(stringr::str_detect(WndwAgr, 'min')) {
   stop()
 }
 
+# Add the suspectCal flag to the data so that it can be time-averaged and fed into the final QF
+data$strainGaugeDepthSuspectCalQF <- qfs$strainGaugeDepthSuspectCalQF
+
 
 strainGaugeDepthAgr <- data %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
@@ -167,7 +169,8 @@ strainGaugeDepthAgr <- data %>%
                    inletHeater1QM = round((length(which(orifice_heater_flag == 100))/dplyr::n())*100,1),
                    inletHeater2QM = round((length(which(orifice_heater_flag == 110))/dplyr::n())*100,1), 
                    inletHeater3QM = round((length(which(orifice_heater_flag == 111))/dplyr::n())*100,1),
-                   inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,1)) 
+                   inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,1),
+                   suspectCalQF = max(strainGaugeDepthSuspectCalQF,na.rm = T)) 
 
 
 # Aggregate flags
@@ -575,14 +578,16 @@ statsAgrHour <- strainGaugeDepthAgr %>%
               inletHeater2QM = mean(inletHeater2QM, na.rm = T),
               inletHeater3QM = mean(inletHeater3QM, na.rm = T),
               inletHeaterNAQM = mean(inletHeaterNAQM, na.rm = T),
+              suspectCalQF = max(suspectCalQF,na.rm = T)
     )
+statsAgrHour$suspectCalQF[!(statsAgrHour$suspectCalQF %in% c(-1,0,1))] <- -1
 
 # Flag for max precip over 60-min - based on hourly totals
 statsAgrHour$extremePrecipQF[statsAgrHour$precipBulk > ExtremePrecipMax] <- 1
 
 # Compute hourly final quality flag
 statsAgrHour$finalQF <- 0
-flags_sub <- statsAgrHour[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+flags_sub <- statsAgrHour[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF','suspectCalQF')]
 flag_1 <- rowSums(flags_sub == 1, na.rm = T) 
 statsAgrHour$finalQF[flag_1 >=1] <- 1 
 
@@ -609,11 +614,13 @@ statsAgrDay <- statsAgrHour %>%
             inletHeater2QM = mean(inletHeater2QM, na.rm = T),
             inletHeater3QM = mean(inletHeater3QM, na.rm = T),
             inletHeaterNAQM = mean(inletHeaterNAQM, na.rm = T),
+            suspectCalQF = max(suspectCalQF,na.rm = T)
   )
+statsAgrDay$suspectCalQF[!(statsAgrDay$suspectCalQF %in% c(-1,0,1))] <- -1
 
 # Compute daily final quality flag
 statsAgrDay$finalQF <- 0
-flags_sub <- statsAgrDay[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+flags_sub <- statsAgrDay[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF','suspectCalQF')]
 flag_1 <- rowSums(flags_sub == 1, na.rm = T) 
 statsAgrDay$finalQF[flag_1 >= 1] <- 1 
 
@@ -670,6 +677,7 @@ statsAgrDay$ucrtExp[is.na(statsAgrDay$precipBulk)] <- as.numeric(NA) # last valu
     # "insuffDataQF" 
     # "extremePrecipQF"
     # "heaterErrorQF" - be more lenient. > 50% of aggregation interval
+    # "suspectCal" (any)
 
     # no
     # "dielNoiseQF"     

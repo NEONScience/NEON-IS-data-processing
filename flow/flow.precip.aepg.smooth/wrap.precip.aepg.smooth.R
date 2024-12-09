@@ -7,7 +7,7 @@
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
 
 #' @description Wrapper function. Aggregate and smooth strain gauge depth data reported by the 
-#' #' Belfort AEPG 600m weighing gauge sensor, and compute precipitation. Uncertainty estimates
+#' Belfort AEPG 600m weighing gauge sensor, and compute precipitation. Uncertainty estimates
 #' are produced via a Monte Carlo approach using IAAFT surrogate data. 
 
 #' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
@@ -192,11 +192,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
   
   
   #combine three gauges into one flagging variable. If any are 1 all flagged, any -1 all flagged, else not flagged
-  
   qfNames <- names(qf)[grepl(unique(names(qf)), pattern = 'strainGauge')]
-  
   qfNames <- unique(sub(pattern='strainGauge[1-3]Depth',replacement='',x=qfNames))
-  
   qfs<- qf[, 'readout_time', drop = F]
   for (name in qfNames){
     qf_sub <- qf[,grepl(names(qf), pattern = name)]
@@ -242,7 +239,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
                      inletHeater1QM = round((length(which(orifice_heater_flag == 100))/dplyr::n())*100,1),
                      inletHeater2QM = round((length(which(orifice_heater_flag == 110))/dplyr::n())*100,1), 
                      inletHeater3QM = round((length(which(orifice_heater_flag == 111))/dplyr::n())*100,1),
-                     inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,1)) 
+                     inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,1),
+                     suspectCalQF = max(strainGaugeDepthSuspectCalQF,na.rm = T)) 
   
   # Initialize time-aggregated flags
   qfAgr <- strainGaugeDepthAgr %>% dplyr::select(startDateTime, endDateTime)
@@ -451,13 +449,16 @@ wrap.precip.aepg.smooth <- function(DirIn,
       inletHeater2QM = mean(inletHeater2QM, na.rm = T),
       inletHeater3QM = mean(inletHeater3QM, na.rm = T),
       inletHeaterNAQM = mean(inletHeaterNAQM, na.rm = T),
+      suspectCalQF = max(suspectCalQF,na.rm = T)
     )
+  statsAgrHour$suspectCalQF[!(statsAgrHour$suspectCalQF %in% c(-1,0,1))] <- -1
+  
   # Flag for max precip over 60-min - based on hourly totals
   statsAgrHour$extremePrecipQF[statsAgrHour$precipBulk > ExtremePrecipMax] <- 1
   
   # Compute hourly final quality flag
   statsAgrHour$finalQF <- 0
-  qf_sub <- statsAgrHour[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+  qf_sub <- statsAgrHour[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF','suspectCalQF')]
   qf_1 <- rowSums(qf_sub == 1, na.rm = T) 
   statsAgrHour$finalQF[qf_1 >=1] <- 1 
   
@@ -483,9 +484,12 @@ wrap.precip.aepg.smooth <- function(DirIn,
               inletHeater2QM = mean(inletHeater2QM, na.rm = T),
               inletHeater3QM = mean(inletHeater3QM, na.rm = T),
               inletHeaterNAQM = mean(inletHeaterNAQM, na.rm = T),
+              suspectCalQF = max(suspectCalQF,na.rm = T)
     )
+  statsAgrDay$suspectCalQF[!(statsAgrDay$suspectCalQF %in% c(-1,0,1))] <- -1
+  
   statsAgrDay$finalQF <- 0
-  qf_sub <- statsAgrDay[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF')]
+  qf_sub <- statsAgrDay[,c('insuffDataQF','extremePrecipQF', 'heaterErrorQF','suspectCalQF')]
   qf_1 <- rowSums(qf_sub == 1, na.rm = T) 
   statsAgrDay$finalQF[qf_1 >=1] <- 1 
   
