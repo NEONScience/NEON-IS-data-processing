@@ -1,24 +1,27 @@
 ##############################################################################################
-#' @title Compute average depth of individual strain gauges, smooth, and compute precipitation for Belfort AEPG600m sensor
+#' @title Compute average depth of individual strain gauges, smooth, and compute precipitation for 
+#' Belfort AEPG600m sensor
 
 #' @author
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
 
-#' @description Workflow. Compute average depth related QC for 
-#' Belfort AEPG600m sensor, then apply smoothing algorithm of the average depth over multiple days and
-#' compute precipitation. 
+#' @description Workflow. Compute the average depth and related QC flags for the
+#' Belfort AEPG600m sensor, then apply a smoothing algorithm over multiple days to 
+#' reduce or eliminate period noise due to environmental variation and draw out actual
+#' precipitation events. Compute precipitation sums, uncertainty, and quality flags
+#' for hourly and daily intervals. 
 #'
 #' General code workflow:
 #'    Parse input parameters
 #'    Determine datums to process (set of files/folders to process as a single unit)
 #'    For each datum:
 #'      Create output directories and copy (by symbolic link) unmodified components
-#'      Read in the L0 data files into an arrow dataset
+#'      Read in the L0 data files into arrow datasets
 #'      Compute average depth streams and performed related QC
-#'      Average consolidated depth to X minutes (user defined) 
-#'      Smooth average depth stream to compute precip
-#'      Write data and flags output to file
+#'      Average consolidated depth to X minutes (user defined in thresholds) 
+#'      Smooth average depth stream to compute hourly and daily precip for 3 central days
+#'      Write stats and flags output to file
 #'
 #' This script is run at the command line with the following arguments. Each argument must be a string
 #' in the format "Para=value", where "Para" is the intended parameter name and "value" is the value of
@@ -105,10 +108,10 @@
 
 #' @examples 
 #' # Not Run - uses all available defaults
-#' Rscript flow.precip.aepg.avg.depth.R "DirIn=/scratch/pfs/aepg600m_calibration_group_and_convert" "DirOut=/scratch/pfs/out" "DirErr=/scratch/pfs/out/errored_datums"  
+#' Rscript flow.precip.aepg.smooth.R "DirIn=/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/05/30" "DirOut=/scratch/pfs/out" "DirErr=/scratch/pfs/out/errored_datums"  
 #'
 #' Not Run - Stepping through the code in Rstudio
-#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30')
+#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/05/30')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "DirErr=/scratch/pfs/out/errored_datums")
 #' # Then copy and paste rest of workflow into the command window
