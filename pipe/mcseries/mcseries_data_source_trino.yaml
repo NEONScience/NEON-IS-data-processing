@@ -119,10 +119,10 @@ input:
     glob: "/mcseries/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 4
+  constant: 10
 autoscaling: true
 resource_requests:
-  memory: 500M
+  memory: 300M
   cpu: 0.7
 resource_limits:
   memory: 800M
@@ -131,7 +131,7 @@ sidecar_resource_requests:
   memory: 2G
   cpu: 0.2
 sidecar_resource_limits:
-  memory: 6G
+  memory: 3G
   cpu: 1.2
 datum_set_spec:
   number: 1
