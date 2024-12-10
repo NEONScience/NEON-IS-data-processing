@@ -403,10 +403,10 @@ wrap.precip.aepg.smooth <- function(DirIn,
     
   } # End loop around surrogates
   
-  # Compute the variability in computed benchmark of the surrogates
+  # Compute the variability in computed benchmark of the surrogates (incl actual benchmark)
   # The uncertainty of a sum or difference is equal to their individual uncertainties added in quadrature.
   nameVar <- names(strainGaugeDepthAgr)
-  nameVarBenchS <- nameVar[grepl('benchS[0-9]',nameVar)]
+  nameVarBenchS <- c('bench',nameVar[grepl('benchS[0-9]',nameVar)])
   strainGaugeDepthAgr$benchS_std <- matrixStats::rowSds(as.matrix(strainGaugeDepthAgr[,nameVarBenchS]))
 
   # Post-precip computation 
