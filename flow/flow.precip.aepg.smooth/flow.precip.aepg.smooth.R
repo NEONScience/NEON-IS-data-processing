@@ -128,6 +128,7 @@ library(doParallel)
 # Source the wrapper function and other dependency functions. Assume it is in the working directory
 source("./wrap.precip.aepg.smooth.R")
 source("./def.ucrt.agr.precip.bench.R")
+source("./def.precip.depth.smooth.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
