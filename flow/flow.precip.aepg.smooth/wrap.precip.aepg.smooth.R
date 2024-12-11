@@ -334,8 +334,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   strainGaugeDepthAgr$bench <- as.numeric(NA)
   strainGaugeDepthAgr$precip <- FALSE # TRUE when rain detected
   strainGaugeDepthAgr$precipType <- as.character(NA)
-  strainGaugeDepthAgr$bench <- as.numeric(NA)
-  
+
   # Initialize & pre-allocate surrogate data for uncertainty analysis
   numRow <- nrow(strainGaugeDepthAgr)
   nSurr <- 30
@@ -418,7 +417,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     }
     
     # Compute precip
-    strainGaugeDepthAgr[[nameVarPrecipBulk]] <- c(diff(varBench),as.numeric(NA))
+    strainGaugeDepthAgr[[nameVarPrecipBulk]] <- c(base::diff(strainGaugeDepthAgr[[nameVarBench]]),as.numeric(NA))
     strainGaugeDepthAgr[[nameVarPrecipBulk]][strainGaugeDepthAgr[[nameVarPrecipBulk]] < 0] <- 0
     strainGaugeDepthAgr[[nameVarPrecipType]] <- c(strainGaugeDepthAgr[[nameVarPrecipType]][2:numRow],as.numeric(NA)) # Shift precip type to align with precip
     

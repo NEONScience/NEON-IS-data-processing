@@ -91,7 +91,7 @@ def.precip.depth.smooth <- function(dateTime,
   currRow <- RangeSize 
   
   # Intialize
-  numData <- base::length(strainGaugeDepth)
+  numData <- base::length(gaugeDepth)
   outBench <- base::rep(base::as.numeric(NA),numData)
   outBench[1:currRow] <-  stats::quantile(gaugeDepth[1:currRow],Quant,na.rm=TRUE)
   outPrecip <- base::rep(FALSE,numData)
@@ -101,7 +101,7 @@ def.precip.depth.smooth <- function(dateTime,
   
   ##loop through data to establish benchmarks 
   skipping <- FALSE
-  for (i in base::seq_len(1:numData)){
+  for (i in base::seq_len(numData)){
     
     # Check for at least 1/2 a day of non-NA values. 
     # If not, get to the next point at which we have at least 1/2 day and start fresh
