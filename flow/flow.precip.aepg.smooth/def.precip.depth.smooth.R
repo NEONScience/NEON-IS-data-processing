@@ -252,10 +252,8 @@ def.precip.depth.smooth <- function(dateTime,
       
       bench <- raw_min_lastRngSz # Set to the min of the last day to better track evap
       precipType <- 'EvapAdj'
-      if(idxSurr == 0){
-        evapDetectedQF[currRow] <- 1
-      }
-      
+      evapDetectedQF[currRow] <- 1
+
     } else if ((bench - raw) > Recharge){
       # If the raw depth has dropped precipitously (as defined by the recharge rage), assume bucket was emptied. Reset benchmark.
       bench <- raw

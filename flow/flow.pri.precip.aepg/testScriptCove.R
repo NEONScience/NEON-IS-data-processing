@@ -323,7 +323,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
   strainGaugeDepthAgr[[nameVarBench]] <- precipSmooth$bench
   strainGaugeDepthAgr[[nameVarPrecip]] <- precipSmooth$precip 
   strainGaugeDepthAgr[[nameVarPrecipType]] <- precipSmooth$precipType
-  if(nameVarBench == 'bench'){
+  if(idxSurr == 0){
     # Only save evapDetectedQF if we processed the original data
     flagsAgr$evapDetectedQF <- precipSmooth$evapDetectedQF
   }

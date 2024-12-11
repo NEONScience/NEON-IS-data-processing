@@ -411,7 +411,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     strainGaugeDepthAgr[[nameVarBench]] <- precipSmooth$bench
     strainGaugeDepthAgr[[nameVarPrecip]] <- precipSmooth$precip 
     strainGaugeDepthAgr[[nameVarPrecipType]] <- precipSmooth$precipType
-    if(nameVarBench == 'bench'){
+    if(idxSurr == 0){
       # Only save evapDetectedQF if we processed the original data
       qfAgr$evapDetectedQF <- precipSmooth$evapDetectedQF
     }
