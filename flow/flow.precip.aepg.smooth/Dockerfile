@@ -25,6 +25,7 @@ WORKDIR /home/app
 COPY ${FLOW_DIR}/${APP_DIR}/flow.precip.aepg.smooth.R .
 COPY ${FLOW_DIR}/${APP_DIR}/wrap.precip.aepg.smooth.R .
 COPY ${FLOW_DIR}/${APP_DIR}/def.ucrt.agr.precip.bench.R .
+COPY ${FLOW_DIR}/${APP_DIR}/def.precip.depth.smooth.R .
 
 # Run as app user
 RUN chown app:app -R /home/app
