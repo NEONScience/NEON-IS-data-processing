@@ -244,7 +244,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
   if(!('inlet_temperature' %in% names(data))){data$inlet_temperature <- as.numeric(NA)}
   if(!('orifice_heater_flag' %in% names(data))){data$orifice_heater_flag <- as.numeric(NA)}
   
-
+  # Add the suspectCal flag to the data so that it can be time-averaged and fed into the final QF
+  data$strainGaugeDepthSuspectCalQF <- qfs$strainGaugeDepthSuspectCalQF
+  
   # Do time averaging
   strainGaugeDepthAgr <- data %>%
     dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
