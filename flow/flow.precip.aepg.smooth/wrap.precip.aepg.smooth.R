@@ -405,7 +405,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                             ThshChange=ThshChange,
                                             ChangeFactor=ChangeFactor,
                                             ChangeFactorEvap=ChangeFactorEvap,
-                                            Recharge=Recharge)
+                                            Recharge=Recharge,
+                                            log=log)
 
     # Reassign outputs
     strainGaugeDepthAgr[[nameVarBench]] <- precipSmooth$bench

@@ -82,8 +82,14 @@ def.precip.depth.smooth <- function(dateTime,
                                     ThshChange=0.2,
                                     ChangeFactor=1,
                                     ChangeFactorEvap=0.5,
-                                    Recharge
+                                    Recharge,
+                                    log=NULL
 ){
+  
+  # Intialize logging if needed
+  if (base::is.null(log)) {
+    log <- NEONprocIS.base::def.log.init()
+  }
   
   # start counters for smoothing algorithm
   rawCount <- 0
@@ -98,6 +104,18 @@ def.precip.depth.smooth <- function(dateTime,
   outPrecipType <- base::rep(as.character(NA),numData)
   evapDetectedQF <- base::rep(0,numData)
   
+  #Is the data all NA? End early
+  if(all(is.na(gaugeDepth))){
+    rpt <- base::data.frame(bench=outBench,
+                            precip=outPrecip,
+                            precipType=outPrecipType,
+                            evapDetectedQF=evapDetectedQF,
+                            stringsAsFactors=FALSE
+    )
+    log$debug('All gauge depths are NA. Returning early from def.precip.depth.smooth function.')
+    return(rpt)
+
+  }
   
   ##loop through data to establish benchmarks 
   skipping <- FALSE
@@ -283,17 +301,16 @@ def.precip.depth.smooth <- function(dateTime,
     # Move to next row
     currRow <- currRow + 1
     
-    # Stop at end of data frame
-    if (currRow == numData){
-      outBench[currRow] <- bench
-      rpt <- base::data.frame(bench=outBench,
-                              precip=outPrecip,
-                              precipType=outPrecipType,
-                              evapDetectedQF=evapDetectedQF,
-                              stringsAsFactors=FALSE
-      )
-      return(rpt)
-    }
     
   } # End loop around data
+  
+  # Report out
+  rpt <- base::data.frame(bench=outBench,
+                          precip=outPrecip,
+                          precipType=outPrecipType,
+                          evapDetectedQF=evapDetectedQF,
+                          stringsAsFactors=FALSE
+  )
+  return(rpt)
+    
 } # End function
