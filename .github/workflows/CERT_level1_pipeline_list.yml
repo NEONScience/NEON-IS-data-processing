@@ -12,7 +12,7 @@ jobs:
     #runs-on: ubuntu-latest 
     env:
       PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
       REPO: level1_pipeline_list # Pachyderm repo
       BRANCH: master 
       IN_PATHS: 'pipe/processed_datums_reader/level1_pipeline_list.txt'
