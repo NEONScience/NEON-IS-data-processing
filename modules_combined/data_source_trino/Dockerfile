@@ -7,7 +7,6 @@
 ###
 FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:v3.5.7
 
-
 ARG MODULE_DIR="modules"
 ARG APP_DIR="parquet_linkmerge"
 ARG COMMON_DIR="common"
