@@ -301,6 +301,9 @@ def.precip.depth.smooth <- function(dateTime,
     # Move to next row
     currRow <- currRow + 1
     
+    if (currRow == numData){
+      break
+    }
     
   } # End loop around data
   
