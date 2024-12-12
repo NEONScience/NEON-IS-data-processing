@@ -33,7 +33,8 @@
 # ------ Choose options --------
 
 # Module or local package directory
-dirWork <- '~/R/NEON-IS-data-processing-homeDir/pack/NEONprocIS.base'
+# dirWork <- '~/R/NEON-IS-data-processing-homeDir/pack/NEONprocIS.base'
+dirWork <- '~/NEON-IS-data-processing/flow/flow.subs.files'
 #dirWork <- '~/R/NEON-IS-data-processing-homeDir/flow/flow.kfka.comb'
 #dirWork <- '~/R/NEON-IS-data-processing/flow/flow.troll.uncertainty'
 PackIgnr <- c('NEONprocIS.base','NEONprocIS.cal','NEONprocIS.qaqc','NEONprocIS.wq','NEONprocIS.stat','NEONprocIS.pub') # These should already be in the respective docker containers
