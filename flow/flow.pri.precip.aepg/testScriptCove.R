@@ -16,7 +16,7 @@ source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.pre
   # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
 # DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/10/16/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/12/15/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
-DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/12/07/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
+# DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/12/07/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
 # DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2022/10/24/precip-weighing_UNDE900000/aepg600m_heated/CFGLOC107634"
@@ -27,7 +27,7 @@ DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/12/07/p
 # DirIn <-   "/scratch/pfs/precipWeighing_ts_pad_smoother/2021/06/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
+DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/11/08/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
 DirOutBase <- "/scratch/pfs/out_Cove"
@@ -291,8 +291,8 @@ for(idxSurr in c(0,seq_len(nSurr))){
       setNotNa[1:rangeSize] <- FALSE 
       setNotNa[(numRow-rangeSize+1):numRow] <- FALSE
       
-      if(sum(setNotNa) == 0){
-        message('All benchmarks are NA. Skipping surrogate testing.')
+      if(sum(setNotNa) < 5){
+        message('Less than 5 benchmarks needed for surrogate generation are not NA. Skipping surrogate testing.')
         break
       }
       surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)

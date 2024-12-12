@@ -379,8 +379,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
         setNotNa[1:rangeSize] <- FALSE 
         setNotNa[(numRow-rangeSize+1):numRow] <- FALSE
         
-        if(sum(setNotNa) == 0){
-          log$debug(paste0('All benchmarks for datum ',DirIn, ' are NA. Skipping surrogate testing.'))
+        if(sum(setNotNa) < 5){
+          log$debug(paste0('Less than 5 benchmarks needed for surrogate testing for datum ',DirIn, ' are not NA. Skipping surrogate testing.'))
           break
         }
         surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
