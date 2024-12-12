@@ -45,7 +45,7 @@ jobs:
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
       PATHS: 'pipe/li191r,pipe/parQuantumLine' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.'
       TRANSACTION: True
-      UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
+      UPDATED_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
     steps:
       - uses: actions/checkout@v4
@@ -58,6 +58,6 @@ jobs:
           pach_token: ${{ env.PACH_TOKEN }}
           paths: ${{ env.PATHS }}
           transaction: ${{ env.TRANSACTION }}
-          update_scope: ${{ env.UPDATE_SCOPE }}
+          updated_scope: ${{ env.UPDATE_SCOPE }}
           changed_files: ${{ env.CHANGED_FILES }}
           
