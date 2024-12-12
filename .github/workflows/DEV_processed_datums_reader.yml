@@ -19,7 +19,7 @@ jobs:
   # Event `push`: Compare the preceding remote commit -> to the current commit of the main branch 
   # ----------------------------------------------------------------------------------------------
 
- changed_files:
+  changed_files:
     runs-on: ubuntu-latest  # windows-latest || macos-latest
     outputs:
     # Use this changed_file_list if you plan to use get-changed-files-action 
