@@ -16,5 +16,6 @@ RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in subsurface file workflow
 COPY ${FLOW_DIR}/${APP_DIR}/flow.subs.files.R .
-COPY ${FLOW_DIR}/${APP_DIR}/wrap.subs.files.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.subs.LT400.files.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.subs.HOBOU24.files.R .
 
