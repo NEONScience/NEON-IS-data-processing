@@ -43,7 +43,7 @@ jobs:
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
       PATHS: 'pipe/errored_datums_reader'
       TRANSACTION: True
-      UPDATED_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
+      UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +56,6 @@ jobs:
           pach_token: ${{ env.PACH_TOKEN }}
           paths: ${{ env.PATHS }}
           transaction: ${{ env.TRANSACTION }}
-          updated_scope: ${{ env.UPDATE_SCOPE }}
+          update_scope: ${{ env.UPDATE_SCOPE }}
           changed_files: ${{ env.CHANGED_FILES }}
           
