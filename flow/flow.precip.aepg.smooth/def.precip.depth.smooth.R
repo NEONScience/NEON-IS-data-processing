@@ -218,7 +218,14 @@ def.precip.depth.smooth <- function(dateTime,
         # Now go back to the start of the drizzle and set the bench to increasing
         #   raw values and continue to count.
         benchNext <- bench
-        for (idx in (currRow-1):(currRow-ThshCount+2)) {
+        setDzzl <- (currRow-1):(currRow-ThshCount+2) # indices staged to back-adjust
+        
+        # Back-adjust the benchmark
+        for (idx in setDzzl) {
+          # Make sure we aren't backing into NA benchmarks
+          if(is.na(bench[idx])){
+            break
+          }
           rawIdx <- gaugeDepth[idx]
           rawIdx <- ifelse(is.na(rawIdx), benchNext, rawIdx)
           if(rawIdx < benchNext){
