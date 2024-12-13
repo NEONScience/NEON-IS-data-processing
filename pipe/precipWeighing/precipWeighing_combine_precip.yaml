@@ -20,7 +20,7 @@ transform:
     EOF
   env:
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '3'
 output_branch: master
 input:

@@ -132,56 +132,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                        log=log)
   }    
   
-  # Read in the thresholds file (read first file only, there should only be 1)
-  if(base::length(fileThsh) > 1){
-    fileThsh <- fileThsh[1]
-    log$info(base::paste0('There is more than one threshold file in ',dirThsh,'. Using ',fileThsh))
-  }
-  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile=base::paste0(dirThsh,'/',fileThsh)))
-  
-  # Verify that the term(s) needed in the input parameters are included in the threshold files
-  termTest <- "precipBulk"
-  exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
-  if(base::sum(exstThsh) != base::length(termTest)){
-    log$error(base::paste0('Thresholds for term(s): ',base::paste(termTest[!exstThsh],collapse=','),' do not exist in the thresholds file. Cannot proceed.')) 
-    stop()
-  }
-  # Assign thresholds
-  thshIdxTerm <- thsh[thsh$term_name == termTest,]
-  WndwAgr = thshIdxTerm$string_value[thshIdxTerm$threshold_name == 'WndwAgr']
-  RangeSizeHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'RangeSizeHour']
-  Envelope = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Envelope']
-  ThshCountHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ThshCountHour']
-  Quant = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Quant']
-  ThshChange = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ThshChange']
-  ChangeFactor = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ChangeFactor']
-  ChangeFactorEvap = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ChangeFactorEvap']
-  Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Recharge']
-  ExtremePrecipMax = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ExtremePrecipMax']
-
-  # Adjust thresholds based on WndwAgr unit
-  WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
-  if(stringr::str_detect(WndwAgr, 'min')) {
-    ThshCount <- ThshCountHour * (60/WndwAgrNumc) 
-    rangeSize <- RangeSizeHour*(60/WndwAgrNumc)   
-    
-    if(WndwAgrNumc > 60 | WndwAgrNumc < 5){
-      log$error('averaging unit must be between 5 minutes and one hour')
-      stop()
-    }
-  } else if ((stringr::str_detect(WndwAgr, 'hour')) ){
-    ThshCount <- ThshCountHour/WndwAgrNumc
-    rangeSize <- RangeSizeHour/WndwAgrNumc
-    
-    if(WndwAgrNumc > 1 | WndwAgrNumc < (5/60)){
-      log$error('averaging unit must be between 5 minutes and one hour')
-      stop()
-    }
-  } else {
-    log$error('averaging unit needs to be in minutes (min) or hours (hour)')
-    stop()
-  }
-  
   # Take stock of our data files.
   fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
   fileQfPlau <- base::list.files(dirInQf,pattern='Plausibility.parquet',full.names=FALSE)
@@ -214,6 +164,56 @@ wrap.precip.aepg.smooth <- function(DirIn,
       
   }
 
+  # Read in the thresholds file (read first file only, there should only be 1)
+  if(base::length(fileThsh) > 1){
+    fileThsh <- fileThsh[1]
+    log$info(base::paste0('There is more than one threshold file in ',dirThsh,'. Using ',fileThsh))
+  }
+  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile=base::paste0(dirThsh,'/',fileThsh)))
+  
+  # Verify that the term(s) needed in the input parameters are included in the threshold files
+  termTest <- "precipBulk"
+  exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
+  if(base::sum(exstThsh) != base::length(termTest)){
+    log$error(base::paste0('Thresholds for term(s): ',base::paste(termTest[!exstThsh],collapse=','),' do not exist in the thresholds file. Cannot proceed.')) 
+    stop()
+  }
+  # Assign thresholds
+  thshIdxTerm <- thsh[thsh$term_name == termTest,]
+  WndwAgr = thshIdxTerm$string_value[thshIdxTerm$threshold_name == 'WndwAgr']
+  RangeSizeHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'RangeSizeHour']
+  Envelope = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Envelope']
+  ThshCountHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ThshCountHour']
+  Quant = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Quant']
+  ThshChange = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ThshChange']
+  ChangeFactor = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ChangeFactor']
+  ChangeFactorEvap = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ChangeFactorEvap']
+  Recharge = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Recharge']
+  ExtremePrecipMax = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'ExtremePrecipMax']
+  
+  # Adjust thresholds based on WndwAgr unit
+  WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
+  if(stringr::str_detect(WndwAgr, 'min')) {
+    ThshCount <- ThshCountHour * (60/WndwAgrNumc) 
+    rangeSize <- RangeSizeHour*(60/WndwAgrNumc)   
+    
+    if(WndwAgrNumc > 60 | WndwAgrNumc < 5){
+      log$error('averaging unit must be between 5 minutes and one hour')
+      stop()
+    }
+  } else if ((stringr::str_detect(WndwAgr, 'hour')) ){
+    ThshCount <- ThshCountHour/WndwAgrNumc
+    rangeSize <- RangeSizeHour/WndwAgrNumc
+    
+    if(WndwAgrNumc > 1 | WndwAgrNumc < (5/60)){
+      log$error('averaging unit must be between 5 minutes and one hour')
+      stop()
+    }
+  } else {
+    log$error('averaging unit needs to be in minutes (min) or hours (hour)')
+    stop()
+  }
+  
   # Read the datasets 
   data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
                                             VarTime='readout_time',
