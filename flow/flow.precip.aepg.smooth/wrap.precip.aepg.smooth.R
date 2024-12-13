@@ -187,6 +187,33 @@ wrap.precip.aepg.smooth <- function(DirIn,
   fileQfPlau <- base::list.files(dirInQf,pattern='Plausibility.parquet',full.names=FALSE)
   fileQfCal <- base::list.files(dirInQf,pattern='Cal.parquet',full.names=FALSE)
   
+  
+  # Check for a manifest file. Ensures full pad.
+  fileManifest <- base::list.files(dirInData,pattern='manifest',full.names=TRUE)
+  if(length(fileManifest) == 0){
+    log$warn('No manifest file. Cannot continue.')
+    return()
+  } else {
+    dayExpc <- base::readLines(fileManifest)
+    dayHave <- unlist(lapply(fileData,FUN=function(fileIdx){
+      mtch <- regexec(pattern='[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}',fileIdx)[[1]]
+      if(mtch != -1){
+        dayHaveIdx <- substr(fileIdx,mtch,mtch+attr(mtch,"match.length")-1)
+        return(dayHaveIdx)
+      } else {
+        return(NULL)
+      }
+    }))
+    dayChk <- dayExpc %in% dayHave
+    if(!all(dayChk)){
+      log$warn(paste0('Timeseries pad incomplete. Missing the following days: ',
+                      paste0(dayExpc[!dayChk],collapse=', ')))
+      return()
+      
+    }
+      
+  }
+
   # Read the datasets 
   data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
                                             VarTime='readout_time',
@@ -376,7 +403,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
 
         # Remove rangeSize amount of data at beginning and end of timeseries, which can have untracked changes in benchmark that corrupt the surrogates
         setNotNa[1:rangeSize] <- FALSE 
-        setNotNa[(numRow-rangeSize+1):numRow] <- FALSE
+        setNotNa[floor(numRow-rangeSize/2+1):numRow] <- FALSE
         
         # Create surrogates
         surrFill <- base::try(multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr),silent=F)
@@ -388,7 +415,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
         
         # Backfill rangeSize amount of data at beginning and end of timeseries to the original strain gauge depth to form a complete timeseries
         strainGaugeDepthAgr[1:rangeSize,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[1:rangeSize] 
-        strainGaugeDepthAgr[(numRow-rangeSize+1):numRow,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[(numRow-rangeSize+1):numRow] 
+        strainGaugeDepthAgr[floor(numRow-rangeSize/2+1):numRow,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[floor(numRow-rangeSize/2+1):numRow] 
       }
       
       strainGaugeDepthS <- strainGaugeDepthAgr[[nameVarDepth]]

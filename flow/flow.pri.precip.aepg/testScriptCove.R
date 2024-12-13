@@ -1,7 +1,7 @@
 rm(list=setdiff(ls(),c('arg','log')))
 source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.ucrt.agr.precip.bench.R')
 source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.precip.depth.smooth.R')
-DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2022/10/24/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
+# DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2022/10/24/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/03/01/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
@@ -24,17 +24,17 @@ DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2022/10/24/p
   # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/19/precip-weighing_WREF900000/aepg600m_heated/CFGLOC112933"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/10/12/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
-# DirIn <-   "/scratch/pfs/precipWeighing_ts_pad_smoother/2021/06/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
+DirIn <-   "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
-# DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/11/08/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
+# DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/03/26/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
 DirOutBase <- "/scratch/pfs/out_Cove"
 DirSubCopy <- NULL
-WndwAgr <- '60 min'
+WndwAgr <- '5 min'
 RangeSizeHour <- 24
-Envelope <- 1.3
+Envelope <- 2.7
 # WndwAgr <- '60 min'
 # RangeSizeHour <- 72
 # Envelope <- 30
@@ -96,6 +96,32 @@ if(stringr::str_detect(WndwAgr, 'min')) {
 fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
 fileFlagsPlau <- base::list.files(dirInFlags,pattern='Plausibility.parquet',full.names=FALSE)
 fileFlagsCal <- base::list.files(dirInFlags,pattern='Cal.parquet',full.names=FALSE)
+
+# Check for a manifest file. Ensures full pad.
+fileManifest <- base::list.files(dirInData,pattern='manifest',full.names=TRUE)
+if(length(fileManifest) == 0){
+  log$warn('No manifest file. Cannot continue.')
+  return()
+} else {
+  dayExpc <- base::readLines(fileManifest)
+  dayHave <- unlist(lapply(fileData,FUN=function(fileIdx){
+    mtch <- regexec(pattern='[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}',fileIdx)[[1]]
+    if(mtch != -1){
+      dayHaveIdx <- substr(fileIdx,mtch,mtch+attr(mtch,"match.length")-1)
+      return(dayHaveIdx)
+    } else {
+      return(NULL)
+    }
+  }))
+  dayChk <- dayExpc %in% dayHave
+  if(!all(dayChk)){
+    stop(paste0('Timeseries pad incomplete. Missing the following days: ',
+                    paste0(dayExpc[!dayChk],collapse=', ')))
+
+  }
+}
+
+
 
 # Read the datasets
 data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
@@ -171,6 +197,9 @@ strainGaugeDepthAgr <- data %>%
                    inletHeaterNAQM = round((length(which(is.na(orifice_heater_flag)))/dplyr::n())*100,1),
                    suspectCalQF = max(strainGaugeDepthSuspectCalQF,na.rm = T)) 
 
+#!!! TESTING ONLY - Add some artificial rain
+# strainGaugeDepthAgr$strainGaugeDepth[(nrow(strainGaugeDepthAgr)-25):nrow(strainGaugeDepthAgr)] <- strainGaugeDepthAgr$strainGaugeDepth[(nrow(strainGaugeDepthAgr)-25):nrow(strainGaugeDepthAgr)]+10
+# !!!!
 
 # Aggregate flags
 flagsAgr <- strainGaugeDepthAgr %>% dplyr::select(startDateTime, endDateTime)
@@ -284,9 +313,9 @@ for(idxSurr in c(0,seq_len(nSurr))){
       depthMinusBench <- strainGaugeDepthAgr$strainGaugeDepth - strainGaugeDepthAgr$bench # remove the computed benchmark
       setNotNa <- !is.na(depthMinusBench) # Remove all NA
       
-      # Remove rangeSize amount of data at beginning and end of timeseries, which can have untracked changes in benchmark that corrupt the surrogates
+      # Remove rangeSize amount of data at beginning of the timeseries, which can have untracked changes in benchmark that corrupt the surrogates
       setNotNa[1:rangeSize] <- FALSE 
-      setNotNa[(numRow-rangeSize+1):numRow] <- FALSE
+      setNotNa[floor(numRow-rangeSize/2+1):numRow] <- FALSE
       
       # Create surrogates
       surrFill <- base::try(multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr),silent=F)
@@ -298,7 +327,7 @@ for(idxSurr in c(0,seq_len(nSurr))){
 
       # Backfill rangeSize amount of data at beginning and end of timeseries to the original strain gauge depth to form a complete timeseries
       strainGaugeDepthAgr[1:rangeSize,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[1:rangeSize] 
-      strainGaugeDepthAgr[(numRow-rangeSize+1):numRow,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[(numRow-rangeSize+1):numRow] 
+      strainGaugeDepthAgr[floor(numRow-rangeSize/2+1):numRow,nameVarDepthS] <- strainGaugeDepthAgr$strainGaugeDepth[floor(numRow-rangeSize/2+1):numRow] 
     }
     
     strainGaugeDepthS <- strainGaugeDepthAgr[[nameVarDepth]]
