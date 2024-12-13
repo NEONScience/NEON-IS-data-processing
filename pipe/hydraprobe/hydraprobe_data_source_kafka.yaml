@@ -7,7 +7,7 @@ transform:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    LOGLEVEL: debug
+    LOGLEVEL: info
     SOURCE_TYPE_INDEX: "5"
     YEAR_INDEX: "6"
     MONTH_INDEX: "7"

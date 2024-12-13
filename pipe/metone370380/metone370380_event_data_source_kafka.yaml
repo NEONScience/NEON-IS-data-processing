@@ -16,7 +16,7 @@ transform:
     # SOURCE_TYPE: "soil"
     # TOPIC_CENTRAL: "event.cnc"
     DATATYPE_DIR: "event"
-    LOGLEVEL: debug
+    LOGLEVEL: info
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
