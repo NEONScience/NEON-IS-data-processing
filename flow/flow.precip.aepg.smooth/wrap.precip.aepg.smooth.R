@@ -148,7 +148,6 @@ wrap.precip.aepg.smooth <- function(DirIn,
   }
   # Assign thresholds
   thshIdxTerm <- thsh[thsh$term_name == termTest,]
-
   WndwAgr = thshIdxTerm$string_value[thshIdxTerm$threshold_name == 'WndwAgr']
   RangeSizeHour = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'RangeSizeHour']
   Envelope = thshIdxTerm$number_value[thshIdxTerm$threshold_name == 'Envelope']
@@ -328,8 +327,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
       Recharge <- 3*Envelope
     }
   }
-  
-  
+
   #initialize fields
   strainGaugeDepthAgr$bench <- as.numeric(NA)
   strainGaugeDepthAgr$precip <- FALSE # TRUE when rain detected
@@ -363,6 +361,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
       strainGaugeDepthS <- strainGaugeDepthAgr$strainGaugeDepth
       
     } else {
+      
       log$debug(paste0('Running Surrogate ',idxSurr, ' for datum ',DirIn))
       nameVarDepth <- paste0('strainGaugeDepthS',idxSurr)
       nameVarBench <- paste0('benchS',idxSurr)
@@ -379,11 +378,12 @@ wrap.precip.aepg.smooth <- function(DirIn,
         setNotNa[1:rangeSize] <- FALSE 
         setNotNa[(numRow-rangeSize+1):numRow] <- FALSE
         
-        if(sum(setNotNa) < 5){
-          log$debug(paste0('Less than 5 benchmarks needed for surrogate testing for datum ',DirIn, ' are not NA. Skipping surrogate testing.'))
+        # Create surrogates
+        surrFill <- base::try(multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr),silent=F)
+        if("try-error" %in% base::class(surrFill)){
+          log$warn('Surrogate generation failed (could be not enough data). Uncertainty estimates cannot be generated. A check will be done later to ensure precip is also NA. If not, an error will occur.')
           break
         }
-        surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
         strainGaugeDepthAgr[setNotNa,nameVarDepthS] <- strainGaugeDepthAgr$bench[setNotNa] + surrFill    # Add the surrogates to the benchmark
         
         # Backfill rangeSize amount of data at beginning and end of timeseries to the original strain gauge depth to form a complete timeseries
@@ -444,7 +444,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   qfAgr$evapDetectedQF[qfAgr$insuffDataQF == 1] <- -1
   qfAgr$extremePrecipQF[qfAgr$insuffDataQF == 1] <- -1
   
-  # Join flagsAgr into strainGaugeDepthAgr
+  # Join qfAgr into strainGaugeDepthAgr
   strainGaugeDepthAgr <- dplyr::full_join(strainGaugeDepthAgr, qfAgr, by = c('startDateTime', 'endDateTime'))
   
   # Aggregate to the hour
@@ -574,6 +574,19 @@ wrap.precip.aepg.smooth <- function(DirIn,
     # Filter the data for this output day
     statsAgrHourIdx <- statsAgrHour[setOutHour,]
     statsAgrDayIdx <- statsAgrDay[setOutDay,]
+    
+    # Final check whether uncertainty estimates are provided for all non-NA daily precip output 
+    if(!(all.equal(is.na(statsAgrHourIdx$precipBulkExpUncert),is.na(statsAgrHourIdx$precipBulk)) == TRUE)){
+      log$error(paste0('There is a mismatch between NA values in hourly precipBulk vs. precipBulkExpUncert for datum: ',
+                       DirIn))
+      stop()
+    }
+    # Final check whether uncertainty estimates are provided for all non-NA daily precip output
+    if(!(all.equal(is.na(statsAgrDayIdx$precipBulkExpUncert),is.na(statsAgrDayIdx$precipBulk)) == TRUE)){
+      log$error(paste0('There is a mismatch between NA values in daily precipBulk vs. precipBulkExpUncert for datum: ',
+                       DirIn))
+      stop()
+    }
     
     
     # Replace the date in the output path structure with the current date

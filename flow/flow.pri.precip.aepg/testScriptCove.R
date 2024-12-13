@@ -1,7 +1,7 @@
 rm(list=setdiff(ls(),c('arg','log')))
 source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.ucrt.agr.precip.bench.R')
 source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.precip.depth.smooth.R')
-# DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/10/16/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
+DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2022/10/24/precip-weighing_ARIK900000/aepg600m_heated/CFGLOC101675"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/03/01/precip-weighing_BONA900000/aepg600m_heated/CFGLOC112155"
@@ -11,11 +11,11 @@ source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.pre
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/12/01/precip-weighing_HARV900000/aepg600m_heated/CFGLOC108455"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2017/12/01/precip-weighing_KONZ900000/aepg600m_heated/CFGLOC109787"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_ONAQ900000/aepg600m_heated/CFGLOC107416"
-  # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/04/30/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
+  # DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/08/03/precip-weighing_REDB900000/aepg600m_heated/CFGLOC112599"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_PRIN900000/aepg600m_heated/CFGLOC104101"
   # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2020/09/01/precip-weighing_SRER900000/aepg600m/CFGLOC104646"
 # DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/10/16/precip-weighing_OSBS900000/aepg600m/CFGLOC102875"
-# DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2022/12/15/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
+# DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/10/19/precip-weighing_SCBI900000/aepg600m_heated/CFGLOC103160"
 # DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/12/07/precip-weighing_SJER900000/aepg600m_heated/CFGLOC113350"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_TALL900000/aepg600m/CFGLOC108877"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_TOOL900000/aepg600m_heated/CFGLOC106786"
@@ -27,14 +27,14 @@ source('~/R/NEON-IS-data-processing-homeDir/flow/flow.precip.aepg.smooth/def.pre
 # DirIn <-   "/scratch/pfs/precipWeighing_ts_pad_smoother/2021/06/01/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_ORNL900000/aepg600m_heated/CFGLOC103016"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2018/12/01/precip-weighing_NIWO900000/aepg600m_heated/CFGLOC109533"
-DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/11/08/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
+# DirIn <- "/scratch/pfs/precipWeighing_thresh_select_ts_pad_smoother/2024/11/08/precip-weighing_PUUM900000/aepg600m/CFGLOC113779"
 # DirIn <- "/scratch/pfs/precipWeighing_ts_pad_smoother/2023/01/15/precip-weighing_HQTW900000/aepg600m_heated/CFGLOC114310"
 
 DirOutBase <- "/scratch/pfs/out_Cove"
 DirSubCopy <- NULL
-WndwAgr <- '5 min'
+WndwAgr <- '60 min'
 RangeSizeHour <- 24
-Envelope <- 2
+Envelope <- 1.3
 # WndwAgr <- '60 min'
 # RangeSizeHour <- 72
 # Envelope <- 30
@@ -70,6 +70,27 @@ if(base::length(DirSubCopy) > 0){
                                      log=log)
 }
 
+#adjust thresholds based on WndwAgr unit
+WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
+if(stringr::str_detect(WndwAgr, 'min')) {
+  ThshCount <- ThshCountHour * (60/WndwAgrNumc)
+  rangeSize <- RangeSizeHour*(60/WndwAgrNumc)   #!!! POTENTIAL FOR MAKING AN INPUT VARIABLE !!!
+  if(WndwAgrNumc > 60 | WndwAgrNumc < 5){
+    log$fatal('averaging unit must be between 5 minutes and one hour')
+    stop()
+  }
+} else if ((stringr::str_detect(WndwAgr, 'hour')) ){
+  ThshCount <- ThshCountHour/WndwAgrNumc
+  rangeSize <- RangeSizeHour/WndwAgrNumc #account for evap in last 24 hours
+  if(WndwAgrNumc > 1 | WndwAgrNumc < (5/60)){
+    log$fatal('averaging unit must be between 5 minutes and one hour')
+    stop()
+  }
+} else {
+  log$fatal('averaging unit needs to be in minutes (min) or hours (hour)')
+  stop()
+}
+
 # Take stock of our data files.
 # !! Try to make more generic, while excluding the manifest.txt file
 fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
@@ -98,13 +119,9 @@ flagsCal <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInFlags,fileFla
 flags <- dplyr::full_join(flagsPlau, flagsCal, by =  'readout_time')
 
 #combine three gauges into one flagging variable. If any are 1 all flagged, any -1 all flagged, else not flagged
-
 flagNames <- names(flags)[grepl(unique(names(flags)), pattern = 'strainGauge')]
-
 flagNames <- unique(sub(pattern='strainGauge[1-3]Depth',replacement='',x=flagNames))
-
 qfs<- flags[, 'readout_time', drop = F]
-
 for (name in flagNames){
   flags_sub <- flags[,grepl(names(flags), pattern = name)]
   flagVar <- paste0('strainGaugeDepth', name)
@@ -122,8 +139,12 @@ for (name in flagNames){
 data$strain_gauge1_stability[is.na(data$strainGauge1Depth)] <- NA
 data$strain_gauge2_stability[is.na(data$strainGauge2Depth)] <- NA
 data$strain_gauge3_stability[is.na(data$strainGauge3Depth)] <- NA
-data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth, strainGauge2Depth, strainGauge3Depth), na.rm = F),
-                               strainGaugeStability = base::rowSums(x=base::cbind(strain_gauge1_stability, strain_gauge2_stability, strain_gauge3_stability), na.rm = F)==3)
+data <- data %>% dplyr::mutate(strainGaugeDepth = base::rowMeans(x=base::cbind(strainGauge1Depth,
+                                                                               strainGauge2Depth,
+                                                                               strainGauge3Depth), na.rm = F),
+                               strainGaugeStability = base::rowSums(x=base::cbind(strain_gauge1_stability,
+                                                                                  strain_gauge2_stability,
+                                                                                  strain_gauge3_stability), na.rm = F)==3)
 data$strainGaugeDepth[data$strainGaugeStability == FALSE] <- NA
 
 #if there are no heater streams add them in as NA
@@ -131,33 +152,10 @@ if(!('internal_temperature' %in% names(data))){data$internal_temperature <- as.n
 if(!('inlet_temperature' %in% names(data))){data$inlet_temperature <- as.numeric(NA)}
 if(!('orifice_heater_flag' %in% names(data))){data$orifice_heater_flag <- as.numeric(NA)}
 
-# Do time averaging
-
-#adjust thresholds based on WndwAgr unit
-WndwAgrNumc <- as.numeric(stringr::str_extract(string = WndwAgr, pattern = '[0-9]+'))
-if(stringr::str_detect(WndwAgr, 'min')) {
-  ThshCount <- ThshCountHour * (60/WndwAgrNumc)
-  rangeSize <- RangeSizeHour*(60/WndwAgrNumc)   #!!! POTENTIAL FOR MAKING AN INPUT VARIABLE !!!
-  if(WndwAgrNumc > 60 | WndwAgrNumc < 5){
-    log$fatal('averaging unit must be between 5 minutes and one hour')
-    stop()
-  }
-} else if ((stringr::str_detect(WndwAgr, 'hour')) ){
-  ThshCount <- ThshCountHour/WndwAgrNumc
-  rangeSize <- RangeSizeHour/WndwAgrNumc #account for evap in last 24 hours
-  if(WndwAgrNumc > 1 | WndwAgrNumc < (5/60)){
-    log$fatal('averaging unit must be between 5 minutes and one hour')
-    stop()
-  }
-} else {
-  log$fatal('averaging unit needs to be in minutes (min) or hours (hour)')
-  stop()
-}
-
 # Add the suspectCal flag to the data so that it can be time-averaged and fed into the final QF
 data$strainGaugeDepthSuspectCalQF <- qfs$strainGaugeDepthSuspectCalQF
 
-
+# Do time averaging
 strainGaugeDepthAgr <- data %>%
   dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr)) %>%
   dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = WndwAgr,change_on_boundary=TRUE)) %>%
@@ -184,14 +182,13 @@ flagsAgr$strainGaugeStabilityQF[is.na(strainGaugeDepthAgr$strainGaugeStability)]
 flagsAgr$strainGaugeStabilityQF[strainGaugeDepthAgr$strainGaugeStability == FALSE] <- 1 # Probably make informational flag b/c we removed unstable values
 flagsAgr$heaterErrorQF <- 0
 flagsAgr$evapDetectedQF <- 0
-
-#### should threshold probably
-#### what happens when there's no heater? 
 flagsAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > -6 & 
                          strainGaugeDepthAgr$internalTemperature < 2 & 
                          strainGaugeDepthAgr$inletTemperature < strainGaugeDepthAgr$internalTemperature] <- 1
 flagsAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > 6 & strainGaugeDepthAgr$orificeHeaterFlag > 0] <- 1
-flagsAgr$heaterErrorQF[is.na(strainGaugeDepthAgr$internalTemperature)|is.na(strainGaugeDepthAgr$inletTemperature)|is.na(strainGaugeDepthAgr$orificeHeaterFlag)] <- -1
+flagsAgr$heaterErrorQF[is.na(strainGaugeDepthAgr$internalTemperature) |
+                         is.na(strainGaugeDepthAgr$inletTemperature) |
+                         is.na(strainGaugeDepthAgr$orificeHeaterFlag)] <- -1
 
 
 # Dynamic Envelope
@@ -291,11 +288,12 @@ for(idxSurr in c(0,seq_len(nSurr))){
       setNotNa[1:rangeSize] <- FALSE 
       setNotNa[(numRow-rangeSize+1):numRow] <- FALSE
       
-      if(sum(setNotNa) < 5){
-        message('Less than 5 benchmarks needed for surrogate generation are not NA. Skipping surrogate testing.')
+      # Create surrogates
+      surrFill <- base::try(multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr),silent=F)
+      if("try-error" %in% base::class(surrFill)){
+        log$warn('Surrogate generation failed (likely not enough data). Uncertainty estimates cannot be generated. A check will be done later to ensure precip is also NA. If not, an error will occur.')
         break
       }
-      surrFill <- multifractal::iaaft(x=depthMinusBench[setNotNa],N=nSurr)
       strainGaugeDepthAgr[setNotNa,nameVarDepthS] <- strainGaugeDepthAgr$bench[setNotNa] + surrFill    # Add the surrogates to the benchmark
 
       # Backfill rangeSize amount of data at beginning and end of timeseries to the original strain gauge depth to form a complete timeseries
@@ -467,9 +465,24 @@ statsAgrDay$ucrtExp <- 2*unlist(ucrtAgrDay)
 statsAgrDay$ucrtExp[is.na(statsAgrDay$precipBulk)] <- as.numeric(NA) # last value will always be NA because we don't have the start of the next day
 
 
-  
 
 
+# Final check whether uncertainty estimates are provided for all non-NA daily precip output for central 3 days
+dayOut <- InfoDirIn$time+as.difftime(c(-1,0,1),units='days')
+setOutHour <- statsAgrHour$startDateTime >= min(dayOut) & 
+  statsAgrHour$startDateTime < (max(dayOut) + as.difftime(1,units='days'))
+setOutDay <- statsAgrDay$startDate >= min(dayOut) & 
+  statsAgrDay$startDate < (max(dayOut) + as.difftime(1,units='days'))
+# Filter the data for this output day
+statsAgrHourIdx <- statsAgrHour[setOutHour,]
+statsAgrDayIdx <- statsAgrDay[setOutDay,]
+
+if(!(all.equal(is.na(statsAgrHourIdx$ucrtExp),is.na(statsAgrHourIdx$precipBulk)) == TRUE)){
+  stop('There is a mismatch between NA values in hourly precipBulk vs. ucrtExp')
+}
+if(!(all.equal(is.na(statsAgrDayIdx$ucrtExp),is.na(statsAgrDayIdx$precipBulk)) == TRUE)){
+  stop('There is a mismatch between NA values in daily precipBulk vs. ucrtExp')
+}
 
 ### outputs
 # qfs #raw resolution collection of flags as one variable rather than each strain gauge
