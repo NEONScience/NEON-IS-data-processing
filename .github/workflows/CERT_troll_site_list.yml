@@ -7,12 +7,12 @@ on:
       - 'pipe/troll/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 jobs:
-  put-file:
+  put_files:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
+      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
       REPO: troll_site_list # Pachyderm repo
       BRANCH: master 
       IN_PATHS: 'pipe/troll/site-list.json' # Comma-separated list (no spaces) to one or more paths or directories. Length must match OUT_PATHS. If directory, all files in directory will be placed in pachyderm at corresponding entry of OUT_PATHS. 
