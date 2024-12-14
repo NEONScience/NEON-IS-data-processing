@@ -2,7 +2,7 @@
 # Build with the following command
 # docker build --no-cache -t neon-is-precip-aepg-smooth-r <path to this directory>
 
-# Start with the neon-is-precip-aepg-smooth-r image. 
+# Start with the qaqc package image. 
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.7
 
 ARG FLOW_DIR="./flow"
@@ -21,10 +21,11 @@ RUN groupadd app && \
     useradd app -g app
 WORKDIR /home/app
 
-# Copy in calibration workflow
-COPY ${FLOW_DIR}/${APP_DIR}/wrap.precip.aepg.smooth.R .
-COPY ${FLOW_DIR}/${APP_DIR}/wrap.precip.aepg.smooth_Belfort_depth.R .
+# Copy in workflow
 COPY ${FLOW_DIR}/${APP_DIR}/flow.precip.aepg.smooth.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.precip.aepg.smooth.R .
+COPY ${FLOW_DIR}/${APP_DIR}/def.ucrt.agr.precip.bench.R .
+COPY ${FLOW_DIR}/${APP_DIR}/def.precip.depth.smooth.R .
 
 # Run as app user
 RUN chown app:app -R /home/app

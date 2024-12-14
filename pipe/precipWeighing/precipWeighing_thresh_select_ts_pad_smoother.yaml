@@ -1,0 +1,91 @@
+---
+pipeline:
+  name: precipWeighing_thresh_select_ts_pad_smoother
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.1.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/threshold_select
+    rm -rf /tmp/threshold_selectCopy
+    mkdir -p /tmp/threshold_select
+    
+    # Run first module - threshold_select'
+    Rscript ./flow.thsh.slct.R \
+      DirIn=$REPO_LOCATIONS \
+      DirOut=/tmp/threshold_select \
+      DirErr=/pfs/out/errored_datums \
+      FileThsh=$FILE_THRESHOLDS \
+      "TermCtxt1=precipBulk|precipitation|weighing" \
+      "DirSubCopy=data|flags"
+      
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output)  || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/threshold_select 
+    
+    # Run timeseries_padder
+    python3 -m timeseries_padder.timeseries_padder.constant_pad_main 
+    EOF
+  env:
+    DATA_PATH: /tmp/threshold_selectCopy
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    YEAR_INDEX: '3'
+    MONTH_INDEX: '4'
+    DAY_INDEX: '5'
+    LOCATION_INDEX: '8'
+    DATA_TYPE_INDEX: '9'
+    RELATIVE_PATH_INDEX: '3'
+    PAD_DIR: data,flags
+    WINDOW_SIZE: '4'
+    COPY_DIR: none # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none' if none other are desired.
+    PARALLELIZATION_INTERNAL: '3' # For threshold select module
+output_branch: master
+input:
+  cross:
+  - pfs:
+      name: REPO_LOCATIONS
+      repo: precipWeighing_analyze_pad_and_qaqc_plau
+      glob: /*/*/*
+  - pfs:
+      name: FILE_THRESHOLDS
+      repo: precipWeighing_threshold_smoother
+      glob: /thresholds.json
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 800M
+  cpu: 3.3
+resource_limits:
+  memory: 1.5G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 1.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
