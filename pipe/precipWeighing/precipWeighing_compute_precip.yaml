@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighing_compute_precip
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-smooth:sha-bfc0c7d
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-smooth:sha-f1743ef
   cmd:
   - sh
   - "-c"
@@ -22,7 +22,7 @@ transform:
     EOF
   env:
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '5'
 output_branch: master
 input:
