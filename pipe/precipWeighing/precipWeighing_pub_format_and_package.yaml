@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: groundwaterPhysical_pub_format_and_package
+  name: precipWeighing_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:sha-bbae305
   cmd:
   - sh
   - "-c"
@@ -15,12 +15,10 @@ transform:
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH_TRANSFORMER
     rm -rf $OUT_PATH_PACKAGER
-    rm -rf $OUT_PATH_PUBFILES
     mkdir $OUT_PATH_TRANSFORMER
     mkdir $OUT_PATH_PACKAGER
-    mkdir $OUT_PATH_PUBFILES
-    
-    # Set some environment variables for the second module
+
+    # Set some environment variables for the pub transformer module
     export DATA_PATH=$GROUPED_PATH
     export OUT_PATH=$OUT_PATH_TRANSFORMER
     
@@ -48,31 +46,15 @@ transform:
     export LOCATION_PATH=$GROUPED_PATH
     python3 -m pub_files.main
     
-    # Run os_table_loader
-    export IN_PATH=$OUT_PATH_PUBFILES
-    export OUT_PATH="/pfs/out"
-    export WORKBOOK_PATH=$WORKBOOK_PATH
-    export PARTIAL_TABLE_NAME="maintenance"
-    export FILE_TYPE="csv"
-    export DB_CONFIG_SOURCE="mount"
-    export LOG_LEVEL=$LOG_LEVEL
-    export INPUT_PATH_PARSE_INDEX="3"
-    export DATA_PRODUCT_PATH_INDEX="3"
-    export SITE_PATH_INDEX="4"
-    export YEAR_PATH_INDEX="5"
-    export MONTH_PATH_INDEX="6"
-    export PACKAGE_TYPE_PATH_INDEX="7"
-    python3 -m os_table_loader.publication_main
-    
     EOF
   env:
     # Environment variables for 2nd (part A) module: pub_workbook_loader.
     OUT_PATH_WORKBOOK: "/tmp/pub_workbooks"
-    PRODUCTS: NEON.DOM.SITE.DP1.20100.001,NEON.DOM.SITE.DP1.20015.001,NEON.DOM.SITE.DP1.20217.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
+    PRODUCTS: NEON.DOM.SITE.DP1.00044.001 # Format: NEON.DOM.SITE.DPX.XXXXX.XXX,NEON.DOM.SITE.DPX.XXXXX.XXX,etc
 
     # Environment variables for 2nd module (part B): pub_transformer.
     LOG_LEVEL: INFO
-    PRODUCT_INDEX: '3' # input path index of the data product identifier
+    PRODUCT_INDEX: '3' # input path index of the data product identifier. Also shared with pub_packager.
     YEAR_INDEX: '4'
     MONTH_INDEX: '5'
     DAY_INDEX: '7'
@@ -91,7 +73,7 @@ transform:
     SORT_INDEX: '10' # File name index corresponding to date field (delimiter = .)
 
     # Environment variables for 3rd module: pub_files.
-    OUT_PATH_PUBFILES: "/tmp/pub_files"
+    OUT_PATH_PUBFILES: "/pfs/out"
     RELATIVE_PATH_INDEX: '3'
     DB_SECRETS_PATH: /var/db_secret
     GITHUB_PEM_PATH: /var/github_secret/key
@@ -118,21 +100,21 @@ transform:
 input:
   pfs:
     name: GROUPED_PATH
-    repo: groundwaterPhysical_pub_group
+    repo: precipWeighing_pub_group
     # Glob must be product-monthly or product-site-monthly. Product-site-month datums reduce unneccesary republication.
     # path structure is e.g. DP1.00098.001/2023/04/CPER/04 (product/year/month/site/day)
     glob: /*/*/*/*
 parallelism_spec:
-  constant: 6
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 400M
-  cpu: 1
+  cpu: 1.2
 resource_limits:
   memory: 800M
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 3.5G
+  memory: 2G
   cpu: 0.4
 datum_set_spec:
   number: 5

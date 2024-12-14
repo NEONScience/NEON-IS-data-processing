@@ -10,7 +10,7 @@ transform:
     # NOTE that the aepg600m needs to handle both heated and unheated source types, and have different site-dates for kafka and trino loaders.
     # This is because some kafka topics start with <site>dfir instead of simply <site>, which the trino loader cannot handle
     LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
-    START_DATE: "2021-12-31"
+    START_DATE: "2024-09-20"
     #END_DATE: "2024-06-01"
     OUT_PATH_KAFKA: /pfs/out/kafka
     OUT_PATH_TRINO: /pfs/out/trino
@@ -74,10 +74,10 @@ input:
       repo: aepg600m_site_list
       glob: /site-list-nonheated-trino.json
 resource_requests:
-  memory: 100M
-  cpu: 1
+  memory: 500M
+  cpu: 1.5
 resource_limits:
-  memory: 300M
+  memory: 800M
   cpu: 1.5
 sidecar_resource_requests:
   memory: 500M

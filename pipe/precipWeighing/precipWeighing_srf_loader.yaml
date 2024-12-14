@@ -1,15 +1,13 @@
 pipeline:
-  name: parWaterSurface_srf_loader
+  name: precipWeighing_srf_loader
 transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:v1.0.0
   cmd:
     - /bin/bash
   env:
-    GROUP_PREFIX: par-water-surface_
-    LOG_LEVEL: INFO
+    GROUP_PREFIX: precip-weighing_
+    LOG_LEVEL: DEBUG
     OUT_PATH: /pfs/out
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:v1.0.0
-  # image_pull_secrets:
-  #   - battelleecology-quay-read-all-pull-secret
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
@@ -21,12 +19,17 @@ input:
     branch: master
     empty_files: true
     glob: /*
-    repo: pqs1_cron_daily_and_date_control_tick
-output_branch: master
-resource_requests:
-  cpu: 1
-  memory: 300M
+    repo: aepg600m_cron_daily_and_date_control_tick
 autoscaling: true
+resource_requests:
+  memory: 50M
+  cpu: 0.1
+resource_limits:
+  memory: 300M
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 200M
+  cpu: 0.3
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -44,14 +47,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
-    }
-  ]

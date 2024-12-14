@@ -29,17 +29,12 @@
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/source-id, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
 #' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor. \cr
-#'
 #' Nested within the path for each source ID is (at a minimum) the folder:
-#'         /data
+#'         /stats
 #'         /flags
-#' The data/flags folders holds any number of daily data/flags files padded around the yyyy/mm/dd in the input path.
-#' #' 
-#' For example:
-#' Input path = /scratch/pfs/aepg600m_calibration_group_and_convert/aepg600m_heated/2023/01/01/17777/data/ with nested file:
-#'    aepg600m_heated_17777_2023-01-01.parquet
+#' The stats/flags folders holds any number of daily stats/flags files padded around the yyyy/mm/dd in the input path.
 #'
-#' There may be other folders at the same level as the data directory. They are ignored and not passed 
+#' There may be other folders at the same level as the stats directory. They are ignored and not passed 
 #' to the output unless indicated in SubDirCopy.
 #' 
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
@@ -48,38 +43,16 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "FileSchmData=value" (optional), where value is the full path to schema for the aggregated data 
-#' output by this workflow. If not input, a schema will be automatically crafted. 
-#' The output is ordered as follows:
-#' readout_time
-#' gauge_depth_average: average of the 3 individual calibrated gauge depths 
-#' gauge_depth_range: maximum difference among the 3 individual strain gauge depths
-#' orifice_temp
-#' inlet_temp
-#' Ensure that any schema input here matches the column order of the auto-generated schema, 
-#' simply making any desired changes to column names.
-#'
-#' 5. "FileSchmQf=value" (optional), where value is the full path to schema for quality flags
-#' output by this workflow. If not input, the schema will be created automatically.
-#' The output  is ordered as follows:
-#' readout_time
-#' orificeHeaterQF
-#' stabilityQF
-#' ENSURE THAT ANY
-#' OUTPUT SCHEMA MATCHES THIS ORDER, otherwise the columns will be mislabeled. If no schema is input, default column
-#' names other than "readout_time" are a combination of the term, '_', and the flag name ('QfExpi' or 'QfSusp').
-#' For example, for terms 'resistance' and 'voltage' each having calibration information. The default column naming
-#' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
-#'
-#' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
+#' 4. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the data folder that are to be copied with a
 #' symbolic link to the output path. May NOT include 'data'. 
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #'
-#' @return A repository with the aggregated sensor depth data and flags in DirOut, where DirOut replaces BASE_REPO but
-#' otherwise retains the child directory structure of the input path. 
+#' @return A repository with the average precipitation for each sensor location in DirOut, where DirOut replaces BASE_REPO but
+#' otherwise retains the child directory structure of the input path. Only the stats directory is populated as 
+#' the terminal directory. (Flags do not need averaging across computation days.) 
 #'
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -88,11 +61,11 @@
 
 #' @examples 
 #' # Not Run - uses all available defaults
-#' Rscript flow.precip.aepg.avg.depth.R "DirIn=/scratch/pfs/aepg600m_calibration_group_and_convert" "DirOut=/scratch/pfs/out" "DirErr=/scratch/pfs/out/errored_datums"  
+#' Rscript flow.precip.aepg.comb.R "DirIn=/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000" "DirOut=/scratch/pfs/out" "DirErr=/scratch/pfs/out/errored_datums"  
 #'
 #' Not Run - Stepping through the code in Rstudio
-#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30')
-#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28')
+#' log <- NEONprocIS.base::def.log.init(Lvl = "DEBUG")
 #' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "DirErr=/scratch/pfs/out/errored_datums")
 #' # Then copy and paste rest of workflow into the command window
 
@@ -106,7 +79,6 @@ library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
-# source("./wrap.precip.aepg.smooth_Belfort_depth.R")
 source("./wrap.precip.aepg.comb.R")
 
 # Pull in command line arguments (parameters)
@@ -136,8 +108,7 @@ Para <-
                      "DirErr" 
                      ),
     NameParaOptn = c(
-                     "DirSubCopy",
-                     "FileSchmData"
+                     "DirSubCopy"
                      ),
     log = log
   )
@@ -148,17 +119,6 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-# Retrieve output schema for data
-FileSchmData <- Para$FileSchmData
-log$debug(base::paste0('Output schema for bulk precipitation: ',base::paste0(FileSchmData,collapse=',')))
-
-# Read in the schema 
-if(base::is.null(FileSchmData) || FileSchmData == 'NA'){
-  SchmData <- NULL
-} else {
-  SchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
-}
-
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
 log$debug(base::paste0(
@@ -167,7 +127,7 @@ log$debug(base::paste0(
 ))
 
 # What are the expected subdirectories of each input path
-nameDirSub <- c('data')
+nameDirSub <- c('stats')
 log$debug(base::paste0(
   'Minimum expected subdirectories of each datum path: ',
   base::paste0(nameDirSub, collapse = ',')
@@ -191,7 +151,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.precip.aepg.comb(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmData=SchmData,
         DirSubCopy=DirSubCopy,
         log=log
         ),

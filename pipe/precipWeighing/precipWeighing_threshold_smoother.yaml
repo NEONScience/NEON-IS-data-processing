@@ -1,37 +1,38 @@
+---
 pipeline:
-  name: tempSurfacewater_srf_loader
+  name: precipWeighing_threshold_smoother
 transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-threshold-loader:v1.0.0
   cmd:
-    - /bin/bash
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m threshold_loader.threshold_loader_main
   env:
-    GROUP_PREFIX: temp-surfacewater_
-    LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:v1.0.0
-  # image_pull_secrets:
-  #   - battelleecology-quay-read-all-pull-secret
+    LOG_LEVEL: INFO
+    # Separate multiple terms with a pipe (|). Enter "none" to retrieve all terms
+    TERM: precipBulk
+    # Separate multiple contexts with a pipe (|). E.g. (par-met|upward-facing). Enter "none" for no context filtering.
+    CTXT: precipitation|weighing
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
-  stdin:
-    - '#!/bin/bash'
-    - python3 -m srf_loader.srf_loader_main
 input:
   pfs:
-    branch: master
-    empty_files: true
+    repo: aepg600m_cron_daily_and_date_control_tick
     glob: /*
-    repo: prt_cron_daily_and_date_control_tick
+    empty_files: true
 autoscaling: true
 resource_requests:
-  memory: 50M
-  cpu: 0.1
+  memory: 32M
+  cpu: 0.05
 resource_limits:
-  memory: 300M
-  cpu: 1.5
+  memory: 200M
+  cpu: 0.5
 sidecar_resource_requests:
   memory: 200M
-  cpu: 0.3
+  cpu: 0.5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
