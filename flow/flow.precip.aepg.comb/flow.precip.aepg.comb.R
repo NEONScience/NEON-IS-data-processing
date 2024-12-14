@@ -29,15 +29,10 @@
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/source-id, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
 #' the 4-digit year, 2-digit month, and' 2-digit day. The source-id is the unique identifier of the sensor. \cr
-#'
 #' Nested within the path for each source ID is (at a minimum) the folder:
 #'         /stats
 #'         /flags
 #' The stats/flags folders holds any number of daily stats/flags files padded around the yyyy/mm/dd in the input path.
-#' #' 
-#' For example:
-#' Input path = /scratch/pfs/aepg600m_calibration_group_and_convert/aepg600m_heated/2023/01/01/17777/stats/ with nested file:
-#'    aepg600m_heated_17777_2023-01-01.parquet
 #'
 #' There may be other folders at the same level as the stats directory. They are ignored and not passed 
 #' to the output unless indicated in SubDirCopy.
@@ -55,8 +50,9 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #'
-#' @return A repository with the aggregated sensor depth data and flags in DirOut, where DirOut replaces BASE_REPO but
-#' otherwise retains the child directory structure of the input path. 
+#' @return A repository with the average precipitation for each sensor location in DirOut, where DirOut replaces BASE_REPO but
+#' otherwise retains the child directory structure of the input path. Only the stats directory is populated as 
+#' the terminal directory. (Flags do not need averaging across computation days.) 
 #'
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -65,11 +61,11 @@
 
 #' @examples 
 #' # Not Run - uses all available defaults
-#' Rscript flow.precip.aepg.avg.depth.R "DirIn=/scratch/pfs/aepg600m_calibration_group_and_convert" "DirOut=/scratch/pfs/out" "DirErr=/scratch/pfs/out/errored_datums"  
+#' Rscript flow.precip.aepg.comb.R "DirIn=/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000" "DirOut=/scratch/pfs/out" "DirErr=/scratch/pfs/out/errored_datums"  
 #'
 #' Not Run - Stepping through the code in Rstudio
-#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30')
-#' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28')
+#' log <- NEONprocIS.base::def.log.init(Lvl = "DEBUG")
 #' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "DirErr=/scratch/pfs/out/errored_datums")
 #' # Then copy and paste rest of workflow into the command window
 
@@ -83,7 +79,6 @@ library(foreach)
 library(doParallel)
 
 # Source the wrapper function. Assume it is in the working directory
-# source("./wrap.precip.aepg.smooth_Belfort_depth.R")
 source("./wrap.precip.aepg.comb.R")
 
 # Pull in command line arguments (parameters)

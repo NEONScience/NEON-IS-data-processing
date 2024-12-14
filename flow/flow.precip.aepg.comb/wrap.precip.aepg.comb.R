@@ -15,15 +15,9 @@
 #' the 4-digit year, 2-digit month, and' 2-digit day. The location-id is the unique identifier of the location. \cr
 #'
 #' Nested within this path is the folder:
-#'         /data
-#'         /threshold
-#' The data folder holds any number of data files from kafka with the naming format:
-#' SOURCETYPE_LOCATIONID_YYYY-MM-DD.parquet
-#' 
-#' For example:
-#' Input path = /scratch/pfs/li191r_data_source_kafka/li191r/2023/03/01/11346/data/ with nested file:
-#'    li191r_11346_2023-03-05_13275082_13534222.parquet
-#'    li191r_11346_2023-03-05_13534225_13534273.parquet
+#'         /stats
+#'         /flags
+#' The stats and flags folders hold the output from flow.precip.aepg.smooth.R
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
@@ -36,8 +30,10 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #'
-#' @return A repository in DirOutBase containing the merged and filtered Kafka output, where DirOutBase replaces BASE_REPO 
-#' of argument \code{DirIn} but otherwise retains the child directory structure of the input path. 
+#' @return A repository in DirOutBase containing the the average computed precipitation for each data day, 
+#' where DirOutBase replaces BASE_REPO of argument \code{DirIn} but otherwise retains the child directory 
+#' structure of the input path. Only the stats terminal directory is output. (Flags do not need averaging
+#' across computation days.)
 #'
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -46,10 +42,9 @@
 
 #' @examples 
 #' # NOT RUN
-#' DirIn <- '/scratch/pfs/li191r_data_source_kafka/li191r/2023/03/02/27733'
+#' DirIn <- '/scratch/pfs/precipWeighing_ts_pad_smoother/2022/07/28'
 #' DirOutBase <- '/scratch/pfs/out'
-#' FileSchmL0 <- '~/R/avro_schemas/schemas/li191r/li191r.avsc' # L0 schema
-#' wrap.kfka.comb(DirIn,DirOutBase,FileSchmL0)
+#' wrap.precip.aepg.comb(DirIn,DirOutBase)
 
 #' @seealso Currently none
 
