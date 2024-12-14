@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighing_quality_metrics
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:sha-c8208f2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.0
   cmd:
   - sh
   - "-c"
