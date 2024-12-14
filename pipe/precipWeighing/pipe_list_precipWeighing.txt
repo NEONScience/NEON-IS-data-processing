@@ -15,5 +15,6 @@ precipWeighing_srf_loader.yaml
 precipWeighing_srf_assignment.yaml
 precipWeighing_level1_group_consolidate_srf.yaml
 precipWeighing_cron_monthly_and_pub_control.yaml
-precipWeighing_pub_group_and_package.yaml
+precipWeighing_pub_group.yaml
+precipWeighing_pub_format_and_package.yaml
 precipWeighing_pub_egress_and_publish.yaml
