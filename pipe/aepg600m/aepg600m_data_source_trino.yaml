@@ -97,7 +97,7 @@ transform:
     fi
     set +x
 
-    Export L0 data to bucket
+    #Export L0 data to bucket
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
