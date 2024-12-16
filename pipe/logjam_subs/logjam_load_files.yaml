@@ -11,7 +11,7 @@ transform:
   - '#!/bin/bash'
   - python3 -m logjam_loader.load_all_logjam_files
   env:
-    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest/test_pachyderm
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     STARTING_PATH_INDEX: "7"
