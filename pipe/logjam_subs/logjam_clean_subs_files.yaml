@@ -20,7 +20,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: logjam_subs_load_files
+      repo: logjam_load_files
       glob: /*
 parallelism_spec:
   constant: 3

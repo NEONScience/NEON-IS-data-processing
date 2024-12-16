@@ -64,20 +64,20 @@ wrap.troll.logfiles <- function(FileIn,
   # --------- Load the data ----------
   # Load in the csv log file(s)
   # Read in a single test file from LT400
-  log_file <- base::try(read.table("/home/NEON/kcawley/otherScripts/logjam_prod_48816_0d51729c57060bc8defa47da65cdedeb.csv", 
-                                   header = FALSE, 
-                                   sep = ",", 
-                                   col.names = paste0("V",seq_len(10)),
-                                   encoding = 'utf-8',
-                                   stringsAsFactors = FALSE,
-                                   fill = TRUE,
-                                   strip.white = TRUE,
-                                   na.strings=c(-1,'')))
+  # log_file <- base::try(read.table("/home/NEON/kcawley/otherScripts/logjam_prod_48816_0d51729c57060bc8defa47da65cdedeb.csv", 
+  #                                  header = FALSE, 
+  #                                  sep = ",", 
+  #                                  col.names = paste0("V",seq_len(10)),
+  #                                  encoding = 'utf-8',
+  #                                  stringsAsFactors = FALSE,
+  #                                  fill = TRUE,
+  #                                  strip.white = TRUE,
+  #                                  na.strings=c(-1,'')))
   
-  # log_file  <-
-  #   base::try(read.table(paste0(FileIn), header = FALSE, sep = ",", 
-  #                        col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
-  #                        stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
+  log_file  <-
+    base::try(read.table(paste0(FileIn), header = FALSE, sep = ",",
+                         col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
+                         stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
   if (base::any(base::class(log_file) == 'try-error')) {
     # Generate error and stop execution
     log$error(base::paste0('File ', FileIn, ' is unreadable. Likely not a HOBO file.'))
