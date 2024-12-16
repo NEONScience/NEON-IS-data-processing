@@ -84,7 +84,7 @@ input:
       joinOn: $1/$2/$3/$4
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 4
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 1.2G
@@ -93,8 +93,8 @@ resource_limits:
   memory: 2G
   cpu: 4.5
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 0.5
+  memory: 2G
+  cpu: 0.2
 datum_set_spec:
   number: 1
 scheduling_spec:
