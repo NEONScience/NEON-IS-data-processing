@@ -1,24 +1,27 @@
 ##############################################################################################
-#' @title Compute average depth of individual strain gauges, smooth, and compute precipitation for Belfort AEPG600m sensor
+#' @title Compute average depth of individual strain gauges, smooth, and compute precipitation for 
+#' Belfort AEPG600m sensor
 
 #' @author
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
 
-#' @description Workflow. Compute average depth related QC for 
-#' Belfort AEPG600m sensor, then apply smoothing algorithm of the average depth over multiple days and
-#' compute precipitation. 
+#' @description Workflow. Compute the average depth and related QC flags for the
+#' Belfort AEPG600m sensor, then apply a smoothing algorithm over multiple days to 
+#' reduce or eliminate period noise due to environmental variation and draw out actual
+#' precipitation events. Compute precipitation sums, uncertainty, and quality flags
+#' for hourly and daily intervals. 
 #'
 #' General code workflow:
 #'    Parse input parameters
 #'    Determine datums to process (set of files/folders to process as a single unit)
 #'    For each datum:
 #'      Create output directories and copy (by symbolic link) unmodified components
-#'      Read in the L0 data files into an arrow dataset
+#'      Read in the L0 data files into arrow datasets
 #'      Compute average depth streams and performed related QC
-#'      Average consolidated depth to X minutes (user defined) 
-#'      Smooth average depth stream to compute precip
-#'      Write data and flags output to file
+#'      Average consolidated depth to X minutes (user defined in thresholds) 
+#'      Smooth average depth stream to compute hourly and daily precip for 3 central days
+#'      Write stats and flags output to file
 #'
 #' This script is run at the command line with the following arguments. Each argument must be a string
 #' in the format "Para=value", where "Para" is the intended parameter name and "value" is the value of
@@ -39,8 +42,7 @@
 #' The data/flags folders holds any number of daily data/flags files padded around the yyyy/mm/dd in the input path.
 #' #' 
 #' For example:
-#' Input path = /scratch/pfs/aepg600m_calibration_group_and_convert/aepg600m_heated/2023/01/01/17777/data/ with nested file:
-#'    aepg600m_heated_17777_2023-01-01.parquet
+#' Input path = precipWeighing_ts_pad_smoother/2022/07/28/precip-weighing_BLUE900000/aepg600m_heated/CFGLOC103882
 #'
 #' There may be other folders at the same level as the data directory. They are ignored and not passed 
 #' to the output unless indicated in SubDirCopy.
@@ -51,28 +53,42 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "FileSchmData=value" (optional), where value is the full path to schema for the aggregated data 
+#' 4. "FileSchmStatHour=value" (optional), where value is the full path to schema for the hourly aggregated data 
 #' output by this workflow. If not input, a schema will be automatically crafted. 
 #' The output is ordered as follows:
-#' readout_time
-#' gauge_depth_average: average of the 3 individual calibrated gauge depths 
-#' gauge_depth_range: maximum difference among the 3 individual strain gauge depths
-#' orifice_temp
-#' inlet_temp
+#' startDateTime
+#' endDateTime
+#' precipBulk
+#' precipBulkExpUncert
+#' insuffDataQF
+#' extremePrecipQF
+#' heaterErrorQF
+#' dielNoiseQF
+#' strainGaugeStabilityQF
+#' evapDetectedQF
+#' inletHeater1QM
+#' inletHeater2QM
+#' inletHeater3QM
+#' inletHeaterNAQM
+#' finalQF
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.
 #'
-#' 5. "FileSchmQf=value" (optional), where value is the full path to schema for quality flags
-#' output by this workflow. If not input, the schema will be created automatically.
-#' The output  is ordered as follows:
+#' 5. "FileSchmStatDay=value" (optional), where value is the full path to schema for the daily aggregated data 
+#' output by this workflow. The columns are the same as the hourly output, except that startDate and endDate 
+#' are the timestamp columns (instead of startDateTime and endDateTime). If not input, a schema will be 
+#' automatically crafted. 
+#'
+#' 6. "FileSchmQfGage=value" (optional), where value is the full path to output schema for the quality flags
+#' representing the results of quality tests run on the individual strain gauge measurements. These quality flags
+#' are aggregated across the three strain gauges such that a single flag is output for each test (instead of 
+#' one quality flag for each strain gauge). If not input, a schema will be automatically crafted. 
+#' The output is ordered as follows:
 #' readout_time
-#' orificeHeaterQF
-#' stabilityQF
-#' ENSURE THAT ANY
-#' OUTPUT SCHEMA MATCHES THIS ORDER, otherwise the columns will be mislabeled. If no schema is input, default column
-#' names other than "readout_time" are a combination of the term, '_', and the flag name ('QfExpi' or 'QfSusp').
-#' For example, for terms 'resistance' and 'voltage' each having calibration information. The default column naming
-#' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
+#' all quality flags output by the plausibility module (retaining the same order)
+#' all quality flags output by the calibration module (retaining the same order)
+#' Ensure that any schema input here matches the column order of the auto-generated schema, 
+#' simply making any desired changes to column names.
 #'
 #' 6. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by
 #' pipes, at the same level as the data folder that are to be copied with a
@@ -81,8 +97,13 @@
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
 #' which uses system environment variables if available.
 #'
-#' @return A repository with the aggregated sensor depth data and flags in DirOut, where DirOut replaces BASE_REPO but
-#' otherwise retains the child directory structure of the input path. 
+#' @return A repository with the computed precipitation and flags in DirOut, where DirOut replaces BASE_REPO but
+#' otherwise retains the child directory structure of the input path. The terminal directories of each 
+#' sensor location folder are "stats" and "flags". For each individual daily run, the "stats" folder
+#' will populate output for the day indicated in the path structure as well as the days on either 
+#' side of it. Thus, if a sequence of days is processed, each output day will contain precipitation 
+#' estimates generated by the central day and the days on either side of it. The file names are appended
+#' with the day generating the output. 
 #'
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -91,10 +112,10 @@
 
 #' @examples 
 #' # Not Run - uses all available defaults
-#' Rscript flow.precip.aepg.avg.depth.R "DirIn=/scratch/pfs/aepg600m_calibration_group_and_convert" "DirOut=/scratch/pfs/out" "DirErr=/scratch/pfs/out/errored_datums"  
+#' Rscript flow.precip.aepg.comb.R "DirIn=/scratch/pfs/precipWeighing_compute_precip/2024/05/30" "DirOut=/scratch/pfs/out" "DirErr=/scratch/pfs/out/errored_datums"  
 #'
 #' Not Run - Stepping through the code in Rstudio
-#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_ts_pad_smoother/2024/05/30')
+#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_compute_precip/2024/05/30')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "DirErr=/scratch/pfs/out/errored_datums")
 #' # Then copy and paste rest of workflow into the command window
@@ -108,9 +129,10 @@
 library(foreach)
 library(doParallel)
 
-# Source the wrapper function. Assume it is in the working directory
-# source("./wrap.precip.aepg.smooth_Belfort_depth.R")
+# Source the wrapper function and other dependency functions. Assume it is in the working directory
 source("./wrap.precip.aepg.smooth.R")
+source("./def.ucrt.agr.precip.bench.R")
+source("./def.precip.depth.smooth.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -140,7 +162,9 @@ Para <-
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
-                     "FileSchmData"
+                     "FileSchmStatHour",
+                     "FileSchmStatDay",
+                     "FileSchmQfGage"
                      ),
     log = log
   )
@@ -151,15 +175,37 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-# Retrieve output schema for data
-FileSchmData <- Para$FileSchmData
-log$debug(base::paste0('Output schema for bulk precipitation: ',base::paste0(FileSchmData,collapse=',')))
+# Retrieve output schema for hourly stats
+FileSchmStatHour <- Para$FileSchmStatHour
+log$debug(base::paste0('Output schema for hourly bulk precipitation stats: ',base::paste0(FileSchmStatHour,collapse=',')))
 
 # Read in the schema 
-if(base::is.null(FileSchmData) || FileSchmData == 'NA'){
-  SchmData <- NULL
+if(base::is.null(FileSchmStatHour) || FileSchmStatHour == 'NA'){
+  SchmStatHour <- NULL
 } else {
-  SchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
+  SchmStatHour <- base::paste0(base::readLines(FileSchmStatHour),collapse='')
+}
+
+# Retrieve output schema for daily stats
+FileSchmStatDay <- Para$FileSchmStatDay
+log$debug(base::paste0('Output schema for bulk precipitation stats: ',base::paste0(FileSchmStatDay,collapse=',')))
+
+# Read in the schema 
+if(base::is.null(FileSchmStatDay) || FileSchmStatDay == 'NA'){
+  SchmStatDay <- NULL
+} else {
+  SchmStatDay <- base::paste0(base::readLines(FileSchmStatDay),collapse='')
+}
+
+# Retrieve output schema for strain gauge quality flags
+FileSchmQfGage <- Para$FileSchmQfGage
+log$debug(base::paste0('Output schema for aggregated strain gauge quality flags: ',base::paste0(FileSchmQfGage,collapse=',')))
+
+# Read in the schema 
+if(base::is.null(FileSchmQfGage) || FileSchmQfGage == 'NA'){
+  SchmQfGage <- NULL
+} else {
+  SchmQfGage <- base::paste0(base::readLines(FileSchmQfGage),collapse='')
 }
 
 # Retrieve optional subdirectories to copy over
@@ -194,7 +240,9 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.precip.aepg.smooth(
         DirIn=idxDirIn,
         DirOutBase=Para$DirOut,
-        SchmData=SchmData,
+        SchmStatHour=SchmStatHour,
+        SchmStatDay=SchmStatDay,
+        SchmQfGage=SchmQfGage,
         DirSubCopy=DirSubCopy,
         log=log
         ),
