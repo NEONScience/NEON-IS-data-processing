@@ -27,6 +27,7 @@ transform:
       p=${path#/pfs}
       IFS="/"; arr=($p); unset IFS;
       source_type=${arr[3]}
+      export SOURCE_TYPE=$source_type
       year=${arr[4]}
       month=${arr[5]}
       day=${arr[6]}
@@ -46,7 +47,6 @@ transform:
       export GEN_DATE=$year-$month-$day
       export GEN_SITE_NAME=$site
       export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
-      export SOURCE_TYPE=$source_type
       export GEN_YAML_CONF="/usr/src/app/genscript/configs/$(echo $SOURCE_TYPE)_streams.yaml"
       export GEN_SCHEMA_FILE="/usr/src/app/schemas/aepg600m/$(echo $SOURCE_TYPE).avsc"
       echo "Extracting $SOURCE_TYPE from Trino for $year/$month/$day/$site"
