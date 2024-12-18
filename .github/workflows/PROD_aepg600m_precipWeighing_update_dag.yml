@@ -1,8 +1,8 @@
-name: CERT-aepg600m-precipWeighing-update-dag
+name: PROD-aepg600m-precipWeighing-update-dag
 on:
   push:
     branches:
-      - 'cert'
+      - 'prod'
     paths:
       - 'pipe/aepg600m/*.yaml'
       - 'pipe/aepg600m/pipe_list_aepg600m.txt'
@@ -41,8 +41,8 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
+      PACHD_ADDRESS: grpcs://pachyderm-prod.transitions.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermProd }}
       PATHS: 'pipe/aepg600m,pipe/precipWeighing' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
