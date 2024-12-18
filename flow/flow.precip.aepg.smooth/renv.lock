@@ -154,6 +154,38 @@
       "Hash": "7ce2733a9826b3aeb1775d56fd305472",
       "Requirements": []
     },
+    "matrixStats": {
+      "Package": "matrixStats",
+      "Version": "1.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8885ffb1f46e820dede6b2ca9442abca",
+      "Requirements": []
+    },
+    "multifractal": {
+      "Package": "multifractal",
+      "Version": "1.0.0",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "multifractal",
+      "RemoteUsername": "wol-fi",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "71ec3d322a6ce37a9ca69582b11f6c724f4a3838",
+      "Hash": "940ee119fc940fe3339f4e18fdb4891d",
+      "Requirements": [
+        "pracma",
+        "waveslim"
+      ]
+    },
+    "multitaper": {
+      "Package": "multitaper",
+      "Version": "1.0-17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "29a4db6175aa4b8ff7e9764eedbd787b",
+      "Requirements": []
+    },
     "pillar": {
       "Package": "pillar",
       "Version": "1.9.0",
@@ -176,6 +208,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "01f28d4278f15c76cddbea05899c5d6f",
+      "Requirements": []
+    },
+    "pracma": {
+      "Package": "pracma",
+      "Version": "2.4.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "44bc172d47d1ea0a638d9f299e321203",
       "Requirements": []
     },
     "renv": {
@@ -278,6 +318,16 @@
         "glue",
         "lifecycle",
         "rlang"
+      ]
+    },
+    "waveslim": {
+      "Package": "waveslim",
+      "Version": "1.8.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4df5bdeeeee3d16a6571f34735cd7fa0",
+      "Requirements": [
+        "multitaper"
       ]
     },
     "withr": {
