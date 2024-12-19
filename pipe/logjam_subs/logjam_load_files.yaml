@@ -11,7 +11,7 @@ transform:
   - '#!/bin/bash'
   - python3 -m logjam_loader.load_all_logjam_files
   env:
-    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest/test_pachyderm
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     STARTING_PATH_INDEX: "7"
@@ -22,7 +22,7 @@ input:
   pfs:
     name: IN_PATH
     repo: logjam_list_files
-    glob: /*/*/*/logjam_prod/*/*
+    glob: /*/*/*/test_pachyderm/*/*
     empty_files: true
 parallelism_spec:
   constant: 10
