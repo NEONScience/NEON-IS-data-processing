@@ -57,10 +57,10 @@ library(lubridate)
 source("./wrap.subs.LT400.files.R")
 source("./wrap.subs.HOBOU24.files.R")
 
-allHOBOs <- restR2::get.asset(stack = 'prod',
-                  assetDefName = "High-accuracy conductivity data logger")
-allLT400 <- restR2::get.asset(stack = 'prod',
-                              assetDefName = "In-Situ Level TROLL 400")
+# allHOBOs <- restR2::get.asset(stack = 'prod',
+#                   assetDefName = "High-accuracy conductivity data logger")
+# allLT400 <- restR2::get.asset(stack = 'prod',
+#                               assetDefName = "In-Situ Level TROLL 400")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
