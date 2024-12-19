@@ -57,6 +57,11 @@ library(lubridate)
 source("./wrap.subs.LT400.files.R")
 source("./wrap.subs.HOBOU24.files.R")
 
+allHOBOs <- restR2::get.asset(stack = 'prod',
+                  assetDefName = "High-accuracy conductivity data logger")
+allLT400 <- restR2::get.asset(stack = 'prod',
+                              assetDefName = "In-Situ Level TROLL 400")
+
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
 
@@ -103,7 +108,7 @@ fileData <- base::list.files(DirIn,full.names=TRUE)
 log$debug(base::paste0('Files identified:', fileData))
 
 doParallel::registerDoParallel(numCoreUse)
-# Process each datum path for LT400 fils
+# Process each datum path for LT400 files
 foreach::foreach(idxFileIn = fileData) %dopar% {
   log$info(base::paste0('Processing path to file: ', idxFileIn))
   # Run the wrapper function for each datum, with error routing
@@ -138,42 +143,3 @@ foreach::foreach(idxFileIn = fileData) %dopar% {
   
   return()
 }
-
-# Then run the script for HOBOU24 files
-foreach::foreach(idxFileIn = fileData) %dopar% {
-  log$info(base::paste0('Processing path to file: ', idxFileIn))
-  # Run the wrapper function for each datum, with error routing
-  tryCatch(
-    withCallingHandlers(
-      wrap.subs.HOBOU24.files(
-        FileIn=idxFileIn,
-        DirOut=Para$DirOut,
-        SchmDataOut=SchmDataOut,
-        log=log
-      ),
-      error = function(err) {
-        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
-        log$error(err$message)
-        InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxFileIn, 
-                                                             log = log)
-        DirSub <- strsplit(InfoDirIn$dirRepo,".", fixed = TRUE)[[1]][1]
-        NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = DirSub, 
-                                      log = log)
-        csvname <- DirSub %>%
-          strsplit( "/" ) %>%
-          sapply( tail, 1 )
-        nameFileErr <- base::paste0(Para$DirErr, DirSub, "/",csvname)
-        log$info(base::paste0("Re-routing failed datum path to ", nameFileErr))
-        con <- base::file(nameFileErr, "w")
-        base::close(con)
-      }
-    ),
-    # This simply to avoid returning the error
-    error=function(err) {}
-  )
-  
-  return()
-}
-
-
-
