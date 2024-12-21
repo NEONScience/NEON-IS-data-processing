@@ -41,7 +41,7 @@
 #   Kaelin Cawley (2024-12-06) original creation
 #' 
 ##############################################################################################
-wrap.troll.logfiles <- function(FileIn,
+wrap.subs.HOBOU24.files <- function(FileIn,
                              DirOut,
                              SchmDataOut=NULL,
                              log=NULL
