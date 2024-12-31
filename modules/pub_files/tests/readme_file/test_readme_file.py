@@ -15,11 +15,13 @@ from pub_files.output_files.readme.readme_file import write_file
 from pub_files.output_files.science_review.science_review_file import ScienceReviewFile, Term
 from pub_files.tests.input_file_processor_data.file_processor_database import get_file_processor_database
 from pub_files.database.publication_workbook import PublicationWorkbook
+from pub_files.tests.publication_workbook.publication_workbook import get_workbook
 
 
 class ReadmeFileTest(TestCase):
 
     def setUp(self):
+        self.workbook: PublicationWorkbook = get_workbook('')
         self.setUpPyfakefs()
         self.test_files_path = Path(os.path.dirname(__file__))
         self.in_path = Path('/in/CPER/2020/01')
@@ -57,7 +59,7 @@ class ReadmeFileTest(TestCase):
         filename_parts: FilenameParts = parse_filename(str(filename))
         table_name = filename_parts.table_name
         workbook: PublicationWorkbook
-        workbook = self.add_workbook()
+        workbook=self.workbook
         start_time,end_time = get_file_time_span(path, workbook, table_name)
 
         assert datetime.strftime(start_time, '%Y-%m-%dT%H:%M:%SZ') == '2020-01-02T00:00:00Z'
