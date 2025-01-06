@@ -59,7 +59,7 @@ input:
   - group:
     - pfs:
         name: DATA_PATH
-        repo: mti300ahrs_location_group_and_restructure
+        repo: mti300ahrs_structure_and_merge_by_location
         # For full-scale daily processing, glob should be /mti300ahrs/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /mti300ahrs/(*/*/*/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
         #glob: /mti300ahrs/(*/*/*/(CFGLOC104242|CFGLOC103630|CFGLOC104713|CFGLOC105211|CFGLOC106586|CFGLOC110682|CFGLOC110995|CFGLOC113253|CFGLOC113734))
         glob: /mti300ahrs/(*/*/*)
@@ -88,10 +88,10 @@ parallelism_spec:
   constant: 1
 autoscaling: true
 resource_requests:
-  memory: 4G
+  memory: 2G
   cpu: 2.0
 resource_limits:
-  memory: 8G
+  memory: 5G
   cpu: 4
 sidecar_resource_requests:
   memory: 4G
