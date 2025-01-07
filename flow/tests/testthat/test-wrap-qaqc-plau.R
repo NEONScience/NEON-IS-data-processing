@@ -201,6 +201,7 @@ test_that("Unit test of wrap.qaqc.plau.R", {
    
   #
   # Test 4 - a column, readoutTime, missing in the data
+  # commented out due to the error, "object of type 'symbol' is not subsettable" happens on Jenkins
   
    # badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingReadoutTime/2020/01/02/CFGLOC101252"
    # if (dir.exists(DirOutBase)) {
