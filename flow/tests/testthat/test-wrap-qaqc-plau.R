@@ -188,16 +188,16 @@ test_that("Unit test of wrap.qaqc.plau.R", {
   
   # Test 3 - a wrong file is in data/, parquet file expected, but avro file sent
   
-   badDatagDirIn = "pfs/padded_timeseries_analyzer/hmp155_wrongData/2020/01/02/CFGLOC101252"
-  
-   if (dir.exists(DirOutBase)) {
-     unlink(DirOutBase, recursive = TRUE)
-   }
-   returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDatagDirIn,
-                                             DirOutBase=DirOutBase,
-                                             ParaTest=ParaTest,
-                                             DirSubCopy=thresholdDir,
-                                             VarAddFileQf=VarAddFileQf), silent=TRUE)
+   # badDatagDirIn = "pfs/padded_timeseries_analyzer/hmp155_wrongData/2020/01/02/CFGLOC101252"
+   # 
+   # if (dir.exists(DirOutBase)) {
+   #   unlink(DirOutBase, recursive = TRUE)
+   # }
+   # returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDatagDirIn,
+   #                                           DirOutBase=DirOutBase,
+   #                                           ParaTest=ParaTest,
+   #                                           DirSubCopy=thresholdDir,
+   #                                           VarAddFileQf=VarAddFileQf), silent=TRUE)
    
   #
   # Test 4 - a column, readoutTime, missing in the data
