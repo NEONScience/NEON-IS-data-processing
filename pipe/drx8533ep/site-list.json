@@ -1,0 +1,30 @@
+[
+	{
+	"site" : "CPER",
+	"kafka_start_date" : "2022-12-30"
+	},
+	{
+	"site" : "HQTW",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "MOAB",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "NIWO",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "ONAQ",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "RMNP",
+	"kafka_start_date" : "2023-01-19"
+	},
+	{
+	"site" : "STER",
+	"kafka_start_date" : "2023-01-13"
+	}
+]
