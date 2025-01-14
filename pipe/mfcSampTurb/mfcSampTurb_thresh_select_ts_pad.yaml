@@ -53,6 +53,7 @@ input:
       glob: /thresholds.json
 parallelism_spec:
   constant: 4
+autoscaling: true
 resource_requests:
   memory: 300M
   cpu: 1.2
