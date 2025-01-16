@@ -1,0 +1,676 @@
+{
+   "thresholds":[
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         7,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         5,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         20,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         300,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         0.005,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         1800,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         650,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         -50,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         2000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         2,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge1Depth",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         7,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         5,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         20,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         300,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         0.005,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         1800,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         650,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         -50,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         2000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         2,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge2Depth",
+         "threshold_name":"Step Test value"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         7,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Despiking MAD"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         5,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Despiking maximum consecutive points (n)"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         20,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Despiking maximum (%) missing points per window"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":null,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"A",
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Despiking Method"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         300,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Despiking window size - points"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         1,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Despiking window step - points."
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         4,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Gap Test value - # missing points"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         0.005,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Persistence (change)"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         1800,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Persistence (time - seconds)"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         650,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Range Threshold Hard Max"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         -50,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Range Threshold Hard Min"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         2000,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Range Threshold Soft Max"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         0,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Range Threshold Soft Min"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"YELL",
+         "number_value":         2,
+         "start_date":"2000-01-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"strainGauge3Depth",
+         "threshold_name":"Step Test value"
+      }
+   ]
+}
