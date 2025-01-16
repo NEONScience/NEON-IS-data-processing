@@ -2,7 +2,7 @@
 pipeline:
   name: hfp01sc_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.4.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.5.0
   cmd:
   - sh
   - "-c"
