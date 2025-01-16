@@ -8,14 +8,14 @@ def get_spatial_unit(connector: DbConnector, srid: int) -> str:
     schema = connector.get_schema()
     connection = connector.get_connection()
     sql = f'''
-        select
-            split_part((regexp_split_to_array(srtext, 'UNIT\["'))[array_length(regexp_split_to_array(srtext, 'UNIT\['), 1)], '"', 1) 
-        as 
-            unit 
-        from 
-            {schema}.spatial_ref_sys 
-        where 
-            srid = %s
+         select
+             split_part((regexp_split_to_array(srtext, 'UNIT\["'))[array_length(regexp_split_to_array(srtext, 'UNIT\['), 1)], '"', 1) 
+         as 
+             unit 
+         from 
+             {schema}.spatial_ref_sys 
+         where 
+             srid = %s
     '''
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, [srid])

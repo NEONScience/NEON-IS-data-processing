@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: windobserverii_data_source_trino
+  name: li850_data_source_trino
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.5.0
   cmd:
@@ -52,7 +52,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # Example: /pfs/out/windobserverii/2023/01/01/12345/data/file.parquet
+      # Example: /pfs/out/li850/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do
@@ -84,8 +84,8 @@ transform:
     EOF
   env:
     # Environment variables for data conversion step
-    GEN_YAML_CONF: "/usr/src/app/genscript/configs/windobserverii_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/windobserverii/windobserverii.avsc"
+    GEN_YAML_CONF: "/usr/src/app/genscript/configs/li850_streams.yaml"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/li850/li850.avsc"
     LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
@@ -98,7 +98,7 @@ transform:
     SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "15"
     # Environment variables for bash code
-    SOURCE_TYPE: 'windobserverii'
+    SOURCE_TYPE: 'li850'
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -115,8 +115,8 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: windobserverii_cron_daily_and_date_control
-    glob: "/windobserverii/*/*/*"
+    repo: li850_cron_daily_and_date_control
+    glob: "/li850/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5
