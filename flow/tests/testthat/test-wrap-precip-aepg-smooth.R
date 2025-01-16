@@ -102,7 +102,7 @@ test_that("Unit test of wrap.precip.aepg.smooth.R", {
   #
   testOutputBase = "pfs/out"
   testInputDir <-
-    'pfs/pW_thresh_select_ts_pad/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC11359'
+    'pfs/pW_thresh_select_ts_pad/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591'
   
   dirParts <- NEONprocIS.base::def.dir.splt.pach.time(testInputDir)
   testOutputDir <- paste0(testOutputBase, dirParts$dirRepo)
@@ -122,16 +122,16 @@ test_that("Unit test of wrap.precip.aepg.smooth.R", {
   
   # Test 2. DirSubCopy not Null, for example, DirSubCopy = 'aaa'. 
   # The input files are copied over under DirSubCopy along with the output. So, 
-  # pfs/out/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC11359/ will have DirSubCopy, 'aaa', and the output directory, stats 
-  # pfs/out/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC11359/aaa/ will have stats and flags, copied from the input directory, 
-  # pfs/pW_thresh_select_ts_pad/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC11359/
+  # pfs/out/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591/ will have DirSubCopy, 'aaa', and the output directory, stats 
+  # pfs/out/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591/aaa/ will have stats and flags, copied from the input directory, 
+  # pfs/pW_thresh_select_ts_pad/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591/
   
   if (dir.exists(testOutputBase)) {
     unlink(testOutputBase, recursive = TRUE)
   }
   
   testInputDir <-
-    'pfs/pW_thresh_select_ts_pad/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC1135'
+    'pfs/pW_thresh_select_ts_pad/2024/12/09/precip-weighing_YELL900000/aepg600m_heated/CFGLOC113591'
   DirSub = 'aaa'
   
   returnedOutputDir <-
