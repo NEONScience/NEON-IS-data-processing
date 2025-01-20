@@ -21,7 +21,7 @@ input:
     repo: pressuretransducer_fill_date_gaps_and_regularize
     glob: /pressuretransducer/(*)/(*)/(*)
 parallelism_spec:
-  constant: 8
+  constant: 2
 resource_requests:
   memory: 500MB
   cpu: 0.6
