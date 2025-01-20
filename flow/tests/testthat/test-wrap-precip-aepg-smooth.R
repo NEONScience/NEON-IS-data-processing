@@ -99,6 +99,7 @@ context("\n                       Unit test of wrap.precip.aepg.smooth.R\n")
 test_that("Unit test of wrap.precip.aepg.smooth.R", {
   source('../../flow.precip.aepg.smooth/wrap.precip.aepg.smooth.R')
   library(stringr)
+  library(MFDFA)
   #
   testOutputBase = "pfs/out"
   testInputDir <-

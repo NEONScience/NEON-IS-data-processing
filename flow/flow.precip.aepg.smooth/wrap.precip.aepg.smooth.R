@@ -158,7 +158,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     if(!all(dayChk)){
       log$warn(paste0('Timeseries pad incomplete. Missing the following days: ',
                       paste0(dayExpc[!dayChk],collapse=', ')))
-      return()
+    #  return()
       
     }
       
