@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_cron_daily_and_date_control
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
     # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
