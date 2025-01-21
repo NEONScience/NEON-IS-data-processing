@@ -40,13 +40,13 @@ class DateControl:
         site_end_date=None
         if 'start_date' in keys:
           site_start_date=entry['start_date']
-          site_start_date=datetime.strptime(f"{site_start_date}", "%Y-%m-%d")
+          site_start_date=datetime.strptime(f"{site_start_date}", "%Y-%m-%d").date()
         if 'kafka_start_date' in keys:
           kafka_site_start_date=entry['kafka_start_date']
-          kafka_site_start_date=datetime.strptime(f"{kafka_site_start_date}", "%Y-%m-%d")
+          kafka_site_start_date=datetime.strptime(f"{kafka_site_start_date}", "%Y-%m-%d").date()
         if 'end_date' in keys:
           site_end_date=entry['end_date']
-          site_end_date=datetime.strptime(f"{site_end_date}", "%Y-%m-%d")
+          site_end_date=datetime.strptime(f"{site_end_date}", "%Y-%m-%d").date()
         
         # Preliminary logic for start and end dates
         if (self.start_date is None) & (site_start_date is None) & (kafka_site_start_date is None):

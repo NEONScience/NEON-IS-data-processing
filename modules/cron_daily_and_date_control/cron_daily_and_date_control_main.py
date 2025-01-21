@@ -31,16 +31,16 @@ def main() -> None:
     # If global END_DATE unset, set to lag_days_end days ago (default 2)
     log.info(f'Global start date: {start_date}')
     if start_date is not None:
-        start_date=datetime.strptime(f"{start_date}", "%Y-%m-%d")
+        start_date=datetime.strptime(f"{start_date}", "%Y-%m-%d").date()
     
     if end_date is None:
         end_date=date.today() - timedelta(days=lag_days_end)
         log.info(f'Input END_DATE is unset. Using {lag_days_end} days previous.')
     else:
-        end_date=datetime.strptime(f"{end_date}", "%Y-%m-%d")
+        end_date=datetime.strptime(f"{end_date}", "%Y-%m-%d").date()
     
     log.info(f'Global end date: {end_date.strftime("%Y-%m-%d")}')
-    
+
     config = Config(site_file_path=site_file_path,
                     out_path=out_path,
                     source_type=source_type,
