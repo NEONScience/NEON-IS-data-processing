@@ -2,7 +2,7 @@
 pipeline:
   name: prt_cron_daily_and_date_control
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:sha-f209d46
   cmd: ["/bin/bash"]
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
@@ -16,7 +16,7 @@ transform:
     SOURCE_TYPE: "prt"
   stdin:
   - "#!/bin/bash"
-  - ./cron_daily_and_date_control/populate_site_dates.sh
+  - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
 input:
   cross:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
