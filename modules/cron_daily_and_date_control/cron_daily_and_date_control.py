@@ -115,7 +115,7 @@ class DateControl:
             date_path.mkdir(parents=True, exist_ok=True)
             site_date_path = Path(date_path,site)
             with site_date_path.open('w') as file:
-              rpt=file.write(site)
+              rpt=file.write(site+'\n')
            
         # Create daily folder structure for kafka data
         if start_date_kafka is not None:
@@ -125,12 +125,12 @@ class DateControl:
             date_path.mkdir(parents=True, exist_ok=True)
             site_date_file_path = Path(date_path,site+'.kafka')
             with site_date_file_path.open('w') as file:
-              rpt=file.write(site+'.kafka')
+              rpt=file.write(site+'.kafka\n')
            
         # Finally, create a file listing the data years (for the metadata assignment pipelines)      
         years=os.listdir(Path(self.out_path,self.source_type)) 
         for year in years:
           year_file_path=Path(self.out_path,'data_year_'+year+'.txt')
           with year_file_path.open('w') as file:
-            rpt=file.write(year)
+            rpt=file.write(year+'\n')
           
