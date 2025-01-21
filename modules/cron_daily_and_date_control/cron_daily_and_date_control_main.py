@@ -21,13 +21,13 @@ def main() -> None:
     log_level: str = os.getenv('LOG_LEVEL','INFO')
     log_config.configure(log_level)
     log = structlog.get_logger()
-
+    
     
     log.info(f'source Type: {source_type}')
     log.debug(f'site_file: {site_file_path}')
     log.debug(f'out_path: {out_path}')
-
-
+    
+    
     # If global END_DATE unset, set to lag_days_end days ago (default 2)
     log.info(f'Global start date: {start_date}')
     if start_date is not None:
@@ -40,7 +40,7 @@ def main() -> None:
         end_date=datetime.strptime(f"{end_date}", "%Y-%m-%d")
     
     log.info(f'Global end date: {end_date.strftime("%Y-%m-%d")}')
-
+    
     config = Config(site_file_path=site_file_path,
                     out_path=out_path,
                     source_type=source_type,

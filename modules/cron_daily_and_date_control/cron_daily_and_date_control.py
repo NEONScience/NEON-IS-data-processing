@@ -26,10 +26,17 @@ class DateControl:
     with open(self.site_file_path, 'r') as site_file_json:
       site_list=json.load(site_file_json)
       for entry in site_list:
-        keys=entry.keys()
-        site=entry['site']
+        # Reinitialize
+        start_date_trino=None
+        end_date_trino=None
+        start_date_kafka=None
+        end_date_kafka=None
         site_start_date=None
         kafka_site_start_date=None
+        
+        # Extract info from entry
+        keys=entry.keys()
+        site=entry['site']
         site_end_date=None
         if 'start_date' in keys:
           site_start_date=entry['start_date']
@@ -40,12 +47,6 @@ class DateControl:
         if 'end_date' in keys:
           site_end_date=entry['end_date']
           site_end_date=datetime.strptime(f"{site_end_date}", "%Y-%m-%d")
-        
-        # Reinitialize
-        start_date_trino=None
-        end_date_trino=None
-        start_date_kafka=None
-        end_date_kafka=None
         
         # Preliminary logic for start and end dates
         if (self.start_date is None) & (site_start_date is None) & (kafka_site_start_date is None):
@@ -61,11 +62,11 @@ class DateControl:
           log.debug(f'Setting site start date for {site} to global start date {self.start_date.strftime("%Y-%m-%d")}')
             
         # Make sure site start date is on or after global start date
-        if (self.start_date is not None) & (site_start_date < self.start_date):
+        if (self.start_date is not None) and (site_start_date < self.start_date):
           site_start_date=self.start_date
             
         # Make sure kafka site start date is on or after global start date
-        if (self.start_date is not None) & (kafka_site_start_date is not None) & (kafka_site_start_date < self.start_date):
+        if (self.start_date is not None) and (kafka_site_start_date is not None) and (kafka_site_start_date < self.start_date):
           kafka_site_start_date=self.start_date
             
         # Make sure site end date is never null
@@ -85,12 +86,12 @@ class DateControl:
           continue
         
         # Make sure kafka start date is on or after site start date 
-        if (kafka_site_start_date is not None) & (kafka_site_start_date < site_start_date):
+        if (kafka_site_start_date is not None) and (kafka_site_start_date < site_start_date):
           kafka_site_start_date=site_start_date;
           log.debug(f'Adjusting Kafka start date for {site} to {site_start_date.strftime("%Y-%m-%d")}.')
         
         # Determine dates for kafka data vs. trino data
-        if (kafka_site_start_date is None) | (kafka_site_start_date > site_end_date):
+        if (kafka_site_start_date is None) or (kafka_site_start_date > site_end_date):
           # Trino only
           start_date_trino=site_start_date
           end_date_trino=site_end_date
