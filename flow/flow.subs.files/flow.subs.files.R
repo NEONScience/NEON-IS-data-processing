@@ -37,7 +37,11 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' Sys.setenv(DIR_IN='/home/NEON/kcawley/pfs/troll_logjam_load_files/23646')
+#' setwd('/home/NEON/kcawley/NEON-IS-data-processing/flow/flow.subs.files')
+#' source the two functions
+#' Sys.setenv(DIR_IN='/home/NEON/kcawley/pfs/troll_logjam_load_files/48776') #TROLL data
+#' Sys.setenv(DIR_IN='/home/NEON/kcawley/pfs/troll_logjam_load_files/49150') #HOBO data
+#' Sys.setenv(DIR_IN='/home/NEON/kcawley/pfs/troll_logjam_load_files/49176') #more HOBO data
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
 #' rm(list=setdiff(ls(),c('arg','log')))
@@ -111,10 +115,41 @@ doParallel::registerDoParallel(numCoreUse)
 # Process each datum path for LT400 files
 foreach::foreach(idxFileIn = fileData) %dopar% {
   log$info(base::paste0('Processing path to file: ', idxFileIn))
-  # Run the wrapper function for each datum, with error routing
+  
+  # Run the wrapper function for each datum, with error routing TROLL FILES
   tryCatch(
     withCallingHandlers(
       wrap.subs.LT400.files(
+        FileIn=idxFileIn,
+        DirOut=Para$DirOut,
+        SchmDataOut=SchmDataOut,
+        log=log
+      ),
+      error = function(err) {
+        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
+        log$error(err$message)
+        InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxFileIn, 
+                                                             log = log)
+        DirSub <- strsplit(InfoDirIn$dirRepo,".", fixed = TRUE)[[1]][1]
+        NEONprocIS.base::def.dir.crea(DirBgn = Para$DirErr, DirSub = DirSub, 
+                                      log = log)
+        csvname <- DirSub %>%
+          strsplit( "/" ) %>%
+          sapply( tail, 1 )
+        nameFileErr <- base::paste0(Para$DirErr, DirSub, "/",csvname)
+        log$info(base::paste0("Re-routing failed datum path to ", nameFileErr))
+        con <- base::file(nameFileErr, "w")
+        base::close(con)
+      }
+    ),
+    # This simply to avoid returning the error
+    error=function(err) {}
+  )
+  
+  # Run the wrapper function for each datum, with error routing HOBO FILES
+  tryCatch(
+    withCallingHandlers(
+      wrap.subs.HOBOU24.files(
         FileIn=idxFileIn,
         DirOut=Para$DirOut,
         SchmDataOut=SchmDataOut,
