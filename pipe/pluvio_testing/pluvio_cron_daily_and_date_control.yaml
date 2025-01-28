@@ -30,19 +30,19 @@ transform:
     export SOURCE_TYPE=$SOURCE_TYPE
     export SITE_FILE=$SITE_FILE_KAFKA
     export OUT_PATH=$OUT_PATH_KAFKA
-    ./cron_daily_and_date_control/populate_site_dates.sh
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # Heated Belfort - Kafka
     export SOURCE_TYPE=$SOURCE_TYPE_2
     export SITE_FILE=$SITE_FILE_KAFKA
     export OUT_PATH=$OUT_PATH_KAFKA
-    ./cron_daily_and_date_control/populate_site_dates.sh
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
 
     # Metone370380 - Kafka
     export SOURCE_TYPE=$SOURCE_TYPE_3
     export SITE_FILE=$SITE_FILE_KAFKA
     export OUT_PATH=$OUT_PATH_KAFKA
-    ./cron_daily_and_date_control/populate_site_dates.sh
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
 
     EOF
 input:
