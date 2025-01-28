@@ -11,12 +11,15 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     interimDir="/tmp/interimData"
     rm -rf $interimDir
+    
     # Get today's date for evaluating kafka data retention period
     date_today=$(date -u +%Y-%m-%d)
     kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    
     # Run first module - data_source_site (pull data from database by site)
     # Split data source path
     for path in $(find -L $import_trigger -type f); do
@@ -45,8 +48,47 @@ transform:
       mkdir -p $GEN_OUTPUT_DIR
       /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second
     done
+    
     # Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day
     python3 -m parquet_linkmerge.parquet_linkmerge_main
+    
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # !!!! TEMPORARY FIX FOR INCORRECT "name:" FIELD in nadp127tm.avsc schema.  !!!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    set -x # Uncomment to troubleshoot
+    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH}/**/*.parquet"
+  
+      for f in $out_parquet_glob; do
+      
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+        psourcetype="${BASH_REMATCH[1]}"
+        pyear="${BASH_REMATCH[2]}"
+        pmonth="${BASH_REMATCH[3]}"
+        pday="${BASH_REMATCH[4]}"
+        psourceid="${BASH_REMATCH[5]}"
+        fname="${BASH_REMATCH[6]}"
+
+        # Parse the file name
+        [[ "$fname" =~ ^(.*)_([0-9]+)_([0-9]{4})-([0-9]{2})-([0-9]{2}).parquet$ ]]
+        fsourcetype="${BASH_REMATCH[1]}"
+        fsourceid="${BASH_REMATCH[2]}"
+        fyear="${BASH_REMATCH[3]}"
+        fmonth="${BASH_REMATCH[4]}"
+        fday="${BASH_REMATCH[5]}"
+        
+        # Construct new file name, forcing source type to aepg600m_heated
+        fname_fix="nadp127tm_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"
+        
+        # Replace the file
+        mv $OUT_PATH/$psourcetype/$pyear/$pmonth/$pday/$psourceid/data/$fname $OUT_PATH/$psourcetype/$pyear/$pmonth/$pday/$psourceid/data/$fname_fix
+      done
+    fi
+    set +x
+
     # Export L0 data to bucket
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
