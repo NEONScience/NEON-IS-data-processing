@@ -2,7 +2,7 @@
 pipeline:
   name: surfacewaterPhysical_qm_group_and_compute
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.0
   cmd:
   - sh
   - "-c"
@@ -29,7 +29,7 @@ transform:
       "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperaturePersistenceQF|zeroPressureQF" \
@@ -50,7 +50,7 @@ transform:
       Tmi=001 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF:-1" \
@@ -74,7 +74,7 @@ transform:
       "WndwAgr=005|030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
-      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBeta1=pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "GrpQfAlph2=temperature:temperatureNullQF|temperatureGapQF|temperatureRangeQF|temperatureStepQF|temperaturePersistenceQF|zeroPressureQF" \
@@ -90,7 +90,7 @@ transform:
       Tmi=001 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
-      "GrpQfAlph1=pressure:pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
+      "GrpQfAlph1=pressure:pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressureSpikeQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBeta1=pressure:pressure:pressureNullQF|pressureGapQF|pressureRangeQF|pressureStepQF|pressurePersistenceQF|zeroPressureQF" \
       "GrpQfBetaIgnr1=pressure:pressureNullQF|pressureGapQF" \
       "QfForc1=zeroPressureQF:1:pressureRangeQF|pressureStepQF|pressurePersistenceQF|pressureSpikeQF:-1" \

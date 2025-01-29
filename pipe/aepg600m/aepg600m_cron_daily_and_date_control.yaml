@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_cron_daily_and_date_control
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
     # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
@@ -10,7 +10,7 @@ transform:
     # NOTE that the aepg600m needs to handle both heated and unheated source types, and have different site-dates for kafka and trino loaders.
     # This is because some kafka topics start with <site>dfir instead of simply <site>, which the trino loader cannot handle
     LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
-    START_DATE: "2021-12-31"
+    START_DATE: "2024-09-20"
     #END_DATE: "2024-06-01"
     OUT_PATH_KAFKA: /pfs/out/kafka
     OUT_PATH_TRINO: /pfs/out/trino
@@ -29,25 +29,25 @@ transform:
     export SOURCE_TYPE=$SOURCE_TYPE_NONHEATED
     export SITE_FILE=$SITE_FILE_NONHEATED_KAFKA
     export OUT_PATH=$OUT_PATH_KAFKA
-    ./cron_daily_and_date_control/populate_site_dates.sh
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # Heated - Kafka
     export SOURCE_TYPE=$SOURCE_TYPE_HEATED
     export SITE_FILE=$SITE_FILE_HEATED_KAFKA
     export OUT_PATH=$OUT_PATH_KAFKA
-    ./cron_daily_and_date_control/populate_site_dates.sh
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # Non-heated - Trino
     export SOURCE_TYPE=$SOURCE_TYPE_NONHEATED
     export SITE_FILE=$SITE_FILE_NONHEATED_TRINO
     export OUT_PATH=$OUT_PATH_TRINO
-    ./cron_daily_and_date_control/populate_site_dates.sh
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # Heated - Trino
     export SOURCE_TYPE=$SOURCE_TYPE_HEATED
     export SITE_FILE=$SITE_FILE_HEATED_TRINO
     export OUT_PATH=$OUT_PATH_TRINO
-    ./cron_daily_and_date_control/populate_site_dates.sh
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     EOF
 input:
@@ -74,10 +74,10 @@ input:
       repo: aepg600m_site_list
       glob: /site-list-nonheated-trino.json
 resource_requests:
-  memory: 100M
-  cpu: 1
+  memory: 500M
+  cpu: 1.5
 resource_limits:
-  memory: 300M
+  memory: 800M
   cpu: 1.5
 sidecar_resource_requests:
   memory: 500M

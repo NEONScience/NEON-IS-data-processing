@@ -2,8 +2,11 @@
 
 # Start with the neon-is-base-r image. 
 # Use a multi-stage build to obscure the value of GITHUB_PAT used to install eddy4R.base
-#FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4 #as intermediate
-FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
+#FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.4.8
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.4.8
+
+ARG FLOW_DIR="./flow"
+ARG APP_DIR="flow.rglr"
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
@@ -22,13 +25,13 @@ MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 #RUN git clone -b deve https://$GITHUB_PAT:x-oauth-basic@github.com/NEONScience/NEON-FIU-algorithm.git
 #
 # Now make the final build, which will leave behind our access token
-#FROM quay.io/battelleecology/neon-is-base-r:v1.4.7-aa651ed4
+#FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.4.8
 #
 # copy the eddy4R.base package from the previous image
 #COPY --from=intermediate /NEON-FIU-algorithm/ext/eddy4R/pack/eddy4R.base/ /pack/eddy4R.base/
 
 # Copy the lockfile and restore known working versions of R dependency packages
-COPY ./renv.lock /renv.lock
+COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Install the eddy4R.base package, including dependencies (usually this is done through renv.lock file when pulling from public repo - comment this line)
@@ -42,8 +45,8 @@ RUN groupadd app && \
 WORKDIR /home/app
 
 # Copy in application code
-COPY ./flow.rglr.R .
-COPY ./wrap.rglr.R .
+COPY ${FLOW_DIR}/${APP_DIR}/flow.rglr.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.rglr.R .
 
 # Run as app user
 RUN chown app:app -R /home/app

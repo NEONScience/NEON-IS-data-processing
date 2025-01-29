@@ -76,6 +76,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2023-02-10)
 #     Initial creation
+#   Cove Sturtevant (2024-11-20)
+#     Expand tmi detection in file names to include characters (e.g. 01D)
 ##############################################################################################
 wrap.pub.tabl.srf <- function(DirIn,
                           DirOutBase,
@@ -249,7 +251,7 @@ wrap.pub.tabl.srf <- function(DirIn,
                     utils::tail,
                     n=1)
                   )
-  idxTmi <-  base::regexpr(pattern='_[0-9]{3}\\.',text=nameFileData)
+  idxTmi <-  base::regexpr(pattern='_[0-9A-Z]{3}\\.',text=nameFileData)
   tmiFile <-  base::substr(nameFileData,start=idxTmi+1,stop=idxTmi+3)
  
   # Create each desired pub wb table and apply SRFs

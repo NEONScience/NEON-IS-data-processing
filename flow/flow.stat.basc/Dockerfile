@@ -1,13 +1,16 @@
 # Dockerfile for NEON IS Data Processing - Basic statistics module
 
 # Start with the base image. 
-FROM quay.io/battelleecology/neon-is-pack-stat-r:v0.0.4-aa651ed4
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-stat-r:v1.0.1
+
+ARG FLOW_DIR="./flow"
+ARG APP_DIR="flow.stat.basc"
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 
 # Copy the lockfile and restore known working versions of R dependency packages
-COPY ./renv.lock /renv.lock
+COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Create app user
@@ -16,8 +19,8 @@ RUN groupadd app && \
 WORKDIR /home/app
 
 # Copy in application code
-COPY ./flow.stat.basc.R .
-COPY ./wrap.stat.basc.R .
+COPY ${FLOW_DIR}/${APP_DIR}/flow.stat.basc.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.stat.basc.R .
 
 # Run as app user
 RUN chown app:app -R /home/app

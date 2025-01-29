@@ -1,14 +1,17 @@
 # Dockerfile for NEON IS Data Processing - Create pub tables and apply srf
 
 # Start with the pub package image. 
-FROM quay.io/battelleecology/neon-is-pack-pub-r:v1.0.2-aa651ed4
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:v1.0.3
+
+ARG FLOW_DIR="./flow"
+ARG APP_DIR="flow.pub.tabl.srf"
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 
 # Copy the lockfile and restore known working versions of R dependency packages
 # ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./renv.lock /renv.lock
+COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Create app user
@@ -17,8 +20,8 @@ RUN groupadd app && \
 WORKDIR /home/app
 
 # Copy in application code
-COPY ./wrap.pub.tabl.srf.R .
-COPY ./flow.pub.tabl.srf.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.pub.tabl.srf.R .
+COPY ${FLOW_DIR}/${APP_DIR}/flow.pub.tabl.srf.R .
 
 # Run as app user
 RUN chown app:app -R /home/app

@@ -70,7 +70,8 @@
 #' 5. "WndwAgr=value", where value is the aggregation interval for which to compute statistics. It is formatted 
 #' as a 3 character sequence, typically representing the number of minutes over which to compute statistics. 
 #' For example, "WndwAgr=001" refers to a 1-minute aggregation interval, while "WndwAgr=030" refers to a 
-#' 30-minute aggregation interval. Multiple aggregation intervals may be specified by delimiting with a pipe 
+#' 30-minute aggregation interval. The only exception (currently) is "01D", indicating an aggregation interval
+#' of exactly 1 day.  Multiple aggregation intervals may be specified by delimiting with a pipe 
 #' (e.g. "WndwAgr=001|030|060"). Note that a separate file will be output for each aggregation interval. 
 #' It is assumed that the length of the file is one day. The aggregation interval must be an equal divisor of 
 #' one day.
@@ -204,6 +205,8 @@
 #       forcing flag values based on other flag values prior to QM computations
 #       specifying separately the flags that feed into each alpha QM and beta QM
 #       forcing the betaQF of a record to 0 based on flag values
+#   Cove Sturtevant (2024-11-07)
+#     Add support for 01D (daily) timing index
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -275,6 +278,9 @@ if(base::is.null(FileSchmQm) || FileSchmQm == 'NA'){
 
 # Retrieve aggregation intervals
 WndwAgr <- base::as.difftime(base::as.numeric(Para$WndwAgr),units="mins") 
+if("01D" %in% Para$WndwAgr){
+  WndwAgr[Para$WndwAgr == '01D'] <- base::as.difftime(1,units="days") 
+}
 log$debug(base::paste0('Aggregation interval(s), in minutes: ',base::paste0(WndwAgr,collapse=',')))
 
 # Retrieve alpha and beta QM thresholds

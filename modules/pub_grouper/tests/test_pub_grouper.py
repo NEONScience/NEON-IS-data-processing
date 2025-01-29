@@ -66,7 +66,7 @@ class PubGrouperTest(TestCase):
         self.check_output()
 
     def check_output(self):
-        root_path = Path(self.output_path, self.product, *self.date_path.parts[0:3], self.site)
+        root_path = Path(self.output_path, self.product, *self.date_path.parts[0:2], self.site,self.date_path.parts[2])
         out_data_path = Path(root_path, 'data', self.group, self.data_file)
         out_group_path = Path(root_path, 'group', self.group, self.group_file)
         self.assertTrue(out_data_path.exists())

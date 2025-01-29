@@ -2,7 +2,7 @@
 pipeline:
   name: tempSurfacewater_level1_group_consolidate_srf
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.0
   cmd:
   - sh
   - "-c"
@@ -72,7 +72,7 @@ transform:
         fname="${BASH_REMATCH[5]}"
         # Now get the timing index from the file name
         [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
-        avg_int="${BASH_REMATCH[1]}"
+        avg_int="${BASH_REMATCH[2]}"
         #Form the output path and link
         outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
         mkdir -p "${outdir}"

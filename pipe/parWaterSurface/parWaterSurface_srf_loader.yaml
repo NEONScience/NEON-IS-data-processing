@@ -5,7 +5,7 @@ transform:
     - /bin/bash
   env:
     GROUP_PREFIX: par-water-surface_
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:v1.0.0
   # image_pull_secrets:

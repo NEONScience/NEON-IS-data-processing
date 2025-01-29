@@ -10,7 +10,7 @@ inputs:
      required: true
    transaction:
      required: true
-   updated_scope:
+   update_scope:
      required: true
    changed_files:
      required: true

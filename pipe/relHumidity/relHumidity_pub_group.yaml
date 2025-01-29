@@ -3,7 +3,7 @@ pipeline:
   name: relHumidity_pub_group
 transform:
 #  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-group:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.1.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
@@ -35,7 +35,7 @@ input:
       name: DATA_PATH
       repo: relHumidity_level1_group_consolidate_srf
       # Glob should be daily or monthly, must be joined monthly with pub_control to hold pub until month is likely complete
-      glob: /(*/*)/*
+      glob: /(*/*)
       joinOn: $1
   - pfs: 
       repo: relHumidity_cron_monthly_and_pub_control
@@ -43,20 +43,17 @@ input:
       joinOn: $1
       empty_files: true
 parallelism_spec:
-  constant: 1
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 500M
-  cpu: 0.8
+  cpu: 1.2
 resource_limits:
   memory: 2G
-  cpu: 2
+  cpu: 1.2
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.6
-sidecar_resource_limits:
-  memory: 3Gi
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:

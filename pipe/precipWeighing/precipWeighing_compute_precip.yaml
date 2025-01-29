@@ -1,10 +1,8 @@
 ---
 pipeline:
-  name: precipWeighing_compute_precip_dynamic
+  name: precipWeighing_compute_precip
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/neon-is-precip-aepg-smooth-r:4d165c82
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-smooth:v1.0.0
   cmd:
   - sh
   - "-c"
@@ -19,34 +17,39 @@ transform:
       DirIn=$DIR_IN \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      FileSchmData=$FILE_SCHEMA_DATA
+      FileSchmStatHour=$FILE_SCHEMA_STATS_HOURLY \
+      FileSchmStatDay=$FILE_SCHEMA_STATS_DAILY
     EOF
   env:
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
-    PARALLELIZATION_INTERNAL: '3'
+    LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '5'
 output_branch: master
 input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: precipWeighing_ts_pad_smoother
+      repo: precipWeighing_thresh_select_ts_pad_smoother
       glob: /*/*/*
   - pfs:
-      name: FILE_SCHEMA_DATA
+      name: FILE_SCHEMA_STATS_HOURLY
       repo: precipWeighing_avro_schemas
-      glob: /precipWeighing/precipWeighing_precip_output.avsc
+      glob: /precipWeighing/precipWeighing_dp01_stats_hourly_aepg.avsc
+  - pfs:
+      name: FILE_SCHEMA_STATS_DAILY
+      repo: precipWeighing_avro_schemas
+      glob: /precipWeighing/precipWeighing_dp01_stats_daily_aepg.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 3.3
+  memory: 3.5G
+  cpu: 5.5
 resource_limits:
-  memory: 3G
-  cpu: 4.5
+  memory: 4G
+  cpu: 6
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 0.3
 datum_set_spec:
   number: 1

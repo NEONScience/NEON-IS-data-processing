@@ -34,7 +34,7 @@ jobs:
         id: changed-files-action
         uses: ./.github/actions/get-changed-files
 
-  update-pipelines:
+  update_pipelines:
     needs: changed_files
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 

@@ -3,13 +3,13 @@
 pipeline:
   name: troll_cron_daily_and_date_control
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
     # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be LAG_DAYS_END ago. 
     LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
-    START_DATE: "2024-07-29"
+    START_DATE: "2024-09-29"
     # END_DATE: "2023-08-03"
     OUT_PATH: /pfs/out
     SOURCE_TYPE_AQUATROLL: "aquatroll200"
@@ -25,11 +25,11 @@ transform:
     
     # AQUATROLL
     export SOURCE_TYPE=$SOURCE_TYPE_AQUATROLL
-    ./cron_daily_and_date_control/populate_site_dates.sh
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     # LEVELTROLL
     export SOURCE_TYPE=$SOURCE_TYPE_LEVELTROLL
-    ./cron_daily_and_date_control/populate_site_dates.sh
+    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
     EOF
 input:
@@ -44,13 +44,13 @@ input:
       repo: troll_site_list
       glob: /site-list.json
 resource_requests:
-  memory: 100M
-  cpu: 1
+  memory: 2G
+  cpu: 1.5
 resource_limits:
-  memory: 300M
+  memory: 3G
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 500M
+  memory: 2G
   cpu: 0.2
 autoscaling: true
 scheduling_spec:

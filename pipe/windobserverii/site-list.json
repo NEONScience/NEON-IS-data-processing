@@ -4,20 +4,12 @@
 	"kafka_start_date" : "2023-05-24"
 	},
 	{
-	"site" : "BARR",
-	"kafka_start_date" : "2023-06-01"
-	},
-	{
 	"site" : "BART",
 	"kafka_start_date" : "2023-05-10"
 	},
 	{
 	"site" : "BLAN",
 	"kafka_start_date" : "2023-03-03"
-	},
-	{
-	"site" : "BONA",
-	"kafka_start_date" : "2023-06-01"
 	},
 	{
 	"site" : "CLBJ",
@@ -30,10 +22,6 @@
 	{
 	"site" : "DCFS",
 	"kafka_start_date" : "2023-05-19"
-	},
-	{
-	"site" : "DEJU",
-	"kafka_start_date" : "2023-06-01"
 	},
 	{
 	"site" : "DELA",
@@ -54,10 +42,6 @@
 	{
 	"site" : "HARV",
 	"kafka_start_date" : "2023-03-03"
-	},
-	{
-	"site" : "HEAL",
-	"kafka_start_date" : "2023-06-01"
 	},
 	{
 	"site" : "JERC",
@@ -109,10 +93,6 @@
 	},
 	{
 	"site" : "MOAB",
-	"kafka_start_date" : "2023-05-24"
-	},
-	{
-	"site" : "NIWO",
 	"kafka_start_date" : "2023-05-24"
 	},
 	{
@@ -178,10 +158,6 @@
 	{
 	"site" : "TEAK",
 	"kafka_start_date" : "2023-05-24"
-	},
-	{
-	"site" : "TOOL",
-	"kafka_start_date" : "2023-06-01"
 	},
 	{
 	"site" : "TREE",

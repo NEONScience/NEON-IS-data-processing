@@ -19,6 +19,7 @@ transform:
     SOURCE_TYPE_2: aepg600m_heated
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
+    ERR_PATH: /pfs/out/errored_datums
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
