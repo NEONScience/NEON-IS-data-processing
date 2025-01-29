@@ -61,7 +61,7 @@ input:
         name: DATA_PATH
         repo: pressuretransducer_location_group_and_restructure
         # For full-scale daily processing, glob should be /pressuretransducer/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /pressuretransducer/(*/*/*/(CFGLOC108321|...|CFGLOC110994))
-        glob: /pressuretransducer/((*/*/*)
+        glob: /pressuretransducer/(*/*/*)
         group_by: $1
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - join:
