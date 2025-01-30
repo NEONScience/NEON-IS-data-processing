@@ -101,6 +101,8 @@ test_that("Unit test of wrap.precip.aepg.smooth.R", {
   source('../../flow.precip.aepg.smooth/def.precip.depth.smooth.R')
   source('../../flow.precip.aepg.smooth/def.ucrt.agr.precip.bench.R')
   library(stringr)
+  library(jsonlite)
+  library(rjson)
   #
   testOutputBase = "pfs/out"
   testInputDir <- 'pfs/pW_thresh_select_ts_pad_smoother/2024/11/08/pw_BLUE900000/aepg600m_heated/CFGLOC103882'
@@ -122,7 +124,18 @@ test_that("Unit test of wrap.precip.aepg.smooth.R", {
   testthat::expect_true(file.exists(testOutputStatsDir, recursive = TRUE))
   testthat::expect_true(file.exists(testOutputFlagsDir, recursive = TRUE))
 
-  # Test 2. No manifest file, will error out and no files in the out directory
+  WndwAgr <- '5 min'
+  RangeSizeHour <- 24
+  Envelope <- 4
+  
+  if (dir.exists(testOutputBase)) {
+    unlink(testOutputBase, recursive = TRUE)
+  }
+  
+  returnedOutputDir <-
+    wrap.precip.aepg.smooth(DirIn = testInputDir, DirOutBase = testOutputBase)
+  
+  # Test 2. No manifest file, the output directories are created, but there will be no files in them due to the error.
   
   testInputDirnoManifest <- 'pfs/pW_thresh_select_ts_pad_smoother/2024/10/01/pw_OSBS900000/aepg600m_noManifest/CFGLOC102875'
   
@@ -144,30 +157,23 @@ test_that("Unit test of wrap.precip.aepg.smooth.R", {
   
   # Test 3. DirSubCopy not Null, for example, DirSubCopy = 'aaa'. 
 # 
-  # if (dir.exists(testOutputBase)) {
-  #   unlink(testOutputBase, recursive = TRUE)
-  # }
-  # 
-  # DirSub = 'aaa'
-  # dirParts <- NEONprocIS.base::def.dir.splt.pach.time(testInputDir)
-  # testOutputDir <- paste0(testOutputBase,'/', dirParts$dirRepo)
-  # 
-  # if (dir.exists(testOutputDir)) {
-  #   unlink(testOutputBase, recursive = TRUE)
-  # }
-  # 
-  # returnedOutputDir <-
-  #   try(wrap.precip.aepg.smooth(DirIn = testInputDir,
-  #                         DirOutBase = testOutputBase,
-  #                         DirSubCopy = DirSub), silent = TRUE)
-  # 
-  # testOutputCopyDirSub <- paste0(testOutputDir, '/aaa')
-  # testOutputCopyDirSubData <- paste0(testOutputCopyDirSub, '/data')
-  # testOutputCopyDirSubFlags <- paste0(testOutputCopyDirSub, '/flags')
-  # testOutputCopyDirSubThreshold <- paste0(testOutputCopyDirSub, '/threshold')
-  # testthat::expect_true(file.exists(testOutputCopyDirSub, recursive = TRUE))
-  # testthat::expect_true(file.exists(testOutputCopyDirSubData, recursive = TRUE))
-  # testthat::expect_true(file.exists(testOutputCopyDirSubFlags, recursive = TRUE))
-  # testthat::expect_true(file.exists(testOutputCopyDirSubThreshold, recursive = TRUE))
+  if (dir.exists(testOutputBase)) {
+    unlink(testOutputBase, recursive = TRUE)
+  }
+
+  DirSub = 'aaa'
+  testInputDir <- 'pfs/pW_thresh_select_ts_pad_smoother/2024/11/08/pw_BLUE900000/aepg600m_heated/CFGLOC103882'
+  dirParts <- NEONprocIS.base::def.dir.splt.pach.time(testInputDir)
+  testOutputDir <- paste0(testOutputBase,'/', dirParts$dirRepo)
+
+  returnedOutputDir <-
+    wrap.precip.aepg.smooth(DirIn = testInputDir,
+                          DirOutBase = testOutputBase,
+                          DirSubCopy = DirSub)
+
+  testOutputDirStats <- paste0(testOutputDir, '/stats')
+  testOutputDirFlags <- paste0(testOutputDir, '/flags')
+  testthat::expect_true(file.exists(testOutputDirStats, recursive = TRUE))
+  testthat::expect_true(file.exists(testOutputDirFlags, recursive = TRUE))
   # 
 })
