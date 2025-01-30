@@ -1,13 +1,13 @@
 ---
 pipeline:
-  name: mcseries_data_source_kafka
+  name: pressuretransducer_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v3.5.8
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v3.3.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "mcseries"
+    SOURCE_TYPE: "pressuretransducer"
     LOGLEVEL: debug
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
@@ -79,7 +79,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/mcseries/2023/01/01/12345/data/file.parquet
+      # /pfs/out/pressuretransducer/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do
@@ -112,9 +112,9 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: mcseries_cron_daily_and_date_control
+    repo: pressuretransducer_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/mcseries/*/*/*/*"
+    glob: "/pressuretransducer/*/*/*/*"
 parallelism_spec:
   constant: 20
 autoscaling: true

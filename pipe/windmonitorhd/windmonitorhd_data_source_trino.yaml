@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: mcseries_data_source_trino
+  name: windmonitorhd_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.5.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-15a0d69
   cmd:
   - sh
   - "-c"
@@ -52,7 +52,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # Example: /pfs/out/li191r/2023/01/01/12345/data/file.parquet
+      # Example: /pfs/out/windmonitorhd/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       set -x
       for f in $out_parquet_glob; do
@@ -84,8 +84,8 @@ transform:
     EOF
   env:
     # Environment variables for data conversion step
-    GEN_YAML_CONF: "/usr/src/app/genscript/configs/mcseries_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/mcseries/mcseries.avsc"
+    GEN_YAML_CONF: "/usr/src/app/genscript/configs/windmonitorhd_streams.yaml"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/windmonitorhd/windmonitorhd.avsc"
     LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
@@ -98,7 +98,7 @@ transform:
     SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "15"
     # Environment variables for bash code
-    SOURCE_TYPE: 'mcseries'
+    SOURCE_TYPE: 'windmonitorhd'
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -115,21 +115,21 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: mcseries_cron_daily_and_date_control
-    glob: "/mcseries/*/*/*"
+    repo: windmonitorhd_cron_daily_and_date_control
+    glob: "/windmonitorhd/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 10
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 0.7
+  memory: 400M
+  cpu: 1.2
 resource_limits:
   memory: 800M
-  cpu: 1.5
+  cpu: 2
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.2
+  memory: 3G
+  cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:
