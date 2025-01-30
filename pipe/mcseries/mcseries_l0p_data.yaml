@@ -12,7 +12,7 @@ transform:
     OUT_PATH: /pfs/out
     FILE_DIR: data
     LOG_LEVEL: INFO
-    #NEW_SOURCE_TYPE_NAME will be decided by location context when running script
+    #NEW_SOURCE_TYPE_NAME #when not defined, new name is decided by location context when running script
     RELATIVE_PATH_INDEX: "4"
     LOCATION_LINK_TYPE: SYMLINK #SYMLINK or COPY, if not defined, location will not be in output repo
 input:
@@ -23,7 +23,7 @@ input:
 parallelism_spec:
   constant: 8
 resource_requests:
-  memory: 100MB
+  memory: 1GB
   cpu: 0.5
 autoscaling: true
 scheduling_spec:

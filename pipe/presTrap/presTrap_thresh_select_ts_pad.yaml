@@ -21,20 +21,20 @@ transform:
       DirOut=/tmp/threshold_select \
       DirErr=/pfs/out/errored_datums \
       FileThsh=$FILE_THRESHOLDS \
-      "TermCtxt1=presAtm" \
+      TermCtxt1=presAtm \
       "DirSubCopy=data|location"
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 
     rm -r -f /tmp/threshold_select 
     # Run second module - timeseries_padder
-    python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 3 --monthindex 4 --dayindex 5 --locindex 8 --subdirindex 9
+    python3 -m timeseries_padder.timeseries_padder.variable_pad_main --yearindex 4 --monthindex 5 --dayindex 6 --locindex 7 --subdirindex 8
     EOF
   env:
     DATA_PATH: /tmp/threshold_selectCopy
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     PAD_DIR: data
-    COPY_DIR: none # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none' if none other are desired.
+    COPY_DIR: location # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none' if none other are desired.
     RELATIVE_PATH_INDEX: '3'
     PARALLELIZATION_INTERNAL: '1' # For threshold select module
 output_branch: master
@@ -46,10 +46,11 @@ input:
       glob: /presTrap/*/*/*
   - pfs:
       name: FILE_THRESHOLDS
-      repo: presTrap_threshold
+      repo: presTrap_threshold_loader
       glob: /thresholds.json
 parallelism_spec:
   constant: 4
+autoscaling: true
 resource_requests:
   memory: 200M
   cpu: 1.2
@@ -59,9 +60,6 @@ resource_limits:
 sidecar_resource_requests:
   memory: 1G
   cpu: 0.3
-sidecar_resource_limits:
-  memory: 2Gi
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
