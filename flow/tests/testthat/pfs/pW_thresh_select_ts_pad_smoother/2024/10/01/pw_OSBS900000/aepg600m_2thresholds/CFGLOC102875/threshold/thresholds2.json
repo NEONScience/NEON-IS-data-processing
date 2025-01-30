@@ -1,0 +1,164 @@
+{
+   "thresholds":[
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":         1,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"ChangeFactor"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":         0.5,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"ChangeFactorEvap"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":         3.1,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"Envelope"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":         120,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"ExtremePrecipMax"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":         0.5,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"Quant"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":         24,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"RangeSizeHour"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":         20,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"Recharge"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":         0.2,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"ThshChange"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":         15,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":null,
+         "term_name":"precipBulk",
+         "threshold_name":"ThshCountHour"
+      },
+      {
+         "context":[
+"precipitation",
+"weighing"
+         ],
+         "end_date":null,
+         "end_day_of_year":null,
+         "is_date_constrained":"N",
+         "location_name":"OSBS",
+         "number_value":null,
+         "start_date":"2022-12-01T00:00:00Z",
+         "start_day_of_year":null,
+         "string_value":"5 min",
+         "term_name":"precipBulk",
+         "threshold_name":"WndwAgr"
+      }
+   ]
+}
