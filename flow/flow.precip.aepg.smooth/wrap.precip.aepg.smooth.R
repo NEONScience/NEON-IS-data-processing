@@ -108,7 +108,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
     log <- NEONprocIS.base::def.log.init()
   } 
   
-  
+
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirInData <- fs::path(DirIn,'data')
@@ -125,7 +125,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   # Copy with a symbolic link the desired subfolders 
   DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('stats','flags')))
   if(base::length(DirSubCopy) > 0){
-    
+
     NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
                                        DirDest=dirOut,
                                        LnkSubObj=FALSE,
@@ -161,9 +161,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
       return()
       
     }
-    
+      
   }
-  
+
   # Read in the thresholds file (read first file only, there should only be 1)
   if(base::length(fileThsh) > 1){
     fileThsh <- fileThsh[1]
@@ -222,16 +222,16 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                             log=log)
   
   qfPlau <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInQf,fileQfPlau),
-                                              VarTime='readout_time',
-                                              RmvDupl=TRUE,
-                                              Df=TRUE,
-                                              log=log)
+                                                 VarTime='readout_time',
+                                                 RmvDupl=TRUE,
+                                                 Df=TRUE,
+                                                 log=log)
   
   qfCal <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInQf,fileQfCal),
-                                             VarTime='readout_time',
-                                             RmvDupl=TRUE,
-                                             Df=TRUE,
-                                             log=log)
+                                                VarTime='readout_time',
+                                                RmvDupl=TRUE,
+                                                Df=TRUE,
+                                                log=log)
   
   qf <- dplyr::full_join(qfPlau, qfCal, by =  'readout_time')
   
@@ -300,16 +300,16 @@ wrap.precip.aepg.smooth <- function(DirIn,
   qfAgr$heaterErrorQF <- 0
   qfAgr$evapDetectedQF <- 0
   qfAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > -6 & 
-                        strainGaugeDepthAgr$internalTemperature < 2 & 
-                        strainGaugeDepthAgr$inletTemperature < strainGaugeDepthAgr$internalTemperature] <- 1
+                           strainGaugeDepthAgr$internalTemperature < 2 & 
+                           strainGaugeDepthAgr$inletTemperature < strainGaugeDepthAgr$internalTemperature] <- 1
   qfAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > 6 & strainGaugeDepthAgr$orificeHeaterFlag > 0] <- 1
   qfAgr$heaterErrorQF[is.na(strainGaugeDepthAgr$internalTemperature) | 
-                        is.na(strainGaugeDepthAgr$inletTemperature) | 
-                        is.na(strainGaugeDepthAgr$orificeHeaterFlag)] <- -1
+                         is.na(strainGaugeDepthAgr$inletTemperature) | 
+                         is.na(strainGaugeDepthAgr$orificeHeaterFlag)] <- -1
   
   
   
-  
+
   # Dynamic Envelope
   # Identify no-rain days in order to apply a dynamic envelope calculation
   # Require that there be no change in depth between the start and end of the day that is
@@ -354,12 +354,12 @@ wrap.precip.aepg.smooth <- function(DirIn,
       Recharge <- 3*Envelope
     }
   }
-  
+
   #initialize fields
   strainGaugeDepthAgr$bench <- as.numeric(NA)
   strainGaugeDepthAgr$precip <- FALSE # TRUE when rain detected
   strainGaugeDepthAgr$precipType <- as.character(NA)
-  
+
   # Initialize & pre-allocate surrogate data for uncertainty analysis
   numRow <- nrow(strainGaugeDepthAgr)
   nSurr <- 30
@@ -374,7 +374,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   strainGaugeDepthAgr[,c(nameVarPrecipS)] <- FALSE
   strainGaugeDepthAgr[,nameVarPrecipTypeS] <- as.character(NA)
   strainGaugeDepthAgr[,nameVarPrecipBulkS] <- as.numeric(NA)
-  
+
   for(idxSurr in c(0,seq_len(nSurr))){
     
     if (idxSurr == 0){
@@ -400,7 +400,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
       if(idxSurr == 1){
         depthMinusBench <- strainGaugeDepthAgr$strainGaugeDepth - strainGaugeDepthAgr$bench # remove the computed benchmark
         setNotNa <- !is.na(depthMinusBench) # Remove all NA
-        
+
         # Remove rangeSize amount of data at beginning and end of timeseries, which can have untracked changes in benchmark that corrupt the surrogates
         setNotNa[1:rangeSize] <- FALSE 
         setNotNa[floor(numRow-rangeSize/2+1):numRow] <- FALSE
@@ -434,7 +434,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                             ChangeFactorEvap=ChangeFactorEvap,
                                             Recharge=Recharge,
                                             log=log)
-    
+
     # Reassign outputs
     strainGaugeDepthAgr[[nameVarBench]] <- precipSmooth$bench
     strainGaugeDepthAgr[[nameVarPrecip]] <- precipSmooth$precip 
@@ -456,17 +456,17 @@ wrap.precip.aepg.smooth <- function(DirIn,
   nameVar <- names(strainGaugeDepthAgr)
   nameVarBenchS <- c('bench',nameVar[grepl('benchS[0-9]',nameVar)])
   strainGaugeDepthAgr$benchS_std <- matrixStats::rowSds(as.matrix(strainGaugeDepthAgr[,nameVarBenchS]))
-  
+
   # Post-precip computation 
   qfAgr$insuffDataQF[is.na(strainGaugeDepthAgr$precipBulk)] <- 1
-  
+
   # Envelope == Massive --> Flag all the data
   if(all(qfAgr$insuffDataQF == 1)){
     qfAgr$dielNoiseQF <- -1
   } else if(Envelope > 10){
     qfAgr$dielNoiseQF <- 1
   }
-  
+
   # Clean up flag logic for NA data
   qfAgr$evapDetectedQF[qfAgr$insuffDataQF == 1] <- -1
   qfAgr$extremePrecipQF[qfAgr$insuffDataQF == 1] <- -1
@@ -622,19 +622,19 @@ wrap.precip.aepg.smooth <- function(DirIn,
                          x=dirOutStat,
                          fixed=TRUE)
     base::dir.create(dirOutStatIdx,recursive = TRUE)
-    
+
     # Get the filename for this day
     nameFileIdx <- fileData[grepl(format(dayOutIdx,'%Y-%m-%d'),fileData)][1]
-    
+
     if(!is.na(nameFileIdx)){
       
       # Append the center date to the end of the file name to know where it came from
       nameFileIdxSplt <- base::strsplit(nameFileIdx,'.',fixed=TRUE)[[1]]
       nameFileStatIdxSplt060 <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
-                                         '_stats_060',
-                                         '_from_',
-                                         format(InfoDirIn$time,'%Y-%m-%d')),
-                                  utils::tail(nameFileIdxSplt,1))
+                                      '_stats_060',
+                                  '_from_',
+                                  format(InfoDirIn$time,'%Y-%m-%d')),
+                           utils::tail(nameFileIdxSplt,1))
       nameFileStatIdxSplt01D <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
                                          '_stats_01D',
                                          '_from_',
@@ -670,7 +670,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
           fileStatOut060Idx
         ))
       }
-      
+
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
           data = statsAgrDayIdx,
@@ -702,8 +702,8 @@ wrap.precip.aepg.smooth <- function(DirIn,
         qfIdx <- qfs[setOutQf,]
         base::dir.create(dirOutQf,recursive = TRUE)
         nameFileQfIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
-                                      '_flagsSmooth'),
-                               utils::tail(nameFileIdxSplt,1))
+                                         '_flagsSmooth'),
+                                  utils::tail(nameFileIdxSplt,1))
         nameFileQfOutIdx <- base::paste0(nameFileQfIdxSplt,collapse='.')
         
         
@@ -734,12 +734,12 @@ wrap.precip.aepg.smooth <- function(DirIn,
           ))
         }
       }
-      
+        
     } else {
       log$warn(paste0(nameFileIdx,' and associated flags files are not able to be output because this data file was not found in the input.'))
     }        
-    
+
   }
-  
+
   return()
 } 
