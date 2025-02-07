@@ -2,7 +2,7 @@
 pipeline:
   name: mcseries_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v3.3.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v3.5.8
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -114,9 +114,9 @@ input:
     name: import_trigger
     repo: mcseries_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/mcseries/*/*/*"
+    glob: "/mcseries/*/*/*/*"
 parallelism_spec:
-  constant: 1
+  constant: 20
 autoscaling: true
 resource_requests:
   memory: 1G

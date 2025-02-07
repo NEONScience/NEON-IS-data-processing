@@ -1,6 +1,6 @@
 mcseries_cron_daily_and_date_control.yaml
 mcseries_data_source_trino.yaml
-mcseries_data_years.yaml
+mcseries_data_source_kafka.yaml
 mcseries_location_asset.yaml
 mcseries_location_asset_assignment.yaml
 mcseries_location_group_and_restructure.yaml

@@ -152,6 +152,7 @@ test_that("Unit test of wrap.qaqc.plau.R", {
   
   expect_true ((file.exists(dirOutData, fileData, recursive = TRUE)) &&
                  (file.exists(dirOutFlags, fileFlags, recursive = TRUE)))
+  rm(returned_wrap_qaqc_plau)
   
   # Test 2 -  DirSubCopy="threshold" and the directory, threshold, exists in the out dir.
   
@@ -180,7 +181,8 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                   (file.exists(dirOutFlags, fileFlags, recursive = TRUE)) &&
                   (dir.exists(dirOutSub))
                 )
-  
+   rm(returned_wrap_qaqc_plau)
+   
    if (base::unlist(base::lapply(DirSrc, base::dir.exists))) {
      cmdSymbLink <- base::paste0('rm ', base::paste0(DirSrc))
      rmSymbLink <- base::lapply(cmdSymbLink, base::system)
@@ -189,7 +191,7 @@ test_that("Unit test of wrap.qaqc.plau.R", {
   # Test 3 - a wrong file is in data/, parquet file expected, but avro file sent
   
    badDatagDirIn = "pfs/padded_timeseries_analyzer/hmp155_wrongData/2020/01/02/CFGLOC101252"
-  
+
    if (dir.exists(DirOutBase)) {
      unlink(DirOutBase, recursive = TRUE)
    }
@@ -197,22 +199,25 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                              DirOutBase=DirOutBase,
                                              ParaTest=ParaTest,
                                              DirSubCopy=thresholdDir,
-                                             VarAddFileQf=VarAddFileQf), silent=TRUE)
+                                             VarAddFileQf=VarAddFileQf), silent=FALSE)
+   expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+   rm(returned_wrap_qaqc_plau)
    
   #
   # Test 4 - a column, readoutTime, missing in the data
-  
    badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingReadoutTime/2020/01/02/CFGLOC101252"
    if (dir.exists(DirOutBase)) {
      unlink(DirOutBase, recursive = TRUE)
    }
-  
+
     returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDataDirIn,
                                                  DirOutBase=DirOutBase,
                                                  ParaTest=ParaTest,
                                                  DirSubCopy=thresholdDir,
-                                                 VarAddFileQf=VarAddFileQf), silent=TRUE)
-  
+                                                 VarAddFileQf=VarAddFileQf), silent=FALSE)
+    expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+    rm(returned_wrap_qaqc_plau)
+    
   # Test 5 - more than one threshold json
   
    badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_morethanOneThreshold/2020/01/02/CFGLOC101252"
@@ -224,8 +229,10 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                  DirOutBase=DirOutBase,
                                                  ParaTest=ParaTest,
                                                  DirSubCopy=thresholdDir,
-                                                 VarAddFileQf=VarAddFileQf), silent=TRUE)
-  
+                                                 VarAddFileQf=VarAddFileQf), silent=FALSE)
+   expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+   rm(returned_wrap_qaqc_plau)
+   
    # Test 6 - term_name is missing in threshold.json
  
     badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingTermName/2020/01/02/CFGLOC101252"
@@ -235,8 +242,9 @@ test_that("Unit test of wrap.qaqc.plau.R", {
     returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=badDataDirIn,
                                                   DirOutBase=DirOutBase,
                                                   ParaTest=ParaTest,
-                                                  VarAddFileQf=VarAddFileQf), silent=TRUE)
+                                                  VarAddFileQf=VarAddFileQf), silent=FALSE)
     expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+    rm(returned_wrap_qaqc_plau)
     
     # Test 7 - Check that the tests to run are wholly contained in the tests run by this code
     # not-null does not exist in c("null", "gap", "range", "step", "spike", "persistence")
@@ -251,7 +259,9 @@ test_that("Unit test of wrap.qaqc.plau.R", {
     returned_wrap_qaqc_plau <- try(wrap.qaqc.plau(DirIn=DirIn,
                                                   DirOutBase=DirOutBase,
                                                   ParaTest=ParaTest_notContained,
-                                                  VarAddFileQf=VarAddFileQf), silent=TRUE)
+                                                  VarAddFileQf=VarAddFileQf), silent=FALSE)
+    expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+    rm(returned_wrap_qaqc_plau)
     
     # Test 8 - "threshold_name":"Gap Test value - # missing points" missing in thresholds.json
     # when ParaTest[[]]$test has "gap", for example, c("null", "gap", "range", "step", "spike", "persistence")
@@ -266,6 +276,8 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                    DirOutBase=DirOutBase,
                                                    ParaTest= ParaTest,
                                                    VarAddFileQf=VarAddFileQf), silent=TRUE)
+     expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+     rm(returned_wrap_qaqc_plau)
      
      # Test 9 - check "range" min not found in thresholds json
      #
@@ -280,6 +292,8 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                    DirOutBase=DirOutBase,
                                                    ParaTest= ParaTest,
                                                    VarAddFileQf=VarAddFileQf), silent=TRUE)
+     expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+     rm(returned_wrap_qaqc_plau)
      
      # Test 10 - check "range" max not found in thresholds json
      #
@@ -294,6 +308,8 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                    DirOutBase=DirOutBase,
                                                    ParaTest= ParaTest,
                                                    VarAddFileQf=VarAddFileQf), silent=TRUE)
+     expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+     rm(returned_wrap_qaqc_plau)
      
      # Test 11 - check step threshold name not found in thresholds json
      #
@@ -308,6 +324,8 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                    DirOutBase=DirOutBase,
                                                    ParaTest= ParaTest,
                                                    VarAddFileQf=VarAddFileQf), silent=TRUE)
+     expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+     rm(returned_wrap_qaqc_plau)
      
      # Test 12 - check wrong Persistance Change in thresholds json
      #
@@ -322,6 +340,8 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                    DirOutBase=DirOutBase,
                                                    ParaTest= ParaTest,
                                                    VarAddFileQf=VarAddFileQf), silent=TRUE)
+     expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+     rm(returned_wrap_qaqc_plau)
      
      # Test 13 - check typo in Persistance time-sec in thresholds json
      #
@@ -336,6 +356,8 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                    DirOutBase=DirOutBase,
                                                    ParaTest= ParaTest,
                                                    VarAddFileQf=VarAddFileQf), silent=TRUE)
+     expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+     rm(returned_wrap_qaqc_plau)
      
     # Test 14 -  SchmQf is not null
     
@@ -353,8 +375,10 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                    SchmQf=SchmQf,
                                                    VarAddFileQf=VarAddFileQf), silent=TRUE)
     
-    
-   # Test 15 - DespikningMethod is missing in threshold.json
+     expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+     rm(returned_wrap_qaqc_plau)
+     
+   # Test 15 - DespikingMethod is missing in threshold.json
   
      badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingDspMthd/2020/01/02/CFGLOC101252"
       if (dir.exists(DirOutBase)) {
@@ -367,7 +391,9 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                     DirSubCopy=thresholdDir,
                                                     VarAddFileQf=VarAddFileQf), silent=TRUE)
     
-  
+    expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+    rm(returned_wrap_qaqc_plau)
+    
   # Test 16 - Despiknign MAD is missing in threshold.json
   #
    badDataDirIn = "pfs/padded_timeseries_analyzer/hmp155_missingDspMAD/2020/01/02/CFGLOC101252"
@@ -380,6 +406,8 @@ test_that("Unit test of wrap.qaqc.plau.R", {
                                                  ParaTest=ParaTest,
                                                  DirSubCopy=thresholdDir,
                                                  VarAddFileQf=VarAddFileQf), silent=TRUE)
+   expect_true('try-error' %in% class(returned_wrap_qaqc_plau))
+   rm(returned_wrap_qaqc_plau)
    
    if (dir.exists(DirOutBase)) {
      unlink(DirOutBase, recursive = TRUE)
