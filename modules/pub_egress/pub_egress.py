@@ -125,7 +125,9 @@ class Pub_egress:
 
                     # Populate the object id
                     for key in objectIdByFile:
+                        print('\nkey in objectIdByFile is :::::::: ', key)
                         manifest.loc[manifest['file'] == key, 'objectId'] = objectIdByFile[key]
+                        print('\n objectIdByFile[key] :::::::::: ',  objectIdByFile[key])
 
                     # Restrict manifest to private files for MDP sites, i.e., MD03, MD11, ...
                     # and public files for non MDP sites, i.e., ABBY, BARR... and write to the output
