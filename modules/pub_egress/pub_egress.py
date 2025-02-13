@@ -102,18 +102,16 @@ class Pub_egress:
                             visibility=manifest.loc[manifest['file'] == filename, 'visibility']
                             log.debug(f'Visibility for {filename}: {visibility.iloc[0]}')
                             if (not (re.match((r'^MD(\d\d)'),site))) and (visibility.iloc[0] != 'public'):
-                                print('\ntest inside if site = ',site,' visibility = ',  visibility)
                                 continue
-                            print('\ntest outside if site = ', site, ' visibility = ', visibility)
+
                             file_path = Path(root, filename)
-                            print('\nfile_path = ', file_path)
 
                             # construct link filename
                             base_path = os.path.join(idq, site, date_range, package, filename)
                             link_path = Path(self.out_path, base_path)
                             if re.match((r'^MD(\d\d)'),site):
                                 link_path = Path(self.out_path_mdp,base_path)
-                            print('\nlink_path = ',link_path)
+
                             log.debug(f'source_path: {file_path} link_path: {link_path}')
                             link_path.parent.mkdir(parents=True, exist_ok=True)
 
