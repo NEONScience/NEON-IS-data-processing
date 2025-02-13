@@ -101,15 +101,19 @@ class Pub_egress:
                             # Get portal visibility. Skip egress if private
                             visibility=manifest.loc[manifest['file'] == filename, 'visibility']
                             log.debug(f'Visibility for {filename}: {visibility.iloc[0]}')
-                            if not (re.match((r'^MD(\d\d)'),site)) and (visibility.iloc[0] != 'public'):
+                            if (not (re.match((r'^MD(\d\d)'),site))) and (visibility.iloc[0] != 'public'):
                                 print('\ntest inside if site = ',site,' visibility = ',  visibility)
                                 continue
                             print('\ntest outside if site = ', site, ' visibility = ', visibility)
                             file_path = Path(root, filename)
+                            print('\nfile_path = ', file_path)
 
                             # construct link filename
                             base_path = os.path.join(idq, site, date_range, package, filename)
                             link_path = Path(self.out_path, base_path)
+                            if re.match((r'^MD(\d\d)'),site):
+                                link_path = Path(self.out_path_mdp,base_path)
+                            print('\nlink_path = ',link_path)
                             log.debug(f'source_path: {file_path} link_path: {link_path}')
                             link_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -129,12 +133,11 @@ class Pub_egress:
                     # and public files for non MDP sites, i.e., ABBY, BARR... and write to the output
                     if re.match((r'^MD(\d\d)'),site):
                         manifest = manifest.loc[manifest['visibility'] == 'private',]
-                        manifest.to_csv(os.path.join(self.out_path_mdp,idq,site,date_range,package,'manifest.csv'),
-                                        index=False)
+                        self.out_path = self.out_path_mdp
                     else:
                         manifest = manifest.loc[manifest['visibility'] == 'public',]
-                        manifest.to_csv(os.path.join(self.out_path, idq, site, date_range, package, 'manifest.csv'), index=False)
-                        print('\nout_path = ',self.out_path)
+
+                    manifest.to_csv(os.path.join(self.out_path, idq, site, date_range, package, 'manifest.csv'), index=False)
 
                 except Exception:
                     exc_type, exc_obj, exc_tb = sys.exc_info()
