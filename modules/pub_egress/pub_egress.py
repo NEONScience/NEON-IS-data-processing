@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
+import re
 from pathlib import Path
 import datetime
 import dateutil
@@ -71,7 +72,6 @@ class Pub_egress:
                         filename_parts = filename.split(self.filename_delimiter)
                         if len(filename_parts) == self.delimited_data_length:
                             site = filename_parts[self.site_index]
-
                             # parse out the idq
                             filename_parts[self.domain_index] = self.domain_generic
                             filename_parts[self.site_index] = self.site_generic
@@ -100,7 +100,7 @@ class Pub_egress:
                             # Get portal visibility. Skip egress if private
                             visibility=manifest.loc[manifest['file'] == filename, 'visibility']
                             log.debug(f'Visibility for {filename}: {visibility.iloc[0]}')
-                            if visibility.iloc[0] != 'public':
+                            if not (re.match((r'^MD(\d\d)'),site)) and (visibility.iloc[0] != 'public'):
                                 continue
 
                             file_path = Path(root, filename)
@@ -123,8 +123,12 @@ class Pub_egress:
                     for key in objectIdByFile:
                         manifest.loc[manifest['file'] == key, 'objectId'] = objectIdByFile[key]
 
-                    # Restrict manifest to public files only and write to the output
-                    manifest = manifest.loc[manifest['visibility'] == 'public',]
+                    # Restrict manifest to private files for MDP sites, i.e., MD03, MD11, ...
+                    # and public files for non MDP sites, i.e., ABBY, BARR... and write to the output
+                    if re.match((r'^MD(\d\d)'),site):
+                        manifest = manifest.loc[manifest['visibility'] == 'private',]
+                    else:
+                        manifest = manifest.loc[manifest['visibility'] == 'public',]
                     manifest.to_csv(os.path.join(self.out_path, idq, site, date_range, package, 'manifest.csv'), index=False)
 
                 except Exception:
