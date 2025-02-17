@@ -16,7 +16,7 @@ transform:
     SOURCE_TYPE: "pump"
   stdin:
   - "#!/bin/bash"
-  - ./cron_daily_and_date_control/populate_site_dates.sh
+  - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
 input:
   cross:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
