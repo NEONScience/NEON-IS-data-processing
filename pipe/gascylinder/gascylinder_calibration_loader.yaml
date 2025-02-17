@@ -26,20 +26,17 @@ input:
     glob: /*/*/*/*
     empty_files: true
 parallelism_spec:
-  constant: 10
+  constant: 6
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.5
-resource_limits:
   memory: 1G
+  cpu: 1
+resource_limits:
+  memory: 2G
   cpu: 1.5
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 0.2
-sidecar_resource_limits:
-  memory: 5G
-  cpu: 1.2
+  memory: 4G
+  cpu: 3
 datum_set_spec:
   number: 1
 scheduling_spec:
