@@ -108,9 +108,11 @@ class Pub_egress:
 
                             # construct link filename
                             base_path = os.path.join(idq, site, date_range, package, filename)
-                            link_path = Path(self.out_path, base_path)
+                            
                             if re.match((r'^MD(\d\d)'),site):
                                 link_path = Path(self.out_path_mdp,base_path)
+                            else:
+                                link_path = Path(self.out_path, base_path)
 
                             log.debug(f'source_path: {file_path} link_path: {link_path}')
                             link_path.parent.mkdir(parents=True, exist_ok=True)
@@ -125,8 +127,6 @@ class Pub_egress:
 
                     # Populate the object id
                     for key in objectIdByFile:
-                        print('\nkey: ', key)
-                        print('\nobjectIdByFile[key]: ', objectIdByFile[key])
                         manifest.loc[manifest['file'] == key, 'objectId'] = objectIdByFile[key]
 
                     # Restrict manifest to private files for MDP sites, i.e., MD03, MD11, ...
@@ -135,6 +135,7 @@ class Pub_egress:
                         manifest = manifest.loc[manifest['visibility'] == 'private',]
                         self.out_path = self.out_path_mdp
                     else:
+                        self.out_path = self.out_path
                         manifest = manifest.loc[manifest['visibility'] == 'public',]
 
                     manifest.to_csv(os.path.join(self.out_path, idq, site, date_range, package, 'manifest.csv'), index=False)

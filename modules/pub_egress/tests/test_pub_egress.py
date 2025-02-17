@@ -52,6 +52,7 @@ class PubEgressTest(TestCase):
     def check_output(self):
         """Check data files are in the output directory."""
         output_path = Path(self.out_dir, self.target_file_name)
+        print('\noutput_path is :::::::::: ',output_path)
         self.assertTrue(output_path.exists())
         """Check manifest file is in the output directory."""
         output_manifest_path = Path(self.out_dir, self.target_manifest_name)
