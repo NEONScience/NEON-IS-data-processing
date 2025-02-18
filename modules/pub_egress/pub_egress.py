@@ -111,7 +111,7 @@ class Pub_egress:
                             
                             if not re.match((r'^MD(\d\d)'),site):
                                 link_path = Path(self.out_path, base_path)
-                            else:
+                            if re.match((r'^MD(\d\d)'),site):
                                 link_path = Path(self.out_path_mdp, base_path)
 
                             log.info(f'\nsite: {site} link_path: {link_path}')
@@ -135,10 +135,11 @@ class Pub_egress:
                     if re.match((r'^MD(\d\d)'),site):
                         manifest = manifest.loc[manifest['visibility'] == 'private',]
                         manifest.to_csv(os.path.join(self.out_path_mdp, idq, site, date_range, package, 'manifest.csv'), index=False)
-                    else
+
+                    if not re.match((r'^MD(\d\d)'),site):
                         manifest = manifest.loc[manifest['visibility'] == 'public',]
                         manifest.to_csv(os.path.join(self.out_path, idq, site, date_range, package, 'manifest.csv'), index=False)
-                        
+                                            
        #              manifest.to_csv(os.path.join(self.out_path, idq, site, date_range, package, 'manifest.csv'), index=False)
 
                 except Exception:
