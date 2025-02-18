@@ -109,10 +109,10 @@ class Pub_egress:
                             # construct link filename
                             base_path = os.path.join(idq, site, date_range, package, filename)
                             
-                            if re.match((r'^MD(\d\d)'),site):
-                                link_path = Path(self.out_path_mdp,base_path)
-                            else:
+                            if not re.match((r'^MD(\d\d)'),site):
                                 link_path = Path(self.out_path, base_path)
+                            else:
+                                link_path = Path(self.out_path_mdp, base_path)
 
                             log.info(f'\nsite: {site} link_path: {link_path}')
                             log.debug(f'source_path: {file_path} link_path: {link_path}')
@@ -134,7 +134,7 @@ class Pub_egress:
                     # and public files for non MDP sites, i.e., ABBY, BARR... and write to the output
                     if re.match((r'^MD(\d\d)'),site):
                         manifest = manifest.loc[manifest['visibility'] == 'private',]
-                        manifest.to_csv(os.path.join(self.out_path = self.out_path_mdp, idq, site, date_range, package, 'manifest.csv'), index=False)
+                        manifest.to_csv(os.path.join(self.out_path_mdp, idq, site, date_range, package, 'manifest.csv'), index=False)
                     else
                         manifest = manifest.loc[manifest['visibility'] == 'public',]
                         manifest.to_csv(os.path.join(self.out_path, idq, site, date_range, package, 'manifest.csv'), index=False)
