@@ -13,6 +13,7 @@ def l0_gcs_loader() -> None:
 
     env = environs.Env()
     ingest_bucket_name = env.str('BUCKET_NAME')
+    bucket_version_path = env.str('BUCKET_VERSION_PATH') # The root path of the bucket, indicative of the version (e.g. v2)
     source_type = env.str('SOURCE_TYPE')
     output_directory: Path = env.path('OUT_PATH')
     storage_client = storage.Client()
@@ -29,7 +30,7 @@ def l0_gcs_loader() -> None:
     gen_date = download_year+"-"+download_month+"-"+download_day
     #print(f"gen_date is {gen_date}")
     
-    blobs = list(ingest_bucket.list_blobs(prefix=f"v1/{source_type}/ms={download_year}-{download_month}"))
+    blobs = list(ingest_bucket.list_blobs(prefix=f"{bucket_version_path}/{source_type}/ms={download_year}-{download_month}"))
     for blob in blobs:
        # print("blob name is:  ", blob.name)
         file_name = os.path.splitext(blob.name)[0]
