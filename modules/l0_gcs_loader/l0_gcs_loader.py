@@ -14,7 +14,10 @@ def l0_gcs_loader() -> None:
     env = environs.Env()
     ingest_bucket_name = env.str('BUCKET_NAME')
     bucket_version_path = env.str('BUCKET_VERSION_PATH') # The root path of the bucket, indicative of the version (e.g. v2)
-    source_type = env.str('SOURCE_TYPE')
+    source_type_index = env.int('SOURCE_TYPE_INDEX')
+    year_index = env.int('YEAR_INDEX')
+    month_index = env.int('MONTH_INDEX')
+    day_index = env.int('DAY_INDEX')
     output_directory: Path = env.path('OUT_PATH')
     storage_client = storage.Client()
     #print(f"L0 Bucket name : {ingest_bucket_name}")
@@ -24,9 +27,10 @@ def l0_gcs_loader() -> None:
     pathname, extension = os.path.splitext(import_trigger)
     import_path = pathname.split('/')
     #print(f"impport_path is {import_path}")
-    download_year = import_path[4]
-    download_month = import_path[5]
-    download_day = import_path[6]
+    source_type = import_path[source_type_index]
+    download_year = import_path[year_index]
+    download_month = import_path[month_index]
+    download_day = import_path[day_index]
     gen_date = download_year+"-"+download_month+"-"+download_day
     #print(f"gen_date is {gen_date}")
     
