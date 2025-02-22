@@ -39,7 +39,8 @@ def l0_gcs_loader() -> None:
        # print("blob name is:  ", blob.name)
         file_path_bucket = os.path.splitext(blob.name)[0]
         file_name_bucket = re.split('/', file_path_bucket)[-1]
-        source_id =  re.split('/', file_path_bucket)[-2]
+        source_id = re.split('/', file_path_bucket)[-2]
+        source_id = source_id.replace("source_id=","")
         file_date = re.search('[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}',file_name_bucket).group(0)
         trigger_date = datetime(int(download_year), int(download_month), int(download_day))
         bucket_file_date = datetime(int(re.split('-', file_date)[0]), int(re.split('-', file_date)[1]), int(re.split('-', file_date)[2]))
