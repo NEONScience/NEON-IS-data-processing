@@ -24,17 +24,14 @@ parallelism_spec:
   constant: 8
 autoscaling: true
 resource_requests:
-  memory: 20G
-  cpu: 2.0
+  memory: 3G
+  cpu: 2
 resource_limits:
-  memory: 25G
-  cpu: 2.5
-sidecar_resource_requests:
   memory: 4G
-  cpu: 1.0
-sidecar_resource_limits:
-  memory: 8G
-  cpu: 1.5
+  cpu: 3
+sidecar_resource_requests:
+  memory: 5G
+  cpu: 3
 datum_set_spec:
   number: 1
 scheduling_spec:
