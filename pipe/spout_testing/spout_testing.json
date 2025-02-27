@@ -9,7 +9,7 @@
     "stdin": [ "#!/bin/bash", "python3 -m message_reader.message_reader_main" ],
     "env": {
         "OUT_PATH": "/pfs/out",
-        "LOG_LEVEL": "DEBUG",
+        "LOG_LEVEL": "INFO",
         "BOOTSTRAP_SERVER": "den-devrmarkel-1.ci.neoninternal.org:30937",
         "TOPIC": "i_pdr.i_pdr.type_type",
         "GROUP_ID": "my-group",
