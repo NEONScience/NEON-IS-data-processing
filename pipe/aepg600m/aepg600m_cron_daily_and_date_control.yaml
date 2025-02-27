@@ -11,7 +11,7 @@ transform:
     # This is because some kafka topics start with <site>dfir instead of simply <site>, which the trino loader cannot handle
     LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
     START_DATE: "2025-01-01"
-    #END_DATE: "2024-06-01"
+    END_DATE: "2025-02-20"
     OUT_PATH_KAFKA: /pfs/out/kafka
     OUT_PATH_TRINO: /pfs/out/trino
     SOURCE_TYPE_NONHEATED: "aepg600m"
