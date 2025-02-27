@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.6.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-27de589
   cmd:
   - sh
   - "-c"
@@ -52,7 +52,7 @@ transform:
       echo "Extracting $SOURCE_TYPE from Trino for $year/$month/$day/$site"
       export GEN_OUTPUT_DIR=$interimDir/$SOURCE_TYPE/$year/$month/$day
       mkdir -p $GEN_OUTPUT_DIR
-      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second
+      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip
     done
     
     # Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day
@@ -61,7 +61,7 @@ transform:
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # !!!! TEMPORARY FIX FOR INCORRECT "name:" FIELD in aepg600m_heated.avsc schema.  !!!
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    set -x # Uncomment to troubleshoot
+    # set -x # Uncomment to troubleshoot
     if [[ -d "$OUT_PATH/$source_type" ]]; then
       if [ $source_type = "aepg600m_heated" ]; then 
 
@@ -95,7 +95,7 @@ transform:
         done
       fi
     fi
-    set +x
+    # set +x # Uncomment for debugging
 
     #Export L0 data to bucket
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
@@ -104,7 +104,7 @@ transform:
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
       # Example: /pfs/out/li191r/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      #set -x
+      # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -114,11 +114,11 @@ transform:
         fday="${BASH_REMATCH[4]}"
         fsourceid="${BASH_REMATCH[5]}"
         fname="${BASH_REMATCH[6]}"
-        outdir="${linkdir}/v1/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
         mkdir -p "${outdir}"
         ln -s "${f}" "${outdir}/${fname}"
       done
-      #set +x
+
       echo "Syncing files to bucket"
       rclone \
         --no-check-dest \
@@ -128,8 +128,11 @@ transform:
         copy \
         "${linkdir}" \
         ":gcs://${BUCKET_NAME}"
+        
       echo "Removing temporary files"
       rm -rf $linkdir
+      
+      # set +x # Uncomment for debugging
     fi
     EOF
   env:

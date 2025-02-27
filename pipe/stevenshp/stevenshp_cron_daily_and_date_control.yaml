@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: hydraprobe_cron_daily_and_date_control
+  name: stevenshp_cron_daily_and_date_control
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   env:
@@ -10,11 +10,11 @@ transform:
     # NOTE that the hydraprobe has different site-dates for kafka and trino loaders.
     # This is because some kafka topics start with <site>dfir instead of simply <site>, which the trino loader cannot handle
     LAG_DAYS_END: "2" # Default is 2. Don't go lower than 2.
-    START_DATE: "2024-06-17"
+    START_DATE: "2025-02-01"
     #END_DATE: "2024-06-01"
     OUT_PATH_KAFKA: /pfs/out/kafka
     # OUT_PATH_TRINO: /pfs/out/trino
-    SOURCE_TYPE: "hydraprobe_raw"
+    SOURCE_TYPE: "stevenshp_raw"
   cmd:
   - sh
   - "-c"
@@ -40,7 +40,7 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE_KAFKA
-      repo: hydraprobe_site_list
+      repo: stevenshp_site_list
       glob: /site-list.json
 resource_requests:
   memory: 100M
