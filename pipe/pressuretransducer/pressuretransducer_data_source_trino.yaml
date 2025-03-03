@@ -2,7 +2,7 @@
 pipeline:
   name: pressuretransducer_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.5.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.6.0
   cmd:
   - sh
   - "-c"
@@ -115,11 +115,11 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: pressuretransducer_import_trigger
+    repo: pressuretransducer_cron_daily_and_date_control
     glob: "/pressuretransducer/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 4
+  constant: 10
 autoscaling: true
 resource_requests:
   memory: 500M
@@ -130,9 +130,6 @@ resource_limits:
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.2
-sidecar_resource_limits:
-  memory: 6G
-  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
