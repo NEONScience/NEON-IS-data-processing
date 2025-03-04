@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from typing import List, Tuple
+from typing import List, Tuple, Set
 
 from geojson import Feature, FeatureCollection
 
+from data_access.get_assets import get_asset_definition_by_date
 from data_access.get_named_location_geolocations import get_named_location_geolocations
 from data_access.get_named_location_context import get_named_location_context
 from data_access.get_named_location_parents import get_named_location_parents
@@ -41,7 +42,7 @@ def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollecti
         and
             type.type_id = nam_locn.type_id
         order by 
-         	is_asset_location.install_date;
+            is_asset_location.install_date;
     '''
     features: List[Feature] = []
     with closing(connection.cursor()) as cursor:
@@ -54,6 +55,13 @@ def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollecti
             name = row[3]
             locations: FeatureCollection = get_named_location_geolocations(connector, key)
             properties: List[Property] = get_named_location_properties(connector, key)
+            # get asset information (model, manufacturer, software version) and append to properties
+            all_asset: Set[Asset] = get_asset_definition_by_date(connector, install_date, remove_date, asset.id)
+            asset_def = next(iter(all_asset))
+            properties.extend([Property(name="asset_model", value=asset_def.model),
+                               Property(name="asset_manufacturer", value=asset_def.manufacturer),
+                               Property(name="asset_software_version", value=asset_def.software_version)])
+
             parents: dict[str, Tuple[int, str]] = get_named_location_parents(connector, key)
             (domain_id, domain) = parents['domain'] if parents else None
             (site_id, site) = parents['site'] if parents else None
@@ -66,4 +74,7 @@ def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollecti
     # add the asset as the source
     feature_collection.update(source_id=asset.id)
     feature_collection.update(source_type=asset.type)
+    # feature_collection.update(source_modl=asset.model)
+    # feature_collection.update(source_mfr=asset.manufacturer)
+    # feature_collection.update(source_swversion=asset.software_version)
     return feature_collection
