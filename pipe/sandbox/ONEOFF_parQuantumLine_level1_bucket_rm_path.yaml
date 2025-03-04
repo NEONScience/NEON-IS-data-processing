@@ -13,7 +13,7 @@ transform:
     IFS=$'\n\t'
 
     
-    # set -x # Echo commands to output for debugging
+    # set -x # Echo commands to output for troubleshooting
     
     echo "Objects and directories in $BUCKET_NAME/${REMOVE_PATH}:"
     rclone lsf :gcs://${BUCKET_NAME}/${REMOVE_PATH}

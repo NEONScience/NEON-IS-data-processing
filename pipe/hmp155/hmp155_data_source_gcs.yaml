@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: li191r_data_source_gcs
+  name: hmp155_data_source_gcs
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -51,9 +51,9 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: li191r_cron_daily_and_date_control
+    repo: hmp155_cron_daily_and_date_control
     # Glob must be daily
-    glob: "/li191r/*/*/*"
+    glob: "/hmp155/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5
