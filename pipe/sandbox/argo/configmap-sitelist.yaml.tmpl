@@ -12,7 +12,11 @@ data:
     [
 {{- range $index, $element := (ds "netboxsites").results }}
 {{- if not (.name | strings.ToLower | strings.Contains "hqtw") }}
-      {"site": "{{ $element.name | strings.ToLower }}"}{{if ne $index $resultcount }},{{end}}
+      {
+        "site": "{{ $element.name | strings.ToLower }}",
+        "domain": "{{ index $element.custom_fields "NEON Domain" }},
+        "group": "{{ index $element.group "slug" | strings.ToLower | strings.TrimSuffix "-sites" }}
+      }{{if ne $index $resultcount }},{{end}}
 {{- end }}
 {{- end }}
     ]
