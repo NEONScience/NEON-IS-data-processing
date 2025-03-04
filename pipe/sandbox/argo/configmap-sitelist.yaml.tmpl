@@ -1,0 +1,18 @@
+{{- /* To find more about gomplate formatting, please visit its documentation site - https://docs.gomplate.ca/ */ -}}
+{{- /* This will break when there are more than 150 sites */ -}}
+{{ defineDatasource "netboxsites" "https://den-prodnetbox-2.ci.neoninternal.org/api/dcim/sites/?limit=150&region=sites" -}}
+{{- $resultcount := math.Sub (ds "netboxsites").count 1 -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argo-sitelist-params
+  namespace: argo
+data:
+  sitelist: |
+    [
+{{- range $index, $element := (ds "netboxsites").results }}
+{{- if not (.name | strings.ToLower | strings.Contains "hqtw") }}
+      {"site": "{{ $element.name | strings.ToLower }}"}{{if ne $index $resultcount }},{{end}}
+{{- end }}
+{{- end }}
+    ]
