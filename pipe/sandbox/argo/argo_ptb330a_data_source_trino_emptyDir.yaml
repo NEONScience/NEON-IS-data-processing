@@ -21,6 +21,8 @@ spec:
   - name: load-from-trino
     script:
       image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.5.0
+      securityContext:
+        runAsUser: 1001 
       resources:
         requests:
           cpu: 1
@@ -30,7 +32,9 @@ spec:
           memory: 1G
       command: [bash]
       source: |
+        whoami
         year="2025"
+        echo $year
         month="01"
         day="10"
         export GEN_DATE=$year-$month-$day
@@ -66,18 +70,27 @@ spec:
             key: TRINO_PASSWORD     # 'key' subcomponent of the secret    
       volumeMounts:
         - name: vol
-          mountPath: /mnt   
+          mountPath: /mnt 
+        - name: tmpvol
+          mountPath: /tmp
     volumes:
     - name: vol
+      emptyDir: { }
+    - name: tmpvol
       emptyDir: { }
     outputs:
       artifacts:
       - name: trino_data
         path: /mnt/trino
+        gcs:
+          bucket: neon-nonprod-argo-artifacts
+          key: artifacts/trino_raw
               
   - name: linkmerge
     script:
       image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.5.0
+      securityContext:
+        runAsUser: 1001 
       resources:
         requests:
           cpu: 1
@@ -154,9 +167,13 @@ spec:
         value: neon-nonprod-argo-artifacts
       volumeMounts:
         - name: vol
-          mountPath: /mnt   
+          mountPath: /mnt 
+        - name: tmpvol
+          mountPath: /tmp
     volumes:
     - name: vol
+      emptyDir: { }
+    - name: tmpvol
       emptyDir: { }
     inputs:
       artifacts:
@@ -166,3 +183,6 @@ spec:
       artifacts:
       - name: linkmerge_data
         path: /mnt/out
+        gcs:
+          bucket: neon-nonprod-argo-artifacts
+          key: artifacts/trino_linkmerge
