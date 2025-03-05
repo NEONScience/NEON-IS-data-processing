@@ -2,7 +2,7 @@
 pipeline:
   name: exo2_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.6.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-27de589
   cmd:
   - sh
   - "-c"
@@ -57,9 +57,9 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # Example: /pfs/out/exo2/2023/01/01/12345/data/file.parquet
+      # Example: /pfs/out/li191r/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for debugging
+      # set -x # Uncomment for troubleshooting
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -87,7 +87,7 @@ transform:
       echo "Removing temporary files"
       rm -rf $linkdir
       
-      # set +x # Uncomment for debugging
+      # set +x # Uncomment for troubleshooting
     fi
     EOF
   env:
@@ -127,17 +127,20 @@ input:
     glob: "/exo/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 5
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 400M
-  cpu: 1.2
+  memory: 300M
+  cpu: 0.8
 resource_limits:
-  memory: 800M
-  cpu: 2
+  memory: 600M
+  cpu: 1.5
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 0.5
+sidecar_resource_limits:
+  memory: 3G
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
