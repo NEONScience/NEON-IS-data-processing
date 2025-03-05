@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: exo2_data_source_trino
+  name: exodissolvedoxygen_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.6.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-27de589
   cmd:
   - sh
   - "-c"
@@ -57,7 +57,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # Example: /pfs/out/exo2/2023/01/01/12345/data/file.parquet
+      # Example: /pfs/out/exodissolvedoxygen/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
@@ -92,8 +92,8 @@ transform:
     EOF
   env:
     # Environment variables for data conversion step
-    GEN_YAML_CONF: "/usr/src/app/genscript/configs/exo2_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/exo2/exo2.avsc"
+    GEN_YAML_CONF: "/usr/src/app/genscript/configs/exodissolvedoxygen_streams.yaml"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/exodissolvedoxygen/exodissolvedoxygen.avsc"
     LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
@@ -106,7 +106,7 @@ transform:
     SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "15"
     # Environment variables for bash code
-    SOURCE_TYPE: 'exo2'
+    SOURCE_TYPE: 'exodissolvedoxygen'
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
