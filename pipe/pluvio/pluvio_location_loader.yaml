@@ -21,6 +21,8 @@ transform:
     python3 -m location_loader.location_loader_main #run the location loader
     
     ln -s $OUT_PATH/$SOURCE_TYPE /pfs/out/$SOURCE_TYPE_OUT
+    
+    EOF
   env:
     LOCATION_TYPE: CONFIG
     SOURCE_TYPE: pluvio_raw

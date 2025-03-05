@@ -8,7 +8,7 @@ transform:
   - "-c"
   - |-
     /bin/bash <<'EOF'
-    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-sstrict-mode/
     set -euo pipefail
     IFS=$'\n\t'
     
@@ -20,6 +20,7 @@ transform:
     
     ln -s $OUT_PATH/$SOURCE_TYPE /pfs/out/$SOURCE_TYPE_OUT
     
+    EOF
   env:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /tmp/out
