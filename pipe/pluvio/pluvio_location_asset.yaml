@@ -1,8 +1,11 @@
 ---
 pipeline:
-  name: pluvio_calibration_loader
+  name: pluvio_location_asset
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-asset-loader:v1.0.0
+
   cmd:
   - sh
   - "-c"
@@ -16,40 +19,34 @@ transform:
     rm -rf $OUT_PATH
     mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
     
-    python3 -m calval_loader.load_all_calval_files #run the calibration loader
-    
+    python3 -m location_asset_loader.location_asset_loader_main
+  
     ln -s $OUT_PATH/$SOURCE_TYPE /pfs/out/$SOURCE_TYPE_OUT
-    
   env:
-    CVAL_INGEST_BUCKET: neon-cval
-    OUT_PATH: /tmp/out
+    OUT_PATH: /tmp/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
     LOG_LEVEL: INFO
-    SOURCE_TYPE: "pluvio_raw"
-    SOURCE_TYPE_OUT: "pluvio"
-    STARTING_PATH_INDEX: "5"
+    SOURCE_TYPE: pluvio_raw
+    SOURCE_TYPE_OUT: pluvio
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
-    name: IN_PATH
-    repo: pluvio_calibration_list_files
-    glob: /*/*/*/*
+    repo: pluvio_cron_daily_and_date_control_tick
+    glob: /*
     empty_files: true
-parallelism_spec:
-  constant: 10
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.5
+  memory: 100M
+  cpu: 0.15
 resource_limits:
-  memory: 1G
-  cpu: 1.5
+  memory: 300M
+  cpu: 0.5
 sidecar_resource_requests:
-  memory: 800M
-  cpu: 0.2
-datum_set_spec:
-  number: 1
+  memory: 250M
+  cpu: 0.3
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
