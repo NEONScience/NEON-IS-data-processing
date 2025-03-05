@@ -55,8 +55,8 @@ runs:
             file: ${{ env.MODULE_PATH }}/Dockerfile
             push: ${{ github.event_name != 'pull_request' }}
             tags:  |
-              ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NS }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
               ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
+              ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NS }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
             labels: ${{ steps.meta.outputs.labels }}
  
         
