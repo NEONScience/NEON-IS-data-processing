@@ -18,7 +18,6 @@ env:
   GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
   GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
   GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
-  GHCR_NS: battelleecology
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # Get just the repo name from the event, i.e., NEON-IS-data-processing, in lowercase
