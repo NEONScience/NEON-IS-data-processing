@@ -12,8 +12,8 @@ env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   # Use github and google registries
   GHCR_REGISTRY: ghcr.io
-  # GHCR_NS: ${{ github.repository_owner }}
-  GHCR_NS: ${{ vars.SHARED_WIF_REPO }}
+  GHCR_NS: ${{ github.repository_owner }}
+  # GHCR_NS: ${{ vars.SHARED_WIF_REPO }}
   GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
   GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
   GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
