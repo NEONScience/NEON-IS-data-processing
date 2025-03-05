@@ -18,7 +18,9 @@ transform:
     
     python3 -m calval_loader.load_all_calval_files #run the calibration loader
     
-    cp -r $OUT_PATH/$SOURCE_TYPE /pfs/out/$SOURCE_TYPE_OUT
+    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+      cp -r $OUT_PATH/$SOURCE_TYPE /pfs/out/$SOURCE_TYPE_OUT
+    fi
     
     EOF
   env:
