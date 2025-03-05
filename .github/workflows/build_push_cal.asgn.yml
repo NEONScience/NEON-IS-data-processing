@@ -1,11 +1,11 @@
-name: "Build-push_flow.cal.asgn"
+name: "Build-push-update_flow.cal.asgn"
 
 on:
   push:
-    branches:
-      - 'master'
-    paths:
-      - 'flow/flow.cal.asgn/**'
+    # branches:
+    #   - 'master'
+    tags:
+      - "flow.cal.asgn/v*.*.*"
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -29,22 +29,26 @@ env:
   IMAGE_NAME: neon-is-cal-asgn
 
 jobs:
-  build-push:
+  build-push-update:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
+        security-events: write
+        packages: write
         id-token: 'write'
+        pull-requests: 'write'
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
+          ref: 'master'
           fetch-depth: '0'
 
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Build and push
-        uses: ./.github/actions/build-push
-        with:
-            image-tag: "${short_sha}"
-            
+      - name: Get semver
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=flow.cal.asgn/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+
+      - name: Build push and update
+        uses: ./.github/actions/build-push-update
