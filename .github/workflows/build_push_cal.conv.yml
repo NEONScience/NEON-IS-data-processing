@@ -1,13 +1,13 @@
-name: "Build-push-update_flow.cal.conv"
+name: "Build-push_flow.cal.conv"
 
 on:
   push:
-    # branches:
-    #   - 'master'
-    tags:
-      - "flow.cal.conv/v*.*.*"
+    branches:
+      - 'master'
+    paths:
+      - 'flow/flow.cal.conv/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
-  
+
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   # Use github and google registries
@@ -19,6 +19,7 @@ env:
   GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
   GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
   GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
+  GHCR_NS: battelleecology
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # Get just the repo name from the event, i.e., NEON-IS-data-processing, in lowercase
@@ -29,27 +30,22 @@ env:
   IMAGE_NAME: neon-is-cal-conv
 
 jobs:
-  build-push-update:
+  build-push:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
-        security-events: write
-        packages: write
         id-token: 'write'
-        pull-requests: 'write'
-
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
-  #        ref: 'master'
           fetch-depth: '0'
 
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 --match=flow.cal.conv/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
-
-      - name: Build push and update
-        uses: ./.github/actions/build-push-update
+      - name: Build and push
+        uses: ./.github/actions/build-push
+        with:
+            image-tag: "${short_sha}"
+            
