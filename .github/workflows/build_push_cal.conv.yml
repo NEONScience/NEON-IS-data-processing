@@ -1,15 +1,16 @@
-name: "Build-push_flow.cal.conv"
+name: "Build-push-update_flow.cal.conv"
 
 on:
   push:
-    branches:
-      - 'master'
-    paths:
-      - 'flow/flow.cal.conv/**'
+    # branches:
+    #   - 'master'
+    tags:
+      - "flow.cal.conv/v*.*.*"
   workflow_dispatch: {} # Allows trigger of workflow from web interface
-
+  
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # Use github and google registries
   GHCR_REGISTRY: ghcr.io
   # GHCR_NS, i.e, NEONSciene, in lowercase
@@ -30,22 +31,27 @@ env:
   IMAGE_NAME: neon-is-cal-conv
 
 jobs:
-  build-push:
+  build-push-update:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
+        security-events: write
+        packages: write
         id-token: 'write'
+        pull-requests: 'write'
+
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
+          ref: 'master'
           fetch-depth: '0'
 
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Build and push
-        uses: ./.github/actions/build-push
-        with:
-            image-tag: "${short_sha}"
-            
+      - name: Get semver
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=flow.cal.conv/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+
+      - name: Build push and update
+        uses: ./.github/actions/build-push-update
