@@ -1,13 +1,13 @@
 ---
 pipeline:
-  name: prt_data_source_kafka
+  name: windobserverii_extreme_data_source_kafka
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "prt"
+    SOURCE_TYPE: "windobserverii_extreme"
     LOGLEVEL: info
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
@@ -91,9 +91,9 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/prt/2023/01/01/12345/data/file.parquet
+      # /pfs/out/windobserverii_extreme/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for debugging
+      # set -x # Uncomment for troubleshooting
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -113,18 +113,18 @@ transform:
         rm -rf "${outdir}"
       done
       
-      # set +x # Uncomment for debugging
+      # set +x # Uncomment for troubleshooting
       rm -rf $linkdir
     fi
     EOF
 input:
   pfs:
     name: import_trigger
-    repo: prt_cron_daily_and_date_control
+    repo: windobserverii_extreme_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/prt/*/*/*"
+    glob: "/windobserverii_extreme/*/*/*"
 parallelism_spec:
-  constant: 3
+  constant: 1
 autoscaling: true
 resource_requests:
   memory: 300M
@@ -133,7 +133,7 @@ resource_limits:
   memory: 1.5G
   cpu: 2
 sidecar_resource_requests:
-  memory: 4G
+  memory: 2G
   cpu: 0.5
 datum_set_spec:
   number: 1

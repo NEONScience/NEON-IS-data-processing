@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: ONEOFF_precipWeighing_level1_bucket_rm_path
+  name: ONEOFF_level0_bucket_rm_path
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.0
   cmd:
@@ -18,8 +18,9 @@ transform:
     echo "Objects and directories in $BUCKET_NAME/${REMOVE_PATH}:"
     rclone lsf :gcs://${BUCKET_NAME}/${REMOVE_PATH}
     
-    # echo "Deleting files/folders in $BUCKET_NAME/${REMOVE_PATH}"
+    # echo "Deleting files in $BUCKET_NAME/${REMOVE_PATH}"
     # rclone delete :gcs://${BUCKET_NAME}/${REMOVE_PATH} --max-depth 10 --rmdirs -v
+    # rclone delete :gcs://${BUCKET_NAME}/${REMOVE_PATH} -v
 
     echo "Deleting path $BUCKET_NAME/${REMOVE_PATH}"
     rclone purge :gcs://${BUCKET_NAME}/${REMOVE_PATH}
@@ -30,13 +31,13 @@ transform:
     
   env:
 
-    # Environment variables for the L1 archiver
-    REMOVE_PATH: 'v2/precip-weighing/daily' # no beginning "/"
+    # Environment variables 
+    REMOVE_PATH: 'v2/hmp155' # no beginning "/"
 
   secrets:
-  - name: l1-bucket
+  - name: l0-bucket
     env_var: BUCKET_NAME
-    key: L1_BUCKET
+    key: LO_BUCKET
     
 input:
   cron:
