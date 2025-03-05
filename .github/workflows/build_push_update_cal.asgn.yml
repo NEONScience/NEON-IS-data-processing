@@ -28,7 +28,7 @@ env:
   IMAGE_NAME: neon-is-cal-asgn
 
 jobs:
-  build-push:
+  build-push-update:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
