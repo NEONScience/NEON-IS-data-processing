@@ -34,8 +34,7 @@ runs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-            images:  |
-              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
+            images: ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
             tags: |
               # type=semver,pattern={{raw}}
               # type=semver,pattern={{major}}.{{minor}}
