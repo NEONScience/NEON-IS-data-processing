@@ -6,7 +6,6 @@ on:
     #   - 'master'
     tags:
       - "flow.cal.asgn/v*.*.*"
-  workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
