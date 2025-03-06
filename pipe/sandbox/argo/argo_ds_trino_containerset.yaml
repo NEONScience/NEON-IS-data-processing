@@ -4,9 +4,33 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName: ptb330a-ds-trino-containerset-
+  generateName: ds-trino-containerset-
 spec:
   entrypoint: containerset-trino-example
+  arguments:
+    parameters:
+      - name: log_level
+        value: INFO
+      - name: source_type
+        value: ptb330a
+      - name: site
+        value: HARV
+      - name: year
+        value: "2025"
+      - name: month
+        value: "01"
+      - name: day
+        value: "15"
+      - name: align 
+        value: True # Set to True to use the --alignperiod option in gen_parquet.py
+      - name: alignperiod_value
+        value: second # Sets the value in the --alignperiod <value> parameter of gen_parquet.py. Ignored if alignperiod is not True
+      - name: gen_yaml_conf
+        value: "/usr/src/app/genscript/configs/ptb330a_streams.yaml"
+      - name: gen_schema_file
+        value: "/usr/src/app/schemas/ptb330a/ptb330a.avsc"
+      - name: bucket_name
+        value: neon-nonprod-argo-artifacts
   templates:
   # No output spec here because rclone is loading data right now
   - name: containerset-trino-example
@@ -26,9 +50,11 @@ spec:
         mountPath: /tmp
       containers:
       - name: main  # Loads from trino, called main in case we want to upload artifacts
-        image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.5.0
+        image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.0.0
         securityContext:
           runAsUser: 1001
+        # Resources get summed together in a containerset, and since the second container depends on the first
+        # container it can just use the same resources
         resources:
           requests:
             cpu: 1
@@ -40,27 +66,37 @@ spec:
         - bash
         - -c
         - |
-          whoami
-          year="2025"
-          echo $year
-          month="01"
-          day="10"
-          GEN_DATE=$year-$month-$day \
-          GEN_OUTPUT_DIR="/mnt/trino/$SOURCE_TYPE/$year/$month/$day" \
-          /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second
+          echo $GEN_SITE_NAME $YEAR-$MONTH-$DAY
+          GEN_DATE=$YEAR-$MONTH-$DAY 
+          GEN_OUTPUT_DIR="/mnt/trino_unmerged_data/$SOURCE_TYPE/$YEAR/$MONTH/$DAY" 
+          if [ "$ALIGN" = "True" ]; then 
+            /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --alignperiod $ALIGNPERIOD_VALUE 
+          else 
+            /usr/src/app/genscript/genparquet.py --storesitename --codec gzip 
+          fi
         env:
         - name: LOG_LEVEL
-          value: INFO
+          value: "{{workflow.parameters.log_level}}"
         - name: SOURCE_TYPE
-          value: 'ptb330a'
+          value: "{{workflow.parameters.source_type}}"
         - name: GEN_SITE_NAME
-          value: "HARV"
+          value: "{{workflow.parameters.site}}"
+        - name: YEAR
+          value: "{{workflow.parameters.year}}"
+        - name: MONTH
+          value: "{{workflow.parameters.month}}"
+        - name: DAY
+          value: "{{workflow.parameters.day}}"
         - name: REQUESTS_CA_BUNDLE
           value: "/etc/pki/tls/cert.pem"
         - name: GEN_YAML_CONF
-          value: "/usr/src/app/genscript/configs/ptb330a_streams.yaml"
+          value: "{{workflow.parameters.gen_yaml_conf}}"
         - name: GEN_SCHEMA_FILE
-          value: "/usr/src/app/schemas/ptb330a/ptb330a.avsc"
+          value: "{{workflow.parameters.gen_schema_file}}"
+        - name: ALIGN
+          value: "{{workflow.parameters.align}}"
+        - name: ALIGNPERIOD_VALUE
+          value: "{{workflow.parameters.alignperiod_value}}"
         - name: PRESTO_HOST  # name of env var
           valueFrom:
             secretKeyRef:
@@ -76,20 +112,12 @@ spec:
             secretKeyRef:
               name: trino-secret   # name of an existing k8s secret
               key: TRINO_PASSWORD  # 'key' subcomponent of the secret
+              
       - name: linkmerge
         dependencies: ["main"]
-        image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.5.0
+        image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.0.0
         securityContext:
           runAsUser: 1001
-        # These get summed together in a containerset, and since this depends on the other
-        # container it can just use the same resources
-        # resources:
-        #   requests:
-        #     cpu: 1
-        #     memory: 500M
-        #   limits:
-        #     cpu: 1.5
-        #     memory: 1G
         command:
         - bash
         - -c
@@ -109,7 +137,7 @@ spec:
             out_parquet_glob="${OUT_PATH}/**/*.parquet"
             # Example: /mnt/out/li191r/2023/01/01/12345/data/file.parquet
             echo "Linking output files to ${linkdir}"
-            set -x
+            # set -x # Uncomment for troubleshooting
             for f in $out_parquet_glob; do
               # Parse the path
               [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -119,11 +147,11 @@ spec:
               fday="${BASH_REMATCH[4]}"
               fsourceid="${BASH_REMATCH[5]}"
               fname="${BASH_REMATCH[6]}"
-              outdir="${linkdir}/v1/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+              outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
               mkdir -p "${outdir}"
               ln -s "${f}" "${outdir}/${fname}"
             done
-            set +x
+            
             echo "Syncing files to bucket"
             rclone \
               --no-check-dest \
@@ -133,18 +161,21 @@ spec:
               copy \
               "${linkdir}" \
               ":gcs://${BUCKET_NAME}"
+              
             echo "Removing temporary files"
             rm -rf $linkdir
+            
+            # set +x # Uncomment for troubleshooting
           fi
         env:
         - name: LOG_LEVEL
-          value: DEBUG
+          value: "{{workflow.parameters.log_level}}"
         - name: IN_PATH
-          value: "/mnt/trino"
+          value: "/mnt/trino_unmerged_data"
         - name: OUT_PATH
           value: "/mnt/out"
         - name: SOURCE_TYPE
-          value: 'ptb330a'
+          value: "{{workflow.parameters.source_type}}"
         - name: SOURCE_TYPE_INDEX
           value: '3'
         - name: YEAR_INDEX
@@ -156,4 +187,4 @@ spec:
         - name: SOURCE_ID_INDEX
           value: '7'
         - name: BUCKET_NAME  # name of env var
-          value: neon-nonprod-argo-artifacts
+          value: "{{workflow.parameters.bucket_name}}"
