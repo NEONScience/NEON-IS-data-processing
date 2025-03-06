@@ -1,0 +1,51 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: ds-trino-templateref-loopsite-
+spec:
+  entrypoint: loop-site
+  arguments:
+    parameters:
+    - name: site-list
+      valueFrom:
+        configMapKeyRef:
+          name: argo-sitelist-params-small
+          key: sitelist
+  templates:
+  - name: loop-site
+    inputs:
+      parameters:
+      - name: site-list
+    steps:
+    - - name: data-source-trino-site
+        templateRef:
+          name: workflow-template-ds-trino
+          template: containerset-trino-example
+        arguments:
+          parameters:
+          - name: site
+            value: "{{item.site}}"
+          - name: log_level
+            value: INFO
+          - name: source_type
+            value: ptb330a
+          - name: year
+            value: "2025"
+          - name: month
+            value: "01"
+          - name: day
+            value: "15"
+          - name: align 
+            value: True # Set to True to use the --alignperiod option in gen_parquet.py
+          - name: alignperiod_value
+            value: second # Sets the value in the --alignperiod <value> parameter of gen_parquet.py. Ignored if alignperiod is not True
+          - name: gen_yaml_conf
+            value: "/usr/src/app/genscript/configs/ptb330a_streams.yaml"
+          - name: gen_schema_file
+            value: "/usr/src/app/schemas/ptb330a/ptb330a.avsc"
+          - name: bucket_name
+            value: neon-nonprod-argo-artifacts
+        withParam: "{{inputs.parameters.site-list}}"      # parameter specifies the list to iterate over
+
+
