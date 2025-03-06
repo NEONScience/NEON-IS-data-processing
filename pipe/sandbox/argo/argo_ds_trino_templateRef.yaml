@@ -1,0 +1,32 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: ds-trino-templateref-
+spec:
+  arguments:
+    parameters:
+      - name: log_level
+        value: INFO
+      - name: source_type
+        value: ptb330a
+      - name: site
+        value: HARV
+      - name: year
+        value: "2025"
+      - name: month
+        value: "01"
+      - name: day
+        value: "15"
+      - name: align 
+        value: True # Set to True to use the --alignperiod option in gen_parquet.py
+      - name: alignperiod_value
+        value: second # Sets the value in the --alignperiod <value> parameter of gen_parquet.py. Ignored if alignperiod is not True
+      - name: gen_yaml_conf
+        value: "/usr/src/app/genscript/configs/ptb330a_streams.yaml"
+      - name: gen_schema_file
+        value: "/usr/src/app/schemas/ptb330a/ptb330a.avsc"
+      - name: bucket_name
+        value: neon-nonprod-argo-artifacts
+  workflowTemplateRef:
+    name: workflow-template-ds-trino
