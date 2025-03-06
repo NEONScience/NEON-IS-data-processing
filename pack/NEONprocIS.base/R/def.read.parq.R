@@ -12,7 +12,8 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 #' 
 #' @return A data frame of the data contained in the Parquet file. The schema is included in
-#' attribute 'schema'.
+#' attribute 'schema'. Any other schema metadata included in the parquet file is attached to
+#' the output data frame in the 'metadata' attribute.
 
 #' @references 
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -32,6 +33,8 @@
 #     original creation
 #   Cove Sturtevant (2022-02-10)
 #     Use base::data.frame instead of base::as.data.frame to avoid tibble data frame
+#   Cove Sturtevant (2024-02-25)
+#     Attach metadata included in the parquet file as an attribute of the output dataframe
 ##############################################################################################
 def.read.parq <- function(NameFile,
                           log=NULL
@@ -50,6 +53,7 @@ def.read.parq <- function(NameFile,
   objParq <- arrow::read_parquet(file=NameFile,as_data_frame=FALSE)
   data <- base::data.frame(objParq)
   base::attr(data,'schema') <- objParq$schema
+  base::attr(data,'metadata') <- objParq$metadata # Attach any other included metadata
 
   # Assign timezone for POSIX variables
   clssVar <- base::lapply(X=data,FUN=base::class)

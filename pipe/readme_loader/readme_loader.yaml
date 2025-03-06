@@ -12,7 +12,7 @@ transform:
   - python3 -m readme_loader.readme_loader_main
   env:
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG 
+    LOG_LEVEL: INFO 
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
