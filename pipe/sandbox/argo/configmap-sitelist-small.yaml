@@ -18,6 +18,16 @@ data:
         "site": "ARIK",
         "domain": "D10",
         "group": "ais"
+      },
+      {
+        "site": "BARC",
+        "domain": "D03",
+        "group": "ais"
+      },
+      {
+        "site": "BARR",
+        "domain": "D18",
+        "group": "tis"
       }
     ]
     

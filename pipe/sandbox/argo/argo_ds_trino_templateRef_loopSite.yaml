@@ -5,6 +5,7 @@ metadata:
   generateName: ds-trino-templateref-loopsite-
 spec:
   entrypoint: loop-site
+  parallelism: 2
   arguments:
     parameters:
     - name: site-list
@@ -25,7 +26,7 @@ spec:
         arguments:
           parameters:
           - name: site
-            value: "{{item.site}}"
+            value: "{{ item.site }}"
           - name: log_level
             value: INFO
           - name: source_type
