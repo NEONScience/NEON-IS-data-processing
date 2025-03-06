@@ -3,6 +3,9 @@ kind: ConfigMap
 metadata:
   name: argo-sitelist-params
   namespace: argo
+  labels:
+    # Note that this label is required for the informer to detect this ConfigMap.
+    workflows.argoproj.io/configmap-type: Parameter
 data:
   sitelist: |
     [
