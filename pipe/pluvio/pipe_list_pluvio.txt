@@ -9,3 +9,5 @@ pluvio_location_asset.yaml
 pluvio_location_asset_assignment.yaml
 pluvio_location_active_dates_assignment.yaml
 pluvio_calibration_group_and_convert.yaml
+pluvio_location_group_and_restructure.yaml
+pluvio_fill_date_gaps_and_regularize.yaml
