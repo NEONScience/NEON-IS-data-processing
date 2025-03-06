@@ -33,7 +33,7 @@ transform:
       DirIn=/tmp/pfs/structuredCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "DirSubCombData=data|flags|uncertainty_data" \
+      "DirSubCombData=data|flags" \
       DirSubCombUcrt=uncertainty_coef \
       DirSubCopy=location 
     EOF
