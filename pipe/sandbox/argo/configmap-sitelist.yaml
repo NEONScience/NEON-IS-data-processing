@@ -11,467 +11,468 @@ data:
     [
       {
         "site": "abby",
-        "domain": "D16,
-        "group": "tis
+        "domain": "D16",
+        "group": "tis"
       },
       {
         "site": "arik",
-        "domain": "D10,
-        "group": "ais
+        "domain": "D10",
+        "group": "ais"
       },
       {
         "site": "barc",
-        "domain": "D03,
-        "group": "ais
+        "domain": "D03",
+        "group": "ais"
       },
       {
         "site": "barr",
-        "domain": "D18,
-        "group": "tis
+        "domain": "D18",
+        "group": "tis"
       },
       {
         "site": "bart",
-        "domain": "D01,
-        "group": "tis
+        "domain": "D01",
+        "group": "tis"
       },
       {
         "site": "bigc",
-        "domain": "D17,
-        "group": "ais
+        "domain": "D17",
+        "group": "ais"
       },
       {
         "site": "blan",
-        "domain": "D02,
-        "group": "tis
+        "domain": "D02",
+        "group": "tis"
       },
       {
         "site": "blde",
-        "domain": "D12,
-        "group": "ais
+        "domain": "D12",
+        "group": "ais"
       },
       {
         "site": "bldr",
-        "domain": "D20,
-        "group": "tis
+        "domain": "D20",
+        "group": "tis"
       },
       {
         "site": "blue",
-        "domain": "D11,
-        "group": "ais
+        "domain": "D11",
+        "group": "ais"
       },
       {
         "site": "blwa",
-        "domain": "D08,
-        "group": "ais
+        "domain": "D08",
+        "group": "ais"
       },
       {
         "site": "bona",
-        "domain": "D19,
-        "group": "tis
+        "domain": "D19",
+        "group": "tis"
       },
       {
         "site": "cari",
-        "domain": "D19,
-        "group": "ais
+        "domain": "D19",
+        "group": "ais"
       },
       {
         "site": "clbj",
-        "domain": "D11,
-        "group": "tis
+        "domain": "D11",
+        "group": "tis"
       },
       {
         "site": "clbjdfir",
-        "domain": "D11,
-        "group": "tis
+        "domain": "D11",
+        "group": "tis"
       },
       {
         "site": "como",
-        "domain": "D13,
-        "group": "ais
+        "domain": "D13",
+        "group": "ais"
       },
       {
         "site": "cper",
-        "domain": "D10,
-        "group": "tis
+        "domain": "D10",
+        "group": "tis"
       },
       {
         "site": "cram",
-        "domain": "D05,
-        "group": "ais
+        "domain": "D05",
+        "group": "ais"
       },
       {
         "site": "cupe",
-        "domain": "D04,
-        "group": "ais
+        "domain": "D04",
+        "group": "ais"
       },
       {
         "site": "dcfs",
-        "domain": "D09,
-        "group": "tis
+        "domain": "D09",
+        "group": "tis"
       },
       {
         "site": "deju",
-        "domain": "D19,
-        "group": "tis
+        "domain": "D19",
+        "group": "tis"
       },
       {
         "site": "dela",
-        "domain": "D08,
-        "group": "tis
+        "domain": "D08",
+        "group": "tis"
       },
       {
         "site": "dsny",
-        "domain": "D03,
-        "group": "tis
+        "domain": "D03",
+        "group": "tis"
       },
       {
         "site": "flnt",
-        "domain": "D03,
-        "group": "ais
+        "domain": "D03",
+        "group": "ais"
       },
       {
         "site": "grsm",
-        "domain": "D07,
-        "group": "tis
+        "domain": "D07",
+        "group": "tis"
       },
       {
         "site": "guan",
-        "domain": "D04,
-        "group": "tis
+        "domain": "D04",
+        "group": "tis"
       },
       {
         "site": "guil",
-        "domain": "D04,
-        "group": "ais
+        "domain": "D04",
+        "group": "ais"
       },
       {
         "site": "harv",
-        "domain": "D01,
-        "group": "tis
+        "domain": "D01",
+        "group": "tis"
       },
       {
         "site": "heal",
-        "domain": "D19,
-        "group": "tis
+        "domain": "D19",
+        "group": "tis"
       },
       {
         "site": "hopb",
-        "domain": "D01,
-        "group": "ais
+        "domain": "D01",
+        "group": "ais"
       },
       {
         "site": "jerc",
-        "domain": "D03,
-        "group": "tis
+        "domain": "D03",
+        "group": "tis"
       },
       {
         "site": "jorn",
-        "domain": "D14,
-        "group": "tis
+        "domain": "D14",
+        "group": "tis"
       },
       {
         "site": "king",
-        "domain": "D06,
-        "group": "ais
+        "domain": "D06",
+        "group": "ais"
       },
       {
         "site": "kona",
-        "domain": "D06,
-        "group": "tis
+        "domain": "D06",
+        "group": "tis"
       },
       {
         "site": "konz",
-        "domain": "D06,
-        "group": "tis
+        "domain": "D06",
+        "group": "tis"
       },
       {
         "site": "laja",
-        "domain": "D04,
-        "group": "tis
+        "domain": "D04",
+        "group": "tis"
       },
       {
         "site": "leco",
-        "domain": "D07,
-        "group": "ais
+        "domain": "D07",
+        "group": "ais"
       },
       {
         "site": "leno",
-        "domain": "D08,
-        "group": "tis
+        "domain": "D08",
+        "group": "tis"
       },
       {
         "site": "lewi",
-        "domain": "D02,
-        "group": "ais
+        "domain": "D02",
+        "group": "ais"
       },
       {
         "site": "liro",
-        "domain": "D05,
-        "group": "ais
+        "domain": "D05",
+        "group": "ais"
       },
       {
         "site": "mart",
-        "domain": "D16,
-        "group": "ais
+        "domain": "D16",
+        "group": "ais"
       },
       {
         "site": "mayf",
-        "domain": "D08,
-        "group": "ais
+        "domain": "D08",
+        "group": "ais"
       },
       {
         "site": "mcdi",
-        "domain": "D06,
-        "group": "ais
+        "domain": "D06",
+        "group": "ais"
       },
       {
         "site": "mcra",
-        "domain": "D16,
-        "group": "ais
+        "domain": "D16",
+        "group": "ais"
       },
       {
         "site": "mdp1",
-        "domain": "<no value>,
-        "group": "mdp
+        "domain": "<no value>",
+        "group": "mdp"
       },
       {
         "site": "mdp2",
-        "domain": "<no value>,
-        "group": "mdp
+        "domain": "<no value>",
+        "group": "mdp"
       },
       {
         "site": "mdp3",
-        "domain": "<no value>,
-        "group": "mdp
+        "domain": "<no value>",
+        "group": "mdp"
       },
       {
         "site": "mdp4",
-        "domain": "<no value>,
-        "group": "mdp
+        "domain": "<no value>",
+        "group": "mdp"
       },
       {
         "site": "mdp5",
-        "domain": "<no value>,
-        "group": "mdp
+        "domain": "<no value>",
+        "group": "mdp"
       },
       {
         "site": "mdp6",
-        "domain": "<no value>,
-        "group": "mdp
+        "domain": "<no value>",
+        "group": "mdp"
       },
       {
         "site": "mdp7",
-        "domain": "<no value>,
-        "group": "mdp
+        "domain": "<no value>",
+        "group": "mdp"
       },
       {
         "site": "mlbs",
-        "domain": "D07,
-        "group": "tis
+        "domain": "D07",
+        "group": "tis"
       },
       {
         "site": "moab",
-        "domain": "D13,
-        "group": "tis
+        "domain": "D13",
+        "group": "tis"
       },
       {
         "site": "niwo",
-        "domain": "D13,
-        "group": "tis
+        "domain": "D13",
+        "group": "tis"
       },
       {
         "site": "nogp",
-        "domain": "D09,
-        "group": "tis
+        "domain": "D09",
+        "group": "tis"
       },
       {
         "site": "oaes",
-        "domain": "D11,
-        "group": "tis
+        "domain": "D11",
+        "group": "tis"
       },
       {
         "site": "oksr",
-        "domain": "D18,
-        "group": "ais
+        "domain": "D18",
+        "group": "ais"
       },
       {
         "site": "onaq",
-        "domain": "D15,
-        "group": "tis
+        "domain": "D15",
+        "group": "tis"
       },
       {
         "site": "ornl",
-        "domain": "D07,
-        "group": "tis
+        "domain": "D07",
+        "group": "tis"
       },
       {
         "site": "ornldfir",
-        "domain": "D07,
-        "group": "tis
+        "domain": "D07",
+        "group": "tis"
       },
       {
         "site": "osbs",
-        "domain": "D03,
-        "group": "tis
+        "domain": "D03",
+        "group": "tis"
       },
       {
         "site": "pose",
-        "domain": "D02,
-        "group": "ais
+        "domain": "D02",
+        "group": "ais"
       },
       {
         "site": "prin",
-        "domain": "D11,
-        "group": "ais
+        "domain": "D11",
+        "group": "ais"
       },
       {
         "site": "prla",
-        "domain": "D09,
-        "group": "ais
+        "domain": "D09",
+        "group": "ais"
       },
       {
         "site": "prpo",
-        "domain": "D09,
-        "group": "ais
+        "domain": "D09",
+        "group": "ais"
       },
       {
         "site": "puum",
-        "domain": "D20,
-        "group": "tis
+        "domain": "D20",
+        "group": "tis"
       },
       {
         "site": "puumdfir",
-        "domain": "D20,
-        "group": "tis
+        "domain": "D20",
+        "group": "tis"
       },
       {
         "site": "redb",
-        "domain": "D15,
-        "group": "ais
+        "domain": "D15",
+        "group": "ais"
       },
       {
         "site": "rmnp",
-        "domain": "D10,
-        "group": "tis
+        "domain": "D10",
+        "group": "tis"
       },
       {
         "site": "scbi",
-        "domain": "D02,
-        "group": "tis
+        "domain": "D02",
+        "group": "tis"
       },
       {
         "site": "serc",
-        "domain": "D02,
-        "group": "tis
+        "domain": "D02",
+        "group": "tis"
       },
       {
         "site": "sjer",
-        "domain": "D17,
-        "group": "tis
+        "domain": "D17",
+        "group": "tis"
       },
       {
         "site": "soap",
-        "domain": "D17,
-        "group": "tis
+        "domain": "D17",
+        "group": "tis"
       },
       {
         "site": "srer",
-        "domain": "D14,
-        "group": "tis
+        "domain": "D14",
+        "group": "tis"
       },
       {
         "site": "stei",
-        "domain": "D05,
-        "group": "tis
+        "domain": "D05",
+        "group": "tis"
       },
       {
         "site": "ster",
-        "domain": "D10,
-        "group": "tis
+        "domain": "D10",
+        "group": "tis"
       },
       {
         "site": "sugg",
-        "domain": "D03,
-        "group": "ais
+        "domain": "D03",
+        "group": "ais"
       },
       {
         "site": "syca",
-        "domain": "D14,
-        "group": "ais
+        "domain": "D14",
+        "group": "ais"
       },
       {
         "site": "tall",
-        "domain": "D08,
-        "group": "tis
+        "domain": "D08",
+        "group": "tis"
       },
       {
         "site": "teak",
-        "domain": "D17,
-        "group": "tis
+        "domain": "D17",
+        "group": "tis"
       },
       {
         "site": "tecr",
-        "domain": "D17,
-        "group": "ais
+        "domain": "D17",
+        "group": "ais"
       },
       {
         "site": "tomb",
-        "domain": "D08,
-        "group": "ais
+        "domain": "D08",
+        "group": "ais"
       },
       {
         "site": "took",
-        "domain": "D18,
-        "group": "ais
+        "domain": "D18",
+        "group": "ais"
       },
       {
         "site": "tool",
-        "domain": "D18,
-        "group": "tis
+        "domain": "D18",
+        "group": "tis"
       },
       {
         "site": "tree",
-        "domain": "D05,
-        "group": "tis
+        "domain": "D05",
+        "group": "tis"
       },
       {
         "site": "ukfs",
-        "domain": "D06,
-        "group": "tis
+        "domain": "D06",
+        "group": "tis"
       },
       {
         "site": "unde",
-        "domain": "D05,
-        "group": "tis
+        "domain": "D05",
+        "group": "tis"
       },
       {
         "site": "walk",
-        "domain": "D07,
-        "group": "ais
+        "domain": "D07",
+        "group": "ais"
       },
       {
         "site": "wlou",
-        "domain": "D13,
-        "group": "ais
+        "domain": "D13",
+        "group": "ais"
       },
       {
         "site": "wood",
-        "domain": "D09,
-        "group": "tis
+        "domain": "D09",
+        "group": "tis"
       },
       {
         "site": "wref",
-        "domain": "D16,
-        "group": "tis
+        "domain": "D16",
+        "group": "tis"
       },
       {
         "site": "wrefdfir",
-        "domain": "D16,
-        "group": "tis
+        "domain": "D16",
+        "group": "tis"
       },
       {
         "site": "yell",
-        "domain": "D12,
-        "group": "tis
+        "domain": "D12",
+        "group": "tis"
       }
     ]
+    
