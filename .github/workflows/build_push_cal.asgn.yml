@@ -5,8 +5,8 @@ on:
     # branches:
     #   - 'master'
     tags:
-      - "flow.precip.aepg.comb/v*.*.*"*.*.*"
-  workflow_dispatch: {} # Allows trigger of workflow from web interfacename: "Build-push-update_flow.kfka.comb"
+      - "flow.precip.aepg.comb/v*.*.*"
+  workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
