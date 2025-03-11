@@ -1,0 +1,103 @@
+name: "Build a module, push the image and update pipeline spec yamls"
+description: "Builds the module, pushes the image to Artifact Registry and github registry"
+
+runs:
+   using: "composite"
+   steps: 
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+            workload_identity_provider: ${{ env.GCP_PROVIDER }}
+            service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      - name: "Docker auth"
+        shell: bash
+        run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT_HOST }} --quiet
+        
+      # setup-buildx-action for Docker
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Login to github registry
+      - name: Log into github registry ${{ env.GHCR_REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GHCR_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ env.GITHUB_TOKEN }}
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+            images: |
+              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
+              ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NS }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}
+            tags: |
+              type=semver,pattern={{version}}
+              type=schedule
+              type=ref,event=tag
+              type=ref,event=pr
+              # type=sha
+
+      # Build and push Docker image with Buildx (don't push on PR)
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v5
+        with:
+            context: ./
+            file: ${{ env.MODULE_PATH }}/Dockerfile
+            push: ${{ github.event_name != 'pull_request' }}
+            tags:  |
+              ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
+              ${{ env.GHCR_REGISTRY }}/${{ env.GHCR_NS }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ env.semver }}
+            labels: ${{ steps.meta.outputs.labels }}
+ 
+        
+      # - name: Set up R
+      #   uses: r-lib/actions/setup-r@v2
+      #   
+      # - name: Install R packages
+      #   uses: r-lib/actions/setup-r-dependencies@v2
+      #   with:
+      #       packages: |
+      #         any::fs
+      # 
+      # - name: Update pipeline spec yamls
+      #   shell: bash
+      #   run: |
+      #     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+      #     set -euo pipefail
+      #     IFS=$'\n\t'
+      #     Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+      #     Rscript ./utilities/flow.img.updt.R "./pipe" ".json" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+      #     Rscript ./utilities/flow.img.updt.R "./flow" "Dockerfile" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+      #     Rscript ./utilities/flow.img.updt.R "./modules" "Dockerfile" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+      #     Rscript ./utilities/flow.img.updt.R "./modules_combined" "Dockerfile" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+      #     Rscript ./utilities/flow.img.updt.R "./pack" "Dockerfile" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+      # 
+      # - name: Commit the pipeline yamls to a new PR
+      #   shell: bash
+      #   run: |
+      #     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+      #     set -euo pipefail
+      #     IFS=$'\n\t'
+      #     git config --local user.email "actions@github.com"
+      #     git config --local user.name "gitHub Actions"
+      #     # Delete out any previous deployment candidate branch
+      #     git push origin --delete deployment-candidate-${{ env.IMAGE_NAME }} || echo "No existing branch deployment-candidate-${{ env.IMAGE_NAME }}"
+      #     echo "If branch deployment-candidate-${{ env.IMAGE_NAME }} existed, it was deleted."
+      #     git checkout -b deployment-candidate-${{ env.IMAGE_NAME }}
+      #     echo "Changed files to be committed:"
+      #     git diff --name-only
+      #     git add  -u .
+      #     git commit -m "pipeline specifications updated"  || echo "No pipeline specifications updated"
+      #     git push origin deployment-candidate-${{ env.IMAGE_NAME }} || echo "No changes to commit"
+      #     gh pr create --title 'Deployment Candidate: ${{ env.IMAGE_NAME }}' --body "Auto-created by Github action" --base master --head "deployment-candidate-${{ env.IMAGE_NAME }}"
+      #     

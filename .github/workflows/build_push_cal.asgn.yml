@@ -51,4 +51,4 @@ jobs:
         run:  echo "semver=$(git describe --tags --abbrev=0 --match=flow.data.comb.ts/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
-        uses: ./.github/actions/build-push-update
+        uses: ./.github/actions/build-push-update2
