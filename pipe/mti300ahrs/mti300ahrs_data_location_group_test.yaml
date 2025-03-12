@@ -1,0 +1,122 @@
+---
+pipeline:
+  name: mti300ahrs_data_location_group_test
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-strict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\\n\\t'
+
+    # Detect if we have data coming from Kafka or Trino
+    if [ ${DATA_PATH_TRINO+x} ]; then 
+      # Data from Trino
+      echo "trino: ${DATA_PATH_TRINO#/pfs/DATA_PATH_TRINO/}"
+      OUTPUT_DIR="/pfs/out/${DATA_PATH_TRINO#/pfs/DATA_PATH_TRINO/}"
+      echo "trino output: $OUTPUT_DIR"
+
+      export CONFIG=$CONFIG_TRINO
+      python3 -m filter_joiner.filter_joiner_main
+    fi
+    if [ ${DATA_PATH_KAFKA+x} ]; then 
+      echo "kafka: ${DATA_PATH_KAFKA#/pfs/DATA_PATH_KAFKA/}"
+      # Define the output directory path
+      OUTPUT_DIR="/pfs/out/${DATA_PATH_KAFKA#/pfs/DATA_PATH_KAFKA/}"
+      echo "kafka output: $OUTPUT_DIR"
+
+      # Data from Kafka
+      export CONFIG=$CONFIG_KAFKA
+      python3 -m filter_joiner.filter_joiner_main
+    fi
+    EOF
+  env:
+    CONFIG_TRINO: |
+      ---
+      input_paths:
+        - path:
+            name: DATA_PATH_TRINO
+            glob_pattern: /pfs/DATA_PATH_TRINO/mti300ahrs/*/*/*/*/**
+            join_indices: [7]
+        - path:
+            name: LOCATION_PATH
+            glob_pattern: /pfs/LOCATION_PATH/mti300ahrs/*/*/*/*/**
+            join_indices: [7]
+    CONFIG_KAFKA: |
+      ---
+      input_paths:
+        - path:
+            name: DATA_PATH_KAFKA
+            glob_pattern: /pfs/DATA_PATH_KAFKA/mti300ahrs/*/*/*/*/**
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: LOCATION_PATH
+            glob_pattern: /pfs/LOCATION_PATH/mti300ahrs/*/*/*/*/**
+            join_indices: [7]
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: SYMLINK
+input:
+  union:
+    - join:
+      - pfs:
+          name: DATA_PATH_TRINO
+          repo: mti300ahrs_data_source_trino
+          glob: /mti300ahrs/(*)/(*)/(*)
+          joinOn: $1/$2/$3
+          empty_files: false
+      - pfs:
+          name: LOCATION_PATH
+          repo: mti300ahrs_location_asset_assignment
+          glob: /mti300ahrs/(*)/(*)/(*)
+          joinOn: $1/$2/$3
+          empty_files: false
+    - join:
+      - pfs:
+          name: DATA_PATH_KAFKA
+          repo: mti300ahrs_kafka_combiner
+          glob: /mti300ahrs/(*)/(*)/(*)
+          joinOn: $1/$2/$3
+          empty_files: false
+      - pfs:
+          name: LOCATION_PATH
+          repo: mti300ahrs_location_asset_assignment
+          glob: /mti300ahrs/(*)/(*)/(*)
+          joinOn: $1/$2/$3
+          empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 1
+autoscaling: true
+resource_requests:
+  memory: 4G
+  cpu: 2
+resource_limits:
+  memory: 6G
+  cpu: 4
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
