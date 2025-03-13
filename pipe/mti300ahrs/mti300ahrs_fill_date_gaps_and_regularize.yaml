@@ -11,11 +11,14 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH
     mkdir -p $OUT_PATH
+
     # Run first module - date-gap-filler (using environment variables below as input parameters)
     python3 -m date_gap_filler.date_gap_filler_main
+
     # Run second module - regularize
     Rscript ./flow.rglr.R \
       DirIn=/tmp/pfs/date_filled \
@@ -31,7 +34,7 @@ transform:
     EOF
   env:
     # Environment variables for date gap filler
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     OUT_PATH: /tmp/pfs/date_filled
     OUTPUT_DIRECTORIES: data,location
     DATA_SOURCE_TYPE_INDEX: '3'
@@ -69,7 +72,7 @@ input:
       - pfs:
           name: LOCATION_PATH
           repo: mti300ahrs_location_active_dates_assignment
-          # For full-scale daily processing, glob should be /li191r/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /mti300ahrs/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
+          # For full-scale daily processing, glob should be /mti300ahrs/(*/*/*). To limit to particular CFGLOCs, note the parentheses and enter something like /mti300ahrs/((*/*/*)/(CFGLOC101017|CFGLOC101299|CFGLOC101011|CFGLOC101302|CFGLOC110719|CFGLOC101252|CFGLOC110694|CFGLOC101012|CFGLOC110812))
           #glob: /mti300ahrs/((*/*/*)/(CFGLOC104242|CFGLOC103630|CFGLOC104713|CFGLOC105211|CFGLOC106586|CFGLOC110682|CFGLOC110995|CFGLOC113253|CFGLOC113734))
           glob: /mti300ahrs/(*/*/*)
           # For full-scale daily processing, joinOn be $1. When limiting to particular CFGLOCs, joinOn will be $2 to match parentheses around (*/*/*)
@@ -88,14 +91,14 @@ parallelism_spec:
   constant: 1
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 2.0
+  memory: 10G
+  cpu: 3
 resource_limits:
-  memory: 5G
+  memory: 15G
   cpu: 4
 sidecar_resource_requests:
-  memory: 4G
-  cpu: 0.5
+  memory: 6G
+  cpu: 3
 datum_set_spec:
   number: 1
 scheduling_spec:
