@@ -8,7 +8,7 @@ transform:
   env:
     OUT_PATH: /pfs/out
     SOURCE_TYPE: "li191r"
-    LOGLEVEL: info
+    LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
