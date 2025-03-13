@@ -28,6 +28,26 @@ data:
         "site": "BARR",
         "domain": "D18",
         "group": "tis"
+      },
+            {
+        "site": "BART",
+        "domain": "D01",
+        "group": "tis"
+      },
+      {
+        "site": "BIGC",
+        "domain": "D17",
+        "group": "ais"
+      },
+      {
+        "site": "BLAN",
+        "domain": "D02",
+        "group": "tis"
+      },
+      {
+        "site": "BLDE",
+        "domain": "D12",
+        "group": "ais"
       }
     ]
     
