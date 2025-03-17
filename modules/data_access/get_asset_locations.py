@@ -74,7 +74,4 @@ def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollecti
     # add the asset as the source
     feature_collection.update(source_id=asset.id)
     feature_collection.update(source_type=asset.type)
-    # feature_collection.update(source_modl=asset.model)
-    # feature_collection.update(source_mfr=asset.manufacturer)
-    # feature_collection.update(source_swversion=asset.software_version)
     return feature_collection
