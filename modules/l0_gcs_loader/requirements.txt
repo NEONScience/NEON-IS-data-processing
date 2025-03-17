@@ -1,6 +1,6 @@
 functions-framework==3.5.0
 betterproto==2.0.0b4
-certifi==2023.7.22
+certifi==2024.7.4
 environs==6.0.0
 python-pachyderm==7.4.0
 google-cloud==0.34.0
@@ -19,7 +19,7 @@ deprecation==2.1.0
 Flask==2.3.2
 gunicorn==22.0.0
 itsdangerous==2.1.2
-Jinja2==3.1.4
+Jinja2==3.1.5
 MarkupSafe==2.1.1
 packaging==21.3
 pathtools==0.1.2

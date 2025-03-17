@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: ONEOFF_parQuantumLine_level1_bucket_rm_path
+  name: ONEOFF_bucket_rm_path
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.0
   cmd:
@@ -31,13 +31,15 @@ transform:
   env:
 
     # Environment variables for the L1 archiver
-    REMOVE_PATH: 'v2/par-quantum-line/1min' # no beginning "/"
+    REMOVE_PATH: 'v2/metone370380' # no beginning "/"
 
   secrets:
-  - name: l1-bucket
+  # - name: l1-bucket
+  #   env_var: BUCKET_NAME
+  #   key: L1_BUCKET
+  - name: l0-bucket
     env_var: BUCKET_NAME
-    key: L1_BUCKET
-    
+    key: LO_BUCKET    
 input:
   cron:
     name: tick
