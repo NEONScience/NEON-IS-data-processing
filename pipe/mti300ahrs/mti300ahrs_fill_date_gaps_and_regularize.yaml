@@ -20,6 +20,8 @@ transform:
     python3 -m date_gap_filler.date_gap_filler_main
 
     # Run second module - regularize
+    # NOTE: 2025-02-04 CFGLOC108729(TALL) has 80Hz data, use Trlg and IdxWndwMin for regularization
+    # also raise resource request to 10Hz.
     Rscript ./flow.rglr.R \
       DirIn=/tmp/pfs/date_filled \
       DirOut=/pfs/out \
@@ -34,7 +36,7 @@ transform:
     EOF
   env:
     # Environment variables for date gap filler
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     OUT_PATH: /tmp/pfs/date_filled
     OUTPUT_DIRECTORIES: data,location
     DATA_SOURCE_TYPE_INDEX: '3'
@@ -91,10 +93,10 @@ parallelism_spec:
   constant: 1
 autoscaling: true
 resource_requests:
-  memory: 10G
+  memory: 8G
   cpu: 3
 resource_limits:
-  memory: 15G
+  memory: 10G
   cpu: 4
 sidecar_resource_requests:
   memory: 6G
