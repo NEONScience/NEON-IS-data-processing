@@ -72,9 +72,9 @@ def get_asset_definition_by_date(connector: DbConnector, install_date: str, remo
              and
                  is_asset_assignment.asset_definition_uuid = is_asset_definition.asset_definition_uuid
              and
-                 is_asset_assignment.start_date < %s
+                 is_asset_assignment.start_date <= %s
              and
-                 (is_asset_assignment.end_date is null or is_asset_assignment.end_date > %s)
+                 (is_asset_assignment.end_date is null or is_asset_assignment.end_date >= %s)
              and
                  asset.asset_uid = %s
     '''

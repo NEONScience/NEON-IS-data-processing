@@ -57,10 +57,11 @@ def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollecti
             properties: List[Property] = get_named_location_properties(connector, key)
             # get asset information (model, manufacturer, software version) and append to properties
             all_asset: Set[Asset] = get_asset_definition_by_date(connector, install_date, remove_date, asset.id)
-            asset_def = next(iter(all_asset))
-            properties.extend([Property(name="asset_model", value=asset_def.model),
-                               Property(name="asset_manufacturer", value=asset_def.manufacturer),
-                               Property(name="asset_software_version", value=asset_def.software_version)])
+            asset_def = next(iter(all_asset), None)
+            if asset_def:
+                properties.extend([Property(name="asset_model", value=asset_def.model),
+                                   Property(name="asset_manufacturer", value=asset_def.manufacturer),
+                                   Property(name="asset_software_version", value=asset_def.software_version)])
 
             parents: dict[str, Tuple[int, str]] = get_named_location_parents(connector, key)
             (domain_id, domain) = parents['domain'] if parents else None
