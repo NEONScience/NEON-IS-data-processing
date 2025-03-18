@@ -1,4 +1,4 @@
-name: "Build-push_pub_egres_and_publish"
+name: "Build-push_pub_egress_and_publish"
 
 on:
   push:
