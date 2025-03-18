@@ -32,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
+        security-events: write
+        packages: write
         id-token: 'write'
         pull-requests: 'write'
 
