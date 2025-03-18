@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: g2131i_raw_data_source_kafka
+  name: g2131i_data_source_kafka
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.3
   image_pull_secrets:
@@ -120,7 +120,7 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: g2131i_raw_cron_daily_and_date_control
+    repo: g2131i_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/g2131i_raw/*/*/*"
 parallelism_spec:
