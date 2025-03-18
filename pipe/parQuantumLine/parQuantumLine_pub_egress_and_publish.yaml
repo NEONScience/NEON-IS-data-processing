@@ -2,7 +2,7 @@
 pipeline:
   name: parQuantumLine_pub_egress_and_publish
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-test:sha-3015d3a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v3.1.2
   cmd:
   - sh
   - "-c"
@@ -11,11 +11,6 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    #
-    # Create mdp directory
-    rm -rf /tmp/mdp
-    mkdir /tmp/mdp
-    #
     # Run first module - pub_egress (using environment variables below as input parameters)
     if [[ $(echo $DATA_PATH) ]]; then
       python3 -m pub_egress.pub_egress_main
