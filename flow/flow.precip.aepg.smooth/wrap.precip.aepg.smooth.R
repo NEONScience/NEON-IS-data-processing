@@ -95,6 +95,8 @@
 #     Initial creation
 #   Teresa Burlingame & Cove Sturtevant (2025-02-18)
 #     adjust heaterErrorQF to match sensor settings
+#   Teresa Burlingame (2025-03-19)
+#     adjust heaterErrorQF to flag when one of the temperature streams is way off, causing heater failure
 #
 ##############################################################################################
 wrap.precip.aepg.smooth <- function(DirIn,
@@ -305,6 +307,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   qfAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > -6 & 
                            strainGaugeDepthAgr$internalTemperature < 2 & 
                            strainGaugeDepthAgr$inletTemperature < 1] <- 1
+  qfAgr$heaterErrorQF[abs(strainGaugeDepthAgr$internalTemperature - strainGaugeDepthAgr$inletTemperature)> 40] <- 1
   qfAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > 5 & strainGaugeDepthAgr$orificeHeaterFlag > 0] <- 1
   qfAgr$heaterErrorQF[is.na(strainGaugeDepthAgr$internalTemperature) | 
                          is.na(strainGaugeDepthAgr$inletTemperature) | 
