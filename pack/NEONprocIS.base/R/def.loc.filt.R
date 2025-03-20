@@ -77,6 +77,7 @@
 #   Cove Sturtevant (2025-03-20)
 #      fix bug causing failure when there are no items in location_properties
 #      Implement filtering options for location_properties
+#      Add support for filtering new site_location property
 ##############################################################################################
 def.loc.filt <- function(NameFileIn,
                          NameFileOut = NULL,
