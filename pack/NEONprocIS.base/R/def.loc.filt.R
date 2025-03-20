@@ -224,8 +224,10 @@ def.loc.filt <- function(NameFileIn,
             if('location_properties' %in% base::names(locGeo[[idxGeo]]$properties)){
               itemGeoProp <- locGeo[[idxGeo]]$properties$location_properties
               nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
-              idxSortItem <- sort(nameItem,index.return=TRUE)$ix
-              locGeo[[idxGeo]]$properties$location_properties <- locGeo[[idxGeo]]$properties$location_properties[idxSortItem]
+              if(base::length(nameItem) > 1){
+                idxSortItem <- sort(nameItem,index.return=TRUE)$ix
+                locGeo[[idxGeo]]$properties$location_properties <- locGeo[[idxGeo]]$properties$location_properties[idxSortItem]
+              }
             }
             
           
@@ -362,9 +364,11 @@ def.loc.filt <- function(NameFileIn,
               base::eval(parse(text = txtItemGeoProp))
               if(!base::is.null(itemGeoProp)){
                 nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
-                idxSortItem <- sort(nameItem,index.return=TRUE)$ix
-                txtItemGeoSort <- base::paste0(txtEval,'$properties$location_properties <- ',txtEval,'$properties$location_properties[idxSortItem]')
-                base::eval(parse(text = txtItemGeoSort))
+                if(base::length(nameItem) > 1){
+                  idxSortItem <- sort(nameItem,index.return=TRUE)$ix
+                  txtItemGeoSort <- base::paste0(txtEval,'$properties$location_properties <- ',txtEval,'$properties$location_properties[idxSortItem]')
+                  base::eval(parse(text = txtItemGeoSort))
+                }
               }
             }
             
