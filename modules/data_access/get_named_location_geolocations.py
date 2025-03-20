@@ -71,7 +71,6 @@ def get_named_location_geolocations(connector: DbConnector, named_location_id: i
             # retrieve the reference locations
             # reference_locations = None
             reference_feature = None
-            site_feature = None
             if (named_location_offset_id is not None) and (named_location_offset_id != named_location_id):
                 # recursively retrieve the reference locations
                 reference_locations = get_named_location_geolocations(connector, named_location_offset_id)
@@ -79,13 +78,7 @@ def get_named_location_geolocations(connector: DbConnector, named_location_id: i
                 reference_location_properties = dict(name=named_location_offset_name, locations=reference_locations)
                 reference_feature = Feature(geometry=None, properties=reference_location_properties)
             else:
-                if len(named_location_offset_name) != 4:  # if not a site name
-                    parents: dict[str, Tuple[int, str]] = get_named_location_parents(connector, named_location_id)
-                    (site_id, site_name) = parents['site'] if parents else None
-                    site_locations = get_named_location_geolocations(connector, site_id)
-                    site_location_properties = dict(name=site_name, locations=site_locations)
-                    site_feature = Feature(geometry=None, properties=site_location_properties)
-                location_properties.extend(get_named_location_properties(connector, named_location_offset_id))
+               location_properties.extend(get_named_location_properties(connector, named_location_offset_id))
 
             properties = dict(start_date=start_date,
                               end_date=end_date,
@@ -95,7 +88,6 @@ def get_named_location_geolocations(connector: DbConnector, named_location_id: i
                               x_offset=x_offset,
                               y_offset=y_offset,
                               z_offset=z_offset,
-                              site_location=site_feature,
                               reference_location=reference_feature,
                               location_properties=location_properties)
             geojson_geometry = parse_geometry(geometry)

@@ -66,10 +66,11 @@ def get_asset_locations(connector: DbConnector, asset: Asset) -> FeatureCollecti
             parents: dict[str, Tuple[int, str]] = get_named_location_parents(connector, key)
             (domain_id, domain) = parents['domain'] if parents else None
             (site_id, site) = parents['site'] if parents else None
+            site_location: FeatureCollection = get_named_location_geolocations(connector, site_id)
             context: List[str] = get_named_location_context(connector, key)
             asset_location = AssetLocation(name=name, domain=domain, site=site, install_date=install_date,
                                            remove_date=remove_date, context=context, properties=properties,
-                                           locations=locations)
+                                           site_location=site_location, locations=locations)
             features.append(geojson_converter.convert_asset_location(asset_location))
     feature_collection = FeatureCollection(features)
     # add the asset as the source
