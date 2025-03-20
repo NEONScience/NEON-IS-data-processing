@@ -221,298 +221,321 @@ def.loc.filt <- function(NameFileIn,
     
     
     # For each applicable named location, filter its geolocation date ranges
-    if (any(c('all','locations') %in% Prop)) {
+    if (any(c('all','locations','site_location') %in% Prop)) {
       for (idxLoc in base::seq_len(base::length(loc$features))) {
-        locGeo <- loc$features[[idxLoc]]$properties$locations$features
         
-        # Filter the geolocations
-        setKeepGeo <- base::numeric(0)
-        for (idxGeo in base::seq_len(base::length(locGeo))) {
-          timeBgnGeo <- locGeo[[idxGeo]]$properties$start_date
-          if (!base::is.null(timeBgnGeo)) {
-            timeBgnGeo <-
-              base::as.POSIXct(timeBgnGeo, format = FmtTime, tz = 'GMT')
-          }
-          timeEndGeo <- locGeo[[idxGeo]]$properties$end_date
-          if (!base::is.null(timeEndGeo)) {
-            timeEndGeo <-
-              base::as.POSIXct(timeEndGeo, format = FmtTime, tz = 'GMT')
-          }
-          
-          if ((timeBgnGeo < TimeEnd) &&
-              (base::is.null(timeEndGeo) ||
-               (timeEndGeo > TimeBgn))) {
-            setKeepGeo <- c(setKeepGeo, idxGeo)
-            
-            # Truncate the start and end dates to the time range we are interested in, so that any 
-            # upstream changes outside TimeBgn and TimeEnd are indistinguishable in 
-            # downstream processing
-            if(timeBgnGeo < TimeBgn){
-              locGeo[[idxGeo]]$properties$start_date <- TimeBgnFmt
-            }
-            if(base::is.null(timeEndGeo) || (timeEndGeo > TimeEnd)){
-              locGeo[[idxGeo]]$properties$end_date <- TimeEndFmt
-            }
-            
-            # Sort the top level feature list, properties and nested location_properties. For some reason, these reorder in the database call sometimes
-            locGeo[[idxGeo]] <- locGeo[[idxGeo]][sort(names(locGeo[[idxGeo]]))]
-            locGeo[[idxGeo]]$properties <- locGeo[[idxGeo]]$properties[sort(base::names(locGeo[[idxGeo]]$properties))]
-            if('location_properties' %in% base::names(locGeo[[idxGeo]]$properties)){
-              
-              # Do we want any location_properties?
-              if(length(LocProp) > 0 || ("location_properties" %in% Prop)){
-                
-                if (length(LocProp) > 0){
-                  # We only want specific properties. Filter.
-                  itemGeoProp <- locGeo[[idxGeo]]$properties$location_properties
-                  nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
-                  setGeoPropKeep <- nameItem %in% LocProp
-                  locGeo[[idxGeo]]$properties$location_properties <- itemGeoProp[setGeoPropKeep]
-                }
-                
-                # Sort
-                itemGeoProp <- locGeo[[idxGeo]]$properties$location_properties
-                nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
-                if(base::length(nameItem) > 1){
-                  idxSortItem <- sort(nameItem,index.return=TRUE)$ix
-                  locGeo[[idxGeo]]$properties$location_properties <- locGeo[[idxGeo]]$properties$location_properties[idxSortItem]
-                }
-                
-              } else {
-                # We don't want any location_properties. Remove the entire entry
-                locGeo[[idxGeo]]$properties['location_properties'] <- NULL
-                
-              }
-            }
-            
-          } else {
-            # We're deleting this geolocation, let's move on
-            next
-          }
-          
-          # Now filter the reference location geolocations (if there are any). Note that the reference locations
-          # can have a chain of their own reference locations. We're going to navigate through them, marking those for
-          # deletion at the end of the while loop
-          locGeoRef00 <-
-            locGeo[[idxGeo]]$properties$reference_location # Initialize
-          idxGeoRef <- 1
-          setRmvGeoRef <- base::list()
-          cont <- TRUE
-          
-          # Sort the properties
-          locGeoRef00$properties <- locGeoRef00$properties[sort(names(locGeoRef00$properties))]
-          
-          while (cont) {
-            # Get the parent of our current level
-            numLvl <- base::length(idxGeoRef)
-            if (numLvl == 1) {
-              txtEval <- 'locGeoRef00$properties$locations$features'
-            } else if (numLvl == 2) {
-              txtEval <-
-                base::paste0(
-                  'locGeoRef00$properties$locations$features[[',
-                  idxGeoRef[1],
-                  ']]',
-                  base::paste0(
-                    '$properties$reference_location$properties$locations$features',
-                    collapse = ''
-                  )
-                )
+        # Filter geolocations for both the installed NL as well as the site_locations also included (if site_locations is to be output)
+        for (locGeoType in c('install','site')){
+          if(locGeoType == 'install'){
+            if(any(c('all','locations') %in% Prop)){
+              locGeo <- loc$features[[idxLoc]]$properties$locations$features
             } else {
-              txtEval <-
-                base::paste0(
-                  'locGeoRef00$properties$locations$features[[',
-                  idxGeoRef[1],
-                  ']]',
-                  base::paste0(
-                    '$properties$reference_location$properties$locations$features[[',
-                    idxGeoRef[2:(length(idxGeoRef) - 1)],
-                    ']]',
-                    collapse = ''
-                  ),
-                  '$properties$reference_location$properties$locations$features'
-                )
-            }
-            locRefPrnt <- base::eval(parse(text = txtEval))
-            
-            # How many geolocs do we have ?
-            numGeoRef <- base::length(locRefPrnt)
-            
-            # Check whether we are beyond the end of reference geolocations at this level
-            if (utils::tail(idxGeoRef, 1) > numGeoRef) {
-              # Back out a level, increment the index
-              idxGeoRef <- idxGeoRef[-length(idxGeoRef)]
-              if (base::length(idxGeoRef) == 0) {
-                # We've gone through the entire hierarchy. We're done.
-                cont <- FALSE
-                next
-              } else {
-                idxGeoRef[length(idxGeoRef)] <-
-                  utils::tail(idxGeoRef, 1) + 1 # increment index
-                next
-              }
-            }
-            
-            # Set locGeoRef to the data at our current level
-            if (base::length(idxGeoRef) > 1) {
-              txtEval <-
-                base::paste0(
-                  'locGeoRef00$properties$locations$features[[',
-                  idxGeoRef[1],
-                  ']]',
-                  base::paste0(
-                    '$properties$reference_location$properties$locations$features[[',
-                    idxGeoRef[-1],
-                    ']]',
-                    collapse = ''
-                  )
-                )
-            } else {
-              txtEval <-
-                base::paste0('locGeoRef00$properties$locations$features[[',
-                             idxGeoRef[1],
-                             ']]')
-            }
-            locGeoRef <- base::eval(parse(text = txtEval))
-            
-            # Check date range of geolocation
-            timeBgnGeoRef <- locGeoRef$properties$start_date
-            if (!base::is.null(timeBgnGeoRef)) {
-              timeBgnGeoRef <-
-                base::as.POSIXct(timeBgnGeoRef, format = FmtTime, tz = 'GMT')
-            }
-            timeEndGeoRef <- locGeoRef$properties$end_date
-            if (!base::is.null(timeEndGeoRef)) {
-              timeEndGeoRef <-
-                base::as.POSIXct(timeEndGeoRef, format = FmtTime, tz = 'GMT')
-            }
-            
-            # If this geoloc date range is outside our day, mark for deletion and move on
-            if ((timeBgnGeoRef > TimeEnd) ||
-                (!base::is.null(timeEndGeoRef) &&
-                 timeEndGeoRef < TimeBgn)) {
-              setRmvGeoRef[[base::length(setRmvGeoRef) + 1]] <- idxGeoRef
-              
-              # Move on. We don't need to dive further into reference locations for this geoloc
-              idxGeoRef[base::length(idxGeoRef)] <-
-                utils::tail(idxGeoRef, 1) + 1
               next
-              
+            }
+          } else if (locGeoType == 'site'){
+            if(any(c('all','site_location') %in% Prop)){
+              locGeo <- loc$features[[idxLoc]]$properties$site_location$features
             } else {
+              next
+            }
+          }
+
+          # Filter the geolocations
+          setKeepGeo <- base::numeric(0)
+          for (idxGeo in base::seq_len(base::length(locGeo))) {
+            timeBgnGeo <- locGeo[[idxGeo]]$properties$start_date
+            if (!base::is.null(timeBgnGeo)) {
+              timeBgnGeo <-
+                base::as.POSIXct(timeBgnGeo, format = FmtTime, tz = 'GMT')
+            }
+            timeEndGeo <- locGeo[[idxGeo]]$properties$end_date
+            if (!base::is.null(timeEndGeo)) {
+              timeEndGeo <-
+                base::as.POSIXct(timeEndGeo, format = FmtTime, tz = 'GMT')
+            }
+            
+            if ((timeBgnGeo < TimeEnd) &&
+                (base::is.null(timeEndGeo) ||
+                 (timeEndGeo > TimeBgn))) {
+              setKeepGeo <- c(setKeepGeo, idxGeo)
+              
               # Truncate the start and end dates to the time range we are interested in, so that any 
               # upstream changes outside TimeBgn and TimeEnd are indistinguishable in 
               # downstream processing
-              if(timeBgnGeoRef < TimeBgn){
-                txtTimeEval <- base::paste0(txtEval,'$properties$start_date <- TimeBgnFmt')
-                base::eval(parse(text = txtTimeEval))
+              if(timeBgnGeo < TimeBgn){
+                locGeo[[idxGeo]]$properties$start_date <- TimeBgnFmt
               }
-              if(base::is.null(timeEndGeoRef) || (timeEndGeoRef > TimeEnd)){
-                txtTimeEval <- base::paste0(txtEval,'$properties$end_date <- TimeEndFmt')
-                base::eval(parse(text = txtTimeEval))
+              if(base::is.null(timeEndGeo) || (timeEndGeo > TimeEnd)){
+                locGeo[[idxGeo]]$properties$end_date <- TimeEndFmt
               }
               
-              # Sort the properties and nested location_properties to ensure consistent output
-              txtPropSortEval <- base::paste0(txtEval,'$properties <- ',txtEval,'$properties[sort(base::names(',txtEval,'$properties))]')
-              base::eval(parse(text = txtPropSortEval))
-              txtItemGeoProp <- base::paste0('itemGeoProp <- ',txtEval,'$properties$location_properties')
-              base::eval(parse(text = txtItemGeoProp))
-              if(!base::is.null(itemGeoProp)){
-                
-                
+              # Sort the top level feature list, properties and nested location_properties. For some reason, these reorder in the database call sometimes
+              locGeo[[idxGeo]] <- locGeo[[idxGeo]][sort(names(locGeo[[idxGeo]]))]
+              locGeo[[idxGeo]]$properties <- locGeo[[idxGeo]]$properties[sort(base::names(locGeo[[idxGeo]]$properties))]
+              if('location_properties' %in% base::names(locGeo[[idxGeo]]$properties)){
                 
                 # Do we want any location_properties?
-                if(length(LocProp) > 0 || ("location_properties" %in% Prop)){
+                if(length(LocProp) > 0 || any(c("all","location_properties") %in% Prop)){
                   
                   if (length(LocProp) > 0){
                     # We only want specific properties. Filter.
+                    itemGeoProp <- locGeo[[idxGeo]]$properties$location_properties
                     nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
                     setGeoPropKeep <- nameItem %in% LocProp
-                    txtItemGeoKeep <- base::paste0(txtEval,'$properties$location_properties <- itemGeoProp[setGeoPropKeep]')
-                    base::eval(parse(text = txtItemGeoKeep))
+                    locGeo[[idxGeo]]$properties$location_properties <- itemGeoProp[setGeoPropKeep]
                   }
                   
                   # Sort
-                  txtItemGeoProp <- base::paste0('itemGeoProp <- ',txtEval,'$properties$location_properties')
-                  base::eval(parse(text = txtItemGeoProp))
+                  itemGeoProp <- locGeo[[idxGeo]]$properties$location_properties
                   nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
                   if(base::length(nameItem) > 1){
                     idxSortItem <- sort(nameItem,index.return=TRUE)$ix
-                    txtItemGeoSort <- base::paste0(txtEval,'$properties$location_properties <- itemGeoProp[idxSortItem]')
-                    base::eval(parse(text = txtItemGeoSort))
+                    locGeo[[idxGeo]]$properties$location_properties <- locGeo[[idxGeo]]$properties$location_properties[idxSortItem]
                   }
                   
                 } else {
                   # We don't want any location_properties. Remove the entire entry
-                  txtItemGeoRmv <- base::paste0(txtEval,"$properties['location_properties'] <- NULL")
-                  base::eval(parse(text = txtItemGeoRmv))
+                  locGeo[[idxGeo]]$properties['location_properties'] <- NULL
                   
                 }
               }
-            }
-            
-            # Are there more reference locations?
-            if (base::length(
-              locGeoRef$properties$reference_location$properties$locations$features
-            ) != 0) {
-              # Go a level deeper
-              idxGeoRef <- c(idxGeoRef, 1)
+              
+            } else {
+              # We're deleting this geolocation, let's move on
               next
-              
-            } else {
-              # We found the end of the reference chain! Let's move on to the next geolocation at this same level.
-              idxGeoRef[base::length(idxGeoRef)] <-
-                utils::tail(idxGeoRef, 1) + 1
-              
             }
-          } # End loop around reference locations
-          
-          # Remove reference geolocations marked for deletion
-          setRmvGeoRef <- base::rev(setRmvGeoRef) # Reverse order so we go from the bottom
-          for (idxRmv in base::seq_len(base::length(setRmvGeoRef))) {
-            idxGeoRef <- setRmvGeoRef[[idxRmv]]
             
-            # Formulate the list path
-            if (base::length(idxGeoRef) > 1) {
-              txtEval <-
-                base::paste0(
-                  'locGeoRef00$properties$locations$features[[',
-                  idxGeoRef[1],
-                  ']]',
+            # Now filter the reference location geolocations (if there are any). Note that the reference locations
+            # can have a chain of their own reference locations. We're going to navigate through them, marking those for
+            # deletion at the end of the while loop
+            locGeoRef00 <-
+              locGeo[[idxGeo]]$properties$reference_location # Initialize
+            idxGeoRef <- 1
+            setRmvGeoRef <- base::list()
+            cont <- TRUE
+            
+            # Sort the properties
+            locGeoRef00$properties <- locGeoRef00$properties[sort(names(locGeoRef00$properties))]
+            
+            while (cont) {
+              # Get the parent of our current level
+              numLvl <- base::length(idxGeoRef)
+              if (numLvl == 1) {
+                txtEval <- 'locGeoRef00$properties$locations$features'
+              } else if (numLvl == 2) {
+                txtEval <-
                   base::paste0(
-                    '$properties$reference_location$properties$locations$features[[',
-                    idxGeoRef[-1],
+                    'locGeoRef00$properties$locations$features[[',
+                    idxGeoRef[1],
                     ']]',
-                    collapse = ''
-                  ),
-                  ' <- NULL'
-                )
-            } else {
-              txtEval <-
-                base::paste0(
-                  'locGeoRef00$properties$locations$features[[',
-                  idxGeoRef[1],
-                  ']] <- NULL'
-                )
-            }
-            base::eval(parse(text = txtEval))
+                    base::paste0(
+                      '$properties$reference_location$properties$locations$features',
+                      collapse = ''
+                    )
+                  )
+              } else {
+                txtEval <-
+                  base::paste0(
+                    'locGeoRef00$properties$locations$features[[',
+                    idxGeoRef[1],
+                    ']]',
+                    base::paste0(
+                      '$properties$reference_location$properties$locations$features[[',
+                      idxGeoRef[2:(length(idxGeoRef) - 1)],
+                      ']]',
+                      collapse = ''
+                    ),
+                    '$properties$reference_location$properties$locations$features'
+                  )
+              }
+              locRefPrnt <- base::eval(parse(text = txtEval))
+              
+              # How many geolocs do we have ?
+              numGeoRef <- base::length(locRefPrnt)
+              
+              # Check whether we are beyond the end of reference geolocations at this level
+              if (utils::tail(idxGeoRef, 1) > numGeoRef) {
+                # Back out a level, increment the index
+                idxGeoRef <- idxGeoRef[-length(idxGeoRef)]
+                if (base::length(idxGeoRef) == 0) {
+                  # We've gone through the entire hierarchy. We're done.
+                  cont <- FALSE
+                  next
+                } else {
+                  idxGeoRef[length(idxGeoRef)] <-
+                    utils::tail(idxGeoRef, 1) + 1 # increment index
+                  next
+                }
+              }
+              
+              # Set locGeoRef to the data at our current level
+              if (base::length(idxGeoRef) > 1) {
+                txtEval <-
+                  base::paste0(
+                    'locGeoRef00$properties$locations$features[[',
+                    idxGeoRef[1],
+                    ']]',
+                    base::paste0(
+                      '$properties$reference_location$properties$locations$features[[',
+                      idxGeoRef[-1],
+                      ']]',
+                      collapse = ''
+                    )
+                  )
+              } else {
+                txtEval <-
+                  base::paste0('locGeoRef00$properties$locations$features[[',
+                               idxGeoRef[1],
+                               ']]')
+              }
+              locGeoRef <- base::eval(parse(text = txtEval))
+              
+              # Check date range of geolocation
+              timeBgnGeoRef <- locGeoRef$properties$start_date
+              if (!base::is.null(timeBgnGeoRef)) {
+                timeBgnGeoRef <-
+                  base::as.POSIXct(timeBgnGeoRef, format = FmtTime, tz = 'GMT')
+              }
+              timeEndGeoRef <- locGeoRef$properties$end_date
+              if (!base::is.null(timeEndGeoRef)) {
+                timeEndGeoRef <-
+                  base::as.POSIXct(timeEndGeoRef, format = FmtTime, tz = 'GMT')
+              }
+              
+              # If this geoloc date range is outside our day, mark for deletion and move on
+              if ((timeBgnGeoRef > TimeEnd) ||
+                  (!base::is.null(timeEndGeoRef) &&
+                   timeEndGeoRef < TimeBgn)) {
+                setRmvGeoRef[[base::length(setRmvGeoRef) + 1]] <- idxGeoRef
+                
+                # Move on. We don't need to dive further into reference locations for this geoloc
+                idxGeoRef[base::length(idxGeoRef)] <-
+                  utils::tail(idxGeoRef, 1) + 1
+                next
+                
+              } else {
+                # Truncate the start and end dates to the time range we are interested in, so that any 
+                # upstream changes outside TimeBgn and TimeEnd are indistinguishable in 
+                # downstream processing
+                if(timeBgnGeoRef < TimeBgn){
+                  txtTimeEval <- base::paste0(txtEval,'$properties$start_date <- TimeBgnFmt')
+                  base::eval(parse(text = txtTimeEval))
+                }
+                if(base::is.null(timeEndGeoRef) || (timeEndGeoRef > TimeEnd)){
+                  txtTimeEval <- base::paste0(txtEval,'$properties$end_date <- TimeEndFmt')
+                  base::eval(parse(text = txtTimeEval))
+                }
+                
+                # Sort the properties and nested location_properties to ensure consistent output
+                txtPropSortEval <- base::paste0(txtEval,'$properties <- ',txtEval,'$properties[sort(base::names(',txtEval,'$properties))]')
+                base::eval(parse(text = txtPropSortEval))
+                txtItemGeoProp <- base::paste0('itemGeoProp <- ',txtEval,'$properties$location_properties')
+                base::eval(parse(text = txtItemGeoProp))
+                if(!base::is.null(itemGeoProp)){
+                  
+                  
+                  
+                  # Do we want any location_properties?
+                  if(length(LocProp) > 0 || any(c("all","location_properties") %in% Prop)){
+                    
+                    if (length(LocProp) > 0){
+                      # We only want specific properties. Filter.
+                      nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
+                      setGeoPropKeep <- nameItem %in% LocProp
+                      txtItemGeoKeep <- base::paste0(txtEval,'$properties$location_properties <- itemGeoProp[setGeoPropKeep]')
+                      base::eval(parse(text = txtItemGeoKeep))
+                    }
+                    
+                    # Sort
+                    txtItemGeoProp <- base::paste0('itemGeoProp <- ',txtEval,'$properties$location_properties')
+                    base::eval(parse(text = txtItemGeoProp))
+                    nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
+                    if(base::length(nameItem) > 1){
+                      idxSortItem <- sort(nameItem,index.return=TRUE)$ix
+                      txtItemGeoSort <- base::paste0(txtEval,'$properties$location_properties <- itemGeoProp[idxSortItem]')
+                      base::eval(parse(text = txtItemGeoSort))
+                    }
+                    
+                  } else {
+                    # We don't want any location_properties. Remove the entire entry
+                    txtItemGeoRmv <- base::paste0(txtEval,"$properties['location_properties'] <- NULL")
+                    base::eval(parse(text = txtItemGeoRmv))
+                    
+                  }
+                }
+              }
+              
+              # Are there more reference locations?
+              if (base::length(
+                locGeoRef$properties$reference_location$properties$locations$features
+              ) != 0) {
+                # Go a level deeper
+                idxGeoRef <- c(idxGeoRef, 1)
+                next
+                
+              } else {
+                # We found the end of the reference chain! Let's move on to the next geolocation at this same level.
+                idxGeoRef[base::length(idxGeoRef)] <-
+                  utils::tail(idxGeoRef, 1) + 1
+                
+              }
+            } # End loop around reference locations
             
+            # Remove reference geolocations marked for deletion
+            setRmvGeoRef <- base::rev(setRmvGeoRef) # Reverse order so we go from the bottom
+            for (idxRmv in base::seq_len(base::length(setRmvGeoRef))) {
+              idxGeoRef <- setRmvGeoRef[[idxRmv]]
+              
+              # Formulate the list path
+              if (base::length(idxGeoRef) > 1) {
+                txtEval <-
+                  base::paste0(
+                    'locGeoRef00$properties$locations$features[[',
+                    idxGeoRef[1],
+                    ']]',
+                    base::paste0(
+                      '$properties$reference_location$properties$locations$features[[',
+                      idxGeoRef[-1],
+                      ']]',
+                      collapse = ''
+                    ),
+                    ' <- NULL'
+                  )
+              } else {
+                txtEval <-
+                  base::paste0(
+                    'locGeoRef00$properties$locations$features[[',
+                    idxGeoRef[1],
+                    ']] <- NULL'
+                  )
+              }
+              base::eval(parse(text = txtEval))
+              
+            }
+            
+            # Insert filtered reference locations back into the geolocation information
+            if(base::is.null(locGeoRef00) && 'reference_location' %in% base::names(locGeo[[idxGeo]]$properties)){
+              # Cover the scenario where the first reference location is listed as null in the location file
+              locGeo[[idxGeo]]$properties['reference_location'] <- base::list(NULL)
+            } else {
+              locGeo[[idxGeo]]$properties$reference_location <- locGeoRef00
+            }
+            
+            
+          } # end loop around geolocations
+          
+          # Keep only applicable geolocations
+          locGeo <- locGeo[setKeepGeo]
+          
+          if(locGeoType == 'install'){
+            loc$features[[idxLoc]]$properties$locations$features <- locGeo
+          } else if (locGeoType == 'site'){
+            loc$features[[idxLoc]]$properties$site_location$features <- locGeo
           }
           
-          # Insert filtered reference locations back into the geolocation information
-          if(base::is.null(locGeoRef00) && 'reference_location' %in% base::names(locGeo[[idxGeo]]$properties)){
-            # Cover the scenario where the first reference location is listed as null in the location file
-            locGeo[[idxGeo]]$properties['reference_location'] <- base::list(NULL)
-          } else {
-            locGeo[[idxGeo]]$properties$reference_location <- locGeoRef00
-          }
           
           
-        } # end loop around geolocations
-        
-        # Keep only applicable geolocations
-        locGeo <- locGeo[setKeepGeo]
-        loc$features[[idxLoc]]$properties$locations$features <- locGeo
-        
+        } # End loop around install vs. site_location  
       } # End loop around named locations
     }
 
