@@ -18,8 +18,18 @@
 #' in which all properties of the original file are retained. Include here the names of properties embedded
 #' at the top level of each location install entry (e.g. "HOR","VER","Data Rate") as well as within the 
 #' "properties" list of each location install entry (e.g. "context","locations","install_date","remove_date",
-#' "name","site"). Currently there is no option to filter for particular geolocation properties (within the
-#' properties:locations:features list)
+#' "name","site"), as well as within the location_properties entry within "locations" 
+#' (properties:locations:features:properties:location_features list). 
+#' By default, adding "locations" will include geolocation coordinates and offsets to reference locations but 
+#' will not include the "location_properties" list. To include "location_properties", add both "locations" 
+#' and "location_properties" to the Prop argument. 
+#' Note that "location_properties" is not allowed without "locations". If it is included alone, a warning 
+#' will be issued and locations will not be included in the output.
+#' By default, specifying "location_properties" will include all location properties, which often changes 
+#' in the database as new properties are added. To filter for a particular set of location_properties (if 
+#' they exist), use the syntax "location_properties:<property>", where <property> is the specific item in 
+#' the location_properties list to include. Do not include spaces before or after the ":". 
+#' Example: Prop="location_properties:UTM Zone"
 
 #' @return A list of filtered location information. If NameFileOut is specified, the filtered location
 #' information will also be writted to file in the same json format of NameFileIn
@@ -36,8 +46,8 @@
 #' NameFileOut <- 'filtered_locations.json'
 #' loc <- def.loc.filt(NameFileIn,NameFileOut,TimeBgn,TimeEnd)
 #' 
-#' Filtering for some basics only, and excluding geolocation history
-#' Prop <- c("HOR","VER","install_date","remove_date","name","site","Data Rate")
+#' Filtering for some basics, geolocation history (locations)m and some location properties
+#' Prop <- c("HOR","VER","install_date","remove_date","name","site","Data Rate","locations","location_properties:UTM Zone","location_properties:TimeTube")
 #' loc <- def.loc.filt(NameFileIn,NameFileOut,TimeBgn,TimeEnd,Prop)
 
 
@@ -64,6 +74,9 @@
 #      add option to filter for select properties
 #   Cove Sturtevant (2024-07-09)
 #      apply additional sorting of output 
+#   Cove Sturtevant (2025-03-20)
+#      fix bug causing failure when there are no items in location_properties
+#      Implement filtering options for location_properties
 ##############################################################################################
 def.loc.filt <- function(NameFileIn,
                          NameFileOut = NULL,
@@ -104,7 +117,30 @@ def.loc.filt <- function(NameFileIn,
       stop("In def.loc.filt::::: Erred out due to the validation failure of the input JSON")
     }
 
-    # Run the code when the input json is correct syntacically and valid against the schema 
+    # Error check location_properties requests
+    setParaLocProp <- base::grepl("location_properties",Prop)
+    if (base::any(setParaLocProp) && !("locations" %in% Prop)){
+      log$warn("'location_properties' is included in the Prop parameter, but without also specifying 'locations'. No location_properties will be included in the output")
+      Prop <- Prop[!setParaLocProp]
+    }
+    
+    # Error check location_properties requests
+    setParaLocProp <- base::grepl("location_properties",Prop)
+    LocProp <- c()
+    if (any(setParaLocProp)){
+      ParaLocPropSplt <- base::strsplit(Prop[setParaLocProp],':')
+      LocProp <- base::unlist(
+        base::lapply(ParaLocPropSplt,FUN=function(locPropIdx){
+          if(length(locPropIdx) > 1){
+            return(locPropIdx[2])
+          } else {
+            return(NULL)
+          }
+        })
+      )
+    }
+
+    # Run the code when the input json is correct syntactically and valid against the schema 
     FmtTime <- '%Y-%m-%dT%H:%M:%SZ' # Time format in the location file
     
     # If NULL, set TimeEnd to 1 second after TimeBgn
@@ -222,15 +258,33 @@ def.loc.filt <- function(NameFileIn,
             locGeo[[idxGeo]] <- locGeo[[idxGeo]][sort(names(locGeo[[idxGeo]]))]
             locGeo[[idxGeo]]$properties <- locGeo[[idxGeo]]$properties[sort(base::names(locGeo[[idxGeo]]$properties))]
             if('location_properties' %in% base::names(locGeo[[idxGeo]]$properties)){
-              itemGeoProp <- locGeo[[idxGeo]]$properties$location_properties
-              nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
-              if(base::length(nameItem) > 1){
-                idxSortItem <- sort(nameItem,index.return=TRUE)$ix
-                locGeo[[idxGeo]]$properties$location_properties <- locGeo[[idxGeo]]$properties$location_properties[idxSortItem]
+              
+              # Do we want any location_properties?
+              if(length(LocProp) > 0 || ("location_properties" %in% Prop)){
+                
+                if (length(LocProp) > 0){
+                  # We only want specific properties. Filter.
+                  itemGeoProp <- locGeo[[idxGeo]]$properties$location_properties
+                  nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
+                  setGeoPropKeep <- nameItem %in% LocProp
+                  locGeo[[idxGeo]]$properties$location_properties <- itemGeoProp[setGeoPropKeep]
+                }
+                
+                # Sort
+                itemGeoProp <- locGeo[[idxGeo]]$properties$location_properties
+                nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
+                if(base::length(nameItem) > 1){
+                  idxSortItem <- sort(nameItem,index.return=TRUE)$ix
+                  locGeo[[idxGeo]]$properties$location_properties <- locGeo[[idxGeo]]$properties$location_properties[idxSortItem]
+                }
+                
+              } else {
+                # We don't want any location_properties. Remove the entire entry
+                locGeo[[idxGeo]]$properties['location_properties'] <- NULL
+                
               }
             }
             
-          
           } else {
             # We're deleting this geolocation, let's move on
             next
@@ -363,11 +417,35 @@ def.loc.filt <- function(NameFileIn,
               txtItemGeoProp <- base::paste0('itemGeoProp <- ',txtEval,'$properties$location_properties')
               base::eval(parse(text = txtItemGeoProp))
               if(!base::is.null(itemGeoProp)){
-                nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
-                if(base::length(nameItem) > 1){
-                  idxSortItem <- sort(nameItem,index.return=TRUE)$ix
-                  txtItemGeoSort <- base::paste0(txtEval,'$properties$location_properties <- ',txtEval,'$properties$location_properties[idxSortItem]')
-                  base::eval(parse(text = txtItemGeoSort))
+                
+                
+                
+                # Do we want any location_properties?
+                if(length(LocProp) > 0 || ("location_properties" %in% Prop)){
+                  
+                  if (length(LocProp) > 0){
+                    # We only want specific properties. Filter.
+                    nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
+                    setGeoPropKeep <- nameItem %in% LocProp
+                    txtItemGeoKeep <- base::paste0(txtEval,'$properties$location_properties <- itemGeoProp[setGeoPropKeep]')
+                    base::eval(parse(text = txtItemGeoKeep))
+                  }
+                  
+                  # Sort
+                  txtItemGeoProp <- base::paste0('itemGeoProp <- ',txtEval,'$properties$location_properties')
+                  base::eval(parse(text = txtItemGeoProp))
+                  nameItem <- base::unlist(base::lapply(itemGeoProp,FUN=function(idxList){idxList[1]}))
+                  if(base::length(nameItem) > 1){
+                    idxSortItem <- sort(nameItem,index.return=TRUE)$ix
+                    txtItemGeoSort <- base::paste0(txtEval,'$properties$location_properties <- itemGeoProp[idxSortItem]')
+                    base::eval(parse(text = txtItemGeoSort))
+                  }
+                  
+                } else {
+                  # We don't want any location_properties. Remove the entire entry
+                  txtItemGeoRmv <- base::paste0(txtEval,"$properties['location_properties'] <- NULL")
+                  base::eval(parse(text = txtItemGeoRmv))
+                  
                 }
               }
             }
