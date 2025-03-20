@@ -307,7 +307,9 @@ wrap.precip.aepg.smooth <- function(DirIn,
   qfAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > -6 & 
                            strainGaugeDepthAgr$internalTemperature < 2 & 
                            strainGaugeDepthAgr$inletTemperature < 1] <- 1
-  qfAgr$heaterErrorQF[abs(strainGaugeDepthAgr$internalTemperature - strainGaugeDepthAgr$inletTemperature)> 40] <- 1
+  qfAgr$heaterErrorQF[abs(strainGaugeDepthAgr$internalTemperature - strainGaugeDepthAgr$inletTemperature) > 40] <- -1
+  qfAgr$heaterErrorQF[abs(strainGaugeDepthAgr$internalTemperature - strainGaugeDepthAgr$inletTemperature) > 40 &
+                        (strainGaugeDepthAgr$internalTemperature < 1 | strainGaugeDepthAgr$inletTemperature < 1) ] <- 1
   qfAgr$heaterErrorQF[strainGaugeDepthAgr$internalTemperature > 5 & strainGaugeDepthAgr$orificeHeaterFlag > 0] <- 1
   qfAgr$heaterErrorQF[is.na(strainGaugeDepthAgr$internalTemperature) | 
                          is.na(strainGaugeDepthAgr$inletTemperature) | 
