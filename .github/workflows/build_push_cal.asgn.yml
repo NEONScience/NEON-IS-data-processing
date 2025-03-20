@@ -1,11 +1,11 @@
-name: "Build-push-update_flow.wq.sens.na"
+name: "Build-push-update_flow_sae_trst_dp0p"
 
 on:
   push:
     # branches:
     #   - 'master'
     tags:
-      - "flow.wq.sens.na/v*.*.*"
+      - "flow_sae_trst_dp0p/v*.*.*"
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -24,8 +24,8 @@ env:
   # REPO_NAME: ${{ github.event.repository.name }}
   REPO_NAME: neon-is-data-processing
   # IS module name
-  MODULE_PATH: ./flow/flow.wq.sens.na
-  IMAGE_NAME: neon-is-wq-sens-na
+  MODULE_PATH: ./flow/flow_sae_trst_dp0p
+  IMAGE_NAME: neon-is-sae-trst-dp0p
 
 jobs:
   build-push-update:
@@ -48,7 +48,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 --match=flow.wq.sens.na/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=flow_sae_trst_dp0p/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
