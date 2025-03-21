@@ -97,6 +97,8 @@
 #     Add option for retaining only particular properties
 #   Cove Sturtevant (2024-11-27)
 #     Allow good records to pass through, while removing bad records and routing to errored datums
+#   Cove Sturtevant (2025-03-20)
+#     Accommodate location_properties:<property> syntax for Prop argument (see def.loc.filt)
 ##############################################################################################
 library(foreach)
 library(doParallel)
@@ -133,6 +135,14 @@ Para <-
     ValuParaOpt = list(Prop = 'all'),
     log = log
   )
+
+# Re-construct the Prop argument if there were colons 
+idxProp <- base::which(base::substr(arg,start=1,stop=5) == 'Prop=')
+if (base::length(idxProp) == 1 & 'location_properties' %in% Para$Prop){
+    Prop <- base::sub('Prop=','',arg[idxProp])
+    Para$Prop <- base::strsplit(Prop,'[|]')[[1]]
+}
+  
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
