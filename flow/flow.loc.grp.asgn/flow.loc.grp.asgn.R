@@ -136,7 +136,7 @@ Para <-
     log = log
   )
 
-# Re-construct the Prop argument if there were colons 
+# Re-construct the Prop argument if location_properties was included (potentially in the form location_properties:<property>)
 idxProp <- base::which(base::substr(arg,start=1,stop=5) == 'Prop=')
 if (base::length(idxProp) == 1 & 'location_properties' %in% Para$Prop){
     Prop <- base::sub('Prop=','',arg[idxProp])
