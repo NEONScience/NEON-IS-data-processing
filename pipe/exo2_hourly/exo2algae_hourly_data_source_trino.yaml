@@ -2,7 +2,7 @@
 pipeline:
   name: exo2algae_hourly_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-27de589
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-4e9be10
   cmd:
   - sh
   - "-c"
