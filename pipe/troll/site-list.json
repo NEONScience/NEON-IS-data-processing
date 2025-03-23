@@ -84,6 +84,11 @@
 	"kafka_start_date" : "2024-02-05"
 	},
 	{
+	"site" : "MDP2",
+	"start_date" : "2025-03-23",
+	"kafka_start_date" : "2025-03-23"
+	},
+	{
 	"site" : "OKSR",
 	"kafka_start_date" : "2024-04-06"
 	},
