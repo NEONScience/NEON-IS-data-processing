@@ -18,7 +18,7 @@
     ],
     "image": "us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-comb-ts:v1.1.0",
     "env": {
-      "LOG_LEVEL": "DEBUG"
+      "LOG_LEVEL": "INFO"
     }
   },
   "input": {

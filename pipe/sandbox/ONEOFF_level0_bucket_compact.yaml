@@ -1,0 +1,90 @@
+---
+pipeline:
+  name: ONEOFF_level0_bucket_compact
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.3
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Note: This module requires that data are loaded into pachyderm from the bucket in a previous module
+    
+    # Upload L0 files to bucket, compacting with any existing file with the same name
+    linkdir=$(mktemp -d)
+    shopt -s globstar
+    out_parquet_glob="${LEVEL0_PATH}/**/*.parquet" # Guaranteed alphanumeric ordering, thus trino files should come before kafka, which is what we want
+    # /pfs/LEVEL0_PATH/hmp155/2023/01/01/12345/data/file.parquet
+    echo "Linking output files to ${linkdir}"
+    # set -x # Uncomment for troubleshooting
+    for f in $out_parquet_glob; do
+      # Parse the path
+      [[ "$f" =~ ^$BASE_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+      fsourcetype="${BASH_REMATCH[1]}"
+      fyear="${BASH_REMATCH[2]}"
+      fmonth="${BASH_REMATCH[3]}"
+      fday="${BASH_REMATCH[4]}"
+      fsourceid="${BASH_REMATCH[5]}"
+      fname="${BASH_REMATCH[6]}"
+      fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove any offsets from the filename
+      outdir="${linkdir}/$BUCKET_VERSION_PATH/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+      mkdir -p "${outdir}"
+      ln -s "${f}" "${outdir}/${fname_out}"
+      
+      # Upload to bucket, compacting with any existing file 
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+      rm -rf "${outdir}"
+    done
+    
+    EOF
+    
+  env:
+    BASE_PATH: /pfs/LEVEL0_PATH # This first part of the input path will drop when writing the bucket
+    BUCKET_VERSION_PATH: v2 # No beginning slash. Base directory in the bucket where to put the compacted files. 
+    
+
+  secrets:
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET # Yes, it's an "oh" and not a zero
+    
+input:
+  pfs:
+    name: LEVEL0_PATH
+    repo: aepg600m_data_source_gcs
+    glob: /*/*/*/*
+parallelism_spec:
+  constant: 1
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 1.2
+resource_limits:
+  memory: 2G
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

@@ -2,7 +2,7 @@
 pipeline:
   name: gmp343_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v1.5.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.0.0
   cmd:
   - sh
   - "-c"
@@ -11,12 +11,15 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     interimDir="/tmp/interimData"
     rm -rf $interimDir
+    
     # Get today's date for evaluating kafka data retention period
     date_today=$(date -u +%Y-%m-%d)
     kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
+    
     # Run first module - data_source_site (pull data from database by site)
     # Split data source path
     for path in $(find -L $import_trigger -type f); do
@@ -43,10 +46,12 @@ transform:
       export GEN_OUTPUT_DIR=$interimDir/$SOURCE_TYPE/$year/$month/$day
       export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
       mkdir -p $GEN_OUTPUT_DIR
-      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --truncperiod second
+      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip
     done
+    
     # Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day
     python3 -m parquet_linkmerge.parquet_linkmerge_main
+    
     # Export L0 data to bucket
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
@@ -54,7 +59,7 @@ transform:
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
       # Example: /pfs/out/gmp343/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      set -x
+      # set -x # Uncomment for troubleshooting
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -64,11 +69,11 @@ transform:
         fday="${BASH_REMATCH[4]}"
         fsourceid="${BASH_REMATCH[5]}"
         fname="${BASH_REMATCH[6]}"
-        outdir="${linkdir}/v1/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
         mkdir -p "${outdir}"
         ln -s "${f}" "${outdir}/${fname}"
       done
-      set +x
+
       echo "Syncing files to bucket"
       rclone \
         --no-check-dest \
@@ -78,8 +83,11 @@ transform:
         copy \
         "${linkdir}" \
         ":gcs://${BUCKET_NAME}"
+        
       echo "Removing temporary files"
       rm -rf $linkdir
+      
+      # set +x # Uncomment for troubleshooting
     fi
     EOF
   env:

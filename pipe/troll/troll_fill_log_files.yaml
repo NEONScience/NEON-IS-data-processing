@@ -25,7 +25,7 @@ transform:
     if [ ${DATA_PATH_KAFKA+x} ]; then 
       data="T"
     fi
-    if [ ${DATA_PATH_TRINO+x} ]; then 
+    if [ ${DATA_PATH_ARCHIVE+x} ]; then 
       data="T"
     fi
     if [ ${DATA_PATH_LOG+x} ]; then 
@@ -90,9 +90,9 @@ transform:
     EOF
   env:
     # Environment variables for filter-joiner.
-    # Ensure the path for the trino data is listed prior to that for the kafka data. When a conflict arises, 
-    # such as when Kafka re-streams some data unexpectedly, the Trino data will take precedence because it is 
-    # more likely to be complete. 
+    # Ensure the path for the kafka data is listed prior to that for the archive data. When a conflict arises, 
+    # such as when Kafka re-streams data, the Kafka data will take precedence because it is 
+    # the latest and greatest.
     CONFIG_LIMIT_LOGFILES: |
       ---
       # Configuration for filter-joiner module that will limit log files to the dates in
@@ -120,17 +120,10 @@ transform:
       ---
       # Configuration for filter-joiner module that will bring together all sources of data
       # Make sure the DATA_PATH_LOG path is second. Any site files from the date_control pipeline
-      # won't be copied if there are files from trino, kafka, or the log files. 
+      # won't be copied if there are files from the archive, kafka, or the log files. 
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
       input_paths:
-        - path:
-            name: DATA_PATH_TRINO
-            # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_TRINO/*/*/*/**
-            # Join on y/m/d and sourceID 
-            join_indices: [3,4,5,6]
-            outer_join: True
         - path:
             name: DATA_PATH_KAFKA
             # Filter for data directory
@@ -138,6 +131,13 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [3,4,5,6]
             outer_join: true
+        - path:
+            name: DATA_PATH_ARCHIVE
+            # Filter for data directory
+            glob_pattern: /pfs/DATA_PATH_ARCHIVE/*/*/*/**
+            # Join on y/m/d and sourceID 
+            join_indices: [3,4,5,6]
+            outer_join: True
         - path:
             name: DATA_PATH_LOG
             # Filter for data directory
@@ -166,8 +166,8 @@ input:
         group_by: $1
   - join:
     - pfs:
-        name: DATA_PATH_TRINO
-        repo: troll_data_source_trino
+        name: DATA_PATH_ARCHIVE
+        repo: troll_data_source_gcs
         glob: /(*/*/*/*) #aquatroll200/Y/M/D
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY

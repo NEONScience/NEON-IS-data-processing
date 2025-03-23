@@ -12,7 +12,7 @@ transform:
   env:
     PARSED_START_INDEX: "3"
     PARSED_END_INDEX: "16"
-    LOG_LEVEL: DEBUG 
+    LOG_LEVEL: INFO 
     OUT_PATH: /pfs/out 
     PARSE_FIELD: serial_output
     RELATIVE_PATH_INDEX: "4"

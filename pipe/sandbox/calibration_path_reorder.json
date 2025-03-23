@@ -8,7 +8,7 @@
       "stdin": [ "#!/bin/bash", "python3 -m path_order.path_order_main" ],
       "env": {
           "OUT_PATH": "/pfs/out",
-          "LOG_LEVEL": "DEBUG",
+          "LOG_LEVEL": "INFO",
           "PATH_INDICES": "3, 5, 4, 6"
       }
   },
