@@ -39,18 +39,153 @@
                 "x_offset": 0.06731,
                 "y_offset": 0.12,
                 "z_offset": 0.06,
+                "location_properties":[
+                                    [
+                                        "Country",
+                                        "USA"
+                                    ],
+                                    [
+                                        "UTM Zone",
+                                        "13N"
+                                    ],
+                                    [
+                                        "Geodetic datum",
+                                        "WGS84"
+                                    ],
+                                    [
+                                        "State province",
+                                        "CO"
+                                    ]
+                ],
                 "reference_location": {
-                  "type": "Feature",
-                  "geometry": null,
-                  "properties": {
-                    "name": "S1LOC101258",
-                    "locations": null
-                  }
+                    "geometry": null,
+                    "properties": {
+                        "locations": {
+                            "features": [
+                                {
+                                    "geometry": {
+                                        "coordinates": [
+                                            -103.02929,
+                                            40.461927,
+                                            1364.63056
+                                        ],
+                                        "type": "Point"
+                                    },
+                                    "properties": {
+                                        "alpha": 0.0,
+                                        "beta": 0.0,
+                                        "end_date": null,
+                                        "gamma": 0.0,
+                                        "location_properties": [
+                                            [
+                                                "Country",
+                                                "USA"
+                                            ],
+                                            [
+                                                "County",
+                                                "Logan"
+                                            ],
+                                            [
+                                                "Geodetic datum",
+                                                "WGS84"
+                                            ],
+                                            [
+                                                "State province",
+                                                "CO"
+                                            ],
+                                            [
+                                                "x Azimuth Angle",
+                                                270.0
+                                            ],
+                                            [
+                                                "UTM Zone",
+                                                "13N"
+                                            ],
+                                            [
+                                                "y Azimuth Angle",
+                                                180.0
+                                            ],
+                                            [
+                                                "DistZaxsLvlMeasTow",
+                                                "0.56,1.85,4.94,8.30"
+                                            ],
+                                            [
+                                                "TimeTube",
+                                                "11.54,12.09,12.27,12.44"
+                                            ],
+                                            [
+                                                "DistZaxsTow",
+                                                "7.93"
+                                            ]
+                                        ],
+                                        "reference_location": null,
+                                        "start_date": "2010-01-01T00:00:00Z",
+                                        "x_offset": 0.0,
+                                        "y_offset": 0.0,
+                                        "z_offset": 0.0
+                                    },
+                                    "type": "Feature"
+                                }
+                            ],
+                            "type": "FeatureCollection"
+                        },
+                        "name": "TOWER100002"
+                    },
+                    "type": "Feature"
                 }
               }
             }
           ]
-        }
+        },
+        "site_location": {
+          "features": [
+              {
+                  "geometry": {
+                      "coordinates": [
+                          -103.02929,
+                          40.461894,
+                          1364.63056
+                      ],
+                      "type": "Point"
+                  },
+                  "properties": {
+                      "alpha": 0.0,
+                      "beta": 0.0,
+                      "end_date": null,
+                      "gamma": 0.0,
+                      "location_properties": [
+                          [
+                              "UTM Zone",
+                              "13N"
+                          ],
+                          [
+                              "Country",
+                              "USA"
+                          ],
+                          [
+                              "County",
+                              "Logan"
+                          ],
+                          [
+                              "Geodetic datum",
+                              "WGS84"
+                          ],
+                          [
+                              "State province",
+                              "CO"
+                          ]
+                      ],
+                      "reference_location": null,
+                      "start_date": "2010-01-01T00:00:00Z",
+                      "x_offset": 0.0,
+                      "y_offset": 0.0,
+                      "z_offset": 0.0
+                  },
+                  "type": "Feature"
+              }
+          ],
+          "type": "FeatureCollection"
+      }
       },
       "Required Asset Management Location ID": 2988,
       "Required Asset Management Location Code": "CFGLOC101663",

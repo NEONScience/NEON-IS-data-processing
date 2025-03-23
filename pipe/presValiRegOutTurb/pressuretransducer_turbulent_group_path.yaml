@@ -1,0 +1,102 @@
+---
+pipeline:
+  name: pressuretransducer_turbulent_group_path
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-group-path:v1.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    mkdir /tmp/LOCATION_FOCUS_PATH
+    cp -r /pfs/LOCATION_FOCUS_PATH_1/* /tmp/LOCATION_FOCUS_PATH
+    cp -r /pfs/LOCATION_FOCUS_PATH_2/* /tmp/LOCATION_FOCUS_PATH
+    cp -r /pfs/LOCATION_FOCUS_PATH_3/* /tmp/LOCATION_FOCUS_PATH
+    cp -r /pfs/LOCATION_FOCUS_PATH_4/* /tmp/LOCATION_FOCUS_PATH
+    export LOCATION_FOCUS_PATH=/tmp/LOCATION_FOCUS_PATH
+    python3 -m group_path.group_path_main
+    EOF
+  env:
+    GROUP: turbulent
+    LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
+    GROUP_ASSIGNMENT_YEAR_INDEX: '4'
+    GROUP_ASSIGNMENT_MONTH_INDEX: '5'
+    GROUP_ASSIGNMENT_DAY_INDEX: '6'
+    GROUP_ASSIGNMENT_MEMBER_INDEX: '7'
+    GROUP_ASSIGNMENT_DATA_TYPE_INDEX: '8'
+    LOCATION_FOCUS_SOURCE_TYPE_INDEX: '3'
+    LOCATION_FOCUS_YEAR_INDEX: '4'
+    LOCATION_FOCUS_MONTH_INDEX: '5'
+    LOCATION_FOCUS_DAY_INDEX: '6'
+    LOCATION_FOCUS_LOCATION_INDEX: '7'
+    LOCATION_FOCUS_DATA_TYPE_INDEX: '8'
+input:
+# The input to the group_path module must be a join between the group_assignment module and the union of any/all 
+#   data repos that are currently in a location focus structure or a (different/L1+ dependency) group focus structure
+  join:
+  - pfs:
+      # name must be GROUP_ASSIGNMENT_PATH
+      name: GROUP_ASSIGNMENT_PATH
+      repo: pressuretransducer_turbulent_group_assignment
+      glob: /turbulent/(*/*/*)
+      joinOn: $1
+  - pfs:
+      # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+      name: LOCATION_FOCUS_PATH_1
+      repo: presTrap_analyze_pad_and_qaqc_plau
+      glob: /presTrap/(*/*/*)
+      joinOn: $1
+  - pfs:
+      # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+      name: LOCATION_FOCUS_PATH_2
+      repo: presValiLine_analyze_pad_and_qaqc_plau
+      glob: /presValiLine/(*/*/*)
+      joinOn: $1
+  - pfs:
+      # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+      name: LOCATION_FOCUS_PATH_3
+      repo: presValiRegInTurb_analyze_pad_and_qaqc_plau
+      glob: /presValiRegInTurb/(*/*/*)
+      joinOn: $1
+  - pfs:
+      # Any/all repos in location focus name must be named LOCATION_FOCUS_PATH
+      name: LOCATION_FOCUS_PATH_4
+      repo: presValiRegOutTurb_analyze_pad_and_qaqc_plau
+      glob: /presValiRegOutTurb/(*/*/*)
+      joinOn: $1
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 4G
+  cpu: 1
+resource_limits:
+  memory: 6G
+  cpu: 2.5
+sidecar_resource_requests:
+  memory: 5G
+  cpu: 1
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

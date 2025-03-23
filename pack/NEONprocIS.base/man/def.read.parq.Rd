@@ -14,7 +14,8 @@ output. Defaults to NULL, in which the logger will be created and used within th
 }
 \value{
 A data frame of the data contained in the Parquet file. The schema is included in
-attribute 'schema'.
+attribute 'schema'. Any other schema metadata included in the parquet file is attached to
+the output data frame in the 'metadata' attribute.
 }
 \description{
 Definition function. Read in parquet file.
