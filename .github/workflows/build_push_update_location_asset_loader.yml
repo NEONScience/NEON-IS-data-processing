@@ -33,7 +33,7 @@ jobs:
         security-events: write
         packages: write
         id-token: 'write'
-        # pull-requests: 'write'
+        pull-requests: 'write'
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
