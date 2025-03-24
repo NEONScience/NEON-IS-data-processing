@@ -88,6 +88,10 @@
 	"kafka_start_date" : "2024-04-06"
 	},
 	{
+	"site" : "ORNL",
+	"kafka_start_date" : "2023-05-10"
+	},
+	{
 	"site" : "POSE",
 	"kafka_start_date" : "2024-01-25"
 	},
@@ -102,10 +106,6 @@
 	{
 	"site" : "PRPO",
 	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "ORNL",
-	"kafka_start_date" : "2023-05-10"
 	},
 	{
 	"site" : "PRLA",
