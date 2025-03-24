@@ -14,4 +14,5 @@ class AssetLocation(NamedTuple):
     remove_date: datetime
     context: List[str]
     properties: List[Property]
+    site_location: FeatureCollection
     locations: FeatureCollection

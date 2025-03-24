@@ -52,14 +52,14 @@ parallelism_spec:
   constant: 4
 autoscaling: true
 resource_requests:
-  memory: 200M
-  cpu: 1.2
+  memory: 600M
+  cpu: 1
 resource_limits:
   memory: 1G
   cpu: 2
 sidecar_resource_requests:
   memory: 1G
-  cpu: 0.3
+  cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:

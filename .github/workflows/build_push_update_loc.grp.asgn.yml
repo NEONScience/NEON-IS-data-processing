@@ -2,8 +2,6 @@ name: "Build-push-update_flow.loc.grp.asgn"
 
 on:
   push:
-    # branches:
-    #   - 'master'
     tags:
       - "flow.loc.grp.asgn/v*.*.*"
 env:
@@ -19,7 +17,8 @@ env:
   GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # Get just the repo name from the event, i.e., NEON-IS-data-processing, in lowercase
+  # IMAGE_NAME: ${{ github.repository }}
+  # Get just the repo name from the event, i.e., NEON-IS-data-processing
   # REPO_NAME: ${{ github.event.repository.name }}
   REPO_NAME: neon-is-data-processing
   # IS module name
@@ -35,7 +34,6 @@ jobs:
         packages: write
         id-token: 'write'
         pull-requests: 'write'
-
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
