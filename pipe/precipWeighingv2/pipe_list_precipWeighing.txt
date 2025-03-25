@@ -1,0 +1,5 @@
+precipWeighingv2_group_loader.yaml
+precipWeighingv2_group_assignment.yaml
+precipWeighingv2_group_path.yaml
+precipWeighingv2_srf_loader.yaml
+precipWeighingv2_srf_assignment.yaml
