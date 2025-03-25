@@ -2,11 +2,7 @@
 pipeline:
   name: pluvio_data_source_kafka
 transform:
-<<<<<<< HEAD:pipe/pluvio/pluvio_data_source_kafka.yaml
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.1
-=======
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.3
->>>>>>> c7b1598660a9e4b84daff3adcb756ff78904f170:pipe/pluvio_testing/pluvio_data_source_kafka.yaml
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
