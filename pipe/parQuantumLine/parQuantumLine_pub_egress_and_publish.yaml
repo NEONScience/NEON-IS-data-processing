@@ -2,7 +2,7 @@
 pipeline:
   name: parQuantumLine_pub_egress_and_publish
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:sha-d82dede
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:sha-848d535
   cmd:
   - sh
   - "-c"
@@ -11,6 +11,11 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/out
+    mkdir -p /tmp/out/mdp # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+
     # Run first module - pub_egress (using environment variables below as input parameters)
     if [[ $(echo $DATA_PATH) ]]; then
       python3 -m pub_egress.pub_egress_main
@@ -99,8 +104,8 @@ transform:
     
     # Environment variables for 1st module: pub_egress. The pub bucket and egress url are specified via secrets below.
     OUT_PATH: "/pfs/out"
-    OUT_PATH_MDP: "/pfs/out/mdp/"
-    OUT_MDP_SITES: "/pfs/out/mdp_sites.txt"
+    OUT_PATH_MDP: "/tmp/out/mdp/"
+    OUT_MDP_SITES: "/tmp/out/mdp_sites.txt"
     # ERR_PATH can be changed, it is user specified
     ERR_PATH: /pfs/out/errored_datums
     STARTING_PATH_INDEX: "2" # starting path index to process pub packages. Use "2" to process the whole repo with path structure /pfs/repo_name/...
