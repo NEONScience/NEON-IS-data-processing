@@ -90,8 +90,7 @@ transform:
       echo "============ Done for MDP sites"
     else
       echo "No pub output to egress"
-    fi
-    # 
+    fi 
     # Set some environment variables for the second module
     export DATA_PATH=$OUT_PATH
     
