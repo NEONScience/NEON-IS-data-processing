@@ -1,5 +1,4 @@
 import datetime
-import re
 from contextlib import closing
 
 from structlog import get_logger
@@ -66,7 +65,7 @@ def remove_pub(connector: DbConnector, pub_records: dict, change_by: str):
                 # Remove any non-tagged pub records
                 for pub_record in pub_records[pub_key]:
 
-                    if (pub_record.releaseStatus == 'T') or (re.match((r'^MD(\d\d)'),pub_record.site)):
+                    if pub_record.releaseStatus == 'T':
                         release_status = 'U'  # updated
                         log.debug(f'Retaining release-tagged pub record: {pub_record}')
                     else:
