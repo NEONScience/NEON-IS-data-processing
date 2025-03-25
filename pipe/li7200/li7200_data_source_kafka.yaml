@@ -2,13 +2,13 @@
 pipeline:
   name: li7200_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.3
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
     SOURCE_TYPE: "li7200_raw"
-    LOGLEVEL: info
+    LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
@@ -127,14 +127,14 @@ parallelism_spec:
   constant: 1
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 1.5
+  memory: 6G
+  cpu: 3
 resource_limits:
-  memory: 5G
+  memory: 8G
   cpu: 4
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 1.5
+  memory: 4G
+  cpu: 3
 datum_set_spec:
   number: 1
 scheduling_spec:

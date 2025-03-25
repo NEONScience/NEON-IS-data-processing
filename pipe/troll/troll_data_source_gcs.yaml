@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: hmp155_data_source_gcs
+  name: troll_data_source_gcs
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
@@ -39,7 +39,7 @@ transform:
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
     KAFKA_RETENTION_DAYS: "15"
-    BUCKET_VERSION_PATH: "v1"  # The root path of the bucket, indicative of the version (e.g. v2)
+    BUCKET_VERSION_PATH: "v2"  # The root path of the bucket, indicative of the version (e.g. v2)
     SOURCE_TYPE_INDEX: "3"
     YEAR_INDEX: "4"
     MONTH_INDEX: "5"
@@ -49,12 +49,13 @@ transform:
   # - name: l0-bucket # Using this secret will use the dev/cert/prod bucket linked to the Pachyderm environment
   #   env_var: BUCKET_NAME
   #   key: LO_BUCKET
+
 input:
   pfs:
     name: import_trigger
-    repo: hmp155_cron_daily_and_date_control
+    repo: troll_cron_daily_and_date_control
     # Glob must be daily
-    glob: "/hmp155/*/*/*"
+    glob: "/*/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5
