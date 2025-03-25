@@ -101,7 +101,7 @@ class Pub_egress:
                             # Get portal visibility. Skip egress if private
                             visibility=manifest.loc[manifest['file'] == filename, 'visibility']
                             log.debug(f'Visibility for {filename}: {visibility.iloc[0]}')
-                            if (not (re.match((r'^MD(\d\d)'),site))) and (visibility.iloc[0] != 'public'):
+                            if visibility.iloc[0] != 'public':
                                 continue
 
                             file_path = Path(root, filename)
