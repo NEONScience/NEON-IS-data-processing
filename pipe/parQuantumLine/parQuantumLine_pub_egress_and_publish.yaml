@@ -90,8 +90,7 @@ transform:
     else
       echo "No pub output to egress"
     fi
-    # 
-    # # Set some environment variables for the second module
+    # Set some environment variables for the second module
     export DATA_PATH=$OUT_PATH
     # Run second module - pub_upload (using environment variables below as input parameters)
     python3 -m pub_uploader.pub_uploader_main

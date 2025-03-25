@@ -90,7 +90,6 @@ transform:
     else
       echo "No pub output to egress"
     fi
-    fi
     # Set some environment variables for the second module
     export DATA_PATH=$OUT_PATH
     # Run second module - pub_upload (using environment variables below as input parameters)
