@@ -38,7 +38,6 @@ transform:
           "${OUT_PATH}/${PRODUCT}" \
           ":gcs://${BUCKET_NAME}/${PRODUCT}"
       done
-      echo "Done"
       echo "============ Done for non-MDP sites"
     else
       echo "No pub output to egress"
