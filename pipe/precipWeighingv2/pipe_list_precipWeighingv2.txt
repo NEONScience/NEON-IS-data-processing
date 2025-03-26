@@ -3,3 +3,6 @@ precipWeighingv2_group_assignment.yaml
 precipWeighingv2_group_path.yaml
 precipWeighingv2_srf_loader.yaml
 precipWeighingv2_srf_assignment.yaml
+precipWeighingv2_threshold.yaml
+precipWeighingv2_thresh_select_ts_pad.yaml
+precipWeighingv2_analyze_pad_and_qaqc_plau.yaml
