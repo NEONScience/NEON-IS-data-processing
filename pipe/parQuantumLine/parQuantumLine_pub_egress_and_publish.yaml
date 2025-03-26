@@ -97,7 +97,6 @@ transform:
     # Run third module - pub_sync (using environment variables below as input parameters)
     python3 -m pub_sync.pub_sync_main
     EOF
-    
   env:
     LOG_LEVEL: INFO
     
