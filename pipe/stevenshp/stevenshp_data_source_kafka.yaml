@@ -26,6 +26,18 @@ transform:
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
+  - name: pdr-secret
+    env_var: PDR_HOST
+    key: hostname
+  - name: pdr-secret
+    env_var: PDR_DBNAME
+    key: database
+  - name: pdr-secret
+    env_var: PDR_USER
+    key: username
+  - name: pdr-secret
+    env_var: PDR_PASSWORD
+    key: password
   cmd:
   - sh
   - "-c"
@@ -115,6 +127,9 @@ transform:
         rm -rf "${outdir}"
       done
       
+      # Update the airflow triggering table
+      ./update-trigger-table.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
+
       # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi

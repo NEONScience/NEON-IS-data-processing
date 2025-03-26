@@ -136,6 +136,9 @@ transform:
         rm -rf "${outdir}"
       done
       
+      # Update the airflow triggering table
+      ./update-trigger-table.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
+
       # set +x # Uncomment for troubleshooting
       rm -rf $linkdir
     fi
