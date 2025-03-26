@@ -3,17 +3,22 @@ pipeline:
   name: li7200_parse_kafka_raw_data
 transform:
 #  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-raw-data-parse:v1.4.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-06fcd8d
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - "python3 -m raw_data_parser.raw_data_parser_main"
+  - "python3 -m li7200_data_parser_main"
   env:
+    # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
+    # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
+    #   skip first 3 fields (source_id, site_id, readout_time) in parsed schema
     OUT_PATH: /pfs/out
+    RELATIVE_PATH_INDEX: "4"
     LOG_LEVEL: DEBUG 
     SOURCE_TYPE: "li7200_raw"
     PARSE_FIELD: "ethernet_output"
-    RELATIVE_PATH_INDEX: "4"
+    PARSED_START_INDEX: "1" # skip first element 'time' in parse_field for parsing
+    PARSED_SCHEMA_PATH: /usr/src/app/schemas/li7200/li7200_metrics.avsc
 input:
   pfs:
     name: DATA_PATH
