@@ -20,7 +20,6 @@ transform:
     if [[ $(echo $DATA_PATH) ]]; then
       python3 -m pub_egress.pub_egress_main
     fi
-    
     # If there is output, egress it
     if ls $OUT_PATH/NEON.DOM.SITE* 1> /dev/null 2>&1; then
       for DIR in $OUT_PATH/NEON.DOM.SITE*; do
@@ -29,6 +28,7 @@ transform:
         # Parse the product
         [[ "$DIR" =~ ^$OUT_PATH/(.*)$ ]]
         PRODUCT="${BASH_REMATCH[1]}"
+        echo "PRODUCT is $PRODUCT"
         rclone \
           --no-check-dest \
           --copy-links \
