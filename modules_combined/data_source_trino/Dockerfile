@@ -5,7 +5,7 @@
 # docker build -t neon-is-data-src-trino:latest -f ./modules_combined/data_source_trino/Dockerfile .
 #
 ###
-FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:v4.2.2
+FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:sha-a05a53d
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="parquet_linkmerge"
