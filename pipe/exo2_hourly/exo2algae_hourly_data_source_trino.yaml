@@ -106,7 +106,7 @@ transform:
     SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "15"
     # Environment variables for bash code
-    SOURCE_TYPE: 'exo2_hourly'
+    SOURCE_TYPE: 'exo2algae_hourly'
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST

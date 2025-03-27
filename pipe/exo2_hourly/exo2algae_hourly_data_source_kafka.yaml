@@ -2,7 +2,7 @@
 pipeline:
   name: exo2algae_hourly_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-90104f0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -122,7 +122,7 @@ input:
     name: import_trigger
     repo: exo2_hourly_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/exo2/*/*/*"
+    glob: "/exo2_hourly/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
