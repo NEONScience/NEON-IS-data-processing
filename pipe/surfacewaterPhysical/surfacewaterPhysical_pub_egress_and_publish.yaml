@@ -2,7 +2,7 @@
 pipeline:
   name: surfacewaterPhysical_pub_egress_and_publish
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:sha-d82dede
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-egrs-publ:v4.0.0
   cmd:
   - sh
   - "-c"
