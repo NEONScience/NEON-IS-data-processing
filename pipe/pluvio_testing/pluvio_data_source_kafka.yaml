@@ -26,18 +26,6 @@ transform:
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
-  - name: pdr-secret
-    env_var: PDR_HOST
-    key: hostname
-  - name: pdr-secret
-    env_var: PDR_DBNAME
-    key: database
-  - name: pdr-secret
-    env_var: PDR_USER
-    key: username
-  - name: pdr-secret
-    env_var: PDR_PASSWORD
-    key: password
   cmd:
   - sh
   - "-c"
