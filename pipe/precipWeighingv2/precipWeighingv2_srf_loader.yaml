@@ -6,7 +6,7 @@ transform:
     - /bin/bash
   env:
     GROUP_PREFIX: precip-weighing-v2_
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
   secrets:
   - name: pdr-secret

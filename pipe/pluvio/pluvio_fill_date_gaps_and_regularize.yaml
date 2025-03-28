@@ -30,7 +30,7 @@ transform:
       IdxWndw=IdxWndwMin \
       RptTimeWndw=FALSE \
       DropNotNumc=FALSE \
-      "DirSubCopy=location|uncertainty_coef"
+      "DirSubCopy=location|uncertainty_coef|flags"
     EOF
   env:
     # Environment variables for date gap filler

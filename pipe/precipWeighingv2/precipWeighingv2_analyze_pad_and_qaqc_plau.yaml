@@ -39,7 +39,7 @@ transform:
   env:
     # Environment variables for padded timeseries analyzer
     OUT_PATH: /tmp/pfs/padded_analyzer
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: '3'
     ERR_PATH: /pfs/out/errored_datums
     # Environment variables for qaqc plausibility
