@@ -1,7 +1,7 @@
 pipeline:
   name: pluvio_data_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-06fcd8d
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-95c3872
   cmd:
     - /bin/bash
   stdin:

@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: li7200_replace_macaddress_with_assetuid
+  name: l2130i_replace_macaddress_with_assetuid
 transform:
   # image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-mac-addr-to-asset-uid:v1.30.0
@@ -12,6 +12,7 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t' 
+
     # Detect if we have data coming from Kafka or trino
     # Note that we run the macAddress-replacer in sequential if statements rather than an elif statement ...
     # ... so that if there is any overlap in sensor data coming from both Kafka and Trino on the same day, the ...
@@ -33,58 +34,32 @@ transform:
       export DATA_PATH=$DATA_PATH_KAFKA
       python3 -m replace_macaddress_with_assetuid.replace_macaddress_with_assetuid_main
     fi
+
   env:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "3"
     LOG_LEVEL: DEBUG
     # LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
-#  union:
-#    - join:
-#      - pfs:
-#          name: DATA_PATH_TRINO
-#          repo: li7200_data_source_trino
-#          glob: /li7200/*/*/*/(*)
-#          empty_files: true
-#          joinOn: $1
-#      - pfs:
-#          name: MAP_PATH
-#          repo: li7200_assetuid_macaddress_map
-#          glob: /li7200/(*)
-#          joinOn: $1
-#    - join:
-#      - pfs:
-#          name: DATA_PATH_KAFKA
-#          repo: li7200_parse_kafka_raw_data
-#          glob: /li7200/*/*/*/(*)
-#          empty_files: true
-#          joinOn: $1
-#      - pfs:
-#          name: MAP_PATH
-#          repo: li7200_assetuid_macaddress_map
-#          glob: /li7200/(*)
-#          joinOn: $1
-# another option to join
   union:
     - cross:
       - pfs:
           name: DATA_PATH_TRINO
-          repo: li7200_data_source_trino
-          glob: /li7200/*/*/*
+          repo: l2130i_data_source_trino
+          glob: /l2130i/*/*/*
       - pfs:
           name: MAP_PATH
-          repo: li7200_assetuid_macaddress_map
-          glob: /li7200
+          repo: l2130i_assetuid_macaddress_map
+          glob: /l2130i
     - cross:
       - pfs:
           name: DATA_PATH_KAFKA
-          repo: li7200_parse_kafka_raw_data
-          glob: /li7200/*/*/*
+          repo: l2130i_parse_kafka_raw_data
+          glob: /l2130i/*/*/*
       - pfs:
           name: MAP_PATH
-          repo: li7200_assetuid_macaddress_map
-          glob: /li7200
-#
+          repo: l2130i_assetuid_macaddress_map
+          glob: /l2130i
 parallelism_spec:
   constant: 1
 autoscaling: true
@@ -114,5 +89,5 @@ pod_spec: |-
       "effect": "NoSchedule",
       "key": "cloud.google.com/gke-spot",
       "operator": "Exists"
-    }  
+    }
   ] }

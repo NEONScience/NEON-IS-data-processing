@@ -3,7 +3,7 @@ pipeline:
   name: li7200_parse_kafka_raw_data
 transform:
 #  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-06fcd8d
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-95c3872
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
