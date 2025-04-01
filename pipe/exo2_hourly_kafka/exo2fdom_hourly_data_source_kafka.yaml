@@ -120,7 +120,7 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: exo2_hourly_cron_daily_and_date_control
+    repo: exo2_hourly_kafka_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/exo2_hourly/*/*/*"
 parallelism_spec:
