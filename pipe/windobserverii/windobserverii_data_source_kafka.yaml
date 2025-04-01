@@ -2,7 +2,7 @@
 pipeline:
   name: windobserverii_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-413746d
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -98,7 +98,7 @@ transform:
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
       
-      sites_output+=(site)
+      sites_output+=($site)
 
     done
     
@@ -131,7 +131,7 @@ transform:
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
-        ./update-trigger-table.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
+        ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
       done
 
       # set +x # Uncomment for debugging
