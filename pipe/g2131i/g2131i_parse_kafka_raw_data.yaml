@@ -2,11 +2,11 @@
 pipeline:
   name: g2131i_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-95c3872
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-1596778
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - "python3 -m picarro_data_parser_main"
+  - "python3 -m raw_data_parser.picarro_data_parser_main"
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
