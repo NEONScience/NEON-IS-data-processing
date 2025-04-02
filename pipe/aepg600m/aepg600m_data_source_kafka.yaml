@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-413746d
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-33a37dd
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -152,7 +152,7 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 300M
-  cpu: 1.3
+  cpu: 1.6
 resource_limits:
   memory: 1.5G
   cpu: 2
