@@ -25,7 +25,7 @@ input:
   cross:
   - pfs:
       name: SCHEMA_PATH
-      repo: avro_schemas_tchain
+      repo: tchain_avro_schemas
       branch: master
       glob: /tchain/tchain_parsed.avsc
   - pfs:
@@ -33,11 +33,16 @@ input:
       repo: tchain_data_calibration_group
       branch: master
       glob: /tchain/*/*/*
-resource_requests:
-  memory: 500M
-  cpu: 1
 autoscaling: true
-
+resource_requests:
+  memory: 1.5G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.6
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
