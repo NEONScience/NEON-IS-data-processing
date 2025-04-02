@@ -1,6 +1,3 @@
 l2130i_cron_daily_and_date_control.yaml
 l2130i_data_source_kafka.yaml
 l2130i_data_source_trino.yaml
-l2130i_parse_kafka_raw_data.yaml
-l2130i_assetuid_macaddress_map.yaml
-l2130i_replace_macaddress_with_assetuid.yaml
