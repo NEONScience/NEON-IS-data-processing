@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: g2131i_raw_cron_daily_and_date_control
+  name: l2130i_cron_daily_and_date_control
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   cmd: ["/bin/bash"]
@@ -12,8 +12,8 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be 2 days previous. 
     OUT_PATH: /pfs/out
     START_DATE: "2025-02-01" # Inclusive
-    END_DATE: "2025-02-24" # Inclusive
-    SOURCE_TYPE: "g2131i_raw"
+    #END_DATE: "2025-03-05" # Inclusive
+    SOURCE_TYPE: "l2130i"
   stdin:
   - "#!/bin/bash"
   - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
@@ -26,7 +26,7 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: g2131i_raw_site_list
+      repo: l2130i_site_list
       glob: /site-list.json
 resource_requests:
   memory: 100M
