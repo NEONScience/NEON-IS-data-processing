@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: l2130i_raw_data_source_kafka
+  name: l2130i_data_source_kafka
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.4.0
   image_pull_secrets:
@@ -107,9 +107,9 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/l2130i_raw/2023/01/01/12345/data/file.parquet
+      # /pfs/out/l2130i/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for troubleshooting
+      # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -141,15 +141,15 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: l2130i_raw_cron_daily_and_date_control
+    repo: l2130i_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/l2130i_raw/*/*/*"
+    glob: "/l2130i/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
 resource_requests:
   memory: 300M
-  cpu: 1.6
+  cpu: 1.3
 resource_limits:
   memory: 1.5G
   cpu: 2

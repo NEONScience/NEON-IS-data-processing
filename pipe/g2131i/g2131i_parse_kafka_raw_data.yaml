@@ -1,13 +1,12 @@
 ---
 pipeline:
-  name: li7200_parse_kafka_raw_data
+  name: g2131i_parse_kafka_raw_data
 transform:
-#  image_pull_secrets: [battelleecology-quay-read-all-pull-secret]
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:v4.3.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
-  - "python3 -m raw_data_parser.li7200_data_parser_main"
+  - "python3 -m raw_data_parser.picarro_data_parser_main"
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -15,27 +14,28 @@ transform:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "4"
     LOG_LEVEL: DEBUG 
-    SOURCE_TYPE: "li7200_raw"
-    PARSE_FIELD: "ethernet_output"
+    SOURCE_TYPE: "g2131i_raw"
+    PARSE_FIELD: "measurement_buffer"
     PARSED_START_INDEX: "1" # skip first element 'time' in parse_field for parsing
-    PARSED_SCHEMA_PATH: /usr/src/app/schemas/li7200/li7200_metrics.avsc
+    PARSED_SCHEMA_PATH: /usr/src/app/schemas/g2131i/g2131i_metrics.avsc
+    FIELD_START_INDEX: "4" # skip instrument_status for parsing
 input:
   pfs:
     name: DATA_PATH
-    repo: li7200_data_source_kafka
-    glob: /li7200_raw/(*)/(*)/(*)/(*)
+    repo: g2131i_data_source_kafka
+    glob: /g2131i_raw/(*)/(*)/(*)/(*)
 parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 4G
-  cpu: 2.5
+  memory: 500M
+  cpu: 0.5
 resource_limits:
-  memory: 8G
-  cpu: 5
+  memory: 1G
+  cpu: 1
 sidecar_resource_requests:
   memory: 3G
-  cpu: 1.5
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
