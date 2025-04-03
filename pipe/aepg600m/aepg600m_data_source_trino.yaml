@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-27de589
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.0.0
   cmd:
   - sh
   - "-c"
@@ -52,7 +52,7 @@ transform:
       echo "Extracting $SOURCE_TYPE from Trino for $year/$month/$day/$site"
       export GEN_OUTPUT_DIR=$interimDir/$SOURCE_TYPE/$year/$month/$day
       mkdir -p $GEN_OUTPUT_DIR
-      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip
+      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --alignperiod second
     done
     
     # Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day

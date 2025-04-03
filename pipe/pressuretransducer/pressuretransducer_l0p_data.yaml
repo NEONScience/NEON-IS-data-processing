@@ -19,9 +19,9 @@ input:
   pfs:
     name: IN_PATH
     repo: pressuretransducer_fill_date_gaps_and_regularize
-    glob: /pressuretransducer/(*)/(*)/(*)
+    glob: /pressuretransducer/(*)/(*)/(*)/(*)
 parallelism_spec:
-  constant: 2
+  constant: 20
 resource_requests:
   memory: 500MB
   cpu: 0.6

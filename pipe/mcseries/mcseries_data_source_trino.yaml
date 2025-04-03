@@ -2,7 +2,7 @@
 pipeline:
   name: mcseries_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-27de589
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.0.0
   cmd:
   - sh
   - "-c"
@@ -130,14 +130,14 @@ parallelism_spec:
   constant: 10
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 0.7
+  memory: 600M
+  cpu: 1
 resource_limits:
-  memory: 800M
+  memory: 1G
   cpu: 1.5
 sidecar_resource_requests:
   memory: 2G
-  cpu: 0.2
+  cpu: 0.5
 datum_set_spec:
   number: 1
 scheduling_spec:

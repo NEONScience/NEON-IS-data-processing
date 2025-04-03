@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 from contextlib import closing
-from typing import List
+from typing import List, Tuple
 
 from geojson import Point, Polygon, Feature, FeatureCollection
 
 import common.date_formatter as date_formatter
+from data_access.get_named_location_parents import get_named_location_parents
+from data_access.get_named_location_properties import get_named_location_properties
 from data_access.get_geolocation_properties import get_geolocation_properties
 from data_access.db_connector import DbConnector
+from data_access.types.property import Property
 
 
 def get_named_location_geolocations(connector: DbConnector, named_location_id: int) -> FeatureCollection:
@@ -74,6 +77,9 @@ def get_named_location_geolocations(connector: DbConnector, named_location_id: i
                 # build the reference feature
                 reference_location_properties = dict(name=named_location_offset_name, locations=reference_locations)
                 reference_feature = Feature(geometry=None, properties=reference_location_properties)
+            else:
+               location_properties.extend(get_named_location_properties(connector, named_location_offset_id))
+
             properties = dict(start_date=start_date,
                               end_date=end_date,
                               alpha=alpha,

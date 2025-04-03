@@ -2,7 +2,7 @@
 pipeline:
   name: ONEOFF_level0_bucket_compact
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-33a37dd
   cmd:
   - sh
   - "-c"
@@ -44,7 +44,7 @@ transform:
     
   env:
     BASE_PATH: /pfs/LEVEL0_PATH # This first part of the input path will drop when writing the bucket
-    BUCKET_VERSION_PATH: v2 # No beginning slash
+    BUCKET_VERSION_PATH: v2 # No beginning slash. Base directory in the bucket where to put the compacted files. 
     
 
   secrets:
