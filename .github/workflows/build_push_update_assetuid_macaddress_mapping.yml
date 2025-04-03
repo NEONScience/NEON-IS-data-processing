@@ -5,7 +5,7 @@ on:
     # branches:
     #   - 'master'
     tags:
-      - "assetuid_macaddress_mapping/v*.*.*"
+      - "assetuid_macaddress_mapping_loader/v*.*.*"
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 --match=assetuid_macaddress_mapping/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=assetuid_macaddress_mapping_loader/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
