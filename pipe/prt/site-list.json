@@ -84,11 +84,6 @@
 	"kafka_start_date" : "2023-06-15"
 	},
 	{
-	"site" : "MDP2",
-	"start_date" : "2025-03-26",
-	"kafka_start_date" : "2025-03-26"
-	},
-	{
 	"site" : "MD00",
 	"start_date" : "2017-07-18",
 	"end_date" : "2017-08-23"
@@ -111,6 +106,11 @@
 	{
 	"site" : "MD04",
 	"start_date" : "2025-03-26"
+	},
+	{
+	"site" : "MDP2",
+	"start_date" : "2025-03-26",
+	"kafka_start_date" : "2025-03-26"
 	},
 	{
 	"site" : "MLBS",

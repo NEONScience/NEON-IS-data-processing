@@ -60,10 +60,6 @@
 	"kafka_start_date" : "2023-06-01"
 	},
 	{
-	"site" : "HQTW",
-	"kafka_start_date" : "2023-06-01"
-	},
-	{
 	"site" : "JERC",
 	"kafka_start_date" : "2023-03-09"
 	},
@@ -106,6 +102,15 @@
 	"site" : "MD03",
 	"start_date" : "2022-04-08",
 	"end_date" : "2022-05-11"
+	},
+	{
+	"site" : "MD04",
+	"start_date" : "2025-03-26"
+	},
+	{
+	"site" : "MDP2",
+	"start_date" : "2025-03-26",
+	"kafka_start_date" : "2025-03-26"
 	},
 	{
 	"site" : "MLBS",

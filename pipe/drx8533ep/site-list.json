@@ -4,10 +4,6 @@
 	"kafka_start_date" : "2022-12-30"
 	},
 	{
-	"site" : "HQTW",
-	"kafka_start_date" : "2023-06-01"
-	},
-	{
 	"site" : "MOAB",
 	"kafka_start_date" : "2023-05-24"
 	},
