@@ -21,9 +21,9 @@ input:
   pfs:
     name: DATA_PATH
     repo: pluvio_data_source_kafka
-    glob: /pluvio_raw/*/*/*/*
+    glob: /pluvio_raw/*/*/*
 parallelism_spec:
-  constant: 10
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 500M
