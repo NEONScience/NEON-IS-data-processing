@@ -39,7 +39,7 @@ transform:
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out
     KAFKA_RETENTION_DAYS: "15"
-    BUCKET_VERSION_PATH: "v1"  # The root path of the bucket, indicative of the version (e.g. v2)
+    BUCKET_VERSION_PATH: "v2"  # The root path of the bucket, indicative of the version (e.g. v2)
     SOURCE_TYPE_INDEX: "4"
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"

@@ -41,17 +41,17 @@ input:
     repo: mti300ahrs_data_location_group
     glob: /mti300ahrs/*/*/*
 parallelism_spec:
-  constant: 1
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 2G
+  memory: 5G
   cpu: 1.5
 resource_limits:
-  memory: 6G
+  memory: 7G
   cpu: 2.5
 sidecar_resource_requests:
   memory: 3G
-  cpu: 0.5
+  cpu: 1.5
 datum_set_spec:
   number: 1
 scheduling_spec:
