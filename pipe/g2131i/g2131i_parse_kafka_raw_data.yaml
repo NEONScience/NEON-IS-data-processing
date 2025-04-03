@@ -2,7 +2,7 @@
 pipeline:
   name: g2131i_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-1596778
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:v4.3.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
