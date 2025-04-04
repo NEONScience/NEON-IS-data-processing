@@ -1,22 +1,13 @@
 ---
 pipeline:
-  name: metone370380_event_data_source_kafka
+  name: nadp127tm_data_source_kafka
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.4.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "metone370380"
-    TOPIC_CENTRAL: "event.rtu"
-    # SOURCE_TYPE: "nr01"
-    # TOPIC_CENTRAL: "event.rtu"
-    # SOURCE_TYPE: "hfp01sc"
-    # TOPIC_CENTRAL: "event.rtu"
-    # SOURCE_TYPE: "soil"
-    # TOPIC_CENTRAL: "event.cnc"
-    DATATYPE_DIR: "event"
-    OUTFILETYPE: "parquet" # parquet recommended
+    SOURCE_TYPE: "nadp127tm"
     LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
@@ -61,7 +52,7 @@ transform:
     meta=$(curl -sH "Metadata-Flavor: Google" "http://metadata/computeMetadata/v1/instance/zone")
     zone=$(echo $meta | cut -d "/" -f 4)
     echo $zone
-
+    
     # Get today's date for evaluating kafka data retention period
     date_today=$(date -u +%Y-%m-%d)
     kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
@@ -92,7 +83,7 @@ transform:
       elif [ "$(date -u +%s -d "$date_str")" -lt "$(date -u +%s -d "$kafka_min_date")" ]
       then
         echo -n "Cannot extract $date_str Kafka data for $site. "
-        echo -n "Date ($date_str) is beyond the Kafka retention period ($KAFKA_RETENTION_DAYS days). Skipping..."
+        echo -n "Today's date ($date_today) is beyond the Kafka retention period ($KAFKA_RETENTION_DAYS days). Skipping..."
         continue
       fi
       
@@ -101,80 +92,64 @@ transform:
       
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
-      ./extract-kafka-event.py -s $site -S $SOURCE_TYPE -t $TOPIC_CENTRAL -D "$OUT_PATH/$SOURCE_TYPE" -T $DATATYPE_DIR -F "$OUTFILETYPE" -d $date_str --only current --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
       
       # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-      ./extract-kafka-event.py -s $site -S $SOURCE_TYPE -t $TOPIC_CENTRAL -D "$OUT_PATH/$SOURCE_TYPE" -T $DATATYPE_DIR -F "$OUTFILETYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
-      echo "Finished extracting"
-
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      
       sites_output+=($site)
 
     done
-
+    
     # Upload L0 files to bucket, compacting with any existing file with the same name
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
-      out_parquet_glob="${OUT_PATH}/**/*.${OUTFILETYPE}"
-      # /pfs/out/metone370380/2023/01/01/12345/data/file.json
+      out_parquet_glob="${OUT_PATH}/**/*.parquet"
+      # /pfs/out/nadp127tm/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for troubleshooting
+      # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
         # Parse the path
-        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/$DATATYPE_DIR/(.*)$ ]]
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
         fsourcetype="${BASH_REMATCH[1]}"
         fyear="${BASH_REMATCH[2]}"
         fmonth="${BASH_REMATCH[3]}"
         fday="${BASH_REMATCH[4]}"
         fsourceid="${BASH_REMATCH[5]}"
         fname="${BASH_REMATCH[6]}"
-        fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.${OUTFILETYPE}"  # Remove offsets from the filename
+        fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
         outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
         mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname_out}"
         
-        # Upload to bucket
-        if [[ "${OUTFILETYPE}" == "parquet" ]]; then
-          ln -s "${f}" "${outdir}/${fname_out}"
-          ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
-        else
-          echo "Syncing files to bucket with rclone (not using compactor)"
-          ln -s "${f}" "${outdir}/${fname}"
-          rclone \
-            --no-check-dest \
-            --copy-links \
-            --gcs-bucket-policy-only \
-            --gcs-no-check-bucket \
-            copy \
-            "${linkdir}" \
-            ":gcs://${BUCKET_NAME}"
-        fi
-        
+        # Upload to bucket, compacting with any existing file 
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
         rm -rf "${outdir}"
       done
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
-        echo "De-activated! Not running Airflow trigger table update for $site_output."
-        # ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
+        ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
       done
 
-      # set +x # Uncomment for troubleshooting
+      # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi
     EOF
 input:
   pfs:
     name: import_trigger
-    repo: metone370380_cron_daily_and_date_control
+    repo: nadp127tm_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/metone370380/*/*/*"
+    glob: "/nadp127tm/*/*/*"
 parallelism_spec:
-  constant: 1
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 300M
-  cpu: 1.3
+  cpu: 1.6
 resource_limits:
   memory: 1.5G
   cpu: 2

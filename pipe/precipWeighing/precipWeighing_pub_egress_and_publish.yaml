@@ -41,6 +41,7 @@ transform:
       echo "============ Done for non-MDP sites"
     else
       echo "No pub output to egress"
+    fi
     # 
     # Do the same for MDP sites if mdp sites exists in the output
     # Check to see if the output need to be sent to the staging or not
