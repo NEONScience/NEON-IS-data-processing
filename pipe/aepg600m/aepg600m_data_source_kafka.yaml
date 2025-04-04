@@ -127,6 +127,7 @@ transform:
         ln -s "${f}" "${outdir}/${fname_out}"
         
         # Upload to bucket, compacting with any existing file 
+        echo "De-activated! Not running Airflow trigger table update for $site_output."
         ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
         rm -rf "${outdir}"
       done
