@@ -143,7 +143,7 @@ transform:
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
-        # ./update-trigger-table.py.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
+        # ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
       done
 
       # set +x # Uncomment for troubleshooting
