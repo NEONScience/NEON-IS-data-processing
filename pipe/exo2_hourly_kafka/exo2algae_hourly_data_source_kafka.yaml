@@ -1,13 +1,13 @@
 ---
 pipeline:
-  name: l2130i_raw_data_source_kafka
+  name: exo2algae_hourly_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.2.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.4.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "l2130i_raw"
+    SOURCE_TYPE: "exo2algae_hourly"
     LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
@@ -75,7 +75,7 @@ transform:
       
       # We are ok to run
       echo "Extracting $date_str kafka data for $site"
-
+      
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
@@ -91,9 +91,9 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/l2130i_raw/2023/01/01/12345/data/file.parquet
+      # /pfs/out/exo2algae_hourly/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for troubleshooting
+      # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -113,16 +113,16 @@ transform:
         rm -rf "${outdir}"
       done
       
-      # set +x # Uncomment for troubleshooting
+      # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi
     EOF
 input:
   pfs:
     name: import_trigger
-    repo: l2130i_raw_cron_daily_and_date_control
+    repo: exo2_hourly_kafka_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/l2130i_raw/*/*/*"
+    glob: "/exo2_hourly/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
