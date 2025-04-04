@@ -1,4 +1,4 @@
-name: "Build-push-update_calval_loader"
+name: "Build-push-update_assetuid_macaddress_mapping"
 
 on:
   push:
@@ -41,7 +41,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
-   #       ref: 'master'
+  #        ref: 'master'
           fetch-depth: '0'
 
       - name: Get short SHA
