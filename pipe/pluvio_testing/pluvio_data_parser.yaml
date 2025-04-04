@@ -1,17 +1,16 @@
 pipeline:
   name: pluvio_data_parser
 transform:
-  image_pull_secrets:
-    - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser-pluvio:v3.5.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:v4.3.0
   cmd:
     - /bin/bash
   stdin:
     - '#!/bin/bash'
-    - python3 -m pluvio_data_parser.data_parser_main
+    - python3 -m raw_data_parser.data_parser_main
   env:
-    PARSED_START_INDEX: "3"
-    PARSED_END_INDEX: "16"
+    # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
+    # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
+    #   skip first 3 fields (source_id, site_id, readout_time) in parsed schema
     LOG_LEVEL: INFO 
     OUT_PATH: /pfs/out 
     PARSE_FIELD: serial_output
