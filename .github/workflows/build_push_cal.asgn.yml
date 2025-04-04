@@ -5,7 +5,7 @@ on:
     # branches:
     #   - 'master'
     tags:
-      - "calval_loader/v*.*.*"
+      - "assetuid_macaddress_mapping_loader/v*.*.*"
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -24,8 +24,8 @@ env:
   # REPO_NAME: ${{ github.event.repository.name }}
   REPO_NAME: neon-is-data-processing
   # IS module name
-  MODULE_PATH: ./modules/calval_loader
-  IMAGE_NAME: neon-is-cval-loader
+  MODULE_PATH: ./modules/assetuid_macaddress_mapping_loader
+  IMAGE_NAME: neon-is-asset-mac-map
 
 jobs:
   build-push-update:
@@ -48,7 +48,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 --match=calval_loader/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=assetuid_macaddress_mapping_loader/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update

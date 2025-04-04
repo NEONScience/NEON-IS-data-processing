@@ -8,20 +8,20 @@ on:
       - "assetuid_macaddress_mapping_loader/v*.*.*"
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # Use github and google registries
   GHCR_REGISTRY: ghcr.io
+  # GHCR_NS, i.e, NEONSciene, in lowercase
+  # GHCR_NS: ${{ github.repository_owner }}
+  GHCR_NS: ${{ vars.SHARED_WIF_REPO }}
   GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
   GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
   GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
   GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
-  GHCR_NS: battelleecology
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  # IMAGE_NAME: ${{ github.repository }}
-  # Get just the repo name from the event, i.e., NEON-IS-data-processing
-  REPO_NAME: ${{ github.event.repository.name }}
+  # Get just the repo name from the event, i.e., NEON-IS-data-processing, in lowercase
+  # REPO_NAME: ${{ github.event.repository.name }}
+  REPO_NAME: neon-is-data-processing
   # IS module name
   MODULE_PATH: ./modules/assetuid_macaddress_mapping_loader
   IMAGE_NAME: neon-is-asset-mac-map
@@ -31,6 +31,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
         contents: 'write'
+        security-events: write
+        packages: write
         id-token: 'write'
         pull-requests: 'write'
 
