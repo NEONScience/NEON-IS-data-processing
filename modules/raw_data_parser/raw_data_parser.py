@@ -13,6 +13,7 @@ from raw_data_parser.parse_code import parse_code_dict
 
 log = get_logger()
 keep_columns = ['source_id', 'site_id', 'readout_time']
+drop_columns = ['kafka_key', 'kakfa_ts_type', 'kafka_ts', 'kafka_partition', 'kafka_offset', 'kafka_topic', 'ds']
 
 
 def parse_raw(source_type: str, parse_field: str, data_path: Path, out_path: Path,
@@ -25,6 +26,8 @@ def parse_raw(source_type: str, parse_field: str, data_path: Path, out_path: Pat
             log.debug(f'reading file {path}.')
             df = pd.read_parquet(path)
             log.debug(f'{df.columns}')
+            df.drop(columns=drop_columns, inplace=True)
+            log.debug(f'after drop kafka columns {df.columns}')
 
             if out_df.empty:
                 out_df = sensor_parse(df, source_type, parse_field)
@@ -44,19 +47,28 @@ def sensor_parse(df: pd.DataFrame, source_type: str, parse_field: str) -> pd.Dat
     parser = parse_code_dict.get(source_type)
 
     if source_type.lower() == 'li7200_raw':
-        # extract_and_rename(data_string: str, name_mapping: dict):
+        # li7200_raw parse_field data example: (Data (Ndx 116847692)(DiagVal 8191)... ...(CO2AWO 34252))(CH4Data )
         extracted_df = df[parse_field].apply(lambda x: extract_and_rename(x, parser))
         # Convert the series of dictionaries into a DataFrame
         extracted_df = pd.json_normalize(extracted_df)
+        return pd.concat([df[keep_columns], extracted_df], axis=1)
 
-        out_df = pd.concat([df[keep_columns], extracted_df], axis=1)
-        return out_df
+    elif source_type.lower() == 'g2131i_raw' or source_type.lower() == 'l2130i_raw':
+        # g2131i_raw parse_field data example: 2024-03-13 17:24:47.224;140.001;45.000;40.715;... ...;
+        # Split the string column into lists of floats
+        df[parse_field] = df[parse_field].apply(lambda x: x.split(';'))
+        # Extract and assign columns based on dictionary
+        for index, term in parser.items():
+            df[term] = df[parse_field].apply(lambda x: float(x[index]) if index < len(x) else None)
+        df.drop(columns=parse_field, inplace=True)
+        return df
+    else:
+        pass
 
 
 def extract_and_rename(data_string: str, name_mapping: dict) -> Dict:
     # Regular expression to find all (name number) pairs
     pattern = r'\((\w+)\s([\w\.\-:]+)\)'
-
     # Find all matches
     matches = re.findall(pattern, data_string)
     # Filter and rename based on the name_mapping dictionary
@@ -71,7 +83,6 @@ def extract_and_rename(data_string: str, name_mapping: dict) -> Dict:
     #             extracted_data[name_mapping[name]] = float(number)
     #         else:
     #             extracted_data[name_mapping[name]] = int(number)
-
     return extracted_data
 
 
