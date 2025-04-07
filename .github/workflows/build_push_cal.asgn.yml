@@ -1,11 +1,11 @@
-name: "Build-push-update_level1_consolidate"
+name: "Build-push-update_location_loader"
 
 on:
   push:
     # branches:
     #   - 'master'
     tags:
-      - "level1_consolidate/v*.*.*"
+      - "location_loader/v*.*.*"
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -24,8 +24,8 @@ env:
   # REPO_NAME: ${{ github.event.repository.name }}
   REPO_NAME: neon-is-data-processing
   # IS module name
-  MODULE_PATH: ./modules/level1_consolidate
-  IMAGE_NAME: neon-is-l1-consolidate
+  MODULE_PATH: ./modules/location_loader
+  IMAGE_NAME: neon-is-loc-loader
 
 jobs:
   build-push-update:
@@ -48,7 +48,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 --match=level1_consolidate/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=location_loader/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
