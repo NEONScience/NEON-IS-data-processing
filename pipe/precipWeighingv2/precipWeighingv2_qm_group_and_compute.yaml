@@ -36,6 +36,9 @@ transform:
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
       # Use unix-style glob pattern to select the desired directories in each repo 
+      ####################################
+      # NEEDS OUTER JOIN REMOVED TODO
+      ####################################
       input_paths:
         - path:
             name: QAQC_PLAUSIBILITY_PATH
@@ -43,6 +46,7 @@ transform:
             glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
             # Join on named location (already joined below by day)
             join_indices: [6]
+            outer_join: True
         - path:
             name: REGULARIZED_FLAGS_PATH
             # Filter for flags directory
@@ -50,7 +54,7 @@ transform:
             # Join on named location (already joined below by day
             join_indices: [6]
     OUT_PATH: /tmp/pfs/filter_joined
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
     PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
