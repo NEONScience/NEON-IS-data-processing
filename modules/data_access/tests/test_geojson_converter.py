@@ -45,9 +45,10 @@ class GeoJsonConverterTest(unittest.TestCase):
         location = Feature(properties=location_properties)
         location['prop1'] = 'value1'
         locations = FeatureCollection([location])
+        site_location = 'site_loc'
         asset_location = AssetLocation(name=name, domain=domain, site=site, install_date=install_datetime, 
                                        remove_date=remove_datetime, context=context_list, properties=properties, 
-                                       locations=locations)
+                                       site_location=site_location, locations=locations)
         feature = geojson_converter.convert_asset_location(asset_location)
         geojson_data = dumps(feature, indent=4, sort_keys=False, default=str)
         json_data = json.loads(geojson_data)
