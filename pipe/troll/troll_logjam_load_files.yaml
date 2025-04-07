@@ -2,7 +2,7 @@
 pipeline:
   name: troll_logjam_load_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.1.0
   cmd:
   - /bin/bash
   stdin:
