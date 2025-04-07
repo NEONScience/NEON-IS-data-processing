@@ -125,7 +125,7 @@ transform:
     DATA_PATH_PACKAGE_INDEX: "6"
     PRODUCTS: NEON.DOM.SITE.DP1.00098.001,NEON.DOM.SITE.DP1.20046.001,NEON.DOM.SITE.DP1.20271.001 # CAN BE MULTIPLE, COMMA-SEPARATED
     SITES: "all"  # CAN BE MULTIPLE, COMMA-SEPARATED array of NEON site codes. "all" will find all sites with pub records in the database.
-    PROD: "false"       # false for non-prod, true for prod      
+    PROD: "true"       # false for non-prod, true for prod      
     STAGING: "true"     # The default is true. 
 
   secrets:
