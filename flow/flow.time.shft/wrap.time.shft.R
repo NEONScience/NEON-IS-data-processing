@@ -33,6 +33,9 @@
 #' @param TimeShft numeric value. The amount of time to shift datums 
 #' 
 #' @param TimeShft character value. The unit of time shift
+#' #' 
+#' @param TimeShftDir character value. Constrained to Pos or Neg. Indicates direction of time shift. 
+#' eg Neg 5 mins would change 00:00:00 to 23:55:00
 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the data folder(s) in the input path that are to be copied with a symbolic link to the 
@@ -56,7 +59,7 @@
 #' DirIn <- '/scratch/pfs/pluvio_data_parser/pluvio/2023/03/02/27733'
 #' DirOutBase <- '/scratch/pfs/out'
 #' FileSchmL0 <- '~/R/avro_schemas/schemas/pluvio/pluvio_parsed.avsc' # L0 schema
-#' wrap.time.shft(DirIn,DirOutBase,FileSchmL0, TimeShft, TimeUnit)
+#' wrap.time.shft(DirIn,DirOutBase,FileSchmL0, TimeShft, TimeUnit, TimeShftDir)
 
 #' @seealso Currently none
 
@@ -69,6 +72,7 @@ wrap.time.shft <- function(DirIn,
                            DirOutBase,
                            TimeShft,
                            TimeUnit,
+                           TimeShftDir,
                            DirSubCopy=NULL,
                            log=NULL
 ){
@@ -86,6 +90,12 @@ wrap.time.shft <- function(DirIn,
   #not robust to totally biffing the time unit # TODO
   if(!(TimeUnit %in% c( "secs", "mins", "hours","days", "weeks"))) {
     log$error('Time Shift Unit invalid, must be "secs", "mins", "hours","days" or "weeks"')
+    stop()
+  }
+  
+  #not robust to totally biffing the time unit # TODO
+  if(!(TimeShftDir %in% c( "Pos", "Neg"))) {
+    log$error('Time Shift direction invalid, must be "Pos" or "Neg"')
     stop()
   }
 
@@ -120,8 +130,9 @@ wrap.time.shft <- function(DirIn,
     log$warn('No manifest file. Cannot continue.')
     return()
   } else {
-    #### add an if for shift positive or negative TODO#######
-    dayExpc <- format(timeBgn + as.difftime(c(0,1), units = 'days'),format="%Y-%m-%d")
+    dayExpc <- base::ifelse(TimeShftDir == "Neg",
+      format(timeBgn + as.difftime(c(0,1), units = 'days'),format="%Y-%m-%d"),
+      format(timeBgn + as.difftime(c(-1,0), units = 'days'),format="%Y-%m-%d"))
     dayHave <- unlist(lapply(fileData,FUN=function(fileIdx){
       mtch <- regexec(pattern='[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}',fileIdx)[[1]]
       if(mtch != -1){
@@ -149,11 +160,21 @@ wrap.time.shft <- function(DirIn,
 
   #combine data, shift time 5 mins, pull out center day
   timeDiff <- as.difftime(TimeShft, units = TimeUnit)
-  ######## allow positive time shift TODO 
-  dataShift <- data %>% 
-    dplyr::arrange(readout_time) %>% 
-    dplyr::mutate(readout_time = readout_time - timeDiff) %>% 
-    dplyr::filter(base::as.Date(readout_time) == base::as.Date(timeBgn))
+
+  if (TimeShftDir == 'Neg'){
+      dataShift <- data %>% 
+        dplyr::arrange(readout_time) %>% 
+        dplyr::mutate(readout_time = readout_time - timeDiff) %>% 
+        dplyr::filter(base::as.Date(readout_time) == base::as.Date(timeBgn))
+  } else if (TimeShftDir == 'Pos'){
+      dataShift <- data %>% 
+        dplyr::arrange(readout_time) %>% 
+        dplyr::mutate(readout_time = readout_time + timeDiff) %>% 
+        dplyr::filter(base::as.Date(readout_time) == base::as.Date(timeBgn))
+  } else {
+    log$error("TimeShftDir must be Pos or Neg")
+    stop()
+  }
   
   #get file name based on date of data in directory
   nameFileOut <- fileData[base::which(base::grepl(fileData, pattern = base::as.Date(timeBgn)))]
