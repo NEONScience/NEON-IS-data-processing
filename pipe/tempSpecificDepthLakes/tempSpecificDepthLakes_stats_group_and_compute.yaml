@@ -1,0 +1,127 @@
+---
+pipeline:
+  name: tempSpecificDepthLakes_stats_group_and_compute
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    
+    # Run second module - basic stats
+    Rscript ./flow.stat.basc.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      "WndwAgr=001|030" \
+      "TermStat1=depth0WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat2=depth1WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat3=depth2WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat4=depth3WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat5=depth4WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat6=depth5WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat7=depth6WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat8=depth7WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat9=depth8WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat10=depth9WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" 
+    Rscript ./flow.data.comb.ts.R \
+        DirIn=/tmp/pfs/filter_joined \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        "DirComb=data|uncertainty_data" \
+        NameDirCombOut=stats \
+        NameVarTime=readout_time \
+        "ColKeep=readout_time|depth0WaterTemp|depth0WaterTemp_ucrtExpn|depth1WaterTemp|depth1WaterTemp_ucrtExpn|depth2WaterTemp|depth2WaterTemp_ucrtExpn|depth3WaterTemp|depth3WaterTemp_ucrtExpn|depth4WaterTemp|depth4WaterTemp_ucrtExpn|depth5WaterTemp|depth5WaterTemp_ucrtExpn|depth6WaterTemp|depth6WaterTemp_ucrtExpn|depth7WaterTemp|depth7WaterTemp_ucrtExpn|depth8WaterTemp|depth8WaterTemp_ucrtExpn|depth9WaterTemp|depth9WaterTemp_ucrtExpn|depth10WaterTemp|depth10WaterTemp_ucrtExpn" \
+        NameFileSufx=_basicStats_001
+    EOF
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      input_paths:
+        - path:
+            name: QAQC_PATH
+            # Filter for data & uncertainty_data directories
+            glob_pattern: /pfs/QAQC_PATH/*/*/*/*/*/*/data/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+        - path:
+            name: UNCERTAINTY_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/UNCERTAINTY_PATH/*/*/*/*/*/*/uncertainty*/**
+            # Join on named location (already joined below by day)
+            join_indices: [6]
+    OUT_PATH: /tmp/pfs/filter_joined
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '5' # Option for stats module
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_STATS
+      repo: tempSpecificDepthLakes_avro_schemas
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_stats.avsc
+  - pfs:
+      name: FILE_SCHEMA_STATS_INST
+      repo: tempSpecificDepthLakes_avro_schemas
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_stats_instantaneous.avsc
+  - join:
+    - pfs:
+        name: QAQC_PATH
+        repo: tempSpecificDepthLakes_analyze_pad_and_qaqc_plau
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: UNCERTAINTY_PATH
+        repo: tempSpecificDepthLakes_group_path
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+resource_requests: 
+  memory: 1.8G
+  cpu: 6
+resource_limits:
+  memory: 3G
+  cpu: 7
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+autoscaling: true
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
