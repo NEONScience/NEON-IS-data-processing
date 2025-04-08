@@ -11,7 +11,7 @@ transform:
   - '#!/bin/bash'
   - python3 -m group_path.group_path_main
   env:
-    GROUP: temp-specific-depth-lakes_
+    GROUP: temp-specific-depths-lakes_
     LOG_LEVEL: INFO
     OUT_PATH: /pfs/out    
     # ERR_PATH can be changed, it is user specified
@@ -39,7 +39,7 @@ input:
       # name must be GROUP_ASSIGNMENT_PATH
       name: GROUP_ASSIGNMENT_PATH
       repo: tempSpecificDepthLakes_group_assignment
-      glob: /temp-specific-depth-lakes/(*/*/*)
+      glob: /temp-specific-depths-lakes/(*/*/*)
       joinOn: $1
   - union: 
     - pfs:

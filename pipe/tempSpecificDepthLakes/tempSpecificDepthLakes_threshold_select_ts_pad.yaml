@@ -34,7 +34,7 @@ transform:
       "TermCtxt9=depth8WaterTemp" \
       "TermCtxt10=depth9WaterTemp" \
       "TermCtxt11=depth10WaterTemp" \
-      "DirSubCopy=location|data|uncertainty_data|uncertainty_coef|flags"
+      "DirSubCopy=location|data"
     
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
     cp -rL /tmp/threshold_select /tmp/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output) 
