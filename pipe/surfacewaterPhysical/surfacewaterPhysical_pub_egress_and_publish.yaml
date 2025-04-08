@@ -145,10 +145,13 @@ input:
     - pfs: 
         name: DATA_PATH
         repo: surfacewaterPhysical_pub_format_and_package
-        # Glob must be at each intended pub datum (i.e. each site/year/month), grouped by month
-        glob: /*/*/(*/*)
-        joinOn: $1
-        group_by: $1
+        # Glob must be at each intended pub datum (i.e. each product/site/year/month), grouped by month
+        # glob: /*/*/(*/*)
+        # joinOn: $1
+        # group_by: $1
+        glob: /*/(ARIK|BARC|BIGC|BLDE|BLUE|BLWA|CARI|COMO|CRAM|CUPE|FLNT|GUIL|HOPB|KING|LECO|LEWI|LIRO|MART|MAYF|MCDI|MCRA|OKSR|POSE|PRIN|PRLA|PRPO|REDB|SUGG|SYCA|TECR|TOMB|TOOK|WALK|WLOU)/(*/*)
+        joinOn: $2
+        group_by: $2
     - pfs: 
         name: DATE_PATH
         repo: surfacewaterPhysical_cron_monthly_and_pub_control
