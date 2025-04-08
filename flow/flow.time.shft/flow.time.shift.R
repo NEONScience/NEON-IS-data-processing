@@ -91,6 +91,8 @@
 ##############################################################################################
 library(foreach)
 library(doParallel)
+library(magrittr)
+library(dplyr)
 
 # Source the wrapper function. Assume it is in the working directory
 source("./wrap.time.shft.R")
@@ -120,7 +122,9 @@ Para <-
                      "DirIn", 
                      "DirOut", 
                      "DirErr",
-                     "FileSchmL0" 
+                     "FileSchmL0",
+                     "TimeShft",
+                     "TimeUnit"
                      ),
     NameParaOptn = c(
                      "DirSubCopy"
@@ -135,7 +139,6 @@ Para <-
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
-
 
 # Retrieve L0 data schema
 FileSchmL0 <- Para$FileSchmL0
@@ -168,7 +171,6 @@ DirIn <-
   NEONprocIS.base::def.dir.in(DirBgn = Para$DirIn,
                               nameDirSub =  nameDirSub,
                               log = log)
-
 
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)

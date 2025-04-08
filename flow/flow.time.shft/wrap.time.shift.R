@@ -1,5 +1,5 @@
 ##############################################################################################
-#' @title Combine calibration group and convert output and shift time
+#' @title Combine padded data output and shift time
 
 #' @author
 #' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
@@ -22,9 +22,11 @@
 #' SOURCETYPE_SOURCEID_YYYY-MM-DD.parquet
 #' 
 #' For example:
-#' Input path = /scratch/pfs/pluvio_data_source_kafka/pluvio/2023/03/01/11346/data/ with nested files:
+#' Input path = /scratch/pfs/pluvio_data_parser/pluvio/2023/04/02/11346/data/ with nested files:
 #'    pluvio_55221_2025-04-01.parquet
 #'    pluvio_55221_2025-04-02.parquet
+#'    pluvio_55221_2025-04-03.parquet
+#'    manifest.txt
 #'
 #'
 #' @param FileSchmL0 String. Optional. Full or relative path to L0 schema file. One of FileSchmL0 or SchmL0 must be 
@@ -49,7 +51,7 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #'
-#' @return A repository in DirOutBase containing the merged and filtered Kafka output, where DirOutBase replaces BASE_REPO 
+#' @return A repository in DirOutBase containing the time shifted l0 output, where DirOutBase replaces BASE_REPO 
 #' of argument \code{DirIn} but otherwise retains the child directory structure of the input path. 
 #'
 #' @references
@@ -59,10 +61,10 @@
 
 #' @examples 
 #' # NOT RUN
-#' DirIn <- '/scratch/pfs/pluvio_data_source_kafka/pluvio/2023/03/02/27733'
+#' DirIn <- '/scratch/pfs/pluvio_data_parser/pluvio/2023/03/02/27733'
 #' DirOutBase <- '/scratch/pfs/out'
 #' FileSchmL0 <- '~/R/avro_schemas/schemas/pluvio/pluvio_parsed.avsc' # L0 schema
-#' wrap.time.shft(DirIn,DirOutBase,FileSchmL0)
+#' wrap.time.shft(DirIn,DirOutBase,FileSchmL0, TimeShft, TimeUnit)
 
 #' @seealso Currently none
 
@@ -86,13 +88,13 @@ wrap.time.shft <- function(DirIn,
     log <- NEONprocIS.base::def.log.init()
   } 
   
-  if(!(is.numeric(TimeShift) | is.integer(TimeShift))){
-    log$error(base::paste0('TimeShift must be a numeric or integer unit to proceed')) 
-    stop()
+  if(!(is.numeric(TimeShft) | is.integer(TimeShft))){
+    TimeShft <- as.numeric(TimeShft)
+    log$debug(base::paste0('TimeShft changed to numeric')) 
   }
   
-  if(!(is.numeric(TimeShift) | is.integer(TimeShift))){
-    log$error(base::paste0('TimeShift must be a numeric or integer unit to proceed')) 
+  if(!(is.numeric(TimeShft) | is.integer(TimeShft))){
+    log$error(base::paste0('TimeShft must be a numeric or integer unit to proceed')) 
     stop()
   }
   
@@ -104,6 +106,7 @@ wrap.time.shft <- function(DirIn,
 
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
+  timeBgn <- InfoDirIn$time
   dirInData <- fs::path(DirIn,'data')
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutData <- fs::path(dirOut,'data')
@@ -165,15 +168,17 @@ wrap.time.shft <- function(DirIn,
                                             log=log)
 
   #combine data, shift time 5 mins, pull out center day
-  timeDiff <- as.difftime(TimeShift, units = TimeUnit)
+  timeDiff <- as.difftime(TimeShft, units = TimeUnit)
   
-  dataShift <- dplyr::bind_rows(data, dataPrev, dataNext) %>% 
+  dataShift <- data %>% 
     dplyr::arrange(readout_time) %>% 
     dplyr::mutate(readout_time = readout_time - timeDiff) %>% 
     dplyr::filter(base::as.Date(readout_time) == base::as.Date(timeBgn))
   
-
-  # Write out the combined dataset to file
+  #get file name based on date of data in directory
+  nameFileOut <- fileData[base::which(base::grepl(fileData, pattern = base::as.Date(timeBgn)))]
+  
+  # Write out the time shifted dataset to file
   fileOut <- fs::path(dirOutData,nameFileOut)
   
   rptWrte <-
