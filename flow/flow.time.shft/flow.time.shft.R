@@ -122,7 +122,6 @@ Para <-
                      "DirIn", 
                      "DirOut", 
                      "DirErr",
-                     "FileSchmL0",
                      "TimeShft",
                      "TimeUnit"
                      ),
@@ -131,6 +130,7 @@ Para <-
                      ),
     ValuParaOptn = list(
                     ),
+    TypePara=list(TimeShft="numeric"),
     log = log
   )
 
@@ -140,17 +140,6 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-# Retrieve L0 data schema
-FileSchmL0 <- Para$FileSchmL0
-log$debug(base::paste0('L0 data schema: ',FileSchmL0))
-
-# Read in the schema 
-if(base::is.null(FileSchmL0) || FileSchmL0 == 'NA'){
-  log$fatal("L0 schema must be input")
-  stop()
-} else {
-  SchmL0 <- base::paste0(base::readLines(FileSchmL0),collapse='')
-}
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
@@ -185,7 +174,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         DirOutBase=Para$DirOut,
         TimeShft = Para$TimeShft,
         TimeUnit = Para$TimeUnit,
-        SchmL0=SchmL0,
         DirSubCopy=DirSubCopy,
         log=log
         ),

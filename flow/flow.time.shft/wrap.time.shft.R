@@ -28,14 +28,6 @@
 #'    pluvio_55221_2025-04-03.parquet
 #'    manifest.txt
 #'
-#'
-#' @param FileSchmL0 String. Optional. Full or relative path to L0 schema file. One of FileSchmL0 or SchmL0 must be 
-#' provided.
-#' 
-#' @param SchmL0 String. Optional. Json formatted string of the AVRO L0 file schema. One of FileSchmL0 or SchmL0 must 
-#' be provided. If both SchmL0 and FileSchmL0 are provided, SchmL0 will be ignored.
-#' 
-#'  
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
 #' @param TimeShft numeric value. The amount of time to shift datums 
@@ -77,8 +69,6 @@ wrap.time.shft <- function(DirIn,
                            DirOutBase,
                            TimeShft,
                            TimeUnit,
-                           FileSchmL0=NULL,
-                           SchmL0=NULL,
                            DirSubCopy=NULL,
                            log=NULL
 ){
@@ -88,19 +78,14 @@ wrap.time.shft <- function(DirIn,
     log <- NEONprocIS.base::def.log.init()
   } 
   
-  if(!(is.numeric(TimeShft) | is.integer(TimeShft))){
-    TimeShft <- as.numeric(TimeShft)
-    log$debug(base::paste0('TimeShft changed to numeric')) 
-  }
-  
-  if(!(is.numeric(TimeShft) | is.integer(TimeShft))){
+  if(!(is.numeric(TimeShft) | is.na(TimeShft))){
     log$error(base::paste0('TimeShft must be a numeric or integer unit to proceed')) 
     stop()
   }
   
   #not robust to totally biffing the time unit # TODO
-  if(!stringr::str_detect(TimeUnit, 'min|Min|hour|Hour|sec|Sec|day|Day')) {
-    log$error('Time Shift Unit invalid, must be seconds, minutes, hours or days')
+  if(!(TimeUnit %in% c( "secs", "mins", "hours","days", "weeks"))) {
+    log$error('Time Shift Unit invalid, must be "secs", "mins", "hours","days" or "weeks"')
     stop()
   }
 
@@ -124,11 +109,6 @@ wrap.time.shft <- function(DirIn,
                                        log=log)
   }    
   
-  # Get the fields in the L0 schema. We will include only these fields in the output
-  varSchmL0 <- NEONprocIS.base::def.schm.avro.pars(FileSchm=FileSchmL0,
-                                                  Schm=SchmL0,
-                                                  log=log
-  )$var
 
   # Take stock of our data files. 
   fileData <-  base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
@@ -140,7 +120,8 @@ wrap.time.shft <- function(DirIn,
     log$warn('No manifest file. Cannot continue.')
     return()
   } else {
-    dayExpc <- base::readLines(fileManifest)
+    #### add an if for shift positive or negative TODO#######
+    dayExpc <- format(timeBgn + as.difftime(c(0,1), units = 'days'),format="%Y-%m-%d")
     dayHave <- unlist(lapply(fileData,FUN=function(fileIdx){
       mtch <- regexec(pattern='[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}',fileIdx)[[1]]
       if(mtch != -1){
@@ -162,14 +143,13 @@ wrap.time.shft <- function(DirIn,
 
   # Read, combine, filter, and sort the dataset 
   data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
-                                            Var=varSchmL0$name,
                                             VarTime='readout_time',
                                             Df=TRUE, 
                                             log=log)
 
   #combine data, shift time 5 mins, pull out center day
   timeDiff <- as.difftime(TimeShft, units = TimeUnit)
-  
+  ######## allow positive time shift TODO 
   dataShift <- data %>% 
     dplyr::arrange(readout_time) %>% 
     dplyr::mutate(readout_time = readout_time - timeDiff) %>% 
