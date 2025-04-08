@@ -144,10 +144,13 @@ input:
     - pfs: 
         name: DATA_PATH
         repo: parQuantumLine_pub_format_and_package
-        # Glob must be at each intended pub datum (i.e. each site/year/month), grouped by month
-        glob: /*/*/(*/*)
-        joinOn: $1
-        group_by: $1
+        # Glob must be at each intended pub datum (i.e. each product/site/year/month), grouped by month
+        # glob: /*/*/(*/*)
+        # joinOn: $1
+        # group_by: $1
+        glob: /*/(ABBY|BARR|BART|BLAN|BONA|CLBJ|CPER|DCFS|DEJU|DELA|DSNY|GRSM|GUAN|HARV|HEAL|JERC|JORN|KONA|KONZ|LAJA|LENO|MLBS|MOAB|NIWO|NOGP|OAES|ONAQ|ORNL|OSBS|PUUM|RMNP|SCBI|SERC|SJER|SOAP|SRER|STEI|STER|TALL|TEAK|TOOL|TREE|UKFS|UNDE|WOOD|WREF|YELL)/(*/*)
+        joinOn: $2
+        group_by: $2
     - pfs: 
         name: DATE_PATH
         repo: parQuantumLine_cron_monthly_and_pub_control
