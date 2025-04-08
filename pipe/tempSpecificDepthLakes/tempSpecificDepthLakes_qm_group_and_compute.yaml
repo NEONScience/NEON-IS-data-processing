@@ -96,9 +96,6 @@ transform:
       "GrpQfAlph10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempSpikeQF" \
       "GrpQfBeta10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF|depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempSpikeQF" \
       "GrpQfBetaIgnr10=depth9WaterTemp:depth9WaterTempNullQF|depth9WaterTempGapQF" \
-      "GrpQfAlph11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempSpikeQF" \
-      "GrpQfBeta11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF|depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempSpikeQF" \
-      "GrpQfBetaIgnr11=depth10WaterTemp:depth10WaterTempNullQF|depth10WaterTempGapQF" \
       "QfForc1=depth0WaterTempNullQF:1:depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempValidCalQF|depth0WaterTempSpikeQF:-1" \
       "QfForc2=depth1WaterTempNullQF:1:depth1WaterTempRangeQF|depth1WaterTempStepQF|depth1WaterTempValidCalQF|depth1WaterTempSpikeQF:-1" \
       "QfForc3=depth2WaterTempNullQF:1:depth2WaterTempRangeQF|depth2WaterTempStepQF|depth2WaterTempValidCalQF|depth2WaterTempSpikeQF:-1" \
@@ -108,8 +105,7 @@ transform:
       "QfForc7=depth6WaterTempNullQF:1:depth6WaterTempRangeQF|depth6WaterTempStepQF|depth6WaterTempValidCalQF|depth6WaterTempSpikeQF:-1" \
       "QfForc8=depth7WaterTempNullQF:1:depth7WaterTempRangeQF|depth7WaterTempStepQF|depth7WaterTempValidCalQF|depth7WaterTempSpikeQF:-1" \
       "QfForc9=depth8WaterTempNullQF:1:depth8WaterTempRangeQF|depth8WaterTempStepQF|depth8WaterTempValidCalQF|depth8WaterTempSpikeQF:-1" \
-      "QfForc10=depth9WaterTempNullQF:1:depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempValidCalQF|depth9WaterTempSpikeQF:-1" \
-      "QfForc11=depth10WaterTempNullQF:1:depth10WaterTempRangeQF|depth10WaterTempStepQF|depth10WaterTempValidCalQF|depth10WaterTempSpikeQF:-1"
+      "QfForc10=depth9WaterTempNullQF:1:depth9WaterTempRangeQF|depth9WaterTempStepQF|depth9WaterTempValidCalQF|depth9WaterTempSpikeQF:-1"
     EOF
   env:
     # Environment variables for filter-joiner
@@ -122,17 +118,17 @@ transform:
         - path:
             name: QAQC_PLAUSIBILITY_PATH
             # Filter for flags directory
-            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/tchain/*/flags/**
+            glob_pattern: /pfs/QAQC_PLAUSIBILITY_PATH/*/*/*/*/*/*/flags/**
             # Join on named location (already joined below by day)
-            join_indices: [3,4,5,6]
+            join_indices: [6]
         - path:
             name: REGULARIZED_FLAGS_PATH
             # Filter for flags directory
-            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/tchain/*/flags/**
+            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
             # Join on named location (already joined below by day)
-            join_indices: [3,4,5,6]
+            join_indices: [6]
     OUT_PATH: /tmp/pfs/filter_joined
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
@@ -150,14 +146,14 @@ input:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH
         repo: tempSpecificDepthLakes_analyze_pad_and_qaqc_plau
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        glob: /(*/*/*)
+        joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: REGULARIZED_FLAGS_PATH
         repo: tempSpecificDepthLakes_group_path
-        glob: /(*)/(*)/(*)
-        joinOn: $1/$2/$3
+        glob: /(*/*/*)
+        joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
