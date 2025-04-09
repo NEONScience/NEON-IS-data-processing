@@ -24,6 +24,7 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM \
       "WndwAgr=030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
@@ -66,6 +67,7 @@ transform:
       Tmi=001 \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
+      FileSchmQm=$FILE_SCHEMA_QM_INST \
       "GrpQfAlph1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempSpikeQF" \
       "GrpQfBeta1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF|depth0WaterTempRangeQF|depth0WaterTempStepQF|depth0WaterTempSpikeQF" \
       "GrpQfBetaIgnr1=depth0WaterTemp:depth0WaterTempNullQF|depth0WaterTempGapQF" \
@@ -133,19 +135,28 @@ transform:
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
 input:
-  join:
+  cross:
   - pfs:
-      name: QAQC_PLAUSIBILITY_PATH
-      repo: tempSpecificDepthLakes_analyze_pad_and_qaqc_plau
-      glob: /(*/*/*)
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      name: FILE_SCHEMA_QM
+      repo: tempSpecificDepthLakes_avro_schemas
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_quality_metrics.avsc
   - pfs:
-      name: REGULARIZED_FLAGS_PATH
-      repo: tempSpecificDepthLakes_group_path
-      glob: /(*/*/*)
-      joinOn: $1
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      name: FILE_SCHEMA_QM_INST
+      repo: tempSpecificDepthLakes_avro_schemas
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_quality_metrics_inst.avsc
+  - join:
+    - pfs:
+        name: QAQC_PLAUSIBILITY_PATH
+        repo: tempSpecificDepthLakes_analyze_pad_and_qaqc_plau
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: REGULARIZED_FLAGS_PATH
+        repo: tempSpecificDepthLakes_group_path
+        glob: /(*/*/*)
+        joinOn: $1
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
 autoscaling: true

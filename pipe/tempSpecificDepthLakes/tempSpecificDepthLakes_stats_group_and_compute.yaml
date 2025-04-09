@@ -25,6 +25,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       "WndwAgr=001|030" \
+      FileSchmStat=$FILE_SCHEMA_STATS \
       "TermStat1=depth0WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
       "TermStat2=depth1WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
       "TermStat3=depth2WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
@@ -33,8 +34,7 @@ transform:
       "TermStat6=depth5WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
       "TermStat7=depth6WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
       "TermStat8=depth7WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
-      "TermStat9=depth8WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
-      "TermStat10=depth9WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" 
+      "TermStat9=depth8WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" 
     Rscript ./flow.data.comb.ts.R \
         DirIn=/tmp/pfs/filter_joined \
         DirOut=/pfs/out \
@@ -42,7 +42,8 @@ transform:
         "DirComb=data|uncertainty_data" \
         NameDirCombOut=stats \
         NameVarTime=readout_time \
-        "ColKeep=readout_time|depth0WaterTemp|depth0WaterTemp_ucrtExpn|depth1WaterTemp|depth1WaterTemp_ucrtExpn|depth2WaterTemp|depth2WaterTemp_ucrtExpn|depth3WaterTemp|depth3WaterTemp_ucrtExpn|depth4WaterTemp|depth4WaterTemp_ucrtExpn|depth5WaterTemp|depth5WaterTemp_ucrtExpn|depth6WaterTemp|depth6WaterTemp_ucrtExpn|depth7WaterTemp|depth7WaterTemp_ucrtExpn|depth8WaterTemp|depth8WaterTemp_ucrtExpn|depth9WaterTemp|depth9WaterTemp_ucrtExpn|depth10WaterTemp|depth10WaterTemp_ucrtExpn" \
+        FileSchmComb=$FILE_SCHEMA_STATS_INST \
+        "ColKeep=readout_time|depth0WaterTemp|depth0WaterTemp_ucrtExpn|depth1WaterTemp|depth1WaterTemp_ucrtExpn|depth2WaterTemp|depth2WaterTemp_ucrtExpn|depth3WaterTemp|depth3WaterTemp_ucrtExpn|depth4WaterTemp|depth4WaterTemp_ucrtExpn|depth5WaterTemp|depth5WaterTemp_ucrtExpn|depth6WaterTemp|depth6WaterTemp_ucrtExpn|depth7WaterTemp|depth7WaterTemp_ucrtExpn|depth8WaterTemp|depth8WaterTemp_ucrtExpn|depth9WaterTemp|depth9WaterTemp_ucrtExpn" \
         NameFileSufx=_basicStats_001
     EOF
   env:
