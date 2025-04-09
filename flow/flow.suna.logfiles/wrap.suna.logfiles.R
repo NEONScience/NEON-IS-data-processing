@@ -70,86 +70,31 @@ wrap.suna.logfiles <- function(FileIn,
   }else if(any(grepl('Turbidity',log_file))){
     log$debug(base::paste0('skipping sonde file: ', FileIn))
     base::stop()
-  }else{
-    #find row where data actually starts
-    start<-which(grepl('Zeiss Coefficient',log_file$V2))+1
-    #figure out column order and standardize headers (sometimes differs based on log settings/ version)
-    col1<-log_file$V1[start-1]
-    col2<-log_file$V2[start-1]
-    col3<-log_file$V3[start-1]
-    col3<-substr(col3,1,14)
-    col4<-log_file$V4[start-1]
-    col4<-substr(col4,1,14)
-    col5<-log_file$V5[start-1]
-    col5<-substr(col5,1,14)
-    col6<-log_file$V6[start-1]
-    col6<-substr(col6,1,14)
+  }
+  # Find row where data actually starts
+  start<-which(grepl('Zeiss Coefficient',log_file$V2))+1
+  # Separate data and metadata
+  log_data<-log_file[start:(length(log_file)),]
+  log_metadata<-log_file[1:(start-1),2:6]
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
     
-    if(start>0){
-      log_data<-log_file[start:(length(log_file$V1)),1:6]
-      if(grepl('date', tolower(col1))){
-        colnames(log_data)[1]<-'readout_time'
-      }else{
-        log$error(base::paste0('File Error: No datetime column where expected in ', FileIn))
-      }
-      if(grepl('seconds', tolower(col2))){
-        colnames(log_data)[2]<-'seconds'
-      }else{
-        log$error(base::paste0('File Error: No seconds column where expected in ', FileIn))
-      }
-      if(grepl('pressure', tolower(col3))){
-        colnames(log_data)[3]<-'pressure'
-      }else if(grepl('temp', tolower(col3))){
-        colnames(log_data)[3]<-'temperature'
-      }else if(grepl('cond', tolower(col3))){
-        colnames(log_data)[3]<-'conductivity'
-      }else if(grepl('depth', tolower(col3))){
-        colnames(log_data)[3]<-'depth'
-      }else{
-        log$error(base::paste0('File Error: No expected streams present in column 3 of ', FileIn))
-      }
-      if(grepl('pressure', tolower(col4))){
-        colnames(log_data)[4]<-'pressure'
-      }else if(grepl('temp', tolower(col4))){
-        colnames(log_data)[4]<-'temperature'
-      }else if(grepl('cond', tolower(col4))){
-        colnames(log_data)[4]<-'conductivity'
-      }else if(grepl('depth', tolower(col4))){
-        colnames(log_data)[4]<-'depth'
-      }else{
-        log$error(base::paste0('File Error: No expected streams present in column 4 of ', FileIn))
-      }
-      if(!is.na(col5)){
-        if(grepl('cond', tolower(col5))){
-          colnames(log_data)[5]<-'conductivity'
-        }else if(grepl('pressure', tolower(col5))){
-          colnames(log_data)[5]<-'pressure'
-        }else if(grepl('temp', tolower(col5))){
-          colnames(log_data)[5]<-'temperature'
-        }else if(grepl('depth', tolower(col5))|grepl('elevation', tolower(col5))){
-          colnames(log_data)[5]<-'depth'
-        }else{
-          log$error(base::paste0('File Error: No expected streams present in column 5 of ', FileIn))
-        }
-      }
-      if(!is.na(col6)){
-        if(grepl('cond', tolower(col6))){
-          colnames(log_data)[6]<-'conductivity'
-        }else if(grepl('pressure', tolower(col6))){
-          colnames(log_data)[6]<-'pressure'
-        }else if(grepl('temp', tolower(col6))){
-          colnames(log_data)[6]<-'temperature'
-        }else if(grepl('depth', tolower(col6))|grepl('elevation', tolower(col6))){
-          colnames(log_data)[6]<-'depth'
-        }else{
-          log$error(base::paste0('File Error: No expected streams present in column 5 of ', FileIn))
-        }
-      }
-      log_data<-log_data[!is.na(log_data$readout_time),]
-      log_metadata<-log_file[1:start,]
-    }else{
-      log$error(base::paste0('File Error: No data in ', FileIn))
-    }
+  
+
+  
+  
     
     #check timezone. lot's of different styles... 
     if(any(grepl('Time Zone: ',log_metadata$V1))){
