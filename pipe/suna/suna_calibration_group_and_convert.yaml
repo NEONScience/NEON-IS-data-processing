@@ -125,7 +125,7 @@ input:
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_ARCHIVE
-        repo: suna_data_source_gcs
+        repo: suna_data_source_trino
         glob: /suna/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
