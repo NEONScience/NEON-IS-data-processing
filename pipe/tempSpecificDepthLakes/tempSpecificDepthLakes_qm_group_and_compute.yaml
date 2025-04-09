@@ -133,28 +133,19 @@ transform:
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
 input:
-  cross:
+  join:
   - pfs:
-      name: FILE_SCHEMA_QM
-      repo: tempSpecificDepthLakes_avro_schemas
-      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_quality_metrics.avsc
+      name: QAQC_PLAUSIBILITY_PATH
+      repo: tempSpecificDepthLakes_analyze_pad_and_qaqc_plau
+      glob: /(*/*/*)
+      joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
-      name: FILE_SCHEMA_QM_INST
-      repo: tempSpecificDepthLakes_avro_schemas
-      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_quality_metrics_inst.avsc
-  - join:
-    - pfs:
-        name: QAQC_PLAUSIBILITY_PATH
-        repo: tempSpecificDepthLakes_analyze_pad_and_qaqc_plau
-        glob: /(*/*/*)
-        joinOn: $1
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
-    - pfs:
-        name: REGULARIZED_FLAGS_PATH
-        repo: tempSpecificDepthLakes_group_path
-        glob: /(*/*/*)
-        joinOn: $1
-        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+      name: REGULARIZED_FLAGS_PATH
+      repo: tempSpecificDepthLakes_group_path
+      glob: /(*/*/*)
+      joinOn: $1
+      empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
   constant: 5
 autoscaling: true
