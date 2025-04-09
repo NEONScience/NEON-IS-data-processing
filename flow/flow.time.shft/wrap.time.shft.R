@@ -130,9 +130,11 @@ wrap.time.shft <- function(DirIn,
     log$warn('No manifest file. Cannot continue.')
     return()
   } else {
-    dayExpc <- base::ifelse(TimeShftDir == "Neg",
-      format(timeBgn + as.difftime(c(0,1), units = 'days'),format="%Y-%m-%d"),
-      format(timeBgn + as.difftime(c(-1,0), units = 'days'),format="%Y-%m-%d"))
+    if(TimeShftDir == "Neg"){
+      dayExpc <- format(timeBgn + as.difftime(c(0,1), units = 'days'),format="%Y-%m-%d")
+    } else if (TimeShftDir == "Pos"){
+      dayExpc <-format(timeBgn + as.difftime(c(-1,0), units = 'days'),format="%Y-%m-%d")
+    }
     dayHave <- unlist(lapply(fileData,FUN=function(fileIdx){
       mtch <- regexec(pattern='[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}',fileIdx)[[1]]
       if(mtch != -1){
