@@ -10,7 +10,7 @@ FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:v4.
 ARG MODULE_DIR="modules"
 ARG APP_DIR="timeseries_padder"
 ARG COMMON_DIR="common"
-ARG CONTAINER_APP_DIR="/usr/src"
+ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
