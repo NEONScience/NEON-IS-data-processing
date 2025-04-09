@@ -123,7 +123,8 @@ Para <-
                      "DirOut", 
                      "DirErr",
                      "TimeShft",
-                     "TimeUnit"
+                     "TimeUnit",
+                     "TimeShftDir"
                      ),
     NameParaOptn = c(
                      "DirSubCopy"
@@ -174,6 +175,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
         DirOutBase=Para$DirOut,
         TimeShft = Para$TimeShft,
         TimeUnit = Para$TimeUnit,
+        TimeShftDir = Para$TimeShftDir,
         DirSubCopy=DirSubCopy,
         log=log
         ),
