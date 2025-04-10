@@ -57,7 +57,7 @@ class L0toL0p:
             raise ValueError('defined LOCATION_LINK_TYPE must be either "SYMLINK" or "COPY". '
                              'If not defined, location directory will not be linked/copied to output.')
         self.out_file = ''
-        log_level: str = env.log_level('LOG_LEVEL', 'DEBUG')
+        log_level: str = env.str('LOG_LEVEL', 'DEBUG')
         log_config.configure(log_level)
 
     def data_conversion(self, filename) -> pd.DataFrame:
@@ -105,7 +105,7 @@ class L0toL0p:
                     self.get_dp_name(root, files)
                     # TODO
                     for filepath in hold_files.keys():
-                        out_df = self.read_files(filepath, hold_files[filepath], out_df)
+                        self.read_files(filepath, hold_files[filepath], out_df)
                 if self.location_link_type:
                     self.link_location(root, files)
                 continue
@@ -118,12 +118,14 @@ class L0toL0p:
                 if self.context_dp_map and not self.new_source_type_name:
                     hold_files[root] = files
                     continue
-                out_df = self.read_files(root, files, out_df)
+                self.read_files(root, files, out_df)
         if not out_df.empty and self.out_file:
             self.write_to_parquet(self.out_file, out_df)
 
-    def read_files(self, filepath: str, files: List, out_df: pd.DataFrame) -> pd.DataFrame:
+    def read_files(self, filepath: str, files: List, out_df: pd.DataFrame):
         for file in files:
+            if ".DS_Store" in file:
+                continue
             path = Path(filepath, file)
             if "flag" in str(path):
                 if out_df.empty:
@@ -139,7 +141,6 @@ class L0toL0p:
                 else:
                     out_df = pd.merge(self.data_conversion(path), out_df, how='inner', left_on=['readout_time'],
                                       right_on=['readout_time'])
-            return out_df
 
     @staticmethod
     def write_to_parquet(out_file: str, out_df: pd.DataFrame) -> None:
@@ -189,7 +190,7 @@ class L0toL0p:
         loc_ctxs = self.get_location_context(path, files)
         # TODO: all element of keys in list of loc_ctxs
         for key in self.context_dp_map.keys():
-            tmp_keys = key.replace(' ','').split(sep=',')
+            tmp_keys = key.replace(' ', '').split(sep=',')
             if all(ctx in loc_ctxs for ctx in tmp_keys):
                 self.new_source_type_name = self.context_dp_map[key]
                 return
