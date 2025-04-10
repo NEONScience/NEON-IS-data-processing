@@ -61,7 +61,8 @@ transform:
     Rscript ./flow.cal.conv.R  \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums 
+      DirErr=/pfs/out/errored_datums \
+      TermQf=accu_nrt
     EOF
   env:
     # Environment variables for filter-joiner.
@@ -118,7 +119,7 @@ input:
     #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
-        repo: pluvio_data_parser
+        repo: pluvio_time_shift
         glob: /pluvio/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
