@@ -5,7 +5,7 @@
 # docker build -t neon-is-data-parse-pad:latest -f ./modules_combined/parse_and_pad/Dockerfile .
 #
 ###
-FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-aca0a49
+FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-0529661
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="timeseries_padder"
@@ -24,4 +24,4 @@ COPY ${MODULE_DIR}/${COMMON_DIR} ${CONTAINER_APP_DIR}/${COMMON_DIR}
 
 
 
-USER appuser
+# USER appuser
