@@ -46,14 +46,10 @@ def load() -> None:
                         avro_schema_name = get_avro_schema_name(connector.get_connection(), asset_id)
                         if ((avro_schema_name != None) and (avro_schema_name in sensor_type)):
                             stream_id = root.find('StreamCalVal').find('StreamID').text
-                            print('schema name , asset_id, stream_id, filename are :', avro_schema_name, "  ", asset_id,
-                                  "  ",
-                                  stream_id, " ", filename)
                             stream_name = get_calibration_stream_name(connector.get_connection(), avro_schema_name,
                                                                       stream_id)
-                            print('schema name , asset_id, stream_name, filename are :', avro_schema_name, "  ", asset_id,
-                                  "  ",
-                                  stream_name, " ", filename)
+                            print('schema name , asset_id, stream_id, stream_name, filename are :', avro_schema_name, "  ", asset_id,
+                                  "  ", stream_id, " ", stream_name, " ", filename)
                             try:
                                 output_path = Path(output_directory, avro_schema_name, asset_id, stream_name, filename)
                                 output_path.parent.mkdir(parents=True, exist_ok=True)
