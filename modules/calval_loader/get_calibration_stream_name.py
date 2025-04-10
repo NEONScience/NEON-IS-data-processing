@@ -28,6 +28,7 @@ def get_calibration_stream_name(connection, asset_type: str, stream_number: int)
         and 
             is_asset_definition.sensor_type_name = %(sensor_type_name)s
     '''
+    
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, dict(sensor_type_name=asset_type, stream_number=stream_number))
         row = cursor.fetchone()
@@ -36,5 +37,5 @@ def get_calibration_stream_name(connection, asset_type: str, stream_number: int)
             logging.error(f'Stream name not found for stream ID {stream_number} and asset type {asset_type}.')
             return None
         stream_name = row[0]
-        print(f'stream_name: {stream_name}')
+        print(f'asset_type: {asset_type}    stream_name: {stream_name}')
     return stream_name
