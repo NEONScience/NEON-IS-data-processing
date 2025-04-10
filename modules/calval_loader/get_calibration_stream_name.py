@@ -28,14 +28,13 @@ def get_calibration_stream_name(connection, asset_type: str, stream_number: int)
         and 
             is_asset_definition.sensor_type_name = %(sensor_type_name)s
     '''
-    print(f'Finding stream name for asset_type: {asset_type} and stream_number: {stream_number}')
+    # print(f'Finding stream name for asset_type: {asset_type} and stream_number: {stream_number}')
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, dict(sensor_type_name=asset_type, stream_number=stream_number))
         row = cursor.fetchone()
         if row is None:
-            print(f'Stream name not found for stream ID {stream_number} and asset type {asset_type}.')
             logging.error(f'Stream name not found for stream ID {stream_number} and asset type {asset_type}.')
             return None
         stream_name = row[0]
-        print(f'asset_type: {asset_type}    stream_name: {stream_name}')
+        # print(f'asset_type: {asset_type}    stream_name: {stream_name}')
     return stream_name
