@@ -28,7 +28,7 @@ def get_calibration_stream_name(connection, asset_type: str, stream_number: int)
         and 
             is_asset_definition.sensor_type_name = %(sensor_type_name)s
     '''
-    
+    print(f'Finding stream name for asset_type: {asset_type} and stream_number: {stream_number}')
     with closing(connection.cursor()) as cursor:
         cursor.execute(sql, dict(sensor_type_name=asset_type, stream_number=stream_number))
         row = cursor.fetchone()
