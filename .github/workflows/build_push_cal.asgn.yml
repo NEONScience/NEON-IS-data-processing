@@ -1,11 +1,11 @@
-name: "Build-push-update_NEONprocIS.qaqc"
+name: "Build-push-update_NEONprocIS.stat"
 
 on:
   push:
     # branches:
     #   - 'master'
     tags:
-      - "NEONprocIS.qaqc/v*.*.*"
+      - "NEONprocIS.stat/v*.*.*"
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -25,8 +25,8 @@ env:
   # REPO_NAME: ${{ github.event.repository.name }}
   REPO_NAME: neon-is-data-processing
   # IS module name
-  MODULE_PATH: ./pack/NEONprocIS.qaqc
-  IMAGE_NAME: neon-is-pack-qaqc-r
+  MODULE_PATH: ./pack/NEONprocIS.stat
+  IMAGE_NAME: neon-is-pack-stat-r
 
 jobs:
   build-push-update:
@@ -42,7 +42,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
- #        ref: 'master'
+  #        ref: 'master'
           fetch-depth: '0'
         # Note: must clone other repos AFTER checking out the repo where the action is run from. 
         # Otherwise, previously cloned repos are removed.
@@ -76,7 +76,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 --match=NEONprocIS.qaqc/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=NEONprocIS.stat/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
