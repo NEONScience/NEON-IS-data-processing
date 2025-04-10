@@ -1,9 +1,11 @@
-name: "Build-push-update_NEONprocIS.cal"
+name: "Build-push-update_NEONprocIS.pub"
 
 on:
   push:
+    # branches:
+    #   - 'master'
     tags:
-      - "NEONprocIS.cal/v*.*.*"
+      - "NEONprocIS.pub/v*.*.*"
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 env:
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
@@ -23,8 +25,8 @@ env:
   # REPO_NAME: ${{ github.event.repository.name }}
   REPO_NAME: neon-is-data-processing
   # IS module name
-  MODULE_PATH: ./pack/NEONprocIS.cal
-  IMAGE_NAME: neon-is-pack-cal-r
+  MODULE_PATH: ./pack/NEONprocIS.pub
+  IMAGE_NAME: neon-is-pack-pub-r
 
 jobs:
   build-push-update:
@@ -40,9 +42,8 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
-   #       ref: 'master'
+ #         ref: 'master'
           fetch-depth: '0'
-
         # Note: must clone other repos AFTER checking out the repo where the action is run from. 
         # Otherwise, previously cloned repos are removed.
       - name: "Clone avro"
@@ -75,7 +76,7 @@ jobs:
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Get semver
-        run:  echo "semver=$(git describe --tags --abbrev=0 --match=NEONprocIS.cal/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+        run:  echo "semver=$(git describe --tags --abbrev=0 --match=NEONprocIS.pub/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
 
       - name: Build push and update
         uses: ./.github/actions/build-push-update
