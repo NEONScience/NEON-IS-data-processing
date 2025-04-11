@@ -15,11 +15,11 @@ transform:
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/kafka_merged
     rm -rf $OUT_PATH_JOINER
-    rm -rf $OUT_PATH_ARRAY_PARSER
+    # rm -rf $OUT_PATH_ARRAY_PARSER
     
     mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
     mkdir -p $OUT_PATH_JOINER 
-    mkdir -p $OUT_PATH_ARRAY_PARSER 
+    # mkdir -p $OUT_PATH_ARRAY_PARSER 
     
     # Detect if we have data coming from Kafka or trino
     # Note that we run the filter-joiner in sequential if statements rather than an elif statement ...
@@ -149,21 +149,21 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: enviroscan_calibration_assignment
-        glob: /enviroscan/(*)/(*)/(*)
+        glob: /enviroscan/(2025)/(03)/(10)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_TRINO
         repo: enviroscan_data_source_trino
-        glob: /enviroscan/(*)/(*)/(*)
+        glob: /enviroscan/(2025)/(03)/(10)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: enviroscan_data_source_kafka
-        glob: /enviroscan/(*)/(*)/(*)
+        glob: /enviroscan/(2025)/(03)/(10)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
