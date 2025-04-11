@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_cron_daily_and_date_control
 transform:
-  image: quay.io/battelleecology/neon-is-date-cntl:00ddb6a7
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   env:
     # START_DATE ("YYYY-MM-DD") and END_DATE ("YYYY-MM-DD") indicate the max date range (inclusive) to create the /Y/M/D folder structure
     # If START_DATE is not set (remove line entirely to unset), the start_date and/or the kafka_start_date for each site will be used, as indicated in the site-list json file
@@ -13,10 +13,8 @@ transform:
     START_DATE: "2024-06-17"
     #END_DATE: "2024-06-01"
     OUT_PATH_KAFKA: /pfs/out/kafka
-    # OUT_PATH_TRINO: /pfs/out/trino
+    OUT_PATH_TRINO: /pfs/out/trino
     SOURCE_TYPE: "pluvio_raw"
-    SOURCE_TYPE_2: "aepg600m_heated"
-    SOURCE_TYPE_3: "metone370380"
   cmd:
   - sh
   - "-c"
@@ -32,18 +30,11 @@ transform:
     export OUT_PATH=$OUT_PATH_KAFKA
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
     
-    # Heated Belfort - Kafka
-    export SOURCE_TYPE=$SOURCE_TYPE_2
-    export SITE_FILE=$SITE_FILE_KAFKA
-    export OUT_PATH=$OUT_PATH_KAFKA
+    # Trino
+    export SITE_FILE=$SITE_FILE_TRINO
+    export OUT_PATH=$OUT_PATH_TRINO
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
-
-    # Metone370380 - Kafka
-    export SOURCE_TYPE=$SOURCE_TYPE_3
-    export SITE_FILE=$SITE_FILE_KAFKA
-    export OUT_PATH=$OUT_PATH_KAFKA
-    python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
-
+   
     EOF
 input:
   cross:
@@ -55,7 +46,11 @@ input:
   - pfs:
       name: SITE_FILE_KAFKA
       repo: pluvio_site_list
-      glob: /site-list.json
+      glob: /site-list-kafka.json
+  - pfs:
+      name: SITE_FILE_TRINO
+      repo: pluvio_site_list
+      glob: /site-list-trino.json
 resource_requests:
   memory: 100M
   cpu: 1
