@@ -1,0 +1,44 @@
+---
+pipeline:
+  name: pluvio_calibration_list_files
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  cmd: ["/bin/bash"]
+  env:
+    CVAL_INGEST_BUCKET: neon-cval
+    OUT_PATH: /pfs/out
+  stdin:
+  - "#!/bin/bash"
+  - python3 -m calval_loader.calval_loader
+input:
+  pfs:
+    repo: pluvio_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.4
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.3
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
