@@ -42,34 +42,6 @@ jobs:
           ref: 'master'
           fetch-depth: '0'
 
-        # Note: must clone other repos AFTER checking out the repo where the action is run from. 
-        # Otherwise, previously cloned repos are removed.
-      - name: "Clone avro"
-        uses: actions/checkout@v4
-        with:
-          # Repository name with owner. For example, actions/checkout
-          # Default: ${{ github.repository }}
-          repository: 'BattelleEcology/avro'
-          
-          # The branch, tag or SHA to checkout. When checking out the repository that
-          # triggered a workflow, this defaults to the reference or SHA for that event.
-          # Otherwise, uses the default branch.
-          ref: 'release-1.10.0'
-          #fetch-depth: '0' 
-          
-          # SSH key used to fetch the repository. The SSH key is configured with the local
-          # git config, which enables your scripts to run authenticated git commands. The
-          # post-job step removes the SSH key.
-          #
-          # We recommend using a service account with the least permissions necessary.
-          #
-          # [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
-          # Note: when generating the key, use the following: ssh-keygen -t ed25519 -C "git@github.com"
-          ssh-key: ${{ secrets.BE_GITHUB_KEY }}
-          
-          # Relative path under $GITHUB_WORKSPACE to place the repository
-          path: './avro'
-
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
