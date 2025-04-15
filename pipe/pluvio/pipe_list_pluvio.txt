@@ -1,8 +1,8 @@
 pluvio_cron_daily_and_date_control.yaml
 pluvio_data_source_kafka.yaml
 pluvio_data_parser.yaml
-# padder (eventually parse and pad)
-# analyze pad and time shifter
+pluvio_parser_pad.yaml #combine w parser eventually
+pluvio_time_shift.yaml 
 pluvio_calibration_list_files.yaml
 pluvio_calibration_loader.yaml
 pluvio_calibration_assignment.yaml
