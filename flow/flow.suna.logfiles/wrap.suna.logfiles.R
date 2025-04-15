@@ -53,7 +53,6 @@ wrap.suna.logfiles <- function(FileIn,
     log <- NEONprocIS.base::def.log.init()
   } 
 
-  # --------- Load the data ----------
   # Load in the csv log file(s)
   log_file  <-
     base::try(read.table(paste0(FileIn), header = FALSE, sep = ",", 
@@ -71,6 +70,7 @@ wrap.suna.logfiles <- function(FileIn,
     log$debug(base::paste0('skipping sonde file: ', FileIn))
     base::stop()
   }
+  
   # Find row where data actually starts
   start<-which(grepl('Zeiss Coefficient',log_file$V2))+1
   # Separate data and metadata
@@ -108,6 +108,11 @@ wrap.suna.logfiles <- function(FileIn,
                      "internal_temp","spec_temp","lamp_temp","cum_lamp_time","humidity","main_volt","lamp_volt","internal_volt","current","fit_aux_1","fit_aux_2",
                      "fit_base_1","fit_base_2","fit_RMSE","ctd_time","ctd_salinity","ctd_temp","ctd_pressure","check_sum")
   
+  # Gets metadata
+  sensor<-"suna"
+  serial_number<-log_metadata[1,2]
+  eprom<-"20349"     #' Need to figure out a way to get this from the folder name the file came from since it's not included in the file itself
+  
   # Calculates the date and time in POSIXct format 
   log_data$date<-lubridate::parse_date_time(as.character(log_data$date),order="yj") 
   log_data$date<-lubridate::with_tz(log_data$date+(as.numeric(log_data$time)*60*60),'UTC')
@@ -115,13 +120,54 @@ wrap.suna.logfiles <- function(FileIn,
   if(any(log_data$date<"2014-01-01 00:00:00 UTC")){
     log$debug(base::paste0("Data contains dates prior to when NEON began collecting IS data"))}
   
+  # Output file
+      # Create output directory
+      year <- substr(log_data$date[1],1,4)
+      month <- substr(log_data$date[1],6,7)
+      day <- substr(log_data$date[1],9,10)
+      DirOutLogFile <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',eprom,'/data/')
+      base::dir.create(DirOutLogFile,recursive=TRUE)
+      csv_name <-paste0(sensor,'_',eprom,'_',year,'-',month,'-',day,'_log')
+      # Writes parquet file to output directory
+      rptOut <- try(NEONprocIS.base::def.wrte.parq(data = log_data,
+                                                   NameFile = base::paste0(DirOutLogFile,csv_name,".parquet"),
+                                                   Schm = SchmDataOut),silent=TRUE)
+      if(class(rptOut)[1] == 'try-error'){
+        log$error(base::paste0('Cannot write Data to ',base::paste0(DirOutLogFile,csv_name,".parquet"),'. ',attr(rptOut, "condition")))
+        stop()
+      } else {
+        log$info(base::paste0('Data written successfully in ', base::paste0(DirOutLogFile,csv_name,".parquet")))
+      }
+
+  
+  
+  
+ 
+  
+      
+      
+      
+      
+      
   
   
   
   
   
   
-    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+     
   
 
   
