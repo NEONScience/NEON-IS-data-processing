@@ -22,10 +22,10 @@ transform:
     echo "Processing $import_trigger"
     p=${import_trigger#/pfs}
     IFS="/"; arr=($p); unset IFS;
-    source_type=${arr[2]}
-    year=${arr[3]}
-    month=${arr[4]}
-    day=${arr[5]}
+    source_type=${SOURCE_TYPE}
+    year=${arr[4]}
+    month=${arr[5]}
+    day=${arr[6]}
     if [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]
     then
       echo "Extracting $year-$month-$day for $source_type from GCS"
@@ -40,10 +40,10 @@ transform:
     OUT_PATH: /pfs/out
     KAFKA_RETENTION_DAYS: "15"
     BUCKET_VERSION_PATH: "v2"  # The root path of the bucket, indicative of the version (e.g. v2)
-    SOURCE_TYPE_INDEX: "4"
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
+    SOURCE_TYPE: pluvio
     #BUCKET_NAME: neon-l0-ingest # Always pull from prod bucket
   secrets:
   - name: l0-bucket # Using this secret will use the dev/cert/prod bucket linked to the Pachyderm environment
