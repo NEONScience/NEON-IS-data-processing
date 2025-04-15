@@ -24,7 +24,7 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "WndwAgr=001|030" \
+      "WndwAgr=030" \
       FileSchmStat=$FILE_SCHEMA_STATS \
       "TermStat1=depth0WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
       "TermStat2=depth1WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
@@ -34,7 +34,8 @@ transform:
       "TermStat6=depth5WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
       "TermStat7=depth6WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
       "TermStat8=depth7WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
-      "TermStat9=depth8WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" 
+      "TermStat9=depth8WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" \
+      "TermStat10=depth9WaterTemp:mean|minimum|maximum|variance|numPts|stdEr|expUncert(wrap.ucrt.dp01.cal.cnst)" 
     Rscript ./flow.data.comb.ts.R \
         DirIn=/tmp/pfs/filter_joined \
         DirOut=/pfs/out \

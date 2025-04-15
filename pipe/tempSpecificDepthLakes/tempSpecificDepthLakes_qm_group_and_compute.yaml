@@ -143,7 +143,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_QM_INST
       repo: tempSpecificDepthLakes_avro_schemas
-      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_quality_metrics_inst.avsc
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_quality_metrics_instantaneous.avsc
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH
