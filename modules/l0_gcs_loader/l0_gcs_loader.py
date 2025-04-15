@@ -14,7 +14,8 @@ def l0_gcs_loader() -> None:
     env = environs.Env()
     ingest_bucket_name = env.str('BUCKET_NAME')
     bucket_version_path = env.str('BUCKET_VERSION_PATH') # The root path of the bucket, indicative of the version (e.g. v2)
-    source_type_index = env.int('SOURCE_TYPE_INDEX')
+    source_type_index = env.int('SOURCE_TYPE_INDEX',None) # One of SOURCE_TYPE_INDEX or SOURCE TYPE is required. SOURCE_TYPE_INDEX supercedes if both are input
+    source_type = env.str('SOURCE_TYPE',None)
     year_index = env.int('YEAR_INDEX')
     month_index = env.int('MONTH_INDEX')
     day_index = env.int('DAY_INDEX')
@@ -27,7 +28,12 @@ def l0_gcs_loader() -> None:
     pathname, extension = os.path.splitext(import_trigger)
     import_path = pathname.split('/')
     #print(f"impport_path is {import_path}")
-    source_type = import_path[source_type_index]
+    
+    if source_type_index is None & source_type is None:
+        sys.exit("One of SOURCE_TYPE_INDEX or SOURCE_TYPE environment variables is required.")
+    else if source_type_index is not None:
+        source_type = import_path[source_type_index]
+        
     download_year = import_path[year_index]
     download_month = import_path[month_index]
     download_day = import_path[day_index]
