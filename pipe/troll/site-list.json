@@ -40,6 +40,10 @@
 	"kafka_start_date" : "2024-02-09"
 	},
 	{
+	"site" : "DELA",
+	"kafka_start_date" : "2024-01-01"
+	},
+	{
 	"site" : "FLNT",
 	"kafka_start_date" : "2024-08-11"
 	},
