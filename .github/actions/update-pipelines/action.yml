@@ -22,7 +22,7 @@ runs:
       
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          python-version: '3.13' # Version range or exact version of a Python version to use, using SemVer's version range syntax
           cache: 'pip'      
       - name: install .....update_dag_pipelines/requirements.txt
         shell: bash
