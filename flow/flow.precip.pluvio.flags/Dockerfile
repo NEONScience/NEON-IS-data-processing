@@ -6,11 +6,7 @@
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.7
 
 ARG FLOW_DIR="./flow"
-ARG APP_DIR="flow.precip.pluvio.stats"
-
-# maintainer handle
-MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
-MAINTAINER "Teresa Burlingame" tburlingame@battelleecology.org
+ARG APP_DIR="flow.precip.pluvio.flags"
 
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
@@ -22,8 +18,8 @@ RUN groupadd app && \
 WORKDIR /home/app
 
 # Copy in workflow
-COPY ${FLOW_DIR}/${APP_DIR}/flow.precip.pluvio.stats.R .
-COPY ${FLOW_DIR}/${APP_DIR}/wrap.precip.pluvio.stats.R .
+COPY ${FLOW_DIR}/${APP_DIR}/flow.precip.pluvio.flags.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.precip.pluvio.flags.R .
 
 
 # Run as app user

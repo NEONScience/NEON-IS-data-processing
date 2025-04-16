@@ -5,7 +5,7 @@
 # docker build -t neon-is-data-parse-pad:latest -f ./modules_combined/parse_and_pad/Dockerfile .
 #
 ###
-FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:sha-0529661
+FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.5.0
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="timeseries_padder"

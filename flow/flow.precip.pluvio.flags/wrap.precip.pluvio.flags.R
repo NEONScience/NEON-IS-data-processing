@@ -1,15 +1,12 @@
 ##############################################################################################
-#' @title Compute 5 minute sum of precip values, intensity of precipitation and assess sensor status flags 
-#' for Pluvio 200L sensor 
+#' @title  Assess sensor status flags for Pluvio 200L sensor on instant or aggregated levels
 
 #' @author
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
-#' Cove Sturtevant \email{csturtevant@battelleecology.org} \cr
 
 #' @description Workflow. Compute the heater and status flags by assessing the bit rate. Only 
-#' flagging alarm codes of interest. Aggregate data to 5 minutes for sum of precipitation, average intensity, and 
-#' flagging result of data. Compile further to 30 minute datata. 
-
+#' flagging alarm codes of interest. Aggregate data to 30 minutes or keep as instant QF 
+#' 
 #' @param DirIn Character value. The input path to the data from a single source ID, structured as follows: 
 #' #/pfs/BASE_REPO/#/yyyy/mm/dd/#/location-id, where # indicates any number of parent and child directories 
 #' of any name, so long as they are not 'pfs' or recognizable as the 'yyyy/mm/dd' structure which indicates 
@@ -19,13 +16,7 @@
 #'         /data
 #'         /flags
 #'         /threshold
-#' The data folder holds a multiple data files with strain gauge depth data, one file per day, 
-#' from the same sensor/location. The daily files should be sequential such that they comprise a dataset
-#' from the same sensor/location over a window of several days around 3 central processing days. The
-#' window of time surrounding these days should be adequate such that edge effects in applying the 
-#' smoothing algorithm are minimal for the central days. The data files are named in the convention:
-#' SOURCETYPE_LOCATIONID_YYYY-MM-DD.parquet
-#' 
+
 #' The flags folder holds two files containing basic plausibility and calibration quality flags for 
 #' the central processing day only. These files should respectively be named in the convention:
 #' SOURCETYPE_LOCATIONID_YYYY-MM-DD_flagsPlausibility.parquet
@@ -94,26 +85,23 @@
 #   Teresa Burlingame & Cove Sturtevant (2024-06-25)
 #     Initial creation
 ##############################################################################################
-wrap.precip.aepg.smooth <- function(DirIn,
+wrap.precip.pluvio.flags<- function(DirIn,
                                     DirOutBase,
                                     FileSchmStat=NULL,
-                                    SchmQfGage=NULL,
+                                    SchmQm=NULL,
                                     DirSubCopy=NULL,
                                     log=NULL
 ){
   
-  # Start logging if not already
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
   } 
   
-
   # Gather info about the input directory and create the output directory.
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   dirInData <- fs::path(DirIn,'data')
   dirInQf <- fs::path(DirIn,'flags')
-  dirThsh <- base::paste0(DirIn,'/threshold')
-  fileThsh <- base::dir(dirThsh)
+
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutQf <- fs::path(dirOut,'flags')
   dirOutStat <- fs::path(dirOut,'stats')
@@ -134,49 +122,7 @@ wrap.precip.aepg.smooth <- function(DirIn,
   # Take stock of our data files.
   fileData <- base::list.files(dirInData,pattern='.parquet',full.names=FALSE)
   fileQfPlau <- base::list.files(dirInQf,pattern='Plausibility.parquet',full.names=FALSE)
-  fileQfCal <- base::list.files(dirInQf,pattern='Cal.parquet',full.names=FALSE)
-  
-  # Check for a manifest file. Ensures full pad.
-  fileManifest <- base::list.files(dirInData,pattern='manifest',full.names=TRUE)
-  if(length(fileManifest) == 0){
-    log$warn('No manifest file. Cannot continue.')
-    return()
-  } else {
-    dayExpc <- base::readLines(fileManifest)
-    dayHave <- unlist(lapply(fileData,FUN=function(fileIdx){
-      mtch <- regexec(pattern='[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}',fileIdx)[[1]]
-      if(mtch != -1){
-        dayHaveIdx <- substr(fileIdx,mtch,mtch+attr(mtch,"match.length")-1)
-        return(dayHaveIdx)
-      } else {
-        return(NULL)
-      }
-    }))
-    dayChk <- dayExpc %in% dayHave
-    if(!all(dayChk)){
-      log$warn(paste0('Timeseries pad incomplete. Missing the following days: ',
-                      paste0(dayExpc[!dayChk],collapse=', ')))
-      return()
-      
-    }
-      
-  }
 
-  # Read in the thresholds file (read first file only, there should only be 1)
-  if(base::length(fileThsh) > 1){
-    fileThsh <- fileThsh[1]
-    log$info(base::paste0('There is more than one threshold file in ',dirThsh,'. Using ',fileThsh))
-  }
-  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile=base::paste0(dirThsh,'/',fileThsh)))
-  
-  # Verify that the term(s) needed in the input parameters are included in the threshold files
-  termTest <- "precipBulk"
-  exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
-  if(base::sum(exstThsh) != base::length(termTest)){
-    log$error(base::paste0('Thresholds for term(s): ',base::paste(termTest[!exstThsh],collapse=','),' do not exist in the thresholds file. Cannot proceed.')) 
-    stop()
-  }
- 
   # Read the datasets 
   data <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInData,fileData),
                                             VarTime='readout_time',
@@ -190,51 +136,51 @@ wrap.precip.aepg.smooth <- function(DirIn,
                                                  Df=TRUE,
                                                  log=log)
   
-  qfCal <- NEONprocIS.base::def.read.parq.ds(fileIn=fs::path(dirInQf,fileQfCal),
-                                                VarTime='readout_time',
-                                                RmvDupl=TRUE,
-                                                Df=TRUE,
-                                                log=log)
+  ## wipe preexisting schema TODO check with Cove
+  # Remove the "schema" attribute
+  #remove existing schema from plau so we can add more cols. 
+  if (is.null(SchmQm)){
+    base::attr(qfPlau, "schema") <- NULL
+    }
   
-  qf <- dplyr::full_join(qfPlau, qfCal, by =  'readout_time')
-  
-  
- 
   # if there are no heater streams add them in as NA
-# TODO do we need to do a heater stream add for non-heated or are they all heated?
+  if(!('heater_status' %in% names(data))){
+    data$heater_status <- NA
+    }
 
-  data$sensorErrorQF <- 0
-  data$heaterErrorQF <- 0
+  #initialize fields 
+  qfPlau$sensorErrorQF <- 0
+  qfPlau$heaterErrorQF <- 0
 
   #bitwise calculation of flags of interest
   
   for (i in seq_along(data$sensorErrorQF)) {
     if (is.na(data$sensorStatus[i])) {
-      data$sensorErrorQF[i] <- -1
+      qfPlau$sensorErrorQF[i] <- -1
     } else {
       if (data$sensorStatus[i] == 0) {
-        data$sensorStatus[i] <- 0
+        qfPlau$sensorErrorQF[i] <- 0
       }
       
       if ((data$sensorStatus[i] / 2^6) %% 2 >= 1) { # unstable
-        data$sensorErrorQF[i] <- 1
+        qfPlau$sensorErrorQF[i] <- 1
       }
       
       if ((data$sensorStatus[i] / 2^7) %% 2 >= 1) { # defective
         
-        data$sensorErrorQF[i] <- 1
+        qfPlau$sensorErrorQF[i] <- 1
       }
       
       if ((data$sensorStatus[i] / 2^8) %% 2 >= 1) { # weight less minimum
-        data$sensorErrorQF[i] <- 1
+        qfPlau$sensorErrorQF[i] <- 1
       }
       
       if ((data$sensorStatus[i] / 2^9) %% 2 >= 1) { # weight greater maximum
-        data$sensorErrorQF[i] <- 1
+        qfPlau$sensorErrorQF[i] <- 1
       }
       
       if ((data$sensorStatus[i] / 2^10) %% 2 >= 1) { # no calibration
-        data$sensorErrorQF[i] <- 1
+        qfPlau$sensorErrorQF[i] <- 1
       }
     }
   }
@@ -242,141 +188,79 @@ wrap.precip.aepg.smooth <- function(DirIn,
   #heater status for bit vals of interest
   for (i in seq_along(data$heater_status)) {
     if (is.na(data$heater_status[i])) {
-      data$sensorErrorQF[i] <- -1
+      qfPlau$heaterErrorQF[i] <- -1
     } else {
       if (data$heater_status[i] == 0) {
-        data$heaterErrorQF[i] <- 0
+        qfPlau$heaterErrorQF[i] <- 0
       }
       if ((data$heater_status[i] / 2^5) %% 2 >= 1) { #functional check failed
-        data$heaterErrorQF[i] <- 1
+        qfPlau$heaterErrorQF[i] <- 1
       }
       if ((data$heater_status[i] / 2^7) %% 2 >= 1) { #heater deactivated or not present
-        data$heaterErrorQF[i] <- 1
+        qfPlau$heaterErrorQF[i] <- 1
       }
     }
   }
-  
-  #####adjust to 30 minute, 1 minute comes in as 1 minute
-  # Do time averaging
-  precip5min <- dat %>%
-    dplyr::mutate(startDateTime = lubridate::floor_date(as.POSIXct(readout_time, tz = 'UTC'), unit = '5 min')) %>%
-    dplyr::mutate(endDateTime = lubridate::ceiling_date(as.POSIXct(readout_time, tz = 'UTC'), unit = '5 min',change_on_boundary=TRUE)) %>%
-    dplyr::group_by(startDateTime,endDateTime) %>%
-    dplyr::summarise(precipBulk = sum(accu_nrt, na.rm = T),
-                     precipIntensityMean = mean(intensity_rt, na.rm = T), #max or min intensity?
-                     numPts = length(!which(is.na(accu_nrt))), 
-                     heaterErrorQFMax = max(heaterErrorQF), 
-                     heaterErrorQFMin = min(heaterErrorQF),
-                     sensorErrorQFMax = max(sensorErrorQF),
-                     sensorErrorQFMin = min(sensorErrorQF)) 
-  
-  #flag 1 if anything flagged else
-  #flag -1 if it is the max or minimum
-  precip5min$heaterErrorQF <- 0 
-  precip5min$heaterErrorQF[precip5min$heaterErrorQFMax == 1] <- 1
-  precip5min$heaterErrorQF[precip5min$heaterErrorQFMax == -1] <- -1
-  precip5min$heaterErrorQF[precip5min$heaterErrorQFMax == 0 & precip5min$heaterErrorQFMin== -1] <- -1
-  
-  precip5min$sensorErrorQF <- 0 
-  precip5min$sensorErrorQF[precip5min$sensorErrorQFMax == 1] <- 1
-  precip5min$sensorErrorQF[precip5min$sensorErrorQFMax == -1] <- -1
-  precip5min$sensorErrorQF[precip5min$sensorErrorQFMax == 0 & precip5min$sensorErrorQFMin== -1] <- -1
- 
-  ### 30 minute processing? 
-  
-  ######################################################################################################
-      rptWrte <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-          data = statsAgrFiveMinIdx,
-          NameFile = fileStatOut005Idx,
-          NameFileSchm=NULL,
-          Schm=FileSchmStat,
-          log=log
-        ),
-        silent = TRUE)
-      if ('try-error' %in% base::class(rptWrte)) {
-        log$error(base::paste0(
-          'Cannot write output to ',
-          fileStatOut005Idx,
-          '. ',
-          attr(rptWrte, "condition")
-        ))
-        stop()
-      } else {
-        log$info(base::paste0(
-          'Wrote 5 min precipitation to file ',
-          fileStatOut005Idx
-        ))
-      }
 
-      rptWrte <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-          data = statsAgrThrtMinIdx,
-          NameFile = fileStatOut030Idx,
-          NameFileSchm=NULL,
-          Schm=SchmStatDay,
-          log=log
-        ),
-        silent = TRUE)
-      if ('try-error' %in% base::class(rptWrte)) {
-        log$error(base::paste0(
-          'Cannot write output to ',
-          fileStatOut030Idx,
-          '. ',
-          attr(rptWrte, "condition")
-        ))
-        stop()
-      } else {
-        log$info(base::paste0(
-          'Wrote daily precipitation to file ',
-          fileStatOut030Idx
-        ))
-      }
-      
-      # Write out the flags to file. We only need the central day.
+  # "pass through" of data
+  # qfs added to list of flags to process through qm module. 
 
-        setOutQf <- qfs
-        
-        base::dir.create(dirOutQf,recursive = TRUE)
-        nameFileQfIdxSplt <- c(paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt)-1)],
-                                         '_flagsSmooth'),
-                                  utils::tail(nameFileIdxSplt,1))
-        nameFileQfOutIdx <- base::paste0(nameFileQfIdxSplt,collapse='.')
-        
-        
-        
-        FileQfOutIdx <- fs::path(dirOutQf,nameFileQfOutIdx)
-        
-        rptWrte <-
-          base::try(NEONprocIS.base::def.wrte.parq(
-            data = qfIdx,
-            NameFile = FileQfOutIdx,
-            NameFileSchm=NULL,
-            Schm=SchmQfGage,
-            log=log
-          ),
-          silent = TRUE)
-        if ('try-error' %in% base::class(rptWrte)) {
-          log$error(base::paste0(
-            'Cannot write output to ',
-            FileQfOutIdx,
-            '. ',
-            attr(rptWrte, "condition")
-          ))
-          stop()
-        } else {
-          log$info(base::paste0(
-            'Wrote flags to file ',
-            FileQfOutIdx
-          ))
-        }
-      
-        
+    #get file name based on date of data in directory
+    nameFileOut <- fileData
+    
+    # Write out the time shifted dataset to file
+    fileOut <- fs::path(dirOutStat,nameFileOut)
+    
+    rptWrte <-
+      base::try(NEONprocIS.base::def.wrte.parq(
+        data = data,
+        NameFile = fileOut,
+        log=log
+      ),
+      silent = TRUE)
+    
+    if ('try-error' %in% base::class(rptWrte)) {
+      log$error(base::paste0(
+        'Cannot write output to ',
+        fileOut,
+        '. ',
+        attr(rptWrte, "condition")
+      ))
+      stop()
     } else {
-      log$warn(paste0(nameFileIdx,' and associated flags files are not able to be output because this data file was not found in the input.'))
-    }        
+      log$info(base::paste0(
+        'Data file written to file ',
+        fileOut
+      ))
+    }
+    
+      nameFileQfOutFlag <- fileQfPlau
 
-  }
+      nameFileQfOutFlag <- fs::path(dirOutQf,nameFileQfOutFlag)
+      
+      rptWrte <-
+        base::try(NEONprocIS.base::def.wrte.parq(
+          data = qfPlau,
+          NameFile = nameFileQfOutFlag,
+          log=log
+        ),
+        silent = TRUE)
+      
+      if ('try-error' %in% base::class(rptWrte)) {
+        log$error(base::paste0(
+          'Cannot write output to ',
+          nameFileQfOutFlag,
+          '. ',
+          attr(rptWrte, "condition")
+        ))
+        stop()
+      } else {
+        log$info(base::paste0(
+          'Wrote updated flags data to file ',
+          nameFileQfOutFlag
+        ))
+      }
 
   return()
 } 
+

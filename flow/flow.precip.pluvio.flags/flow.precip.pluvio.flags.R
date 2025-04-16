@@ -51,7 +51,7 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "FileSchmStat=value" (optional), where value is the full path to schema for the 5 and 30 minute aggregated data 
+#' 4. "FileSchmData=value" (optional), where value is the full path to schema for the 5 and 30 minute aggregated data 
 #' output by this workflow. If not input, a schema will be automatically crafted. 
 #' The output is ordered as follows:
 #' startDateTime
@@ -142,12 +142,12 @@ Para <-
     NameParaReqd = c(
                      "DirIn", 
                      "DirOut", 
-                     "DirErr" 
+                     "DirErr" ,
+                     "SchmQm",
+                     "SchmData"
                      ),
     NameParaOptn = c(
-                     "DirSubCopy",
-                     "FileSchmStat",
-                     "FileSchmQfGage"
+                     "DirSubCopy"
                      ),
     log = log
   )
@@ -159,27 +159,28 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Retrieve output schema for  stats
-FileSchmStat <- Para$FileSchmStat
-log$debug(base::paste0('Output schema for bulk precipitation stats: ',base::paste0(FileSchmStat,collapse=',')))
+FileSchmQm <- Para$SchmQm
+log$debug(base::paste0('Output schema for bulk precipitation custom flags: ',base::paste0(FileSchmData,collapse=',')))
 
 # Read in the schema 
-if(base::is.null(FileSchmStat) || FileSchmStat == 'NA'){
-  FileSchmStat <- NULL
+if(base::is.null(FileSchmQm) || FileSchmQm == 'NA'){
+  FileSchmQm <- NULL
 } else {
-  FileSchmStat <- base::paste0(base::readLines(FileSchmStat),collapse='')
+  FileSchmQm <- base::paste0(base::readLines(FileSchmQm),collapse='')
 }
 
-
-# Retrieve output schema for strain gauge quality flags
-FileSchmQfGage <- Para$FileSchmQfGage
-log$debug(base::paste0('Output schema for aggregated strain gauge quality flags: ',base::paste0(FileSchmQfGage,collapse=',')))
+# Retrieve output schema for  stats
+FileSchmData <- Para$SchmData
+log$debug(base::paste0('Output schema for precipitation data: ',base::paste0(FileSchmData,collapse=',')))
 
 # Read in the schema 
-if(base::is.null(FileSchmQfGage) || FileSchmQfGage == 'NA'){
-  SchmQfGage <- NULL
+if(base::is.null(FileSchmData) || FileSchmData== 'NA'){
+  FileSchmData <- NULL
 } else {
-  SchmQfGage <- base::paste0(base::readLines(FileSchmQfGage),collapse='')
+  FileSchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
 }
+
+####might need a data schema probably?? 
 
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
@@ -210,14 +211,13 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.precip.pluvio.stats(
-        DirIn=idxDirIn,
-        DirOutBase=Para$DirOut,
-        FileSchmStat=FileSchmStat,
-        SchmQfGage=SchmQfGage,
-        DirSubCopy=DirSubCopy,
-        log=log
-        ),
+      wrap.precip.pluvio.flags(DirIn=DirIn,
+                              DirOutBase=Para$DirOut,
+                              SchmData=FileSchmData, # TODO do I need a stat schema? 
+                              SchmQm=FileSchmQm, #TODO Check syntax
+                              DirSubCopy=DirSubCopy,
+                              log=log
+      ),
       error = function(err) {
         call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
         
@@ -232,11 +232,11 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
           log=log
         )
       }
-    ),
-    # This simply to avoid returning the error
-    error=function(err) {}
+  ),
+  # This simply to avoid returning the error
+  error=function(err) {}
   )
-  
-    return()
-    
+
+return()
+
 } # End loop around datum paths
