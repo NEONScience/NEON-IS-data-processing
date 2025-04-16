@@ -31,7 +31,7 @@ def l0_gcs_loader() -> None:
     
     if source_type_index is None & source_type is None:
         sys.exit("One of SOURCE_TYPE_INDEX or SOURCE_TYPE environment variables is required.")
-    else if source_type_index is not None:
+    elif source_type_index is not None:
         source_type = import_path[source_type_index]
         
     download_year = import_path[year_index]
