@@ -29,7 +29,7 @@ def l0_gcs_loader() -> None:
     import_path = pathname.split('/')
     #print(f"impport_path is {import_path}")
     
-    if source_type_index is None & source_type is None:
+    if (source_type_index is None) & (source_type is None):
         sys.exit("One of SOURCE_TYPE_INDEX or SOURCE_TYPE environment variables is required.")
     elif source_type_index is not None:
         source_type = import_path[source_type_index]
