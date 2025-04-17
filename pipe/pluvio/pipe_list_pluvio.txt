@@ -1,15 +1,8 @@
 pluvio_cron_daily_and_date_control.yaml
 pluvio_data_source_kafka.yaml #and parse
-
 pluvio_data_source_gcs.yaml # load parsed data
-
-pluvio_data_parser.yaml #will be removed. 
-
-#####kafka_gcs_comb_pad_shft.yaml
-pluvio_parser_pad.yaml # and kafka combine 
+pluvio_l0_combine_and_pad.yaml
 pluvio_time_shift.yaml 
-#### ^ will be combined into one module
-
 pluvio_calibration_list_files.yaml
 pluvio_calibration_loader.yaml
 pluvio_calibration_assignment.yaml

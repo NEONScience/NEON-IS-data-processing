@@ -30,7 +30,7 @@ transform:
 input:
   pfs:
     name: DATA_PATH
-    repo: pluvio_parser_pad
+    repo: pluvio_l0_combine_and_pad
     glob: /*/*/*/*
 parallelism_spec:
   constant: 5
