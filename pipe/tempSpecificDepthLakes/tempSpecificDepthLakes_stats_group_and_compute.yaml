@@ -44,7 +44,7 @@ transform:
         NameDirCombOut=stats \
         NameVarTime=readout_time \
         FileSchmComb=$FILE_SCHEMA_STATS_INST \
-        "ColKeep=readout_time|depth0WaterTemp|depth0WaterTemp_ucrtExpn|depth1WaterTemp|depth1WaterTemp_ucrtExpn|depth2WaterTemp|depth2WaterTemp_ucrtExpn|depth3WaterTemp|depth3WaterTemp_ucrtExpn|depth4WaterTemp|depth4WaterTemp_ucrtExpn|depth5WaterTemp|depth5WaterTemp_ucrtExpn|depth6WaterTemp|depth6WaterTemp_ucrtExpn|depth7WaterTemp|depth7WaterTemp_ucrtExpn|depth8WaterTemp|depth8WaterTemp_ucrtExpn|depth9WaterTemp|depth9WaterTemp_ucrtExpn" \
+        "ColKeep=readout_time|readout_time|depth0WaterTemp|depth0WaterTemp_ucrtExpn|depth1WaterTemp|depth1WaterTemp_ucrtExpn|depth2WaterTemp|depth2WaterTemp_ucrtExpn|depth3WaterTemp|depth3WaterTemp_ucrtExpn|depth4WaterTemp|depth4WaterTemp_ucrtExpn|depth5WaterTemp|depth5WaterTemp_ucrtExpn|depth6WaterTemp|depth6WaterTemp_ucrtExpn|depth7WaterTemp|depth7WaterTemp_ucrtExpn|depth8WaterTemp|depth8WaterTemp_ucrtExpn|depth9WaterTemp|depth9WaterTemp_ucrtExpn" \
         NameFileSufx=_basicStats_001
     EOF
   env:
