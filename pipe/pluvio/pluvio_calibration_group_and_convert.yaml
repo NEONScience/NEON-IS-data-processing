@@ -97,10 +97,10 @@ input:
       name: FILE_SCHEMA_L0
       repo: pluvio_avro_schemas
       glob: /pluvio/pluvio_parsed.avsc
-  # - pfs:
-  #     name: FILE_SCHEMA_FLAGS
-  #     repo: pluvio_avro_schemas
-  #     glob: /pluvio/flags_calibration_pluvio.avsc
+  - pfs:
+      name: FILE_SCHEMA_FLAGS
+      repo: pluvio_avro_schemas
+      glob: /pluvio/flags_calibration_pluvio.avsc
   # Outer join all days so that varying sensors between kafka and archive loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
     - pfs:
@@ -110,13 +110,13 @@ input:
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    # - pfs:
-    #     name: DATA_PATH_ARCHIVE
-    #     repo: pluvio_data_source_gcs
-    #     glob: /pluvio/(*)/(*)/(*)
-    #     joinOn: $1/$2/$3
-    #     outer_join: true
-    #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH_ARCHIVE
+        repo: pluvio_data_source_gcs
+        glob: /pluvio/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: pluvio_time_shift
