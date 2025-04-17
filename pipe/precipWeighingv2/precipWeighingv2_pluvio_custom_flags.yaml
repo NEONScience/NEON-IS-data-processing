@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighingv2_pluvio_custom_flags
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:sha-77d6b29
   cmd:
   - sh
   - "-c"
@@ -11,16 +11,12 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -r -f /tmp/pfs/filter_joined
-    mkdir -p /tmp/pfs/filter_joined
-    # Run first module - filter-joiner (using environment variables below as input parameters)
-    python3 -m filter_joiner.filter_joiner_main
+    
     # Run second module - quality metrics
     #       SchmQm=$FILE_SCHEMA_QM \
     #       SchmData=$FILE_SCHEMA_DATA \ 
     Rscript ./flow.precip.pluvio.flags.R \
-      DirIn=/tmp/pfs/filter_joined \
+      DirIn=/tmp/pfs/ \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums 
 

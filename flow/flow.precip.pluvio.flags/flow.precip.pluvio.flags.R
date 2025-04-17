@@ -105,7 +105,7 @@ library(foreach)
 library(doParallel)
 
 # Source the wrapper function and other dependency functions. Assume it is in the working directory
-source("./wrap.precip.pluvio.stats.R")
+source("./wrap.precip.pluvio.flags.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
