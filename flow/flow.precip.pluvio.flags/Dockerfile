@@ -1,6 +1,6 @@
-# Dockerfile for NEON IS Data Processing - Belfort (aepg600m) Preciptation computation module
+# Dockerfile for NEON IS Data Processing - Pluvio 200L Custom Flag module
 # Build with the following command
-# docker build --no-cache -t neon-is-precip-aepg-smooth-r <path to this directory>
+# docker build --no-cache -t neon-is-pluvio-flgs <path to this directory>
 
 # Start with the qaqc package image. 
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.7
