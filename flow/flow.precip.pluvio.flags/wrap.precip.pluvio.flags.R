@@ -192,7 +192,7 @@ wrap.precip.pluvio.flags<- function(DirIn,
       nameFileOut <- fileData
       
       # Write out the time shifted dataset to file
-      fileOut <- fs::path(dirOutStat,nameFileOut)
+      fileOut <- fs::path(dirOutData,nameFileOut)
       
       rptWrte <-
         base::try(NEONprocIS.base::def.wrte.parq(
