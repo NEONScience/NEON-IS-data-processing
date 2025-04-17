@@ -22,7 +22,7 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./flow/precip.pluvio.flags
+  MODULE_PATH: ./flow/flow.precip.pluvio.flags
   IMAGE_NAME: neon-is-pluvio-flgs
 
 jobs:
