@@ -17,7 +17,7 @@ transform:
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
     # Run second module - quality metrics
-    #       FileSchmQm=$FILE_SCHEMA_QM \
+
     Rscript ./flow.qaqc.qm.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
@@ -25,6 +25,7 @@ transform:
       "WndwAgr=030" \
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
+      FileSchmQm=$FILE_SCHEMA_QM \
       "GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF" \
       "GrpQfBeta1=:nullQF|gapQF|rangeQF" \
       "GrpQfBetaIgnr1=:nullQF|gapQF" \
@@ -35,6 +36,7 @@ transform:
       DirErr=/pfs/out/errored_datums \
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
+      FileSchmQm=$FILE_SCHEMA_QM_INST\
       'GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF' \
       'GrpQfBeta1=:nullQF|gapQF|rangeQF' \
       'GrpQfBetaIgnr1=:nullQF|gapQF' \
@@ -58,7 +60,7 @@ transform:
             name: REGULARIZED_FLAGS_PATH
             # Filter for flags directory
             glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
-            # Join on named location (already joined below by day
+            # Join on named location (already joined below by day)
             join_indices: [6]
     OUT_PATH: /tmp/pfs/filter_joined
     LOG_LEVEL: DEBUG
@@ -67,10 +69,14 @@ transform:
     PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
 input:
   cross:
-  # - pfs:
-  #     name: FILE_SCHEMA_QM
-  #     repo: precipWeighingv2_avro_schemas
-  #     glob: /precipWeighingv2/precipWeighingv2_dp01_quality_metrics.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM
+      repo: precipWeighingv2_avro_schemas
+      glob: /precipWeighingv2/precipWeighingv2_dp01_quality_metrics.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM_INST
+      repo: precipWeighingv2_avro_schemas
+      glob: /precipWeighingv2/precipWeighingv2_dp01_quality_metrics_inst.avsc
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH

@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighingv2_pluvio_custom_flags
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:sha-edffc37
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:sha-965f7a3
   cmd:
   - sh
   - "-c"
