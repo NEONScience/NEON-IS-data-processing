@@ -18,7 +18,8 @@ transform:
     Rscript ./flow.precip.pluvio.flags.R \
       DirIn=$DATA_PATH\
       DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums 
+      DirErr=/pfs/out/errored_datums \
+      SchmQf=$SCHEMA_FLAGS
 
     EOF
   env:
@@ -29,16 +30,10 @@ input:
       name: DATA_PATH
       repo: precipWeighingv2_analyze_pad_and_qaqc_plau
       glob: /*/*/*
-  #MAY NOT NEED DATA SCHEMA
-  #MAY NEED TO LINK CAL FLAGS IN HERE. 
-  # - pfs:
-  #     name: SCHEMA_FLAGS
-  #     repo: precipWeighingv2_avro_schemas
-  #     glob: /precipWeighingv2/flags_plausibility_precipWeighingv2.avsc
-  # - pfs:
-  #     name: SCHEMA_DATA
-  #     repo: precipWeighingv2_avro_schemas
-  #     glob: /precipWeighingv2/flags_plausibility_precipWeighingv2.avsc
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: precipWeighingv2_avro_schemas
+      glob: /precipWeighingv2/flags_plausibility_custom_precipWeighingv2.avsc
       
 parallelism_spec:
   constant: 5

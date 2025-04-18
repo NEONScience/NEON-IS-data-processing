@@ -147,7 +147,7 @@ log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-# Retrieve output schema for  stats
+# Retrieve output schema for  flags
 FileSchmQm <- Para$SchmQm
 log$debug(base::paste0('Output schema for bulk precipitation custom flags: ',base::paste0(FileSchmData,collapse=',')))
 
