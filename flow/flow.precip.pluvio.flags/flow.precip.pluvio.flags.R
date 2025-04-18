@@ -54,7 +54,7 @@
 #' gapQF
 #' rangeQF
 #' stepQF
-#' TODO add calibration flag info 
+#' TODO add calibration flag info ?
 #' sensorErrorQF
 #' heaterErrorQF
 #' 
@@ -136,7 +136,7 @@ Para <-
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
-                     "SchmQm"
+                     "SchmQf"
                      ),
     log = log
   )
@@ -148,14 +148,14 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
 # Retrieve output schema for  flags
-FileSchmQm <- Para$SchmQm
+FileSchmQf <- Para$SchmQf
 log$debug(base::paste0('Output schema for bulk precipitation custom flags: ',base::paste0(FileSchmData,collapse=',')))
 
 # Read in the schema 
-if(base::is.null(FileSchmQm) || FileSchmQm == 'NA'){
-  FileSchmQm <- NULL
+if(base::is.null(FileSchmQf) || FileSchmQf == 'NA'){
+  FileSchmQf <- NULL
 } else {
-  FileSchmQm <- base::paste0(base::readLines(FileSchmQm),collapse='')
+  FileSchmQf <- base::paste0(base::readLines(FileSchmQf),collapse='')
 }
 
 # TODO do I need data schemas? 
@@ -204,7 +204,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
       wrap.precip.pluvio.flags(DirIn=DirIn,
                               DirOutBase=Para$DirOut,
                               #SchmData=FileSchmData, # TODO do I need a stat schema? 
-                              SchmQm=FileSchmQm, 
+                              SchmQf=FileSchmQf, 
                               DirSubCopy=DirSubCopy,
                               log=log
       ),
