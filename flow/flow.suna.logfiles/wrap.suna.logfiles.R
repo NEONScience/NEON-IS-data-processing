@@ -22,7 +22,7 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #' 
-#' @return Cleaned SUNA log files in daily parquets.
+#' @return Data from SUNA log files in daily parquets.
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -76,6 +76,13 @@ wrap.suna.logfiles <- function(FileIn,
   # Separate data and metadata
   log_data<-log_file[start:(nrow(log_file)),]
   log_metadata<-log_file[1:(start-1),2:6]
+  
+  # Gets metadata
+  sensor<-"suna"
+  serial_number<-log_metadata[1,2]
+  asset_string <- regexpr("\\/[0-9]{5}\\/",FileIn) #' For SUNA asset info not included in log file header.  Need it from input file folder name.
+  asset<-gsub("\\/","",substr(FileIn,asset_string[1],asset_string[1]+attributes(asset_string)$match.length-1))
+  
   # Create column names for data
   names(log_data)<-c("serial_number","date","time","nitrate_uM","nitrate_mgL","absorbance_254","absorbance_350","bromide",
                      "spec_avg","dark_value","int_time_factor",
@@ -108,26 +115,24 @@ wrap.suna.logfiles <- function(FileIn,
                      "internal_temp","spec_temp","lamp_temp","cum_lamp_time","humidity","main_volt","lamp_volt","internal_volt","current","fit_aux_1","fit_aux_2",
                      "fit_base_1","fit_base_2","fit_RMSE","ctd_time","ctd_salinity","ctd_temp","ctd_pressure","check_sum")
   
-  # Gets metadata
-  sensor<-"suna"
-  serial_number<-log_metadata[1,2]
-  eprom<-"20349"     #' Need to figure out a way to get this from the folder name the file came from since it's not included in the file itself
-  
   # Calculates the date and time in POSIXct format 
   log_data$date<-lubridate::parse_date_time(as.character(log_data$date),order="yj") 
   log_data$date<-lubridate::with_tz(log_data$date+(as.numeric(log_data$time)*60*60),'UTC')
   # Checks that there are no dates prior to when NEON began collecting IS data
   if(any(log_data$date<"2014-01-01 00:00:00 UTC")){
     log$debug(base::paste0("Data contains dates prior to when NEON began collecting IS data"))}
+  # Checks that there are no future dates after the current date
+  if(any(log_data$date>Sys.time())){
+    log$debug(base::paste0("Data contains future dates after the current date"))}
   
   # Output file
       # Create output directory
       year <- substr(log_data$date[1],1,4)
       month <- substr(log_data$date[1],6,7)
       day <- substr(log_data$date[1],9,10)
-      DirOutLogFile <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',eprom,'/data/')
+      DirOutLogFile <- paste0(DirOut,'/',sensor,'/',year,'/',month,'/',day,'/',asset,'/data/')
       base::dir.create(DirOutLogFile,recursive=TRUE)
-      csv_name <-paste0(sensor,'_',eprom,'_',year,'-',month,'-',day,'_log')
+      csv_name <-paste0(sensor,'_',asset,'_',year,'-',month,'-',day,'_log')
       # Writes parquet file to output directory
       rptOut <- try(NEONprocIS.base::def.wrte.parq(data = log_data,
                                                    NameFile = base::paste0(DirOutLogFile,csv_name,".parquet"),
