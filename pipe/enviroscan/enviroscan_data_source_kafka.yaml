@@ -1,13 +1,13 @@
 ---
 pipeline:
-  name: spn1_data_source_kafka
+  name: enviroscan_data_source_kafka
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.6.1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "spn1"
+    SOURCE_TYPE: "enviroscan"
     LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
@@ -107,7 +107,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/spn1/2023/01/01/12345/data/file.parquet
+      # /pfs/out/enviroscan/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
@@ -141,9 +141,9 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: spn1_cron_daily_and_date_control
+    repo: enviroscan_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/spn1/*/*/*"
+    glob: "/enviroscan/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
