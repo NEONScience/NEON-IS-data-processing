@@ -1,11 +1,11 @@
-name: DEV-drx8533ep-update-dag
+name: DEV-dualfan-update-dag
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'pipe/drx8533ep/*.yaml'
-      - 'pipe/drx8533ep/pipe_list_drx8533ep.txt'
+      - 'pipe/dualfan/*.yaml'
+      - 'pipe/dualfan/pipe_list_dualfan.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
     env:
       PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
-      PATHS: 'pipe/drx8533ep' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
+      PATHS: 'pipe/dualfan' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
