@@ -2,17 +2,24 @@
 pipeline:
   name: pluvio_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.4.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.6.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
-    OUT_PATH: /pfs/out
+  # environment variables for kafka loader
+    OUT_PATH:  /pfs/out #also used for parser
     LOG_LEVEL: INFO
     SOURCE_TYPE_INDEX: "5"
     YEAR_INDEX: "6"
     MONTH_INDEX: "7"
     DAY_INDEX: "8"
     KAFKA_RETENTION_DAYS: "15"
+    # environment variables for the parser
+    PARSE_FIELD: serial_output
+    RELATIVE_PATH_INDEX: "4"
+    PARSED_SCHEMA_PATH: /usr/src/app/schemas/pluvio/pluvio_parsed.avsc 
+    SOURCE_TYPE: 'pluvio_raw'
+    DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
   secrets:
   - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_USER
@@ -44,8 +51,6 @@ transform:
     
     # Get date from input path. Terminal path structure must be /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
     # Datum must be set at /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD or /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
-    source_type=$(echo $import_trigger | cut -f $SOURCE_TYPE_INDEX -d "/")
-    export SOURCE_TYPE=$source_type
     date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
     echo $date_path
     date_str=$(date -u +%Y-%m-%d -d $date_path)
@@ -73,31 +78,17 @@ transform:
       fi
       
       # We are ok to run
-      if [ "$SOURCE_TYPE" != "metone370380" ]; then
-        echo "Extracting $date_str kafka data for $SOURCE_TYPE at $site"
-        
-        # Get "current data" - data that came in on the specified day, which is the same day it was measured
-        # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
-        ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
-        
-        # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
-        date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-        ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
-      else
-        export TOPIC_CENTRAL="event.rtu"
-        export DATATYPE_DIR="event"
-
-        echo "Extracting $date_str kafka data for $site"
-
-        # Get "current data" - data that came in on the specified day, which is the same day it was measured
-        # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
-        ./extract-kafka-event.py -s $site -S $SOURCE_TYPE -t $TOPIC_CENTRAL -D "$OUT_PATH/$SOURCE_TYPE" -T $DATATYPE_DIR -F "parquet" -d $date_str --only current --consumer client.rack=$zone
-        
-        # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
-        date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-        ./extract-kafka-event.py -s $site -S $SOURCE_TYPE -t $TOPIC_CENTRAL -D "$OUT_PATH/$SOURCE_TYPE" -T $DATATYPE_DIR -F "parquet" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
-      fi
-
+   
+      echo "Extracting $date_str kafka data for $SOURCE_TYPE at $site"
+      
+      # Get "current data" - data that came in on the specified day, which is the same day it was measured
+      # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
+      
+      # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
+      date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+    
     done
     
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
@@ -129,6 +120,40 @@ transform:
       # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi
+    
+    # run data parser
+    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+      python3 -m raw_data_parsers.raw_data_parser.data_parser_main
+    
+    # save parsed data to gcs 
+      export SOURCE_TYPE=pluvio
+    
+      linkdir=$(mktemp -d)
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH}/${SOURCE_TYPE}/**/*.parquet"
+      # /pfs/out/pluvio/2023/01/01/12345/data/file.parquet
+      echo "Linking output files to ${linkdir}"
+      set -x
+      for f in $out_parquet_glob; do
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/(.*)/(.*)$ ]]
+        fsourcetype="${BASH_REMATCH[1]}"
+        fyear="${BASH_REMATCH[2]}"
+        fmonth="${BASH_REMATCH[3]}"
+        fday="${BASH_REMATCH[4]}"
+        fsourceid="${BASH_REMATCH[5]}"
+        fname="${BASH_REMATCH[7]}"
+        fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
+        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname_out}"
+        
+        # Upload to bucket, compacting with any existing file 
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+        rm -rf "${outdir}"
+      done
+    fi
+
     EOF
 input:
   pfs:
