@@ -7,6 +7,7 @@ on:
     paths:
       - 'modules_combined/calibration_group_and_convert/**'
       - 'modules/filter_joiner/**'
+      - 'modules/array_parser/**'
       - 'modules/common/**'
       - 'flow/flow.kfka.comb/**'
       - 'flow/flow.cal.conv/**'

@@ -33,7 +33,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmQf=$SCHEMA_FLAGS \
-      "TermTest1=accu_nrt:null|gap|range(rmv)|step(rmv)|spike(rmv)"
+      "TermTest1=accu_nrt:null|gap|range(rmv)|step(rmv)"
       
     EOF
   env:
