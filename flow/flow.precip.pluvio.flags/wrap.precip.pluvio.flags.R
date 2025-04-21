@@ -92,7 +92,7 @@ wrap.precip.pluvio.flags<- function(DirIn,
                                 log = log)
   
   # Copy with a symbolic link the desired subfolders 
-  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('data','flags')))
+  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('flags')))
   if(base::length(DirSubCopy) > 0){
 
     NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
@@ -189,35 +189,35 @@ wrap.precip.pluvio.flags<- function(DirIn,
   # "pass through" of data
   # TODO ask Cove if this is necessary? 
   # qfs added to list of flags to process through qm module. 
-      
-      #get file name based on date of data in directory
-      nameFileOut <- fileData
-      
-      # Write out the time shifted dataset to file
-      fileOut <- fs::path(dirOutData,nameFileOut)
-      
-      rptWrte <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-          data = data,
-          NameFile = fileOut,
-          log=log
-        ),
-        silent = TRUE)
-      
-      if ('try-error' %in% base::class(rptWrte)) {
-        log$error(base::paste0(
-          'Cannot write output to ',
-          fileOut,
-          '. ',
-          attr(rptWrte, "condition")
-        ))
-        stop()
-      } else {
-        log$info(base::paste0(
-          'Data file written to file ',
-          fileOut
-        ))
-      }
+      # 
+      # #get file name based on date of data in directory
+      # nameFileOut <- fileData
+      # 
+      # # Write out the time shifted dataset to file
+      # fileOut <- fs::path(dirOutData,nameFileOut)
+      # 
+      # rptWrte <-
+      #   base::try(NEONprocIS.base::def.wrte.parq(
+      #     data = data,
+      #     NameFile = fileOut,
+      #     log=log
+      #   ),
+      #   silent = TRUE)
+      # 
+      # if ('try-error' %in% base::class(rptWrte)) {
+      #   log$error(base::paste0(
+      #     'Cannot write output to ',
+      #     fileOut,
+      #     '. ',
+      #     attr(rptWrte, "condition")
+      #   ))
+      #   stop()
+      # } else {
+      #   log$info(base::paste0(
+      #     'Data file written to file ',
+      #     fileOut
+      #   ))
+      # }
     
       nameFileQfOutFlag <- fileQfPlau
 
