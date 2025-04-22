@@ -26,7 +26,7 @@ transform:
       "WghtAlphBeta=2|1" \
       Thsh=0.2 \
       FileSchmQm=$FILE_SCHEMA_QM \
-      "GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF" \
+      "GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|heaterErrorQF|sensorStatusQF" \
       "GrpQfBeta1=:nullQF|gapQF|rangeQF" \
       "GrpQfBetaIgnr1=:nullQF|gapQF" \
       
@@ -37,7 +37,7 @@ transform:
       VarTimeBgn=readout_time \
       VarTimeEnd=readout_time \
       FileSchmQm=$FILE_SCHEMA_QM_INST\
-      'GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF' \
+      'GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|heaterErrorQF|sensorStatusQF' \
       'GrpQfBeta1=:nullQF|gapQF|rangeQF' \
       'GrpQfBetaIgnr1=:nullQF|gapQF' \
       Tmi=001 \

@@ -2,7 +2,7 @@
 pipeline:
   name: precipWeighingv2_pluvio_custom_flags
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:sha-965f7a3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:sha-f16678a
   cmd:
   - sh
   - "-c"
@@ -13,12 +13,11 @@ transform:
     IFS=$'\n\t'
     
     # Run second module - quality metrics
-    #       SchmQm=$FILE_SCHEMA_QM \
-    #       SchmData=$FILE_SCHEMA_DATA \ 
     Rscript ./flow.precip.pluvio.flags.R \
       DirIn=$DATA_PATH\
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      DirSubCopy=data \
       SchmQf=$SCHEMA_FLAGS
 
     EOF
