@@ -1,10 +1,10 @@
 ---
 pipeline:
-  name: precipWeighingv2_analyze_pad_and_qaqc_plau
+  name: precipWeighingv2_analyze_pad_and_qaqc
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v1.1.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:sha-518fc1a
   cmd:
   - sh
   - "-c"
@@ -18,7 +18,9 @@ transform:
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/pfs/padded_analyzer
     rm -rf /tmp/pfs/padded_analyzerCopy
+    rm -rf /tmp/pfs/plau
     mkdir -p /tmp/pfs/padded_analyzer
+    mkdir -p /tmp/pfs/plau
     
     # Run first module - padded_timeseries_analyzer
     python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
@@ -30,10 +32,18 @@ transform:
     # Run second module - qaqc plausibility
     Rscript ./flow.qaqc.plau.R \
       DirIn=/tmp/pfs/padded_analyzerCopy \
-      DirOut=/pfs/out \
+      DirOut=/tmp/pfs/plau \
       DirErr=/pfs/out/errored_datums \
       FileSchmQf=$SCHEMA_FLAGS \
       "TermTest1=accu_nrt:null|gap|range(rmv)|step(rmv)"
+        
+    # Run third module - custom flags
+    Rscript ./flow.precip.pluvio.flags.R \
+      DirIn=/tmp/pfs/plau \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      DirSubCopy=data \
+      SchmQf=$SCHEMA_FLAGS_CUST
       
     EOF
   env:
@@ -43,7 +53,7 @@ transform:
     RELATIVE_PATH_INDEX: '3'
     ERR_PATH: /pfs/out/errored_datums
     # Environment variables for qaqc plausibility
-    PARALLELIZATION_INTERNAL: '5'
+    PARALLELIZATION_INTERNAL: '3'
 input:
   cross:
   - pfs:
@@ -54,17 +64,21 @@ input:
       name: SCHEMA_FLAGS
       repo: precipWeighingv2_avro_schemas
       glob: /precipWeighingv2/flags_plausibility_precipWeighingv2.avsc
+  - pfs:
+      name: SCHEMA_FLAGS_CUST
+      repo: precipWeighingv2_avro_schemas
+      glob: /precipWeighingv2/flags_plausibility_custom_precipWeighingv2.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 2G
-  cpu: 5.5
+  memory: 1G
+  cpu: 3.3
 resource_limits:
-  memory: 4G
-  cpu: 7
+  memory: 2G
+  cpu: 4
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 0.3
 datum_set_spec:
   number: 1

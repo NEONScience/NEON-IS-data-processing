@@ -80,7 +80,7 @@ input:
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH
-        repo: precipWeighingv2_pluvio_custom_flags
+        repo: precipWeighingv2_analyze_pad_and_qaqc
         glob: /(*/*/*)
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY

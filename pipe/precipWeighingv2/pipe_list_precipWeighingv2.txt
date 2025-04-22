@@ -6,14 +6,10 @@ precipWeighingv2_srf_assignment.yaml
 precipWeighingv2_threshold.yaml
 precipWeighingv2_thresh_select_ts_pad.yaml
 precipWeighingv2_pre_stats_qm.yaml 
-
-
-#will make compbined module
-precipWeighingv2_analyze_pad_and_qaqc_plau.yaml #will combo w stats
-precipWeighingv2_pluvio_custom_flags #will combo w stats
+precipWeighingv2_analyze_pad_and_qaqc.yaml 
 
 #will make into combined module
 precipWeighingv2_qm_group_and_compute.yaml #will combo w stats
-precip_weighing_stats_group_and_compute.yaml
+precipWeighingv2_stats_group_and_compute.yaml
 
 
