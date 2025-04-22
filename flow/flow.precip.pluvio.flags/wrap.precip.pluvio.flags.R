@@ -86,9 +86,9 @@ wrap.precip.pluvio.flags<- function(DirIn,
 
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutQf <- fs::path(dirOut,'flags')
-  dirOutData <- fs::path(dirOut,'data')
+  #dirOutData <- fs::path(dirOut,'data')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,
-                                DirSub = c('data','flags'),
+                                DirSub = c('flags'),
                                 log = log)
   
   # Copy with a symbolic link the desired subfolders 

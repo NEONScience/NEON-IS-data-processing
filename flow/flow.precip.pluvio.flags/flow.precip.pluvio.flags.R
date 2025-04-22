@@ -158,20 +158,6 @@ if(base::is.null(FileSchmQf) || FileSchmQf == 'NA'){
   FileSchmQf <- base::paste0(base::readLines(FileSchmQf),collapse='')
 }
 
-# TODO do I need data schemas? 
-# # Retrieve output schema for  stats
-# FileSchmData <- Para$SchmData
-# log$debug(base::paste0('Output schema for precipitation data: ',base::paste0(FileSchmData,collapse=',')))
-# 
-# # Read in the schema 
-# if(base::is.null(FileSchmData) || FileSchmData== 'NA'){
-#   FileSchmData <- NULL
-# } else {
-#   FileSchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
-# }
-
-####might need a data schema probably?? 
-
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
 log$debug(base::paste0(
@@ -203,7 +189,6 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
     withCallingHandlers(
       wrap.precip.pluvio.flags(DirIn=DirIn,
                               DirOutBase=Para$DirOut,
-                              #SchmData=FileSchmData, # TODO do I need a stat schema? 
                               SchmQf=FileSchmQf, 
                               DirSubCopy=DirSubCopy,
                               log=log
