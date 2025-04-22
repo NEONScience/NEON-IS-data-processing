@@ -86,7 +86,7 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: REGULARIZED_FLAGS_PATH
-        repo: precipWeighingv2_pre_stats_qm
+        repo: precipWeighingv2_group_path
         glob: /(*/*/*)
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY

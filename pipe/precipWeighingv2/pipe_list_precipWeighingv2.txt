@@ -5,7 +5,6 @@ precipWeighingv2_srf_loader.yaml
 precipWeighingv2_srf_assignment.yaml
 precipWeighingv2_threshold.yaml
 precipWeighingv2_thresh_select_ts_pad.yaml
-precipWeighingv2_pre_stats_qm.yaml 
 precipWeighingv2_analyze_pad_and_qaqc.yaml 
 
 #will make into combined module

@@ -78,7 +78,7 @@ input:
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
         name: UNCERTAINTY_PATH
-        repo: precipWeighingv2_pre_stats_qm
+        repo: precipWeighingv2_group_path
         glob: /(*/*/*)
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
