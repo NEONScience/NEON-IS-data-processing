@@ -10,7 +10,8 @@ ARG APP_DIR="flow.precip.pluvio.flags"
 
 # Copy the lockfile and restore known working versions of R dependency packages
 COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
-RUN R -e 'renv::restore(lockfile="/renv.lock")'
+ENV RENV_PATHS_CACHE /tmp/renv_cache
+RUN R -e 'options(renv.paths.cache = Sys.getenv("RENV_PATHS_CACHE")); renv::restore(lockfile="/renv.lock")'
 
 # Create app user
 RUN groupadd appuser && \
