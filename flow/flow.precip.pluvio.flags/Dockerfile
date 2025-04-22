@@ -3,7 +3,7 @@
 # docker build --no-cache -t neon-is-pluvio-flgs <path to this directory>
 
 # Start with the qaqc package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.7
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v1.1.1
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.precip.pluvio.flags"
@@ -13,9 +13,9 @@ COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Create app user
-RUN groupadd app && \
-    useradd app -g app
-WORKDIR /home/app
+RUN groupadd appuser && \
+    useradd appuser -g appuser
+WORKDIR /home/appuser
 
 # Copy in workflow
 COPY ${FLOW_DIR}/${APP_DIR}/flow.precip.pluvio.flags.R .
@@ -23,5 +23,5 @@ COPY ${FLOW_DIR}/${APP_DIR}/wrap.precip.pluvio.flags.R .
 
 
 # Run as app user
-RUN chown app:app -R /home/app
-USER app
+RUN chown appuser:appuser -R /home/appuser
+USER appuser
