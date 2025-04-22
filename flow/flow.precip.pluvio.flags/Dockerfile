@@ -3,7 +3,7 @@
 # docker build --no-cache -t neon-is-pluvio-flgs <path to this directory>
 
 # Start with the qaqc package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v1.1.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.7
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.precip.pluvio.flags"
