@@ -9,6 +9,7 @@ ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.precip.pluvio.flags"
 
 # Copy the lockfile and restore known working versions of R dependency packages
+RUN rm -rf /home/appuser/.cache/R/renv 
 COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
