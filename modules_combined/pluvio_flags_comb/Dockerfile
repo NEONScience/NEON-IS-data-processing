@@ -1,8 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Combined padded_timeseries_analyzer, Basic QA/QC module (plausibility) and Pluvio 200L Custom Flag module
 # Example command (must be run from project root directory to include both modules in Docker context):
 # Build with the following command
-# docker build --no-cache -t neon-is-pluvio-flgs <path to this directory>
-
+# docker build --no-cache -t neon-is-pluvio-flgs-f ./modules_combined/pluvio_flags_comb/Dockerfile .
 
 # Start with the neon-is-pack-qaqc-r image. 
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-qaqc-r:v1.1.7
@@ -43,7 +42,7 @@ RUN R -e 'renv::restore(lockfile="./renv.lock")'
 #copy lock file from pluvio flags
 ARG APP_DIR2="flow.precip.pluvio.flags"
 
-COPY ${MODULE_DIR}/${APP_DIR2}/renv.lock ./renv.lock2
+COPY ./${MODULE_DIR}/${APP_DIR2}/renv.lock ./renv.lock2
 RUN R -e 'renv::restore(lockfile="/renv.lock2")'
 
 # Create app user
@@ -55,8 +54,8 @@ COPY ./${MODULE_DIR}/${APP_DIR}/wrap.qaqc.plau.R .
 COPY ./${MODULE_DIR}/${APP_DIR}/flow.qaqc.plau.R .
 
 # Copy in workflow
-COPY ${MODULE_DIR}/${APP_DIR2}/flow.precip.pluvio.flags.R .
-COPY ${MODULE_DIR}/${APP_DIR2}/wrap.precip.pluvio.flags.R .
+COPY ./${MODULE_DIR}/${APP_DIR2}/flow.precip.pluvio.flags.R .
+COPY ./${MODULE_DIR}/${APP_DIR2}/wrap.precip.pluvio.flags.R .
 
 # Run as app user
 USER appuser
