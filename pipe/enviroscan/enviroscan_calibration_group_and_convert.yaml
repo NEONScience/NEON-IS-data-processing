@@ -62,7 +62,8 @@ transform:
       DirIn=$OUT_PATH_ARRAY_PARSER \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7"
+      "TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
+      DirSubCopy=calibration
     EOF
   env:
     # Environment variables for filter-joiner.
