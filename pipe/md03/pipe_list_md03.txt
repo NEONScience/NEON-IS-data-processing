@@ -1,2 +1,0 @@
-md03_cron_daily_and_date_control.yaml
-md03_data_source_kafka.yaml
