@@ -47,6 +47,8 @@ transform:
     Rscript ./flow.cal.conv.R  \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
+      FileSchmData=$FILE_SCHEMA_DATA \
+      FileSchmQf=$FILE_SCHEMA_FLAGS \
       DirErr=/pfs/out/errored_datums \
       TermFuncConv=bucket_tip:def.cal.conv.poly \
       TermQf=bucket_tip \
