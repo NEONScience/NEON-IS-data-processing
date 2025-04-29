@@ -116,6 +116,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2022-06-16)
 #     Convert flow script to wrapper function
+#   Cove Sturtevant (2025-04-29)
+#     Force sum of all-NA data to be NA (instead of 0)
 ##############################################################################################
 wrap.stat.basc <- function(DirIn,
                          DirOutBase,
