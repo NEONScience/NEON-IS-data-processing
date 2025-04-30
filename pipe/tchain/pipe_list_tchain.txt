@@ -1,11 +1,9 @@
 cron_daily_tchain.yaml
 location_asset_tchain.yaml
 location_loader_tchain.yaml
-#data_source_tchain_list_years.yaml
 tchain_calibration_assignment.yaml
 tchain_location_asset_assignment.yaml
 tchain_location_active_dates_assignment.yaml
-#tchain_data_calibration_group.yaml
 tchain_array_parser.yaml
 tchain_calibration_conversion.yaml
 tchain_calibrated_location_group.yaml
