@@ -202,6 +202,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
     withCallingHandlers(
       wrap.cal.asgn(DirIn=idxDirIn,
                     DirOutBase=Para$DirOut,
+                    DirErrBase=Para$DirErr,
                     TimeBgn=timeBgn,
                     TimeEnd=timeEnd,
                     PadDay=c(timePadBgn,timePadEnd),

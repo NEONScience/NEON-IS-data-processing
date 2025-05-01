@@ -70,10 +70,10 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.4.6",
+      "Version": "0.5.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "707fae4bbf73697ec8d85f9d7076c061",
+      "Hash": "2720e3fd3dad08f34b19b56b3d6f073d",
       "Requirements": []
     },
     "crayon": {
@@ -403,14 +403,18 @@
     },
     "stringr": {
       "Package": "stringr",
-      "Version": "1.4.0",
+      "Version": "1.5.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "0759e6b6c0957edb1311028a49a35e76",
+      "Hash": "960e2ae9e09656611e0b8214ad543207",
       "Requirements": [
+        "cli",
         "glue",
+        "lifecycle",
         "magrittr",
-        "stringi"
+        "rlang",
+        "stringi",
+        "vctrs"
       ]
     },
     "testthat": {
