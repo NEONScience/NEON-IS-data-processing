@@ -1,5 +1,4 @@
 metone370380_cron_daily_and_date_control.yaml
-<<<<<<< HEAD
 metone370380_data_source_trino.yaml
 metone370380_data_source_kafka.yaml
 metone370380_calibration_list_files.yaml
@@ -11,9 +10,3 @@ metone370380_calibration_group_and_convert.yaml
 metone370380_location_loader.yaml
 metone370380_location_active_dates_assignment.yaml
 metone370380_location_group_and_restructure.yaml
-
-
-=======
-metone370380_event_data_source_kafka.yaml
-metone370380_data_source_trino.yaml
->>>>>>> 54cf3c14e68a986e4244e097babed41d425aa695
