@@ -30,8 +30,11 @@ def parse(config: Config) -> None:
                     link_data_file(path, Path(common_path, data_type))
                 else:
                     data_file_parser.write_restructured_file(path, Path(common_path, data_type), schema_path)
-            if parse_calibration and data_type == 'calibration':
+            elif parse_calibration and data_type == 'calibration':
                 link_calibration_file(path, Path(common_path, data_type), schema_data)
+            else:
+                # Copy/link over other files in the directory
+                link_data_file(path, Path(common_path, data_type))
 
 
 def link_calibration_file(path: Path, out_path, schema_data: SchemaData) -> None:
