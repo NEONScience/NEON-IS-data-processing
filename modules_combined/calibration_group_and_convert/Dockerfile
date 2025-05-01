@@ -1,13 +1,11 @@
 # Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, array parser, and Calibration Conversion
+# Image also includes rclone for exporting output to a bucket
 # Example command (must be run from project parent directory to include modules/ and flow/ paths in Docker context):
 # docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
 
 # Start with the calibration package image. 
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:sha-5586219
 
-
-# maintainer handle
-MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
 
 # Add in the python-based filter-joiner module
 ARG MODULE_DIR="modules"
@@ -17,12 +15,15 @@ ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
+# For rclone
+ARG TARGETPLATFORM
+ARG RCLONE_VERSION=v1.62.2
+
 WORKDIR ${CONTAINER_APP_DIR}
 
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
 
- 
 RUN apt update && \
     apt-get install -y --no-install-recommends \
         python3.8 && \
@@ -35,6 +36,16 @@ RUN apt update && \
 	 rm -rf /var/lib/apt/lists/* && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
+
+# Multi-platform package install for rclone
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then ARCHITECTURE=amd64; \
+    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then ARCHITECTURE=arm-v7; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then ARCHITECTURE=arm64; \
+    else ARCHITECTURE=amd64; fi && \
+    TEMP_DEB="$(mktemp)" && \
+    wget -O "$TEMP_DEB" "https://github.com/rclone/rclone/releases/download/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-${ARCHITECTURE}.deb" &&\
+    dpkg -i "$TEMP_DEB" &&\
+    rm -f "$TEMP_DEB"
 
 # Copy in python code
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
