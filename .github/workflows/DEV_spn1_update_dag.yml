@@ -1,11 +1,11 @@
-name: DEV-exo2_hourly-update-dag
+name: DEV-exo2_hourly_kafka-update-dag
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'pipe/exo2_hourly/*.yaml'
-      - 'pipe/exo2_hourly/pipe_list_exo2_hourly.txt'
+      - 'pipe/exo2_hourly_kafka/*.yaml'
+      - 'pipe/exo2_hourly_kafka/pipe_list_exo2_hourly_kafka.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
     env:
       PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
-      PATHS: 'pipe/exo2_hourly' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
+      PATHS: 'pipe/exo2_hourly_kafka' # Separate multiple with comma (e.g. 'pipe/pqs1,pipe/parWaterSurface'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
