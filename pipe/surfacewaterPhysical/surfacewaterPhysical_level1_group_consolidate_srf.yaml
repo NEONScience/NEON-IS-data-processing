@@ -59,7 +59,7 @@ transform:
     out_parquet_glob="${OUT_PATH}/**/*.parquet"
     # Example: /2024/01/18/surfacewater-physical_ARIK101100/data/surfacewater-physical_ARIK101100_2022-04-04_EOS_30_min_030.parquet
     echo "Linking output files to ${linkdir}"
-    #set -x # Echo commands to output for debugging
+    #set -x # Echo commands to output for troubleshooting
     fname=""
     for f in $out_parquet_glob; do
       if [[ -f "$f" ]]; then

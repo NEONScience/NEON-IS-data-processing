@@ -2,7 +2,7 @@
 pipeline:
   name: aepg600m_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v1.3.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.0.0
   cmd:
   - sh
   - "-c"
@@ -20,8 +20,8 @@ transform:
     
     # Detect the source_type
     unset source_type
-    if [ ${DATA_PATH_TRINO+x} ]; then 
-      export SOURCE_TYPE_PATH=$DATA_PATH_TRINO
+    if [ ${DATA_PATH_ARCHIVE+x} ]; then 
+      export SOURCE_TYPE_PATH=$DATA_PATH_ARCHIVE
     elif [ ${KAFKA_UNMERGED_DATA+x} ]; then 
       export SOURCE_TYPE_PATH=$KAFKA_UNMERGED_DATA
     elif [ ${CALIBRATION_PATH+x} ]; then 
@@ -42,22 +42,15 @@ transform:
       unset FILE_SCHEMA_DATA
     fi
       
-    # Detect if we have data coming from Kafka or trino
-    # Note that we run the filter-joiner in sequential if statements rather than an elif statement ...
-    # ... so that if there is any overlap in sensor data coming from both Kafka and Trino on the same day, the ...
-    # ... trino data wins (filter joiner will not copy a file if it is already in the destination). This scenario ...
-    # ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka ...
-    # ... retention period for data that have already been loaded from Trino. In normal operations this scenario ...
-    # ... should not arise because the only data coming into Pachyderm will be coming from Kafka. ...
-    # ... When a conflict does arise, the Trino data will take precedence, which is fine because the ...
-    # ... conflict arose because data for the same sensor and day were in both locations.
-    if [ ${DATA_PATH_TRINO+x} ]; then 
-      # Data from trino. 
-      
-      # Set CONFIG for filter-joiner to the trino version and run filter joiner
-      export CONFIG=$CONFIG_TRINO
-      python3 -m filter_joiner.filter_joiner_main
-    fi  
+    # Detect if we have data coming from Kafka or the archive
+    # Note that we run the filter-joiner in sequential if statements rather than an elif statement
+    # ... so that if there is any overlap in sensor data coming from both Kafka and the archive on the same day, the
+    # ... kafka data wins (filter joiner will not copy a file if it is already in the destination). This scenario
+    # ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka
+    # ... retention period for data that have already been loaded from the archive. 
+    # ... When a conflict does arise, the kafka data will take precedence, assuming that it is the latest 
+    # ... and greatest. 
+    
     if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
       # Data from kafka. 
       
@@ -67,9 +60,24 @@ transform:
           DirOut=/tmp/kafka_merged \
           DirErr=/pfs/out/errored_datums \
           FileSchmL0=$FILE_SCHEMA_L0
+      
+      # Run filter joiner
+      python3 -m filter_joiner.filter_joiner_main
+    fi  
+    if [ ${DATA_PATH_ARCHIVE+x} ]; then 
+      # Data from the archive. 
+      
+      # Run kafka combiner - note that this works for both trino-loaded data and kafka loaded data. If both
+      #   exist in the folder for the same sensor and day, likely there will be duplicate data written to file
+      #   because the Trino timestamps are truncated to the second whereas Kafka readout times are not. However, 
+      #   this scenario should be rare and duplicates will be removed in the regularization module.
+      Rscript ./flow.kfka.comb.R \
+          DirIn=$DATA_PATH_ARCHIVE \
+          DirOut=/tmp/kafka_merged \
+          DirErr=/pfs/out/errored_datums \
+          FileSchmL0=$FILE_SCHEMA_L0
           
-      # Set CONFIG for filter-joiner to the kafka version and run filter joiner
-      export CONFIG=$CONFIG_KAFKA
+      # Run filter joiner
       python3 -m filter_joiner.filter_joiner_main
     fi  
     
@@ -86,35 +94,14 @@ transform:
     EOF
   env:
     # Environment variables for filter-joiner.
-    # There are two configs here, CONFIG_KAFKA is when data comes from kafka, CONFIG_TRINO is when data comes from trino. 
-    # The engironment variable CONFIG is set to the appropriate one as detected in the bash script above
-    CONFIG_TRINO: |
+    CONFIG: |
       ---
       # Configuration for filter-joiner module that will bring together the data and calibrations
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: DATA_PATH_TRINO
-            # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_TRINO/*/*/*/*/*/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
-            outer_join: true
-        - path:
-            name: CALIBRATION_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
-    CONFIG_KAFKA: |
-      ---
-      # Configuration for filter-joiner module that will bring together the data and calibrations
-      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
-      # Metadata indices will typically begin at index 3.
-      input_paths:
-        - path:
-            name: DATA_PATH_KAFKA
+            name: DATA_PATH_KAFKA_MERGED
             # Filter for data directory
             glob_pattern: /tmp/kafka_merged/*/*/*/*/*/**
             # Join on named location (already joined below by day)
@@ -151,8 +138,8 @@ input:
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
-        name: DATA_PATH_TRINO
-        repo: aepg600m_data_source_trino
+        name: DATA_PATH_ARCHIVE
+        repo: aepg600m_data_source_gcs
         glob: /(*)/(*)/(*)/(*)
         joinOn: $1/$2/$3/$4
         outer_join: true

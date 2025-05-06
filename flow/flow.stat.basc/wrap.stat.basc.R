@@ -116,6 +116,8 @@
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2022-06-16)
 #     Convert flow script to wrapper function
+#   Cove Sturtevant (2025-04-29)
+#     Force sum of all-NA data to be NA (instead of 0)
 ##############################################################################################
 wrap.stat.basc <- function(DirIn,
                          DirOutBase,
@@ -401,7 +403,7 @@ wrap.stat.basc <- function(DirIn,
                             median=base::apply(X=base::subset(dataWndwTime,select=statTerm[['median']]),MARGIN=2,FUN=stats::median,na.rm=TRUE),
                             minimum=base::suppressWarnings(base::apply(X=base::subset(dataWndwTime,select=statTerm[['minimum']]),MARGIN=2,FUN=base::min,na.rm=TRUE)),
                             maximum=base::suppressWarnings(base::apply(X=base::subset(dataWndwTime,select=statTerm[['maximum']]),MARGIN=2,FUN=base::max,na.rm=TRUE)),
-                            sum=base::apply(X=base::subset(dataWndwTime,select=statTerm[['sum']]),MARGIN=2,FUN=base::sum,na.rm=TRUE),
+                            sum=base::apply(X=base::subset(dataWndwTime,select=statTerm[['sum']]),MARGIN=2,FUN=function(dataIdx){ifelse(all(is.na(dataIdx)),as.numeric(NA),base::sum(dataIdx,na.rm=TRUE))}),
                             variance=vari[statTerm[['variance']]],
                             stdDev=sd[statTerm[['stdDev']]],
                             stdEr=sd[statTerm[['stdEr']]]/base::sqrt(numPts[statTerm[['stdEr']]]),
