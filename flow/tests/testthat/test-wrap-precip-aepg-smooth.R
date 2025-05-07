@@ -124,14 +124,7 @@ test_that("Unit test of wrap.precip.aepg.smooth.R", {
   testOutputFlagsDir <- paste0(testOutputDir, '/flags')
   testthat::expect_true(file.exists(testOutputStatsDir, recursive = TRUE))
   testthat::expect_true(file.exists(testOutputFlagsDir, recursive = TRUE))
-  
-  if (dir.exists(testOutputBase)) {
-    unlink(testOutputBase, recursive = TRUE)
-  }
-  
-  returnedOutputDir <-
-    wrap.precip.aepg.smooth(DirIn = testInputDir, DirOutBase = testOutputBase)
-  
+
   # Test 2. No manifest file, the output directories are created, but there will be no files in them due to the error.
   
   testInputDirnoManifest <-
