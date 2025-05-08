@@ -39,6 +39,14 @@
         "iterators"
       ]
     },
+    "fs": {
+      "Package": "fs",
+      "Version": "1.6.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7eb1e342eee7e0a7449c49cdaa526d39",
+      "Requirements": []
+    },
     "iterators": {
       "Package": "iterators",
       "Version": "1.0.14",

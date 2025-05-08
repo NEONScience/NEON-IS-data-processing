@@ -11,18 +11,18 @@
   "Packages": {
     "R6": {
       "Package": "R6",
-      "Version": "2.5.1",
+      "Version": "2.6.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "470851b6d5d0ac559e9d01bb352b4021",
+      "Hash": "d4335fe7207f1c01ab8c41762f5840d4",
       "Requirements": []
     },
     "arrow": {
       "Package": "arrow",
-      "Version": "14.0.0",
+      "Version": "19.0.1.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "daa5319da4e6fa5595647054dcbe7e8d",
+      "Hash": "96d6db49e9dd0dec85a6a0844dd0f5fe",
       "Requirements": [
         "R6",
         "assertthat",
@@ -45,18 +45,18 @@
     },
     "bit": {
       "Package": "bit",
-      "Version": "4.0.5",
+      "Version": "4.6.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "d242abec29412ce988848d0294b208fd",
+      "Hash": "ebe86ffd194564abdc895d87742d5a29",
       "Requirements": []
     },
     "bit64": {
       "Package": "bit64",
-      "Version": "4.0.5",
+      "Version": "4.6.0-1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "9fe98599ca456d6552421db0d6772d8f",
+      "Hash": "4f572fbc586294afff277db583b9060f",
       "Requirements": [
         "bit"
       ]
@@ -79,10 +79,10 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.4.6",
+      "Version": "0.5.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "707fae4bbf73697ec8d85f9d7076c061",
+      "Hash": "2720e3fd3dad08f34b19b56b3d6f073d",
       "Requirements": []
     },
     "doParallel": {
@@ -109,10 +109,10 @@
     },
     "glue": {
       "Package": "glue",
-      "Version": "1.6.2",
+      "Version": "1.8.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4f2596dfb05dac67b9dc558e5c6fba2e",
+      "Hash": "5899f1eaa825580172bb56c08266f37c",
       "Requirements": []
     },
     "iterators": {
@@ -145,10 +145,10 @@
     },
     "purrr": {
       "Package": "purrr",
-      "Version": "1.0.2",
+      "Version": "1.0.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "1cba04a4e9414bdefc9dcaa99649a8dc",
+      "Hash": "cc8b5d43f90551fa6df0a6be5d640a4f",
       "Requirements": [
         "cli",
         "lifecycle",
@@ -167,10 +167,10 @@
     },
     "rjson": {
       "Package": "rjson",
-      "Version": "0.2.21",
+      "Version": "0.2.23",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f9da75e6444e95a1baf8ca24909d63b9",
+      "Hash": "7a04e9eff95857dbf557b4e5f0b3d1a8",
       "Requirements": []
     },
     "rlang": {
@@ -183,10 +183,10 @@
     },
     "tidyselect": {
       "Package": "tidyselect",
-      "Version": "1.2.0",
+      "Version": "1.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "79540e5fcd9e0435af547d885f184fd5",
+      "Hash": "829f27b9c4919c16b593794a6344d6c0",
       "Requirements": [
         "cli",
         "glue",
@@ -198,10 +198,10 @@
     },
     "vctrs": {
       "Package": "vctrs",
-      "Version": "0.6.4",
+      "Version": "0.6.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "266c1ca411266ba8f365fcc726444b87",
+      "Hash": "c03fa420630029418f7e6da3667aac4a",
       "Requirements": [
         "cli",
         "glue",
@@ -211,10 +211,10 @@
     },
     "withr": {
       "Package": "withr",
-      "Version": "2.5.2",
+      "Version": "3.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4b25e70111b7d644322e9513f403a272",
+      "Hash": "cc2d62c76458d425210d1eb1478b30b4",
       "Requirements": []
     }
   }

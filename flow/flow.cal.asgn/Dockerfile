@@ -1,7 +1,7 @@
 # Dockerfile for NEON IS Data Processing - Calibration assignment
 
 # Start with the calibration package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:sha-5586219
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:sha-bf36f9d
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.cal.asgn"
 
