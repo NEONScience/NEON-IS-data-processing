@@ -36,6 +36,8 @@ ENV ARROW_USE_PKG_CONFIG=false
 ENV LIBARROW_MINIMAL=false
 ENV NOT_CRAN=true
 ENV ARROW_WITH_GZIP=ON
+ENV ARROW_S3=ON
+ENV ARROW_GCS=ON
 
 RUN apt-get update \
 && apt-get dist-upgrade -y \
@@ -61,6 +63,8 @@ RUN apt-get update \
         libjansson-dev \
         libsnappy-dev \
         zlib1g-dev \
+      # For duckdb R package
+        xz-utils \
         " \
 && BUILDDEPS="\
            # The following 1 for avro library (and general use it seems)
