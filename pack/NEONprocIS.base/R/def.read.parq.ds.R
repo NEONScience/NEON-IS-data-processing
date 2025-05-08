@@ -45,6 +45,8 @@
 #     original creation
 #   Cove Sturtevant (2023-11-13)
 #     add option to remove duplicated rows
+#   Cove Sturtevant (2025-05-07)
+#     add workaround converting to duckdb when RmvDupl= TRUE to support some array data types
 ##############################################################################################
 def.read.parq.ds <- function(fileIn,
                              Var=NULL,
@@ -54,7 +56,8 @@ def.read.parq.ds <- function(fileIn,
                              log=NULL
 ){
   
-  library(dplyr)
+  library(dplyr,quietly=TRUE)
+  require(duckdb,quietly=TRUE)
   
   # initialize logging if necessary
   if (base::is.null(log)) {
@@ -73,16 +76,26 @@ def.read.parq.ds <- function(fileIn,
   dataMtch <- data %>% 
     dplyr::select(dplyr::all_of(varMtch))
  
+  # Get rid of duplicates if selected
+  # Note: There is a bug for some array data types (e.g. enviroscan) in which the use of distinct()
+  # alters the data type of the array unless .keep_all=TRUE is used, but .keep_all is not supported by arrow. 
+  # Found a workaround to convert to duckdb first, per the following StackOverflow:
+  # https://stackoverflow.com/questions/78240769/alternatives-for-distinct-keep-all-true-in-arrow
+  # If and when arrow supports .keep_all=TRUE, the extra conversions to and from duckdb and subsequent
+  # return to an arrow_dplyr_query can be removed.
+  if(RmvDupl == TRUE){
+    dataMtch <- dataMtch %>%
+      # dplyr::distinct()
+      arrow::to_duckdb() %>% # swap to duckdb to use distinct with .keep_all = TRUE, required to work properly for array data types
+      dplyr::distinct(.keep_all = TRUE) %>%
+      arrow::to_arrow() %>% # back to arrow
+      dplyr::select(dplyr::all_of(varMtch)) # Back to arrow_dplyr_query
+  }
+  
   # Order by time, if selected
   if(!base::is.null(VarTime)){
     dataMtch <- dataMtch %>%
       dplyr::arrange(!! rlang::sym(VarTime))
-  }
-  
-  # Get rid of duplicates if selected
-  if(RmvDupl == TRUE){
-    dataMtch <- dataMtch %>%
-      dplyr::distinct()
   }
   
   # Return a data frame, if selected. Otherwise return arrow table.
@@ -91,7 +104,16 @@ def.read.parq.ds <- function(fileIn,
       dplyr::collect() 
     
     dataMtch <- base::data.frame(dataMtch)
-    base::attr(dataMtch,'schema') <- data$schema
+    
+    # Adjust the schema for selected variables and attach to data frame
+    schm <- data$schema
+    if(!base::all(varData %in% varMtch)){
+      nameFld <- base::unlist(base::lapply(schm$fields,FUN=function(fld){fld$name}))
+      fldNew <- schm$fields[nameFld %in% varMtch]
+      schm <- base::do.call(arrow::schema, fldNew)
+      schm$metadata <- data$schema$metadata # re-attach metadata
+    }
+    base::attr(dataMtch,'schema') <- schm
     
     # Assign timezone for POSIX variables
     clssVar <- base::lapply(X=dataMtch,FUN=base::class)

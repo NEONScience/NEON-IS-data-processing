@@ -70,6 +70,7 @@ def.wrte.parq <- function(data,
                           Dict=NULL,
                           log=NULL
 ){
+  
   # initialize logging if necessary
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
@@ -175,10 +176,17 @@ def.wrte.parq <- function(data,
 
      varData <- base::names(data)
      numUniq <- base::lapply(varData,FUN=function(varIdx){
-       base::length(base::unique(data$GetColumnByName(varIdx)))
+       # Doesn't work for some data types. Skip dictionary encoding if error
+       numUniqIdx <- try({base::length(base::unique(data$GetColumnByName(varIdx)))},silent=TRUE)
+       if("try-error" %in% class(numUniqIdx)){
+         return(numRow)
+       } else {
+         return(numUniqIdx)
+       }
      })
      base::names(numUniq) <- varData
      Dict <- numUniq < 0.7*numRow
+     Dict[is.na(Dict)]<- FALSE
 
      # This is slow, especially for a large number of columns. Replacement above after converting to arrow table.
      # Works for both arrow tables and class arrow_dplyr_query
