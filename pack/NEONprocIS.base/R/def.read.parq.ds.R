@@ -57,7 +57,9 @@ def.read.parq.ds <- function(fileIn,
 ){
   
   library(dplyr,quietly=TRUE)
-  require(duckdb,quietly=TRUE)
+  require(duckdb,quietly=TRUE) # for to_duckdb()
+  require(dbplyr,quietly=TRUE) # for to_duckdb()
+  
   
   # initialize logging if necessary
   if (base::is.null(log)) {
