@@ -88,9 +88,9 @@ class ArrayParserTest(TestCase):
     def test_schema_parser(self) -> None:
         schema_data: SchemaData = schema_parser.parse_schema_file(self.schema_path)
         assert schema_data.source_type == 'tchain'
-        term_name = schema_data.mapping.get('0')
+        term_name = schema_data.calibration_mapping.get('0')
         assert term_name == 'depth0WaterTemp'
-        term_name = schema_data.mapping.get('10')
+        term_name = schema_data.calibration_mapping.get('10')
         assert term_name == 'depth10WaterTemp'
 
     def test_parser(self) -> None:
