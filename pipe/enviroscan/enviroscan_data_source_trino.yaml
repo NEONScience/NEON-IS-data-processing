@@ -69,7 +69,7 @@ transform:
         fday="${BASH_REMATCH[4]}"
         fsourceid="${BASH_REMATCH[5]}"
         fname="${BASH_REMATCH[6]}"
-        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        outdir="${linkdir}/v2/${fsourcetype}_raw/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
         mkdir -p "${outdir}"
         ln -s "${f}" "${outdir}/${fname}"
       done

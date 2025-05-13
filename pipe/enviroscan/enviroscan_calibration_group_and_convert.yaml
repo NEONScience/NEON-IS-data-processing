@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-447d01e
   cmd:
   - sh
   - "-c"
@@ -44,7 +44,7 @@ transform:
           DirIn=$KAFKA_UNMERGED_DATA \
           DirOut=/tmp/kafka_merged \
           DirErr=/pfs/out/errored_datums \
-          FileSchmL0=$FILE_SCHEMA_L0
+          FileSchmL0=$FILE_SCHEMA_L0 
       # Set CONFIG for filter-joiner to the kafka version and run filter joiner
       export CONFIG=$CONFIG_KAFKA
       export OUT_PATH=$OUT_PATH_JOINER
@@ -57,13 +57,50 @@ transform:
     export OUT_PATH=$OUT_PATH_ARRAY_PARSER
     python3 -m array_parser.array_parser_main
 
+    # Send array-parsed data to the L0 bucket
+    # Upload L0 files to bucket, compacting with any existing file with the same name
+    if [[ -d "$OUT_PATH/enviroscan" ]]; then
+      linkdir=$(mktemp -d)
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH}/enviroscan/**/*.parquet"
+      # /pfs/out/enviroscan/2023/01/01/12345/data/file.parquet
+      echo "Linking output files to ${linkdir}"
+      # set -x # Uncomment for debugging
+      for f in $out_parquet_glob; do
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+        fsourcetype="${BASH_REMATCH[1]}"
+        fyear="${BASH_REMATCH[2]}"
+        fmonth="${BASH_REMATCH[3]}"
+        fday="${BASH_REMATCH[4]}"
+        fsourceid="${BASH_REMATCH[5]}"
+        fname="${BASH_REMATCH[6]}"
+        fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
+        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname_out}"
+        
+        # Upload to bucket, compacting with any existing file 
+        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+        rm -rf "${outdir}"
+      done
+      
+      # Update the airflow triggering table
+      for site_output in "${sites_output[@]}"; do
+        ./update-trigger-table.py -s $site_output -S ${SOURCE_TYPE} -D "$OUT_PATH/${SOURCE_TYPE}" 
+      done
+
+      # set +x # Uncomment for debugging
+      rm -rf $linkdir
+    fi
+
     # Run calibration conversion module
     Rscript ./flow.cal.conv.R \
       DirIn=$OUT_PATH_ARRAY_PARSER \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       "TermQf=rawVSWC0|rawVSWC1|rawVSWC2|rawVSWC3|rawVSWC4|rawVSWC5|rawVSWC6|rawVSWC7|rawVSIC0|rawVSIC1|rawVSIC2|rawVSIC3|rawVSIC4|rawVSIC5|rawVSIC6|rawVSIC7" \
-      DirSubCopy=calibration
+      "DirSubCopy=calibration|location"
     EOF
   env:
     # Environment variables for filter-joiner.
@@ -88,6 +125,12 @@ transform:
             glob_pattern: /pfs/CALIBRATION_PATH/enviroscan/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/enviroscan/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
     CONFIG_TRINO: |
       ---
       # Configuration for filter-joiner module that will bring together the data and calibrations
@@ -107,6 +150,12 @@ transform:
             glob_pattern: /pfs/CALIBRATION_PATH/enviroscan/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
+        - path:
+            name: LOCATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/LOCATION_PATH/enviroscan/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
@@ -115,7 +164,6 @@ transform:
     # Environment variables for array parser
     PARSE_CALIBRATION: 'True'
     TEST_MODE: 'False'
-    LOG_LEVEL: DEBUG
     SOURCE_TYPE_INDEX: '4'
     YEAR_INDEX: '5'
     MONTH_INDEX: '6'
@@ -126,6 +174,10 @@ transform:
 
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+  secrets:
+  - name: l0-bucket
+    env_var: BUCKET_NAME
+    key: LO_BUCKET
 input:
   cross:
   - pfs:
@@ -149,21 +201,28 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: enviroscan_calibration_assignment
-        glob: /enviroscan/(2025)/(03)/(10)
+        glob: /enviroscan/(2025)/(04)/(25)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: LOCATION_PATH
+        repo: enviroscan_location_asset_assignment
+        glob: /enviroscan/(2025)/(04)/(25)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_TRINO
         repo: enviroscan_data_source_trino
-        glob: /enviroscan/(2025)/(03)/(10)
+        glob: /enviroscan/(2025)/(04)/(25)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: enviroscan_data_source_kafka
-        glob: /enviroscan/(2025)/(03)/(10)
+        glob: /enviroscan/(2025)/(04)/(25)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
