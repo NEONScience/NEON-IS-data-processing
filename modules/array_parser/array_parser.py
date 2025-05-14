@@ -36,15 +36,17 @@ def parse(config: Config) -> None:
 
 def link_calibration_file(path: Path, out_path, schema_data: SchemaData) -> None:
     stream_id = calibration_file_parser.get_stream_id(path)
-    field_name = schema_data.mapping.get(stream_id)
+    field_name = schema_data.calibration_mapping.get(stream_id)
     link_path = Path(out_path, field_name, path.name)
-    log.debug(f'calibration link: {link_path}')
-    link_path.parent.mkdir(parents=True, exist_ok=True)
-    link_path.symlink_to(path)
+    if not link_path.exists():
+        log.debug(f'calibration link: {link_path}')
+        link_path.parent.mkdir(parents=True, exist_ok=True)
+        link_path.symlink_to(path)
 
 
 def link_data_file(path: Path, out_path: Path) -> None:
     link_path = Path(out_path, path.name)
-    link_path.parent.mkdir(parents=True, exist_ok=True)
-    log.debug(f'data link: {link_path}')
-    link_path.symlink_to(path)
+    if not link_path.exists():
+        link_path.parent.mkdir(parents=True, exist_ok=True)
+        log.debug(f'data link: {link_path}')
+        link_path.symlink_to(path)
