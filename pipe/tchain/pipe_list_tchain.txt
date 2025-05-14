@@ -6,9 +6,7 @@ tchain_calibration_loader.yaml
 tchain_location_asset.yaml
 tchain_location_loader.yaml
 tchain_calibration_assignment.yaml
-tchain_data_calibration_group.yaml
-tchain_array_parser.yaml
-tchain_calibration_conversion.yaml
+tchain_calibration_group_and_convert.yaml
 tchain_location_asset_assignment.yaml
 tchain_location_active_dates_assignment.yaml
 tchain_location_group_and_restructure.yaml

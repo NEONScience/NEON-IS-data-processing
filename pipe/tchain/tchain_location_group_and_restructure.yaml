@@ -72,7 +72,7 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: tchain_calibration_conversion
+      repo: tchain_calibration_group_and_convert
       glob: /(*)/(*)/(*)/(*)
       joinOn: $1/$2/$3/$4
       outer_join: true
