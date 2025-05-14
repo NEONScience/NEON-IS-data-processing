@@ -2,8 +2,8 @@ name: "Build-push-update_assetuid_macaddress_mapping_loader
 
 on:
   push:
-    branches:
-       - 'master'
+   # branches:
+   #    - 'master'
     tags:
       - "assetuid_macaddress_mapping_loader/v*.*.*"
 env:
