@@ -9,7 +9,7 @@ transform:
   - '#!/bin/bash'
   - python3 -m logjam_loader.load_all_logjam_files
   env:
-    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
+    LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     STARTING_PATH_INDEX: "7"
@@ -20,7 +20,7 @@ input:
   pfs:
     name: IN_PATH
     repo: troll_logjam_list_files
-    glob: /*/*/*/logjam_prod/(leveltroll500|aquatroll200)/
+    glob: /*/*/*/logjam_dev/(leveltroll500|aquatroll200)/
     empty_files: true
 parallelism_spec:
   constant: 10
