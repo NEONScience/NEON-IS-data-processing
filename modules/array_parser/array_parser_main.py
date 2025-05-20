@@ -17,7 +17,7 @@ def main() -> None:
     schema_path: Path = env.path('SCHEMA_PATH')
     out_path: Path = env.path('OUT_PATH')
     parse_calibration = env.bool('PARSE_CALIBRATION')
-    log_level: str = env.log_level('LOG_LEVEL', 'INFO')
+    log_level: str = env.str('LOG_LEVEL', 'INFO')
     source_type_index: int = env.int('SOURCE_TYPE_INDEX')
     year_index: int = env.int('YEAR_INDEX')
     month_index: int = env.int('MONTH_INDEX')
