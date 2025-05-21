@@ -22,7 +22,8 @@ transform:
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "TermQf=h2o_raw|co2_raw"
+      "TermQf=h2o_raw|co2_raw" \
+      DirSubCopy=calibration
     EOF
   env:
     # Environment variables for filter-joiner
