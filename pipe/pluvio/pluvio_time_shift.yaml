@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_time_shift
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-time-shft:sha-9f2e9ca
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-time-shft:sha-f025d47
   cmd:
   - sh
   - "-c"
