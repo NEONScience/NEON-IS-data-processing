@@ -20,7 +20,7 @@ input:
   pfs:
     name: IN_PATH
     repo: troll_logjam_list_files
-    glob: /*/*/*/logjam_prod/(leveltroll500|aquatroll200)/
+    glob: /*/*/*/logjam_prod/
     empty_files: true
 parallelism_spec:
   constant: 10
