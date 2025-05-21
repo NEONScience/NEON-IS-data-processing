@@ -10,7 +10,7 @@ ARG APP_DIR="logjam_loader"
 ARG CONTAINER_APP_DIR="/usr/src/app"
 ARG DATA_ACCESS_DIR="data_access"
 ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
-ENV LOGJAM_INGEST_BUCKET="neon-is-logjam-ingest/test_pachyderm"
+ENV LOGJAM_INGEST_BUCKET="neon-is-logjam-ingest"
 
 
 WORKDIR ${CONTAINER_APP_DIR}
