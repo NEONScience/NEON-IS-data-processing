@@ -2,10 +2,10 @@
 pipeline:
   name: troll_logjam_list_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:sha-15a7767
   cmd: ["/bin/bash"]
   env:
-    LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
+    LOGJAM_INGEST_BUCKET: neon-is-logjam-ingest
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
   stdin:
