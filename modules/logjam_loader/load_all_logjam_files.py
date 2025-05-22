@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-print(python3 --version)
-print(environs.__version__)
-print(marshmallow.__version__)
+
 import os
 from contextlib import closing
 from pathlib import Path
+python3 --version
+environs.__version__
+marshmallow.__version__
 import environs
 import xml.etree.ElementTree as ET
 import sys
