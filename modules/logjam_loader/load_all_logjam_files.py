@@ -3,7 +3,6 @@ import os
 from contextlib import closing
 from pathlib import Path
 import environs
-env = environs.Env()
 import xml.etree.ElementTree as ET
 import sys
 from google.cloud import storage
