@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+print(python3 --version)
+print(environs.__version__)
+print(marshmallow.__version__)
 import os
 from contextlib import closing
 from pathlib import Path
