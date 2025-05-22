@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: mwseries_data_source_trino
+  name: hivol3000_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.1.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-433bb2c
   cmd:
   - sh
   - "-c"
@@ -57,9 +57,9 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # Example: /pfs/out/mwseries/2023/01/01/12345/data/file.parquet
+      # Example: /pfs/out/hivol3000/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for debugging
+      # set -x # Uncomment for troubleshooting
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -87,13 +87,13 @@ transform:
       echo "Removing temporary files"
       rm -rf $linkdir
       
-      # set +x # Uncomment for debugging
+      # set +x # Uncomment for troubleshooting
     fi
     EOF
   env:
     # Environment variables for data conversion step
-    GEN_YAML_CONF: "/usr/src/app/genscript/configs/mwseries_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/mwseries/mwseries.avsc"
+    GEN_YAML_CONF: "/usr/src/app/genscript/configs/hivol3000_streams.yaml"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/hivol3000/hivol3000.avsc"
     LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
@@ -106,7 +106,7 @@ transform:
     SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "15"
     # Environment variables for bash code
-    SOURCE_TYPE: 'mwseries'
+    SOURCE_TYPE: 'hivol3000'
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -123,8 +123,8 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: mwseries_cron_daily_and_date_control
-    glob: "/mwseries/*/*/*"
+    repo: hivol3000_cron_daily_and_date_control
+    glob: "/hivol3000/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5

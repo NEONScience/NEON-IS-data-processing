@@ -4,6 +4,14 @@
 	"kafka_start_date" : "2023-05-24"
 	},
 	{
+	"site" : "ARIK",
+	"kafka_start_date" : "2024-03-01"
+	},
+	{
+	"site" : "BARC",
+	"kafka_start_date" : "2024-08-11"
+	},
+	{	
 	"site" : "BARR",
 	"kafka_start_date" : "2023-06-01"
 	},
@@ -12,20 +20,52 @@
 	"kafka_start_date" : "2023-05-10"
 	},
 	{
+	"site" : "BIGC",
+	"kafka_start_date" : "2024-06-01"
+	},
+	{
 	"site" : "BLAN",
 	"kafka_start_date" : "2023-03-03"
+	},
+	{
+	"site" : "BLDE",
+	"kafka_start_date" : "2024-05-08"
+	},
+	{
+	"site" : "BLUE",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "BLWA",
+	"kafka_start_date" : "2024-08-22"
 	},
 	{
 	"site" : "BONA",
 	"kafka_start_date" : "2023-06-01"
 	},
 	{
+	"site" : "CARI",
+	"kafka_start_date" : "2024-03-01"
+	},
+	{
 	"site" : "CLBJ",
 	"kafka_start_date" : "2023-05-19"
 	},
 	{
+	"site" : "COMO",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
 	"site" : "CPER",
 	"kafka_start_date" : "2022-12-30"
+	},
+	{
+	"site" : "CRAM",
+	"kafka_start_date" : "2024-07-20"
+	},
+	{
+	"site" : "CUPE",
+	"kafka_start_date" : "2024-02-09"
 	},
 	{
 	"site" : "DCFS",
@@ -44,12 +84,20 @@
 	"kafka_start_date" : "2023-03-09"
 	},
 	{
+	"site" : "FLNT",
+	"kafka_start_date" : "2024-08-11"
+	},
+	{
 	"site" : "GRSM",
 	"kafka_start_date" : "2023-05-10"
 	},
 	{
 	"site" : "GUAN",
 	"kafka_start_date" : "2023-03-09"
+	},
+	{
+	"site" : "GUIL",
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
 	"site" : "HARV",
@@ -60,12 +108,24 @@
 	"kafka_start_date" : "2023-06-01"
 	},
 	{
+	"site" : "HOPB",
+	"kafka_start_date" : "2024-01-17"
+	},
+	{
+	"site" : "HQTW",
+	"kafka_start_date" : "2024-06-17"
+	},
+	{
 	"site" : "JERC",
 	"kafka_start_date" : "2023-03-09"
 	},
 	{
 	"site" : "JORN",
 	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "KING",
+	"kafka_start_date" : "2024-01-25"
 	},
 	{
 	"site" : "KONA",
@@ -80,8 +140,36 @@
 	"kafka_start_date" : "2023-05-10"
 	},
 	{
+	"site" : "LECO",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
 	"site" : "LENO",
 	"kafka_start_date" : "2023-06-15"
+	},
+	{
+	"site" : "LEWI",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "LIRO",
+	"kafka_start_date" : "2024-08-10"
+	},
+	{
+	"site" : "MART",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "MAYF",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "MCDI",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "MCRA",
+	"kafka_start_date" : "2024-02-05"
 	},
 	{
 	"site" : "MD00",
@@ -108,11 +196,6 @@
 	"start_date" : "2025-03-26"
 	},
 	{
-	"site" : "MDP2",
-	"start_date" : "2025-03-26",
-	"kafka_start_date" : "2025-03-26"
-	},
-	{
 	"site" : "MLBS",
 	"kafka_start_date" : "2023-02-03"
 	},
@@ -133,6 +216,10 @@
 	"kafka_start_date" : "2023-05-19"
 	},
 	{
+	"site" : "OKSR",
+	"kafka_start_date" : "2024-04-06"
+	},
+	{
 	"site" : "ONAQ",
 	"kafka_start_date" : "2023-05-24"
 	},
@@ -145,8 +232,28 @@
 	"kafka_start_date" : "2023-03-09"
 	},
 	{
+	"site" : "POSE",
+	"kafka_start_date" : "2024-01-25"
+	},
+	{
+	"site" : "PRIN",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "PRLA",
+	"kafka_start_date" : "2024-08-10"
+	},
+	{
+	"site" : "PRPO",
+	"kafka_start_date" : "2024-08-10"
+	},
+	{
 	"site" : "PUUM",
 	"kafka_start_date" : "2023-02-03"
+	},
+	{
+	"site" : "REDB",
+	"kafka_start_date" : "2024-02-06"
 	},
 	{
 	"site" : "RMNP",
@@ -181,12 +288,32 @@
 	"kafka_start_date" : "2023-01-13"
 	},
 	{
+	"site" : "SUGG",
+	"kafka_start_date" : "2024-08-11"
+	},
+	{
+	"site" : "SYCA",
+	"kafka_start_date" : "2024-04-11"
+	},
+	{
 	"site" : "TALL",
 	"kafka_start_date" : "2023-05-10"
 	},
 	{
 	"site" : "TEAK",
 	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "TECR",
+	"kafka_start_date" : "2024-03-17"
+	},
+	{
+	"site" : "TOMB",
+	"kafka_start_date" : "2024-08-10"
+	},
+	{
+	"site" : "TOOK",
+	"kafka_start_date" : "2024-08-10"
 	},
 	{
 	"site" : "TOOL",
@@ -205,6 +332,14 @@
 	"kafka_start_date" : "2023-03-15"
 	},
 	{
+	"site" : "WALK",
+	"kafka_start_date" : "2024-02-09"
+	},
+	{
+	"site" : "WLOU",
+	"kafka_start_date" : "2024-02-06"
+	},
+	{
 	"site" : "WOOD",
 	"kafka_start_date" : "2023-05-24"
 	},
@@ -215,141 +350,5 @@
 	{
 	"site" : "YELL",
 	"kafka_start_date" : "2023-02-03"
-	},
-	{
-	"site" : "ARIK",
-	"kafka_start_date" : "2024-03-01"
-	},
-	{
-	"site" : "BARC",
-	"kafka_start_date" : "2024-08-11"
-	},
-	{
-	"site" : "BIGC",
-	"kafka_start_date" : "2024-06-01"
-	},
-	{
-	"site" : "BLDE",
-	"kafka_start_date" : "2024-05-08"
-	},
-	{
-	"site" : "BLUE",
-	"kafka_start_date" : "2024-02-09"
-	},
-	{
-	"site" : "BLWA",
-	"kafka_start_date" : "2024-08-22"
-	},
-	{
-	"site" : "CARI",
-	"kafka_start_date" : "2024-03-01"
-	},
-	{
-	"site" : "COMO",
-	"kafka_start_date" : "2024-02-09"
-	},
-	{
-	"site" : "CRAM",
-	"kafka_start_date" : "2024-07-20"
-	},
-	{
-	"site" : "CUPE",
-	"kafka_start_date" : "2024-02-09"
-	},
-	{
-	"site" : "FLNT",
-	"kafka_start_date" : "2024-08-11"
-	},
-	{
-	"site" : "GUIL",
-	"kafka_start_date" : "2024-01-25"
-	},
-	{
-	"site" : "HOPB",
-	"kafka_start_date" : "2024-01-17"
-	},
-	{
-	"site" : "KING",
-	"kafka_start_date" : "2024-01-25"
-	},
-	{
-	"site" : "LECO",
-	"kafka_start_date" : "2024-02-09"
-	},
-	{
-	"site" : "LEWI",
-	"kafka_start_date" : "2024-01-25"
-	},
-	{
-	"site" : "LIRO",
-	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "MART",
-	"kafka_start_date" : "2024-01-25"
-	},
-	{
-	"site" : "MAYF",
-	"kafka_start_date" : "2024-01-25"
-	},
-	{
-	"site" : "MCDI",
-	"kafka_start_date" : "2024-01-25"
-	},
-	{
-	"site" : "MCRA",
-	"kafka_start_date" : "2024-02-05"
-	},
-	{
-	"site" : "OKSR",
-	"kafka_start_date" : "2024-04-06"
-	},
-	{
-	"site" : "POSE",
-	"kafka_start_date" : "2024-01-25"
-	},
-	{
-	"site" : "PRIN",
-	"kafka_start_date" : "2024-02-09"
-	},
-	{
-	"site" : "PRLA",
-	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "PRPO",
-	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "REDB",
-	"kafka_start_date" : "2024-02-06"
-	},
-	{
-	"site" : "SUGG",
-	"kafka_start_date" : "2024-08-11"
-	},
-	{
-	"site" : "SYCA",
-	"kafka_start_date" : "2024-04-11"
-	},
-	{
-	"site" : "TECR",
-	"kafka_start_date" : "2024-03-17"
-	},
-	{
-	"site" : "TOMB",
-	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "TOOK",
-	"kafka_start_date" : "2024-08-10"
-	},
-	{
-	"site" : "WALK",
-	"kafka_start_date" : "2024-02-09"
-	},
-	{
-	"site" : "WLOU",
-	"kafka_start_date" : "2024-02-06"
 	}
 ]

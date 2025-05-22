@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import os
 from contextlib import closing
 from pathlib import Path
@@ -37,10 +38,13 @@ def load() -> None:
                     pathname, extension = os.path.splitext(path)
                     print("pathname is: ", pathname)
                     path_split = pathname.split('/')
-                    #print("path_split is: ", path_split)
+                    print("path_split is: ", path_split)
                     
-                    folder = path_split[-3]
+                    folder = path_split[-4]
                     print("folder is: ", folder)
+                    
+                    sourcetype = path_split[-3]
+                    print("sourcetype is: ", sourcetype)
                     
                     asset = path_split[-2]
                     print("asset is: ", asset)
@@ -50,7 +54,7 @@ def load() -> None:
                         print("Not a recognized file.")
                     else:
                         print("FileName is: ", filename)
-                        gcs_path = os.path.join(folder, asset,filename)
+                        gcs_path = os.path.join(folder,sourcetype,asset,filename)
                         print("gcs_path is: ", gcs_path)
                     
                         blob = ingest_bucket.blob(gcs_path)

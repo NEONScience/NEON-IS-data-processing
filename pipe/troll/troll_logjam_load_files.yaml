@@ -2,7 +2,7 @@
 pipeline:
   name: troll_logjam_load_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:sha-15a7767
   cmd:
   - /bin/bash
   stdin:
@@ -20,7 +20,7 @@ input:
   pfs:
     name: IN_PATH
     repo: troll_logjam_list_files
-    glob: /*/*/*/logjam_prod/
+    glob: /*/*/*/logjam_prod/(leveltroll500|aquatroll200)/
     empty_files: true
 parallelism_spec:
   constant: 10
