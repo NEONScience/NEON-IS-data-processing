@@ -3,9 +3,6 @@
 import os
 from contextlib import closing
 from pathlib import Path
-python3 --version
-environs.__version__
-marshmallow.__version__
 import environs
 import xml.etree.ElementTree as ET
 import sys
