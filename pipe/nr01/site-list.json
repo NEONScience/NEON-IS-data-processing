@@ -153,23 +153,19 @@
 	},
 	{
 	"site" : "MART",
-	"start_date" : "2017-07-18",
-	"end_date" : "2017-08-23"
+	"kafka_start_date" : "2023-06-15"
 	},
 	{
 	"site" : "MAYF",
-	"start_date" : "2017-07-18",
-	"end_date" : "2017-08-23"
+	"kafka_start_date" : "2023-06-15"
 	},
 	{
 	"site" : "MCDI",
-	"start_date" : "2021-07-23",
-	"end_date" : "2021-11-17"
+	"kafka_start_date" : "2023-06-15"
 	},
 	{
 	"site" : "MCRA",
-	"start_date" : "2021-08-23",
-	"end_date" : "2021-11-30"
+	"kafka_start_date" : "2023-06-15"
 	},
 	{
 	"site" : "MD00",
