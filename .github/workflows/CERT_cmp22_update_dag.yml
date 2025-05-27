@@ -2,7 +2,7 @@ name: CERT-cmp22-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'cert'
     paths:
       - 'pipe/cmp22/*.yaml'
       - 'pipe/cmp22/pipe_list_cmp22.txt'

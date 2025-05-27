@@ -1,2 +1,3 @@
 nr01_cron_daily_and_date_control.yaml
 nr01_data_source_kafka.yaml
+nr01_data_source_trino.yaml
