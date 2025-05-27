@@ -1,17 +1,17 @@
 ---
 pipeline:
-  name: aepg600m_data_source_kafka
+  name: li840a_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.2
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
+    SOURCE_TYPE: "li840a"
     LOG_LEVEL: INFO
-    SOURCE_TYPE_INDEX: "5"
-    YEAR_INDEX: "6"
-    MONTH_INDEX: "7"
-    DAY_INDEX: "8"
+    YEAR_INDEX: "5"
+    MONTH_INDEX: "6"
+    DAY_INDEX: "7"
     KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: pachyderm-kafka-auth
@@ -57,10 +57,8 @@ transform:
     date_today=$(date -u +%Y-%m-%d)
     kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
     
-    # Get date from input path. Terminal path structure must be /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
-    # Datum must be set at /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD or /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
-    source_type=$(echo $import_trigger | cut -f $SOURCE_TYPE_INDEX -d "/")
-    export SOURCE_TYPE=$source_type
+    # Get date from input path. Terminal path structure must be /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
+    # Datum must be set at /SOURCE_TYPE/YYYY/MM/DD or /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
     date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
     echo $date_path
     date_str=$(date -u +%Y-%m-%d -d $date_path)
@@ -71,9 +69,9 @@ transform:
     else
       import_trigger_glob="${import_trigger}/*"
     fi
-
-    sites_output=()
     
+    sites_output=()
+
     for site_kafka in $import_trigger_glob; do
       site_file=$(basename $site_kafka) # Strip off any path prefix
       site=$(echo $site_file | cut -f 1 -d "." --only-delimited) # Extract the site from site.kafka. Ignore site-only files (e.g. CPER vs. CPER.kafka)
@@ -90,7 +88,7 @@ transform:
       fi
       
       # We are ok to run
-      echo "Extracting $date_str kafka data for $SOURCE_TYPE at $site"
+      echo "Extracting $date_str kafka data for $site"
       
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
@@ -99,7 +97,7 @@ transform:
       # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
       ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
-
+      
       sites_output+=($site)
 
     done
@@ -109,9 +107,9 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/aepg600m/2023/01/01/12345/data/file.parquet
+      # /pfs/out/li840a/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for troubleshooting
+      # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -130,26 +128,24 @@ transform:
         ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
         rm -rf "${outdir}"
       done
-
+      
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
-        echo "De-activated! Not running Airflow trigger table update fpr $site_output."
-        # ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
+        ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
       done
 
-      # set +x # Uncomment for troubleshooting
+      # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi
     EOF
 input:
   pfs:
     name: import_trigger
-    repo: aepg600m_cron_daily_and_date_control
-    # Must be datum by day (e.g. /kafka/SOURCE_TYPE/*/*/*) or by day/site (e.g. /kafka/SOURCE_TYPE/*/*/*/*)
-    # Note that aepg600m has separate kafka and trino date-site controls bc some kafka topics start with <site>dfir instead of simply <site>
-    glob: "/kafka/*/*/*/*" 
+    repo: li840a_cron_daily_and_date_control
+    # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
+    glob: "/li840a/*/*/*"
 parallelism_spec:
-  constant: 1
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 300M
@@ -160,6 +156,9 @@ resource_limits:
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.5
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
