@@ -97,7 +97,7 @@ runs:
             cat(x, file="pack/NEONprocIS.base/lintr_out.json")
 
             #Run unit test coverage using covr package
-            setwd("/home/NEON/choim/R/NEON-IS-data-processing/pack/NEONprocIS.base/tests/testthat")
+            #setwd("/home/NEON/choim/R/NEON-IS-data-processing/pack/NEONprocIS.base/tests/testthat")
             devtools::test(pkg="./pack/NEONprocIS.base")
             cov <- covr::package_coverage(path="./pack/NEONprocIS.base", relative_path=TRUE)
             #covr::to_sonarqube(cov, filename="pack/NEONprocIS.base/NEONprocIS.base.xml")
