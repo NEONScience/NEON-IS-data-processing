@@ -94,7 +94,7 @@ runs:
           Rscript | 
           # read the library versions from renv.lock
             renv::restore()
-            devtools::install("${{ env.MODULE_PATH }}")
+            #devtools::install("${{ env.MODULE_PATH }}")
 
             #Run lint_package and covert to JSON
 
