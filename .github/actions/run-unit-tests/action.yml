@@ -88,19 +88,20 @@ runs:
           IFS=$'\n\t'
           Rscript | 
             #renv::use(lockfile = "./pack/NEONprocIS.base/renv.lock")
-            devtools::install("./pack/NEONprocIS.base")
+            renv::restore()
+            devtools::install("${{ env.MODULE_PATH }}")
 
             #Run lint_package and covert to JSON
 
-            res <- lint_package(path="./pack/NEONprocIS.base", relative_path=TRUE)
+            res <- lint_package(path="${{ env.MODULE_PATH }}", relative_path=TRUE)
             x <- toJSON(as.data.frame(res), pretty=TRUE)
-            cat(x, file="pack/NEONprocIS.base/lintr_out.json")
+            cat(x, file="${{ env.MODULE_PATH }}/lintr_out.json")
 
             #Run unit test coverage using covr package
             #setwd("/home/NEON/choim/R/NEON-IS-data-processing/pack/NEONprocIS.base/tests/testthat")
-            devtools::test(pkg="./pack/NEONprocIS.base")
-            cov <- covr::package_coverage(path="./pack/NEONprocIS.base", relative_path=TRUE)
-            #covr::to_sonarqube(cov, filename="pack/NEONprocIS.base/NEONprocIS.base.xml")
+            devtools::test(pkg="${{ env.MODULE_PATH }}")
+            cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}", relative_path=TRUE)
+            #covr::to_sonarqube(cov, filename="${{ env.MODULE_PATH }}/NEONprocIS.base.xml")
 
       # - name: Commit the pipeline yamls to a new PR
       #   shell: bash
