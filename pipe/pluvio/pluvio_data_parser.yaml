@@ -1,7 +1,7 @@
 pipeline:
-  name: pluvio_data_parser_test
+  name: pluvio_data_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-f171451
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -16,6 +16,18 @@ transform:
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
+  - name: pdr-secret
+    env_var: PDR_HOST
+    key: hostname
+  - name: pdr-secret
+    env_var: PDR_DBNAME
+    key: database
+  - name: pdr-secret
+    env_var: PDR_USER
+    key: username
+  - name: pdr-secret
+    env_var: PDR_PASSWORD
+    key: password
   cmd: 
   - sh
   - "-c"
@@ -57,11 +69,6 @@ transform:
         rm -rf "${outdir}"
       done
       
-      # Update the airflow triggering table
-      for site_output in "${sites_output[@]}"; do
-        ./update-trigger-table.py -s $site_output -S $OUT_SOURCE_TYPE -D "$OUT_PATH/$OUT_SOURCE_TYPE" 
-      done
-
       # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi

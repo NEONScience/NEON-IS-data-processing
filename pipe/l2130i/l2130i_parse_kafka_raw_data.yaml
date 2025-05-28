@@ -2,7 +2,7 @@
 pipeline:
   name: l2130i_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-f171451
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -10,15 +10,28 @@ transform:
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "4"
     LOG_LEVEL: DEBUG 
+    UPDATE_TRIGGER_TABLE: "True"
     SOURCE_TYPE: "l2130i_raw"
     PARSE_FIELD: "measurement_buffer"
     PARSED_START_INDEX: "1" # skip first element 'time' in parse_field for parsing
-    PARSED_SCHEMA_PATH: /usr/src/app/schemas/l2130i/l2130i_metrics.avsc
+    PARSED_SCHEMA_PATH: /usr/src/app/schemas/l2130i/l2130i_parsed.avsc
     FIELD_START_INDEX: "4" # skip instrument_status for parsing
   secrets:
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
+  - name: pdr-secret
+    env_var: PDR_HOST
+    key: hostname
+  - name: pdr-secret
+    env_var: PDR_DBNAME
+    key: database
+  - name: pdr-secret
+    env_var: PDR_USER
+    key: username
+  - name: pdr-secret
+    env_var: PDR_PASSWORD
+    key: password
   cmd: 
   - sh
   - "-c"
@@ -60,11 +73,6 @@ transform:
         rm -rf "${outdir}"
       done
       
-      # Update the airflow triggering table
-      for site_output in "${sites_output[@]}"; do
-        ./update-trigger-table.py -s $site_output -S $OUT_SOURCE_TYPE -D "$OUT_PATH/$OUT_SOURCE_TYPE" 
-      done
-
       # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi

@@ -93,7 +93,7 @@ transform:
   env:
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/li7200_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/li7200/li7200_metrics.avsc"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/li7200/li7200_parsed.avsc"
     LOG_LEVEL: info
     OUT_SOURCE_TYPE: 'li7200'
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
