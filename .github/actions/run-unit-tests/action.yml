@@ -87,7 +87,7 @@ runs:
           set -euo pipefail
           IFS=$'\n\t'
           Rscript | 
-            renv::use(lockfile = "./pack/NEONprocIS.base/renv.lock")
+            #renv::use(lockfile = "./pack/NEONprocIS.base/renv.lock")
             devtools::install("./pack/NEONprocIS.base")
 
             #Run lint_package and covert to JSON
