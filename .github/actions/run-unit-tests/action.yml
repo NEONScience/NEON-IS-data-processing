@@ -97,25 +97,26 @@ runs:
             cat(x, file="pack/NEONprocIS.base/lintr_out.json")
 
             #Run unit test coverage using covr package
+            setwd("/home/NEON/choim/R/NEON-IS-data-processing/pack/NEONprocIS.base/tests/testthat")
             devtools::test(pkg="./pack/NEONprocIS.base")
             cov <- covr::package_coverage(path="./pack/NEONprocIS.base", relative_path=TRUE)
             #covr::to_sonarqube(cov, filename="pack/NEONprocIS.base/NEONprocIS.base.xml")
 
-      - name: Commit the pipeline yamls to a new PR
-        shell: bash
-        run: |
-          # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
-          set -euo pipefail
-          IFS=$'\n\t'
-          git config --local user.email "actions@github.com"
-          git config --local user.name "gitHub Actions"
-          # Delete out any previous deployment candidate branch
-          git push origin --delete deployment-candidate-${{ env.IMAGE_NAME }} || echo "No existing branch deployment-candidate-${{ env.IMAGE_NAME }}"
-          echo "If branch deployment-candidate-${{ env.IMAGE_NAME }} existed, it was deleted."
-          git checkout -b deployment-candidate-${{ env.IMAGE_NAME }}
-          echo "Changed files to be committed:"
-          git diff --name-only
-          git add  -u .
-          git commit -m "pipeline specifications updated"  || echo "No pipeline specifications updated"
-          git push origin deployment-candidate-${{ env.IMAGE_NAME }} || echo "No changes to commit"
-          gh pr create --title 'Deployment Candidate: ${{ env.IMAGE_NAME }}' --body "Auto-created by Github action" --base master --head "deployment-candidate-${{ env.IMAGE_NAME }}"
+      # - name: Commit the pipeline yamls to a new PR
+      #   shell: bash
+      #   run: |
+      #     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+      #     set -euo pipefail
+      #     IFS=$'\n\t'
+      #     git config --local user.email "actions@github.com"
+      #     git config --local user.name "gitHub Actions"
+      #     # Delete out any previous deployment candidate branch
+      #     git push origin --delete deployment-candidate-${{ env.IMAGE_NAME }} || echo "No existing branch deployment-candidate-${{ env.IMAGE_NAME }}"
+      #     echo "If branch deployment-candidate-${{ env.IMAGE_NAME }} existed, it was deleted."
+      #     git checkout -b deployment-candidate-${{ env.IMAGE_NAME }}
+      #     echo "Changed files to be committed:"
+      #     git diff --name-only
+      #     git add  -u .
+      #     git commit -m "pipeline specifications updated"  || echo "No pipeline specifications updated"
+      #     git push origin deployment-candidate-${{ env.IMAGE_NAME }} || echo "No changes to commit"
+      #     gh pr create --title 'Deployment Candidate: ${{ env.IMAGE_NAME }}' --body "Auto-created by Github action" --base master --head "deployment-candidate-${{ env.IMAGE_NAME }}"
