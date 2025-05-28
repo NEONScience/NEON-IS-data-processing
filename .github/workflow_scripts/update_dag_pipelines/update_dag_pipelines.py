@@ -29,22 +29,19 @@ def setup_client(pachd_address:str, pach_token:str):
 
 def pipeline_files_from_pipe_lists(paths):
     # Get the list of pipeline yamls to update
-    # paths: a list of type Path or string indicating the directory that contains pipeline specifications. 
-    # Note that the directory must contain a pipe_list_*.txt file listing the pipeline specs that make up the DAG. 
+    # paths: a dictionary with each key being the path that contains pipeline specifications and each value indicating the text file name containing the pipeline specs to update. 
     # The order of paths as well as the internal ordering of the pipe_list_*.txt file should be in the order they should be loaded into pachyderm.
     pipeline_files=[]
-    for path in paths:
-        print(f'Looking in directory {path} for pipeline list (pipe_list_*.txt)')
-        # Load the ordered pipeline list 
-        for pipe_list_file in Path(path).rglob('pipe_list_*.txt'):
-            print(f'Reading pipeline list {pipe_list_file}')
-            with open(pipe_list_file, 'r') as file:
-                for line in file:
-                    line=line.rstrip('\n').strip()
-                    if len(line) > 0:
-                        pipeline_files.append(Path(path,line))
-            break # Only read the first pipe_list file (should only be 1)
-    return(pipeline_files)
+    for path_item in paths.items():
+        path=path_item[0]
+        pipe_list_file=Path(path,path_item[1])
+        print(f'Reading pipeline list {pipe_list_file}')
+        with open(pipe_list_file, 'r') as file:
+            for line in file:
+                line=line.rstrip('\n').strip()
+                if len(line) > 0:
+                    pipeline_files.append(Path(path,line))
+        return(pipeline_files)
 
 
 def create_pipeline_reqs(pipeline_files):
@@ -88,7 +85,7 @@ def main():
     env = environs.Env()
     pachd_address = os.environ["PACHD_ADDRESS"] # e.g. "grpcs://pachd.nonprod.gcp.neoninternal.org:443"
     pach_token = os.environ["PACH_TOKEN"] # auth token (string). Needs repoOwner roles
-    paths = env.list('PATHS') # list of path strings to the directories with pipeline specs to update
+    paths = env.dict('PATHS') # dictionary of paths to monitor for change and the associated file with the list of pipelines to update/create. Example: os.environ['PATHS']='pipe/cmp22=pipe_list_cmp22.txt,pipe/prt=pipe_list_prt.txt'
     update_scope = os.getenv("UPDATE_SCOPE",default='all') # Options are 'all' or 'changed'. If not specified, all will be updated. 'changed' will update any non-existent or changed pipelines.
     changed_files = env.list('CHANGED_FILES') # Paths to files that have changed since last commit
     transaction = env.bool('TRANSACTION',True) # Do updates within a single transaction (recommended)
