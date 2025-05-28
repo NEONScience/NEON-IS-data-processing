@@ -149,13 +149,13 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 1G
-  cpu: 1.6
+  cpu: 1.8
 resource_limits:
   memory: 3G
-  cpu: 3
+  cpu: 2.5
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 1.5
+  memory: 3G
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
