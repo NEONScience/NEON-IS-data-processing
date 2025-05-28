@@ -2,7 +2,7 @@
 pipeline:
   name: pressuretransducer_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.6.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -143,19 +143,19 @@ input:
     name: import_trigger
     repo: pressuretransducer_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/pressuretransducer/*/*/*/*"
+    glob: "/pressuretransducer/*/*/*"
 parallelism_spec:
-  constant: 10
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 1G
-  cpu: 1.6
+  memory: 1.4G
+  cpu: 1.8
 resource_limits:
   memory: 3G
-  cpu: 3
+  cpu: 2.5
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 1.5
+  memory: 3G
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
