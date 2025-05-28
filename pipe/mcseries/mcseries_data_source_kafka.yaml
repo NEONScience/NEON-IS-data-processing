@@ -143,19 +143,19 @@ input:
     name: import_trigger
     repo: mcseries_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/mcseries/*/*/*/*"
+    glob: "/mcseries/*/*/*"
 parallelism_spec:
   constant: 3 
 autoscaling: true
 resource_requests:
   memory: 1G
-  cpu: 1.6
+  cpu: 1.8
 resource_limits:
   memory: 3G
-  cpu: 3
+  cpu: 2.5
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 1.5
+  memory: 3G
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:
