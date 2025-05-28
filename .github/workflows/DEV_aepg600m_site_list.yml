@@ -25,7 +25,7 @@ env:
   REPO_NAME: neon-is-data-processing
   # IS package name
   MODULE_PATH: ./pack/NEONprocIS.base
-  #IMAGE_NAME: neon-is-pack-base-r
+  IMAGE_NAME: neon-is-pack-base-r
 
 jobs:
   run-unit-test:
@@ -71,12 +71,11 @@ jobs:
           
           # Relative path under $GITHUB_WORKSPACE to place the repository
           path: './avro'
-      #     
-      # - name: Get short SHA
-      #   run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-      # 
-      # - name: Get semver
-      #   run:  echo "semver=$(git describe --tags --abbrev=0 --match=NEONprocIS.base/v*.*.* | awk -F "/" '{print $2}')" >> $GITHUB_ENV 
+
+      - name: Get short SHA
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Run IS base package unit tests
         uses: ./.github/actions/run-unit-tests
+        with:
+            image-tag: "${short_sha}"
