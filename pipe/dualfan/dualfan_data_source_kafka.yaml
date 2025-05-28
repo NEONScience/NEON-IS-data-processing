@@ -145,14 +145,14 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/dualfan/*/*/*"
 parallelism_spec:
-  constant: 1
+  constant: 3
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 1.6
+  memory: 400M
+  cpu: 1.8
 resource_limits:
   memory: 1.5G
-  cpu: 2
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.5
