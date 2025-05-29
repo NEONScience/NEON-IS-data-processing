@@ -74,13 +74,13 @@ runs:
             packages: |
               any::fs
               any::devtools
-              any::lintr
-              any::jsonlite
+              #any::lintr
+              #any::jsonlite
               any::testthat
               any::usethis
-              any::dplyr
-              any::arrow
-              any::rjson
+              #any::dplyr
+              #any::arrow
+              #any::rjson
 
       - name: check out repository
         uses: actions/checkout@v3
@@ -89,5 +89,8 @@ runs:
         shell: bash
         run: |
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
-          Rscript -e renv::restore()
-          Rscript -e devtools::test(pkg="/home/NEON/choim/R/NEON-IS-data-processing/pack/NEONprocIS.base")
+          set -euo pipefail
+          IFS=$'\n\t'
+          Rscript  renv::restore()
+          Rscript  devtools::install("${{ env.MODULE_PATH }}")
+          Rscript  devtools::test(pkg="${{ env.MODULE_PATH }}")
