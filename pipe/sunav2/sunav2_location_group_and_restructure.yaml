@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: suna_location_group_and_restructure
+  name: sunav2_location_group_and_restructure
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.0
   cmd:
@@ -47,14 +47,14 @@ transform:
         - path:
             name: DATA_PATH
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH/suna/*/*/*/*/**
+            glob_pattern: /pfs/DATA_PATH/sunav2/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
             outer_join: true
         - path:
             name: LOCATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/LOCATION_PATH/suna/*/*/*/*/**
+            glob_pattern: /pfs/LOCATION_PATH/sunav2/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH: /tmp/pfs/filter_joined
@@ -67,15 +67,15 @@ input:
   join:
   - pfs:
       name: DATA_PATH
-      repo: suna_calibration_group_and_convert
-      glob: /suna/(*)/(*)/(*)
+      repo: sunav2_calibration_group_and_convert
+      glob: /sunav2/(*)/(*)/(*)
       joinOn: $1/$2/$3
       outer_join: true
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - pfs:
       name: LOCATION_PATH
-      repo: suna_location_asset_assignment
-      glob: /suna/(*)/(*)/(*)
+      repo: sunav2_location_asset_assignment
+      glob: /sunav2/(*)/(*)/(*)
       joinOn: $1/$2/$3
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:

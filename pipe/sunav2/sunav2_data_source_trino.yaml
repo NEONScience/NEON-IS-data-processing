@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: suna_data_source_trino
+  name: sunav2_data_source_trino
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.1.1
   cmd:
@@ -125,7 +125,7 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: suna_cron_daily_and_date_control
+    repo: sunav2_cron_daily_and_date_control
     glob: "/*/*/*/*"
 output_branch: master
 parallelism_spec:

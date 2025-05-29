@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: suna_cron_daily_and_date_control
+  name: sunav2_cron_daily_and_date_control
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   cmd: ["/bin/bash"]
@@ -13,7 +13,7 @@ transform:
     OUT_PATH: /pfs/out
     START_DATE: "2024-07-28" # Inclusive
     END_DATE: "2027-08-10" # Inclusive
-    SOURCE_TYPE: "suna"
+    SOURCE_TYPE: "sunav2"
   stdin:
   - "#!/bin/bash"
   - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
@@ -26,7 +26,7 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: suna_site_list
+      repo: sunav2_site_list
       glob: /site-list.json
 resource_requests:
   memory: 100M
