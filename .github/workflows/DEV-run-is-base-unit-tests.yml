@@ -72,10 +72,10 @@ jobs:
           # Relative path under $GITHUB_WORKSPACE to place the repository
           path: './avro'
 
-      # - name: Get short SHA
-      #   run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Get short SHA
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Run IS base package unit tests
         uses: ./.github/actions/run-unit-tests
-        # with:
-        #     image-tag: "${short_sha}"
+        with:
+            image-tag: "${short_sha}"
