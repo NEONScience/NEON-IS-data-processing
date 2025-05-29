@@ -1,10 +1,10 @@
 name: "Build-push_kafka_load_and_array_parse"
 
 on:
+  pull_request:
   push:
-    pull_request:
-      branches:
-        - 'master'
+    branches:
+      - 'master'
     paths:
       - 'modules_combined/kafka_load_and_array_parse/**'
       - 'modules/array_parser/**'
