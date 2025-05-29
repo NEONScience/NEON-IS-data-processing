@@ -2,7 +2,7 @@
 pipeline:
   name: nr01_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.6.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -145,14 +145,14 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/nr01/*/*/*"
 parallelism_spec:
-  constant: 3
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 1.6
+  memory: 400M
+  cpu: 1.8
 resource_limits:
   memory: 1.5G
-  cpu: 2
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.5
