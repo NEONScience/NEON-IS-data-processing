@@ -89,20 +89,5 @@ runs:
         shell: bash
         run: |
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
-          set -euo pipefail
-          IFS=$'\n\t'
-          Rscript | 
-          # read the library versions from renv.lock
-            renv::restore()
-            #devtools::install("${{ env.MODULE_PATH }}")
-
-            #Run lint_package and covert to JSON
-            
-            res = lint_package(path="./pack/NEONprocIS.base", relative_path=TRUE)
-            x = toJSON(as.data.frame(res), pretty=TRUE)
-            cat(x, file="${{ env.MODULE_PATH }}/lintr_out.json")
-
-            #Run unit test coverage using covr package
-            devtools::test(pkg="${{ env.MODULE_PATH }}")
-            cov = covr::package_coverage(path="${{ env.MODULE_PATH }}", relative_path=TRUE)
-            #covr::to_sonarqube(cov, filename="${{ env.MODULE_PATH }}/NEONprocIS.base.xml")
+          Rscript -e renv::restore()
+          Rscript -e devtools::test(pkg="/home/NEON/choim/R/NEON-IS-data-processing/pack/NEONprocIS.base")
