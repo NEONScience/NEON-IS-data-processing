@@ -74,8 +74,6 @@ runs:
             packages: |
               any::fs
               any::devtools
-              any::testthat
-              any::usethis
 
       - name: check out repository
         uses: actions/checkout@v3
@@ -91,6 +89,6 @@ runs:
           IFS=$'\n\t'
           Rscript | 
             #read the library versions from renv.lock
-            renv::restore()
+            #renv::restore()
             devtools::install("${{ env.MODULE_PATH }}")
             devtools::test(pkg="${{ env.MODULE_PATH }}")
