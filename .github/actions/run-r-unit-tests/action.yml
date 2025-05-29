@@ -90,5 +90,6 @@ runs:
           Rscript | 
             #read the library versions from renv.lock
             renv::restore()
-            devtools::install("${{ env.MODULE_PATH }}")
+            #syntax error near unexpected token `devtools::install'
+            #devtools::install("${{ env.MODULE_PATH }}")
             devtools::test(pkg="${{ env.MODULE_PATH }}")
