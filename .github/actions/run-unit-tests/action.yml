@@ -94,12 +94,11 @@ runs:
           Rscript | 
           # read the library versions from renv.lock
             renv::restore()
-            devtools::install("${{ env.MODULE_PATH }}")
+            #devtools::install("${{ env.MODULE_PATH }}")
 
             #Run lint_package and covert to JSON
             
             #Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
-
 
             res = lint_package(path="./pack/NEONprocIS.base", relative_path=TRUE)
             x = toJSON(as.data.frame(res), pretty=TRUE)
