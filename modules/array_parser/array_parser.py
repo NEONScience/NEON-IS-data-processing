@@ -31,7 +31,7 @@ def parse(config: Config) -> None:
                 common_path = Path(out_path, source_type, year, month, day, source_id)
             if data_type == 'data':
                 if test_mode:
-                    log.debug(f'Linking file: {path} to {Path(common_path, data_type}')
+                    log.debug(f'Linking file: {path} to {Path(common_path, data_type)}')
                     link_data_file(path, Path(common_path, data_type))
                 else:
                     log.debug(f'Parsing file: {path}')
@@ -41,7 +41,7 @@ def parse(config: Config) -> None:
                 link_calibration_file(path, Path(common_path, data_type), schema_data)
             else:
                 # Copy/link over other files in the directory
-                log.debug(f'Linking file: {path} to {Path(common_path, data_type}')
+                log.debug(f'Linking file: {path} to {Path(common_path, data_type)}')
                 link_data_file(path, Path(common_path, data_type))
 
 def link_calibration_file(path: Path, out_path, schema_data: SchemaData) -> None:
