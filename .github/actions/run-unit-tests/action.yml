@@ -94,14 +94,13 @@ runs:
           Rscript | 
           # read the library versions from renv.lock
             renv::restore()
-            
             #devtools::install("${{ env.MODULE_PATH }}")
 
             #Run lint_package and covert to JSON
 
-            # res <- lint_package(path="${{ env.MODULE_PATH }}", relative_path=TRUE)
-            # x <- toJSON(as.data.frame(res), pretty=TRUE)
-            # cat(x, file="${{ env.MODULE_PATH }}/lintr_out.json")
+            res <- lint_package(path="./pack/NEONprocIS.base", relative_path=TRUE)
+            x <- toJSON(as.data.frame(res), pretty=TRUE)
+            cat(x, file="${{ env.MODULE_PATH }}/lintr_out.json")
 
             #Run unit test coverage using covr package
             devtools::test(pkg="${{ env.MODULE_PATH }}")
