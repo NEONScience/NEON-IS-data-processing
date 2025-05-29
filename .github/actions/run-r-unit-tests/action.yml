@@ -74,13 +74,13 @@ runs:
             packages: |
               any::fs
               any::devtools
-              #any::lintr
-              #any::jsonlite
+              any::lintr
+              any::jsonlite
               any::testthat
               any::usethis
-              #any::dplyr
-              #any::arrow
-              #any::rjson
+              any::dplyr
+              any::arrow
+              any::rjson
 
       - name: check out repository
         uses: actions/checkout@v3
