@@ -26,8 +26,8 @@ def main() -> None:
     source_id_index: int = env.int('SOURCE_ID_INDEX')
     data_type_index: int = env.int('DATA_TYPE_INDEX')
     test_mode: bool = env.bool("TEST_MODE")
-    log.debug(f'data_path: {data_path} schema_path: {schema_path} out_path: {out_path}')
     log_config.configure(log_level)
+    log.debug(f'data_path: {data_path} schema_path: {schema_path} out_path: {out_path}')
     config = Config(data_path=data_path,
                     schema_path=schema_path,
                     out_path=out_path,
