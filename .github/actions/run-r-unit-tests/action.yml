@@ -86,6 +86,11 @@ runs:
       - name: Run unit test coverage using covr package
         shell: bash
         run: |
-          Rscript  renv::restore()
-          Rscript  devtools::install("${{ env.MODULE_PATH }}")
-          Rscript  devtools::test(pkg="${{ env.MODULE_PATH }}")
+          # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+          set -euo pipefail
+          IFS=$'\n\t'
+          Rscript | 
+            #read the library versions from renv.lock
+            renv::restore()
+            devtools::install("${{ env.MODULE_PATH }}")
+            devtools::test(pkg="${{ env.MODULE_PATH }}")
