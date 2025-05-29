@@ -29,9 +29,9 @@ runs:
       - name: Log into github registry ${{ env.GHCR_REGISTRY }}
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.GHCR_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ env.GITHUB_TOKEN }}
+            registry: ${{ env.GHCR_REGISTRY }}
+            username: ${{ github.actor }}
+            password: ${{ env.GITHUB_TOKEN }}
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
@@ -81,7 +81,7 @@ runs:
         uses: actions/checkout@v3
 
       - name: read renv
-      - uses: r-lib/actions/setup-renv@v2
+        uses: r-lib/actions/setup-renv@v2
 
       - name: Run unit test coverage using covr package
         shell: bash
