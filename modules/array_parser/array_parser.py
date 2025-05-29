@@ -31,13 +31,17 @@ def parse(config: Config) -> None:
                 common_path = Path(out_path, source_type, year, month, day, source_id)
             if data_type == 'data':
                 if test_mode:
+                    log.debug(f'Linking file: {path} to {Path(common_path, data_type}')
                     link_data_file(path, Path(common_path, data_type))
                 else:
+                    log.debug(f'Parsing file: {path}')
                     data_file_parser.write_restructured_file(path, Path(common_path, data_type), schema_path)
             elif parse_calibration and data_type == 'calibration':
+                log.debug(f'Parsing calibration file: {path}')
                 link_calibration_file(path, Path(common_path, data_type), schema_data)
             else:
                 # Copy/link over other files in the directory
+                log.debug(f'Linking file: {path} to {Path(common_path, data_type}')
                 link_data_file(path, Path(common_path, data_type))
 
 def link_calibration_file(path: Path, out_path, schema_data: SchemaData) -> None:
