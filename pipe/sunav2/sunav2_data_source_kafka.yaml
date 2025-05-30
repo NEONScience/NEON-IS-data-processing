@@ -7,7 +7,7 @@ transform:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "sunav2"
+    SOURCE_TYPE: "sunav2_raw"
     LOG_LEVEL: DEBUG
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
