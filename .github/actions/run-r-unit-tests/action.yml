@@ -90,5 +90,5 @@ runs:
           #read the library versions from renv.lock
           Rscript |
             renv::restore()
-            install.packages("${{ env.MODULE_PATH }}")
+            setwd("${{ env.MODULE_PATH }}")
             test()
