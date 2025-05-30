@@ -1,7 +1,6 @@
 name: "Build-push_kafka_load_and_array_parse"
 
 on:
-  pull_request:
   push:
     branches:
       - 'master'
