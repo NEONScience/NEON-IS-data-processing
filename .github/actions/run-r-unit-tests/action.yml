@@ -78,18 +78,13 @@ runs:
       - name: check out repository
         uses: actions/checkout@v3
 
-      # - name: read renv
-      #   uses: r-lib/actions/setup-renv@v2
-
       - name: Run unit test coverage using covr package
         shell: bash
         run: |
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
           set -euo pipefail
           IFS=$'\n\t'
-          Rscript | 
-            #read the library versions from renv.lock
-            renv::restore()
-            #syntax error near unexpected token `devtools::install'
-            #devtools::install("${{ env.MODULE_PATH }}")
-            devtools::test(pkg="${{ env.MODULE_PATH }}")
+          #read the library versions from renv.lock
+          Rscript -e "renv::restore()"
+          Rscript -e "devtools::install("${{ env.MODULE_PATH }}")"
+          Rscript -e "devtools::test(pkg="${{ env.MODULE_PATH }}")"
