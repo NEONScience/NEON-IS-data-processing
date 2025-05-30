@@ -82,13 +82,11 @@ runs:
         uses: actions/checkout@v3
 
       - name: Run unit test coverage using covr package
-        shell: bash
+        shell: Rscript {0}
         run: |
-          # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
-          set -euo pipefail
-          IFS=$'\n\t'
           #read the library versions from renv.lock
-          Rscript |
-            renv::restore()
-            setwd("${{ env.MODULE_PATH }}")
-            test()
+          renv::restore()
+          setwd("${{ env.MODULE_PATH }}")
+          devtools::test(pkg="${{ env.MODULE_PATH }}")
+          cov <- covr::package_coverage()
+          report(cov)
