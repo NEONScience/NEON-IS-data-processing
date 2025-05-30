@@ -74,7 +74,6 @@ runs:
             packages: |
               fs
               devtools
-              renv
 
       - name: check out repository
         uses: actions/checkout@v3
@@ -86,6 +85,7 @@ runs:
           set -euo pipefail
           IFS=$'\n\t'
           #read the library versions from renv.lock
-          Rscript -e "renv::restore()"
+          Rscript |
+            renv::restore()
           Rscript -e "devtools::install("${{ env.MODULE_PATH }}")"
           Rscript -e "devtools::test(pkg="${{ env.MODULE_PATH }}")"
