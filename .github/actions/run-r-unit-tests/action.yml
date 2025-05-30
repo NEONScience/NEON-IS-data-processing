@@ -71,8 +71,12 @@ runs:
       - name: Install R packages
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-            packages: |
+          packages: |
               fs
+          extra-packages: |
+              any::covr
+              any::xml2
+          needs: coverage
 
       - name: check out repository
         uses: actions/checkout@v3
@@ -86,5 +90,5 @@ runs:
           #read the library versions from renv.lock
           Rscript |
             renv::restore()
-            devtools::install_github("${{ env.MODULE_PATH }}")
-            devtools::test()
+            install.packages("${{ env.MODULE_PATH }}")
+            test()
