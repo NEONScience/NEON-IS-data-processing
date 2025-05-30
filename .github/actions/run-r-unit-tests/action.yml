@@ -73,6 +73,7 @@ runs:
         with:
           packages: |
               fs
+              renv
           extra-packages: |
               any::covr
               any::xml2
