@@ -11,6 +11,8 @@ ARG MODULE_DIR="modules"
 ARG APP_DIR="array_parser"
 ARG COMMON_DIR="common"
 ARG CONTAINER_APP_DIR="/usr/src"
+# Commenting PYTHONPATH because adding it conflicts with the common folder/module in the kafka loader image. 
+# If common modules are needed from NEON-IS-data-processing, need to resolve that conflict. For now it works.
 # ENV PYTHONPATH="${PYTHONPATH}:${CONTAINER_APP_DIR}"
 
 WORKDIR ${CONTAINER_APP_DIR}
