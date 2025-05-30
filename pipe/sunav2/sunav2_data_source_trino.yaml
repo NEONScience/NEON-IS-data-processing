@@ -26,8 +26,6 @@ transform:
       echo "Processing $path"
       p=${path#/pfs}
       IFS="/"; arr=($p); unset IFS;
-      source_type=${arr[2]}
-      export SOURCE_TYPE=$source_type
       year=${arr[3]}
       month=${arr[4]}
       day=${arr[5]}
@@ -48,7 +46,7 @@ transform:
       export GEN_SITE_NAME=$site
       export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
       export GEN_YAML_CONF="/usr/src/app/genscript/configs/$(echo $SOURCE_TYPE)_streams.yaml"
-      export GEN_SCHEMA_FILE="/usr/src/app/schemas/$(echo $SOURCE_TYPE)/$(echo $SOURCE_TYPE).avsc"
+      export GEN_SCHEMA_FILE="/usr/src/app/schemas/$(echo $SOURCE_TYPE)/$(echo $SOURCE_TYPE)_raw.avsc"
       echo "Extracting $SOURCE_TYPE from Trino for $year/$month/$day/$site"
       export GEN_OUTPUT_DIR=$interimDir/$SOURCE_TYPE/$year/$month/$day
       mkdir -p $GEN_OUTPUT_DIR
@@ -98,7 +96,7 @@ transform:
     EOF
   env:
     # Static environment variables for data conversion step
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
     IN_PATH: /tmp/interimData
@@ -109,6 +107,7 @@ transform:
     DAY_INDEX: '6'
     SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "15"
+    SOURCE_TYPE: "sunav2"
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -126,7 +125,7 @@ input:
   pfs:
     name: import_trigger
     repo: sunav2_cron_daily_and_date_control
-    glob: "/*/*/*/*"
+    glob: "/sunav2/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5
