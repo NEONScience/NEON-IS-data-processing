@@ -148,11 +148,11 @@ parallelism_spec:
   constant: 1
 autoscaling: true
 resource_requests:
-  memory: 6G
+  memory: 8G
   cpu: 3
 resource_limits:
-  memory: 8G
-  cpu: 4
+  memory: 10G
+  cpu: 5
 sidecar_resource_requests:
   memory: 4G
   cpu: 3
