@@ -73,7 +73,6 @@ runs:
         with:
           packages: |
               fs
-              renv
           extra-packages: |
               any::covr
               any::xml2
@@ -83,12 +82,17 @@ runs:
         uses: actions/checkout@v3
 
       - name: Run unit test coverage using covr package
-        shell: Rscript {0}
+        shell: bash
         run: |
-          #read the library versions from renv.lock
-          #renv::restore()
-          setwd("./tests/testthat")
-          getwd()
-          devtools::test()
-          cov <- covr::package_coverage()
-          report(cov)
+          # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+          set -euo pipefail
+          IFS=$'\n\t'
+          Rscript |
+            #read the library versions from renv.lock
+            renv::restore()
+            devtools::test(pkg="${{ env.MODULE_PATH }}")
+            cov <- covr::package_coverage()
+            report(cov)
+          
+          #Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
+
