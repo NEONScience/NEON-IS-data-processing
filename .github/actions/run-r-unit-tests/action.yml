@@ -87,7 +87,8 @@ runs:
         run: |
           #read the library versions from renv.lock
           #renv::restore()
-          setwd("${{ env.MODULE_PATH }}")
-          devtools::test(pkg="${{ env.MODULE_PATH }}")
+          setwd("./tests/testthat")
+          getwd()
+          devtools::test()
           cov <- covr::package_coverage()
           report(cov)
