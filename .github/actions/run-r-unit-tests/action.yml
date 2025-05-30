@@ -73,7 +73,6 @@ runs:
         with:
             packages: |
               fs
-              devtools
 
       - name: check out repository
         uses: actions/checkout@v3
@@ -87,5 +86,5 @@ runs:
           #read the library versions from renv.lock
           Rscript |
             renv::restore()
-          Rscript -e "devtools::install("${{ env.MODULE_PATH }}")"
-          Rscript -e "devtools::test(pkg="${{ env.MODULE_PATH }}")"
+            devtools::install("${{ env.MODULE_PATH }}")
+            devtools::test(pkg="${{ env.MODULE_PATH }}")
