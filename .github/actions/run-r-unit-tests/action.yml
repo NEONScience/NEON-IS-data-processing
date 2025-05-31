@@ -90,7 +90,7 @@ runs:
           Rscript |
             #read the library versions from renv.lock
             renv::restore()
-            devtools::test(pkg="${{ env.MODULE_PATH }}")
+            devtools::test()
             cov <- covr::package_coverage()
             report(cov)
           
