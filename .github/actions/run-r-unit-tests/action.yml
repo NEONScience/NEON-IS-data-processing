@@ -73,6 +73,7 @@ runs:
         with:
           packages: |
               fs
+              devtools
           extra-packages: |
               any::covr
               any::xml2
@@ -93,7 +94,6 @@ runs:
           Rscript -e 'report(cov)'
           #read the library versions from renv.lock
           #  renv::restore()
-          #  source()
           #  devtools::test()
           #  cov <- covr::package_coverage()
           #  report(cov)
