@@ -88,13 +88,8 @@ runs:
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
           set -euo pipefail
           IFS=$'\n\t'
-          #working-directory: ./tests/testthat/
+          Rscript -e 'renv::restore()'
           Rscript -e 'devtools::install("./pack/NEONprocIS.base")'
           Rscript -e 'devtools::test(pkg="./pack/NEONprocIS.base")'
           Rscript -e 'cov <- covr::package_coverage()'
           Rscript -e 'report(cov)'
-          #read the library versions from renv.lock
-          #  renv::restore()
-          #  devtools::test()
-          #  cov <- covr::package_coverage()
-          #  report(cov)
