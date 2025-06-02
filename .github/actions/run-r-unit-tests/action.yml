@@ -53,7 +53,7 @@ runs:
               
       # Build and push Docker image with Buildx (don't push on PR) with multiple tags
       # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
+      - name: Build but not push Docker image to GCP
         id: build
         uses: docker/build-push-action@v5
         with:
@@ -88,9 +88,9 @@ runs:
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
           set -euo pipefail
           IFS=$'\n\t'
-           Rscript |
-             #read the library versions from renv.lock
-             renv::restore()
+          # Rscript |
+          #   #read the library versions from renv.lock
+          #   renv::restore()
           #Rscript -e 'devtools::install("${{ env.MODULE_PATH }}")'
           Rscript -e 'devtools::test("${{ env.MODULE_PATH }}")'
           Rscript -e 'cov <- covr::package_coverage()'
