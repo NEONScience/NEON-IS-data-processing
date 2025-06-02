@@ -89,7 +89,8 @@ runs:
           set -euo pipefail
           IFS=$'\n\t'
           #working-directory: ./tests/testthat/
-          Rscript -e 'devtools::test()'
+          Rscript -e 'devtools::install("./pack/NEONprocIS.base")'
+          Rscript -e 'devtools::test(pkg="./pack/NEONprocIS.base")'
           Rscript -e 'cov <- covr::package_coverage()'
           Rscript -e 'report(cov)'
           #read the library versions from renv.lock
