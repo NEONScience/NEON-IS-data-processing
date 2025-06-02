@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - 'master'
-    paths:
-      - 'pack/NEONprocIS.base/tests/testthat/**.R'
+    # paths:
+    #   - 'pack/NEONprocIS.base/'
       
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
