@@ -54,16 +54,16 @@ runs:
       # Build and push Docker image with Buildx (don't push on PR) with multiple tags
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
-        id: build-and-push
+        id: build
         uses: docker/build-push-action@v5
         with:
             context: ./
             file: ${{ env.MODULE_PATH }}/Dockerfile
             # push: ${{ github.event_name != 'pull_request' }}
-            push: true
-            tags: |
-              ${{ steps.meta.outputs.tags }}
-            labels: ${{ steps.meta.outputs.labels }}
+            # push: true
+            # tags: |
+            #   ${{ steps.meta.outputs.tags }}
+            # labels: ${{ steps.meta.outputs.labels }}
  
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
@@ -88,8 +88,10 @@ runs:
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
           set -euo pipefail
           IFS=$'\n\t'
-          Rscript -e 'renv::restore()'
-          Rscript -e 'devtools::install("./pack/NEONprocIS.base")'
-          Rscript -e 'devtools::test(pkg="./pack/NEONprocIS.base")'
+           Rscript |
+             #read the library versions from renv.lock
+             renv::restore()
+          #Rscript -e 'devtools::install("${{ env.MODULE_PATH }}")'
+          Rscript -e 'devtools::test("${{ env.MODULE_PATH }}")'
           Rscript -e 'cov <- covr::package_coverage()'
           Rscript -e 'report(cov)'
