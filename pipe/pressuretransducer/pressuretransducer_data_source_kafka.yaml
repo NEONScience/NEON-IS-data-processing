@@ -143,9 +143,9 @@ input:
     name: import_trigger
     repo: pressuretransducer_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/pressuretransducer/*/*/*"
+    glob: "/pressuretransducer/*/*/*/*"
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
   memory: 1.4G

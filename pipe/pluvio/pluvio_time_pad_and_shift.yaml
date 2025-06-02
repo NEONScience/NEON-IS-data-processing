@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_time_pad_and_shift
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.1.0
   cmd:
   - sh
   - "-c"

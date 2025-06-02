@@ -46,9 +46,9 @@ def populate_columns(table: pa.Table, field_names: List[str],
             try:
                 # get values from the file's 2D data array
                 value = data_array[row_index][field_name_index].as_py()
-            except IndexError:
-                # If there are more field names than data values, fill extra columns with None.
-                value = None
+            except (IndexError,TypeError) as e:
+                    # If the array is NULL or there are more field names than data values, fill extra columns with None.
+                    value = None
             # populate new columns
             new_columns[field_name_index].append(value)
 
