@@ -87,10 +87,13 @@ runs:
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
           set -euo pipefail
           IFS=$'\n\t'
-          Rscript |
-            #read the library versions from renv.lock
-            renv::restore()
-            source()
+          working-directory: ./tests/testthat/
+          Rscript -e 'devtools::test()'
+          Rscript -e 'cov <- covr::package_coverage()'
+          Rscript -e 'report(cov)'
+          #read the library versions from renv.lock
+          #  renv::restore()
+          #  source()
           #  devtools::test()
-            cov <- covr::package_coverage()
-            report(cov)
+          #  cov <- covr::package_coverage()
+          #  report(cov)
