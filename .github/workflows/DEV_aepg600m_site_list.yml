@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
     paths:
-      - 'pack/NEONprocIS.base/tests/testthat/**'
+      - 'pack/NEONprocIS.base/tests/testthat/**.R'
       
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 

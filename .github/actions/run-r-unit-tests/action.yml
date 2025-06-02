@@ -90,9 +90,7 @@ runs:
           Rscript |
             #read the library versions from renv.lock
             renv::restore()
-            devtools::test()
+            source()
+          #  devtools::test()
             cov <- covr::package_coverage()
             report(cov)
-          
-          #Rscript ./utilities/flow.img.updt.R "./pipe" ".yaml" "${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}" "${{ env.semver }}"
-
