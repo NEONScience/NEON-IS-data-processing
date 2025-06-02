@@ -17,6 +17,7 @@ def parse(config: Config) -> None:
     data_path: Path = config.data_path
     schema_path: Path = config.schema_path
     out_path: Path = config.out_path
+    source_type_out: str = config.source_type_out
     parse_calibration: bool = config.parse_calibration
     test_mode: bool = config.test_mode
     schema_data: SchemaData = schema_parser.parse_schema_file(schema_path)
@@ -24,15 +25,24 @@ def parse(config: Config) -> None:
     for path in data_path.rglob('*'):
         if path.is_file():
             source_type, year, month, day, source_id, data_type = parser.parse(path)
-            common_path = Path(out_path, source_type, year, month, day, source_id)
+            if source_type_out is not None:
+                common_path = Path(out_path, source_type_out, year, month, day, source_id)
+            else:
+                common_path = Path(out_path, source_type, year, month, day, source_id)
             if data_type == 'data':
                 if test_mode:
+                    log.debug(f'Linking file: {path} to {Path(common_path, data_type)}')
                     link_data_file(path, Path(common_path, data_type))
                 else:
+                    log.debug(f'Parsing file: {path}')
                     data_file_parser.write_restructured_file(path, Path(common_path, data_type), schema_path)
-            if parse_calibration and data_type == 'calibration':
+            elif parse_calibration and data_type == 'calibration':
+                log.debug(f'Parsing calibration file: {path}')
                 link_calibration_file(path, Path(common_path, data_type), schema_data)
-
+            else:
+                # Copy/link over other files in the directory
+                log.debug(f'Linking file: {path} to {Path(common_path, data_type)}')
+                link_data_file(path, Path(common_path, data_type))
 
 def link_calibration_file(path: Path, out_path, schema_data: SchemaData) -> None:
     stream_id = calibration_file_parser.get_stream_id(path)

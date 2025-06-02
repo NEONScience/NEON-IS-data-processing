@@ -2,7 +2,7 @@
 pipeline:
   name: li192sa_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.6.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.4
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -131,6 +131,7 @@ transform:
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
+        echo "Updating airflow trigger table for $site_output and $date_str"
         ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
       done
 
@@ -145,16 +146,16 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/li192sa/*/*/*"
 parallelism_spec:
-  constant: 3
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 1.6
+  memory: 400M
+  cpu: 1.8
 resource_limits:
   memory: 1.5G
-  cpu: 2
+  cpu: 2.5
 sidecar_resource_requests:
-  memory: 2G
+  memory: 1G
   cpu: 0.5
 datum_set_spec:
   number: 1

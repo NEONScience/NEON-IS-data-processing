@@ -9,6 +9,7 @@ class Config(NamedTuple):
     out_path: Path
     parse_calibration: bool
     source_type_index: int
+    source_type_out: str
     year_index: int
     month_index: int
     day_index: int
