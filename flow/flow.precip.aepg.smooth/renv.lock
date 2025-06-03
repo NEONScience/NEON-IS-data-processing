@@ -11,10 +11,10 @@
   "Packages": {
     "R6": {
       "Package": "R6",
-      "Version": "2.5.1",
+      "Version": "2.6.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "470851b6d5d0ac559e9d01bb352b4021",
+      "Hash": "d4335fe7207f1c01ab8c41762f5840d4",
       "Requirements": []
     },
     "cli": {
@@ -35,10 +35,10 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.4.6",
+      "Version": "0.5.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "707fae4bbf73697ec8d85f9d7076c061",
+      "Hash": "2720e3fd3dad08f34b19b56b3d6f073d",
       "Requirements": []
     },
     "doParallel": {
@@ -74,10 +74,10 @@
     },
     "fansi": {
       "Package": "fansi",
-      "Version": "1.0.5",
+      "Version": "1.0.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3e8583a60163b4bc1a80016e63b9959e",
+      "Hash": "962174cf2aeb5b9eea581522286a911f",
       "Requirements": []
     },
     "foreach": {
@@ -93,10 +93,10 @@
     },
     "fs": {
       "Package": "fs",
-      "Version": "1.6.3",
+      "Version": "1.6.6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "47b5f30c720c23999b913a1a635cf0bb",
+      "Hash": "7eb1e342eee7e0a7449c49cdaa526d39",
       "Requirements": []
     },
     "generics": {
@@ -109,10 +109,10 @@
     },
     "glue": {
       "Package": "glue",
-      "Version": "1.6.2",
+      "Version": "1.8.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4f2596dfb05dac67b9dc558e5c6fba2e",
+      "Hash": "5899f1eaa825580172bb56c08266f37c",
       "Requirements": []
     },
     "iterators": {
@@ -188,13 +188,12 @@
     },
     "pillar": {
       "Package": "pillar",
-      "Version": "1.9.0",
+      "Version": "1.10.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "15da5a8412f317beeee6175fbc76f4bb",
+      "Hash": "1098920a19b5cd5a15bacdc74a89979d",
       "Requirements": [
         "cli",
-        "fansi",
         "glue",
         "lifecycle",
         "rlang",
@@ -276,10 +275,10 @@
     },
     "tidyselect": {
       "Package": "tidyselect",
-      "Version": "1.2.0",
+      "Version": "1.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "79540e5fcd9e0435af547d885f184fd5",
+      "Hash": "829f27b9c4919c16b593794a6344d6c0",
       "Requirements": [
         "cli",
         "glue",
@@ -301,18 +300,18 @@
     },
     "utf8": {
       "Package": "utf8",
-      "Version": "1.2.4",
+      "Version": "1.2.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "62b65c52671e6665f803ff02954446e9",
+      "Hash": "ed553a57e9eb21f4d0298fbc1ad7b4df",
       "Requirements": []
     },
     "vctrs": {
       "Package": "vctrs",
-      "Version": "0.6.4",
+      "Version": "0.6.5",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "266c1ca411266ba8f365fcc726444b87",
+      "Hash": "c03fa420630029418f7e6da3667aac4a",
       "Requirements": [
         "cli",
         "glue",
@@ -332,10 +331,10 @@
     },
     "withr": {
       "Package": "withr",
-      "Version": "2.5.2",
+      "Version": "3.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4b25e70111b7d644322e9513f403a272",
+      "Hash": "cc2d62c76458d425210d1eb1478b30b4",
       "Requirements": []
     }
   }
