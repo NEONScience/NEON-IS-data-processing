@@ -8,15 +8,6 @@
       }
     ]
   },
-  "Packages": {
-    "MASS": {
-      "Package": "MASS",
-      "Version": "7.3-55",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "c5232ffb549f6d7a04a152c34ca1353d",
-      "Requirements": []
-    },
     "R6": {
       "Package": "R6",
       "Version": "2.5.1",
