@@ -74,6 +74,8 @@ runs:
           packages: |
               fs
               devtools
+              rapportools
+              renv
           extra-packages: |
               any::covr
               any::xml2
@@ -91,6 +93,7 @@ runs:
           # Rscript |
           #   #read the library versions from renv.lock
           #   renv::restore()
+          Rscript -e 'renv::restore()'
           Rscript -e 'devtools::install("${{ env.MODULE_PATH }}")'
           Rscript -e 'devtools::test("${{ env.MODULE_PATH }}")'
           Rscript -e 'cov <- covr::package_coverage()'
