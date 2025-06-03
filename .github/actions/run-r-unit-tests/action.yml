@@ -93,7 +93,7 @@ runs:
           # Rscript |
           #   #read the library versions from renv.lock
           #   renv::restore()
-          Rscript -e 'renv::restore()'
+          Rscript -e 'renv::use(lockfile = "${{ env.MODULE_PATH }}/renv.lock")'
           Rscript -e 'devtools::install("${{ env.MODULE_PATH }}")'
           Rscript -e 'devtools::test("${{ env.MODULE_PATH }}")'
           Rscript -e 'cov <- covr::package_coverage()'
