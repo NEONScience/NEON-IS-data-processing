@@ -76,7 +76,6 @@ runs:
               devtools
               rapportools
               renv
-              MASS
           extra-packages: |
               any::covr
               any::xml2
