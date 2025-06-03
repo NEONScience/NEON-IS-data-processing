@@ -22,7 +22,7 @@ transform:
   - TermTest10=depth9WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - TermTest11=depth10WaterTemp:null|gap|range(rmv)|step(rmv)|spike
   - DirSubCopy=uncertainty_data|flags|uncertainty_coef
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-plau:v1.1.1
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
