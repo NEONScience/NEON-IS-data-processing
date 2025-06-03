@@ -131,6 +131,7 @@ transform:
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
+        echo "Updating airflow trigger table for $site_output and $date_str"
         ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
       done
 
@@ -143,9 +144,9 @@ input:
     name: import_trigger
     repo: mcseries_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/mcseries/*/*/*"
+    glob: "/mcseries/*/*/*/*"
 parallelism_spec:
-  constant: 3 
+  constant: 4 
 autoscaling: true
 resource_requests:
   memory: 1G

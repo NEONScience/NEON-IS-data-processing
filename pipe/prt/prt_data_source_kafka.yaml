@@ -131,7 +131,7 @@ transform:
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
-        echo "Updating airflow trigger table for $site_output"
+        echo "Updating airflow trigger table for $site_output and $date_str"
         ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
       done
       echo "Completed Airflow trigger table updates."
@@ -145,9 +145,9 @@ input:
     name: import_trigger
     repo: prt_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/prt/*/*/*"
+    glob: "/prt/*/*/*/*"
 parallelism_spec:
-  constant: 5
+  constant: 8
 autoscaling: true
 resource_requests:
   memory: 600M

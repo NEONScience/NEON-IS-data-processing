@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:sha-aa1f92d
   cmd:
   - sh
   - "-c"
@@ -44,14 +44,14 @@ transform:
           DirIn=$KAFKA_UNMERGED_DATA \
           DirOut=/tmp/kafka_merged \
           DirErr=/pfs/out/errored_datums \
-          FileSchmL0=$FILE_SCHEMA_L0
+          FileSchmL0=$FILE_SCHEMA_PARSED
       # Set CONFIG for filter-joiner to the kafka version and run filter joiner
       export CONFIG=$CONFIG_KAFKA
       export OUT_PATH=$OUT_PATH_JOINER
       python3 -m filter_joiner.filter_joiner_main
     fi  
     
-    # Run array parser (also parses calibrations)
+    # Run array parser (parse calibrations only - data already parsed)
     export SCHEMA_PATH=$FILE_SCHEMA_PARSED
     export DATA_PATH=$OUT_PATH_JOINER
     export OUT_PATH=$OUT_PATH_ARRAY_PARSER
@@ -114,7 +114,7 @@ transform:
     
     # Environment variables for array parser
     PARSE_CALIBRATION: 'True'
-    TEST_MODE: 'False'
+    TEST_MODE: 'True' # We already parsed the data. Pass it through via symlink
     LOG_LEVEL: DEBUG
     SOURCE_TYPE_INDEX: '4'
     YEAR_INDEX: '5'
@@ -128,10 +128,10 @@ transform:
     PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
 input:
   cross:
-  - pfs:
-      name: FILE_SCHEMA_L0
-      repo: enviroscan_avro_schemas
-      glob: /enviroscan/enviroscan.avsc
+  # - pfs:
+  #     name: FILE_SCHEMA_L0
+  #     repo: enviroscan_avro_schemas
+  #     glob: /enviroscan/enviroscan.avsc
   - pfs:
       name: FILE_SCHEMA_PARSED
       repo: enviroscan_avro_schemas
@@ -149,21 +149,21 @@ input:
     - pfs:
         name: CALIBRATION_PATH
         repo: enviroscan_calibration_assignment
-        glob: /enviroscan/(2025)/(03)/(10)
+        glob: /enviroscan/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_TRINO
         repo: enviroscan_data_source_trino
-        glob: /enviroscan/(2025)/(03)/(10)
+        glob: /enviroscan/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
         repo: enviroscan_data_source_kafka
-        glob: /enviroscan/(2025)/(03)/(10)
+        glob: /enviroscan/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
