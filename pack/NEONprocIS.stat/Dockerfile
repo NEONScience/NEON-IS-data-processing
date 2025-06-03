@@ -3,7 +3,7 @@
 # docker build --no-cache -t neon-is-pack-stat-r -f ./pack/NEONprocIS.stat/Dockerfile .
 
 # Start with the neon-is-base-r image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:sha-0c9ba68
 
 # maintainer handle
 MAINTAINER "Cove Sturtevant" csturtevant@battelleecology.org
