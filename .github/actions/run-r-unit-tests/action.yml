@@ -93,7 +93,6 @@ runs:
           # read the library versions from renv.lock
           # Rscript -e 'renv::use(lockfile = "${{ env.MODULE_PATH }}/renv.lock")'
           Rscript -e 'devtools::install("${{ env.MODULE_PATH }}")'
-          Rscript -e 'library(NEONprocIS.base)'
-          Rscript -e 'devtools::test("${{ env.MODULE_PATH }}")'
+          Rscript -e 'devtools::test(pkg="${{ env.MODULE_PATH }}")'
           Rscript -e 'cov <- covr::package_coverage()'
           Rscript -e 'report(cov)'
