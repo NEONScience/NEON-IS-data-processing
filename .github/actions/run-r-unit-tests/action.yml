@@ -74,8 +74,6 @@ runs:
           packages: |
               fs
               devtools
-              rapportools
-              renv
               arrow@14.0.0
               dplyr@1.1.3
           extra-packages: |
@@ -92,11 +90,10 @@ runs:
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
           set -euo pipefail
           IFS=$'\n\t'
-          # Rscript |
-          #   #read the library versions from renv.lock
-          #   renv::restore()
+          # read the library versions from renv.lock
           # Rscript -e 'renv::use(lockfile = "${{ env.MODULE_PATH }}/renv.lock")'
           Rscript -e 'devtools::install("${{ env.MODULE_PATH }}")'
+          Rscript -e 'library(NEONprocIS.base)'
           Rscript -e 'devtools::test("${{ env.MODULE_PATH }}")'
           Rscript -e 'cov <- covr::package_coverage()'
           Rscript -e 'report(cov)'
