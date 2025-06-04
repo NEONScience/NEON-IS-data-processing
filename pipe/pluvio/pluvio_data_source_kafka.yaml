@@ -21,6 +21,7 @@ transform:
     PARSED_SCHEMA_PATH: /usr/src/app/schemas/pluvio/pluvio_parsed.avsc 
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
     RM_OFFSETS: "False"
+    UPDATE_TRIGGER_TABLE: "False"
   secrets:
   - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_USER
