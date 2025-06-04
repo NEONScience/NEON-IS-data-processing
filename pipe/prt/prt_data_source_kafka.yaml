@@ -131,7 +131,7 @@ transform:
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
-        echo "Updating airflow trigger table for $site_output"
+        echo "Updating airflow trigger table for $site_output and $date_str"
         ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
       done
       echo "Completed Airflow trigger table updates."
