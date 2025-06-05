@@ -47,10 +47,12 @@ transform:
     Rscript ./flow.cal.conv.R  \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
+      FileSchmData=$FILE_SCHEMA_DATA \
+      FileSchmQf=$FILE_SCHEMA_FLAGS \
       DirErr=/pfs/out/errored_datums \
-      TermFuncConv=bucket_tip:def.cal.conv.poly \
-      TermQf=bucket_tip \
-      TermFuncUcrt=bucket_tip:def.ucrt.meas.mult
+      TermFuncConv=bucket_tips:def.cal.conv.poly \
+      TermQf=bucket_tips \
+      TermFuncUcrt=bucket_tips:def.ucrt.meas.mult
     EOF
   env:
     # Environment variables for filter-joiner.
@@ -105,11 +107,11 @@ input:
   - pfs:
       name: FILE_SCHEMA_L0
       repo: metone370380_avro_schemas
-      glob: /metone370380/metone370380_event.avsc
+      glob: /metone370380/metone370380.avsc
   - pfs:
       name: FILE_SCHEMA_DATA
       repo: metone370380_avro_schemas
-      glob: /metone370380/metone370380_event_calibrated.avsc
+      glob: /metone370380/metone370380_calibrated.avsc
   - pfs:
       name: FILE_SCHEMA_FLAGS
       repo: metone370380_avro_schemas
@@ -126,6 +128,13 @@ input:
     - pfs:
         name: DATA_PATH_TRINO
         repo: metone370380_data_source_trino
+        glob: /metone370380/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: KAFKA_UNMERGED_DATA
+        repo: metone370380_data_source_kafka
         glob: /metone370380/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true
