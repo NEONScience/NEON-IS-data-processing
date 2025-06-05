@@ -36,6 +36,9 @@
 #     added path to calibration directory in output
 #   Cove Sturtevant (2021-04-15)
 #     added stream ID to the output
+#    Cove Sturtevant (2025-05-01)
+#     don't stop execution when individual files fail.
+#     Instead, output error status for each file. 
 ##############################################################################################
 def.cal.meta <- function(fileCal, log = NULL) {
   # Intialize logging if needed
@@ -68,15 +71,38 @@ def.cal.meta <- function(fileCal, log = NULL) {
   for (idxFileCal in base::seq_len(numCal)){
     
     # Read in the cal
-    infoCal <- NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal[idxFileCal],Vrbs=TRUE)
+    infoCal <- try(NEONprocIS.cal::def.read.cal.xml(NameFile=fileCal[idxFileCal],Vrbs=TRUE,log=log),silent=FALSE)
     
     # Error check
     if(!NEONprocIS.cal::def.validate.info.cal(infoCal,NameList=c('cal','ucrt','file','timeVali'),log=log)){
-      stop()
+      
+      log$error(paste0('Error pulling data from calibration file ',fileCal[idxFileCal],' . Some or all metadata will be NA.'))
+      if(!("list" %in% base::class(infoCal))){
+        infoCal <- base::list()
+      }
+      if(base::is.null(infoCal$timeVali$StartTime)){
+        infoCal$timeVali$StartTime <- as.POSIXct(NA)
+      }
+      if(base::is.null(infoCal$timeVali$EndTime)){
+        infoCal$timeVali$EndTime <- as.POSIXct(NA)
+      }
+      if(base::is.null(infoCal$file$StreamCalVal$CertificateNumber)){
+        infoCal$file$StreamCalVal$CertificateNumber <- NA
+      }
+      if(base::is.null(infoCal$file$StreamCalVal$StreamID)){
+        infoCal$file$StreamCalVal$StreamID <- NA
+      }
+      infoCal$err <- TRUE
+      
     } else if (base::is.null(infoCal$file$StreamCalVal$CertificateNumber)) {
       log$error(base::paste0('Cannot find calibration certificate number in ',fileCal[idxFileCal],
                              '. It is not returned in infoCal$file$StreamCalVal$CertificateNumber output from NEONprocIS.cal::def.read.cal.xml'))
-    stop()
+      infoCal$file$StreamCalVal$CertificateNumber <- NA
+      infoCal$err <- TRUE 
+      
+    } else {
+      infoCal$err <- FALSE
+      
     }
     
     # output metadata
@@ -86,6 +112,7 @@ def.cal.meta <- function(fileCal, log = NULL) {
                                               timeValiEnd=infoCal$timeVali$EndTime,
                                               id=base::as.numeric(infoCal$file$StreamCalVal$CertificateNumber),
                                               strm=base::as.numeric(infoCal$file$StreamCalVal$StreamID),
+                                              err=infoCal$err,
                                               stringsAsFactors=FALSE)
     
   }
