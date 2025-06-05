@@ -41,7 +41,7 @@ def pipeline_files_from_pipe_lists(paths):
                 line=line.rstrip('\n').strip()
                 if len(line) > 0:
                     pipeline_files.append(Path(path,line))
-        return(pipeline_files)
+    return(pipeline_files)
 
 
 def create_pipeline_reqs(pipeline_files):
