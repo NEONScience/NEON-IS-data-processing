@@ -44,14 +44,14 @@ transform:
           DirIn=$KAFKA_UNMERGED_DATA \
           DirOut=/tmp/kafka_merged \
           DirErr=/pfs/out/errored_datums \
-          FileSchmL0=$FILE_SCHEMA_L0
+          FileSchmL0=$FILE_SCHEMA_PARSED
       # Set CONFIG for filter-joiner to the kafka version and run filter joiner
       export CONFIG=$CONFIG_KAFKA
       export OUT_PATH=$OUT_PATH_JOINER
       python3 -m filter_joiner.filter_joiner_main
     fi  
     
-    # Run array parser (also parses calibrations)
+    # Run array parser (parse calibrations only - data already parsed)
     export SCHEMA_PATH=$FILE_SCHEMA_PARSED
     export DATA_PATH=$OUT_PATH_JOINER
     export OUT_PATH=$OUT_PATH_ARRAY_PARSER
@@ -118,7 +118,7 @@ transform:
     
     # Environment variables for array parser
     PARSE_CALIBRATION: 'True'
-    TEST_MODE: 'False'
+    TEST_MODE: 'True' # We already parsed the data. Pass it through via symlink
     LOG_LEVEL: DEBUG
     SOURCE_TYPE_INDEX: '4'
     YEAR_INDEX: '5'
@@ -129,13 +129,13 @@ transform:
     OUT_PATH_ARRAY_PARSER: /tmp/pfs/array_parsed # R modules must have pfs in the repo structure
 
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
+    PARALLELIZATION_INTERNAL: '1' # Option for calibration conversion module
 input:
   cross:
-  - pfs:
-      name: FILE_SCHEMA_L0
-      repo: tchain_avro_schemas
-      glob: /tchain/tchain.avsc
+  # - pfs:
+  #     name: FILE_SCHEMA_L0
+  #     repo: tchain_avro_schemas
+  #     glob: /tchain/tchain.avsc
   - pfs:
       name: FILE_SCHEMA_PARSED
       repo: tchain_avro_schemas
