@@ -8,7 +8,7 @@ transform:
   env:
     # environment variables for kafka loader
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "enviroscan"
+    SOURCE_TYPE: "enviroscan" 
     LOG_LEVEL: INFO
     KAFKA_RETENTION_DAYS: "15"
     # environment variables for the array parser
