@@ -7,11 +7,11 @@ transform:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "prtncon"
     LOG_LEVEL: INFO
-    YEAR_INDEX: "5"
-    MONTH_INDEX: "6"
-    DAY_INDEX: "7"
+    SOURCE_TYPE: "prtncon"
+    YEAR_INDEX: "6"
+    MONTH_INDEX: "7"
+    DAY_INDEX: "8"
     KAFKA_RETENTION_DAYS: "15"
   secrets:
   - name: pachyderm-kafka-auth
@@ -58,7 +58,7 @@ transform:
     kafka_min_date=$(date -u -d "$KAFKA_RETENTION_DAYS days ago" +%Y-%m-%d)
     
     # Get date from input path. Terminal path structure must be /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
-    # Datum must be set at /SOURCE_TYPE/YYYY/MM/DD or /SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
+    # Datum must be set at /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD or /<trino|kafka>/SOURCE_TYPE/YYYY/MM/DD/SITE_FILE
     date_path=$(echo $import_trigger | cut -f $YEAR_INDEX,$MONTH_INDEX,$DAY_INDEX -d "/")
     echo $date_path
     date_str=$(date -u +%Y-%m-%d -d $date_path)
@@ -142,8 +142,9 @@ input:
   pfs:
     name: import_trigger
     repo: prtncon_cron_daily_and_date_control
-    # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/prtncon/*/*/*"
+    # Must be datum by day (e.g. /kafka/SOURCE_TYPE/*/*/*) or by day/site (e.g. /kafka/SOURCE_TYPE/*/*/*/*)
+    # Note that prtncon has separate kafka and trino date-site controls bc some kafka topics start with <site>dfir instead of simply <site>
+    glob: "/kafka/prtncon/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
