@@ -9,7 +9,7 @@ transform:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - export GROUP$GROUP_1
+  - export GROUP=$GROUP_1
   - python3 -m group_path.group_path_main
   - export GROUP=$GROUP_2
   - python3 -m group_path.group_path_main
