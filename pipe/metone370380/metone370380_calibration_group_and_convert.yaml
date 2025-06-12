@@ -50,7 +50,7 @@ transform:
       FileSchmData=$FILE_SCHEMA_DATA \
       FileSchmQf=$FILE_SCHEMA_FLAGS \
       DirErr=/pfs/out/errored_datums \
-      TermFuncConv=bucket_tips:def.cal.conv.poly \
+      TermFuncConv=bucket_tips:def.cal.conv.poly.a0.as.a1 \
       TermQf=bucket_tips \
       TermFuncUcrt=bucket_tips:def.ucrt.meas.mult
     EOF
