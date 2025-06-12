@@ -95,10 +95,10 @@ def.cal.conv.poly.a0.as.a1 <- function(data = data.frame(data=base::numeric(0)),
     stop()
   }
   
-  #tipping buckets  have A0 but need A1 level polynomial
+  #add 0 level to coefficient list to place A0 at A1 position
   coefPoly <- c(0, InfoCal$cal$Value[infoCal$cal$Name == 'CVALA0'])
-  # # Construct the polynomial calibration function
-
+  
+  # Construct the polynomial calibration function
   func <- polynom::polynomial(coef = coefPoly)
   
   # Convert data using the calibration function
