@@ -1,38 +1,34 @@
----
 pipeline:
-  name: metone370380_location_loader
+  name: precipTipping_srf_loader
 transform:
-  # image_pull_secrets:
-  # - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-loader:v1.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-srf-loader:v1.0.0
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m location_loader.location_loader_main
+    - /bin/bash
   env:
-    LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: metone370380
-    ERR_PATH: /pfs/out/errored_datums
-    OUT_PATH: /pfs/out
+    GROUP_PREFIX: precip-tipping_
     LOG_LEVEL: INFO
+    OUT_PATH: /pfs/out
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
+  stdin:
+    - '#!/bin/bash'
+    - python3 -m srf_loader.srf_loader_main
 input:
   pfs:
-    repo: metone370380_cron_daily_and_date_control_tick
-    glob: /*
+    branch: master
     empty_files: true
+    glob: /*
+    repo: metone370380_cron_daily_and_date_control_tick
 autoscaling: true
 resource_requests:
-  memory: 100M
+  memory: 50M
   cpu: 0.1
 resource_limits:
   memory: 300M
-  cpu: 0.5
+  cpu: 1.5
 sidecar_resource_requests:
-  memory: 300M
+  memory: 200M
   cpu: 0.3
 scheduling_spec:
   node_selector:

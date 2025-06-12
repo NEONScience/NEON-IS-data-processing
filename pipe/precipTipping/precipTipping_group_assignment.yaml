@@ -1,42 +1,45 @@
 ---
 pipeline:
-  name: metone370380_calibration_assignment
+  name: precipTipping_group_assignment
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.0.0
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - export ERR_PATH="/pfs/out/errored_datums$FILE_YEAR"
   - Rscript
-      ./flow.cal.asgn.R
+      ./flow.loc.grp.asgn.R
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
+      TypeFile=group
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.2.0
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
   env:
     LOG_LEVEL: INFO
 input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: metone370380_calibration_loader
-      glob: /metone370380/*
+      repo: precipTipping_group_loader
+      glob: /precip-tipping/*
   - pfs:
       name: FILE_YEAR
       repo: metone370380_cron_daily_and_date_control
-      glob: /data_year*.txt
+      glob: /data_year_*.txt
 parallelism_spec:
-  constant: 2
+  constant: 1
 autoscaling: true
 resource_requests:
-  memory: 200M
-  cpu: 0.8
-resource_limits:
-  memory: 600M
-  cpu: 1.5
-sidecar_resource_requests:
-  memory: 3G
+  memory: 250M
   cpu: 1
+resource_limits:
+  memory: 400M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.5
 datum_set_spec:
   number: 5
 scheduling_spec:
@@ -56,13 +59,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-# pod_patch: |-
-#   [
-#     { "op": "replace",
-#       "path": "/containers/1/env/-",
-#       "value": {
-#         "name": "GOMEMLIMIT",
-#         "value": "2000000000"
-#       }
-#     }
-#   ]
