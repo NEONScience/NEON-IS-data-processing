@@ -2,7 +2,7 @@
 pipeline:
   name: prtncon_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-ba77f15
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.2.0
   cmd:
   - sh
   - "-c"
@@ -26,10 +26,10 @@ transform:
       echo "Processing $path"
       p=${path#/pfs}
       IFS="/"; arr=($p); unset IFS;
-      year=${arr[3]}
-      month=${arr[4]}
-      day=${arr[5]}
-      site=${arr[6]}
+      year=${arr[4]}
+      month=${arr[5]}
+      day=${arr[6]}
+      site=${arr[7]}
       type=$(echo $site | cut -f 2 -d "." --only-delimited); # Extract the "kafka" from site.kafka if present
       if [ "$type" = "kafka" ] && [ $(date -u +%s -d $year-$month-$day) -lt $(date -u +%s -d $kafka_min_date) ]
       then
@@ -40,6 +40,8 @@ transform:
         echo "$year/$month/$day/$site is indicated to be streaming from Kafka. Skipping..."
         continue
       fi
+      
+      # Set env vars for trino loader
       echo "Extracting data from Trino for $year/$month/$day/$site"
       export GEN_DATE=$year-$month-$day
       export GEN_SITE_NAME=$site
@@ -124,10 +126,12 @@ input:
   pfs:
     name: import_trigger
     repo: prtncon_cron_daily_and_date_control
-    glob: "/prtncon/*/*/*"
+    # Must be datum by day (e.g. /trino/SOURCE_TYPE/*/*/*) or by day/site (e.g. /trino/SOURCE_TYPE/*/*/*/*)
+    # Note that prtncon has separate kafka and trino date-site controls bc some kafka topics start with <site>dfir instead of simply <site>
+    glob: "/trino/prtncon/*/*/*"
 output_branch: master
 parallelism_spec:
-  constant: 5
+  constant: 2
 autoscaling: true
 resource_requests:
   memory: 400M
