@@ -2,7 +2,7 @@
 pipeline:
   name: ONEOFF_level0_bucket_compact
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.4
   cmd:
   - sh
   - "-c"
