@@ -3,8 +3,9 @@ pipeline:
   name: sdrc_stageDischargeCurveInfo_table_loader
 transform:
   image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/os_table_loader:0.003
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-os-table-loader:v1.0.0
   cmd:
   - /bin/bash
   stdin:
