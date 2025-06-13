@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: csd_gaugeWaterColumnHeightRegression_table_loader_control 
+  name: csd_gag_regression_table_loader_control 
 transform:
   cmd: ["/bin/bash"]
 input:
