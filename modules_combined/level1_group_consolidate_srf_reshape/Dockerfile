@@ -3,11 +3,11 @@
 # This dockerfile will build the combined module for level1_consolidate, filter_joiner, flow.tsdl.comb.splt.R, and flow.pub.tabl.
 # It also includes rclone for exporting output to a bucket
 # Example command (must be run from project root directory to include modules and modules_combined path in Docker context):
-# docker build -t neon-is-levl1-grp-cons-srf -f ./modules_combined/level1_group_consolidate_srf_reshape/Dockerfile .
+# docker build -t neon-is-levl1-grp-cons-srf-reshape -f ./modules_combined/level1_group_consolidate_srf_reshape/Dockerfile .
 #
 ###
 # Start with the pub package R image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:v1.0.0
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-pub-r:v1.0.4
 
 # maintainer handle
 MAINTAINER "Nora Catolico" ncatolico@battelleecology.org
