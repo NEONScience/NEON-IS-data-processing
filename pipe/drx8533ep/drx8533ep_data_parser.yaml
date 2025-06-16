@@ -1,16 +1,16 @@
 pipeline:
   name: drx8533ep_data_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.10
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.12
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
     #   skip first 3 fields (source_id, site_id, readout_time) in parsed schema
     LOG_LEVEL: INFO 
     OUT_PATH: /pfs/out 
-    PARSE_FIELD: serial_output
+    PARSE_FIELD: ethenet_output
     RELATIVE_PATH_INDEX: "4"
-    PARSED_SCHEMA_PATH: /usr/src/app/schemas/drx8533ep/drx8533ep_parsed.avsc 
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/drx8533ep/drx8533ep_parsed.avsc 
     SOURCE_TYPE: 'drx8533ep_raw'
   secrets:
   - name: l0-bucket

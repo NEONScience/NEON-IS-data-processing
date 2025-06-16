@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: drx8533ep_data_source_trino
+  name: drx8533ep_data_source_trino2
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.2.0
   cmd:
