@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: sdrc_priorParameters_table_loader_control 
+  name: l4discharge_sdrc_gaugePressureRelationship_table_loader_control 
 transform:
   cmd: ["/bin/bash"]
 input:

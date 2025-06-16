@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: sdrc_curveIdentification_table_loader
+  name: l4discharge_sdrc_gaugeDischargeMeas_table_loader
 transform:
   image_pull_secrets:
   # image_pull_secrets:
@@ -14,8 +14,8 @@ transform:
   env:
     # File output options are 'csv' or 'parquet'. 
     FILE_TYPE: csv
-    OUT_PATH: /pfs/out/sdrc_curveIdentification
-    PARTIAL_TABLE_NAME: curveIdentification
+    OUT_PATH: /pfs/out/l4discharge_sdrc_gaugeDischargeMeas
+    PARTIAL_TABLE_NAME: gaugeDischargeMeas
     DB_CONFIG_SOURCE: mount
     LOG_LEVEL: DEBUG 
   secrets:
@@ -24,7 +24,7 @@ transform:
 input:
   pfs:
     name: IN_PATH 
-    repo: sdrc_curveIdentification_table_loader_control_tick
+    repo: l4discharge_sdrc_gaugeDischargeMeas_table_loader_control_tick
     glob: /*
 autoscaling: true
 resource_requests:
