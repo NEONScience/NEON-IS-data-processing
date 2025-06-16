@@ -39,51 +39,24 @@ transform:
     LOG_LEVEL: DEBUG
     # LINK_TYPE: SYMLINK # options are COPY or SYMLINK
 input:
-#  union:
-#    - join:
-#      - pfs:
-#          name: DATA_PATH_TRINO
-#          repo: li7200_data_source_trino
-#          glob: /li7200/*/*/*/(*)
-#          empty_files: true
-#          joinOn: $1
-#      - pfs:
-#          name: MAP_PATH
-#          repo: li7200_assetuid_macaddress_map
-#          glob: /li7200/(*)
-#          joinOn: $1
-#    - join:
-#      - pfs:
-#          name: DATA_PATH_KAFKA
-#          repo: li7200_parse_kafka_raw_data
-#          glob: /li7200/*/*/*/(*)
-#          empty_files: true
-#          joinOn: $1
-#      - pfs:
-#          name: MAP_PATH
-#          repo: li7200_assetuid_macaddress_map
-#          glob: /li7200/(*)
-#          joinOn: $1
-# another option to join
-  union:
-    - cross:
-      - pfs:
-          name: DATA_PATH_TRINO
-          repo: li7200_data_source_trino
-          glob: /li7200/*/*/*
-      - pfs:
-          name: MAP_PATH
-          repo: li7200_assetuid_macaddress_map
-          glob: /li7200
-    - cross:
-      - pfs:
-          name: DATA_PATH_KAFKA
-          repo: li7200_parse_kafka_raw_data
-          glob: /li7200/*/*/*
-      - pfs:
-          name: MAP_PATH
-          repo: li7200_assetuid_macaddress_map
-          glob: /li7200
+  cross:
+  - pfs:
+      name: MAP_PATH
+      repo: li7200_assetuid_macaddress_map
+      glob: /li7200
+  - join:
+    - pfs:
+        name: DATA_PATH_TRINO
+        repo: li7200_data_source_trino
+        glob: /li7200/(*/*/*)
+        joinOn: $1
+        outer_join: True
+    - pfs:
+        name: DATA_PATH_KAFKA
+        repo: li7200_parse_kafka_raw_data
+        glob: /li7200/(*/*/*)
+        joinOn: $1
+        outer_join: True
 #
 parallelism_spec:
   constant: 1
