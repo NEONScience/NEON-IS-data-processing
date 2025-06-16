@@ -47,20 +47,10 @@ def.read.cal.xml <- function(NameFile,Vrbs=TRUE,log=NULL){
     log <- NEONprocIS.base::def.log.init()
   }
   
-  xsd1 <-
-    system.file("extdata", "calibration.xsd", package = "NEONprocIS.cal")
-  xmlchk <-
-    try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),
-        silent = TRUE)
-  
-  if (xmlchk != TRUE) {
-    log$error(base::paste0(
-      " ====== def.read.cal.xml will not run due to the error in xml,  ",
-      NameFile
-    ))
-    
-    base::stop()
-  }
+  # Check the file against the expected schema. THis issues logs only, because
+  # although a file may fail a schema check, it may still have the info we need.
+  xsd1 <- system.file("extdata", "calibration.xsd", package = "NEONprocIS.cal")
+  xmlchk <- try(NEONprocIS.base::def.validate.xml.schema(NameFile, xsd1),silent = TRUE)
   
   # Read contents of xml file 
   xml <- try(XML::xmlParse(NameFile),silent=TRUE) 
@@ -70,7 +60,6 @@ def.read.cal.xml <- function(NameFile,Vrbs=TRUE,log=NULL){
   }
   
   # XML file as a list
-  #listXml <- XML::xmlToList(NameFile)
   listXml <- XML::xmlToList(xml)
   
   # Grab valid date range
