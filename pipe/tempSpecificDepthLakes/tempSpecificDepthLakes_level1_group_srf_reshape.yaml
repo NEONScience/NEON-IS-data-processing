@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: tempSpecificDepthLakes_level1_group_consolidate_srf_reshape
+  name: tempSpecificDepthLakes_level1_group_srf_reshape
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.0
   cmd:
