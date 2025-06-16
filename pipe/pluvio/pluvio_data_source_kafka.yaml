@@ -17,7 +17,7 @@ transform:
     # environment variables for the parser
     PARSE_FIELD: serial_output
     RELATIVE_PATH_INDEX: "4"
-    PARSED_SCHEMA_PATH: /usr/src/app/schemas/pluvio/pluvio_parsed.avsc 
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/pluvio/pluvio_parsed.avsc 
     SOURCE_TYPE: 'pluvio_raw'
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
   secrets:
