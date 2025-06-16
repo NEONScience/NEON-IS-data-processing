@@ -1,8 +1,7 @@
 ---
 pipeline:
-  name: csd_gag_regression_table_loader
+  name: l4discharge_csd_gag_regression_table_loader
 transform:
-  image_pull_secrets:
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-os-table-loader:v1.0.0
@@ -14,8 +13,8 @@ transform:
   env:
     # File output options are 'csv' or 'parquet'. 
     FILE_TYPE: csv
-    OUT_PATH: /pfs/out/csd_gaugeWaterColumnHeightRegression
-    PARTIAL_TABLE_NAME: gaugeWaterColumnHeightRegression
+    OUT_PATH: /pfs/out/l4discharge_csd_gag_regression
+    PARTIAL_TABLE_NAME: gauge
     DB_CONFIG_SOURCE: mount
     LOG_LEVEL: DEBUG 
   secrets:
@@ -24,7 +23,7 @@ transform:
 input:
   pfs:
     name: IN_PATH 
-    repo: csd_gag_regression_table_loader_control_tick
+    repo: l4discharge_csd_gag_regression_table_loader_control_tick
     glob: /*
 autoscaling: true
 resource_requests:
