@@ -6,7 +6,6 @@ on:
       - 'master'
     paths:
       - 'modules_combined/thresh_select_precip_stats/**'
-      - 'modules/common/**'
       - 'flow/flow.thsh.slct/**'
       - '/flow/flow.precip.bucket/**'
 
