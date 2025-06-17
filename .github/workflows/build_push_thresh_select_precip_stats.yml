@@ -1,4 +1,4 @@
-name: "Build-push_pad_and_shift"
+name: "Build-push_thresh_select_precip_stats"
 
 on:
   push:
