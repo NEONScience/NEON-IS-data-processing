@@ -5,7 +5,7 @@
 # docker build -t flow_sae_trst_dp0p:latest -f flow_sae_trst_dp0p/Dockerfile .
 #
 ###
-FROM registry.access.redhat.com/ubi8/ubi-minimal
+FROM registry.access.redhat.com/ubi9/ubi-minimal
 
 ARG FLOW_DIR="./flow"
 #ARG MODULE_DIR="./modules"
@@ -24,11 +24,11 @@ RUN update-ca-trust && \
             shadow-utils \
             gcc \
             libzstd  \
-            python39 \
-            python39-pip \
-            python39-wheel \
-            python39-devel \
-            python39-setuptools && \
+            python3 \
+            python3-pip \
+            python3-wheel \
+            python3-devel \
+            python3-setuptools && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
     microdnf remove -y --disableplugin=subscription-manager gcc cpp && \
