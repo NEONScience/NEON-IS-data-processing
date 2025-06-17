@@ -445,9 +445,12 @@ wrap.file.comb.tsdl.splt <- function(filePths,
         log$info(base::paste0("Multiple location files exist. Using the first location file, ", groupFilePths[1]))
       }
       groupFilePth <- groupFilePths[1]
+      log$debug(base::paste0("groupFilePth: ", groupFilePth))
       groupData <- try(rjson::fromJSON(file=groupFilePth))
       VER <- sub(".*\\.", "", nameLoc)
+      log$debug(base::paste0("VER: ", VER))
       groupData$features[[1]]$VER<-VER
+      log$debug(base::paste0("groupData$features[[1]]$VER: ", groupData$features[[1]]$VER))
       
       # ----------------------------------------------------------------------- #
       # Write out group file
@@ -455,20 +458,22 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       
       groupFileName <- sub(".*/", "", groupFilePth)
       nameJsonOut <- base::paste0(idxDirOutHORVER, '/group/', groupFileName)
+      log$debug(base::paste0("groupFileName: ", groupFileName))
+      log$debug(base::paste0("nameJsonOut: ", nameJsonOut))
       
-      rptWrte <-
+      jsonWrte <-
         base::try(jsonlite::write_json(groupData, nameJsonOut, pretty = TRUE, auto_unbox = TRUE),
                   silent = TRUE)
-      if (base::class(rptWrte) == 'try-error') {
+      if (base::class(jsonWrte) == 'try-error') {
         log$error(base::paste0(
           'Cannot write combined file ',
           nameJsonOut,
           '. ',
-          attr(rptWrte, "condition")
+          attr(jsonWrte, "condition")
         ))
         stop()
       } else {
-        log$info(base::paste0('Combined data written successfully in file: ',
+        log$info(base::paste0('Group JSON written successfully in file: ',
                               nameJsonOut))
       }
       
