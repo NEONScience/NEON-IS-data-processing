@@ -1,13 +1,14 @@
 ##############################################################################################
 #' @title  Process data from metone370380 tipping bucket sensors to 1 minute and 30 minute 
-#' aggragations
+#' aggregations
 
 #' @author
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
 
 #' @description Workflow. Add 0s to periods where no precipitation recorded, process Throughfall area conversion
-#' (as applicable, location context based), process heater QMs, aggregate to 1 minute and apply 
-#' extremePrecipFlag and finalQF, aggregate to 30 minutes, add uncertainty calculations.
+#' and uncertainty (as applicable, location context based), process heater QMs, aggregate to 1 minute and apply 
+#' extremePrecipFlag and finalQF, aggregate to 30 minutes, including summed precipitation, extreme precip flags and 
+#' uncertainty calculations 
 #' 
 #' General code workflow:
 #'    Parse input parameters
@@ -19,7 +20,7 @@
 #'      apply Throughfall conversion (if applicable)
 #'      Compute flags based on heater QMs
 #'      aggregate data to 1 and 30 minutes
-#'      create extreme precip flags and final qualitfy flag
+#'      create extreme precip flags and final quality flag
 #'      Write stats output to file
 #'
 #' This script is run at the command line with the following arguments. Each argument must be a string
@@ -40,6 +41,7 @@
 #'         /flags
 #'         /threshold
 #'         /location
+#'         /uncertainty_coef
 #' The data/flags folders holds any number of daily data/flags files padded around the yyyy/mm/dd in the input path.
 #' #' 
 #' For example:
@@ -58,7 +60,7 @@
 #' startDateTime
 #' EndDateTime
 #' precipBulk
-#' ucrtPrecip ##TODO fix this
+#' precipBulkExpUncert 
 #' heater0QM
 #' heater1QM
 #' heater2QM
@@ -108,7 +110,7 @@ library(doParallel)
 library(magrittr)
 
 # Source the wrapper function and other dependency functions. Assume it is in the working directory
-source("./wrap.precip.bucket.R")
+source("./wrap.precip.bucket.ucrt.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -221,3 +223,4 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
 return()
 
 } # End loop around datum paths
+
