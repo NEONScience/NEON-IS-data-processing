@@ -42,34 +42,31 @@
 #' 2. "DirOut=value", where the value is the output path that will replace the #/pfs/BASE_REPO portion
 #' of DirIn.
 #'
-#' 3. "NameDirCombOut=value", where value is the name of the output directory that will be created to
-#' hold the combined file, e.g. "level1_reshape".
-#'
-#' 4. "NameVarTime=value", where value is the name of the time variable(s) common across all
+#' 3. "NameVarTime=value", where value is the name of the time variable(s) common across all
 #' files, separated by pipes. Note that any missing timestamps among the files will be filled with NA values.
 #' e.g. "001|030"
 #'
-#' 5. "FileSchmMapDepth=value", where value is the file path to the schema that maps named location depths
+#' 4. "FileSchmMapDepth=value", where value is the file path to the schema that maps named location depths
 #'  to data's depth column naming convention.
 #'
-#' 6. "FileSchmMapCols=value" (optional), where value is the file path to the schema that maps existing
+#' 5. "FileSchmMapCols=value" (optional), where value is the file path to the schema that maps existing
 #' strings in data column names to substitute values. (e.g. WaterTemp becomes tsdWaterTemp). 
 #'
-#' 7. "NameFileSufxRm=value" (optional), where value is a character vector of suffix(es) to remove from the output
+#' 6. "NameFileSufxRm=value" (optional), where value is a character vector of suffix(es) to remove from the output
 #' file name (before any extension). For example, if the shortest file name found in the input files is 
 #' "prt_CFGLOC12345_2019-01-01_basicStats.parquet", and the input argument is "NameFileSufxRm=_basicStats", then the 
 #' output file will be "prt_CFGLOC12345_2019-01-01.parquet". Default is c("basicStats","qualityMetrics") for removal.
 #'  
-#' 8. "MrgeCols=value" (optional), where values is the name of the columns that all data files contain 
+#' 7. "MrgeCols=value" (optional), where values is the name of the columns that all data files contain 
 #' for merging. Each column name is separated by pipes. Default "startDateTime|endDateTime".
 #' 
-#' 9. "LocDir=value" (optional), where LocDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
+#' 8. "LocDir=value" (optional), where LocDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  location file(s). Default "location".
 #' 
-#' 10. "StatDir=value" (optional), where StatDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
+#' 9. "StatDir=value" (optional), where StatDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  the stats data files for each time variable. Default "stats".
 #' 
-#' 11. "QmDir=value" (optional), where QmDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
+#' 10. "QmDir=value" (optional), where QmDir is the subdirectory inside DirIn/CFGLOCXXXXX/ containing
 #'  quality metrics files for each time variable. Default "quality_metrics".
 #'
 #' Note: This script implements logging described in \code{\link[NEONprocIS.base]{def.log.init}},
@@ -86,15 +83,9 @@
 #' @keywords Currently none
 
 #' @examples 
-#' Rscript ./flow.tsdl.comb.splt.R "DirIn=/home/NEON/ncatolico/pfs/tempSpecificDepthLakes_level1_group/tchain/2025/05/10" 
-#' "DirOut=/home/NEON/glitt/pfs/tsdl_comb_long" "NameDirCombOut=/level1_reshape" "NameVarTime=001|030" 
-#' "FileSchmMapDepth=./tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc" 
-#' "FileSchmMapCols=./tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc"
-#' 
-#' /home/NEON/ncatolico/pfs/tempSpecificDepthLakes_level1_group/2025/05/10/temp-specific-depths-lakes_BARC103100
 # Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_level1_group/2025/05/10/temp-specific-depths-lakes_BARC103100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","NameDirCombOut=level1_reshape","NameVarTime=001|030", 
+# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","NameVarTime=001|030", 
 #          "FileSchmMapDepth=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc",
 #          "FileSchmMapCols=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
@@ -130,7 +121,7 @@ arg <- base::commandArgs(trailingOnly = TRUE)
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut", "DirErr","NameDirCombOut", "NameVarTime", "FileSchmMapDepth"),
+    NameParaReqd = c("DirIn", "DirOut", "DirErr", "NameVarTime", "FileSchmMapDepth"),
     NameParaOptn = c("FileSchmMapCols",
                      "MrgeCols",
                      "LocDir",
@@ -177,12 +168,6 @@ log$debug(
   base::paste0(
     'All files found in the following directories will be combined: ',
     base::paste0(Para$DirComb, collapse = ',')
-  )
-)
-log$debug(
-  base::paste0(
-    'A single combined data file will be populated in the directory: ',
-    Para$NameDirCombOut
   )
 )
 
