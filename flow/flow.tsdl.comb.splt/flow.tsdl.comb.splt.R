@@ -83,12 +83,12 @@
 #' @keywords Currently none
 
 #' @examples 
-# Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_level1_group/2025/05/10/temp-specific-depths-lakes_BARC103100')
-# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","NameVarTime=001|030", 
-#          "FileSchmMapDepth=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc",
-#          "FileSchmMapCols=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc")
-# rm(list=setdiff(ls(),c('arg','log')))
+Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_level1_group/2025/05/10/temp-specific-depths-lakes_BARC103100')
+log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","NameVarTime=001|030",
+         "FileSchmMapDepth=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc",
+         "FileSchmMapCols=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc")
+rm(list=setdiff(ls(),c('arg','log')))
 
 #' @seealso Currently none.
 
@@ -105,6 +105,7 @@ library(dplyr)
 library(data.table)
 library(NEONprocIS.base)
 library(stringr)
+library(jsonlite)
 
 source("./wrap.file.comb.tsdl.splt.R")
 source("./wrap.schm.map.char.gsub.R")
@@ -203,6 +204,7 @@ for (idxDirIn in DirIn) {
   
   # Gather info about the input directory (including date).
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn,log=log)
+  idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
   
   #find group directory
   Site <- sub(".*(temp-specific-depths-lakes_[^/]+)/.*", "\\1", idxDirIn)
@@ -211,147 +213,42 @@ for (idxDirIn in DirIn) {
   GroupDir <- paste0(SiteDir,"/group")
   log$debug(base::paste0('Group directory: ', GroupDir))
   
-  # Combine data files
-  dataLs <- NULL
-  dataLs <- # NEONprocIS.base::
-   wrap.file.comb.tsdl.splt(filePths = filePath,
+  # Run the wrapper function for each datum, with error routing
+  tryCatch(
+    withCallingHandlers(
+      # Combine data files
+      wrap.file.comb.tsdl.splt(filePths = filePath,
+                            fileNames = fileNamz,
+                            idxDirOut = idxDirOut,
                            nameVarTime = Para$NameVarTime,
                            mrgeCols = Para$MrgeCols,
                            locDir = Para$LocDir,
                            statDir = Para$StatDir,
                            qmDir = Para$QmDir,
+                           GroupDir = GroupDir,
                            nameSchmMapDpth = Para$FileSchmMapDepth,
                            nameSchmMapCols = Para$FileSchmMapCols,
-                           log = log)
-  
-  # Separate by timing index:
-  for(nameVarTime in Para$NameVarTime){
-    dataTime <- dataLs[[nameVarTime]]
-    
-    log$debug(base::paste0(
-      'HOR.VER locations found in the combined data files: ',
-      base::paste0(base::names(dataTime), collapse = ",")
-    ))
-    
-    for(nameLoc in base::names(dataTime)){
-      data <- dataTime[[nameLoc]]
-      
-      #create output directories
-      idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
-      idxDirOutHORVER <- base::paste0(idxDirOut, '/', nameLoc)
-      NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
-                                    DirSub = nameLoc,
-                                    log = log)
-      
-      NEONprocIS.base::def.dir.crea(DirBgn = paste0(idxDirOut,"/",nameLoc),
-                                    DirSub = "data",
-                                    log = log)
-      NEONprocIS.base::def.dir.crea(DirBgn = paste0(idxDirOut,"/",nameLoc),
-                                    DirSub = "group",
-                                    log = log)
+                           NameFileSufxRm = Para$NameFileSufxRm,
+                           log = log
+      ),
+      error = function(err) {
+        call.stack <- base::sys.calls() # is like a traceback within "withCallingHandlers"
         
-        
-      # Take stock of the combined data
-      nameCol <- base::names(data)
-      log$debug(base::paste0(
-        'Columns found in the combined data files: ',
-        base::paste0(nameCol, collapse = ',')
-      ))
-      
-      # ----------------------------------------------------------------------- #
-      # Remove suffix strings, Take the shortest file name, insert HOR.VER.TMI
-      # ----------------------------------------------------------------------- #
-      # Subset to dat files that should begin with 'tchain'
-      fileDat <- fileNamz[base::intersect(base::grep("tchain", fileNamz), base::grep(nameVarTime,fileNamz))] 
-      
-      # Remove the NameFileSufx strings to simplify output filename
-      fileDats <-  base::lapply(Para$NameFileSufxRm, 
-                                function(x) 
-                                  base::gsub(pattern="__",replacement="_",
-                                             base::gsub(pattern=x,replacement = "",
-                                                        fileDat) ) )
-      fileDats <- base::unlist(base::lapply(fileDats, 
-                                            function(x) x[base::which.min(base::nchar(x))]))
-
-      fileBase <-
-        fileDats[base::nchar(fileDats) == base::min(base::nchar(fileDats))][1]
-      # Insert the HOR.VER into the filename by replacing the nameVarTime with the standard HOR.VER.TMI
-      fileBaseLoc <- base::gsub(nameVarTime,
-                                base::paste0(nameLoc,".",nameVarTime),fileBase)
-      
-      fileOut <-
-        NEONprocIS.base::def.file.name.out(nameFileIn = fileBaseLoc,
-                                           sufx = "",
-                                           log = log)
-      log$debug(base::paste0(
-        "Named output filepath as ", fileOut))
-      
-      nameFileOut <- base::paste0(idxDirOutHORVER, '/data/', fileOut)
-      
-      # ----------------------------------------------------------------------- #
-      # Write out the data file.
-      # ----------------------------------------------------------------------- #
-      rptWrte <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-          data = data,
-          NameFile = nameFileOut,
-          NameFileSchm = NULL,
-          Schm = NULL,
+        # Re-route the failed datum
+        NEONprocIS.base::def.err.datm(
+          err=err,
+          call.stack=call.stack,
+          DirDatm=idxDirIn,
+          DirErrBase=Para$DirErr,
+          RmvDatmOut=TRUE,
+          DirOutBase=Para$DirOut,
           log=log
-        ),
-        silent = TRUE)
-      if (base::class(rptWrte) == 'try-error') {
-        log$error(base::paste0(
-          'Cannot write combined file ',
-          nameFileOut,
-          '. ',
-          attr(rptWrte, "condition")
-        ))
-        stop()
-      } else {
-        log$info(base::paste0('Combined data written successfully in file: ',
-                              nameFileOut))
+        )
       }
-      
-      
-      
-      # ----------------------------------------------------------------------- #
-      # Update group file
-      # ----------------------------------------------------------------------- #
-      
-      groupFilePths <- base::list.files(GroupDir, full.names = TRUE)
-      if(base::length(groupFilePths) > 1){
-        log$info(base::paste0("Multiple location files exist. Using the first location file, ", groupFilePths[1]))
-      }
-      groupFilePth <- groupFilePths[1]
-      groupData <- try(rjson::fromJSON(file=groupFilePth))
-      VER <- sub(".*\\.", "", nameLoc)
-      groupData$features[[1]]$VER<-VER
-      
-      # ----------------------------------------------------------------------- #
-      # Write out group file
-      # ----------------------------------------------------------------------- #
-      
-      groupFileName <- sub(".*/", "", groupFilePth)
-      nameJsonOut <- base::paste0(idxDirOutHORVER, '/group/', groupFileName)
-      
-      rptWrte <-
-        base::try(jsonlite::write_json(groupData, nameJsonOut, pretty = TRUE, auto_unbox = TRUE),
-        silent = TRUE)
-      if (base::class(rptWrte) == 'try-error') {
-        log$error(base::paste0(
-          'Cannot write combined file ',
-          nameJsonOut,
-          '. ',
-          attr(rptWrte, "condition")
-        ))
-        stop()
-      } else {
-        log$info(base::paste0('Combined data written successfully in file: ',
-                              nameJsonOut))
-      }
-      
-    } # end loop on HOR.VER
-  }
+    ),
+    # This simply to avoid returning the error
+    error=function(err) {}
+  )
   
+  return()
 } # End loop around datum paths

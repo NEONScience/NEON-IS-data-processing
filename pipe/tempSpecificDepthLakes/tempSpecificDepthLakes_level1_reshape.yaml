@@ -7,7 +7,7 @@ transform:
   - ./flow.tsdl.comb.splt.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
-  - NameDirCombOut=/level1_reshape
+  - DirErr=/pfs/out/errored_datums \
   - NameVarTime=001|030
   - MrgeCols=startDateTime|endDateTime
   - FileSchmMapDepth=$FILE_SCHEMA_MAP_DEPTH
