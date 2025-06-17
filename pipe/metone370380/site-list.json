@@ -150,5 +150,29 @@
 	{
 	"site" : "WREF",
 	"kafka_start_date" : "2023-02-03"
+	},
+	{
+	"site" : "BIGC",
+	"kafka_start_date" : "2024-02-03"
+	},
+	{
+	"site" : "MCDI",
+	"kafka_start_date" : "2024-02-03"
+	},
+	{
+	"site" : "CUPE",
+	"kafka_start_date" : "2024-02-03"
+	},
+	{
+	"site" : "GUIL",
+	"kafka_start_date" : "2024-02-03"
+	},
+	{
+	"site" : "SYCA",
+	"kafka_start_date" : "2024-02-03"
+	},
+	{
+	"site" : "WLOU",
+	"kafka_start_date" : "2024-02-03"
 	}
 ]
