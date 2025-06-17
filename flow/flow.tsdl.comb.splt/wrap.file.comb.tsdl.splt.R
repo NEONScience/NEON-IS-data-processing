@@ -69,11 +69,11 @@ wrap.file.comb.tsdl.splt <- function(filePths,
                                     nameVarTime, 
                                     nameSchmMapDpth,
                                     nameSchmMapCols,
+                                    GroupDir,
                                     mrgeCols=c("startDateTime", "endDateTime"),
                                     locDir="location",
                                     statDir="stats",
                                     qmDir="quality_metrics",
-                                    GroupDir = GroupDir,
                                     log=NULL) {
   # initialize logging if necessary
   if (base::is.null(log)) {
@@ -439,8 +439,9 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       # ----------------------------------------------------------------------- #
       # Update group file
       # ----------------------------------------------------------------------- #
-      
+      log$debug(base::paste0("GroupDir: ", GroupDir))
       groupFilePths <- base::list.files(GroupDir, full.names = TRUE)
+      log$debug(base::paste0("groupFilePths: ", groupFilePths))
       if(base::length(groupFilePths) > 1){
         log$info(base::paste0("Multiple location files exist. Using the first location file, ", groupFilePths[1]))
       }
