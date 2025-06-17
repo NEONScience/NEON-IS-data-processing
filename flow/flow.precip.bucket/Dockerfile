@@ -20,7 +20,7 @@ RUN groupadd app && \
 WORKDIR /home/app
 
 # Copy in application code
-COPY ${FLOW_DIR}/${APP_DIR}/flow.precip.bucketR .
+COPY ${FLOW_DIR}/${APP_DIR}/flow.precip.bucket.R .
 COPY ${FLOW_DIR}/${APP_DIR}/wrap.precip.bucket.R .
 
 # Run as app user
