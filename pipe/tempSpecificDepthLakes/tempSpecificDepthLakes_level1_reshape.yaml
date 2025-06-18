@@ -16,7 +16,8 @@ transform:
   - StatDir=stats
   - QmDir=quality_metrics
   - NameFileSufxRm=basicStats|qualityMetrics
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:sha-6d0a42b
+  - SplitGroupName=temp-specific-depths-lakes-split_
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:sha-c4d3c50
   env:
     LOG_LEVEL: DEBUG
 input:

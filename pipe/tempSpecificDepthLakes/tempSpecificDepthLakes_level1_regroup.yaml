@@ -1,0 +1,96 @@
+---
+pipeline:
+  name: tempSpecificDepthLakes_level1_regroup
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    # rm -r -f /tmp/pfs/filter_joined
+    # mkdir -p /tmp/pfs/filter_joined
+    
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    
+    EOF
+  env:
+    # Environment variables for filter-joiner
+    CONFIG: |
+      ---
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      # Use unix-style glob pattern to select the desired directories in each repo 
+      
+      input_paths:
+        - path:
+            name: GROUP_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/GROUP_PATH/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [6]
+        - path:
+            name: SRF_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/SRF_PATH/*/**
+            # Join on group ID(already joined below by day)
+            join_indices: [6]
+
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: DEBUG
+    RELATIVE_PATH_INDEX: "3"
+    LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
+    # Environment variables for calibration module
+    PARALLELIZATION_INTERNAL: '5' # Option for stats module
+input:
+  join:
+    - pfs:
+        name: GROUP_PATH
+        repo: tempSpecificDepthLakes_level1_reshape
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true # Need outer join to pull in with or without SRFs
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+    - pfs:
+        name: SRF_PATH
+        repo: tempSpecificDepthLakes_srf_assignment
+        glob: /(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        empty_files: false # Make sure this is false for LINK_TYPE=COPY
+parallelism_spec:
+  constant: 5
+resource_requests: 
+  memory: 1.8G
+  cpu: 6
+resource_limits:
+  memory: 3G
+  cpu: 7
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+autoscaling: true
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
