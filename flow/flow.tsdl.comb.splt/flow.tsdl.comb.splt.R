@@ -85,7 +85,7 @@
 #' @examples 
 # Sys.setenv(DIR_IN='~/pfs/tempSpecificDepthLakes_level1_group/2025/05/10/temp-specific-depths-lakes_BARC103100')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","NameVarTime=001|030",
+# arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums","NameVarTime=001|030", "SplitGroupName=temp-specific-depths-lakes-split_",
 #          "FileSchmMapDepth=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_map_loc_names.avsc",
 #          "FileSchmMapCols=~/R/NEON-IS-data-processing/flow/flow.tsdl.comb.splt/tests/testthat/pfs/schemas/tsdl_col_term_subs.avsc")
 # rm(list=setdiff(ls(),c('arg','log')))
@@ -122,7 +122,7 @@ arg <- base::commandArgs(trailingOnly = TRUE)
 Para <-
   NEONprocIS.base::def.arg.pars(
     arg = arg,
-    NameParaReqd = c("DirIn", "DirOut", "DirErr", "NameVarTime", "FileSchmMapDepth"),
+    NameParaReqd = c("DirIn", "DirOut", "DirErr", "NameVarTime", "FileSchmMapDepth", "SplitGroupName"),
     NameParaOptn = c("FileSchmMapCols",
                      "MrgeCols",
                      "LocDir",
@@ -150,6 +150,9 @@ if(base::is.null(Para$QmDir)){
 }
 if(base::is.null(Para$NameFileSufxRm)){
   Para$NameFileSufxRm <- base::c("basicStats","qualityMetrics")
+}
+if(base::is.null(Para$SplitGroupName)){
+  Para$SplitGroupName <- base::c("temp-specific-depths-lakes-split_")
 }
 if(base::is.null(Para$CorrColNams)){
   Para$CorrColNams <- TRUE
@@ -204,7 +207,6 @@ for (idxDirIn in DirIn) {
   
   # Gather info about the input directory (including date).
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(idxDirIn,log=log)
-  idxDirOut <- base::paste0(Para$DirOut, InfoDirIn$dirRepo)
   
   #find group directory
   Site <- sub(".*(temp-specific-depths-lakes_[^/]+)/.*", "\\1", idxDirIn)
@@ -217,9 +219,10 @@ for (idxDirIn in DirIn) {
   tryCatch(
     withCallingHandlers(
       # Combine data files
-      wrap.file.comb.tsdl.splt(filePths = filePath,
+      wrap.file.comb.tsdl.splt(InfoDirIn = InfoDirIn,
+                               DirOut = Para$DirOut,
+                            filePths = filePath,
                             fileNames = fileNamz,
-                            idxDirOut = idxDirOut,
                            nameVarTime = Para$NameVarTime,
                            mrgeCols = Para$MrgeCols,
                            locDir = Para$LocDir,
@@ -229,6 +232,7 @@ for (idxDirIn in DirIn) {
                            nameSchmMapDpth = Para$FileSchmMapDepth,
                            nameSchmMapCols = Para$FileSchmMapCols,
                            NameFileSufxRm = Para$NameFileSufxRm,
+                           SplitGroupName = Para$SplitGroupName,
                            log = log
       ),
       error = function(err) {

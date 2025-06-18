@@ -64,12 +64,14 @@
 ##############################################################################################
 wrap.file.comb.tsdl.splt <- function(filePths,
                                      fileNames,
-                                     idxDirOut,
+                                     InfoDirIn,
+                                     DirOut,
                                      NameFileSufxRm,
                                     nameVarTime, 
                                     nameSchmMapDpth,
                                     nameSchmMapCols,
                                     GroupDir,
+                                    SplitGroupName,
                                     mrgeCols=c("startDateTime", "endDateTime"),
                                     locDir="location",
                                     statDir="stats",
@@ -333,11 +335,21 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       stop()
     }
     
-    # Rename to HOR.VER
+    # Rename to group and HOR.VER
+    dirRepo<-InfoDirIn$dirRepo
+    #shorten dirRepo to include everything after the last "_" and before the next number
+    NEONsite <- sub(".*_", "", dirRepo)
+    NEONsite <- substr(NEONsite,1,4)
+    #verify that NEONsite is 4 capital letters
+    if (nchar(NEONsite) != 4) {
+      log$error(base::paste0("The site name is invalid: ",NEONsite))
+      stop()
+    }
+    
     base::names(lsDpth) <- base::unlist(base::lapply(1:base::length(lsDpth),
-                        function(i) base::unique(base::paste(lsDpth[[i]]$horizontalPosition,
-                                                             lsDpth[[i]]$verticalPosition,
-                                                             sep ="."))))
+                        function(i) base::unique(base::paste0(SplitGroupName,NEONsite,
+                                                            lsDpth[[i]]$horizontalPosition,
+                                                            lsDpth[[i]]$verticalPosition))))
     
     # Remove horizontalPosition & verticalPosition columns
     lsD <- lapply(1:length(lsDpth), function(i) {x <- lsDpth[[i]] %>% dplyr::select(-base::c("horizontalPosition","verticalPosition")); return(x)})
@@ -358,19 +370,24 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     for(nameLoc in base::names(dataTime)){
       data <- dataTime[[nameLoc]]
       
-      #create output directories
-      idxDirOutHORVER <- base::paste0(idxDirOut, '/', nameLoc)
-      NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
-                                    DirSub = nameLoc,
-                                    log = log)
+      #split 
+      dirRepoParts <- strsplit(dirRepo, "/")[[1]]
+      dirRepoParts <- dirRepoParts[dirRepoParts != ""]  # Remove empty strings
+      idxDirOut <- base::paste0(DirOut,
+                                "/",dirRepoParts[1],
+                               "/",dirRepoParts[2],
+                               "/",dirRepoParts[3],
+                               "/",nameLoc,
+                               "/",dirRepoParts[5],
+                               "/",dirRepoParts[6])
       
-      NEONprocIS.base::def.dir.crea(DirBgn = paste0(idxDirOut,"/",nameLoc),
+      NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
                                     DirSub = "data",
                                     log = log)
-      NEONprocIS.base::def.dir.crea(DirBgn = paste0(idxDirOut,"/",nameLoc),
+      NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
                                     DirSub = "group",
                                     log = log)
-      NEONprocIS.base::def.dir.crea(DirBgn = paste0(idxDirOut,"/",nameLoc),
+      NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
                                     DirSub = "location",
                                     log = log)
       
@@ -400,8 +417,10 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       fileBase <-
         fileDats[base::nchar(fileDats) == base::min(base::nchar(fileDats))][1]
       # Insert the HOR.VER into the filename by replacing the varTime with the standard HOR.VER.TMI
+      HORVER <- substr(nameLoc, nchar(nameLoc) - 5, nchar(nameLoc))
+      HORVER <- paste0(substr(HORVER, 1, 3), ".", substr(HORVER, 4, nchar(HORVER)))
       fileBaseLoc <- base::gsub(varTime,
-                                base::paste0(nameLoc,".",varTime),fileBase)
+                                base::paste0(HORVER,".",varTime),fileBase)
       
       fileOut <-
         NEONprocIS.base::def.file.name.out(nameFileIn = fileBaseLoc,
@@ -410,7 +429,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       log$debug(base::paste0(
         "Named output filepath as ", fileOut))
       
-      nameFileOut <- base::paste0(idxDirOutHORVER, '/data/', fileOut)
+      nameFileOut <- base::paste0(idxDirOut, '/data/', fileOut)
       
       # ----------------------------------------------------------------------- #
       # Write out the data file.
@@ -461,7 +480,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       # ----------------------------------------------------------------------- #
       
       groupFileName <- sub(".*/", "", groupFilePth)
-      nameJsonOut <- base::paste0(idxDirOutHORVER, '/group/', groupFileName)
+      nameJsonOut <- base::paste0(idxDirOut, '/group/', groupFileName)
       log$debug(base::paste0("groupFileName: ", groupFileName))
       log$debug(base::paste0("nameJsonOut: ", nameJsonOut))
       
@@ -488,7 +507,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       # Symbolically link each file
       for(idxFileCopy in locFilePths){
         idxFileName <- sub(".*\\/", "", idxFileCopy)
-        cmdCopy <- base::paste0('ln -s ',idxFileCopy,' ',base::paste0(idxDirOutHORVER,'/',locDir,'/',idxFileName))
+        cmdCopy <- base::paste0('ln -s ',idxFileCopy,' ',base::paste0(idxDirOut,'/',locDir,'/',idxFileName))
         rptCopy <- base::system(cmdCopy)
       }
       
