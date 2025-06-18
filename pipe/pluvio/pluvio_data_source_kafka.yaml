@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.6
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -17,9 +17,11 @@ transform:
     # environment variables for the parser
     PARSE_FIELD: serial_output
     RELATIVE_PATH_INDEX: "4"
-    PARSED_SCHEMA_PATH: /usr/src/app/schemas/pluvio/pluvio_parsed.avsc 
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/pluvio/pluvio_parsed.avsc 
     SOURCE_TYPE: 'pluvio_raw'
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
+    UPDATE_TRIGGER_TABLE: "False"
+    
   secrets:
   - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_USER
@@ -83,11 +85,11 @@ transform:
       
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone --nostrict
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
       
       # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone --nostrict
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
     
     done
     
