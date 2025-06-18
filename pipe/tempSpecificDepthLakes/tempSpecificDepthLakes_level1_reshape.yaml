@@ -7,7 +7,7 @@ transform:
   - ./flow.tsdl.comb.splt.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
-  - DirErr=/pfs/out/errored_datums \
+  - DirErr=/pfs/out/errored_datums
   - NameVarTime=001|030
   - MrgeCols=startDateTime|endDateTime
   - FileSchmMapDepth=$FILE_SCHEMA_MAP_DEPTH
@@ -16,7 +16,7 @@ transform:
   - StatDir=stats
   - QmDir=quality_metrics
   - NameFileSufxRm=basicStats|qualityMetrics
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:sha-fb26489
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:sha-6d0a42b
   env:
     LOG_LEVEL: DEBUG
 input:
@@ -24,7 +24,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: tempSpecificDepthLakes_level1_group
-      glob: "/*/*/*/*/tchain/*"
+      glob: "/*/*/*/*"
   - pfs:
       name: FILE_SCHEMA_MAP_COLS
       repo: tempSpecificDepthLakes_avro_schemas
