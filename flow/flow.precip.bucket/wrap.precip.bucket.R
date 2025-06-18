@@ -124,6 +124,7 @@ wrap.precip.bucket <- function(DirIn,
   
   # Read in the thresholds file (read first file only, there should only be 1)
   if (base::length(fileThsh) > 1) {
+    log$debug(base::paste0('threshold files are ', fileThsh))
     fileThsh <- fileThsh[1]
     log$info(base::paste0('There is more than one threshold file in ', dirInThsh, '. Using ', fileThsh))
   }
