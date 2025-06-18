@@ -155,9 +155,6 @@ log$debug(base::paste0('Error directory: ', Para$DirErr))
 # Retrieve output schema for  stats
 FileSchmData <- Para$FileSchmData
 
-log$debug(base::paste0('Output schema for bulk precipitation custom flags: ',base::paste0(FileSchmDataTF,collapse=',')))
-log$debug(base::paste0('Output schema for bulk precipitation custom flags: ',base::paste0(FileSchmDataTB,collapse=',')))
-
 #one or more will always be null 
 # Read in the schema 
 if(base::is.null(FileSchmData) || FileSchmData == 'NA'){

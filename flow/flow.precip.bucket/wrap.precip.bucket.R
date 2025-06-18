@@ -127,7 +127,8 @@ wrap.precip.bucket <- function(DirIn,
     fileThsh <- fileThsh[1]
     log$info(base::paste0('There is more than one threshold file in ', dirInThsh, '. Using ', fileThsh))
   }
-  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile = base::paste0(dirInThsh, '/', fileThsh)))
+  log$info(base::paste0(dirInThsh, '/', fileThsh))
+  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df(NameFile = base::paste0(dirInThsh, '/', fileThsh))
   
   # Verify that the term(s) needed in the input parameters are included in the threshold files
   termTest <- "precipBulk"
