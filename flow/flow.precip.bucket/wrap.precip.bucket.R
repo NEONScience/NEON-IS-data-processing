@@ -232,13 +232,16 @@ wrap.precip.bucket <- function(DirIn,
   # uCvalA1 <- as.numeric(ucrtCoef_df$Value[ucrtCoef_df$Name == "U_CVALA1"])
   
   #if more than one relevant calibration, grab correct uncertainty coefficients from CVAL based on time. 
-  if (length(uCvalA1) < 1) {
+  if (length(uCvalA1) < 1 & all(is.na(data$precipitation))) {
+    log$info('No precipitation recorded, uncertainty data will not be calculated.')
+    data$uCvalA1 <- 0
+  } else if (length(uCvalA1) < 1 ) {
     # Generate error and stop execution
-    log$error(base::paste0('Uncertainty value uCvalA1 necessary and not available'))
+    log$error('Uncertainty value uCvalA1 necessary and not available')
     stop()
   } else if (length(uCvalA1) > 1) {
     # Adjust to finding more than one valid cal in a day.
-    log$info(base::paste0('more than one calibration for date ', InfoDirIn$time, ' applying multiple coefficients.'))
+    log$info(base::paste0('More than one calibration for date ', InfoDirIn$time, ' applying multiple coefficients.'))
     cals <- ucrtCoef_df[ucrtCoef_df$Name == "U_CVALA1",]
     cals$start_date <-  as.POSIXct(cals$start_date, format = "%Y-%m-%dT%H:%M:%OS", tz = 'GMT')
     cals$end_date <- as.POSIXct(cals$end_date, format = "%Y-%m-%dT%H:%M:%OS", tz = 'GMT')
@@ -247,7 +250,7 @@ wrap.precip.bucket <- function(DirIn,
     data <- data %>%
       mutate(uCvalA1 = NA_real_)
     
-    # Sort cals by start_date to ensure correct order of application
+    # Sort cals by start_date 
     cals <- cals[order(cals$start_date), ]
     
     # Iterate through each calibration entry and apply the coefficient
