@@ -370,6 +370,9 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       NEONprocIS.base::def.dir.crea(DirBgn = paste0(idxDirOut,"/",nameLoc),
                                     DirSub = "group",
                                     log = log)
+      NEONprocIS.base::def.dir.crea(DirBgn = paste0(idxDirOut,"/",nameLoc),
+                                    DirSub = "location",
+                                    log = log)
       
       
       # Take stock of the combined data
@@ -477,6 +480,19 @@ wrap.file.comb.tsdl.splt <- function(filePths,
         log$info(base::paste0('Group JSON written successfully in file: ',
                               nameJsonOut))
       }
+      
+      
+      # ----------------------------------------------------------------------- #
+      # Copy over location file
+      # ----------------------------------------------------------------------- #
+      # Symbolically link each file
+      for(idxFileCopy in locFilePths){
+        idxFileName <- sub(".*\\/", "", idxFileCopy)
+        cmdCopy <- base::paste0('ln -s ',idxFileCopy,' ',base::paste0(idxDirOutHORVER,'/',locDir,'/',idxFileName))
+        rptCopy <- base::system(cmdCopy)
+      }
+      
+      
       
     } # end loop on HOR.VER
     
