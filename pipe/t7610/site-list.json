@@ -16,8 +16,24 @@
 	"kafka_start_date" : "2023-03-03"
 	},
 	{
+	"site" : "BONA",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "CLBJ",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "CPER",
+	"kafka_start_date" : "2022-12-30"
+	},
+	{
 	"site" : "DCFS",
 	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "DEJU",
+	"kafka_start_date" : "2023-06-01"
 	},
 	{
 	"site" : "DELA",
@@ -48,8 +64,20 @@
 	"kafka_start_date" : "2023-03-09"
 	},
 	{
+	"site" : "JORN",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
 	"site" : "KONA",
 	"kafka_start_date" : "2023-03-15"
+	},
+	{
+	"site" : "KONZ",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "LAJA",
+	"kafka_start_date" : "2023-05-10"
 	},
 	{
 	"site" : "LENO",
@@ -76,11 +104,24 @@
 	"end_date" : "2022-05-11"
 	},
 	{
+	"site" : "MD04",
+	"start_date" : "2025-03-26"
+	},
+	{
+	"site" : "MDP2",
+	"start_date" : "2025-03-26",
+	"kafka_start_date" : "2025-03-26"
+	},
+	{
 	"site" : "MLBS",
 	"kafka_start_date" : "2023-02-03"
 	},
 	{
 	"site" : "MOAB",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "NIWO",
 	"kafka_start_date" : "2023-05-24"
 	},
 	{
@@ -90,6 +131,10 @@
 	{
 	"site" : "OAES",
 	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "ONAQ",
+	"kafka_start_date" : "2023-05-24"
 	},
 	{
 	"site" : "ORNL",
@@ -116,7 +161,15 @@
 	"kafka_start_date" : "2023-03-03"
 	},
 	{
+	"site" : "SJER",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
 	"site" : "SOAP",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "SRER",
 	"kafka_start_date" : "2023-05-24"
 	},
 	{
@@ -136,6 +189,10 @@
 	"kafka_start_date" : "2023-05-24"
 	},
 	{
+	"site" : "TOOL",
+	"kafka_start_date" : "2023-06-01"
+	},
+	{
 	"site" : "TREE",
 	"kafka_start_date" : "2023-03-15"
 	},
@@ -148,31 +205,15 @@
 	"kafka_start_date" : "2023-03-15"
 	},
 	{
+	"site" : "WOOD",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
 	"site" : "WREF",
 	"kafka_start_date" : "2023-02-03"
 	},
 	{
-	"site" : "BIGC",
-	"kafka_start_date" : "2024-02-03"
-	},
-	{
-	"site" : "MCDI",
-	"kafka_start_date" : "2024-02-03"
-	},
-	{
-	"site" : "CUPE",
-	"kafka_start_date" : "2024-02-03"
-	},
-	{
-	"site" : "GUIL",
-	"kafka_start_date" : "2024-02-03"
-	},
-	{
-	"site" : "SYCA",
-	"kafka_start_date" : "2024-02-03"
-	},
-	{
-	"site" : "WLOU",
-	"kafka_start_date" : "2024-02-03"
+	"site" : "YELL",
+	"kafka_start_date" : "2023-02-03"
 	}
 ]
