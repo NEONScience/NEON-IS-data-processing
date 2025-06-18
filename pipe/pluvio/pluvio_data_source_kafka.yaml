@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.6
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -17,9 +17,11 @@ transform:
     # environment variables for the parser
     PARSE_FIELD: serial_output
     RELATIVE_PATH_INDEX: "4"
-    PARSED_SCHEMA_PATH: /usr/src/app/schemas/pluvio/pluvio_parsed.avsc 
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/pluvio/pluvio_parsed.avsc 
     SOURCE_TYPE: 'pluvio_raw'
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
+    UPDATE_TRIGGER_TABLE: "False"
+    
   secrets:
   - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_USER
