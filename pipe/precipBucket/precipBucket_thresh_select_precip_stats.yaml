@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: precipBucket_thresh_select
+  name: precipBucket_thresh_select_precip_stats
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.1.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-thsh-slct-prcp-stat:sha-7328b37
   cmd:
   - sh
   - "-c"
@@ -13,7 +13,9 @@ transform:
     IFS=$'\n\t'
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/pfs/threshold_select
+    rm -rf /tmp/pfs/threshold_selectCopy
     mkdir -p /tmp/pfs/threshold_select
+
     # Run first module - threshold_select'
     Rscript ./flow.thsh.slct.R \
       DirIn=$REPO_LOCATIONS \
@@ -22,18 +24,22 @@ transform:
       FileThsh=$FILE_THRESHOLDS \
       "TermCtxt1=precipBulk|precipitation|tipping" \
       "DirSubCopy=location|data|uncertainty_coef|flags"
+      
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/threshold_select /tmp/pfs/threshold_selectCopy || : # Allow to fail without exit code (happens if step above produced no output)  
+    rm -r -f /tmp/pfs/threshold_select 
 
     # Run second module - custom precip
     Rscript ./flow.precip.bucket.R \
-      DirIn=/tmp/pfs/threshold_select \
+      DirIn=/tmp/pfs/threshold_selectCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       FileSchmData=$FILE_SCHEMA_STATS \
       DirSubCopy=location
-    
+      
     EOF
   env:
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     PARALLELIZATION_INTERNAL: '3' # For threshold select module
 output_branch: master
 input:
@@ -41,7 +47,7 @@ input:
   - pfs:
       name: REPO_LOCATIONS
       repo: precipBucket_group_path
-      glob: /*/*/*
+      glob: /(2025)/(05)/(31)
   - pfs:
       name: FILE_THRESHOLDS
       repo: precipBucket_threshold

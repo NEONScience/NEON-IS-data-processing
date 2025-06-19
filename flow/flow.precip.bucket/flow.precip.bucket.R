@@ -192,7 +192,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.precip.bucket(DirIn=DirIn,
+      wrap.precip.bucket(DirIn=idxDirIn,
                               DirOutBase=Para$DirOut,
                               SchmData = FileSchmData,
                               DirSubCopy=DirSubCopy,

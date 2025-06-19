@@ -89,7 +89,7 @@ wrap.precip.bucket <- function(DirIn,
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn, log = log)
   dirInData <- fs::path(DirIn, 'data')
   dirInQf <- fs::path(DirIn, 'flags')
-  dirInThsh <- fs::path(DirIn, 'threshold')
+  dirInThsh <-  fs::path(DirIn, 'threshold')
   dirInLoc <- fs::path(DirIn, 'location')
   dirUcrtCoef <- fs::path(DirIn, 'uncertainty_coef')
   
