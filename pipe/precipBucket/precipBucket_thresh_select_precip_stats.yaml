@@ -2,7 +2,7 @@
 pipeline:
   name: precipBucket_thresh_select_precip_stats
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-thsh-slct-prcp-stat:sha-7328b37
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-thsh-slct-prcp-stat:sha-1b4b56d
   cmd:
   - sh
   - "-c"
@@ -55,7 +55,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_STATS
       repo: precipBucket_avro_schemas
-      glob: /precipBucket/precipBucket_dp01_stats_metone.avsc
+      glob: /precipBucket/precipBucket_dp01_stats_metone_testsec.avsc
 
 parallelism_spec:
   constant: 5
