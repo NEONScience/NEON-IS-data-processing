@@ -47,7 +47,7 @@ input:
   - pfs:
       name: REPO_LOCATIONS
       repo: precipBucket_group_path
-      glob: /(2025)/(05)/(31)
+      glob: /*/*/*
   - pfs:
       name: FILE_THRESHOLDS
       repo: precipBucket_threshold
@@ -61,10 +61,10 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 800M
+  memory: 2G
   cpu: 3.3
 resource_limits:
-  memory: 1.5G
+  memory: 3G
   cpu: 5
 sidecar_resource_requests:
   memory: 3G
