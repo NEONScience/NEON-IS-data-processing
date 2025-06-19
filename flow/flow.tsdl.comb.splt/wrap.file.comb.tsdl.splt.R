@@ -377,9 +377,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
                                 "/",dirRepoParts[1],
                                "/",dirRepoParts[2],
                                "/",dirRepoParts[3],
-                               "/",nameLoc,
-                               "/",dirRepoParts[5],
-                               "/",dirRepoParts[6])
+                               "/",nameLoc)
       
       NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
                                     DirSub = "data",
