@@ -476,6 +476,8 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       groupData$features[[1]]$properties$group<-nameLoc
       log$debug(base::paste0("updated VER: ", groupData$features[[1]]$VER))
       log$debug(base::paste0("updated group: ", groupData$features[[1]]$properties$group))
+      #need to keep some features boxed in json formatting
+      groupData$features[[1]]$properties$data_product_ID<-list(groupData$features[[1]]$properties$data_product_ID)
       
       # ----------------------------------------------------------------------- #
       # Write out group file
@@ -487,7 +489,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       log$debug(base::paste0("nameJsonOut: ", nameJsonOut))
       
       jsonWrte <-
-        base::try(jsonlite::write_json(groupData, nameJsonOut, pretty = TRUE, auto_unbox = TRUE),
+        base::try(jsonlite::write_json(groupData, nameJsonOut, pretty = TRUE, auto_unbox=TRUE),
                   silent = TRUE)
       if (base::class(jsonWrte) == 'try-error') {
         log$error(base::paste0(
