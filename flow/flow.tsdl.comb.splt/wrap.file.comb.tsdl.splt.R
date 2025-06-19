@@ -416,12 +416,11 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       
       fileBase <-
         fileDats[base::nchar(fileDats) == base::min(base::nchar(fileDats))][1]
-      # Insert the HOR.VER into the filename by replacing the varTime with the standard HOR.VER.TMI
+      # Insert the HOR.VER into the filename by replacing the varTime with the standard HORVER_TMI
       HORVER <- substr(nameLoc, nchar(nameLoc) - 5, nchar(nameLoc))
-      HORVER <- paste0(substr(HORVER, 1, 3), ".", substr(HORVER, 4, nchar(HORVER)))
       VER <- substr(HORVER, nchar(HORVER) - 2, nchar(HORVER))
       fileBaseLoc <- base::gsub(varTime,
-                                base::paste0(HORVER,".",varTime),fileBase)
+                                base::paste0(HORVER,"_",varTime),fileBase)
       
       fileOut <-
         NEONprocIS.base::def.file.name.out(nameFileIn = fileBaseLoc,
