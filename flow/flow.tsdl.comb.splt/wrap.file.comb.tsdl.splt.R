@@ -419,6 +419,7 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       # Insert the HOR.VER into the filename by replacing the varTime with the standard HOR.VER.TMI
       HORVER <- substr(nameLoc, nchar(nameLoc) - 5, nchar(nameLoc))
       HORVER <- paste0(substr(HORVER, 1, 3), ".", substr(HORVER, 4, nchar(HORVER)))
+      VER <- substr(HORVER, nchar(HORVER) - 2, nchar(HORVER))
       fileBaseLoc <- base::gsub(varTime,
                                 base::paste0(HORVER,".",varTime),fileBase)
       
@@ -470,10 +471,11 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       groupFilePth <- groupFilePths[1]
       log$debug(base::paste0("groupFilePth: ", groupFilePth))
       groupData <- try(rjson::fromJSON(file=groupFilePth))
-      VER <- sub(".*\\.", "", nameLoc)
       log$debug(base::paste0("VER: ", VER))
       groupData$features[[1]]$VER<-VER
-      log$debug(base::paste0("groupData$features[[1]]$VER: ", groupData$features[[1]]$VER))
+      groupData$features[[1]]$properties$group<-nameLoc
+      log$debug(base::paste0("updated VER: ", groupData$features[[1]]$VER))
+      log$debug(base::paste0("updated group: ", groupData$features[[1]]$properties$group))
       
       # ----------------------------------------------------------------------- #
       # Write out group file
