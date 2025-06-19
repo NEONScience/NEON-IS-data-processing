@@ -2,7 +2,7 @@
 pipeline:
   name: exo2dissolvedoxygen_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.16
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
@@ -92,11 +92,11 @@ transform:
       
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone --nostrict
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
       
       # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone --nostrict
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
       
       sites_output+=($site)
 

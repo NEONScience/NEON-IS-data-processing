@@ -1,13 +1,13 @@
 ---
 pipeline:
-  name: nadp127tm_data_source_kafka
+  name: ncon127tm_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.4
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.16
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "nadp127tm"
+    SOURCE_TYPE: "ncon127tm"
     LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
@@ -92,11 +92,11 @@ transform:
       
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone --nostrict
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
       
       # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone --nostrict
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
       
       sites_output+=($site)
 
@@ -107,7 +107,7 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/nadp127tm/2023/01/01/12345/data/file.parquet
+      # /pfs/out/ncon127tm/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
@@ -141,9 +141,9 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: nadp127tm_cron_daily_and_date_control
+    repo: ncon127tm_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/nadp127tm/*/*/*"
+    glob: "/ncon127tm/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
