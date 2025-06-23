@@ -1,7 +1,7 @@
 [
 	{
-	"site" : "ARIK",
-	"kafka_start_date" : "2024-03-01"
+	"site" : "ABBY",
+	"kafka_start_date" : "2023-05-24"
 	},
 	{
 	"site" : "BARR",
@@ -16,10 +16,6 @@
 	"kafka_start_date" : "2023-03-03"
 	},
 	{
-	"site" : "BLUE",
-	"kafka_start_date" : "2024-02-09"
-	},
-	{
 	"site" : "BONA",
 	"kafka_start_date" : "2023-06-01"
 	},
@@ -32,12 +28,20 @@
 	"kafka_start_date" : "2022-12-30"
 	},
 	{
-	"site" : "CUPE",
-	"kafka_start_date" : "2024-02-09"
+	"site" : "DCFS",
+	"kafka_start_date" : "2023-05-19"
+	},
+	{
+	"site" : "DEJU",
+	"kafka_start_date" : "2023-06-01"
 	},
 	{
 	"site" : "DELA",
 	"kafka_start_date" : "2023-06-16"
+	},
+	{
+	"site" : "DSNY",
+	"kafka_start_date" : "2023-03-09"
 	},
 	{
 	"site" : "GRSM",
@@ -46,10 +50,6 @@
 	{
 	"site" : "GUAN",
 	"kafka_start_date" : "2023-03-09"
-	},
-	{
-	"site" : "GUIL",
-	"kafka_start_date" : "2024-01-25"
 	},
 	{
 	"site" : "HARV",
@@ -63,13 +63,54 @@
 	"site" : "JERC",
 	"kafka_start_date" : "2023-03-09"
 	},
+  {
+	"site" : "JORN",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
+	"site" : "KONA",
+	"kafka_start_date" : "2023-03-15"
+	},
 	{
 	"site" : "KONZ",
 	"kafka_start_date" : "2023-05-19"
 	},
+  {
+	"site" : "LAJA",
+	"kafka_start_date" : "2023-05-10"
+	},
 	{
 	"site" : "LENO",
 	"kafka_start_date" : "2023-06-15"
+	},
+	{
+	"site" : "MD00",
+	"start_date" : "2017-07-18",
+	"end_date" : "2017-08-23"
+	},
+	{
+	"site" : "MD01",
+	"start_date" : "2021-07-23",
+	"end_date" : "2021-11-17"
+	},
+	{
+	"site" : "MD02",
+	"start_date" : "2021-08-23",
+	"end_date" : "2021-11-30"
+	},
+	{
+	"site" : "MD03",
+	"start_date" : "2022-04-08",
+	"end_date" : "2022-05-11"
+	},
+	{
+	"site" : "MD04",
+	"start_date" : "2025-03-26"
+	},
+	{
+	"site" : "MDP2",
+	"start_date" : "2025-03-26",
+	"kafka_start_date" : "2025-03-26"
 	},
 	{
 	"site" : "MLBS",
@@ -104,16 +145,8 @@
 	"kafka_start_date" : "2023-03-09"
 	},
 	{
-	"site" : "PRIN",
-	"kafka_start_date" : "2023-03-09"
-	},
-	{
 	"site" : "PUUM",
 	"kafka_start_date" : "2023-02-03"
-	},
-	{
-	"site" : "REDB",
-	"kafka_start_date" : "2024-02-06"
 	},
 	{
 	"site" : "RMNP",
@@ -132,6 +165,10 @@
 	"kafka_start_date" : "2023-05-24"
 	},
 	{
+	"site" : "SOAP",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
 	"site" : "SRER",
 	"kafka_start_date" : "2023-05-24"
 	},
@@ -144,16 +181,20 @@
 	"kafka_start_date" : "2023-01-13"
 	},
 	{
-	"site" : "SYCA",
-	"kafka_start_date" : "2024-04-11"
-	},
-	{
 	"site" : "TALL",
 	"kafka_start_date" : "2023-05-10"
 	},
 	{
+	"site" : "TEAK",
+	"kafka_start_date" : "2023-05-24"
+	},
+	{
 	"site" : "TOOL",
 	"kafka_start_date" : "2023-06-01"
+	},
+	{
+	"site" : "TREE",
+	"kafka_start_date" : "2023-03-15"
 	},
 	{
 	"site" : "UKFS",

@@ -1,41 +1,40 @@
 ---
 pipeline:
-  name: g2131i_assetuid_macaddress_map
+  name: enviroscan_location_loader
 transform:
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-asset-mac-map:v0.0.1
+  # image_pull_secrets:
+  # - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-loader:v1.0.0
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m assetuid_macaddress_mapping_loader.assetuid_macaddress_loader
+  - python3 -m location_loader.location_loader_main
   env:
-    OUTPUT_PATH: /pfs/out
-    REGION: cert
-    SOURCE_TYPE: g2131i
-    CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/
-    LOG_LEVEL: DEBUG
+    LOCATION_TYPE: CONFIG
+    SOURCE_TYPE: enviroscan
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
+    LOG_LEVEL: INFO
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
-  - name: cds-secret
-    mount_path: /var/cds_secret
 input:
   pfs:
-    repo: g2131i_cron_daily_and_date_control_tick
+    repo: enviroscan_cron_daily_and_date_control_tick
     glob: /*
     empty_files: true
 autoscaling: true
 resource_requests:
   memory: 100M
-  cpu: 0.05
+  cpu: 0.1
 resource_limits:
   memory: 300M
   cpu: 0.5
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 0.5
+  memory: 300M
+  cpu: 0.3
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
