@@ -2,7 +2,7 @@
 pipeline:
   name: l2130i_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.7.5
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.16
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -14,7 +14,7 @@ transform:
     SOURCE_TYPE: "l2130i_raw"
     PARSE_FIELD: "measurement_buffer"
     PARSED_START_INDEX: "1" # skip first element 'time' in parse_field for parsing
-    PARSED_SCHEMA_PATH: /usr/src/app/schemas/l2130i/l2130i_parsed.avsc
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/l2130i/l2130i_parsed.avsc
     FIELD_START_INDEX: "4" # skip instrument_status for parsing
   secrets:
   - name: l0-bucket

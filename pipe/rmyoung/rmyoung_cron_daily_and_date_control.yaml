@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: nadp127tm_cron_daily_and_date_control
+  name: rmyoung_cron_daily_and_date_control
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   cmd: ["/bin/bash"]
@@ -11,9 +11,9 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2025-03-01" # Inclusive
-    # END_DATE: "2025-02-24" # Inclusive
-    SOURCE_TYPE: "nadp127tm"
+    START_DATE: "2025-05-01" # Inclusive
+    #END_DATE: "2023-11-23" # Inclusive
+    SOURCE_TYPE: "rmyoung"
   stdin:
   - "#!/bin/bash"
   - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
@@ -26,7 +26,7 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: nadp127tm_site_list
+      repo: rmyoung_site_list
       glob: /site-list.json
 resource_requests:
   memory: 100M
