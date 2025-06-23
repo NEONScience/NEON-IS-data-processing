@@ -131,6 +131,7 @@ transform:
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
+        echo "Updating airflow trigger table for $site_output and $date_str"
         ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
       done
 
@@ -145,14 +146,14 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/nr01/*/*/*"
 parallelism_spec:
-  constant: 3
+  constant: 2
 autoscaling: true
 resource_requests:
-  memory: 300M
-  cpu: 1.6
+  memory: 400M
+  cpu: 1.8
 resource_limits:
   memory: 1.5G
-  cpu: 2
+  cpu: 2.5
 sidecar_resource_requests:
   memory: 2G
   cpu: 0.5

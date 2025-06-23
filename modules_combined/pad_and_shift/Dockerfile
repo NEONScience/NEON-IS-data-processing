@@ -1,6 +1,6 @@
 # Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, data padder and shifter
 # Start with the base package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.2
 
 
 # Add in the python-based filter-joiner module

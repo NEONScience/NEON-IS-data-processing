@@ -28,6 +28,9 @@
 #' Input path = /scratch/pfs/proc_group/prt/27134/resistenace \cr
 #'     
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
+#' @param DirErrBase (optional) Character value. The output path for errored datums that will replace the 
+#' #/pfs/BASE_REPO portion of DirIn. Default is a directory named "errored_datums" appended to the end of DirOutBase.
+#' Paths to calibration files that failed for any reason will be placed in this directory.
 #' @param TimeBgn POSIX. The minimum date for which to assign calibration files.
 #' @param TimeEnd POSIX. The maximum date for which to assign calibration files (non-inclusive).
 #' @param PadDay (optional). 2-element difftime object with units of days indicating the days to include applicable 
@@ -77,9 +80,12 @@
 #     add support for array variables/calibrations that utilize multiple stream IDs for the same term
 #   Cove Sturtevant (2023-03-23)
 #     fix bug when cal is copied in a block of directories where one fails causing the whole block to fail
+#    Cove Sturtevant (2025-05-01)
+#     route individual files that fail checks to an error directory and allow successful files to be assigned
 ##############################################################################################
 wrap.cal.asgn <- function(DirIn,
                           DirOutBase,
+                          DirErrBase=fs::path(DirOutBase,'errored_datums'),
                           TimeBgn,
                           TimeEnd,
                           PadDay=base::as.difftime(c(0,0),units='days'),
@@ -93,6 +99,7 @@ wrap.cal.asgn <- function(DirIn,
   } 
 
   # Directory listing of cal files for this data stream
+  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   fileCal <- base::dir(DirIn)
   
   # Move on if no calibration files
@@ -109,9 +116,22 @@ wrap.cal.asgn <- function(DirIn,
   
   
   # Get metadata for all the calibration files in the directory, saving the valid start/end dates & certificate number
-  metaCal <-
-    NEONprocIS.cal::def.cal.meta(fileCal = base::paste0(DirIn, '/', fileCal),
-                                 log = log)
+  metaCal <- NEONprocIS.cal::def.cal.meta(fileCal = base::paste0(DirIn, '/', fileCal), log = log)
+  
+  # Redirect calibration files that failed for any reason to the error directory, and then remove them from metaCal
+  setFail <- metaCal$err == TRUE
+  if(base::all(setFail==TRUE)){
+    # None left, fail the entire datum
+    stop('All calibrations for ',DirIn,' failed to be processed.')
+  } else if (base::any(setFail==TRUE)){
+    base::lapply(fileCal[setFail], 
+           FUN=function(idxFileFail){
+             dir.create(fs::path(DirErrBase, '/', InfoDirIn$dirRepo),recursive=TRUE)
+             base::system(paste0('touch ',DirErrBase, '/', InfoDirIn$dirRepo, '/', idxFileFail))
+             }
+           )
+    metaCal <- metaCal[!setFail,]
+  }
   
   # In the case of arrays, there can be multiple stream IDs for the same term name.
   # We want to treat each stream ID as if it were a separate term 
@@ -154,7 +174,6 @@ wrap.cal.asgn <- function(DirIn,
   tsChar <- format(ts,format='%Y/%m/%d') # Format as year/month/day repo structure
   
   # Create the output directory structure
-  InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn,log=log)
   typeSrc <- InfoDirIn$dirSplt[InfoDirIn$idxRepo+1]
   idSrc <- InfoDirIn$dirSplt[InfoDirIn$idxRepo+2]
   term <- InfoDirIn$dirSplt[InfoDirIn$idxRepo+3]
