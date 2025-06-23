@@ -23,7 +23,6 @@ transform:
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
     UPDATE_TRIGGER_TABLE: "False"
     
->>>>>>> 63f2a9111be6370f7d0863798b058e5aac744e93
   secrets:
   - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_USER
