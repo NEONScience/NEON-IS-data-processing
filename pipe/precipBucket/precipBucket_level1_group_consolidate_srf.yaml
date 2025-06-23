@@ -52,92 +52,86 @@ transform:
       "DirSubCopy=science_review_flags|group|location"
 
 
-    # # Export Level 1 data to bucket
-    # export OUT_PATH=/pfs/out
-    # export GROUP_PREFIX=$GROUP_PREFIX_1
-    # linkdir=$(mktemp -d)
-    # shopt -s globstar
-    # out_parquet_glob="${OUT_PATH}/**/*.parquet"
-    # # Example: /2024/01/18/par-quantum-line_UKFS001000/data/par-quantum-line_UKFS001000_2024-01-18_PARQL_1min_001.parquet
-    # echo "Linking output files to ${linkdir}"
-    # #set -x # Echo commands to output for debugging
-    # fname=""
-    # for f in $out_parquet_glob; do
-    #   if [[ -f "$f" ]]; then
-    #     # Parse the path
-    #     [[ "$f" =~ ^$OUT_PATH/([0-9]+)/([0-9]+)/([0-9]+)/(${GROUP_PREFIX}_[A-Za-z0-9]+)/data/(.*)$ ]]
-    #     fyear="${BASH_REMATCH[1]}"
-    #     fmonth="${BASH_REMATCH[2]}"
-    #     fday="${BASH_REMATCH[3]}"
-    #     fgroup="${BASH_REMATCH[4]}"
-    #     fname="${BASH_REMATCH[5]}"
-    #     # Now get the timing index from the file name
-    #     [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
-    #     avg_int="${BASH_REMATCH[2]}"
-    #     #Form the output path and link
-    #     outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
-    #     mkdir -p "${outdir}"
-    #     ln -s "${f}" "${outdir}/${fname}"
-    #   fi
-    # done
-    # #set +x
-    # if [[ "${fname}" ]]; then
-    #   echo "Syncing files to bucket"
-    #   rclone \
-    #     --no-check-dest \
-    #     --copy-links \
-    #     --gcs-bucket-policy-only \
-    #     --gcs-no-check-bucket \
-    #     copy \
-    #     "${linkdir}" \
-    #     ":gcs://${BUCKET_NAME}"
-    #   echo "Removing temporary files"
-    #   rm -rf $linkdir
-    # fi
-    # 
-    # 
-    # # # Export Level 1 data to bucket
-    # export OUT_PATH=/pfs/out
-    # export GROUP_PREFIX=$GROUP_PREFIX_2
-    # linkdir=$(mktemp -d)
-    # shopt -s globstar
-    # out_parquet_glob="${OUT_PATH}/**/*.parquet"
-    # # Example: /2024/01/18/par-quantum-line_UKFS001000/data/par-quantum-line_UKFS001000_2024-01-18_PARQL_1min_001.parquet
-    # echo "Linking output files to ${linkdir}"
-    # #set -x # Echo commands to output for debugging
-    # fname=""
-    # for f in $out_parquet_glob; do
-    #   if [[ -f "$f" ]]; then
-    #     # Parse the path
-    #     [[ "$f" =~ ^$OUT_PATH/([0-9]+)/([0-9]+)/([0-9]+)/(${GROUP_PREFIX}_[A-Za-z0-9]+)/data/(.*)$ ]]
-    #     fyear="${BASH_REMATCH[1]}"
-    #     fmonth="${BASH_REMATCH[2]}"
-    #     fday="${BASH_REMATCH[3]}"
-    #     fgroup="${BASH_REMATCH[4]}"
-    #     fname="${BASH_REMATCH[5]}"
-    #     # Now get the timing index from the file name
-    #     [[ "$fname" =~ ^${GROUP_PREFIX}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]
-    #     avg_int="${BASH_REMATCH[2]}"
-    #     #Form the output path and link
-    #     outdir="${linkdir}/v2/${GROUP_PREFIX}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
-    #     mkdir -p "${outdir}"
-    #     ln -s "${f}" "${outdir}/${fname}"
-    #   fi
-    # done
-    # #set +x
-    # if [[ "${fname}" ]]; then
-    #   echo "Syncing files to bucket"
-    #   rclone \
-    #     --no-check-dest \
-    #     --copy-links \
-    #     --gcs-bucket-policy-only \
-    #     --gcs-no-check-bucket \
-    #     copy \
-    #     "${linkdir}" \
-    #     ":gcs://${BUCKET_NAME}"
-    #   echo "Removing temporary files"
-    #   rm -rf $linkdir
-    # fi
+    # Define your group prefixes as variables
+    export GROUP_PREFIX_1=$GROUP_PREFIX_1     # Ensure these match your actual data prefixes
+    export GROUP_PREFIX_2=$GROUP_PREFIX_2 # Ensure these match your actual data prefixes
+    
+    export OUT_PATH=/pfs/out
+    linkdir=$(mktemp -d)
+    shopt -s globstar
+    out_parquet_glob="${OUT_PATH}/**/*.parquet"
+    
+    echo "Linking output files to ${linkdir}"
+    # set -x # Echo commands to output for debugging
+    
+    fname="" # This will continue to act as a flag for rclone
+    for f in $out_parquet_glob; do
+    if [[ -f "$f" ]]; then
+    # First, attempt to parse the path to get the date components and the full group name.
+    # This regex is general enough to capture ANY group name, not just the two specific ones,
+    # so we can filter AFTER extraction.
+    if [[ "$f" =~ ^$OUT_PATH/([0-9]+)/([0-9]+)/([0-9]+)/([A-Za-z0-9_-]+)/data/(.*)$ ]]; then
+    fyear="${BASH_REMATCH[1]}"
+    fmonth="${BASH_REMATCH[2]}"
+    fday="${BASH_REMATCH[3]}"
+    fgroup="${BASH_REMATCH[4]}" 
+    fname_temp="${BASH_REMATCH[5]}" 
+    
+    # --- START: Explicit Group Skip Logic ---
+    # Check if fgroup starts with GROUP_PREFIX_1_ OR GROUP_PREFIX_2_
+    if [[ "$fgroup" == "${GROUP_PREFIX_1}_"* || "$fgroup" == "${GROUP_PREFIX_2}_"* ]]; then
+    # Determine which specific prefix was matched for this file
+    current_group_prefix=""
+    if [[ "$fgroup" == "${GROUP_PREFIX_1}_"* ]]; then
+    current_group_prefix="$GROUP_PREFIX_1"
+    elif [[ "$fgroup" == "${GROUP_PREFIX_2}_"* ]]; then
+    current_group_prefix="$GROUP_PREFIX_2"
+    fi
+    
+    # Assign fname for the next regex and the rclone flag
+    fname="$fname_temp"
+    
+    # Now get the timing index from the file name using the determined prefix
+    if [[ "$fname" =~ ^${current_group_prefix}_[A-Za-z0-9]+_${fyear}-${fmonth}-${fday}_[A-Za-z0-9]+_([A-Za-z0-9]+)_([A-Za-z0-9]+).parquet ]]; then
+    avg_int="${BASH_REMATCH[2]}"
+    
+    # Form the output path and link
+    outdir="${linkdir}/v2/${current_group_prefix}/${avg_int}/group=${fgroup}/ms=${fyear}-${fmonth}"
+    mkdir -p "${outdir}"
+    ln -s "${f}" "${outdir}/${fname}"
+    else
+      echo "Warning: Filename pattern mismatch for '$fname' with extracted prefix '$current_group_prefix'. Skipping."
+    fname="" # Reset fname if the inner regex fails, preventing rclone for this file
+    fi
+    else
+      # This is where files that don't match GROUP_PREFIX_1 or GROUP_PREFIX_2 are skipped
+      echo "Skipping file: $f (group '$fgroup' does not match '${GROUP_PREFIX_1}_' or '${GROUP_PREFIX_2}_')"
+    # No 'continue' needed as it will naturally move to the next iteration
+    fi
+    # --- END: Explicit Group Skip Logic ---
+    
+    else
+      # This block handles files that don't match the general path structure at all
+      echo "Skipping file: $f (does not match general path pattern expected: $OUT_PATH/YEAR/MONTH/DAY/GROUP_ID/data/FILENAME)"
+    fi
+    fi
+    done
+    # set +x # Uncomment this if you uncommented set -x at the top
+    if [[ -n "${fname}" ]]; then # Check if fname is non-empty (-n checks if string is not null)
+    echo "Syncing files to bucket"
+    rclone \
+    --no-check-dest \
+    --copy-links \
+    --gcs-bucket-policy-only \
+    --gcs-no-check-bucket \
+    copy \
+    "${linkdir}" \
+    ":gcs://${BUCKET_NAME}"
+    echo "Removing temporary files"
+    rm -rf "$linkdir"
+    else
+      echo "No matching files found or processed for transfer. Nothing to sync."
+    fi
     EOF
   env:
     # Environment variables for 1st filter-joiner. Need to join by day again here because an outer join was used on 
@@ -164,7 +158,7 @@ transform:
     OUT_PATH_1: /tmp/interimA # Transfered to OUT_PATH for the first module
     RELATIVE_PATH_INDEX: "3" # This is shared among the 2 filter joiners and consolidation module
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules. Also shared with 2nd & 3rd modules 
-    LOG_LEVEL: DEBUG # Shared among all modules
+    LOG_LEVEL: INFO # Shared among all modules
 
 # Below are the environment variables for 2nd filter-joiner bringing in the Science review flags 
 # Can't do this in first filter-joiner bc there are only data in the srf assignment
