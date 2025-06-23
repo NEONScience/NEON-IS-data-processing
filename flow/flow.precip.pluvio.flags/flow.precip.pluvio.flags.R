@@ -187,7 +187,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.precip.pluvio.flags(DirIn=DirIn,
+      wrap.precip.pluvio.flags(DirIn=idxDirIn,
                               DirOutBase=Para$DirOut,
                               SchmQf=FileSchmQf, 
                               DirSubCopy=DirSubCopy,
