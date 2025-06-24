@@ -35,6 +35,7 @@ transform:
             glob_pattern: /pfs/GROUP_PATH/*/**
             # Join on Y/M/D/group ID 
             join_indices: [6]
+            outer_join: True
         - path:
             name: SRF_PATH
             # Filter for data directory
