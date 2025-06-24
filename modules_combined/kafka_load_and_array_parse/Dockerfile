@@ -5,7 +5,7 @@
 # docker build -t neon-is-kfka-load-arry-pars:latest -f ./modules_combined/kafka_load_and_array_parse/Dockerfile .
 #
 ###
-FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.8.16
+FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.9.1
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="array_parser"
