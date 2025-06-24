@@ -9,6 +9,7 @@
 #' frequency (NEON L0' data).   
 
 #' @param data Data frame of L0 data. Must include POSIXct time variable readout_time.  
+#' 
 #' @param FuncUcrt A data frame of the variables for which individual measurement uncertainty is
 #' to be calculated. Columns include:\cr
 #' \code{var} Character. The variable in data for which to compute uncertainty \cr
@@ -21,6 +22,7 @@
 #' \code{FuncUcrtFdas} A character string indicating the FDAS uncertainty function within the NEONprocIS.cal 
 #' package that should be used, if FDAS uncertainty applies. This field may be NA, which indicates that
 #' FDAS uncertainty does not apply and will not be calculated (e.g. digital L0 output).
+#' 
 #' @param ucrtCoefFdas A data frame of FDAS uncertainty coefficients, as read by 
 #' NEONprocIS.cal::def.read.ucrt.coef.fdas. Columns include:\cr
 #' \code{Name} Character. Name of the coefficient.\cr
@@ -28,15 +30,22 @@
 #' \code{.attrs} Character. Relevant attribute (i.e. units)\cr
 #' Defaults to NULL, in which case no variables in FuncUcrt may indicate that FDAS uncertainty 
 #' applies.
+#' 
 #' @param calSlct A named list of data frames, list element corresponding to the variables in
 #' FuncUcrt. The data frame in each list element holds information about the calibration files and 
 #' time periods that apply to the variable, as returned from NEONprocIS.cal::def.cal.slct. 
 #' See documentation for that function. Assign NULL to list elements (variables) for which calibration
 #' information is not applicable (i.e. a function other than def.ucrt.meas.cnst is used to compute its
 #' uncertainty).
+#' 
 #' @param mappNameVar A data frame with in/out variable name mapping as produced by 
 #' NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is NULL),
 #' output variable names will be appended as prefixes to the column names in each output data frame. 
+#' 
+#' @param Meta (optional). A named list (default is an empty list) containing additional metadata to pass to 
+#' calibration and uncertainty functions. This can contain whatever information might be needed in the
+#' calibration and/or uncertainty functions in addition to calibration and uncertainty information. 
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -73,12 +82,15 @@
 #     Changed input argument ParaUcrt to FuncUcrt, and changed input column names to support above changes
 #   Cove Sturtevant (2020-12-09)
 #     removed DirCal from inputs since the calibration path is now included in calSlct
+#   Cove Sturtevant (2025-06-23)
+#     accept Meta object for passing additional metadata to uncertainty functions
 ##############################################################################################
 wrap.ucrt.dp0p <- function(data,
                            FuncUcrt,
                            ucrtCoefFdas=NULL,
                            calSlct,
                            mappNameVar=NULL,
+                           Meta=list(),
                            log=NULL){
   # initialize logging if necessary
   if (base::is.null(log)) {
@@ -127,6 +139,7 @@ wrap.ucrt.dp0p <- function(data,
                                                                 infoCal=infoCal,
                                                                 varUcrt=idxVar,
                                                                 calSlct=calSlct,
+                                                                Meta=Meta,
                                                                 log=log))
       
       
@@ -141,6 +154,7 @@ wrap.ucrt.dp0p <- function(data,
                                                                   infoCal=infoCal,
                                                                   varUcrt=idxVar,
                                                                   calSlct=calSlct,
+                                                                  Meta=Meta,
                                                                   log=log))
         
         # Combine with ucrtMeas

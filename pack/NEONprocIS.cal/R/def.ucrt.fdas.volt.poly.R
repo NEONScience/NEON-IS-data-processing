@@ -10,18 +10,25 @@
 #' coefficients.
 
 #' @param data Data frame of raw measurements. Note that the column/variable indicated in varUcrt must be numeric.
+#' 
 #' @param infoCal List of calibration and uncertainty information read from a NEON calibration file
 #' (as from NEONprocIS.cal::def.read.cal.xml). Included in this list must be infoCal$cal and info$ucrt,
 #' which are data frames of calibration coefficients and uncertainty coeffcients, respectively.
 #' Columns of these data frames are:\cr
 #' \code{Name} String. The name of the coefficient. \cr
 #' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
+#' 
 #' @param varUcrt A character string of the target variable (column) in the data frame \code{data} for 
 #' which FDAS uncertainty data will be computed (all other columns will be ignored). Note that for other
 #' uncertainty functions this variable may not need to be in the input data frame, so long as the function
 #' knows that. Defaults to the first column in \code{data}.
+#' 
 #' @param calSlct Unused in this function. Defaults to NULL. See the inputs to 
 #' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is. 
+#' 
+#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
+#' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.
+#'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -55,11 +62,14 @@
 #     adjusted inputs to conform to new generic format 
 #     This includes inputting the entire data frame, the 
 #     variable to be generate uncertainty info for, and the (unused) argument calSlct
+#   Cove Sturtevant (2025-06-23)
+#    Add unused Meta input to accommodate changes in upstream calibration & uncertainty module
 ##############################################################################################
 def.ucrt.fdas.volt.poly <- function(data = data.frame(data=base::numeric(0)),
                                infoCal = NULL,
                                varUcrt = base::names(data)[1],
                                calSlct=NULL,
+                               Meta=list(),
                                log = NULL) {
   # initialize logging if necessary
   if (base::is.null(log)) {

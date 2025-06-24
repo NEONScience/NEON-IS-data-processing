@@ -14,7 +14,7 @@
 #'    4. lower ID if multiple cals wtih same expiration dates in #3
 #' Note that calibrations with a valid date range beginning after the date range of interest and
 #' calibrations that are expired more than their max allowable days since expiration are treated
-#' as if they don't exist. Data points are turned to NA if no valid or expired valibration is found.
+#' as if they don't exist. Data points are turned to NA if no valid or expired calibration is found.
 #' Quality flags are output indicating whether an expired calibration was used.
 #'
 #'
@@ -116,6 +116,12 @@
 #' For example, for terms 'resistance' and 'voltage' each having calibration information. The default column naming
 #' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
 #'
+#' @param Meta (optional). A named list (default is an empty list) containing additional metadata to pass to 
+#' calibration and uncertainty functions. This can contain whatever information might be needed in the
+#' calibration and/or uncertainty functions in addition to calibration and uncertainty information. If the location 
+#' directory is found in DirIn (not nested further), all location metadata files in that directory will be read in 
+#' and combined with NEONprocIS.base::wrap.loc.meta.comb and added to the Meta object in Meta$locations.  
+#'  
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
 #' the same level as the location folder in the input path that are to be copied with a symbolic link to the 
 #' output path (i.e. not combined but carried through as-is).
@@ -188,7 +194,7 @@
 #'                    SchmQf=SchmQf
 #' )
 
-#' @seealso None currently
+#' @seealso \link[NEONprocIS.base]{wrap.loc.meta.comb}
 
 # changelog and author contributions / copyrights
 #   Cove Sturtevant (2021-07-21)
@@ -199,6 +205,9 @@
 #     Write empty uncertainty_coef json file even if no uncertainty coefs. 
 #   Nora Catolico (2023-01-26)
 #     Update dirSubCopy to allow copying of individual files as opposed to the whole directory
+#   Cove Sturtevant (2025-06-18)
+#     Read in and pass location metadata to calibration routine if present
+#     MORE STUFF
 ##############################################################################################
 wrap.cal.conv.dp0p <- function(DirIn,
                                DirOutBase,
@@ -209,6 +218,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
                                NumDayExpiMax=NA,
                                SchmDataOutList=NULL,
                                SchmQf=NULL,
+                               Meta=list(),
                                DirSubCopy=NULL,
                                log=NULL
 ){
@@ -221,6 +231,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
   # Get directory listing of input directory. Expect subdirectories for data and calibration(s)
   dirData <- base::paste0(DirIn, '/data')
   dirCal <- base::paste0(DirIn, '/calibration')
+  dirLoc <- base::paste0(DirIn, '/location')
   fileData <- base::dir(dirData)
   varCal <- base::dir(dirCal)
   
@@ -376,6 +387,15 @@ wrap.cal.conv.dp0p <- function(DirIn,
     NumDayExpiMax = NumDayExpiMax,
     log = log
   )
+
+  # ------- Load location metadata if present --------
+  fileLoc <- base::dir(dirLoc)
+  numFileLoc <- base::length(fileLoc)
+  if (numFileLoc > 0) {
+    log$debug(base::paste0('Loading location metadata found in ', dirLoc))
+    loc <- NEONprocIS.base::wrap.loc.meta.comb(NameFile=fs::path(dirLoc,fileLoc))
+    Meta$locations <- loc # Add to Meta object to be passed into the calibration functions
+  }
   
   # ------- Apply the calibration function to the selected terms ---------
   log$debug('Applying any calibration conversions.')
@@ -385,6 +405,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
       data = data,
       calSlct = calSlct,
       FuncConv = FuncConv,
+      Meta = Meta,
       log = log
     )
   
@@ -464,6 +485,7 @@ wrap.cal.conv.dp0p <- function(DirIn,
       ucrtCoefFdas = ucrtCoefFdas,
       calSlct = calSlct,
       mappNameVar = mappNameVar,
+      Meta = Meta,
       log = log
     )
   

@@ -11,19 +11,26 @@
 #' Belfort primary precip sensor strain gauges
 
 
-#' @param data Numeric data frame of raw measurements. 
+#' @param data Numeric data frame of raw measurements.
+#'  
 #' @param infoCal A list of calibration information as returned from NEONprocIS.cal::def.read.cal.xml.
 #' One list element must be \code{cal}, which is a data frame of polynomial calibration coefficients.
 #' This data frame must include columns:\cr
 #' \code{Name} String. The name of the coefficient. Must fit regular expression CVALA[0-9]\cr
 #' \code{Value} String or numeric. Coefficient value. Will be converted to numeric. \cr
 #' Defaults to NULL, in which case converted data will be retured as NA.
+#' 
 #' @param varConv A character string of the target variable (column) in the data frame \code{data} for 
 #' which calibrated output will be computed (all other columns will be ignored). Note that for other
 #' uncertainty functions this variable may not need to be in the input data frame. Defaults to the first
 #' column in \code{data}.
+#' 
 #' @param calSlct Unused in this function. Defaults to NULL. See the inputs to 
 #' NEONprocIS.cal::wrap.cal.conv for what this input is. 
+#' 
+#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
+#' NEONprocIS.cal::wrap.cal.conv for what this input is.
+#'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -51,12 +58,14 @@
 # changelog and author contributions / copyrights
 #   David Durden (2024-02-12)
 #    Original creation
-
+#   Cove Sturtevant (2025-06-23)
+#    Add unused Meta input to accommodate changes in upstream calibration module
 ##############################################################################################
 def.cal.conv.poly.aepg600m <- function(data = data.frame(data=base::numeric(0)),
                               infoCal = NULL,
                               varConv = base::names(data)[1],
                               calSlct=NULL,
+                              Meta=list(),
                               log = NULL) {
   # Intialize logging if needed
   if (base::is.null(log)) {

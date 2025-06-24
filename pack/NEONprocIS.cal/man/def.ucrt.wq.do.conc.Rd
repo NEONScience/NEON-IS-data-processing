@@ -10,6 +10,7 @@ def.ucrt.wq.do.conc(
   infoCal = NULL,
   varUcrt = base::names(data)[1],
   calSlct = NULL,
+  Meta = list(),
   log = NULL
 )
 }
@@ -28,6 +29,9 @@ uncertainty functions this variable may not need to be in the input data frame, 
 knows that. Defaults to the first column in \code{data}.}
 
 \item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
+
+\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
 NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
@@ -54,7 +58,7 @@ ucrt <- def.ucrt.wq.do.conc(data = data, cal = NULL)
 License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
 }
 \seealso{
-None currently
+\link[NEONprocIS.cal]{wrap.ucrt.dp0p}
 }
 \author{
 Kaelin Cawley \email{kcawley@battelleecology.org}

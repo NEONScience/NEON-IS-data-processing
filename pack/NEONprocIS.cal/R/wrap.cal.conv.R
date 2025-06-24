@@ -9,18 +9,26 @@
 #' L0' data. 
 
 #' @param data Data frame of L0 data. Must include POSIXct time variable readout_time.  
+#' 
 #' @param calSlct A named list of data frames, list element corresponding to calibrated terms.
 #' The data frame in each list element holds 
 #' information about the calibration files and time periods that apply to the variable, as returned 
 #' from NEONprocIS.cal::def.cal.slct. See documentation for that function. 
+#' 
 #' @param FuncConv A data frame of the terms/variables to convert and the function to convert 
 #' them with. Columns include:\cr
 #' \code{var} Character. The variable in data to apply calibration to. If this variable does not 
-#' exist in the data, it must be created by the associated calibration function in FuncConv. \cr
+#' exist in the data, it must be created by the associated calibration function in FuncConv. 
+#' ENABLE MULTIPLE VARS TO BE INDICATED HERE FOR PRODUCTION WITH A SINGLE FUNCTION CALL.\cr
 #' \code{FuncConv} A character string indicating the calibration conversion function  
 #' within the NEONprocIS.cal package that should be used. For most NEON data products, this will be 
 #' "def.cal.conv.poly". Note that any alternative function must accept the same arguments as 
 #' def.cal.conv.poly, even if they are unused. See that function for details. 
+#' 
+#' @param Meta (optional). A named list (default is an empty list) containing additional metadata to pass to 
+#' calibration and uncertainty functions. This can contain whatever information might be needed in the
+#' calibration and/or uncertainty functions in addition to calibration and uncertainty information. 
+#' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function.
 
@@ -48,10 +56,13 @@
 #     variable to be calibrated, and the (unused) argument calSlct
 #   Cove Sturtevant (2020-12-09)
 #     removed DirCal from inputs since the calibration path is now included in calSlct
+#   Cove Sturtevant (2025-06-23)
+#     accept Meta object for passing additional metadata to calibration functions
 ##############################################################################################
 wrap.cal.conv <- function(data,
                           calSlct,
                           FuncConv,
+                          Meta=list(),
                           log=NULL){
   # initialize logging if necessary
   if (base::is.null(log)) {
@@ -101,6 +112,7 @@ wrap.cal.conv <- function(data,
                                                                               infoCal=infoCal,
                                                                               varConv=idxVarCal,
                                                                               calSlct=calSlct,
+                                                                              Meta=Meta,
                                                                               log=log)
                                                   )
     }

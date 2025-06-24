@@ -4,7 +4,7 @@
 \alias{wrap.cal.conv}
 \title{Wrapper for applying calibration conversion to NEON L0 data}
 \usage{
-wrap.cal.conv(data, calSlct, FuncConv, log = NULL)
+wrap.cal.conv(data, calSlct, FuncConv, Meta = list(), log = NULL)
 }
 \arguments{
 \item{data}{Data frame of L0 data. Must include POSIXct time variable readout_time.}
@@ -17,11 +17,16 @@ from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
 \item{FuncConv}{A data frame of the terms/variables to convert and the function to convert 
 them with. Columns include:\cr
 \code{var} Character. The variable in data to apply calibration to. If this variable does not 
-exist in the data, it must be created by the associated calibration function in FuncConv. \cr
+exist in the data, it must be created by the associated calibration function in FuncConv. 
+ENABLE MULTIPLE VARS TO BE INDICATED HERE FOR PRODUCTION WITH A SINGLE FUNCTION CALL.\cr
 \code{FuncConv} A character string indicating the calibration conversion function  
 within the NEONprocIS.cal package that should be used. For most NEON data products, this will be 
 "def.cal.conv.poly". Note that any alternative function must accept the same arguments as 
 def.cal.conv.poly, even if they are unused. See that function for details.}
+
+\item{Meta}{(optional). A named list (default is an empty list) containing additional metadata to pass to 
+calibration and uncertainty functions. This can contain whatever information might be needed in the
+calibration and/or uncertainty functions in addition to calibration and uncertainty information.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}

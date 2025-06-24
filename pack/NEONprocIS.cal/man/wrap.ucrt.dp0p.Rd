@@ -10,6 +10,7 @@ wrap.ucrt.dp0p(
   ucrtCoefFdas = NULL,
   calSlct,
   mappNameVar = NULL,
+  Meta = list(),
   log = NULL
 )
 }
@@ -47,6 +48,10 @@ uncertainty).}
 \item{mappNameVar}{A data frame with in/out variable name mapping as produced by 
 NEONprocIS.base::def.var.mapp.in.out. See documentation for that function. If input (default is NULL),
 output variable names will be appended as prefixes to the column names in each output data frame.}
+
+\item{Meta}{(optional). A named list (default is an empty list) containing additional metadata to pass to 
+calibration and uncertainty functions. This can contain whatever information might be needed in the
+calibration and/or uncertainty functions in addition to calibration and uncertainty information.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output. Defaults to NULL, in which the logger will be created and used within the function.}

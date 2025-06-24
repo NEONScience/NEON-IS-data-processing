@@ -9,6 +9,7 @@ def.cal.conv.poly.m(
   infoCal = NULL,
   varConv = base::names(data)[1],
   calSlct = NULL,
+  Meta = list(),
   log = NULL
 )
 }
@@ -28,6 +29,9 @@ uncertainty functions this variable may not need to be in the input data frame. 
 column in \code{data}.}
 
 \item{calSlct}{Unused in this function. Defaults to NULL. See the inputs to 
+NEONprocIS.cal::wrap.cal.conv for what this input is.}
+
+\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
 NEONprocIS.cal::wrap.cal.conv for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log

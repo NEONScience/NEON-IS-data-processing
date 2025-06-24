@@ -10,6 +10,7 @@ def.ucrt.meas.rh.dew.frst.pt(
   infoCal = NULL,
   varUcrt = "dew_point",
   calSlct = NULL,
+  Meta = list(),
   log = NULL
 )
 }
@@ -22,6 +23,9 @@ def.ucrt.meas.rh.dew.frst.pt(
 which uncertainty data will be computed (dew_point in this function).}
 
 \item{calSlct}{Defaults to NULL. See the inputs to NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
+
+\item{Meta}{Unused in this function. Defaults to an empty list. See the inputs to 
+NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.}
 
 \item{log}{A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 output in addition to standard R error messaging. Defaults to NULL, in which the logger will be

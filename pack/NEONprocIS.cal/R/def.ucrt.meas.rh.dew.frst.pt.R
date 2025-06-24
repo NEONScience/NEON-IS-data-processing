@@ -17,10 +17,17 @@
 #' 
 #'
 #' @param data Temperature, relative humidity, and dew/frost point data from the relative humidity sensor 
+#' 
 #' @param infoCal Not used in this function \cr
+#' 
 #' @param varUcrt A character string of the target variable (column) in the data frame \code{data} for 
 #' which uncertainty data will be computed (dew_point in this function).
+#' 
 #' @param calSlct Defaults to NULL. See the inputs to NEONprocIS.cal::wrap.ucrt.dp0p for what this input is. 
+#' 
+#' @param Meta Unused in this function. Defaults to an empty list. See the inputs to 
+#' NEONprocIS.cal::wrap.ucrt.dp0p for what this input is.
+#'
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output in addition to standard R error messaging. Defaults to NULL, in which the logger will be
 #' created and used within the function.
@@ -71,11 +78,14 @@
 #     temperature and relative humidity for Level 1 Mean uncertainty calculations
 #   Cove Sturtevant (2022-08-24)
 #     Corrected virtual temperature equation when above freezing (missing exponents)
+#   Cove Sturtevant (2025-06-23)
+#    Add unused Meta input to accommodate changes in upstream calibration & uncertainty module
 ##############################################################################################
 def.ucrt.meas.rh.dew.frst.pt <- function(data = data.frame(data=base::numeric(0)),
                                          infoCal = NULL,
                                          varUcrt = "dew_point",
                                          calSlct=NULL,
+                                         Meta=list(),
                                          log = NULL) {
   # Initialize logging if necessary
   if (base::is.null(log)) {
