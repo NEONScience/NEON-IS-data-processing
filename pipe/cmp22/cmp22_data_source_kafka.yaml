@@ -144,7 +144,7 @@ input:
     name: import_trigger
     repo: cmp22_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/cmp22/2025/06/22"
+    glob: "/cmp22/*/*/*"
 parallelism_spec:
   constant: 1
 autoscaling: true
