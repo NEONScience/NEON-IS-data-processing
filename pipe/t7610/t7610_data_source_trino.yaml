@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: t7610_data_source_trino
+  name: t7610_data_source_trino_testLower
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:sha-6db43f8
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.2.2
   cmd:
   - sh
   - "-c"
@@ -80,6 +80,7 @@ transform:
         --copy-links \
         --gcs-bucket-policy-only \
         --gcs-no-check-bucket \
+        --metadata-set "content-type=application/vnd.apache.parquet" \
         copy \
         "${linkdir}" \
         ":gcs://${BUCKET_NAME}"
@@ -124,7 +125,7 @@ input:
   pfs:
     name: import_trigger
     repo: t7610_cron_daily_and_date_control
-    glob: "/t7610/*/*/*"
+    glob: "/t7610/2025/06/22"
 output_branch: master
 parallelism_spec:
   constant: 5
