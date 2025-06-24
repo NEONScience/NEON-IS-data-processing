@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: t7610_data_source_trino_testLower
+  name: t7610_data_source_trino
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.2.2
   cmd:
