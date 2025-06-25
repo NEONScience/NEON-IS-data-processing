@@ -94,7 +94,7 @@ transform:
   env:
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/g2131i_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/g2131i/g2131i_parsed.avsc"
+    GEN_SCHEMA_FILE: "/usr/src/app/parsed-schemas/g2131i/g2131i_parsed.avsc"
     LOG_LEVEL: info
     OUT_SOURCE_TYPE: 'g2131i'
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
