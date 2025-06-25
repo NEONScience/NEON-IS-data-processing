@@ -158,7 +158,19 @@
 #' Must be provided if FDAS uncertainty applies. These coefficients will be added to the uncertainty coefficients found in any calibration
 #' files and output to the ucrt_coef folder, as well as input into any uncertainty functions indicated in TermFuncUcrt.
 #'
-#' 11. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at
+#' 11. "PathMeta=value" (optional), where value is a named list of paths (directories or files), relative or absolute,
+#'  and separated by pipes (|), that will be passed to any/all functions specified for calibration and uncertainty 
+#'  for use within those functions (in the 'Meta' list object). Use the format: "PathMeta=name1:path1|name2:path2|name3:path3", etc. 
+#'  In this example, name1 will be the name of the list element and path1 will be the path string. The same goes for 
+#'  name2:path2, name3:path3, etc. If any path is relative  (does not begin with a forward-slash), the path will 
+#'  be prepended with the path to the datum being processed (see the DirIn input above). Note that if the "location" 
+#'  directory is found in the datum path (alongside "data" and "calibration"), one list element of the Meta object 
+#'  passed to calibration and uncertainty functions will automatically be 'locations', which will contain the combined 
+#'  location metadata read from all files found in that directory. Note that it is up to the calibration and uncertainty
+#'  functions themselves to know what do with with any location metadata or directory/file paths sent in the Meta
+#'  object. Most calibration functions do nothing with this metadata.
+#' 
+#' 12. "DirSubCopy=value" (optional), where value is the names of additional subfolders, separated by pipes, at
 #' the same level as the data folder in the input path that are to be copied with a symbolic link to the
 #' output path.
 #'
@@ -244,6 +256,9 @@
 #     Add datum error routing
 #   Nora Catolico (2023-01-26)
 #     Update dirSubCopy to allow copying of individual files as opposed to the whole directory
+#   Cove Sturtevant (2025-06-19)
+#     Incorporate an optional input to specific directory or file paths to send
+#     in as metadata to specified calibration and uncertainty functions
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)
@@ -282,14 +297,15 @@ Para <-
       "TermQf",
       "TermFuncUcrt",
       "FileUcrtFdas",
+      "PathMeta",
       "DirSubCopy"
     ),
     ValuParaOptn = base::list(
       TermFuncConv = NULL,
       TermQf = NULL,
       TermFuncUcrt = NULL,
-      NumDayExpiMax =
-        NA
+      NumDayExpiMax = NA,
+      PathMeta = NULL
     ),
     TypePara = base::list(NumDayExpiMax =
                             'numeric'),
@@ -302,9 +318,8 @@ log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 log$debug(base::paste0('Schema for output data: ', Para$FileSchmData))
 log$debug(base::paste0('Schema for output flags: ', Para$FileSchmQf))
-log$debug(base::paste0(
-  'Terms to output calibration flags: ',
-  base::paste0(Para$TermQf, collapse = ',')
+log$debug(base::paste0('Terms to output calibration flags: ',
+                       base::paste0(Para$TermQf, collapse = ',')
 ))
 
 # Read in the schemas so we only have to do it once and not every
@@ -341,7 +356,7 @@ if (!base::is.null(Para$TermFuncConv) &&
   log$debug(base::paste0(
     'Terms to calibrate & conversion function(s) to be used: ',
     base::paste0(apply(as.matrix(FuncConv),1,base::paste0,collapse=':'), collapse = ', ')
-))
+  ))
 } else {
   FuncConv <- NULL
   log$debug('Terms to calibrate & conversion function(s) to be used: None')
@@ -411,6 +426,34 @@ if (base::is.null(Para$FileUcrtFdas) && !base::is.null(FuncUcrt) && base::any(!b
   ucrtCoefFdas  <- NULL
 }
 
+# Additional metadata to be sent into calibration and uncertainty functions
+if(!base::is.null(Para$PathMeta) && 
+   base::length(Para$PathMeta) %% 2 > 0){
+  log$fatal('Input argument PathMeta must contain name:path pairs, separated by pipes.')
+  stop()
+}
+if (!base::is.null(Para$PathMeta) &&
+    base::length(Para$PathMeta) > 0) {
+  Meta <-
+    NEONprocIS.base::def.vect.pars.pair(
+      vect = Para$PathMeta,
+      NameCol = c('name', 'path'),
+      log = log
+    )
+  if(base::any(base::duplicated(Meta$name))){
+    log$fatal('Names of PathMeta argument must be unique (e.g. PathMeta=name1:path2|name2:path2).')
+    stop()
+  }
+  Meta <- stats::setNames(base::as.list(Meta$path),Meta$name)
+  log$debug(base::paste0(
+    'Paths sent in as additional metadata for use in calibration and uncertainty functions: ',
+    paste0(paste0(names(Meta),'=',unlist(Meta)), collapse = ', ')
+  ))
+} else {
+  Meta <- base::list()
+  log$debug('Paths sent in as additional metadata for use in calibration and uncertainty functions: None')
+}
+
 # Retrieve optional subdirectories to copy over
 DirSubCopy <- base::unique(Para$DirSubCopy)
 log$debug(base::paste0('Additional subdirectories to copy: ',base::paste0(DirSubCopy,collapse=',')))
@@ -434,8 +477,17 @@ DirIn <-
 # Process each datum
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
-    
+  
   log$info(base::paste0('Processing path to datum: ', idxDirIn))
+  
+  # Prepend local paths in Meta object
+  idxMeta <- Meta
+  str01 <- substr(idxMeta,1,1)
+  setPrp <- str01 != '/'
+  idxMeta[setPrp] <- base::lapply(idxMeta[setPrp],
+                                  FUN=function(pathIdx){
+                                    fs::path(idxDirIn,pathIdx)
+                                  })
   
   # Run the wrapper function for each datum, with error routing
   tryCatch(
@@ -449,6 +501,7 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
                          NumDayExpiMax=NumDayExpiMax,
                          SchmDataOutList=SchmDataOutList,
                          SchmQf=SchmQf,
+                         Meta=idxMeta,
                          DirSubCopy=DirSubCopy,
                          log=log
       ),
