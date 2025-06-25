@@ -42,6 +42,7 @@ transform:
       "TermTest8=depth7WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
       "TermTest9=depth8WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
       "TermTest10=depth9WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
+      "TermTest11=depth=10WaterTemp:null|gap|range(rmv)|step(rmv)|spike" \
       DirSubCopy=location
     EOF
   env:

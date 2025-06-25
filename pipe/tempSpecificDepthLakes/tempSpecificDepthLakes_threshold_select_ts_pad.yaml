@@ -33,6 +33,7 @@ transform:
       "TermCtxt8=depth7WaterTemp" \
       "TermCtxt9=depth8WaterTemp" \
       "TermCtxt10=depth9WaterTemp" \
+      "TermCtxt11=depth10WaterTemp" \
       "DirSubCopy=location|data"
     
     # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
