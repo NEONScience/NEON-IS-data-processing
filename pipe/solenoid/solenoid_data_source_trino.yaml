@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: t7610_data_source_trino
+  name: solenoid_data_source_trino
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.2.3
   cmd:
@@ -46,7 +46,7 @@ transform:
       export GEN_OUTPUT_DIR=$interimDir/$SOURCE_TYPE/$year/$month/$day
       export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
       mkdir -p $GEN_OUTPUT_DIR
-      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip
+      /usr/src/app/genscript/genparquet.py --storesitename --codec gzip --alignperiod second
     done
     
     # Run second module - parquet_linkmerge (merges data from a source id that collected data from multiple sites in one day
@@ -57,9 +57,9 @@ transform:
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # Example: /pfs/out/t7610/2023/01/01/12345/data/file.parquet
+      # Example: /pfs/out/solenoid/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
-      # set -x # Uncomment for debugging
+      # set -x # Uncomment for troubleshooting
       for f in $out_parquet_glob; do
         # Parse the path
         [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
@@ -88,13 +88,13 @@ transform:
       echo "Removing temporary files"
       rm -rf $linkdir
       
-      # set +x # Uncomment for debugging
+      # set +x # Uncomment for troubleshooting
     fi
     EOF
   env:
     # Environment variables for data conversion step
-    GEN_YAML_CONF: "/usr/src/app/genscript/configs/t7610_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/t7610/t7610.avsc"
+    GEN_YAML_CONF: "/usr/src/app/genscript/configs/solenoid_streams.yaml"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/solenoid/solenoid.avsc"
     LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
@@ -107,7 +107,7 @@ transform:
     SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "15"
     # Environment variables for bash code
-    SOURCE_TYPE: 't7610'
+    SOURCE_TYPE: 'solenoid'
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -124,8 +124,8 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: t7610_cron_daily_and_date_control
-    glob: "/t7610/*/*/*"
+    repo: solenoid_cron_daily_and_date_control
+    glob: "/solenoid/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5
