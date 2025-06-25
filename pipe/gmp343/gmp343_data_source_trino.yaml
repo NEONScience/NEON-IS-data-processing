@@ -80,6 +80,7 @@ transform:
         --copy-links \
         --gcs-bucket-policy-only \
         --gcs-no-check-bucket \
+        --metadata-set "content-type=application/vnd.apache.parquet" \
         copy \
         "${linkdir}" \
         ":gcs://${BUCKET_NAME}"
