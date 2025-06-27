@@ -1,16 +1,16 @@
 ---
 pipeline:
-  name: troll_logjam_assign_clean_files
+  name: sunav2_logjam_assign_clean_files
 transform:
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - Rscript
-      ./flow.troll.logfiles.R
+      ./flow.sunav2.logfiles.R
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=$ERR_PATH
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-troll-logfiles:v1.0.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logfiles:v1.0.1
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
@@ -20,7 +20,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: troll_logjam_load_files
+      repo: sunav2_logjam_load_files
       glob: /*
 parallelism_spec:
   constant: 5
