@@ -1,0 +1,7 @@
+precipBucket_group_loader.yaml
+precipBucket_group_assignment.yaml
+precipBucket_group_path.yaml
+precipBucket_srf_loader.yaml
+precipBucket_srf_assignment.yaml
+precipBucket_threshold.yaml
+#precipBucket_thresh_select_precip_stats.yaml
