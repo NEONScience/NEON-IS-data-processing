@@ -56,7 +56,7 @@
 #' Bobby Hensley (2025-05-30) adapted for suna
 #' 
 ##############################################################################################
-wrap.suna.logfiles.fill <- function(DirInLogs=NULL,
+wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
                              DirInStream=NULL,
                              DirIn,
                              DirOutBase,
