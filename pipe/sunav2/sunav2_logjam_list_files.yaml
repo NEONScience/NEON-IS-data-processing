@@ -1,0 +1,48 @@
+---
+pipeline:
+  name: sunav2_logjam_list_files
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-logjam-loader:v2.0.0
+  cmd: ["/bin/bash"]
+  env:
+    LOGJAM_INGEST_BUCKET: neon-nonprod-is-logjam-ingest
+    OUT_PATH: /pfs/out
+    LOG_LEVEL: DEBUG
+  stdin:
+  - "#!/bin/bash"
+  - python3 --version
+  - python3 -c "import environs; print(environs.__version__)"
+  - python3 -c "import marshmallow; print(marshmallow.__version__)"
+  - python3 -m logjam_loader.logjam_loader
+input:
+  pfs:
+    repo: nitrate_cron_monthly_and_pub_control_tick
+    glob: /*
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 1
+resource_limits:
+  memory: 1.5G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.4
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

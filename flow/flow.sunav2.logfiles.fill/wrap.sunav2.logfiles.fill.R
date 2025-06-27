@@ -23,14 +23,12 @@
 #' @param SchmDataOut (optional), A json-formatted character string containing the schema for the output data 
 #' file. If this input is not provided, the output schema for the data will be the same as the input data
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
-#' leveltroll500 (does not output conductivity) in your schema.
+#' THE INPUT DATA.
 #' 
 #' @param SchmFlagsOut (optional), A json-formatted character string containing the schema for the output flags 
 #' file. If this input is not provided, the output schema for the data will be the same as the input flags
 #' file. If a schema is provided, ENSURE THAT ANY PROVIDED OUTPUT SCHEMA FOR THE DATA MATCHES THE COLUMN ORDER OF 
-#' THE INPUT DATA. Note that you will need to distinguish between the aquatroll200 (outputs conductivity) and the 
-#' leveltroll500 (does not output conductivity) in your schema.
+#' THE INPUT DATA.
 #' 
 #' @param log A logger object as produced by NEONprocIS.base::def.log.init to produce structured log
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
@@ -45,21 +43,13 @@
 #' 
 #' @examples
 #' # Not run
-DirInLogs<-"~/pfs/sunav2_logs_output/sunav2/2024/09/10/20349" #cleaned log data
-DirInStream<-"~/pfs/sunav2_data_source_trino/sunav2/2024/09/10/20349" #streamed L0 data
-DirIn<-NULL
-DirOutBase="~/pfs/sunav2_filled_output"
-SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2.avsc'),collapse='')
-log <- NEONprocIS.base::def.log.init(Lvl = "debug")
+# DirInLogs<-"~/pfs/sunav2_logs_output/sunav2/2024/09/10/20349" #cleaned log data
+# DirInStream<-"~/pfs/sunav2_data_source_trino/sunav2/2024/09/10/20349" #streamed L0 data
+# DirIn<-NULL
+# DirOutBase="~/pfs/sunav2_filled_output"
+# SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2.avsc'),collapse='')
+# log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_log_flags.avsc'),collapse='')
-# wrap.troll.logfiles.fill(
-#   DirInLogs=DirInLogs,
-#   DirInStream=DirInStream,
-#   DirIn=DirIn,
-#   DirOutBase="~/pfs/out",
-#   SchmDataOut="~/pfs/aquatroll200_avro_schemas/aquatroll200/aquatroll200_log_data.avsc",
-#   SchmFlagsOut=SchmFlagsOut,
-#   log=log)
 #'                               
 #' @changelog
 #' Nora Catolico (2024-01-30) original creation
