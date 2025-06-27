@@ -35,7 +35,7 @@
 # DirOut="~/pfs/sunav2_logs_output"
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.suna.logfiles <- function(FileIn = "~/pfs/suna_logjam_load_files/20349/logjam_prod_20349_0b05a4c0da3bb05af840fece674fe34c.csv",
+#' wrap.sunav2.logfiles <- function(FileIn = "~/pfs/sunav2_logjam_load_files/20349/logjam_prod_20349_0b05a4c0da3bb05af840fece674fe34c.csv",
 #'                               DirOut="~/pfs/out",
 #'                               SchmDataOut=NULL,
 #'                               log=log)
@@ -44,7 +44,7 @@
 #' Nora Catolico (2024-01-09) original creation
 #' Bobby Hensley (2025-04-09) adapted for SUNA 
 ##############################################################################################
-wrap.suna.logfiles <- function(FileIn,
+wrap.sunav2.logfiles <- function(FileIn,
                              DirOut,
                              SchmDataOut=NULL,
                              log=NULL
