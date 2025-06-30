@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logfiles-fill:sha-431b28e
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logfiles-fill:sha-1a9c472
   cmd:
   - sh
   - "-c"
@@ -115,9 +115,9 @@ transform:
             join_indices: [3,4,5,6]
             outer_join: true
         - path:
-            name: DATA_PATH_ARCHIVE
+            name: DATA_PATH_TRINO
             # Filter for data directory
-            glob_pattern: /pfs/DATA_PATH_ARCHIVE/*/*/*/**
+            glob_pattern: /pfs/DATA_PATH_TRINO/*/*/*/**
             # Join on y/m/d and sourceID 
             join_indices: [3,4,5,6]
             outer_join: True
