@@ -223,14 +223,24 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
                       "check_sum","error_missing_data")]
   
 #' Determine whether to use logged or streamed data.  
-  #' Preference is to use logged data if available
-  if(!is.null(logData)){dataOut<-logData}
-  if(is.null(logData) & !is.null(L0DataParsed)){dataOut<-L0DataParsed}
-  if(is.null(logData) & is.null(L0DataParsed)){dataOut<-L0DataParsed}
+  #' Logged data is used if available, and log data flag set to 1
+  if(!is.null(logData)){
+    dataOut<-logData
+    flagsOut<-data.frame(matrix(ncol=2,nrow=nrow(dataOut), dimnames=list(NULL, c("readout_time", "sunaLogDataQF"))))
+    flagsOut$readout_time<-dataOut$readout_time
+    flagsOut$sunaLogDataQF<-1
+    }
+  #' Streamed data is used if no logged data is available, and log data flags set to 0
+  if(is.null(logData) & !is.null(L0DataParsed)){
+    dataOut<-L0DataParsed
+    flagsOut<-data.frame(matrix(ncol=2,nrow=nrow(dataOut), dimnames=list(NULL, c("readout_time", "sunaLogDataQF"))))
+    flagsOut$readout_time<-dataOut$readout_time
+    flagsOut$sunaLogDataQF<-0
+    }
   
-#' Write out data  
+#' Write out data file and log flags file  
   
-  #write out data
+  #write out data file
   fileOutSplt <- base::strsplit(DirInStream,'[/]')[[1]] # Separate underscore-delimited components of the file name
   asset<-tail(x=fileOutSplt,n=1)
   csv_name <-paste0('sunav2_',asset,'_',format(timeBgn,format = "%Y-%m-%d"),'_filled')
@@ -245,7 +255,7 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
     log$info(base::paste0('Data written successfully in ', base::paste0(DirOutData,'/',csv_name,".parquet")))
   }
   
-  #write out flags
+  #write out log flags file
   csv_name_flags <-paste0('sunav2_',asset,'_',format(timeBgn,format = "%Y-%m-%d"),'_logFlags')
   
   rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,
