@@ -43,10 +43,10 @@
 #' 
 #' @examples
 #' # Not run
-# DirInLogs<-"~/pfs/sunav2_logs_output/sunav2/2024/09/10/20349" #cleaned log data
+# DirInLogs<-"~/pfs/sunav2_logjam_assign_clean_files/sunav2/2024/09/10/20349" #cleaned log data
 # DirInStream<-"~/pfs/sunav2_data_source_trino/sunav2/2024/09/10/20349" #streamed L0 data
 # DirIn<-NULL
-# DirOutBase="~/pfs/sunav2_filled_output"
+# DirOutBase="~/pfs/out"
 # SchmDataOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2.avsc'),collapse='')
 # log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 # SchmFlagsOut<-base::paste0(base::readLines('~/pfs/sunav2_avro_schemas/sunav2_log_flags.avsc'),collapse='')
@@ -230,14 +230,6 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   
 #' Write out data  
   
-  
-
-  
-  
-  
-  
-  
-  
   #write out data
   fileOutSplt <- base::strsplit(DirInStream,'[/]')[[1]] # Separate underscore-delimited components of the file name
   asset<-tail(x=fileOutSplt,n=1)
@@ -254,7 +246,7 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   }
   
   #write out flags
-  csv_name_flags <-paste0(sensor,'_',asset,'_',format(timeBgn,format = "%Y-%m-%d"),'_logFlags')
+  csv_name_flags <-paste0('sunav2_',asset,'_',format(timeBgn,format = "%Y-%m-%d"),'_logFlags')
   
   rptOutFlags <- try(NEONprocIS.base::def.wrte.parq(data = flagsOut,
                                                NameFile = base::paste0(DirOutFlags,'/',csv_name_flags,".parquet"),
