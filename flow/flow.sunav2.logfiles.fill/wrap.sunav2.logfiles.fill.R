@@ -243,7 +243,7 @@ wrap.sunav2.logfiles.fill <- function(DirInLogs=NULL,
   #write out data file
   fileOutSplt <- base::strsplit(DirInStream,'[/]')[[1]] # Separate underscore-delimited components of the file name
   asset<-tail(x=fileOutSplt,n=1)
-  csv_name <-paste0('sunav2_',asset,'_',format(timeBgn,format = "%Y-%m-%d"),'_filled')
+  csv_name <-paste0('sunav2_',asset,'_',format(timeBgn,format = "%Y-%m-%d"))
   
   rptOut <- try(NEONprocIS.base::def.wrte.parq(data = dataOut,
                                                NameFile = base::paste0(DirOutData,'/',csv_name,".parquet"),
