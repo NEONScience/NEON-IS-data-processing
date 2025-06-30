@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_calibration_group_and_convert
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v1.3.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
   cmd:
   - sh
   - "-c"
@@ -11,63 +11,25 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
-    
+    #
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
-    rm -rf /tmp/kafka_merged
+    rm -r -f /tmp/pfs/filter_joined
     rm -rf $OUT_PATH
-    mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+    mkdir -p /tmp/pfs/filter_joined
     mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
-    
-    # Detect if we have data coming from Kafka or the archive
-    # Note that we run the filter-joiner in sequential if statements rather than an elif statement
-    # ... so that if there is any overlap in sensor data coming from both Kafka and the archive on the same day, the
-    # ... kafka data wins (filter joiner will not copy a file if it is already in the destination). This scenario
-    # ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka
-    # ... retention period for data that have already been loaded from the archive. 
-    # ... When a conflict does arise, the kafka data will take precedence, assuming that it is the latest 
-    # ... and greatest. 
-    
-    if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
-      # Data from kafka. 
-      
-      # Run kafka combiner
-      Rscript ./flow.kfka.comb.R \
-          DirIn=$KAFKA_UNMERGED_DATA \
-          DirOut=/tmp/kafka_merged \
-          DirErr=/pfs/out/errored_datums \
-          FileSchmL0=$FILE_SCHEMA_L0
-      
-      # Run filter joiner
-      python3 -m filter_joiner.filter_joiner_main
-    fi  
-    if [ ${DATA_PATH_ARCHIVE+x} ]; then 
-      # Data from the archive. 
-      
-      # Run kafka combiner - note that this works for both trino-loaded data and kafka loaded data. If both
-      #   exist in the folder for the same sensor and day, likely there will be duplicate data written to file
-      #   because the Trino timestamps are truncated to the second whereas Kafka readout times are not. However, 
-      #   this scenario should be rare and duplicates will be removed in the regularization module.
-      Rscript ./flow.kfka.comb.R \
-          DirIn=$DATA_PATH_ARCHIVE \
-          DirOut=/tmp/kafka_merged \
-          DirErr=/pfs/out/errored_datums \
-          FileSchmL0=$FILE_SCHEMA_L0
-          
-      # Run filter joiner
-      python3 -m filter_joiner.filter_joiner_main
-    fi  
-    
+    #
+    # Run filter-joiner for data (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    #
     # Run calibration conversion module
-    Rscript ./flow.cal.conv.R  \
-      DirIn=/tmp/pfs/filter_joined \
-      DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums \
-      FileSchmData=$FILE_SCHEMA_DATA \
-      FileSchmQf=$FILE_SCHEMA_FLAGS \
-      TermFuncConv=voltage:def.cal.conv.poly \
-      TermQf=voltage \
-      TermFuncUcrt=voltage:def.ucrt.meas.mult,def.ucrt.fdas.volt.poly \
-      FileUcrtFdas=$FILE_UNCERTAINTY_FDAS
+    Rscript ./flow.cal.conv.R \
+        DirIn=/tmp/pfs/filter_joined \
+        DirOut=/pfs/out \
+        DirErr=/pfs/out/errored_datums \
+        DirSubCopy=flags \
+        "TermFuncConv=pressure:def.cal.conv.poly.b|temperature:def.cal.conv.poly|conductivity:def.cal.conv.poly.split" \
+        "TermQf=pressure|temperature|conductivity" \
+        "TermFuncUcrt=pressure:def.ucrt.meas.cnst|temperature:def.ucrt.meas.cnst|conductivity:def.ucrt.meas.cnst"
     EOF
   env:
     # Environment variables for filter-joiner.
@@ -78,16 +40,16 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: DATA_PATH_KAFKA_MERGED
+            name: DATA_PATH
             # Filter for data directory
-            glob_pattern: /tmp/kafka_merged/sunav2/*/*/*/*/**
-            # Join on named location (already joined below by day)
+            glob_pattern: /pfs/DATA_PATH/*/*/*/*/*/**
+            # Join on named location (already joined below by source type and day)
             join_indices: [7]
             outer_join: true
         - path:
             name: CALIBRATION_PATH
             # Filter for data directory
-            glob_pattern: /pfs/CALIBRATION_PATH/sunav2/*/*/*/*/**
+            glob_pattern: /pfs/CALIBRATION_PATH/*/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
@@ -97,46 +59,21 @@ transform:
     # Environment variables for calibration module
     PARALLELIZATION_INTERNAL: '3' # Option for calibration conversion module
 input:
-  cross:
+  # Outer join all days
+  join:
   - pfs:
-      name: FILE_SCHEMA_L0
-      repo: sunav2_avro_schemas
-      glob: /sunav2/sunav2.avsc
+      name: CALIBRATION_PATH
+      repo: sunav2_calibration_assignment
+      glob: /(*)/(*)/(*)/(*)
+      joinOn: $1/$2/$3/$4
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
   - pfs:
-      name: FILE_SCHEMA_DATA
-      repo: sunav2_avro_schemas
-      glob: /sunav2/sunav2_calibrated.avsc
-  - pfs:
-      name: FILE_SCHEMA_FLAGS
-      repo: sunav2_avro_schemas
-      glob: /sunav2/flags_calibration_sunav2.avsc
-  - pfs:
-      name: FILE_UNCERTAINTY_FDAS
-      repo: sunav2_uncertainty_fdas
-      glob: /fdas_calibration_uncertainty_general.json
-  # Outer join all days so that varying sensors between kafka and archive loaders will all get joined with calibrations. Filter-joiner will narrow down.
-  - join:
-    - pfs:
-        name: CALIBRATION_PATH
-        repo: sunav2_calibration_assignment
-        glob: /sunav2/(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    - pfs:
-        name: DATA_PATH_ARCHIVE
-        repo: sunav2_data_source_trino
-        glob: /sunav2/(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-    - pfs:
-        name: KAFKA_UNMERGED_DATA
-        repo: sunav2_data_source_kafka
-        glob: /sunav2/(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+      name: DATA_PATH
+      repo: sunav2_fill_log_files
+      glob: /(*)/(*)/(*)/(*)
+      joinOn: $1/$2/$3/$4
+      outer_join: true
+      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
   constant: 5
 autoscaling: true

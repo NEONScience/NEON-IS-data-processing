@@ -23,7 +23,7 @@ input:
   pfs:
     name: IN_PATH
     repo: sunav2_calibration_list_files
-    glob: /*/*/*/*
+    glob: /*/*/*/*/*
     empty_files: true
 parallelism_spec:
   constant: 10
