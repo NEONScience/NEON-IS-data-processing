@@ -13,8 +13,8 @@ transform:
   env:
     # File output options are 'csv' or 'parquet'. 
     FILE_TYPE: csv
-    OUT_PATH: /pfs/out/l4discharge_csd_gag_regression
-    PARTIAL_TABLE_NAME: gauge
+    OUT_PATH: /pfs/out
+    PARTIAL_TABLE_NAME: l4d
     DB_CONFIG_SOURCE: mount
     LOG_LEVEL: DEBUG 
   secrets:
