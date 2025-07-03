@@ -19,12 +19,12 @@ def get_avro_schema_name(connection, asset_uid : int) -> Optional[str]:
             iaa2.asset_uid = %(asset_uid)s
     '''
     with closing(connection.cursor()) as cursor:
-        print('avro schema sql is', sql)
+        #print('avro schema sql is', sql)
         cursor.execute(sql, dict(asset_uid=asset_uid))
         row = cursor.fetchone()
         if row is None:
             logging.error(f'Avro schema name not found for asset id ID {asset_uid} .')
             return None
         avro_schema_name = row[0]
-        print(f'avro_schema_name: {avro_schema_name}')
+        #print(f'avro_schema_name: {avro_schema_name}')
     return avro_schema_name

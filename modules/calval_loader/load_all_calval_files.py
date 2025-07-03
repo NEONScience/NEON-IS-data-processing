@@ -17,7 +17,7 @@ def load() -> None:
     env = environs.Env()
     ingest_bucket_name = env.str('CVAL_INGEST_BUCKET')
     in_path: Path = env.path('IN_PATH')
-    print("IN_PATH value is:", in_path)
+    #print("IN_PATH value is:", in_path)
     output_directory: Path = env.path('OUT_PATH')
     sensor_type = env.list('SOURCE_TYPE')
     db_config = read_from_mount(Path('/var/db_secret'))
@@ -37,13 +37,15 @@ def load() -> None:
                     filename = pathname.split('/')
 
                     filename = filename[-1] + ".xml"
-                    print("FileName is: ", filename)
+                    #print("FileName is: ", filename)
                     blob = ingest_bucket.get_blob(filename)
 
                     with blob.open("r") as f:
                         root = ET.fromstring(blob.download_as_string())
                         asset_id = root.find('SensorID').find('MxAssetID').text
                         avro_schema_name = get_avro_schema_name(connector.get_connection(), asset_id)
+                        print('sensor_type:', sensor_type)
+                        print('avro_schema_name:', sensor_type)
                         if ((avro_schema_name != None) and (avro_schema_name in sensor_type)):
                             stream_id = root.find('StreamCalVal').find('StreamID').text
                             stream_name = get_calibration_stream_name(connector.get_connection(), avro_schema_name,
