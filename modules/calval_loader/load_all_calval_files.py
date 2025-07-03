@@ -45,7 +45,7 @@ def load() -> None:
                         asset_id = root.find('SensorID').find('MxAssetID').text
                         avro_schema_name = get_avro_schema_name(connector.get_connection(), asset_id)
                         print('sensor_type:', sensor_type)
-                        print('avro_schema_name:', sensor_type)
+                        print('avro_schema_name:', avro_schema_name)
                         if ((avro_schema_name != None) and (avro_schema_name in sensor_type)):
                             stream_id = root.find('StreamCalVal').find('StreamID').text
                             stream_name = get_calibration_stream_name(connector.get_connection(), avro_schema_name,
