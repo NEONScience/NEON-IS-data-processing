@@ -4,7 +4,7 @@ pipeline:
 transform:
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:sha-a243d3e
   cmd:
   - /bin/bash
   stdin:
@@ -13,8 +13,8 @@ transform:
   env:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
-    SOURCE_TYPE: suna
+    LOG_LEVEL: DEBUG
+    SOURCE_TYPE: sunav2_raw
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
