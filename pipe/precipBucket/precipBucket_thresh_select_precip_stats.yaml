@@ -55,7 +55,7 @@ input:
   - pfs:
       name: FILE_SCHEMA_STATS
       repo: precipBucket_avro_schemas
-      glob: /precipBucket/precipBucket_dp01_stats_metone_testsec.avsc
+      glob: /precipBucket/precipBucket_dp01_stats_metone.avsc
 
 parallelism_spec:
   constant: 5
