@@ -57,10 +57,10 @@
     },
     "rjson": {
       "Package": "rjson",
-      "Version": "0.2.21",
+      "Version": "0.2.23",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f9da75e6444e95a1baf8ca24909d63b9",
+      "Hash": "7a04e9eff95857dbf557b4e5f0b3d1a8",
       "Requirements": []
     }
   }

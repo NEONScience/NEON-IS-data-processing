@@ -3,7 +3,7 @@
 # docker build -t neon-is-cal-grp-conv -f ./modules_combined/calibration_group_and_convert/Dockerfile .
 
 # Start with the calibration package image. 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v1.3.5
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-cal-r:v2.1.1
 
 
 # maintainer handle
@@ -25,14 +25,22 @@ COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_
  
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        python3.8 && \
-    apt install -y python3-pip && \
-    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
-   apt-get autoremove -y && \
-	 apt-get autoclean -y && \
-	 rm -rf /var/lib/apt/lists/* && \
+        software-properties-common \
+        gnupg && \
+    rm -rf /var/lib/apt/lists/* 
+    
+RUN add-apt-repository ppa:deadsnakes/ppa -y
+RUN apt update
+RUN apt-get install -y python3.9 python3.9-venv python3-pip
+RUN python3.9 -m venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
+    apt-get autoremove -y && \
+    apt-get autoclean -y && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 

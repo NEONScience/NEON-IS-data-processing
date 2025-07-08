@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: quay.io/battelleecology/assetuid_macaddress_loader:NSE-9908
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-asset-mac-map:v0.0.1
   cmd:
   - /bin/bash
   stdin:
