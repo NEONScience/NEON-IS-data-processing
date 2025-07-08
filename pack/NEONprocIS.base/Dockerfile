@@ -95,6 +95,7 @@ RUN apt-get update \
 # Copy the NEONprocIS.base package from local
 COPY ./pack/NEONprocIS.base/ /pack/NEONprocIS.base/
 #
+COPY ./pack/NEONprocIS.base/ravro.so /pack/NEONprocIS.base/ravro.so
 COPY ./pack/NEONprocIS.base/ravro.so /pack/NEONprocIS.base/tests/testthat/ravro.so
 
 
