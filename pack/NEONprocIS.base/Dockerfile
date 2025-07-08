@@ -29,6 +29,7 @@ COPY ./avro/ /avro/
 
 # Copy ravro.so to root directory
 COPY ./pack/NEONprocIS.base/ravro.so /ravro.so
+COPY ./pack/NEONprocIS.base/tests/testthat/ravro.so /tests/testthat/ravro.so
 
 # Environment variables for arrow package
 ENV LIBARROW_BINARY=true
