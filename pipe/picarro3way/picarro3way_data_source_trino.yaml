@@ -94,7 +94,7 @@ transform:
   env:
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/picarro3way_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/parsed-schemas/picarro3way/picarro3way_parsed.avsc"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/picarro3way/picarro3way.avsc"
     LOG_LEVEL: info
     OUT_SOURCE_TYPE: 'picarro3way'
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
