@@ -2,7 +2,7 @@
 pipeline:
   name: exo2turbidity_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.9.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.9.6
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
