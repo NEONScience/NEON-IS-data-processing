@@ -5,7 +5,7 @@
 # docker build -t neon-is-data-src-trino:latest -f ./modules_combined/data_source_trino/Dockerfile .
 #
 ###
-FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:v4.9.3
+FROM us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-genscript:v4.9.7
 
 ARG MODULE_DIR="modules"
 ARG APP_DIR="parquet_linkmerge"
@@ -19,8 +19,9 @@ WORKDIR ${CONTAINER_APP_DIR}
 COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt
 COPY ${MODULE_DIR}/${APP_DIR_2}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
 
-RUN python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
+RUN python3 -m ensurepip --default-pip && \
+    python3 -m pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+    python3 -m pip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt
 
 COPY ${MODULE_DIR}/${APP_DIR} ${CONTAINER_APP_DIR}/${APP_DIR}
 COPY ${MODULE_DIR}/${APP_DIR_2} ${CONTAINER_APP_DIR}/${APP_DIR_2}
