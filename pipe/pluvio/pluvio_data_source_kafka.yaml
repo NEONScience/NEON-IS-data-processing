@@ -22,7 +22,8 @@ transform:
     SOURCE_TYPE: 'pluvio_raw'
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
     UPDATE_TRIGGER_TABLE: "False"
-    
+    RM_OFFSETS: "False"
+
   secrets:
   - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_USER
