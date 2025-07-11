@@ -15,7 +15,7 @@ transform:
     OUT_PATH: /pfs/out 
     PARSE_FIELD: serial_output
     RELATIVE_PATH_INDEX: "4"
-    PARSED_SCHEMA_PATH: /usr/src/app/schemas/sunav2/sunav2.avsc 
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/sunav2/sunav2_parsed.avsc 
     SOURCE_TYPE: 'sunav2_raw'
 input:
   pfs:
