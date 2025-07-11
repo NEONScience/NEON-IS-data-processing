@@ -153,10 +153,10 @@ wrap.precip.bucket <- function(DirIn,
   }
   
   # Get threshold values more efficiently using named indexing
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max range test value at point 1"] <- "inactiveHeater"
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max range test value at point 2"] <- "baseHeater"
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max soft range test at point 1"] <- "extremePrecipQF"
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max soft range test at point 2"] <- "funnelHeater"
+  thsh$threshold_name[thsh$threshold_name == "Time dependent max range test value at point 1"] <- "InactiveHeater"
+  thsh$threshold_name[thsh$threshold_name == "Time dependent max range test value at point 2"] <- "BaseHeater"
+  thsh$threshold_name[thsh$threshold_name == "Time dependent max soft range test at point 1"] <- "ExtremePrecipMax"
+  thsh$threshold_name[thsh$threshold_name == "Time dependent max soft range test at point 2"] <- "FunnelHeater"
   
   # Extract thresholds using vectorized lookup
   thsh_subset <- thsh[thsh$term_name == termTest, ]
@@ -164,10 +164,10 @@ wrap.precip.bucket <- function(DirIn,
   
   # Pre-allocate threshold variables
   thresholds <- list(
-    inactiveHeater = threshold_lookup["inactiveHeater"],
-    baseHeater = threshold_lookup["baseHeater"],
-    extremePrecipQF = threshold_lookup["extremePrecipQF"],
-    funnelHeater = threshold_lookup["funnelHeater"]
+    inactiveHeater = threshold_lookup["InactiveHeater"],
+    baseHeater = threshold_lookup["BaseHeater"],
+    extremePrecipQF = threshold_lookup["ExtremePrecipMax"],
+    funnelHeater = threshold_lookup["FunnelHeater"]
   )
   
   # Validate all thresholds exist
