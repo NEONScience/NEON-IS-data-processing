@@ -287,7 +287,7 @@ wrap.precip.bucket <- function(DirIn,
     heater_current < thresholds$baseHeater, 1,
     heater_current <= thresholds$funnelHeater, 2,
     heater_current > thresholds$funnelHeater, 3,
-    default = NA_integer_
+    default = NA_real_
   )]
   
   # More efficient aggregation using data.table
