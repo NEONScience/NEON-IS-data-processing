@@ -75,7 +75,6 @@
 #   Teresa Burlingame  (2025-07-10)
 #     Optimizations with AI assist and update ucrt for sec precip. 
 ##############################################################################################
-
 wrap.precip.bucket <- function(DirIn,
                                DirOutBase,
                                SchmData = NULL,
@@ -94,7 +93,7 @@ wrap.precip.bucket <- function(DirIn,
   # Gather info about the input directory and create the output directory
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn, log = log)
   
-  # Use vectorized path construction
+  # Use list for path construction to enable $ operator
   dir_paths <- list(
     data = fs::path(DirIn, 'data'),
     flags = fs::path(DirIn, 'flags'), 
@@ -274,16 +273,12 @@ wrap.precip.bucket <- function(DirIn,
       precipitation = precipitation * tf_conv,
       uThPTi = uCvalA1 * precipitation * tf_conv,
       uAtPTi = 0.01 * precipitation * tf_conv,
-      combinedUcrt = sqrt((uCvalA1 * precipitation * tf_conv)^2 + (0.01 * precipitation * tf_conv)^2),
-      uncertainty_type = "quadrature"  # Flag for quadrature (RSS) aggregation
+      combinedUcrt = sqrt((uCvalA1 * precipitation * tf_conv)^2 + (0.01 * precipitation * tf_conv)^2)
     )]
     
     log$debug(base::paste0('Throughfall sensor detected at ', loc$name, ' applying area conversion'))
   } else {
-    data[, `:=`(
-      combinedUcrt = uCvalA1 * precipitation,
-      uncertainty_type = "simple_sum"  # Flag for simple sum aggregation
-    )]
+    data[, combinedUcrt := uCvalA1 * precipitation]
   }
   
   # Vectorized heater QF assignment
@@ -292,7 +287,7 @@ wrap.precip.bucket <- function(DirIn,
     heater_current < thresholds$baseHeater, 1,
     heater_current <= thresholds$funnelHeater, 2,
     heater_current > thresholds$funnelHeater, 3,
-    default = NA_real_
+    default = NA_integer_
   )]
   
   # More efficient aggregation using data.table
@@ -301,30 +296,17 @@ wrap.precip.bucket <- function(DirIn,
     endDateTime_1min = ceiling_date(readout_time, '1 minute', change_on_boundary = TRUE)
   )]
   
-  # 1-minute aggregation with conditional uncertainty calculation
-  stats_aggr01 <- data[, {
-    # Conditional uncertainty aggregation based on uncertainty_type
-    if (all(uncertainty_type == "quadrature")) {
-      uncert_calc <- sqrt(sum(combinedUcrt^2, na.rm = TRUE)) * 2
-    } else if (all(uncertainty_type == "simple_sum")) {
-      uncert_calc <- sum(combinedUcrt, na.rm = TRUE) * 2  # Apply coverage factor here
-    } else {
-      # Handle mixed types or other cases (e.g., NA or error)
-      uncert_calc <- NA_real_
-    }
-    
-    .(
-      precipBulk = sum(precipitation, na.rm = TRUE),
-      precipBulkExpUncert = uncert_calc,
-      precipHeater0QM = round(sum(precipHeaterQF == 0, na.rm = TRUE) / .N * 100, 0),
-      precipHeater1QM = round(sum(precipHeaterQF == 1, na.rm = TRUE) / .N * 100, 0),
-      precipHeater2QM = round(sum(precipHeaterQF == 2, na.rm = TRUE) / .N * 100, 0),
-      precipHeater3QM = round(sum(precipHeaterQF == 3, na.rm = TRUE) / .N * 100, 0),
-      validCalQF = max(validCalQF, na.rm = TRUE),
-      suspectCalQF = max(suspectCalQF, na.rm = TRUE),
-      uncertainty_type = first(uncertainty_type)  # Carry forward uncertainty type
-    )
-  }, by = .(startDateTime = startDateTime_1min, endDateTime = endDateTime_1min)]
+  # 1-minute aggregation with quadrature uncertainty calculation
+  stats_aggr01 <- data[, .(
+    precipBulk = sum(precipitation, na.rm = TRUE),
+    precipBulkExpUncert = sqrt(sum(combinedUcrt^2, na.rm = TRUE)) * 2,  # Always use quadrature
+    precipHeater0QM = round(sum(precipHeaterQF == 0, na.rm = TRUE) / .N * 100, 0),
+    precipHeater1QM = round(sum(precipHeaterQF == 1, na.rm = TRUE) / .N * 100, 0),
+    precipHeater2QM = round(sum(precipHeaterQF == 2, na.rm = TRUE) / .N * 100, 0),
+    precipHeater3QM = round(sum(precipHeaterQF == 3, na.rm = TRUE) / .N * 100, 0),
+    validCalQF = max(validCalQF, na.rm = TRUE),
+    suspectCalQF = max(suspectCalQF, na.rm = TRUE)
+  ), by = .(startDateTime = startDateTime_1min, endDateTime = endDateTime_1min)]
   
   # Add derived columns
   stats_aggr01[, `:=`(
@@ -338,37 +320,22 @@ wrap.precip.bucket <- function(DirIn,
     endDateTime_30min = ceiling_date(endDateTime, '30 minute')
   )]
   
-  # 30-minute aggregation with conditional uncertainty calculation
-  stats_aggr30 <- stats_aggr01[, {
-    # Conditional uncertainty aggregation for 30-minute data
-    if (all(uncertainty_type == "quadrature")) {
-      # The (precipBulkExpUncert / 2)^2 removes the k=2 factor before summing squares
-      # and reapplies it at the end
-      uncert_calc <- sqrt(sum((precipBulkExpUncert / 2)^2, na.rm = TRUE)) * 2
-    } else if (all(uncertainty_type == "simple_sum")) {
-      # For simple sum, sum the previously calculated bulk uncertainties
-      # precipBulkExpUncert at 1-min already has k=2 applied
-      uncert_calc <- sum(precipBulkExpUncert, na.rm = TRUE)
-    } else {
-      uncert_calc <- NA_real_
-    }
-    
-    .(
-      precipBulk = sum(precipBulk, na.rm = TRUE),
-      precipBulkExpUncert = uncert_calc,
-      precipHeater0QM = round(mean(precipHeater0QM, na.rm = TRUE), 0),
-      precipHeater1QM = round(mean(precipHeater1QM, na.rm = TRUE), 0),
-      precipHeater2QM = round(mean(precipHeater2QM, na.rm = TRUE), 0),
-      precipHeater3QM = round(mean(precipHeater3QM, na.rm = TRUE), 0),
-      validCalQF = max(validCalQF, na.rm = TRUE),
-      suspectCalQF = max(suspectCalQF, na.rm = TRUE),
-      extremePrecipQF = max(extremePrecipQF, na.rm = TRUE),
-      finalQF = as.integer(max(finalQF, na.rm = TRUE))
-    )
-  }, by = .(startDateTime = startDateTime_30min, endDateTime = endDateTime_30min)]
+  # 30-minute aggregation with quadrature uncertainty calculation
+  stats_aggr30 <- stats_aggr01[, .(
+    precipBulk = sum(precipBulk, na.rm = TRUE),
+    precipBulkExpUncert = sqrt(sum((precipBulkExpUncert / 2)^2, na.rm = TRUE)) * 2,  # Always use quadrature
+    precipHeater0QM = round(mean(precipHeater0QM, na.rm = TRUE), 0),
+    precipHeater1QM = round(mean(precipHeater1QM, na.rm = TRUE), 0),
+    precipHeater2QM = round(mean(precipHeater2QM, na.rm = TRUE), 0),
+    precipHeater3QM = round(mean(precipHeater3QM, na.rm = TRUE), 0),
+    validCalQF = max(validCalQF, na.rm = TRUE),
+    suspectCalQF = max(suspectCalQF, na.rm = TRUE),
+    extremePrecipQF = max(extremePrecipQF, na.rm = TRUE),
+    finalQF = as.integer(max(finalQF, na.rm = TRUE))
+  ), by = .(startDateTime = startDateTime_30min, endDateTime = endDateTime_30min)]
   
-  # Clean up temporary columns and reorder (remove uncertainty_type from final output)
-  stats_aggr01[, c('startDateTime_30min', 'endDateTime_30min', 'uncertainty_type') := NULL]
+  # Clean up temporary columns and reorder
+  stats_aggr01[, c('startDateTime_30min', 'endDateTime_30min') := NULL]
   
   # Reorder columns to match schema requirements
   col_order <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert',
@@ -427,5 +394,3 @@ write_output_files <- function(stats_01, stats_30, fileData, dirOutStat, SchmDat
     }
   }
 }
-
-
