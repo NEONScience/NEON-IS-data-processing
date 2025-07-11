@@ -44,7 +44,8 @@ test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file"
             {
               workingDirPath <- getwd()
               
-              nameLib <- file.path(workingDirPath, "ravro.so")
+             # nameLib <- file.path(workingDirPath, "ravro.so")
+              nameLib='ravro.so'
               col_List = c('source_id', 'site_id', 'readout_time', 'resistance')
               
               nameFile <- file.path(workingDirPath, "testdata/HART_data.avro")
