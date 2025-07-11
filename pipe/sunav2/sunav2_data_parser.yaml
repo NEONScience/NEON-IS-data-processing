@@ -1,7 +1,7 @@
 pipeline:
   name: sunav2_data_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:v4.3.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-raw-data-parser:v4.9.7
   cmd:
     - /bin/bash
   stdin:
