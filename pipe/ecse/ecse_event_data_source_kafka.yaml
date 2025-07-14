@@ -2,14 +2,14 @@
 pipeline:
   name: ecse_event_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.9.2
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.9.7
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
     SOURCE_TYPE: "ecse"
     TOPIC_CENTRAL: "event.cnc"
-    DATATYPE_DIR: "event"
+    DATATYPE_DIR: "event" # default is data in extractor
     OUTFILETYPE: "json" # parquet recommended
     LOG_LEVEL: INFO
     YEAR_INDEX: "5"
@@ -95,34 +95,38 @@ transform:
       
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
-      ./extract-kafka-event.py -s $site -S $SOURCE_TYPE -t $TOPIC_CENTRAL -D "$OUT_PATH/$SOURCE_TYPE" -T $DATATYPE_DIR -F "$OUTFILETYPE" -d $date_str --only current --consumer client.rack=$zone
+      ./extract-kafka-event.py -s $site -S $SOURCE_TYPE -t $TOPIC_CENTRAL -D "$OUT_PATH/$SOURCE_TYPE/$site" -T $DATATYPE_DIR -F "$OUTFILETYPE" -d $date_str --only current --consumer client.rack=$zone
       
       ## Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-      ./extract-kafka-event.py -s $site -S $SOURCE_TYPE -t $TOPIC_CENTRAL -D "$OUT_PATH/$SOURCE_TYPE" -T $DATATYPE_DIR -F "$OUTFILETYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      ./extract-kafka-event.py -s $site -S $SOURCE_TYPE -t $TOPIC_CENTRAL -D "$OUT_PATH/$SOURCE_TYPE/$site" -T $DATATYPE_DIR -F "$OUTFILETYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
       echo "Finished extracting"
 
       sites_output+=($site)
 
     done
 
+    echo "Start uploading to GCS ..."
+
     # Upload L0 files to bucket, compacting with any existing file with the same name
     if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.${OUTFILETYPE}"
-      # /pfs/out/ecse/2023/01/01/validation/event/file.json
+      # /pfs/out/ecse/cper/2023/01/01/validation/event/file.json
       echo "Linking output files to ${linkdir}"
       # set -x # Uncomment for troubleshooting
       for f in $out_parquet_glob; do
         # Parse the path
-        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/$DATATYPE_DIR/(.*)$ ]]
+        # [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/$DATATYPE_DIR/(.*)$ ]]
+        [[ "$f" =~ ^$OUT_PATH/([^/]+)/([^/]+)/([0-9]{4})/([0-9]{2})/([0-9]{2})/([^/]+)/$DATATYPE_DIR/([^/]+)$ ]]
         fsourcetype="${BASH_REMATCH[1]}"
-        fyear="${BASH_REMATCH[2]}"
-        fmonth="${BASH_REMATCH[3]}"
-        fday="${BASH_REMATCH[4]}"
-        fsourceid="${BASH_REMATCH[5]}"
-        fname="${BASH_REMATCH[6]}"
+        fsite="${BASH_REMATCH[2]}"
+        fyear="${BASH_REMATCH[3]}"
+        fmonth="${BASH_REMATCH[4]}"
+        fday="${BASH_REMATCH[5]}"
+        fsourceid="${BASH_REMATCH[6]}"
+        fname="${BASH_REMATCH[7]}"
         if [[ "${fsourceid}" == "validation" ]]; then
           fkey="ico2_validation"
         elif [[ "${fsourceid}" == "calibration" ]]; then
@@ -133,8 +137,8 @@ transform:
           echo "skip $fsourceid for data store ..."
           continue
         fi
-        fname_out="${fsourcetype}_${fkey}_${fyear}-${fmonth}-${fday}.${OUTFILETYPE}"  # Remove offsets from the filename
-        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/key=${fkey}"
+        fname_out="${fsite}_${fsourcetype}_${fkey}_${fyear}-${fmonth}-${fday}.${OUTFILETYPE}" 
+        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/site=${fsite}/key=${fkey}"
         mkdir -p "${outdir}"
         
         # Upload to bucket
@@ -159,7 +163,7 @@ transform:
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
-        ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" 
+        ./update-trigger-table.py -s $site_output -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE/$site_output" 
       done
 
       # set +x # Uncomment for troubleshooting
@@ -170,8 +174,8 @@ input:
   pfs:
     name: import_trigger
     repo: ecse_cron_daily_and_date_control
-    # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/ecse/*/*/*"
+    # Must be datum by day/site (e.g. /SOURCE_TYPE/*/*/*/*), output is ecse/site/year/mm/dd
+    glob: "/ecse/*/*/*/*"
 parallelism_spec:
   constant: 1
 autoscaling: true
