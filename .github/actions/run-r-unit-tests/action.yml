@@ -82,8 +82,10 @@ runs:
               any::xml2
           needs: coverage
 
-      - name: check out repository
-        uses: actions/checkout@v3
+      - name: Add libR.so to LD_LIBRARY_PATH
+        run: |
+          LIBR_DIR=$(dirname $(find /opt -name "libR.so" | head -n 1))
+          echo "LD_LIBRARY_PATH=$LIBR_DIR:$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
       - name: Run unit test coverage using covr package
         shell: bash
