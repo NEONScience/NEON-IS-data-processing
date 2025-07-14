@@ -39,12 +39,12 @@
 test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file",
           {
             os_type = Sys.info()["sysname"]
+            nameLib="ravro.so"
             # Execute the test when the OS is Linux-based, skip otherwise
             if (os_type == "Linux")
             {
               workingDirPath <- getwd()
               
-              nameLib="ravro.so"
               col_List = c('source_id', 'site_id', 'readout_time', 'resistance')
               
               nameFile <- file.path(workingDirPath, "testdata/HART_data.avro")
@@ -55,7 +55,7 @@ test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file"
               cat("\n   Test 1: When one input data is passed in.")
               cat("\n |=================================================================================|\n")
               
-              rpt <- NEONprocIS.base::def.read.avro.deve(NameFile = nameFile)
+              rpt <- NEONprocIS.base::def.read.avro.deve(NameFile = nameFile, NameLib=nameLib)
               
               expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
               expect_true (all (names(rpt) == col_List) && rpt$site_id == "HARV")
@@ -69,7 +69,7 @@ test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file"
               cat("\n   Test 2: When more than one input are passed in, the first one will be taken.")
               cat("\n |=================================================================================|\n")
               
-              rpt <- def.read.avro.deve(NameFile = c(nameFile2, nameFile))
+              rpt <- def.read.avro.deve(NameFile = c(nameFile2, nameFile), NameLib=nameLib)
               
               expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
               expect_true (all (names(rpt) == col_List) && rpt$site_id == "not-HARV")
@@ -81,7 +81,7 @@ test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file"
               
               nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test_noResistance.avro")
               col_List_noResistance = c('source_id', 'site_id', 'readout_time')
-              rpt <- def.read.avro.deve(NameFile = nameFile)
+              rpt <- def.read.avro.deve(NameFile = nameFile, NameLib=nameLib)
               
               expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
               expect_true (all (names(rpt) == col_List_noResistance))
