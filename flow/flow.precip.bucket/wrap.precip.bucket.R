@@ -151,13 +151,7 @@ wrap.precip.bucket <- function(DirIn,
     log$error(base::paste0('Missing threshold term: ', termTest))
     stop()
   }
-  
-  # Get threshold values more efficiently using named indexing
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max range test value at point 1"] <- "InactiveHeater"
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max range test value at point 2"] <- "BaseHeater"
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max soft range test at point 1"] <- "ExtremePrecipMax"
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max soft range test at point 2"] <- "FunnelHeater"
-  
+
   # Extract thresholds using vectorized lookup
   thsh_subset <- thsh[thsh$term_name == termTest, ]
   threshold_lookup <- setNames(thsh_subset$number_value, thsh_subset$threshold_name)
@@ -283,8 +277,8 @@ wrap.precip.bucket <- function(DirIn,
   
   # Vectorized heater QF assignment
   data[, precipHeaterQF := fcase(
-    heater_current < thresholds$inactiveHeater, 0,
-    heater_current < thresholds$baseHeater, 1,
+    heater_current <= thresholds$inactiveHeater, 0,
+    heater_current <= thresholds$baseHeater, 1,
     heater_current <= thresholds$funnelHeater, 2,
     heater_current > thresholds$funnelHeater, 3,
     default = NA_real_
