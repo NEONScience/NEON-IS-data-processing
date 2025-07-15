@@ -2,7 +2,7 @@
 pipeline:
   name: tempSpecificDepthLakes_statistics
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc:v1.1.2
   cmd:
   - Rscript
   - ./flow.stat.basc.R

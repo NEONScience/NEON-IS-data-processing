@@ -1,0 +1,77 @@
+---
+pipeline:
+  name: precipWeighingv2_pluvio_custom_flags
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -r -f /tmp/pfs/filter_joined
+    mkdir -p /tmp/pfs/filter_joined
+    # Run first module - filter-joiner (using environment variables below as input parameters)
+    python3 -m filter_joiner.filter_joiner_main
+    # Run second module - quality metrics
+    #       SchmQm=$FILE_SCHEMA_QM \
+    #       SchmData=$FILE_SCHEMA_DATA \ 
+    Rscript ./flow.precip.pluvio.flags.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums 
+
+    EOF
+  env:
+    PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
+input:
+  cross:
+  - pfs:
+      name: DATA_PATH
+      repo: precipWeighingv2_analyze_pad_and_qaqc_plau
+      glob: /*/*/*
+  #MAY NOT NEED DATA SCHEMA
+  #MAY NEED TO LINK CAL FLAGS IN HERE. 
+  # - pfs:
+  #     name: SCHEMA_FLAGS
+  #     repo: precipWeighingv2_avro_schemas
+  #     glob: /precipWeighingv2/flags_plausibility_precipWeighingv2.avsc
+  # - pfs:
+  #     name: SCHEMA_DATA
+  #     repo: precipWeighingv2_avro_schemas
+  #     glob: /precipWeighingv2/flags_plausibility_precipWeighingv2.avsc
+      
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests: 
+  memory: 900M
+  cpu: 3.5
+resource_limits:
+  memory: 2G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

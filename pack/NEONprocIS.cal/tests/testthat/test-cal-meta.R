@@ -86,23 +86,26 @@ test_that("   Test of def.cal.meta.R, Compile metadata for calibrations",
             metaCal <-
               NEONprocIS.cal::def.cal.meta(fileCal = testFileCalPath)
             
-            NameList = c('path', 'file', 'timeValiBgn', 'timeValiEnd', 'id')
+            NameList = c('path', 'file', 'timeValiBgn', 'timeValiEnd', 'id','err')
             
             expect_true (is.data.frame(metaCal))
             expect_true (all(NameList %in% colnames(metaCal)))
+            expect_true (all(!metaCal$err))
             
             cat("\n       |------                   The test ran successfully, a correct Data frame is returned       |\n")
             
-            fileCal_noCertNum <- c('calibration.xml','calibration5_NoCertNum.xml')
-            #
+            fileCal_noCertNum <- c('calibration.xml','calibration5_NoCertNum.xml','calibration6_BadFile.xml')
+            testFileCalPath <- paste0(testDir, fileCal_noCertNum)
             
             cat("\n       |=====================================   Test Summary   ====================================|\n")
             
-            cat("\n       |------ Negative test 1:: one of the calibration files does not have Cert number            |\n")
+            cat("\n       |------ Negative test 1:: second cal file is missing the cert number, 3rd file bad          |\n")
             
-            metaCal <- try(NEONprocIS.cal::def.cal.meta(fileCal = fileCal_noCertNum), silent = TRUE)
+            metaCal <- try(NEONprocIS.cal::def.cal.meta(fileCal = testFileCalPath), silent = TRUE)
               
-            testthat::expect_true((class(metaCal)[1] == "try-error"))
+            testthat::expect_true(!("try-error" %in% class(metaCal)) && metaCal$err[1] == FALSE)
+            testthat::expect_true(!("try-error" %in% class(metaCal)) && metaCal$err[2] == TRUE && is.na(metaCal$id[2]))
+            testthat::expect_true(!("try-error" %in% class(metaCal)) && metaCal$err[3] == TRUE && is.na(metaCal$timeValiEnd[3]))
             
             
           })

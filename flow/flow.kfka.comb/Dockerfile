@@ -4,7 +4,7 @@
 
 # Start with the pub package image. 
 
-FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.1
+FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.2
 
 ARG FLOW_DIR="./flow"
 ARG APP_DIR="flow.kfka.comb"

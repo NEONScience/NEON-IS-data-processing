@@ -2,7 +2,7 @@
 pipeline:
   name: enviroscan_data_source_trino
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-src-trino:v2.2.4
   cmd:
   - sh
   - "-c"
@@ -43,7 +43,7 @@ transform:
       echo "Extracting data from Trino for $year/$month/$day/$site"
       export GEN_DATE=$year-$month-$day
       export GEN_SITE_NAME=$site
-      export GEN_OUTPUT_DIR=$interimDir/$SOURCE_TYPE/$year/$month/$day
+      export GEN_OUTPUT_DIR=$interimDir/${SOURCE_TYPE}_raw/$year/$month/$day
       export REQUESTS_CA_BUNDLE=/etc/pki/tls/cert.pem
       mkdir -p $GEN_OUTPUT_DIR
       /usr/src/app/genscript/genparquet.py --storesitename --codec gzip
@@ -53,7 +53,7 @@ transform:
     python3 -m parquet_linkmerge.parquet_linkmerge_main
     
     # Export L0 data to bucket
-    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+    if [[ -d "$OUT_PATH/${SOURCE_TYPE}_raw" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
@@ -80,6 +80,7 @@ transform:
         --copy-links \
         --gcs-bucket-policy-only \
         --gcs-no-check-bucket \
+        --metadata-set "content-type=application/vnd.apache.parquet" \
         copy \
         "${linkdir}" \
         ":gcs://${BUCKET_NAME}"
@@ -89,11 +90,64 @@ transform:
       
       # set +x # Uncomment for troubleshooting
     fi
+    
+    # run array parser
+    if [[ -d "$OUT_PATH/${SOURCE_TYPE}_raw" ]]; then
+      # Run array parser 
+      # export LOG_LEVEL=DEBUG
+      export SCHEMA_PATH=$FILE_SCHEMA_PARSED
+      export DATA_PATH=$OUT_PATH/${SOURCE_TYPE}_raw
+      echo "Running array parser"
+      python3 -m array_parser.array_parser_main
+
+      # save parsed data to gcs 
+
+      linkdir=$(mktemp -d)
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH}/${SOURCE_TYPE_OUT}/**/*.parquet"
+      # /pfs/out/pluvio/2023/01/01/12345/data/file.parquet
+      echo "Linking output files to ${linkdir}"
+      # set -x
+      for f in $out_parquet_glob; do
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/(.*)/(.*)$ ]]
+        fsourcetype="${BASH_REMATCH[1]}"
+        fyear="${BASH_REMATCH[2]}"
+        fmonth="${BASH_REMATCH[3]}"
+        fday="${BASH_REMATCH[4]}"
+        fsourceid="${BASH_REMATCH[5]}"
+        fname="${BASH_REMATCH[7]}"
+        fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
+        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname_out}"
+        
+      done
+      
+      echo "Syncing files to bucket"
+      rclone \
+        --no-check-dest \
+        --copy-links \
+        --gcs-bucket-policy-only \
+        --gcs-no-check-bucket \
+        --metadata-set "content-type=application/vnd.apache.parquet" \
+        copy \
+        "${linkdir}" \
+        ":gcs://${BUCKET_NAME}"
+        
+      echo "Removing temporary files"
+      rm -rf $linkdir
+
+      # set +x # Uncomment for debugging
+      
+    fi
     EOF
   env:
+    # Environment variables for bash code
+    SOURCE_TYPE: 'enviroscan'
     # Environment variables for data conversion step
     GEN_YAML_CONF: "/usr/src/app/genscript/configs/enviroscan_streams.yaml"
-    GEN_SCHEMA_FILE: "/usr/src/app/schemas/enviroscan/enviroscan.avsc"
+    GEN_SCHEMA_FILE: "/usr/src/app/schemas/enviroscan/enviroscan.avsc" 
     LOG_LEVEL: INFO
     REQUESTS_CA_BUNDLE: "/etc/pki/tls/cert.pem"
     # Environment variables for linkmerge step
@@ -105,8 +159,16 @@ transform:
     DAY_INDEX: '6'
     SOURCE_ID_INDEX: '7'
     KAFKA_RETENTION_DAYS: "15"
-    # Environment variables for bash code
-    SOURCE_TYPE: 'enviroscan'
+    # environment variables for the array parser
+    PARSE_CALIBRATION: 'False' 
+    TEST_MODE: 'False'
+    # SOURCE_TYPE_INDEX: '3' # Already specified in linkmerge step
+    SOURCE_TYPE_OUT: "enviroscan"
+    # YEAR_INDEX: '4' # Already specified in linkmerge step
+    # MONTH_INDEX: '5' # Already specified in linkmerge step
+    # DAY_INDEX: '6' # Already specified in linkmerge step
+    # SOURCE_ID_INDEX: '7' # Already specified in linkmerge step
+    DATA_TYPE_INDEX: '8'
   secrets:
   - name: pachd-trino-secret
     key: TRINO_HOST
@@ -121,10 +183,19 @@ transform:
     env_var: BUCKET_NAME
     key: LO_BUCKET
 input:
-  pfs:
-    name: import_trigger
-    repo: enviroscan_cron_daily_and_date_control
-    glob: "/enviroscan/*/*/*"
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_PARSED
+      repo: enviroscan_avro_schemas
+      glob: "/enviroscan/enviroscan_parsed.avsc"
+  # - pfs:
+  #     name: GEN_SCHEMA_FILE
+  #     repo: enviroscan_avro_schemas
+  #     glob: /enviroscan/enviroscan_parsed.avsc
+  - pfs:
+      name: import_trigger
+      repo: enviroscan_cron_daily_and_date_control
+      glob: "/enviroscan/*/*/*"
 output_branch: master
 parallelism_spec:
   constant: 5

@@ -2,7 +2,7 @@
 pipeline:
   name: mti300ahrs_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.1.1
   cmd:
   - sh
   - "-c"
@@ -20,16 +20,16 @@ transform:
     python3 -m date_gap_filler.date_gap_filler_main
 
     # Run second module - regularize
-    # NOTE: 2025-02-04 CFGLOC108729(TALL) has 80Hz data, use Trlg and IdxWndwMin for regularization
-    # also raise resource request to 10Hz.
+    # NOTE: 2025-01-02~2025-02-25 CFGLOC108729(TALL) has 80Hz data, 
+    # SCI team agreed to use Trlg and IdxWndwMin for regularization for high frequency data
     Rscript ./flow.rglr.R \
       DirIn=/tmp/pfs/date_filled \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       DirRglr=data \
       MethRglr=CybiEc \
-      WndwRglr=Cntr \
-      IdxWndw=Clst \
+      WndwRglr=Trlg \
+      IdxWndw=IdxWndwMin \
       RptTimeWndw=FALSE \
       DropNotNumc=FALSE \
       "DirSubCopy=location"
