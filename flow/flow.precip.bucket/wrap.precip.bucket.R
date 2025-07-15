@@ -209,19 +209,29 @@ wrap.precip.bucket <- function(DirIn,
   # Read uncertainty coefficients
   fileUcrt <- base::dir(dir_paths$uncertainty_coef)
   
-  if (base::length(fileUcrt) != 1) {
-    log$warn("No single uncertainty coefficient file found")
+  # Handle multiple UCRT files
+  if (base::length(fileUcrt) == 0) {
+    log$warn("No uncertainty coefficient files found")
     ucrtCoef <- base::list()
   } else {
-    nameFileUcrt <- fs::path(dir_paths$uncertainty_coef, fileUcrt)
-    ucrtCoef <- base::try(rjson::fromJSON(file = nameFileUcrt, simplify = TRUE), silent = FALSE)
-    if (base::class(ucrtCoef) == 'try-error') {
-      log$error(base::paste0('Cannot read uncertainty file: ', nameFileUcrt))
-      stop()
+    log$info(base::paste0("Found ", length(fileUcrt), " uncertainty coefficient file(s)"))
+    ucrtCoef <- base::list()
+    
+    # Read all UCRT files
+    for (i in seq_along(fileUcrt)) {
+      nameFileUcrt <- fs::path(dir_paths$uncertainty_coef, fileUcrt[i])
+      ucrtCoef_temp <- base::try(rjson::fromJSON(file = nameFileUcrt, simplify = TRUE), silent = FALSE)
+      
+      if (base::class(ucrtCoef_temp) == 'try-error') {
+        log$error(base::paste0('Cannot read uncertainty file: ', nameFileUcrt))
+        stop()
+      } else {
+        ucrtCoef <- c(ucrtCoef, ucrtCoef_temp)
+      }
     }
   }
   
-  # Process uncertainty coefficients more efficiently
+  # Process U_CVALA1 uncertainty coefficients
   if (length(ucrtCoef) > 0) {
     ucrtCoef_df <- dplyr::bind_rows(ucrtCoef)
     uCvalA1_rows <- ucrtCoef_df$Name == "U_CVALA1"
@@ -229,7 +239,7 @@ wrap.precip.bucket <- function(DirIn,
     
     # Handle multiple calibrations more efficiently
     if (length(uCvalA1) > 1) {
-      log$info('Applying multiple calibration coefficients')
+      log$info('Applying multiple U_CVALA1 calibration coefficients')
       cals <- ucrtCoef_df[uCvalA1_rows, ]
       cals[, c('start_date', 'end_date')] <- lapply(cals[, c('start_date', 'end_date')], 
                                                     function(x) as.POSIXct(x, format = "%Y-%m-%dT%H:%M:%OS", tz = 'GMT'))
@@ -242,15 +252,22 @@ wrap.precip.bucket <- function(DirIn,
         data[readout_time >= cals$start_date[i] & readout_time <= cals$end_date[i], 
              uCvalA1 := as.numeric(cals$Value[i])]
       }
+      
+      # Log how many rows were assigned values
+      assigned_rows <- sum(!is.na(data$uCvalA1))
+      log$info(paste0('Applied U_CVALA1 coefficients to ', assigned_rows, ' rows'))
+      
     } else if (length(uCvalA1) == 1) {
       data[, uCvalA1 := uCvalA1]
+      log$info(paste0('Applied single U_CVALA1 coefficient: ', uCvalA1))
     } else {
       data[, uCvalA1 := 0]
+      log$info('No U_CVALA1 coefficients found, setting to 0')
     }
   } else {
     data[, uCvalA1 := 0]
+    log$info('No UCRT data available, setting uCvalA1 to 0')
   }
-  
   # Vectorized data cleaning
   data[is.na(precipitation), precipitation := 0]
   data[is.na(validCalQF), validCalQF := -1]
