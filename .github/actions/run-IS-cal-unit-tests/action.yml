@@ -1,5 +1,5 @@
-name: "Run R unit tests"
-description: "Run R unit tests on NEONprocIS.base"
+name: "Run NEONprocIS cal package unit tests"
+description: "Run R unit tests on NEONprocIS.cal"
 
 inputs:
   image-tag:
@@ -93,8 +93,10 @@ runs:
           IFS=$'\n\t'
           # read the library versions from renv.lock
           # Rscript -e 'renv::use(lockfile = "${{ env.MODULE_PATH }}/renv.lock")'
+          Rscript -e 'devtools::install("./pack/NEONprocIS.base")'
           Rscript -e 'devtools::install("${{ env.MODULE_PATH }}")'
-          Rscript -e 'library(NEONprocIS.base)'  
+          Rscript -e 'library(NEONprocIS.base)'
+          Rscript -e 'library(NEONprocIS.cal)'
           Rscript -e 'library(dplyr)'
           Rscript -e 'library(arrow)'
           Rscript -e 'library(jsonlite)'

@@ -144,7 +144,7 @@ input:
     name: import_trigger
     repo: drx8533ep_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/drx8533ep/*/*/*"
+    glob: "/drx8533ep/*/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
