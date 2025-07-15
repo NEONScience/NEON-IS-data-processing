@@ -58,7 +58,7 @@ test_that("   Testing def.read.avro.deve.R, definition function. Read AVRO file"
               rpt <- NEONprocIS.base::def.read.avro.deve(NameFile = nameFile, NameLib=nameLib)
               
               expect_true ((is.data.frame(rpt)) && !(is.null(rpt)))
-              #expect_true (all (names(rpt) == col_List) && rpt$site_id == "HARV")
+              expect_true (all (names(rpt) == col_List) && rpt$site_id == "HARV")
               
               nameFile <- file.path(workingDirPath, "def.read.avro.deve/prt_test.avro")
               nameFile2 <- file.path(workingDirPath, "def.read.avro.deve/prt_test2.avro")
