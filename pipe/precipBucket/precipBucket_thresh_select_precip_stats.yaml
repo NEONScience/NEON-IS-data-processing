@@ -2,7 +2,7 @@
 pipeline:
   name: precipBucket_thresh_select_precip_stats
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-thsh-slct-prcp-stat:sha-4984bf2
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-thsh-slct-prcp-stat:sha-c27016b
   cmd:
   - sh
   - "-c"
