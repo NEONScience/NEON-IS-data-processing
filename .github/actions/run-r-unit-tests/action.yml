@@ -109,5 +109,10 @@ runs:
           Rscript -e 'library(stringr)'
           Rscript -e 'devtools::test(pkg="${{ env.MODULE_PATH }}")'
           Rscript -e 'cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")'
-          Rscript -e 'report(cov)' 
+          Rscript -e 'covr::report(cov, file = "coverage.html")'
   
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.html
