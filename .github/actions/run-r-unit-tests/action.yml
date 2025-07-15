@@ -108,16 +108,6 @@ runs:
           Rscript -e 'library(rlang)'
           Rscript -e 'library(stringr)'
           Rscript -e 'devtools::test(pkg="${{ env.MODULE_PATH }}")'
-          #Rscript -e 'cov <- covr::package_coverage()'
-          # Rscript -e 'report(cov)'
-
-      - name: Test coverage
-        run: |
-          cov <- covr::package_coverage(
-            quiet = FALSE,
-            clean = FALSE,
-            install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
-          )
-          covr::to_cobertura(cov)
-        shell: Rscript {0}
+          Rscript -e 'cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")'
+          Rscript -e 'report(cov)' 
   
