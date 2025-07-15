@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: l4discharge_sdrc_gaugeDischargeMeas_table_loader_control 
+  name: l4discharge_sdrc_curveID_table_loader_control 
 transform:
   cmd: ["/bin/bash"]
 input:

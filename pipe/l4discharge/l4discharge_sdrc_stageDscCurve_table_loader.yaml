@@ -1,10 +1,7 @@
 ---
 pipeline:
-  name: l4discharge_sdrc_priorParameters_table_loader
+  name: l4discharge_sdrc_stageDscCurve_table_loader
 transform:
-  image_pull_secrets:
-  # image_pull_secrets:
-  # - battelleecology-quay-read-all-pull-secret
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-os-table-loader:v1.0.0
   cmd:
   - /bin/bash
@@ -14,8 +11,8 @@ transform:
   env:
     # File output options are 'csv' or 'parquet'. 
     FILE_TYPE: csv
-    OUT_PATH: /pfs/out/l4discharge_sdrc_priorParameters
-    PARTIAL_TABLE_NAME: priorParameters
+    OUT_PATH: /pfs/out
+    PARTIAL_TABLE_NAME: stageDischargeCurveInfo
     DB_CONFIG_SOURCE: mount
     LOG_LEVEL: DEBUG 
   secrets:
@@ -24,7 +21,7 @@ transform:
 input:
   pfs:
     name: IN_PATH 
-    repo: l4discharge_sdrc_priorParameters_table_loader_control_tick
+    repo: l4discharge_sdrc_stageDscCurve_table_loader_control_tick
     glob: /*
 autoscaling: true
 resource_requests:
