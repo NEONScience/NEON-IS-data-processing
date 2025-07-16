@@ -96,9 +96,11 @@ runs:
           # read the library versions from renv.lock
           # Rscript -e 'renv::use(lockfile = "${{ env.MODULE_PATH }}/renv.lock")'
           devtools::install("./pack/NEONprocIS.base")
-          devtools::install("${{ env.MODULE_PATH }}")
-          library(NEONprocIS.base)
-          library("${{ env.MODULE_NAME }}")
+          library("${{ env.MODULE_BASE_NAME }}")
+          if ("${{ env.MODULE_NAME }}" != "${{ env.MODULE_BASE_NAME }}") {
+            devtools::install("${{ env.MODULE_PATH }}")
+            library("${{ env.MODULE_NAME }}")
+          }
           library(dplyr)
           library(arrow)
           library(jsonlite)
