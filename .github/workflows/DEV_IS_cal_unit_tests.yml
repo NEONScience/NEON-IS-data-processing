@@ -1,11 +1,11 @@
-name: "Run IS base package unit tests"
+name: "Run IS cal package unit tests"
 
 on:
   push:
     branches:
      - 'master'
     paths:
-      - 'pack/NEONprocIS.base/**'
+      - 'pack/NEONprocIS.cal/**'
       
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
@@ -25,9 +25,9 @@ env:
   REPO_NAME: neon-is-data-processing
   # IS package name
   MODULE_BASE_NAME: NEONprocIS.base
-  MODULE_PATH: ./pack/NEONprocIS.base
-  MODULE_NAME: NEONprocIS.base
-  IMAGE_NAME: neon-is-pack-base-r
+  MODULE_PATH: ./pack/NEONprocIS.cal
+  MODULE_NAME: NEONprocIS.cal
+  IMAGE_NAME: neon-is-pack-cal-r
 
 jobs:
   run-unit-test:
