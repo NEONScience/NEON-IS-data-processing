@@ -44,7 +44,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
-          ref: 'master'
+ #         ref: 'master'
           fetch-depth: '0'
 
         # Note: must clone other repos AFTER checking out the repo where the action is run from. 
@@ -78,7 +78,7 @@ jobs:
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Run IS ${{ MODULE_NAME }} unit tests
+      - name: Run IS ${{ env.MODULE_NAME }} unit tests
         uses: ./.github/actions/run-IS-unit-tests
         with:
             image-tag: "${short_sha}"
