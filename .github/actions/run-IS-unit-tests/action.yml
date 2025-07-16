@@ -1,5 +1,5 @@
-name: "Run ${{ MODULE_NAME }} package unit tests"
-description: "Run R unit tests on ${{ MODULE_NAME }}"
+name: "Run ${{ env.MODULE_NAME }} package unit tests"
+description: "Run R unit tests on ${{ env.MODULE_NAME }}"
 
 inputs:
   image-tag:
@@ -87,7 +87,7 @@ runs:
       - name: check out repository
         uses: actions/checkout@v3
 
-      - name: Run ${{ MODULE_NAME }} unit test coverage using covr package
+      - name: Run ${{ env.MODULE_NAME }} unit test coverage using covr package
         shell: Rscript {0}
         run: |
           # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
