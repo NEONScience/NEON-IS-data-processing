@@ -44,7 +44,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
-          ref: 'master'
+ #         ref: 'master'
           fetch-depth: '0'
 
         # Note: must clone other repos AFTER checking out the repo where the action is run from. 
