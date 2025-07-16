@@ -98,7 +98,7 @@ runs:
           devtools::install("./pack/NEONprocIS.base")
           devtools::install("${{ env.MODULE_PATH }}")
           library(NEONprocIS.base)
-          library(NEONprocIS.cal)
+          library("${{ env.MODULE_NAME }}")
           library(dplyr)
           library(arrow)
           library(jsonlite)
