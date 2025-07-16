@@ -31,6 +31,7 @@ runs:
           echo "LD_LIBRARY_PATH=$LIBR_DIR:$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
       - name: Install Avro
+        shell: bash
         run: sudo apt install libavro23
 
       - name: Run unit test coverage using covr package
