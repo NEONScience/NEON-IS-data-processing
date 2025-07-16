@@ -25,6 +25,7 @@ env:
   REPO_NAME: neon-is-data-processing
   # IS package name
   MODULE_BASE_NAME: NEONprocIS.base
+  MODULE_BASE_PATH: ./pack/NEONprocIS.base
   MODULE_PATH: ./pack/NEONprocIS.cal
   MODULE_NAME: NEONprocIS.cal
   IMAGE_NAME: neon-is-pack-cal-r
@@ -43,7 +44,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
-#          ref: 'master'
+          ref: 'master'
           fetch-depth: '0'
 
         # Note: must clone other repos AFTER checking out the repo where the action is run from. 
@@ -77,7 +78,7 @@ jobs:
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Run IS package unit tests
+      - name: Run IS ${{ MODULE_NAME }}  unit tests
         uses: ./.github/actions/run-IS-unit-tests
         with:
             image-tag: "${short_sha}"
