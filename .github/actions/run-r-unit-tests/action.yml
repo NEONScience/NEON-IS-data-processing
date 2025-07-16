@@ -67,7 +67,7 @@ runs:
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
             ${{ env.IMAGE_NAME }}:${{ inputs.image-tag }} \
-            Rscript -e '${{ env.MODULE_PATH }}")/run-tests.R'
+            Rscript -e '${{ env.MODULE_PATH }}/run-tests.R'
 
       # - name: Upload coverage report
       #   uses: actions/upload-artifact@v4
