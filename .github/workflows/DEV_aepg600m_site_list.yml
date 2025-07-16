@@ -79,4 +79,4 @@ jobs:
       - name: Run IS base package unit tests
         uses: ./.github/actions/run-r-unit-tests
         with:
-            image-tag: "${short_sha}"
+            image-tag: ${{ env.short_sha }}
