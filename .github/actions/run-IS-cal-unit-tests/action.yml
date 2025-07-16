@@ -1,4 +1,4 @@
-name: "Run NEONprocIS cal package unit tests"
+name: "Run NEONprocIS package unit tests"
 description: "Run R unit tests on NEONprocIS.cal"
 
 inputs:
