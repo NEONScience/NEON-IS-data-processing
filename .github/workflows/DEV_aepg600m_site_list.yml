@@ -76,9 +76,6 @@ jobs:
       - name: Get short SHA
         run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Install libavro23
-        run: sudo apt install libavro23
-
       - name: Run IS base package unit tests
         uses: ./.github/actions/run-r-unit-tests
         with:

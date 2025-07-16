@@ -24,16 +24,11 @@
 # to correctly install Bioconductor packages
 FROM rocker/r-ver:4.1.3
 
-ARG CONTAINER_APP_DIR="/home/runner/work/"
-
 # copy the avro repo from the previous image, or clone the repo into the project root directory prior to running (e.g. via github actions)
 COPY ./avro/ /avro/
 
 # Copy ravro.so to root directory
 COPY ./pack/NEONprocIS.base/ravro.so /ravro.so
-#
-COPY ./pack/NEONprocIS.base/ravro.so ${CONTAINER_APP_DIR}/NEONprocIS.base/tests/testthat/ravro.so
-
 
 # Environment variables for arrow package
 ENV LIBARROW_BINARY=true
