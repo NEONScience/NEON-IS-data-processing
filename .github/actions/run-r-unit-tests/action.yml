@@ -61,6 +61,7 @@ runs:
             tags: ${{ env.IMAGE_NAME }}:${{ inputs.image-tag }}
   
       - name: Run unit tests inside Docker container
+        shell: bash
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
