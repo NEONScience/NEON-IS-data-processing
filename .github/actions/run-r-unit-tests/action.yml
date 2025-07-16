@@ -83,6 +83,7 @@ runs:
               any::covr
               any::xml2
           needs: coverage
+          cache: always
 
       - name: Add libR.so to LD_LIBRARY_PATH
         shell: bash
@@ -106,10 +107,10 @@ runs:
           library(stringr)
           devtools::test(pkg="${{ env.MODULE_PATH }}")
           cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")
-          covr::to_cobertura(cov, filename="${{ env.MODULE_NAME }}-cobertura.xml")
+          covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
   
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: ${{ env.MODULE_NAME }}-cobertura.xml
+          path: ${{ env.MODULE_NAME }}-coverage.html
