@@ -1,70 +1,9 @@
 name: "Run R unit tests"
 description: "Run R unit tests on NEONprocIS.base"
 
-inputs:
-  image-tag:
-    required: true
-
 runs:
    using: "composite"
    steps: 
-      # - id: "auth"
-      #   uses: "google-github-actions/auth@v2"
-      #   with:
-      #       workload_identity_provider: ${{ env.GCP_PROVIDER }}
-      #       service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
-
-      # - name: "Set up Cloud SDK"
-      #   uses: "google-github-actions/setup-gcloud@v2"
-
-      # - name: "Docker auth"
-      #   shell: bash
-      #   run: gcloud auth configure-docker ${{ env.GCP_ARTIFACT_HOST }} --quiet
-        
-      # setup-buildx-action for Docker
-      # - name: Setup Docker buildx
-      #   uses: docker/setup-buildx-action@v3
-
-      # Login to github registry
-      # - name: Log into github registry ${{ env.GHCR_REGISTRY }}
-      #   uses: docker/login-action@v3
-      #   with:
-      #       registry: ${{ env.GHCR_REGISTRY }}
-      #       username: ${{ github.actor }}
-      #       password: ${{ env.GITHUB_TOKEN }}
-
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
-
-      # - name: Extract Docker metadata
-      #   id: meta
-      #   uses: docker/metadata-action@v5
-      #   with:
-      #       images: ${{ env.GCP_REGISTRY }}/${{ env.IMAGE_NAME }}
-      #       tags: |
-      #         # type=semver,pattern={{raw}}
-      #         # type=semver,pattern={{major}}.{{minor}}
-      #         # type=semver,pattern={{major}}
-      #         # type=schedule
-      #         type=sha
-      #         # type=ref,event=tag
-      #         # type=ref,event=pr
-      #         # type=ref,event=branch
-              
-      # Build and push Docker image with Buildx (don't push on PR) with multiple tags
-      # https://github.com/docker/build-push-action
-      # - name: Build but not push Docker image to GCP
-      #   id: build
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #       context: ./
-      #       file: ${{ env.MODULE_PATH }}/Dockerfile
-            # push: ${{ github.event_name != 'pull_request' }}
-            # push: true
-            # tags: |
-            #   ${{ steps.meta.outputs.tags }}
-            # labels: ${{ steps.meta.outputs.labels }}
- 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
@@ -90,6 +29,9 @@ runs:
         run: |
           LIBR_DIR=$(dirname $(find /opt -name "libR.so" | head -n 1))
           echo "LD_LIBRARY_PATH=$LIBR_DIR:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+      - name: Install Avro
+        run: sudo apt install libavro23
 
       - name: Run unit test coverage using covr package
         shell: Rscript {0}
