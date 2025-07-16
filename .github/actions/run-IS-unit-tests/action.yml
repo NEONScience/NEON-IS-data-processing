@@ -1,5 +1,5 @@
-name: "Run ${{ env.MODULE_NAME }} package unit tests"
-description: "Run R unit tests on ${{ env.MODULE_NAME }}"
+name: "Run IS package unit tests"
+description: "Run R unit tests on IS package"
 
 inputs:
   image-tag:
