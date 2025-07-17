@@ -137,29 +137,29 @@ input:
   join:
   - pfs:
       name: DATA_PATH_TRINO
-      repo: sunav2_data_source_trino
-      glob: /(*/*/*/*) #sunav2/Y/M/D
+      repo: sunav2_trino_data_parser
+      glob: /(sunav2/*/*/*) #sunav2/Y/M/D
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
       outer_join: true
   - pfs:
       name: DATA_PATH_KAFKA
       repo: sunav2_data_source_kafka
-      glob: /(*/*/*/*)
+      glob: /(sunav2/*/*/*)
       joinOn: $1
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
       outer_join: true
   - pfs:
       name: DATA_PATH_LOG
       repo: sunav2_logjam_assign_clean_files
-      glob: /(*/*/*/*) #sunav2/Y/M/D
+      glob: /(sunav2/*/*/*) #sunav2/Y/M/D
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
       outer_join: true
   - pfs:
       name: DATE_CONTROL
       repo: sunav2_cron_daily_and_date_control
-      glob: /(*/*/*/*) #sunav2/Y/M/D
+      glob: /(sunav2/*/*/*) #sunav2/Y/M/D
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
       outer_join: true

@@ -6,17 +6,30 @@ transform:
   # - battelleecology-quay-read-all-pull-secret
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-loader:v1.0.0
   cmd:
-  - /bin/bash
-  stdin:
-  - '#!/bin/bash'
-  - python3 -m location_loader.location_loader_main
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    
+    python3 -m location_loader.location_loader_main #run the location loader
+    
+    cp -r $OUT_PATH/$SOURCE_TYPE /pfs/out/$SOURCE_TYPE_OUT
+    
+    EOF
   env:
     LOCATION_TYPE: CONFIG
-    SOURCE_TYPE: sunav2
-    OUT_PATH: /pfs/out    
-    # ERR_PATH can be changed, it is user specified
-    ERR_PATH: /pfs/out/errored_datums
+    SOURCE_TYPE: sunav2_raw
+    SOURCE_TYPE_OUT: sunav2
+    OUT_PATH: /tmp/out
     LOG_LEVEL: INFO
+    ERR_PATH: /pfs/out/errored_datums
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret

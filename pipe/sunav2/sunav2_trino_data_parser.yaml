@@ -1,7 +1,7 @@
 pipeline:
-  name: sunav2_data_parser
+  name: sunav2_trino_data_parser
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.9.7
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-37cf497
   env:
     # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
     # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
@@ -39,7 +39,7 @@ transform:
     IFS=$'\n\t'
 
     # run data parser
-    python3 -m raw_data_parsers.raw_data_parser.data_parser_main
+    python3 -m raw_data_parsers.raw_data_parser.suna_data_parser_main
 
     # Upload L0 files to bucket, compacting with any existing file with the same name
     # when SOURCE_TYPE is sunav2_raw, OUT_SOURCE_TYPE is sunav2
@@ -77,7 +77,7 @@ transform:
 input:
   pfs:
     name: DATA_PATH
-    repo: sunav2_data_source_kafka
+    repo: sunav2_data_source_trino
     glob: /sunav2_raw/*/*/*
 parallelism_spec:
   constant: 3

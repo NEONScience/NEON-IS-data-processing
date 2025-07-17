@@ -2,17 +2,25 @@
 pipeline:
   name: sunav2_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.9.7
-  image_pull_secrets:
-  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-37cf497
   env:
-    OUT_PATH: /pfs/out
+    # environment variables for kafka loader
+    OUT_PATH: /pfs/out #also used for parser
     SOURCE_TYPE: "sunav2_raw"
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
     KAFKA_RETENTION_DAYS: "15"
+    
+    # environment variables for the parser
+    PARSE_FIELD: serial_output
+    RELATIVE_PATH_INDEX: "4"
+    PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/sunav2/sunav2_parsed.avsc 
+    SOURCE_TYPE: 'sunav2_raw'
+    DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
+    UPDATE_TRIGGER_TABLE: "False"
+    RM_OFFSETS: "False"
   secrets:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_USER
@@ -88,7 +96,7 @@ transform:
       fi
       
       # We are ok to run
-      echo "Extracting $date_str kafka data for $site"
+      echo "Extracting $date_str kafka data for $SOURCE_TYPE at $site"
       
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
@@ -112,22 +120,22 @@ transform:
       # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
         # Parse the path
-        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/data/(.*)$ ]]
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/(.*)/(.*)$ ]]
         fsourcetype="${BASH_REMATCH[1]}"
         fyear="${BASH_REMATCH[2]}"
         fmonth="${BASH_REMATCH[3]}"
         fday="${BASH_REMATCH[4]}"
         fsourceid="${BASH_REMATCH[5]}"
-        fname="${BASH_REMATCH[6]}"
-        fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
+        fname="${BASH_REMATCH[7]}"
+        # fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
         outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
         mkdir -p "${outdir}"
-        ln -s "${f}" "${outdir}/${fname_out}"
+        ln -s "${f}" "${outdir}/${fname}"
         
-        # Upload to bucket, compacting with any existing file 
-        ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
-        rm -rf "${outdir}"
       done
+      
+      # Upload to bucket, compacting with any existing file 
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
       
       # Update the airflow triggering table
       for site_output in "${sites_output[@]}"; do
@@ -137,6 +145,44 @@ transform:
       # set +x # Uncomment for debugging
       rm -rf $linkdir
     fi
+    
+    # run data parser
+    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+      python3 -m raw_data_parsers.raw_data_parser.suna_data_parser_main
+    
+    # save parsed data to gcs 
+      export SOURCE_TYPE=sunav2
+    
+      linkdir=$(mktemp -d)
+      shopt -s globstar
+      out_parquet_glob="${OUT_PATH}/${SOURCE_TYPE}/**/*.parquet"
+      # /pfs/out/sunav2/2023/01/01/12345/data/file.parquet
+      echo "Linking output files to ${linkdir}"
+      # set -x
+      for f in $out_parquet_glob; do
+        # Parse the path
+        [[ "$f" =~ ^$OUT_PATH/(.*)/([0-9]+)/([0-9]+)/([0-9]+)/(.*)/(.*)/(.*)$ ]]
+        fsourcetype="${BASH_REMATCH[1]}"
+        fyear="${BASH_REMATCH[2]}"
+        fmonth="${BASH_REMATCH[3]}"
+        fday="${BASH_REMATCH[4]}"
+        fsourceid="${BASH_REMATCH[5]}"
+        fname="${BASH_REMATCH[7]}"
+        # fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
+        outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
+        mkdir -p "${outdir}"
+        ln -s "${f}" "${outdir}/${fname}"
+        
+      done
+      
+      # Upload to bucket, compacting with any existing file 
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
+
+      # set +x # Uncomment for debugging
+      rm -rf $linkdir
+
+    fi
+
     EOF
 input:
   pfs:
