@@ -22,7 +22,7 @@ input:
   - pfs:
       name: DIR_IN
       repo: sunav2_calibration_loader
-      glob: /sunav2_raw/*
+      glob: /sunav2/*
   - pfs:
       name: FILE_YEAR
       repo: sunav2_cron_daily_and_date_control
