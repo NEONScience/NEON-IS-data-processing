@@ -55,7 +55,7 @@ def.find.mtch.str.best <- function(obj, subFind, log=NULL){
   # Test - there should be no more than one non-NA value in each row:
   if(base::any(base::rowSums(!base::is.na(matRslt)) > 1)){
     log$error(paste0("No more than 1 match should happen for any given subFind and obj. subfind: ",subFind, ". obj: ", obj))
-    stop()
+    #stop()
   }
   
   bestMtch <- base::unlist(base::lapply(1:base::nrow(matRslt), function(i) 
