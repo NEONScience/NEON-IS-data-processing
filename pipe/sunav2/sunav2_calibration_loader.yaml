@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: suna_calibration_loader
+  name: sunav2_calibration_loader
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
   cmd:
@@ -27,8 +27,8 @@ transform:
     CVAL_INGEST_BUCKET: neon-cval
     OUT_PATH: /tmp/out
     LOG_LEVEL: INFO
-    SOURCE_TYPE: "suna_raw"
-    SOURCE_TYPE_OUT: "suna"
+    SOURCE_TYPE: "sunav2_raw"
+    SOURCE_TYPE_OUT: "sunav2"
     STARTING_PATH_INDEX: "5"
   secrets:
   - name: pdr-secret
