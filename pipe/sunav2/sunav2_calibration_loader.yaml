@@ -36,7 +36,7 @@ transform:
 input:
   pfs:
     name: IN_PATH
-    repo: suna_calibration_list_files
+    repo: sunav2_calibration_list_files
     glob: /*/*/*/*
     empty_files: true
 parallelism_spec:
