@@ -2,7 +2,7 @@
 pipeline:
   name: sunav2_fill_log_files
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-9666aec
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-sunav2-logs-group-fill:sha-155c3d8
   cmd:
   - sh
   - "-c"
@@ -107,13 +107,13 @@ transform:
       # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
       # Metadata indices will typically begin at index 3.
       input_paths:
-        - path:
-            name: DATA_PATH_KAFKA
-            # Filter for data directory
-            glob_pattern: /tmp/kafka_merged/*/*/*/*/*/**
-            # Join on named location (already joined below by day)
-            join_indices: [3,4,5,6]
-            outer_join: true
+        # - path:
+        #     name: DATA_PATH_KAFKA
+        #     # Filter for data directory
+        #     glob_pattern: /tmp/kafka_merged/*/*/*/*/*/**
+        #     # Join on named location (already joined below by day)
+        #     join_indices: [3,4,5,6]
+        #     outer_join: true
         - path:
             name: DATA_PATH_TRINO
             # Filter for data directory
@@ -142,13 +142,13 @@ input:
       joinOn: $1
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
       outer_join: true
-  - pfs:
-      name: DATA_PATH_KAFKA
-      repo: sunav2_data_source_kafka
-      glob: /(sunav2/*/*/*)
-      joinOn: $1
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-      outer_join: true
+  # - pfs:
+  #     name: DATA_PATH_KAFKA
+  #     repo: sunav2_data_source_kafka
+  #     glob: /(sunav2/*/*/*)
+  #     joinOn: $1
+  #     empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+  #     outer_join: true
   - pfs:
       name: DATA_PATH_LOG
       repo: sunav2_logjam_assign_clean_files
