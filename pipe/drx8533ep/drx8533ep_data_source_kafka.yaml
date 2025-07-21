@@ -2,7 +2,7 @@
 pipeline:
   name: drx8533ep_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.9.7
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.10.1
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
