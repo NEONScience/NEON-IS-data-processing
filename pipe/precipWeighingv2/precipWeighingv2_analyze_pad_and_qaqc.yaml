@@ -35,7 +35,7 @@ transform:
       DirOut=/tmp/pfs/plau \
       DirErr=/pfs/out/errored_datums \
       FileSchmQf=$SCHEMA_FLAGS \
-      "TermTest1=accu_nrt:null|gap|range(rmv)|step(rmv)"
+      "TermTest1=accu_nrt:null|gap|range(rmv)"
         
     # Run third module - custom flags
     Rscript ./flow.precip.pluvio.flags.R \

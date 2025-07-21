@@ -16,12 +16,14 @@ transform:
     mkdir -p /tmp/pfs/filter_joined
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
+    
     # Run custom QM/QF and Stats/Ucrt
 
-    # Rscript ./flow.precip.pluvio.R \
-    #   DirIn=/tmp/pfs/filter_joined \
-    #   DirOut=/pfs/out \
-    #   DirErr=/pfs/out/errored_datums \
+    Rscript ./flow.precip.pluvio.stats.R \
+      DirIn=/tmp/pfs/filter_joined \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      # SchmData=$FILE_SCHEMA
       
 
     EOF
@@ -51,23 +53,10 @@ transform:
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
     PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
 input:
-  cross:
   - pfs:
-      name: FILE_SCHEMA_QM
+      name: FILE_SCHEMA
       repo: precipWeighingv2_avro_schemas
-      glob: /precipWeighingv2/precipWeighingv2_dp01_quality_metrics.avsc
-  - pfs:
-      name: FILE_SCHEMA_QM_INST
-      repo: precipWeighingv2_avro_schemas
-      glob: /precipWeighingv2/precipWeighingv2_dp01_quality_metrics_inst.avsc
-  - pfs:
-      name: FILE_SCHEMA_STATS
-      repo: precipWeighingv2_avro_schemas
-      glob: /precipWeighingv2/precipWeighingv2_dp01_stats_pluvio.avsc
-  - pfs:
-      name: FILE_SCHEMA_STATS_INST
-      repo: precipWeighingv2_avro_schemas
-      glob: /precipWeighingv2/precipWeighingv2_dp01_stats_pluvio_inst.avsc
+      glob: /precipWeighingv2/precipWeighingv2_stats_qf_pluvio.avsc 
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH
