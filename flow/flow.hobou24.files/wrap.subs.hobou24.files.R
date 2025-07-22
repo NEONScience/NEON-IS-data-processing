@@ -52,14 +52,6 @@ wrap.subs.HOBOU24.files <- function(FileIn,
     log <- NEONprocIS.base::def.log.init()
   } 
 
-  # # This CDS web app call can tell us the sourceID for all LT400 files
-  # usethis::edit_r_environ()
-  # devtools::install_github("NEONScience/restR2", force = TRUE)
-  # 
-  # allHOBOs <- restR2::get.asset(stack = 'prod',
-  #                   assetDefName = "High-accuracy conductivity data logger")
-  # allLT400 <- restR2::get.asset(stack = 'prod',
-  #                               assetDefName = "In-Situ Level TROLL 400")
   
   # --------- Load the data ----------
   asset_string <- regexpr("\\/[0-9]{5}\\/",FileIn) # AssetUID, input folder name?
