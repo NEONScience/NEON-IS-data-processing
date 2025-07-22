@@ -1,2 +1,3 @@
 pump_cron_daily_and_date_control.yaml
+pump_data_source_trino.yaml
 pump_data_source_kafka.yaml

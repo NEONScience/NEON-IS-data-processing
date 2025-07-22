@@ -146,7 +146,7 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/mwseries/*/*/*"
 parallelism_spec:
-  constant: 10
+  constant: 5
 autoscaling: true
 resource_requests:
   memory: 600M
