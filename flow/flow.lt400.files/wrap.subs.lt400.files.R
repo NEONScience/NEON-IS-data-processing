@@ -41,7 +41,7 @@
 #   Kaelin Cawley (2024-12-06) original creation
 #' 
 ##############################################################################################
-wrap.subs.LT400.files <- function(FileIn,
+wrap.subs.lt400.files <- function(FileIn,
                              DirOut,
                              SchmDataOut=NULL,
                              log=NULL
@@ -51,15 +51,6 @@ wrap.subs.LT400.files <- function(FileIn,
   if(base::is.null(log)){
     log <- NEONprocIS.base::def.log.init()
   } 
-
-  # # This CDS web app call can tell us the sourceID for all LT400 files
-  # usethis::edit_r_environ()
-  # devtools::install_github("NEONScience/restR2", force = TRUE)
-  # 
-  # allHOBOs <- restR2::get.asset(stack = 'prod',
-  #                   assetDefName = "High-accuracy conductivity data logger")
-  # allLT400 <- restR2::get.asset(stack = 'prod',
-  #                               assetDefName = "In-Situ Level TROLL 400")
   
   # --------- Load the data ----------
   # Load in the csv log file(s)
