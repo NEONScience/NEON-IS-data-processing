@@ -4,4 +4,9 @@ precipBucket_group_path.yaml
 precipBucket_srf_loader.yaml
 precipBucket_srf_assignment.yaml
 precipBucket_threshold.yaml
-#precipBucket_thresh_select_precip_stats.yaml
+precipBucket_thresh_select_precip_stats.yaml
+precipBucket_level1_group_consolidate_srf.yaml
+precipBucket_cron_monthly_and_pub_control.yaml
+precipBucket_pub_group.yaml
+precipBucket_pub_format_and_package.yaml
+precipBucket_pub_egress_and_package.yaml
