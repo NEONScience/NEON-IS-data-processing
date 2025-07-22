@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: precipWeighingv2_qm_group_and_compute
+  name: precipWeighingv2_qm_stats_group_and_compute
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.1
   cmd:
@@ -16,31 +16,16 @@ transform:
     mkdir -p /tmp/pfs/filter_joined
     # Run first module - filter-joiner (using environment variables below as input parameters)
     python3 -m filter_joiner.filter_joiner_main
-    # Run second module - quality metrics
+    
+    # Run custom QM/QF and Stats/Ucrt
 
-    Rscript ./flow.qaqc.qm.R \
+    Rscript ./flow.precip.pluvio.stats.R \
       DirIn=/tmp/pfs/filter_joined \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "WndwAgr=030" \
-      "WghtAlphBeta=2|1" \
-      Thsh=0.2 \
-      FileSchmQm=$FILE_SCHEMA_QM \
-      "GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|heaterErrorQF|sensorStatusQF" \
-      "GrpQfBeta1=:nullQF|gapQF|rangeQF" \
-      "GrpQfBetaIgnr1=:nullQF|gapQF" \
+      # SchmData=$FILE_SCHEMA
       
-    Rscript ./flow.qaqc.qm.dp0p.R \
-      DirIn=/tmp/pfs/filter_joined \
-      DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums \
-      VarTimeBgn=readout_time \
-      VarTimeEnd=readout_time \
-      FileSchmQm=$FILE_SCHEMA_QM_INST\
-      'GrpQfAlph1=:suspectCalQF|nullQF|gapQF|rangeQF|stepQF|heaterErrorQF|sensorStatusQF' \
-      'GrpQfBeta1=:nullQF|gapQF|rangeQF' \
-      'GrpQfBetaIgnr1=:nullQF|gapQF' \
-      Tmi=001 \
+
     EOF
   env:
     # Environment variables for filter-joiner
@@ -57,26 +42,21 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [6]
         - path:
-            name: REGULARIZED_FLAGS_PATH
+            name: GROUP_PATH
             # Filter for flags directory
-            glob_pattern: /pfs/REGULARIZED_FLAGS_PATH/*/*/*/*/*/*/flags/**
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/*/**
             # Join on named location (already joined below by day)
             join_indices: [6]
-    OUT_PATH: /tmp/pfs/filter_joined
+    OUT_PATH: /pfs/out
     LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined modules.
     PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
 input:
-  cross:
   - pfs:
-      name: FILE_SCHEMA_QM
+      name: FILE_SCHEMA
       repo: precipWeighingv2_avro_schemas
-      glob: /precipWeighingv2/precipWeighingv2_dp01_quality_metrics.avsc
-  - pfs:
-      name: FILE_SCHEMA_QM_INST
-      repo: precipWeighingv2_avro_schemas
-      glob: /precipWeighingv2/precipWeighingv2_dp01_quality_metrics_inst.avsc
+      glob: /precipWeighingv2/precipWeighingv2_stats_qf_pluvio.avsc 
   - join:
     - pfs:
         name: QAQC_PLAUSIBILITY_PATH
@@ -85,7 +65,7 @@ input:
         joinOn: $1
         empty_files: false # Make sure this is false for LINK_TYPE=COPY
     - pfs:
-        name: REGULARIZED_FLAGS_PATH
+        name: GROUP_PATH
         repo: precipWeighingv2_group_path
         glob: /(*/*/*)
         joinOn: $1

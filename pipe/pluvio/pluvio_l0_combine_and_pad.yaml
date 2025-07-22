@@ -1,8 +1,8 @@
 ---
 pipeline:
-  name: pluvio_time_pad_and_shift
+  name: pluvio_l0_combine_and_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-grp-conv:v2.3.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-pad-shft:sha-63f2a91
   cmd:
   - sh
   - "-c"
@@ -15,10 +15,8 @@ transform:
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf /tmp/kafka_merged
     rm -rf $OUT_PATH_JOINER
-    rm -rf $OUT_PATH_PAD
     mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
     mkdir -p $OUT_PATH_JOINER # R modules must have pfs in the repo structure
-    mkdir -p $OUT_PATH_PAD # R modules must have pfs in the repo structure
 
     # Detect if we have data coming from Kafka or the archive
     # Note that we run the filter-joiner in sequential if statements rather than an elif statement
@@ -64,16 +62,8 @@ transform:
     # Run timeseries_padder
     export RELATIVE_PATH_INDEX=$RELATIVE_PATH_INDEX_PAD
     export OUT_PATH=$OUT_PATH_PAD
+    export DATA_PATH=$OUT_PATH_JOINER
     python3 -m timeseries_padder.timeseries_padder.constant_pad_main 
-
-    # Run second module - structure repo by location
-    Rscript ./flow.time.shft.R \
-      DirIn=$OUT_PATH_PAD \
-      DirOut=/pfs/out \
-      DirErr=/pfs/out/errored_datums \
-      TimeShft=5 \
-      TimeUnit=mins \
-      TimeShftDir=Neg
 
     EOF
   env:
@@ -98,11 +88,11 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH_JOINER: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
-    LOG_LEVEL: INFO
+    LOG_LEVEL: DEBUG
     RELATIVE_PATH_INDEX_JOINER: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
     ### parser pad  
-    OUT_PATH_PAD: /tmp/pfs/padded
+    OUT_PATH_PAD: /pfs/out
     YEAR_INDEX: '5'
     MONTH_INDEX: '6'
     DAY_INDEX: '7'
@@ -122,19 +112,8 @@ input:
       name: FILE_SCHEMA_L0
       repo: pluvio_avro_schemas
       glob: /pluvio/pluvio_parsed.avsc
-  - pfs:
-      name: FILE_SCHEMA_FLAGS
-      repo: pluvio_avro_schemas
-      glob: /pluvio/flags_calibration_pluvio.avsc
   # Outer join all days so that varying sensors between kafka and archive loaders will all get joined with calibrations. Filter-joiner will narrow down.
   - join:
-    - pfs:
-        name: CALIBRATION_PATH
-        repo: pluvio_calibration_assignment
-        glob: /pluvio/(*)/(*)/(*)
-        joinOn: $1/$2/$3
-        outer_join: true
-        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: DATA_PATH_ARCHIVE
         repo: pluvio_data_source_gcs
@@ -144,7 +123,7 @@ input:
         empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
     - pfs:
         name: KAFKA_UNMERGED_DATA
-        repo: pluvio_time_shift
+        repo: pluvio_data_source_kafka
         glob: /pluvio/(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true

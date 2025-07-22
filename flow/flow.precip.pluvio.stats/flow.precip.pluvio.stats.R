@@ -1,22 +1,24 @@
 ##############################################################################################
-#' @title Compute custom pluvio flags to add to QFs before pushing through to QM calculations
+#' @title  Process data from plucio200L weighing gauge precipitation sensor to 1 minute and 30 minute 
+#' aggregations
 
 #' @author
 #' Teresa Burlingame \email{tburlingame@battelleecology.org} \cr
+
+#' @description Workflow. read in data, cal flags, plausibility and uncertainty coef, merge to one DF, calculate bulk precipitaiton, uncertainty 
+#' and aggregate flags appropriately for 30 minute data
 #' 
-#' @description Workflow. Compute the heater and status flags by assessing the bit rate. Only 
-#' flagging alarm codes of interest. Add columns to qfPlau table prior to push to QM calculation module. 
-#'
-#'
 #' General code workflow:
 #'    Parse input parameters
 #'    Determine datums to process (set of files/folders to process as a single unit)
 #'    For each datum:
 #'      Create output directories and copy (by symbolic link) unmodified components
-#'      Read in the L0 data files into arrow datasets
-#'      Compute flags based on sensor status streams
-#'      aggregate data to 5 and 30 minutes
-#'      Write stats and flags output to file
+#'      Read in the  data files into arrow datasets
+#'      read in quality flags
+#'      calculate uncertainty#
+#'      aggregate data to 30 minutes 
+#'      add final quality flag
+#'      Write stats output to file
 #'
 #' This script is run at the command line with the following arguments. Each argument must be a string
 #' in the format "Para=value", where "Para" is the intended parameter name and "value" is the value of
@@ -34,10 +36,11 @@
 #' Nested within the path for each source ID is (at a minimum) the folder:
 #'         /data
 #'         /flags
+#'         /uncertainty_coef
 #' The data/flags folders holds any number of daily data/flags files padded around the yyyy/mm/dd in the input path.
 #' #' 
 #' For example:
-#' Input path = precipWeighingv2_analyze_pad_and_qaqc_plau/2025/03/31/precip-weighing-v2_HQTW900000/pluvio/CFGLOC114405
+#' Input path = precipBucket_group_path/2025/05/31/precip-tipping_BLAN000040/metone370380/CFGLOC100292/
 #'
 #' There may be other folders at the same level as the data directory. They are ignored and not passed 
 #' to the output unless indicated in SubDirCopy.
@@ -48,23 +51,21 @@
 #' 3. "DirErr=value", where the value is the output path to place the path structure of errored datums that will 
 #' replace the #/pfs/BASE_REPO portion of \code{DirIn}.
 #' 
-#' 4. "SchmQF=value" (optional), where value is the full path to schema for the QF flags after inputing custom flags
-#' readout_time
+#' 4. "SchmData=value" (optional), where value is the full path to schema for the QF flags after inputing custom flags
+#' startDateTime
+#' EndDateTime
+#' precipBulk
+#' precipBulkExpUncert 
+#' numPts #not published in 1 min data
 #' nullQF
 #' gapQF
-#' rangeQF
-#' stepQF
-#' TODO add calibration flag info ?
-#' sensorErrorQF
+#' extremePrecipQF
 #' heaterErrorQF
+#' sensorErrorQF
+#' validCalQF
+#' suspectCalQF
+#' finalQF
 #' 
-#' Ensure that any schema input here matches the column order of the auto-generated schema, 
-#' simply making any desired changes to column names.
-#'
-#' readout_time
-#' all quality flags output by the plausibility module (retaining the same order)
-#' all quality flags output by the calibration module (retaining the same order)
-#' all quality flags output by this custom module (retaining the same order)
 #' Ensure that any schema input here matches the column order of the auto-generated schema, 
 #' simply making any desired changes to column names.
 #'
@@ -77,7 +78,7 @@
 #'
 #' @return A repository with the computed precipitation and flags in DirOut, where DirOut replaces BASE_REPO but
 #' otherwise retains the child directory structure of the input path. The terminal directories of each 
-#' sensor location folder are "data" and "flags". 
+#' sensor location folder are "stats" and "location"
 #'
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -86,11 +87,11 @@
 
 #' @examples 
 #' # Not Run - uses all available defaults
-#' Rscript flow.precip.pluvio.flags.R  
-# 'DirIn=/scratch/pfs/precipWeighingv2_analyze_pad_and_qaqc_plau/2025/03/31/''DirOut=/scratch/pfs/out_tb' 'DirErr=/scratch/pfs/out_tb/errored_datums''DirSubCopy=data' 
+#' Rscript flow.precip.bucket.R  
+# 'DirIn=/scratch/pfs/precipBucket_group_path/2025/05/31/precip-tipping_BLAN000040/metone370380/CFGLOC100292/''DirOut=/scratch/pfs/out_tb' 'DirErr=/scratch/pfs/out_tb/errored_datums''DirSubCopy=data' 
 
 #' Not Run - Stepping through the code in Rstudio
-#' Sys.setenv(DIR_IN='DirIn=/scratch/pfs/precipWeighingv2_analyze_pad_and_qaqc_plau/2025/03/31/')
+#' Sys.setenv(DIR_IN='/scratch/pfs/precipWeighing_qm_stats_test_data/2025/07/11/precip-weighing-v2_HQTW900000/pluvio/CFGLOC114405/')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN", "DirOut=/scratch/pfs/out", "DirErr=/scratch/pfs/out/errored_datums")
 #' # Then copy and paste rest of workflow into the command window
@@ -98,14 +99,15 @@
 #' @seealso Currently none.
 
 # changelog and author contributions / copyrights
-#   Teresa Burlingame (2025-04-15)
+#   Teresa Burlingame (2025-07-21)
 #     original creation
 ##############################################################################################
 library(foreach)
 library(doParallel)
+library(magrittr)
 
 # Source the wrapper function and other dependency functions. Assume it is in the working directory
-source("./wrap.precip.pluvio.flags.R")
+source("./wrap.precip.pluvio.stats.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -136,26 +138,25 @@ Para <-
                      ),
     NameParaOptn = c(
                      "DirSubCopy",
-                     "SchmQf"
+                     "FileSchmData"
                      ),
     log = log
   )
-
 
 # Echo arguments
 log$debug(base::paste0('Input directory: ', Para$DirIn))
 log$debug(base::paste0('Output directory: ', Para$DirOut))
 log$debug(base::paste0('Error directory: ', Para$DirErr))
 
-# Retrieve output schema for  flags
-FileSchmQf <- Para$SchmQf
-log$debug(base::paste0('Output schema for bulk precipitation custom flags: ',base::paste0(FileSchmData,collapse=',')))
+# Retrieve output schema for  stats
+FileSchmData <- Para$FileSchmData
 
+#one or more will always be null 
 # Read in the schema 
-if(base::is.null(FileSchmQf) || FileSchmQf == 'NA'){
-  FileSchmQf <- NULL
+if(base::is.null(FileSchmData) || FileSchmData == 'NA'){
+  FileSchmData <- NULL
 } else {
-  FileSchmQf <- base::paste0(base::readLines(FileSchmQf),collapse='')
+  FileSchmData <- base::paste0(base::readLines(FileSchmData),collapse='')
 }
 
 # Retrieve optional subdirectories to copy over
@@ -166,7 +167,7 @@ log$debug(base::paste0(
 ))
 
 # What are the expected subdirectories of each input path
-nameDirSub <- c('data','flags')
+nameDirSub <- c('data','flags','uncertainty_coef')
 log$debug(base::paste0(
   'Minimum expected subdirectories of each datum path: ',
   base::paste0(nameDirSub, collapse = ',')
@@ -178,7 +179,6 @@ DirIn <-
                               nameDirSub =  nameDirSub,
                               log = log)
 
-
 # Process each datum path
 doParallel::registerDoParallel(numCoreUse)
 foreach::foreach(idxDirIn = DirIn) %dopar% {
@@ -187,9 +187,9 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # Run the wrapper function for each datum, with error routing
   tryCatch(
     withCallingHandlers(
-      wrap.precip.pluvio.flags(DirIn=idxDirIn,
+      wrap.precip.pluvio.stats(DirIn=idxDirIn,
                               DirOutBase=Para$DirOut,
-                              SchmQf=FileSchmQf, 
+                              SchmData = FileSchmData,
                               DirSubCopy=DirSubCopy,
                               log=log
       ),
@@ -211,7 +211,8 @@ foreach::foreach(idxDirIn = DirIn) %dopar% {
   # This simply to avoid returning the error
   error=function(err) {}
   )
-
+  
 return()
 
 } # End loop around datum paths
+

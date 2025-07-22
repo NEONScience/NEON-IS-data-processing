@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_time_shift
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-time-shft:sha-9f2e9ca
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-time-shft:sha-63f2a91
   cmd:
   - sh
   - "-c"
@@ -30,7 +30,7 @@ transform:
 input:
   pfs:
     name: DATA_PATH
-    repo: pluvio_parser_pad
+    repo: pluvio_l0_combine_and_pad
     glob: /*/*/*/*
 parallelism_spec:
   constant: 5
