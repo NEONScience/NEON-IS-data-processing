@@ -23,6 +23,9 @@ transform:
   - name: pachyderm-kafka-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
