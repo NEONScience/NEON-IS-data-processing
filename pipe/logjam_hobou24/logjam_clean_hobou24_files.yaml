@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: logjam_clean_subs_files
+  name: logjam_clean_hobou24_files
 transform:
   cmd: ["/bin/bash"]
   stdin:
