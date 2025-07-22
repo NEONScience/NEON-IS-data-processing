@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: metone370380_cron_daily_and_date_control
+  name: picarro3way_cron_daily_and_date_control
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v2.0.1
   cmd: ["/bin/bash"]
@@ -11,9 +11,9 @@ transform:
     # kafka_start_date in the site-list file is the first full day from which data began streaming via Kafka
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
-    START_DATE: "2025-02-01" # Inclusive
-    #END_DATE: "2025-06-09" # Inclusive
-    SOURCE_TYPE: "metone370380"
+    START_DATE: "2025-06-01" # Inclusive
+    # END_DATE: "2025-02-24" # Inclusive
+    SOURCE_TYPE: "picarro3way"
   stdin:
   - "#!/bin/bash"
   - python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
@@ -26,7 +26,7 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: metone370380_site_list
+      repo: picarro3way_site_list
       glob: /site-list.json
 resource_requests:
   memory: 100M
