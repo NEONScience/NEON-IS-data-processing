@@ -9,12 +9,12 @@
 
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
-git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
-git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
-git_path_avro_l0='/home/NEON/csturtevant/R/neon-avro-schemas'
+git_path_pipelines='/home/NEON/kcawley/NEON-IS-data-processing/pipe'
+git_path_avro='/home/NEON/kcawley/NEON-IS-avro-schemas'
+git_path_avro_l0='/home/NEON/kcawley/neon-avro-schemas'
 pipe_list_prefix='pipe_list_'
-source_type='prt'
-product='tempSoil'
+source_type='lt400'
+product='subsurfaceTchain'
 
 # Define paths based on base paths and product information above 
 spec_path_source_type=$git_path_pipelines/$source_type
@@ -25,7 +25,7 @@ spec_path_product=$git_path_pipelines/$product
 # Make sure cron_daily_and_date_control pipeline uses the correct file name
 pachctl create repo $source_type'_site_list'
 pachctl start commit $source_type'_site_list'@master
-pachctl put file $source_type'_site_list'@master:/site-list.json -f $spec_path_source_type/site-list.json
+pachctl put file $source_type'_site_list'@master:/lt400-site-list.json -f $spec_path_source_type/lt400-site-list.json
 pachctl finish commit $source_type'_site_list'@master
 
 # Create source-type-specific empty_files
