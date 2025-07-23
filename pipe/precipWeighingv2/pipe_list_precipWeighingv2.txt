@@ -6,9 +6,5 @@ precipWeighingv2_srf_assignment.yaml
 precipWeighingv2_threshold.yaml
 precipWeighingv2_thresh_select_ts_pad.yaml
 precipWeighingv2_analyze_pad_and_qaqc.yaml 
-
-#will make into combined module
-precipWeighingv2_qm_group_and_compute.yaml #will combo w stats
-precipWeighingv2_stats_group_and_compute.yaml
-
+precipWeighingv2_qm_stats_group_and_compute.yaml
 
