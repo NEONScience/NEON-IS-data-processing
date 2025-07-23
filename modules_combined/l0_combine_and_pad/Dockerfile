@@ -1,4 +1,4 @@
-# Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, data padder and shifter
+# Dockerfile for NEON IS Data Processing - combined filter-joiner, kafka combiner, data padder
 # Start with the base package image. 
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.5.2
 
@@ -44,16 +44,6 @@ RUN R -e 'renv::restore(lockfile="./renv.lock")'
 # Copy in R code
 COPY ./flow/flow.kfka.comb/flow.kfka.comb.R .
 COPY ./flow/flow.kfka.comb/wrap.kfka.comb.R .
-
-# Load time shift module
-# Copy the lockfile and restore known working versions of R dependency packages
-# ENSURE that the renv.lock file is up-to-date and thus has all listed dependencies prior to creating this docker image
-COPY ./flow/flow.time.shft/renv.lock .
-RUN R -e 'renv::restore(lockfile="./renv.lock")'
-
-# Copy in R code
-COPY ./flow/flow.time.shft/flow.time.shft.R .
-COPY ./flow/flow.time.shft/wrap.time.shft.R .
 
 # Run as app user
 USER appuser

@@ -47,7 +47,7 @@ transform:
       DirIn=/tmp/pfs/interimC \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
-      "DirData=stats|quality_metrics" \
+      "DirData=stats" \
       PathPubWb=$PUB_WORKBOOKS \
       "DirSubCopy=science_review_flags|group|location"
     #
@@ -104,12 +104,6 @@ transform:
       # Use unix-style glob pattern to select the desired directories in each repo 
       input_paths:
         - path:
-            name: QUALITY_METRICS_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/**
-            # Join on Y/M/D/group ID 
-            join_indices: [3,4,5,6]
-        - path:
             name: STATISTICS_PATH
             # Filter for data directory
             glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/**
@@ -165,7 +159,7 @@ transform:
     GROUP_METADATA_NAMES: group,science_review_flags
     # path index of names of directories to include in the output
     DATA_TYPE_INDEX: "9"
-    DATA_TYPE_NAMES: location,stats,quality_metrics
+    DATA_TYPE_NAMES: location,stats
     
 # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /tmp/pub_workbooks
@@ -187,13 +181,6 @@ transform:
     
 input:
   join:
-  - pfs:
-      name: QUALITY_METRICS_PATH
-      repo: precipWeighingv2_qm_group_and_compute
-      glob: /(*/*/*)
-      joinOn: $1
-      outer_join: true # Need outer join to pull in with or without SRFs
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
       repo: precipWeighingv2_stats_group_and_compute
