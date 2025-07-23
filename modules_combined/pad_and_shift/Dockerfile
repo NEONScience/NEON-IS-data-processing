@@ -24,7 +24,6 @@ RUN apt update && \
     python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
     python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR2}/requirements.txt && \
-
    apt-get autoremove -y && \
 	 apt-get autoclean -y && \
 	 rm -rf /var/lib/apt/lists/* && \
