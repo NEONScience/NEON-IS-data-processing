@@ -52,6 +52,11 @@
 	"start_date" : "2025-03-26"
 	},
 	{
+	"site" : "MDP2",
+	"start_date" : "2025-03-26",
+	"kafka_start_date" : "2025-03-26"
+	},
+	{
 	"site" : "NIWO",
 	"kafka_start_date" : "2023-05-24"
 	},
