@@ -245,21 +245,21 @@ wrap.precip.pluvio.stats <- function(DirIn,
     endDateTime_1min = ceiling_date(readout_time, '1 minute', change_on_boundary = TRUE)
   )]
   
-  # First, aggregate to 1-minute intervals
+  # Since data is already at 1-minute intervals, create 1-minute stats directly
   stats_01min <- data[, .(
-    startDateTime = first(startDateTime_1min),
-    endDateTime = first(endDateTime_1min),
-    precipBulk = sum(accu_nrt, na.rm = TRUE),  # Sum precipitation within 1-minute interval
-    precipBulkExpUncert = sqrt(sum(combinedUcrt^2, na.rm = TRUE)), # Quadrature sum for 1-minute
-    precipNumPts = sum(!is.na(accu_nrt)), # Count non-NA values WITHIN each 1-minute group
-    nullQF = ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(nullQF, na.rm = TRUE))),
-    extremePrecipQF = ifelse(mean(rangeQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(rangeQF, na.rm = TRUE))),
-    gapQF = ifelse(mean(gapQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(gapQF, na.rm = TRUE))),
-    sensorErrorQF = ifelse(mean(sensorErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(sensorErrorQF, na.rm = TRUE))),
-    heaterErrorQF = ifelse(mean(heaterErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(heaterErrorQF, na.rm = TRUE))),
-    validCalQF = ifelse(mean(validCalQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(validCalQF, na.rm = TRUE))),
-    suspectCalQF = ifelse(mean(suspectCalQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(suspectCalQF, na.rm = TRUE)))
-  ), by = .(startDateTime_1min)]
+    startDateTime = floor_date(readout_time, '1 minute'),
+    endDateTime = ceiling_date(readout_time, '1 minute', change_on_boundary = TRUE),
+    precipBulk = accu_nrt,
+    precipBulkExpUncert = combinedUcrt,
+    precipNumPts = ifelse(is.na(accu_nrt), 0L, 1L), # 1 if data exists, 0 if NA
+    nullQF = nullQF,
+    extremePrecipQF = rangeQF,
+    gapQF = gapQF,
+    sensorErrorQF = sensorErrorQF,
+    heaterErrorQF = heaterErrorQF,
+    validCalQF = validCalQF,
+    suspectCalQF = suspectCalQF
+  )]
   
   # Calculate finalQF for 1-minute data
   stats_01min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, na.rm = TRUE)]
@@ -274,20 +274,27 @@ wrap.precip.pluvio.stats <- function(DirIn,
     precipBulk = sum(precipBulk, na.rm = TRUE),
     precipBulkExpUncert = sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2, # Quadrature sum with 2x multiplier
     precipNumPts = sum(precipNumPts, na.rm = TRUE), # Sum the counts from 1-minute intervals
-    nullQF = ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(nullQF, na.rm = TRUE))),
-    extremePrecipQF = ifelse(mean(extremePrecipQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(extremePrecipQF, na.rm = TRUE))),
-    gapQF = ifelse(mean(gapQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(gapQF, na.rm = TRUE))),
-    sensorErrorQF = ifelse(mean(sensorErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(sensorErrorQF, na.rm = TRUE))),
-    validCalQF = ifelse(mean(validCalQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(validCalQF, na.rm = TRUE))),
-    suspectCalQF = ifelse(mean(suspectCalQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(suspectCalQF, na.rm = TRUE))),
+    nullQF = as.integer(ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, 
+                               ifelse(all(is.na(nullQF)), NA_integer_, min(nullQF, na.rm = TRUE)))),
+    extremePrecipQF = as.integer(ifelse(mean(extremePrecipQF == 1, na.rm = TRUE) >= 0.1, 1L, 
+                                        ifelse(all(is.na(extremePrecipQF)), NA_integer_, min(extremePrecipQF, na.rm = TRUE)))),
+    gapQF = as.integer(ifelse(mean(gapQF == 1, na.rm = TRUE) >= 0.1, 1L, 
+                              ifelse(all(is.na(gapQF)), NA_integer_, min(gapQF, na.rm = TRUE)))),
+    sensorErrorQF = as.integer(ifelse(mean(sensorErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, 
+                                      ifelse(all(is.na(sensorErrorQF)), NA_integer_, min(sensorErrorQF, na.rm = TRUE)))),
+    validCalQF = as.integer(ifelse(mean(validCalQF == 1, na.rm = TRUE) >= 0.1, 1L, 
+                                   ifelse(all(is.na(validCalQF)), NA_integer_, min(validCalQF, na.rm = TRUE)))),
+    suspectCalQF = as.integer(ifelse(mean(suspectCalQF == 1, na.rm = TRUE) >= 0.1, 1L, 
+                                     ifelse(all(is.na(suspectCalQF)), NA_integer_, min(suspectCalQF, na.rm = TRUE)))),
     # Special heater error QF at 50% 
-    heaterErrorQF = ifelse(mean(heaterErrorQF == 1, na.rm = TRUE) >= 0.5, 1L, as.integer(min(heaterErrorQF, na.rm = TRUE)))
+    heaterErrorQF = as.integer(ifelse(mean(heaterErrorQF == 1, na.rm = TRUE) >= 0.5, 1L, 
+                                      ifelse(all(is.na(heaterErrorQF)), NA_integer_, min(heaterErrorQF, na.rm = TRUE))))
   ), by = time_group]
   
   # Update finalQF based on the aggregated flags
   stats_30min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, validCalQF, suspectCalQF, na.rm = TRUE)]
   
-  # Clean up
+  # Clean up temporary columns
   stats_01min[, time_group := NULL]
   stats_30min[, time_group := NULL]
   # Clean up
