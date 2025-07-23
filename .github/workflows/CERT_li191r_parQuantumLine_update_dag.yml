@@ -44,7 +44,7 @@ jobs:
       PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
       PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
       PATHS: 'pipe/li191r=pipe_list_li191r.txt,pipe/parQuantumLine=pipe_list_parQuantumLine.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
-      TRANSACTION: False
+      TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
     steps:
