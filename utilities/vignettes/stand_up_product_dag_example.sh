@@ -9,12 +9,12 @@
 
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
-git_path_pipelines='/home/NEON/kcawley/NEON-IS-data-processing/pipe'
-git_path_avro='/home/NEON/kcawley/NEON-IS-avro-schemas'
-git_path_avro_l0='/home/NEON/kcawley/neon-avro-schemas'
+git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
+git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
+git_path_avro_l0='/home/NEON/csturtevant/R/neon-avro-schemas'
 pipe_list_prefix='pipe_list_'
-source_type='leveltroll400'
-product='subsurfaceTchain'
+source_type='prt'
+product='tempSoil'
 
 # Define paths based on base paths and product information above 
 spec_path_source_type=$git_path_pipelines/$source_type
@@ -25,7 +25,7 @@ spec_path_product=$git_path_pipelines/$product
 # Make sure cron_daily_and_date_control pipeline uses the correct file name
 pachctl create repo $source_type'_site_list'
 pachctl start commit $source_type'_site_list'@master
-pachctl put file $source_type'_site_list'@master:/leveltroll400-site-list.json -f $spec_path_source_type/leveltroll400-site-list.json
+pachctl put file $source_type'_site_list'@master:/site-list.json -f $spec_path_source_type/site-list.json
 pachctl finish commit $source_type'_site_list'@master
 
 # Create source-type-specific empty_files
@@ -95,35 +95,4 @@ pachctl finish transaction
 # Add 1 day at full scale to evaluate resource requests in normal operations
 # *** First - edit the cron_daily_and_date_control pipeline spec to add 1 day to the end date ***
 pachctl update pipeline --reprocess -f $spec_path_source_type/$source_type'_cron_daily_and_date_control.yaml'
-
-
-##### Create monthly pipeline
-pachctl create pipeline -f ~/NEON-IS-data-processing/pipe/leveltroll400/leveltroll400_logjam_cron_monthly_and_pub_control.yaml
-pachctl create pipeline -f ~/NEON-IS-data-processing/pipe/leveltroll400/leveltroll400_logjam_list_files.yaml
-pachctl create pipeline -f ~/NEON-IS-data-processing/pipe/leveltroll400/leveltroll400_logjam_load_files.yaml
-
-# Run the cron
-pachctl run cron leveltroll400_logjam_cron_monthly_and_pub_control
-
-# Restart the cron
-pachctl update pipeline --reprocess -f ~/NEON-IS-data-processing/pipe/leveltroll400/leveltroll400_logjam_list_files.yaml
-
-# Next check things out if it ran
-pachctl glob file leveltroll400_logjam_list_files@master:/*
-
-# The stuff after the : is the glob pattern
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
 
