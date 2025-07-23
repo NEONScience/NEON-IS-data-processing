@@ -2,7 +2,7 @@ name: DEV-pluvio-update-dag
 on:
   push:
     branches:
-      - 'pluvio'
+      - 'master'
     paths:
       - 'pipe/pluvio/*.yaml'
       - 'pipe/pluvio/pipe_list_pluvio.txt'
