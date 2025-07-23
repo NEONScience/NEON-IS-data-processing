@@ -27,7 +27,7 @@
 #'
 #' @param DirOutBase Character value. The output path that will replace the #/pfs/BASE_REPO portion of DirIn. 
 #'
-#' @param SchmQF (Optional). A json-formatted character string containing the schema for the standard calibration and
+#' @param SchmQf (Optional). A json-formatted character string containing the schema for the standard calibration and
 #' plausibility QFs as well as the custom QFs heaterErrorQF sensorStatusQF
 
 #' @param DirSubCopy (optional) Character vector. The names of additional subfolders at 
@@ -70,7 +70,7 @@
 ##############################################################################################
 wrap.precip.pluvio.flags<- function(DirIn,
                                     DirOutBase,
-                                    SchmQm=NULL,
+                                    SchmQf=NULL,
                                     DirSubCopy=NULL,
                                     log=NULL
 ){
@@ -86,13 +86,13 @@ wrap.precip.pluvio.flags<- function(DirIn,
 
   dirOut <- fs::path(DirOutBase,InfoDirIn$dirRepo)
   dirOutQf <- fs::path(dirOut,'flags')
-  dirOutData <- fs::path(dirOut,'data')
+  #dirOutData <- fs::path(dirOut,'data')
   NEONprocIS.base::def.dir.crea(DirBgn = dirOut,
-                                DirSub = c('data','flags'),
+                                DirSub = c('flags'),
                                 log = log)
   
   # Copy with a symbolic link the desired subfolders 
-  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('data','flags')))
+  DirSubCopy <- base::unique(base::setdiff(DirSubCopy,c('flags')))
   if(base::length(DirSubCopy) > 0){
 
     NEONprocIS.base::def.dir.copy.symb(DirSrc=fs::path(DirIn,DirSubCopy),
@@ -121,9 +121,11 @@ wrap.precip.pluvio.flags<- function(DirIn,
   ## wipe preexisting schema TODO check with Cove
   # Remove the "schema" attribute
   #remove existing schema from plau so we can add more cols. 
-  if (is.null(SchmQm)){
+  if (is.null(SchmQf)){
     base::attr(qfPlau, "schema") <- NULL
-    }
+  } else {
+    base::attr(qfPlau, "schema") <- SchmQf
+  }
   
   # if there are no heater streams add them in as NA
   if(!('heater_status' %in% names(data))){
@@ -131,9 +133,9 @@ wrap.precip.pluvio.flags<- function(DirIn,
     }
 
   #initialize fields 
-  qfPlau$sensorErrorQF <- 0
   qfPlau$heaterErrorQF <- 0
-
+  qfPlau$sensorErrorQF <- 0
+  
   #bitwise calculation of flags of interest
   
   for (i in seq_along(data$sensorErrorQF)) {
@@ -187,35 +189,35 @@ wrap.precip.pluvio.flags<- function(DirIn,
   # "pass through" of data
   # TODO ask Cove if this is necessary? 
   # qfs added to list of flags to process through qm module. 
-      
-      #get file name based on date of data in directory
-      nameFileOut <- fileData
-      
-      # Write out the time shifted dataset to file
-      fileOut <- fs::path(dirOutStat,nameFileOut)
-      
-      rptWrte <-
-        base::try(NEONprocIS.base::def.wrte.parq(
-          data = data,
-          NameFile = fileOut,
-          log=log
-        ),
-        silent = TRUE)
-      
-      if ('try-error' %in% base::class(rptWrte)) {
-        log$error(base::paste0(
-          'Cannot write output to ',
-          fileOut,
-          '. ',
-          attr(rptWrte, "condition")
-        ))
-        stop()
-      } else {
-        log$info(base::paste0(
-          'Data file written to file ',
-          fileOut
-        ))
-      }
+      # 
+      # #get file name based on date of data in directory
+      # nameFileOut <- fileData
+      # 
+      # # Write out the time shifted dataset to file
+      # fileOut <- fs::path(dirOutData,nameFileOut)
+      # 
+      # rptWrte <-
+      #   base::try(NEONprocIS.base::def.wrte.parq(
+      #     data = data,
+      #     NameFile = fileOut,
+      #     log=log
+      #   ),
+      #   silent = TRUE)
+      # 
+      # if ('try-error' %in% base::class(rptWrte)) {
+      #   log$error(base::paste0(
+      #     'Cannot write output to ',
+      #     fileOut,
+      #     '. ',
+      #     attr(rptWrte, "condition")
+      #   ))
+      #   stop()
+      # } else {
+      #   log$info(base::paste0(
+      #     'Data file written to file ',
+      #     fileOut
+      #   ))
+      # }
     
       nameFileQfOutFlag <- fileQfPlau
 

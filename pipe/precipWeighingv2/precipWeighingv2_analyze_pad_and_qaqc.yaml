@@ -1,0 +1,101 @@
+---
+pipeline:
+  name: precipWeighingv2_analyze_pad_and_qaqc
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pluvio-flgs:sha-bef01d3
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/pfs/padded_analyzer
+    rm -rf /tmp/pfs/padded_analyzerCopy
+    rm -rf /tmp/pfs/plau
+    mkdir -p /tmp/pfs/padded_analyzer
+    mkdir -p /tmp/pfs/plau
+    
+    # Run first module - padded_timeseries_analyzer
+    python3 -m padded_timeseries_analyzer.padded_timeseries_analyzer.padded_timeseries_analyzer_main
+    
+    # Copy output to another interim folder to destroy links (cannot daisy chain links from pfs input to output)
+    cp -rL /tmp/pfs/padded_analyzer /tmp/pfs/padded_analyzerCopy || : # Allow to fail without exit code (happens if step above produced no output)
+    rm -r -f /tmp/pfs/padded_analyzer 
+    
+    # Run second module - qaqc plausibility
+    Rscript ./flow.qaqc.plau.R \
+      DirIn=/tmp/pfs/padded_analyzerCopy \
+      DirOut=/tmp/pfs/plau \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQf=$SCHEMA_FLAGS \
+      "TermTest1=accu_nrt:null|gap|range(rmv)"
+        
+    # Run third module - custom flags
+    Rscript ./flow.precip.pluvio.flags.R \
+      DirIn=/tmp/pfs/plau \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      DirSubCopy=data \
+      SchmQf=$SCHEMA_FLAGS_CUST
+      
+    EOF
+  env:
+    # Environment variables for padded timeseries analyzer
+    OUT_PATH: /tmp/pfs/padded_analyzer
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX: '3'
+    ERR_PATH: /pfs/out/errored_datums
+    # Environment variables for qaqc plausibility
+    PARALLELIZATION_INTERNAL: '3'
+input:
+  cross:
+  - pfs:
+      name: DATA_PATH
+      repo: precipWeighingv2_thresh_select_ts_pad
+      glob: /*/*/*
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: precipWeighingv2_avro_schemas
+      glob: /precipWeighingv2/flags_plausibility_precipWeighingv2.avsc
+  - pfs:
+      name: SCHEMA_FLAGS_CUST
+      repo: precipWeighingv2_avro_schemas
+      glob: /precipWeighingv2/flags_plausibility_custom_precipWeighingv2.avsc
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1G
+  cpu: 3.3
+resource_limits:
+  memory: 2G
+  cpu: 4
+sidecar_resource_requests:
+  memory: 1G
+  cpu: 0.3
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
