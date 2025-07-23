@@ -241,42 +241,46 @@ wrap.precip.pluvio.stats <- function(DirIn,
     
   # More efficient aggregation using data.table
   data[, `:=`(
-    startDateTime_30min = floor_date(readout_time, '1 minute'),
-    endDateTime_30min = ceiling_date(readout_time, '1 minute', change_on_boundary = TRUE)
+    startDateTime_1min = floor_date(readout_time, '1 minute'),
+    endDateTime_1min = ceiling_date(readout_time, '1 minute', change_on_boundary = TRUE)
   )]
-
+  
+  # First, aggregate to 1-minute intervals
   stats_01min <- data[, .(
-    startDateTime = floor_date(readout_time, '1 minute'),
-    endDateTime = ceiling_date(readout_time, '1 minute', change_on_boundary = TRUE),
-    precipBulk = accu_nrt,
-    precipBulkExpUncert = combinedUcrt,
-    precipNumPts = sum(!is.na(accu_nrt)), # Count non-NA precipitation value
-    nullQF = nullQF,
-    extremePrecipQF = rangeQF,
-    gapQF = gapQF,
-    sensorErrorQF = sensorErrorQF,
-    heaterErrorQF = heaterErrorQF,
-    validCalQF = validCalQF,
-    suspectCalQF = suspectCalQF
-  )]
+    startDateTime = first(startDateTime_1min),
+    endDateTime = first(endDateTime_1min),
+    precipBulk = sum(accu_nrt, na.rm = TRUE),  # Sum precipitation within 1-minute interval
+    precipBulkExpUncert = sqrt(sum(combinedUcrt^2, na.rm = TRUE)), # Quadrature sum for 1-minute
+    precipNumPts = sum(!is.na(accu_nrt)), # Count non-NA values WITHIN each 1-minute group
+    nullQF = ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(nullQF, na.rm = TRUE))),
+    extremePrecipQF = ifelse(mean(rangeQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(rangeQF, na.rm = TRUE))),
+    gapQF = ifelse(mean(gapQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(gapQF, na.rm = TRUE))),
+    sensorErrorQF = ifelse(mean(sensorErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(sensorErrorQF, na.rm = TRUE))),
+    heaterErrorQF = ifelse(mean(heaterErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(heaterErrorQF, na.rm = TRUE))),
+    validCalQF = ifelse(mean(validCalQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(validCalQF, na.rm = TRUE))),
+    suspectCalQF = ifelse(mean(suspectCalQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(suspectCalQF, na.rm = TRUE)))
+  ), by = .(startDateTime_1min)]
+  
+  # Calculate finalQF for 1-minute data
   stats_01min[, finalQF := pmax(nullQF, extremePrecipQF, gapQF, sensorErrorQF, heaterErrorQF, na.rm = TRUE)]
   
   # Create 30-minute time groups
   stats_01min[, time_group := floor_date(startDateTime, "30 mins")]
   
+  # Now aggregate the 1-minute data to 30-minute intervals
   stats_30min <- stats_01min[, .(
     startDateTime = min(startDateTime),
     endDateTime = max(endDateTime),
     precipBulk = sum(precipBulk, na.rm = TRUE),
-    precipBulkExpUncert = sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2, # Quadrature sum
-    precipNumPts = sum(!is.na(precipBulk)), # Count non-NA precipitation values
+    precipBulkExpUncert = sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2, # Quadrature sum with 2x multiplier
+    precipNumPts = sum(precipNumPts, na.rm = TRUE), # Sum the counts from 1-minute intervals
     nullQF = ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(nullQF, na.rm = TRUE))),
     extremePrecipQF = ifelse(mean(extremePrecipQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(extremePrecipQF, na.rm = TRUE))),
     gapQF = ifelse(mean(gapQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(gapQF, na.rm = TRUE))),
     sensorErrorQF = ifelse(mean(sensorErrorQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(sensorErrorQF, na.rm = TRUE))),
     validCalQF = ifelse(mean(validCalQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(validCalQF, na.rm = TRUE))),
     suspectCalQF = ifelse(mean(suspectCalQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(suspectCalQF, na.rm = TRUE))),
-    #special heater error QF at 50% 
+    # Special heater error QF at 50% 
     heaterErrorQF = ifelse(mean(heaterErrorQF == 1, na.rm = TRUE) >= 0.5, 1L, as.integer(min(heaterErrorQF, na.rm = TRUE)))
   ), by = time_group]
   
@@ -286,6 +290,13 @@ wrap.precip.pluvio.stats <- function(DirIn,
   # Clean up
   stats_01min[, time_group := NULL]
   stats_30min[, time_group := NULL]
+  # Clean up
+  stats_01min[, startDateTime_1min := NULL]
+  stats_30min[, startDateTime_1min := NULL]
+  
+  # Clean up
+  stats_01min[, endDateTime_1min := NULL]
+  stats_30min[, endDateTime_1min := NULL]
   
  # Reorder columns to match schema requirements
   col_order <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert', 'precipNumPts',
