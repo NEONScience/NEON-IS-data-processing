@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_l0_combine_and_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-comb-pad:sha-b6d0d8a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-comb-pad:v1.0.0
   cmd:
   - sh
   - "-c"
