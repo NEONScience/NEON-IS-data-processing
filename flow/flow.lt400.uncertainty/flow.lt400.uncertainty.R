@@ -4,7 +4,7 @@
 #' @author
 #' Kaelin Cawley \email{kcawley@battelleecology.org}
 
-#' @description Workflow. Calculates uncertainty for LT400 depth measurements.
+#' @description Workflow. Calculates uncertainty for leveltroll400 depth measurements.
 #'
 #' The arguments are: 
 #' 
@@ -59,7 +59,7 @@ source("./wrap.subs.hobou24.files.R")
 
 # allHOBOs <- restR2::get.asset(stack = 'prod',
 #                   assetDefName = "High-accuracy conductivity data logger")
-# allLT400 <- restR2::get.asset(stack = 'prod',
+# allleveltroll400 <- restR2::get.asset(stack = 'prod',
 #                               assetDefName = "In-Situ Level TROLL 400")
 
 # Pull in command line arguments (parameters)
@@ -110,7 +110,7 @@ fileData <- base::list.files(DirIn,full.names=TRUE)
 log$debug(base::paste0('hobou24 Files identified:', fileData))
 
 doParallel::registerDoParallel(numCoreUse)
-# Process each datum path for LT400 files
+# Process each datum path for leveltroll400 files
 foreach::foreach(idxFileIn = fileData) %dopar% {
   log$info(base::paste0('Processing path to file: ', idxFileIn))
   

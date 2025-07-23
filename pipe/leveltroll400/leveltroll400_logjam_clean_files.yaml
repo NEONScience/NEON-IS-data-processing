@@ -1,13 +1,13 @@
 ---
 pipeline:
-  name: lt400_logjam_clean_files
+  name: leveltroll400_logjam_clean_files
 transform:
   cmd: ["/bin/bash"]
   stdin:
   - "#!/bin/bash"
   - export ERR_PATH="/pfs/out/errored_datums"
   - Rscript
-      ./flow.lt400.files.R
+      ./flow.leveltroll400.files.R
       DirIn=$DIR_IN
       DirOut=/pfs/out
       DirErr=$ERR_PATH
@@ -20,7 +20,7 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: lt400_logjam_load_files
+      repo: leveltroll400_logjam_load_files
       glob: /*
 parallelism_spec:
   constant: 3

@@ -21,7 +21,7 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #' 
-#' @return Cleaned LT400 files in daily parquets.
+#' @return Cleaned leveltroll400 files in daily parquets.
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -32,7 +32,7 @@
 #' # Not run
 #' FileIn <- "b6a5483d7675e2f5294cbb0b22021694.csv"
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.subs.LT400.logfiles <- function(FileIn = "~/pfs/troll_logjam_load_files/49150/29f52c1330bf24da67f9ab3a64d0ab51.csv",
+#' wrap.subs.leveltroll400.logfiles <- function(FileIn = "~/pfs/troll_logjam_load_files/49150/29f52c1330bf24da67f9ab3a64d0ab51.csv",
 #'                               DirOut="~/pfs/out",
 #'                               SchmDataOut=NULL,
 #'                               log=log)
@@ -57,7 +57,7 @@ wrap.subs.HOBOU24.files <- function(FileIn,
   asset_string <- regexpr("\\/[0-9]{5}\\/",FileIn) # AssetUID, input folder name?
   Asset <- gsub("\\/","",substr(FileIn,asset_string[1],asset_string[1]+attributes(asset_string)$match.length-1))
   # Load in the csv log file(s)
-  # Read in a single test file from LT400
+  # Read in a single test file from leveltroll400
   log_file <- base::try(utils::read.table(base::paste0(FileIn),
                                    header = FALSE,
                                    sep = ",",

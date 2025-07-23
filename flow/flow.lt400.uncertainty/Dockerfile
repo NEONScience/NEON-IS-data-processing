@@ -4,7 +4,7 @@
 FROM us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pack-base-r:v1.4.8
 
 ARG FLOW_DIR="./flow"
-ARG APP_DIR="flow.lt400.uncertainty"
+ARG APP_DIR="flow.leveltroll400.uncertainty"
 
 # maintainer handle
 MAINTAINER "Kaelin Cawley" kcawley@battelleecology.org
@@ -15,6 +15,6 @@ COPY ${FLOW_DIR}/${APP_DIR}/renv.lock /renv.lock
 RUN R -e 'renv::restore(lockfile="/renv.lock")'
 
 # Copy in subsurface file workflow
-COPY ${FLOW_DIR}/${APP_DIR}/flow.lt400.uncertainty.R .
-COPY ${FLOW_DIR}/${APP_DIR}/wrap.flow.lt400.uncertainty.R .
+COPY ${FLOW_DIR}/${APP_DIR}/flow.leveltroll400.uncertainty.R .
+COPY ${FLOW_DIR}/${APP_DIR}/wrap.flow.leveltroll400.uncertainty.R .
 
