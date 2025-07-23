@@ -149,19 +149,19 @@ input:
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
     glob: "/csat3/*/*/*/*"
 parallelism_spec:
-  constant: 3
+  constant: 5
 autoscaling: true
 resource_requests:
-  memory: 1G
-  cpu: 1.5
+  memory: 1.6G
+  cpu: 1.6
 resource_limits:
   memory: 3G
-  cpu: 3
+  cpu: 2.5
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 2
+  memory: 2G
+  cpu: 0.5
 datum_set_spec:
-  number: 1
+  number: 3
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
