@@ -1,0 +1,10 @@
+precipWeighingv2_group_loader.yaml
+precipWeighingv2_group_assignment.yaml
+precipWeighingv2_group_path.yaml
+precipWeighingv2_srf_loader.yaml
+precipWeighingv2_srf_assignment.yaml
+precipWeighingv2_threshold.yaml
+precipWeighingv2_thresh_select_ts_pad.yaml
+precipWeighingv2_analyze_pad_and_qaqc.yaml 
+precipWeighingv2_qm_stats_group_and_compute.yaml
+

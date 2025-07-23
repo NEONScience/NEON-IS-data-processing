@@ -1,0 +1,161 @@
+---
+pipeline:
+  name: pluvio_l0_combine_and_pad
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-comb-pad:v1.0.0
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf /tmp/kafka_merged
+    rm -rf $OUT_PATH_JOINER
+    mkdir -p /tmp/kafka_merged # Filter joiner relies on the same path positions among inputs (i.e. repo name in 2nd position)
+    mkdir -p $OUT_PATH_JOINER # R modules must have pfs in the repo structure
+
+    # Detect if we have data coming from Kafka or the archive
+    # Note that we run the filter-joiner in sequential if statements rather than an elif statement
+    # ... so that if there is any overlap in sensor data coming from both Kafka and the archive on the same day, the
+    # ... kafka data wins (filter joiner will not copy a file if it is already in the destination). This scenario
+    # ... should only arise during initial data load and a site back-streams data from kafka outside the Kafka
+    # ... retention period for data that have already been loaded from the archive. 
+    # ... When a conflict does arise, the kafka data will take precedence, assuming that it is the latest 
+    # ... and greatest. 
+    export RELATIVE_PATH_INDEX=$RELATIVE_PATH_INDEX_JOINER
+    export OUT_PATH=$OUT_PATH_JOINER
+    
+    if [ ${KAFKA_UNMERGED_DATA+x} ]; then 
+      # Data from kafka. 
+      
+      # Run kafka combiner
+      Rscript ./flow.kfka.comb.R \
+          DirIn=$KAFKA_UNMERGED_DATA \
+          DirOut=/tmp/kafka_merged \
+          DirErr=/pfs/out/errored_datums \
+          FileSchmL0=$FILE_SCHEMA_L0
+      
+      # Run filter joiner
+      python3 -m filter_joiner.filter_joiner_main
+    fi  
+    if [ ${DATA_PATH_ARCHIVE+x} ]; then 
+      # Data from the archive. 
+      
+      # Run kafka combiner - note that this works for both trino-loaded data and kafka loaded data. If both
+      #   exist in the folder for the same sensor and day, likely there will be duplicate data written to file
+      #   because the Trino timestamps are truncated to the second whereas Kafka readout times are not. However, 
+      #   this scenario should be rare and duplicates will be removed in the regularization module.
+      Rscript ./flow.kfka.comb.R \
+          DirIn=$DATA_PATH_ARCHIVE \
+          DirOut=/tmp/kafka_merged \
+          DirErr=/pfs/out/errored_datums \
+          FileSchmL0=$FILE_SCHEMA_L0
+          
+      # Run filter joiner
+      python3 -m filter_joiner.filter_joiner_main
+    fi  
+
+    # Run timeseries_padder
+    export RELATIVE_PATH_INDEX=$RELATIVE_PATH_INDEX_PAD
+    export OUT_PATH=$OUT_PATH_PAD
+    export DATA_PATH=$OUT_PATH_JOINER
+    python3 -m timeseries_padder.timeseries_padder.constant_pad_main 
+
+    EOF
+  env:
+    # Environment variables for filter-joiner.
+    CONFIG: |
+      ---
+      # Configuration for filter-joiner module that will bring together the data and calibrations
+      # In Pachyderm root will be index 0, 'pfs' index 1, and the repo name index 2.
+      # Metadata indices will typically begin at index 3.
+      input_paths:
+        - path:
+            name: DATA_PATH_KAFKA_MERGED
+            # Filter for data directory
+            glob_pattern: /tmp/kafka_merged/pluvio/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+            outer_join: true
+        - path:
+            name: CALIBRATION_PATH
+            # Filter for data directory
+            glob_pattern: /pfs/CALIBRATION_PATH/pluvio/*/*/*/*/**
+            # Join on named location (already joined below by day)
+            join_indices: [7]
+    OUT_PATH_JOINER: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
+    LOG_LEVEL: INFO
+    RELATIVE_PATH_INDEX_JOINER: "3" # Must be consistent across inputs 
+    LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
+    ### parser pad  
+    OUT_PATH_PAD: /pfs/out
+    YEAR_INDEX: '5'
+    MONTH_INDEX: '6'
+    DAY_INDEX: '7'
+    LOCATION_INDEX: '8'
+    DATA_TYPE_INDEX: '9'
+    RELATIVE_PATH_INDEX_PAD: '4'
+    PAD_DIR: data
+    WINDOW_SIZE: '1'
+    COPY_DIR: none # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none
+    # time time shift  
+    # Environment variables for R modules
+    PARALLELIZATION_INTERNAL: '1' 
+
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_L0
+      repo: pluvio_avro_schemas
+      glob: /pluvio/pluvio_parsed.avsc
+  # Outer join all days so that varying sensors between kafka and archive loaders will all get joined with calibrations. Filter-joiner will narrow down.
+  - join:
+    - pfs:
+        name: DATA_PATH_ARCHIVE
+        repo: pluvio_data_source_gcs
+        glob: /pluvio/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: KAFKA_UNMERGED_DATA
+        repo: pluvio_data_source_kafka
+        glob: /pluvio/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests:
+  memory: 1.5G
+  cpu: 3.3
+resource_limits:
+  memory: 3G
+  cpu: 4.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.6
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

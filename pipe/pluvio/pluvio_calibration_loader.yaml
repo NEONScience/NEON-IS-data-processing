@@ -1,0 +1,72 @@
+---
+pipeline:
+  name: pluvio_calibration_loader
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-sstrict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    
+    # Refresh interim directories with each datum (otherwise they persist and cause probs)
+    rm -rf $OUT_PATH
+    mkdir -p $OUT_PATH # R modules must have pfs in the repo structure
+    
+    python3 -m calval_loader.load_all_calval_files #run the calibration loader
+    
+    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+      cp -r $OUT_PATH/$SOURCE_TYPE /pfs/out/$SOURCE_TYPE_OUT
+    fi
+    
+    EOF
+  env:
+    CVAL_INGEST_BUCKET: neon-cval
+    OUT_PATH: /tmp/out
+    LOG_LEVEL: INFO
+    SOURCE_TYPE: "pluvio_raw"
+    SOURCE_TYPE_OUT: "pluvio"
+    STARTING_PATH_INDEX: "5"
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+input:
+  pfs:
+    name: IN_PATH
+    repo: pluvio_calibration_list_files
+    glob: /*/*/*/*
+    empty_files: true
+parallelism_spec:
+  constant: 10
+autoscaling: true
+resource_requests:
+  memory: 500M
+  cpu: 0.5
+resource_limits:
+  memory: 1G
+  cpu: 1.5
+sidecar_resource_requests:
+  memory: 800M
+  cpu: 0.2
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

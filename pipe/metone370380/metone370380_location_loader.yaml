@@ -13,6 +13,7 @@ transform:
   env:
     LOCATION_TYPE: CONFIG
     SOURCE_TYPE: metone370380
+    ERR_PATH: /pfs/out/errored_datums
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
   secrets:

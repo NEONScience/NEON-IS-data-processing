@@ -7,6 +7,7 @@ from data_access.db_connector import DbConnector
 
 
 class WorkbookRow(NamedTuple):
+    dp_number: str
     table_name: str
     field_name: str
     description: str
@@ -42,6 +43,7 @@ def get_workbook(connector: DbConnector, data_product_id: str) -> PublicationWor
     connection = connector.get_connection()
     sql = f'''
         select
+            pfd.dp_number,
             pfd.field_name,
             pfd.description,
             pfd.data_type_code,
@@ -65,6 +67,7 @@ def get_workbook(connector: DbConnector, data_product_id: str) -> PublicationWor
         cursor.execute(sql, [data_product_id])
         rows = cursor.fetchall()
         for row in rows:
+            dp_number = row['dp_number']
             field_name = row['field_name']
             description = row['description']
             data_type_code = row['data_type_code']
@@ -76,7 +79,8 @@ def get_workbook(connector: DbConnector, data_product_id: str) -> PublicationWor
             table_name = row['table_name']
             table_description = row['table_description']
             file_descriptions[get_file_key(table_name, download_package)] = table_description
-            workbook_row = WorkbookRow(table_name=table_name,
+            workbook_row = WorkbookRow(dp_number=dp_number,
+                                       table_name=table_name,
                                        field_name=field_name,
                                        description=description,
                                        data_type_code=data_type_code,

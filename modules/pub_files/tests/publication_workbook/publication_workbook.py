@@ -13,6 +13,7 @@ def get_workbook(_data_product_id) -> PublicationWorkbook:
     with open(file_path) as file:
         reader = csv.DictReader(file, delimiter='\t')
         for row in list(reader):
+            dp_number = row['DPNumber']
             table_name = row['table']
             field_name = row['fieldName']
             description = row['description']
@@ -24,7 +25,8 @@ def get_workbook(_data_product_id) -> PublicationWorkbook:
             lov_code = row['lovName']
             table_description = row['tableDescription']
             file_descriptions[f'{table_name}.{download_package}'] = table_description
-            workbook_row = WorkbookRow(table_name=table_name,
+            workbook_row = WorkbookRow(dp_number=dp_number,
+                                       table_name=table_name,
                                        field_name=field_name,
                                        description=description,
                                        data_type_code=data_type_code,

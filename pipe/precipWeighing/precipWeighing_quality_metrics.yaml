@@ -1,0 +1,78 @@
+---
+pipeline:
+  name: precipWeighing_quality_metrics
+transform:
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-qaqc-qm-grp:v2.1.1
+  cmd:
+  - sh
+  - "-c"
+  - |-
+    /bin/bash <<'EOF'
+    # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
+    set -euo pipefail
+    IFS=$'\n\t'
+    # Run quality metrics module for hourly aggregation
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=$QAQC_PLAUSIBILITY_PATH \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_HOURLY \
+      "WndwAgr=060"
+      
+    # Run quality metrics module for daily aggregation
+    Rscript ./flow.qaqc.qm.R \
+      DirIn=$QAQC_PLAUSIBILITY_PATH \
+      DirOut=/pfs/out \
+      DirErr=/pfs/out/errored_datums \
+      FileSchmQm=$FILE_SCHEMA_QM_DAILY \
+      "WndwAgr=01D"
+    EOF
+  env:
+    LOG_LEVEL: INFO
+    PARALLELIZATION_INTERNAL: '3' # Option for quality metrics module
+input:
+  cross:
+  - pfs:
+      name: FILE_SCHEMA_QM_HOURLY
+      repo: precipWeighing_avro_schemas
+      glob: /precipWeighing/precipWeighing_dp01_quality_metrics_hourly_aepg.avsc
+  - pfs:
+      name: FILE_SCHEMA_QM_DAILY
+      repo: precipWeighing_avro_schemas
+      glob: /precipWeighing/precipWeighing_dp01_quality_metrics_daily_aepg.avsc
+  - pfs:
+      name: QAQC_PLAUSIBILITY_PATH
+      repo: precipWeighing_compute_precip
+      glob: /*/*/*
+parallelism_spec:
+  constant: 5
+autoscaling: true
+resource_requests: 
+  memory: 900M
+  cpu: 3.5
+resource_limits:
+  memory: 2G
+  cpu: 5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }
+

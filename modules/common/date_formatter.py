@@ -5,6 +5,8 @@ from datetime import datetime
 def get_format() -> str:
     return '%Y-%m-%dT%H:%M:%SZ'
 
+def get_format_daily() -> str:
+    return '%Y-%m-%d'
 
 def to_string(dt: datetime) -> str:
     """
@@ -23,4 +25,7 @@ def to_datetime(dt: str) -> datetime:
     :param dt: A formatted date and time string.
     :return: A datetime object representing the date.
     """
-    return datetime.strptime(dt, get_format())
+    try:
+        return datetime.strptime(dt, get_format())
+    except:
+        return datetime.strptime(dt, get_format_daily())

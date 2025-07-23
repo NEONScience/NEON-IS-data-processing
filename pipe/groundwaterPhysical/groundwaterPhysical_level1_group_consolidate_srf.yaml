@@ -2,7 +2,7 @@
 pipeline:
   name: groundwaterPhysical_level1_group_consolidate_srf
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-levl1-grp-cons-srf:v2.2.1
   cmd:
   - sh
   - "-c"
@@ -59,7 +59,7 @@ transform:
     out_parquet_glob="${OUT_PATH}/**/*.parquet"
     # Example: /2024/01/18/par-quantum-line_UKFS001000/data/par-quantum-line_UKFS001000_2024-01-18_PARQL_1min_001.parquet
     echo "Linking output files to ${linkdir}"
-    # set -x # Echo commands to output for debugging
+    # set -x # Echo commands to output for troubleshooting
     fname=""
     for f in $out_parquet_glob; do
       if [[ -f "$f" ]]; then
@@ -227,10 +227,10 @@ parallelism_spec:
 autoscaling: true
 resource_requests:
   memory: 2G
-  cpu: 2.4
+  cpu: 2.6
 resource_limits:
   memory: 3G
-  cpu: 3
+  cpu: 3.2
 sidecar_resource_requests:
   memory: 3G
   cpu: 0.5

@@ -2,7 +2,7 @@
 pipeline:
   name: groundwaterPhysical_pub_format_and_package
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-grp-pack:v4.1.0
   cmd:
   - sh
   - "-c"
@@ -132,7 +132,7 @@ resource_limits:
   memory: 800M
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 2.4G
+  memory: 3.5G
   cpu: 0.4
 datum_set_spec:
   number: 5

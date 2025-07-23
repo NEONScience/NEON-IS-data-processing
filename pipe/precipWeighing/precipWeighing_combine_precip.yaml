@@ -2,9 +2,7 @@
 pipeline:
   name: precipWeighing_combine_precip
 transform:
-  # image_pull_secrets:
-  # - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-comb:sha-9fef35a
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-precip-aepg-comb:v1.0.1
   cmd:
   - sh
   - "-c"
@@ -22,13 +20,13 @@ transform:
     EOF
   env:
     OUT_PATH: /pfs/out
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '3'
 output_branch: master
 input:
   pfs:
     name: DIR_IN
-    repo: precipWeighing_compute_precip_dynamic
+    repo: precipWeighing_compute_precip
     glob: /*/*/*
 parallelism_spec:
   constant: 5

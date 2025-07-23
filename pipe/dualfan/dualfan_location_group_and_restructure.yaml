@@ -2,7 +2,7 @@
 pipeline:
   name: dualfan_location_group_and_restructure
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.1
   cmd:
   - sh
   - "-c"
@@ -104,28 +104,33 @@ transform:
     # Environment variables for R modules
     PARALLELIZATION_INTERNAL: '3' 
 input:
-  join:
+  cross:
   - pfs:
-      name: LOCATION_PATH
-      repo: dualfan_location_asset_assignment
-      glob: /dualfan/(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      outer_join: true
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-  - pfs:
-      name: DATA_PATH_TRINO
-      repo: dualfan_data_source_trino
-      glob: /dualfan/(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      outer_join: true
-      empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
-  - pfs:
-      name: KAFKA_UNMERGED_DATA
-      repo: dualfan_data_source_kafka
-      glob: /dualfan/(*)/(*)/(*)
-      joinOn: $1/$2/$3
-      outer_join: true
-      empty_files: false
+      name: FILE_SCHEMA_L0
+      repo: dualfan_avro_schemas
+      glob: /dualfan/dualfan.avsc
+  - join:
+    - pfs:
+        name: LOCATION_PATH
+        repo: dualfan_location_asset_assignment
+        glob: /dualfan/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: DATA_PATH_TRINO
+        repo: dualfan_data_source_trino
+        glob: /dualfan/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
+    - pfs:
+        name: KAFKA_UNMERGED_DATA
+        repo: dualfan_data_source_kafka
+        glob: /dualfan/(*)/(*)/(*)
+        joinOn: $1/$2/$3
+        outer_join: true
+        empty_files: false
       
 parallelism_spec:
   constant: 5

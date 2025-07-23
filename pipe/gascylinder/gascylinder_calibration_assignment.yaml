@@ -12,7 +12,7 @@ transform:
       DirOut=/pfs/out
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v1.0.6
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cal-asgn:v2.0.2
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
@@ -28,7 +28,7 @@ input:
       repo: gascylinder_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 4
+  constant: 3
 autoscaling: true
 resource_requests:
   memory: 2G
@@ -38,10 +38,7 @@ resource_limits:
   cpu: 1.5
 sidecar_resource_requests:
   memory: 2G
-  cpu: 1.2
-sidecar_resource_limits:
-  memory: 4G
-  cpu: 1.5
+  cpu: 3
 datum_set_spec:
   number: 1
 scheduling_spec:

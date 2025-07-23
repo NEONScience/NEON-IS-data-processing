@@ -2,7 +2,7 @@
 pipeline:
   name: gascylinder_location_group_and_restructure
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.1
   cmd:
   - sh
   - "-c"
@@ -65,20 +65,17 @@ input:
       joinOn: $1/$2/$3
       empty_files: false # Make sure to use false if LINK_TYPE=COPY. Can also be set to false for LINK_TYPE=SYMLINK.
 parallelism_spec:
-  constant: 2
+  constant: 4
 autoscaling: true
 resource_requests:
-  memory: 1.5G
-  cpu: 1.4
-resource_limits:
   memory: 2G
+  cpu: 1.5
+resource_limits:
+  memory: 3G
   cpu: 2
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.5
-sidecar_resource_limits:
-  memory: 4Gi
-  cpu: 1.2
+  memory: 4G
+  cpu: 1
 datum_set_spec:
   number: 1
 scheduling_spec:

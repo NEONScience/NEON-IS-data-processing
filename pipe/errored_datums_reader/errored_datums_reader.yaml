@@ -11,7 +11,7 @@ transform:
   - '#!/bin/bash'
   - python3 -m errored_datums_reader.main
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
   secrets:
   - name: pdr-secret
     envVar: DB_HOST

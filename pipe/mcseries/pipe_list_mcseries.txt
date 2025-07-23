@@ -1,10 +1,2 @@
 mcseries_cron_daily_and_date_control.yaml
-mcseries_data_source_trino.yaml
-mcseries_data_years.yaml
-mcseries_location_asset.yaml
-mcseries_location_asset_assignment.yaml
-mcseries_location_group_and_restructure.yaml
-mcseries_location_loader.yaml
-mcseries_location_active_dates_assignment.yaml
-mcseries_fill_date_gaps_and_regularize.yaml
-mcseries_l0p_data.yaml
+mcseries_data_source_kafka.yaml

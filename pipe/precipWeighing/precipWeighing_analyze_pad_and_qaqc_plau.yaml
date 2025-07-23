@@ -4,7 +4,7 @@ pipeline:
 transform:
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v1.1.1
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-ts-pad-anls-qaqc-plau:v1.1.2
   cmd:
   - sh
   - "-c"
@@ -31,10 +31,11 @@ transform:
       DirIn=/tmp/pfs/padded_analyzerCopy \
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
+      FileSchmQf=$SCHEMA_FLAGS \
       "TermTest1=strainGauge1Depth:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
       "TermTest2=strainGauge2Depth:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
       "TermTest3=strainGauge3Depth:null|gap|range(rmv)|step(rmv)|spike(rmv)|persistence" \
-      "DirSubCopy=flags|threshold"
+      "DirSubCopy=flags|location"
 
     EOF
   env:
@@ -46,19 +47,15 @@ transform:
     # Environment variables for qaqc plausibility
     PARALLELIZATION_INTERNAL: '5'
 input:
-  pfs:
-    name: DATA_PATH
-    repo: precipWeighing_thresh_select_ts_pad
-    glob: /*/*/*
-  # cross:
-  # - pfs:
-  #     name: DATA_PATH
-  #     repo: precipWeighing_thresh_select_ts_pad
-  #     glob: /*/*/*
-  # - pfs:
-  #     name: SCHEMA_FLAGS
-  #     repo: precipWeighing_avro_schemas
-  #     glob: /precipWeighing/flags_plausibility_precipWeighing.avsc
+  cross:
+  - pfs:
+      name: DATA_PATH
+      repo: precipWeighing_thresh_select_ts_pad_qaqc
+      glob: /*/*/*
+  - pfs:
+      name: SCHEMA_FLAGS
+      repo: precipWeighing_avro_schemas
+      glob: /precipWeighing/flags_plausibility_precipWeighing.avsc
 parallelism_spec:
   constant: 5
 autoscaling: true

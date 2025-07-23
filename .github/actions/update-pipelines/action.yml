@@ -10,7 +10,7 @@ inputs:
      required: true
    transaction:
      required: true
-   updated_scope:
+   update_scope:
      required: true
    changed_files:
      required: true
@@ -20,9 +20,9 @@ runs:
 
    steps:
       
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.10' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          python-version: '3.13' # Version range or exact version of a Python version to use, using SemVer's version range syntax
           cache: 'pip'      
       - name: install .....update_dag_pipelines/requirements.txt
         shell: bash

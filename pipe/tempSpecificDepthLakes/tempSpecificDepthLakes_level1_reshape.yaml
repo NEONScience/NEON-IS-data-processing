@@ -16,11 +16,11 @@ transform:
   - StatDir=stats
   - QmDir=quality_metrics
   - NameFileSufxRm=basicStats|qualityMetrics
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:v1.0.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:v1.0.4
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
 input:
   cross:
   - pfs:

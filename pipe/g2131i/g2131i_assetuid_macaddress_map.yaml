@@ -1,0 +1,55 @@
+---
+pipeline:
+  name: g2131i_assetuid_macaddress_map
+transform:
+  image_pull_secrets:
+  - battelleecology-quay-read-all-pull-secret
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-asset-mac-map:v0.0.1
+  cmd:
+  - /bin/bash
+  stdin:
+  - '#!/bin/bash'
+  - python3 -m assetuid_macaddress_mapping_loader.assetuid_macaddress_loader
+  env:
+    OUTPUT_PATH: /pfs/out
+    REGION: cert
+    SOURCE_TYPE: g2131i
+    CDSWEBAPP_URL: http://den-certcdsllb-1.ci.neoninternal.org/cdsWebApp/
+    LOG_LEVEL: DEBUG
+  secrets:
+  - name: pdr-secret
+    mount_path: /var/db_secret
+  - name: cds-secret
+    mount_path: /var/cds_secret
+input:
+  pfs:
+    repo: g2131i_cron_daily_and_date_control_tick
+    glob: /*
+    empty_files: true
+autoscaling: true
+resource_requests:
+  memory: 100M
+  cpu: 0.05
+resource_limits:
+  memory: 300M
+  cpu: 0.5
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+scheduling_spec:
+  node_selector:
+    cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
+    nodepool.neonscience.org/pipeline: "yes"
+    cloud.google.com/gke-spot: "true"
+pod_spec: |-
+  { "tolerations": [
+    {
+      "key": "nodepool.neonscience.org/pipeline",
+      "operator": "Exists"
+    },
+    {
+      "effect": "NoSchedule",
+      "key": "cloud.google.com/gke-spot",
+      "operator": "Exists"
+    }  
+  ] }

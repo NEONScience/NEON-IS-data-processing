@@ -15,6 +15,7 @@ git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pip
 source_type='pqs1'
 product='parQuantumLine'
 pipe_list_prefix='pipe_list_'
+pipe_list_suffix='_development'
 ext='.yaml' # file extension for pipeline specs specified in the pipe_list files. Must be consistent.
 
 # Define paths based on base paths and product information above 
@@ -37,7 +38,7 @@ done
 # The (ordered) list of pipeline files should be located in the file pipe_list_<SOURCE TYPE>.txt in the 
 # directory of pipeline specs for the data product
 unset pipelines
-pipelines=`tac $spec_path_source_type/$pipe_list_prefix$source_type.txt`
+pipelines=`tac $spec_path_source_type/$pipe_list_prefix$source_type$pipe_list_suffix.txt`
 for pipe in $(echo ${pipelines[*]}); do
 echo pachctl delete pipeline ${pipe/$ext}
 pachctl delete pipeline ${pipe/$ext}
