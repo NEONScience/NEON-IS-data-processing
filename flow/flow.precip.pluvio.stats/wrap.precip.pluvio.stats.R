@@ -250,7 +250,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
     endDateTime = ceiling_date(readout_time, '1 minute', change_on_boundary = TRUE),
     precipBulk = accu_nrt,
     precipBulkExpUncert = combinedUcrt,
-    numPts = sum(!is.na(accu_nrt)), # Count non-NA precipitation value
+    precipNumPts = sum(!is.na(accu_nrt)), # Count non-NA precipitation value
     nullQF = nullQF,
     extremePrecipQF = rangeQF,
     gapQF = gapQF,
@@ -269,7 +269,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
     endDateTime = max(endDateTime),
     precipBulk = sum(precipBulk, na.rm = TRUE),
     precipBulkExpUncert = sqrt(sum(precipBulkExpUncert^2, na.rm = TRUE)) * 2, # Quadrature sum
-    numPts = sum(!is.na(precipBulk)), # Count non-NA precipitation values
+    precipNumPts = sum(!is.na(precipBulk)), # Count non-NA precipitation values
     nullQF = ifelse(mean(nullQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(nullQF, na.rm = TRUE))),
     extremePrecipQF = ifelse(mean(extremePrecipQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(extremePrecipQF, na.rm = TRUE))),
     gapQF = ifelse(mean(gapQF == 1, na.rm = TRUE) >= 0.1, 1L, as.integer(min(gapQF, na.rm = TRUE))),
@@ -288,7 +288,7 @@ wrap.precip.pluvio.stats <- function(DirIn,
   stats_30min[, time_group := NULL]
   
  # Reorder columns to match schema requirements
-  col_order <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert', 'numPts',
+  col_order <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert', 'precipNumPts',
                  'nullQF', 'gapQF', 'extremePrecipQF', 'heaterErrorQF',
                  'sensorErrorQF', 'validCalQF', 'suspectCalQF', 'finalQF')
   
