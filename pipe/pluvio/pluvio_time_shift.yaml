@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_time_shift
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-time-shft:sha-63f2a91
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-time-shft:v1.0.0
   cmd:
   - sh
   - "-c"
@@ -24,7 +24,7 @@ transform:
    
     EOF
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     # Environment variables for R modules
     PARALLELIZATION_INTERNAL: '1' 
 input:
