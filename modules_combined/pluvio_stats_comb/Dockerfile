@@ -43,7 +43,7 @@ RUN groupadd appuser && \
     useradd appuser -g appuser
 
 # Copy in workflow
-COPY ./${MODULE_DIR}/${APP_DIR}/wrap.precip.pluvio.statsR .
+COPY ./${MODULE_DIR}/${APP_DIR}/wrap.precip.pluvio.stats.R .
 COPY ./${MODULE_DIR}/${APP_DIR}/flow.precip.pluvio.stats.R .
 
 
