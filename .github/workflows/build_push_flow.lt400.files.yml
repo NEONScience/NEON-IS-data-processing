@@ -3,7 +3,7 @@ name: "Build-push_flow.lt400.files"
 on:
   push:
     branches:
-      - 'master'
+      - 'subsurface_tchain'
     paths:
       - 'flow/flow.lt400.files/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
