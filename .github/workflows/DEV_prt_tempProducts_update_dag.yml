@@ -2,7 +2,7 @@ name: DEV-prt-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/prt/*.yaml'
       - 'pipe/prt/pipe_list_prt.txt'
