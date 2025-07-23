@@ -14,7 +14,7 @@ transform:
   - python3 -m logjam_loader.logjam_loader
 input:
   pfs:
-    repo: leveltroll400_logjam_cron_monthly_and_pub_control
+    repo: leveltroll400_logjam_cron_monthly_and_pub_control_tick
     glob: /(*-*)-*
     empty_files: true
 autoscaling: true

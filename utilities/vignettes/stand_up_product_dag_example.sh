@@ -96,3 +96,34 @@ pachctl finish transaction
 # *** First - edit the cron_daily_and_date_control pipeline spec to add 1 day to the end date ***
 pachctl update pipeline --reprocess -f $spec_path_source_type/$source_type'_cron_daily_and_date_control.yaml'
 
+
+##### Create monthly pipeline
+pachctl create pipeline -f ~/NEON-IS-data-processing/pipe/leveltroll400/leveltroll400_logjam_cron_monthly_and_pub_control.yaml
+pachctl create pipeline -f ~/NEON-IS-data-processing/pipe/leveltroll400/leveltroll400_logjam_list_files.yaml
+pachctl create pipeline -f ~/NEON-IS-data-processing/pipe/leveltroll400/leveltroll400_logjam_load_files.yaml
+
+# Run the cron
+pachctl run cron leveltroll400_logjam_cron_monthly_and_pub_control
+
+# Restart the cron
+pachctl update pipeline --reprocess -f ~/NEON-IS-data-processing/pipe/leveltroll400/leveltroll400_logjam_list_files.yaml
+
+# Next check things out if it ran
+pachctl glob file leveltroll400_logjam_list_files@master:/*
+
+# The stuff after the : is the glob pattern
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
