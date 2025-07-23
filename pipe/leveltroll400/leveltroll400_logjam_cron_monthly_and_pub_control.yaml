@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: lt400_logjam_cron_monthly_and_pub_control
+  name: leveltroll400_logjam_cron_monthly_and_pub_control
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-pub-cntl:v1.1.0
   cmd: ["/bin/bash"]

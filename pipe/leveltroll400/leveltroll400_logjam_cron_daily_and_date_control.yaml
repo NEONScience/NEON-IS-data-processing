@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: lt400_logjam_cron_daily_and_date_control
+  name: leveltroll400_logjam_cron_daily_and_date_control
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v1.0.0
   cmd: ["/bin/bash"]
@@ -23,8 +23,8 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: lt400-site-list
-      glob: /lt400-site-list.json
+      repo: leveltroll400-site-list
+      glob: /leveltroll400-site-list.json
 resource_requests:
   memory: 100M
   cpu: 1

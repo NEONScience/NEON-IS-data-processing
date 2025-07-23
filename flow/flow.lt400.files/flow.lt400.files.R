@@ -37,7 +37,7 @@
 
 #' @examples
 #' Stepping through the code in Rstudio 
-#' setwd('/home/NEON/kcawley/NEON-IS-data-processing/flow/flow.lt400.files')
+#' setwd('/home/NEON/kcawley/NEON-IS-data-processing/flow/flow.leveltroll400.files')
 #' Sys.setenv(DIR_IN='/home/NEON/kcawley/pfs/troll_logjam_load_files/leveltroll400')
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
 #' arg <- c("DirIn=$DIR_IN","DirOut=~/pfs/out","DirErr=~/pfs/out/errored_datums")
@@ -55,7 +55,7 @@ library(doParallel)
 library(lubridate)
 
 # Source the wrapper functions. Assume it is in the working directory
-source("./wrap.subs.lt400.files.R")
+source("./wrap.subs.leveltroll400.files.R")
 
 # Pull in command line arguments (parameters)
 arg <- base::commandArgs(trailingOnly = TRUE)
@@ -105,14 +105,14 @@ fileData <- base::list.files(DirIn,full.names=TRUE)
 log$debug(base::paste0('Files identified:', fileData))
 
 doParallel::registerDoParallel(numCoreUse)
-# Process each datum path for LT400 files
+# Process each datum path for leveltroll400 files
 foreach::foreach(idxFileIn = fileData) %dopar% {
   log$info(base::paste0('Processing path to file: ', idxFileIn))
   
   # Run the wrapper function for each datum, with error routing TROLL FILES
   tryCatch(
     withCallingHandlers(
-      wrap.subs.lt400.files(
+      wrap.subs.leveltroll400.files(
         FileIn=idxFileIn,
         DirOut=Para$DirOut,
         SchmDataOut=SchmDataOut,

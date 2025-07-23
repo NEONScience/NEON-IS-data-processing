@@ -21,7 +21,7 @@
 #' output. Defaults to NULL, in which the logger will be created and used within the function. See NEONprocIS.base::def.log.init
 #' for more details.
 #' 
-#' @return Cleaned LT400 files in daily parquets.
+#' @return Cleaned leveltroll400 files in daily parquets.
 #' 
 #' @references
 #' License: (example) GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -32,7 +32,7 @@
 #' # Not run
 #' FileIn <- "b6a5483d7675e2f5294cbb0b22021694.csv"
 #' log <- NEONprocIS.base::def.log.init(Lvl = "debug")
-#' wrap.subs.LT400.logfiles <- function(FileIn = "~/pfs/logjam_load_files/5886/b6a5483d7675e2f5294cbb0b22021694.csv",
+#' wrap.subs.leveltroll400.logfiles <- function(FileIn = "~/pfs/logjam_load_files/5886/b6a5483d7675e2f5294cbb0b22021694.csv",
 #'                               DirOut="~/pfs/out",
 #'                               SchmDataOut=NULL,
 #'                               log=log)
@@ -41,7 +41,7 @@
 #   Kaelin Cawley (2024-12-06) original creation
 #' 
 ##############################################################################################
-wrap.subs.lt400.files <- function(FileIn,
+wrap.subs.leveltroll400.files <- function(FileIn,
                              DirOut,
                              SchmDataOut=NULL,
                              log=NULL
@@ -54,7 +54,7 @@ wrap.subs.lt400.files <- function(FileIn,
   
   # --------- Load the data ----------
   # Load in the csv log file(s)
-  # Read in a single test file from LT400
+  # Read in a single test file from leveltroll400
   # log_file <- base::try(read.table("/home/NEON/kcawley/otherScripts/logjam_prod_48772_6893ddee737ccd50d25d1d083cd8726f.csv", header = FALSE, sep = ",", 
   #                                  col.names = paste0("V",seq_len(6)),encoding = 'utf-8',
   #                                  stringsAsFactors = FALSE,fill = TRUE,strip.white = TRUE,na.strings=c(-1,'')))
