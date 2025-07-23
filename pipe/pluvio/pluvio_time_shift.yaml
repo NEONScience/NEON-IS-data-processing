@@ -24,7 +24,7 @@ transform:
    
     EOF
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     # Environment variables for R modules
     PARALLELIZATION_INTERNAL: '1' 
 input:

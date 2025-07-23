@@ -23,7 +23,7 @@ transform:
       DirOut=/pfs/out \
       DirErr=/pfs/out/errored_datums \
       "DirSubCopy=data" \
-      SchmData=$FILE_SCHEMA \
+      FileSchmData=$FILE_SCHEMA \
     EOF
   env:
     # Environment variables for filter-joiner

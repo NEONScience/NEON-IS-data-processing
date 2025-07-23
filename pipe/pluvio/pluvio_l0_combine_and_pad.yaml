@@ -88,7 +88,7 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH_JOINER: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX_JOINER: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
     ### parser pad  
