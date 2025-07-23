@@ -246,9 +246,10 @@ wrap.precip.pluvio.stats <- function(DirIn,
   )]
   
   # Since data is already at 1-minute intervals, create 1-minute stats directly
+  # Round timestamps to the nearest minute to handle variable seconds
   stats_01min <- data[, .(
-    startDateTime = floor_date(readout_time, '1 minute'),
-    endDateTime = ceiling_date(readout_time, '1 minute', change_on_boundary = TRUE),
+    startDateTime = round_date(readout_time, '1 minute'),
+    endDateTime = round_date(readout_time, '1 minute') + minutes(1),
     precipBulk = accu_nrt,
     precipBulkExpUncert = combinedUcrt,
     precipNumPts = ifelse(is.na(accu_nrt), 0L, 1L), # 1 if data exists, 0 if NA
