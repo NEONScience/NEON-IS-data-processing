@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: logjam_cron_daily_and_date_control
+  name: lt400_logjam_cron_daily_and_date_control
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-date-cntl:v1.0.0
   cmd: ["/bin/bash"]
@@ -10,7 +10,7 @@ transform:
     # END_DATE can be set or unset (remove line entirely to unset). If unset, end date will be yesterday. 
     OUT_PATH: /pfs/out
     START_DATE: "2019-01-01"
-    SOURCE_TYPE: "leveltroll500"
+    SOURCE_TYPE: "leveltroll400"
   stdin:
   - "#!/bin/bash"
   - ./cron_daily_and_date_control/populate_site_dates.sh
@@ -23,8 +23,8 @@ input:
       overwrite: true
   - pfs:
       name: SITE_FILE
-      repo: leveltroll500_site_list
-      glob: /site-list.json
+      repo: lt400-site-list
+      glob: /lt400-site-list.json
 resource_requests:
   memory: 100M
   cpu: 1
