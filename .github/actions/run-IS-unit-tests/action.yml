@@ -83,6 +83,17 @@ runs:
               any::covr
               any::xml2
           needs: coverage
+          cache: always
+
+      - name: Add libR.so to LD_LIBRARY_PATH
+        shell: bash
+        run: |
+          LIBR_DIR=$(dirname $(find /opt -name "libR.so" | head -n 1))
+          echo "LD_LIBRARY_PATH=$LIBR_DIR:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+
+      - name: Install Avro
+        shell: bash
+        run: sudo apt install libavro23
 
       - name: check out repository
         uses: actions/checkout@v3
