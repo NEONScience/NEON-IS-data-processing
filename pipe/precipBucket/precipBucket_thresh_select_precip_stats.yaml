@@ -39,7 +39,7 @@ transform:
       
     EOF
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '3' # For threshold select module
 output_branch: master
 input:
