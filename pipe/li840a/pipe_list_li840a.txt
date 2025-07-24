@@ -1,3 +1,2 @@
 li840a_cron_daily_and_date_control.yaml
 li840a_data_source_kafka.yaml
-li840a_data_source_trino.yaml

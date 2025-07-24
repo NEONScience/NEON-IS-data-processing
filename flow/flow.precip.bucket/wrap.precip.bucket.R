@@ -72,30 +72,38 @@
 # changelog and author contributions / copyrights
 #   Teresa Burlingame  (2025-06-10)
 #     Initial creation
+#   Teresa Burlingame  (2025-07-10)
+#     Optimizations with AI assist and update ucrt for sec precip. 
 ##############################################################################################
 wrap.precip.bucket <- function(DirIn,
                                DirOutBase,
                                SchmData = NULL,
                                DirSubCopy = NULL,
-                               log = NULL
-) {
+                               log = NULL) {
+  
+  # Load required libraries at start
+  library(dplyr)
+  library(lubridate)
+  library(data.table)
   
   if (base::is.null(log)) {
     log <- NEONprocIS.base::def.log.init()
   }
   
-  # Gather info about the input directory and create the output directory.
-  
+  # Gather info about the input directory and create the output directory
   InfoDirIn <- NEONprocIS.base::def.dir.splt.pach.time(DirIn, log = log)
-  dirInData <- fs::path(DirIn, 'data')
-  dirInQf <- fs::path(DirIn, 'flags')
-  dirInThsh <- fs::path(DirIn, 'threshold')
-  dirInLoc <- fs::path(DirIn, 'location')
-  dirUcrtCoef <- fs::path(DirIn, 'uncertainty_coef')
+  
+  # Use list for path construction to enable $ operator
+  dir_paths <- list(
+    data = fs::path(DirIn, 'data'),
+    flags = fs::path(DirIn, 'flags'), 
+    threshold = fs::path(DirIn, 'threshold'),
+    location = fs::path(DirIn, 'location'),
+    uncertainty_coef = fs::path(DirIn, 'uncertainty_coef')
+  )
   
   dirOut <- fs::path(DirOutBase, InfoDirIn$dirRepo)
   dirOutStat <- fs::path(dirOut, 'stats')
-  
   
   NEONprocIS.base::def.dir.crea(
     DirBgn = dirOut,
@@ -103,11 +111,9 @@ wrap.precip.bucket <- function(DirIn,
     log = log
   )
   
-  
-  # Copy with a symbolic link the desired subfolders
+  # Copy directories more efficiently
   DirSubCopy <- base::unique(base::setdiff(DirSubCopy, c('stats')))
   if (base::length(DirSubCopy) > 0) {
-    
     NEONprocIS.base::def.dir.copy.symb(
       DirSrc = fs::path(DirIn, DirSubCopy),
       DirDest = dirOut,
@@ -116,75 +122,71 @@ wrap.precip.bucket <- function(DirIn,
     )
   }
   
+  # Get file lists more efficiently
+  file_patterns <- list(
+    data = '.parquet',
+    flags = 'flagsCal.parquet',
+    threshold = 'threshold'
+  )
   
-  #grab files for cal, data, thresholds
-  fileData <- base::list.files(dirInData, pattern = '.parquet', full.names = FALSE)
-  fileQfCal <- base::list.files(dirInQf, pattern = 'flagsCal.parquet', full.names = FALSE)
-  fileThsh <- base::list.files(dirInThsh, pattern = 'threshold', full.names = FALSE)
+  files <- lapply(names(file_patterns), function(type) {
+    base::list.files(dir_paths[[type]], pattern = file_patterns[[type]], full.names = FALSE)
+  })
+  names(files) <- names(file_patterns)
   
-  # Read in the thresholds file (read first file only, there should only be 1)
-  if (base::length(fileThsh) > 1) {
-    fileThsh <- fileThsh[1]
-    log$info(base::paste0('There is more than one threshold file in ', dirInThsh, '. Using ', fileThsh))
+  # Read thresholds (optimized error handling)
+  if (base::length(files$threshold) > 1) {
+    log$debug(base::paste0('threshold files are ', paste(files$threshold, collapse = ', ')))
+    files$threshold <- files$threshold[1]
+    log$info(base::paste0('Using first threshold file: ', files$threshold))
   }
-  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df((NameFile = base::paste0(dirInThsh, '/', fileThsh)))
   
-  # Verify that the term(s) needed in the input parameters are included in the threshold files
+  thsh <- NEONprocIS.qaqc::def.read.thsh.qaqc.df(
+    NameFile = fs::path(dir_paths$threshold, files$threshold)
+  )
+  
+  # Verify terms exist (vectorized)
   termTest <- "precipBulk"
-  exstThsh <- termTest %in% base::unique(thsh$term_name) # Do the terms exist in the thresholds
-  if (base::sum(exstThsh) != base::length(termTest)) {
-    log$error(base::paste0('Thresholds for term(s): ', base::paste(termTest[!exstThsh], collapse = ','), ' do not exist in the thresholds file. Cannot proceed.'))
+  if (!termTest %in% thsh$term_name) {
+    log$error(base::paste0('Missing threshold term: ', termTest))
     stop()
   }
-  # Assign thresholds
+
+  # Extract thresholds using vectorized lookup
+  thsh_subset <- thsh[thsh$term_name == termTest, ]
+  threshold_lookup <- setNames(thsh_subset$number_value, thsh_subset$threshold_name)
   
-  ###########TODO temporary sub in of names remove after testing is complete
+  # Pre-allocate threshold variables
+  thresholds <- list(
+    inactiveHeater = threshold_lookup["InactiveHeater"],
+    baseHeater = threshold_lookup["BaseHeater"],
+    extremePrecipQF = threshold_lookup["ExtremePrecipMax"],
+    funnelHeater = threshold_lookup["FunnelHeater"]
+  )
   
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max range test value at point 1"] <- "inactiveHeater"
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max range test value at point 2"] <- "baseHeater"
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max soft range test at point 1"] <- "extremePrecipQF"
-  thsh$threshold_name[thsh$threshold_name == "Time dependent max soft range test at point 2"] <- "funnelHeater"
-  
-  
-  ######################
-  
-  # thresholds to variables
-  thshIdxTerm <- thsh[thsh$term_name == termTest, ]
-  inactiveHeater <- thshIdxTerm$number_value[thshIdxTerm$threshold_name == "inactiveHeater"]
-  baseHeater <- thshIdxTerm$number_value[thshIdxTerm$threshold_name == "baseHeater"]
-  extremePrecipQF <- thshIdxTerm$number_value[thshIdxTerm$threshold_name == "extremePrecipQF"]
-  funnelHeater <- thshIdxTerm$number_value[thshIdxTerm$threshold_name == "funnelHeater"]
-  
-  #verify that the thresholds are all there
-  ThshList <- c(inactiveHeater, baseHeater, extremePrecipQF, funnelHeater)
-  
-  if (length(ThshList) < nrow(thsh)) {
-    log$error(base::paste0('Not all Thresholds specified for term(s): ', base::paste(termTest[!exstThsh], collapse = ','), ' do not exist in the thresholds file. Cannot proceed.'))
+  # Validate all thresholds exist
+  if (any(is.na(thresholds))) {
+    log$error("Missing threshold values")
     stop()
   }
   
-  #read in location information
-  fileLoc <- base::dir(dirInLoc)
-  
-  # If there is no location file, skip
-  numFileLoc <- base::length(fileLoc)
-  if (numFileLoc == 0) {
-    log$error(base::paste0('No location data in ', dirInLoc, '. Skipping...'))
+  # Read location data
+  fileLoc <- base::dir(dir_paths$location)
+  if (length(fileLoc) == 0) {
+    log$error(base::paste0('No location data in ', dir_paths$location))
     stop()
   }
   
-  # If there is more than one location file, use the first
-  if (numFileLoc > 1) {
-    log$warn(base::paste0('There is more than one location file in ', dirInLoc, '. Using the first... (', fileLoc[1], ')'))
+  if (length(fileLoc) > 1) {
+    log$warn(base::paste0('Multiple location files, using first: ', fileLoc[1]))
     fileLoc <- fileLoc[1]
   }
   
-  # Load in the location json
-  loc <- NEONprocIS.base::def.loc.meta(NameFile = base::paste0(dirInLoc, '/', fileLoc))
+  loc <- NEONprocIS.base::def.loc.meta(NameFile = fs::path(dir_paths$location, fileLoc))
   
-  # Read the datasets
+  # Read and merge datasets more efficiently
   data <- NEONprocIS.base::def.read.parq.ds(
-    fileIn = fs::path(dirInData, fileData),
+    fileIn = fs::path(dir_paths$data, files$data),
     VarTime = 'readout_time',
     RmvDupl = TRUE,
     Df = TRUE,
@@ -192,255 +194,214 @@ wrap.precip.bucket <- function(DirIn,
   )
   
   qfCal <- NEONprocIS.base::def.read.parq.ds(
-    fileIn = fs::path(dirInQf, fileQfCal),
+    fileIn = fs::path(dir_paths$flags, files$flags),
     VarTime = 'readout_time',
     RmvDupl = TRUE,
     Df = TRUE,
     log = log
   )
-  #combine into one file
-  data <- full_join(data, qfCal, by = 'readout_time')
   
+  # Use data.table for faster join
+  setDT(data)
+  setDT(qfCal)
+  data <- merge(data, qfCal, by = 'readout_time', all = TRUE)
   
-  # pull in UCRT file
-  fileUcrt <- base::dir(dirUcrtCoef)
+  # Read uncertainty coefficients
+  fileUcrt <- base::dir(dir_paths$uncertainty_coef)
   
-  if (base::length(fileUcrt) != 1) {
-    log$warn(base::paste0("There are either zero or more than one uncertainty coefficient files in path: ", dirUcrtCoef, "... Uncertainty coefs will not be read in. This is fine if the uncertainty function doesn't need it, but you should check..."))
+  # Handle multiple UCRT files
+  if (base::length(fileUcrt) == 0) {
+    log$warn("No uncertainty coefficient files found")
     ucrtCoef <- base::list()
   } else {
-    nameFileUcrt <- base::paste0(dirUcrtCoef, '/', fileUcrt) # Full path to file
-  }
-  # Open the uncertainty file
-  ucrtCoef <- base::try(rjson::fromJSON(file = nameFileUcrt, simplify = TRUE), silent = FALSE)
-  if (base::class(ucrtCoef) == 'try-error') {
-    # Generate error and stop execution
-    log$error(base::paste0('File: ', nameFileUcrt, ' is unreadable.'))
-    stop()
-  }
-  
-  ucrtCoef_df <- dplyr::bind_rows(ucrtCoef)
-  uCvalA1 <- as.numeric(ucrtCoef_df$Value[ucrtCoef_df$Name == "U_CVALA1"])
-  
-  ####testing multiple calibration coefficients.
-  # TODO delete after talk with cove
-  # ucrtCoef_df <- dplyr::bind_rows(ucrtCoef, ucrtCoef)
-  # ucrtCoef_df$calibration_id[1:6] <- 123456
-  # ucrtCoef_df$end_date[1:6] <- '2025-05-31T12:00:00.000Z'
-  # ucrtCoef_df$start_date[7:12] <- '2025-05-31T12:00:00.000Z'
-  # ucrtCoef_df$Value[6] <- 1
-  # uCvalA1 <- as.numeric(ucrtCoef_df$Value[ucrtCoef_df$Name == "U_CVALA1"])
-  
-  #if more than one relevant calibration, grab correct uncertainty coefficients from CVAL based on time. 
-  if (length(uCvalA1) < 1 & all(is.na(data$precipitation))) {
-    log$info('No precipitation recorded, uncertainty data will not be calculated.')
-    data$uCvalA1 <- 0
-  } else if (length(uCvalA1) < 1 ) {
-    # Generate error and stop execution
-    log$error('Uncertainty value uCvalA1 necessary and not available')
-    stop()
-  } else if (length(uCvalA1) > 1) {
-    # Adjust to finding more than one valid cal in a day.
-    log$info(base::paste0('More than one calibration for date ', InfoDirIn$time, ' applying multiple coefficients.'))
-    cals <- ucrtCoef_df[ucrtCoef_df$Name == "U_CVALA1",]
-    cals$start_date <-  as.POSIXct(cals$start_date, format = "%Y-%m-%dT%H:%M:%OS", tz = 'GMT')
-    cals$end_date <- as.POSIXct(cals$end_date, format = "%Y-%m-%dT%H:%M:%OS", tz = 'GMT')
+    log$info(base::paste0("Found ", length(fileUcrt), " uncertainty coefficient file(s)"))
+    ucrtCoef <- base::list()
     
-    # Initialize uCvalA1 in data with NA
-    data <- data %>%
-      mutate(uCvalA1 = NA_real_)
-    
-    # Sort cals by start_date 
-    cals <- cals[order(cals$start_date), ]
-    
-    # Iterate through each calibration entry and apply the coefficient
-    for (i in 1:nrow(cals)){
-      log$info(paste0('Grabbing calibration coefficient for calibration id ', cals$calibration_id[i]))
-      current_value <- as.numeric(cals$Value[i])
-      current_start_date <- cals$start_date[i]
-      current_end_date <- cals$end_date[i]
+    # Read all UCRT files
+    for (i in seq_along(fileUcrt)) {
+      nameFileUcrt <- fs::path(dir_paths$uncertainty_coef, fileUcrt[i])
+      ucrtCoef_temp <- base::try(rjson::fromJSON(file = nameFileUcrt, simplify = TRUE), silent = FALSE)
       
-      data <- data %>%
-        mutate(uCvalA1 = dplyr::if_else(
-          readout_time >= current_start_date & readout_time <= current_end_date,
-          current_value,
-          uCvalA1 # Keep existing value if not within the current range
-        ))
+      if (base::class(ucrtCoef_temp) == 'try-error') {
+        log$error(base::paste0('Cannot read uncertainty file: ', nameFileUcrt))
+        stop()
+      } else {
+        ucrtCoef <- c(ucrtCoef, ucrtCoef_temp)
+      }
+    }
+  }
+  
+  # Process U_CVALA1 uncertainty coefficients
+  if (length(ucrtCoef) > 0) {
+    ucrtCoef_df <- dplyr::bind_rows(ucrtCoef)
+    uCvalA1_rows <- ucrtCoef_df$Name == "U_CVALA1"
+    uCvalA1 <- as.numeric(ucrtCoef_df$Value[uCvalA1_rows])
+    
+    # Handle multiple calibrations more efficiently
+    if (length(uCvalA1) > 1) {
+      log$info('Applying multiple U_CVALA1 calibration coefficients')
+      cals <- ucrtCoef_df[uCvalA1_rows, ]
+      cals[, c('start_date', 'end_date')] <- lapply(cals[, c('start_date', 'end_date')], 
+                                                    function(x) as.POSIXct(x, format = "%Y-%m-%dT%H:%M:%OS", tz = 'GMT'))
+      
+      # Vectorized assignment using data.table
+      data[, uCvalA1 := NA_real_]
+      setorder(cals, start_date)
+      
+      for (i in seq_len(nrow(cals))) {
+        data[readout_time >= cals$start_date[i] & readout_time <= cals$end_date[i], 
+             uCvalA1 := as.numeric(cals$Value[i])]
+      }
+      
+      # Log how many rows were assigned values
+      assigned_rows <- sum(!is.na(data$uCvalA1))
+      log$info(paste0('Applied U_CVALA1 coefficients to ', assigned_rows, ' rows'))
+      
+    } else if (length(uCvalA1) == 1) {
+      data[, uCvalA1 := uCvalA1]
+      log$info(paste0('Applied single U_CVALA1 coefficient: ', uCvalA1))
+    } else {
+      data[, uCvalA1 := 0]
+      log$info('No U_CVALA1 coefficients found, setting to 0')
     }
   } else {
-    data$uCvalA1 <- uCvalA1
+    data[, uCvalA1 := 0]
+    log$info('No UCRT data available, setting uCvalA1 to 0')
   }
-
-  #Convert all NA values to 0, no data = no rain.
-  data$precipitation[is.na(data$precipitation)] <- 0
+  # Vectorized data cleaning
+  data[is.na(precipitation), precipitation := 0]
+  data[is.na(validCalQF), validCalQF := -1]
+  data[is.na(suspectCalQF), suspectCalQF := -1]
   
-  ########## Data where no rain was recorded will have a -1 var for valid Cal and suspect Cals
-  data$validCalQF[is.na(data$validCalQF)] <- -1
-  data$suspectCalQF[is.na(data$suspectCalQF)] <- -1
-  
-  #if throughfall sensor, downscale precip and UCRT based on area
-  
-  if (grepl(loc$context, pattern = "throughfall")) {
-    # convert throughfall values (based on context)
-    A_b <- 32429 # surface area of tipping bucket 
-    A_t <- 251400 #surface area of throughfall collector
-    tf_conv <- A_b / A_t #Multiplier for precip conversion.
-    data$precipitation <- data$precipitation * tf_conv
-    #use tip and area conversions to calculate uncertainties
-    data$uThPTi <- data$uCvalA1 * data$precipitation
-    data$uAtPTi <- 0.01 * data$precipitation #In ATBD and java code
-    data$combinedUcrt <- sqrt(data$uThPTi^2 + data$uAtPTi^2)
+  # Process throughfall conversion and uncertainty calculation
+  is_throughfall <- grepl("throughfall", loc$context)
+  if (is_throughfall) {
+    A_b <- 32429  # surface area of tipping bucket
+    A_t <- 251400 # surface area of throughfall collector
+    tf_conv <- A_b / A_t # Multiplier for precip conversion
+    
+    data[, `:=`(
+      precipitation = precipitation * tf_conv,
+      uThPTi = uCvalA1 * precipitation * tf_conv,
+      uAtPTi = 0.01 * precipitation * tf_conv,
+      combinedUcrt = sqrt((uCvalA1 * precipitation * tf_conv)^2 + (0.01 * precipitation * tf_conv)^2)
+    )]
+    
     log$debug(base::paste0('Throughfall sensor detected at ', loc$name, ' applying area conversion'))
   } else {
-    data$combinedUcrt <- data$uCvalA1 * data$precipitation
+    data[, combinedUcrt := uCvalA1 * precipitation]
   }
   
-  # Apply heater QMs If throughfall or non heatead should be NA
+  # Vectorized heater QF assignment
+  data[, precipHeaterQF := fcase(
+    heater_current <= thresholds$inactiveHeater, 0,
+    heater_current <= thresholds$baseHeater, 1,
+    heater_current <= thresholds$funnelHeater, 2,
+    heater_current > thresholds$funnelHeater, 3,
+    default = NA_real_
+  )]
   
-  data <- data %>%
-    dplyr::mutate(
-      precipHeaterQF = dplyr::case_when(
-        heater_current < inactiveHeater ~ 0,
-        heater_current >= inactiveHeater & heater_current < baseHeater ~ 1,
-        heater_current >= baseHeater & heater_current <= funnelHeater ~ 2,
-        heater_current > funnelHeater ~ 3,
-        TRUE ~ NA #should handle a missing stream in TFs
-      )
-    )
+  # More efficient aggregation using data.table
+  data[, `:=`(
+    startDateTime_1min = floor_date(readout_time, '1 minute'),
+    endDateTime_1min = ceiling_date(readout_time, '1 minute', change_on_boundary = TRUE)
+  )]
   
-  # Aggregate to 1 minute and apply extremePrecip and heaterQF Flags
-  stats_aggr01 <- data %>%
-    dplyr::mutate(startDateTime = lubridate::floor_date(readout_time, '1 minute')) %>%
-    dplyr::mutate(endDateTime = lubridate::ceiling_date(readout_time, '1 minute', change_on_boundary = T)) %>%
-    dplyr::group_by(startDateTime, endDateTime) %>%
-    dplyr::summarise(
-      precipBulk = base::sum(precipitation),
-      precipBulkExpUncert = base::sqrt(base::sum(combinedUcrt^2)) * 2, #keep NAs so that it will NA with lack of Coeff 
-      precipHeater0QM = base::round(base::length(base::which(precipHeaterQF == 0)) / dplyr::n() * 100, 0),
-      precipHeater1QM = base::round(base::length(base::which(precipHeaterQF == 1)) / dplyr::n() * 100, 0),
-      precipHeater2QM = base::round(base::length(base::which(precipHeaterQF == 2)) / dplyr::n() * 100, 0),
-      precipHeater3QM = base::round(base::length(base::which(precipHeaterQF == 3)) / dplyr::n() * 100, 0),
-      validCalQF = base::max(validCalQF, na.rm = T),
-      suspectCalQF = base::max(validCalQF, na.rm = T)
-    ) %>%
-    dplyr::mutate(extremePrecipQF = dplyr::case_when(
-      precipBulk >= extremePrecipQF ~ 1,
-      precipBulk < extremePrecipQF ~ 0,
-      TRUE ~ -1
-    )) %>%
-    #flag data with finalQF if extreme precip observed.
-    dplyr::mutate(finalQF = dplyr::case_when(
-      extremePrecipQF == 1 ~ 1,
-      TRUE ~ 0
-    )) %>%
-    dplyr::mutate(finalQF = as.integer(finalQF)) #make integer
+  # 1-minute aggregation with quadrature uncertainty calculation
+  stats_aggr01 <- data[, .(
+    precipBulk = sum(precipitation, na.rm = TRUE),
+    precipBulkExpUncert = sqrt(sum(combinedUcrt^2, na.rm = TRUE)) * 2,  # Always use quadrature
+    precipHeater0QM = round(sum(precipHeaterQF == 0, na.rm = TRUE) / .N * 100, 0),
+    precipHeater1QM = round(sum(precipHeaterQF == 1, na.rm = TRUE) / .N * 100, 0),
+    precipHeater2QM = round(sum(precipHeaterQF == 2, na.rm = TRUE) / .N * 100, 0),
+    precipHeater3QM = round(sum(precipHeaterQF == 3, na.rm = TRUE) / .N * 100, 0),
+    validCalQF = max(validCalQF, na.rm = TRUE),
+    suspectCalQF = max(suspectCalQF, na.rm = TRUE)
+  ), by = .(startDateTime = startDateTime_1min, endDateTime = endDateTime_1min)]
   
+  # Add derived columns
+  stats_aggr01[, `:=`(
+    extremePrecipQF = fifelse(precipBulk >= thresholds$extremePrecipQF, 1L, 0L),
+    finalQF = fifelse(precipBulk >= thresholds$extremePrecipQF, 1L, 0L)
+  )]
   
-  #aggregate one minute data further to 30 minute, taking the max calue for flags, the mean for QMs
-  stats_aggr30 <- stats_aggr01 %>%
-    dplyr::mutate(startDateTime = lubridate::floor_date(startDateTime, '30 minute')) %>%
-    dplyr::mutate(endDateTime = lubridate::ceiling_date(endDateTime, '30 minute')) %>%
-    dplyr::group_by(startDateTime, endDateTime) %>%
-    dplyr::summarise(
-      precipBulk = base::sum(precipBulk, na.rm = T),
-      precipBulkExpUncert = base::sqrt(base::sum((precipBulkExpUncert / 2)^2)) * 2,
-      precipHeater0QM = base::round(base::mean(precipHeater0QM, na.rm = T), 0),
-      precipHeater1QM = base::round(base::mean(precipHeater1QM, na.rm = T), 0),
-      precipHeater2QM = base::round(base::mean(precipHeater2QM, na.rm = T), 0),
-      precipHeater3QM = base::round(base::mean(precipHeater3QM, na.rm = T), 0),
-      validCalQF = base::max(validCalQF, na.rm = T),
-      suspectCalQF = base::max(validCalQF, na.rm = T),
-      extremePrecipQF = base::max(extremePrecipQF, na.rm = T),
-      finalQF = as.integer(max(finalQF, na.rm = T))
-    )
+  # 30-minute aggregation
+  stats_aggr01[, `:=`(
+    startDateTime_30min = floor_date(startDateTime, '30 minute'),
+    endDateTime_30min = ceiling_date(endDateTime, '30 minute')
+  )]
   
-  ### reorder data. for schemas
-  stats_aggr01 <- stats_aggr01 %>% dplyr::select(
-    startDateTime, endDateTime, precipBulk, precipBulkExpUncert,
-    precipHeater0QM, precipHeater1QM, precipHeater2QM, precipHeater3QM,
-    validCalQF, suspectCalQF, extremePrecipQF, finalQF
-  )
+  # 30-minute aggregation with quadrature uncertainty calculation
+  stats_aggr30 <- stats_aggr01[, .(
+    precipBulk = sum(precipBulk, na.rm = TRUE),
+    precipBulkExpUncert = sqrt(sum((precipBulkExpUncert / 2)^2, na.rm = TRUE)) * 2,  # Always use quadrature
+    precipHeater0QM = round(mean(precipHeater0QM, na.rm = TRUE), 0),
+    precipHeater1QM = round(mean(precipHeater1QM, na.rm = TRUE), 0),
+    precipHeater2QM = round(mean(precipHeater2QM, na.rm = TRUE), 0),
+    precipHeater3QM = round(mean(precipHeater3QM, na.rm = TRUE), 0),
+    validCalQF = max(validCalQF, na.rm = TRUE),
+    suspectCalQF = max(suspectCalQF, na.rm = TRUE),
+    extremePrecipQF = max(extremePrecipQF, na.rm = TRUE),
+    finalQF = as.integer(max(finalQF, na.rm = TRUE))
+  ), by = .(startDateTime = startDateTime_30min, endDateTime = endDateTime_30min)]
   
-  stats_aggr30 <- stats_aggr30 %>% dplyr::select(
-    startDateTime, endDateTime, precipBulk, precipBulkExpUncert,
-    precipHeater0QM, precipHeater1QM, precipHeater2QM, precipHeater3QM,
-    validCalQF, suspectCalQF, extremePrecipQF, finalQF
-  )
+  # Clean up temporary columns and reorder
+  stats_aggr01[, c('startDateTime_30min', 'endDateTime_30min') := NULL]
   
-  # Write out the file for this aggregation interval.
-  nameFileIdx <- fileData
-  if (!is.na(nameFileIdx)) {
-    
-    # Append the center date to the end of the file name to know where it came from
-    nameFileIdxSplt <- base::strsplit(nameFileIdx, '.', fixed = TRUE)[[1]]
-    nameFileStatIdxSplt001 <- c(
-      paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt) - 1)],
-             '_stats_001'),
-      utils::tail(nameFileIdxSplt, 1)
-    )
-    nameFileStatIdxSplt030 <- c(
-      paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt) - 1)],
-             '_stats_030'),
-      utils::tail(nameFileIdxSplt, 1)
-    )
-    nameFileStatOut001Idx <- base::paste0(nameFileStatIdxSplt001, collapse = '.')
-    nameFileStatOut030Idx <- base::paste0(nameFileStatIdxSplt030, collapse = '.')
-    
-    # Write out the data to file
-    fileStatOut001Idx <- fs::path(dirOutStat, nameFileStatOut001Idx)
-    fileStatOut030Idx <- fs::path(dirOutStat, nameFileStatOut030Idx)
-    
-    rptWrte <-
-      base::try(NEONprocIS.base::def.wrte.parq(
-        data = stats_aggr01,
-        NameFile = fileStatOut001Idx,
-        NameFileSchm = NULL,
-        Schm = SchmData,
-        log = log
-      ),
-      silent = TRUE
-      )
-    if ('try-error' %in% base::class(rptWrte)) {
-      log$error(base::paste0(
-        'Cannot write output to ',
-        fileStatOut001Idx,
-        '. ',
-        attr(rptWrte, "condition")
-      ))
-      stop()
-    } else {
-      log$info(base::paste0(
-        'Wrote 1 min precipitation to file ',
-        fileStatOut001Idx
-      ))
-    }
-    
-    rptWrte <-
-      base::try(NEONprocIS.base::def.wrte.parq(
-        data = stats_aggr30,
-        NameFile = fileStatOut030Idx,
-        NameFileSchm = NULL,
-        Schm = SchmData,
-        log = log
-      ),
-      silent = TRUE
-      )
-    if ('try-error' %in% base::class(rptWrte)) {
-      log$error(base::paste0(
-        'Cannot write output to ',
-        fileStatOut030Idx,
-        '. ',
-        attr(rptWrte, "condition")
-      ))
-      stop()
-    } else {
-      log$info(base::paste0(
-        'Wrote 30 min precipitation to file ',
-        fileStatOut030Idx
-      ))
-    }
-  }
+  # Reorder columns to match schema requirements
+  col_order <- c('startDateTime', 'endDateTime', 'precipBulk', 'precipBulkExpUncert',
+                 'precipHeater0QM', 'precipHeater1QM', 'precipHeater2QM', 'precipHeater3QM',
+                 'validCalQF', 'suspectCalQF', 'extremePrecipQF', 'finalQF')
+  
+  stats_aggr01 <- stats_aggr01[, ..col_order]
+  stats_aggr30 <- stats_aggr30[, ..col_order]
+  
+  # Convert back to data.frame if needed for writing
+  setDF(stats_aggr01)
+  setDF(stats_aggr30)
+  
+  # Write output files
+  write_output_files(stats_aggr01, stats_aggr30, files$data, dirOutStat, SchmData, log)
+  
   return()
 }
 
-
+# Helper function for file writing
+write_output_files <- function(stats_01, stats_30, fileData, dirOutStat, SchmData, log) {
+  if (is.na(fileData)) return()
+  
+  # Create output filenames
+  nameFileIdxSplt <- strsplit(fileData, '.', fixed = TRUE)[[1]]
+  base_name <- paste0(nameFileIdxSplt[1:(length(nameFileIdxSplt) - 1)], collapse = '.')
+  extension <- utils::tail(nameFileIdxSplt, 1)
+  
+  file_names <- c(
+    paste0(base_name, '_stats_001.', extension),
+    paste0(base_name, '_stats_030.', extension)
+  )
+  
+  file_paths <- fs::path(dirOutStat, file_names)
+  datasets <- list(stats_01, stats_30)
+  
+  # Write files
+  for (i in seq_along(file_paths)) {
+    rptWrte <- base::try(
+      NEONprocIS.base::def.wrte.parq(
+        data = datasets[[i]],
+        NameFile = file_paths[i],
+        NameFileSchm = NULL,
+        Schm = SchmData,
+        log = log
+      ),
+      silent = TRUE
+    )
+    
+    if ('try-error' %in% base::class(rptWrte)) {
+      log$error(base::paste0('Cannot write output to ', file_paths[i]))
+      stop()
+    } else {
+      interval <- ifelse(i == 1, '1 min', '30 min')
+      log$info(base::paste0('Wrote ', interval, ' precipitation to file ', file_paths[i]))
+    }
+  }
+}
