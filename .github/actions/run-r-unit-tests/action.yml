@@ -52,7 +52,7 @@ runs:
           cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")
           covr::to_cobertura(cov, filename="${{ env.MODULE_NAME }}-cobertura.xml")
   
-      - name: Create Coverage Report
+      - name: Generate coverage summary
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
           filename: ${{ env.MODULE_NAME }}-cobertura.xml
@@ -60,8 +60,6 @@ runs:
           format: markdown
           output: both
 
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: code-coverage-results.md
+      - name: Add coverage to job summary
+        shell: bash
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
