@@ -1,11 +1,11 @@
-name: "Build-push_flow.hobou24.files"
+name: "Build-push_flow.lt400.files"
 
 on:
   push:
     branches:
       - 'subsurface_tchain'
     paths:
-      - 'flow/flow.hobou24.files/**'
+      - 'flow/flow.leveltroll400.files/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -22,8 +22,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./flow/flow.hobou24.files
-  IMAGE_NAME: neon-is-flow-hobou24-files
+  MODULE_PATH: ./flow/flow.leveltroll400.files
+  IMAGE_NAME: neon-is-lt400-files
 
 jobs:
   build-push:
