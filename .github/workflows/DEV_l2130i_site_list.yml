@@ -1,11 +1,11 @@
-name: "Run IS cal package unit tests"
+name: "Run IS qaqc package unit tests"
 
 on:
   push:
     branches:
      - 'master'
     paths:
-      - 'pack/NEONprocIS.cal/**'
+      - 'pack/NEONprocIS.qaqc/**'
       
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
@@ -16,19 +16,19 @@ env:
   # GHCR_NS, i.e, NEONSciene, in lowercase
   # GHCR_NS: ${{ github.repository_owner }}
   GHCR_NS: ${{ vars.SHARED_WIF_REPO }}
-  GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
-  GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
-  GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
-  GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
+  # GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
+  # GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
+  # GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
+  # GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   REPO_NAME: neon-is-data-processing
   # IS package name
   MODULE_BASE_NAME: NEONprocIS.base
   MODULE_BASE_PATH: ./pack/NEONprocIS.base
-  MODULE_PATH: ./pack/NEONprocIS.cal
-  MODULE_NAME: NEONprocIS.cal
-  IMAGE_NAME: neon-is-pack-cal-r
+  MODULE_PATH: ./pack/NEONprocIS.qaqc
+  MODULE_NAME: NEONprocIS.qaqc
+  IMAGE_NAME: neon-is-pack-qaqc-r
 
 jobs:
   run-unit-test:
@@ -44,7 +44,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4.1.4"
         with:
-   #       ref: 'master'
+  #        ref: 'master'
           fetch-depth: '0'
 
         # Note: must clone other repos AFTER checking out the repo where the action is run from. 
