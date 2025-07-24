@@ -57,6 +57,7 @@ runs:
         with:
           filename: ${{ env.MODULE_NAME }}-cobertura.xml
           badge: true
+          hide_complexity: true
           format: markdown
           output: both
 
