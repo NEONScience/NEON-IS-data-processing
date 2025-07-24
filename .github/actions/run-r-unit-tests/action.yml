@@ -50,10 +50,18 @@ runs:
           library(stringr)
           devtools::test(pkg="${{ env.MODULE_PATH }}")
           cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")
-          covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
+          covr::to_cobertura(cov, filename="${{ env.MODULE_NAME }}-cobertura.xml")
   
-      - name: Upload coverage report
+      - name: Create Coverage Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: ${{ env.MODULE_NAME }}-cobertura.xml
+          badge: true
+          format: markdown
+          output: both
+
+      - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: ${{ env.MODULE_NAME }}-coverage.html
+          path: code-coverage-results.md
