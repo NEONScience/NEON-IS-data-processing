@@ -9,4 +9,4 @@ precipBucket_level1_group_consolidate_srf.yaml
 precipBucket_cron_monthly_and_pub_control.yaml
 precipBucket_pub_group.yaml
 precipBucket_pub_format_and_package.yaml
-precipBucket_pub_egress_and_package.yaml
+precipBucket_pub_egress_and_publish.yaml
