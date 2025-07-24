@@ -1,8 +1,8 @@
-name: DEV-metone370380-site-list
+name: CERT-metone370380-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'cert'
     paths:
       - 'pipe/metone370380/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
@@ -11,8 +11,8 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
+      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
       REPO: mti300ahrs_site_list # Pachyderm repo
       BRANCH: master 
       IN_PATHS: 'pipe/metone370380/site-list.json' # Comma-separated list (no spaces) to one or more paths or directories. Length must match OUT_PATHS. If directory, all files in directory will be placed in pachyderm at corresponding entry of OUT_PATHS. 
