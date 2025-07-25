@@ -22,21 +22,13 @@ COPY ${MODULE_DIR}/${APP_DIR}/requirements.txt ${CONTAINER_APP_DIR}/${APP_DIR}/r
  
 RUN apt update && \
     apt-get install -y --no-install-recommends \
-        software-properties-common \
-        gnupg && \
-    rm -rf /var/lib/apt/lists/* 
-    
-RUN add-apt-repository ppa:deadsnakes/ppa -y
-RUN apt update
-RUN apt-get install -y python3.9 python3.9-venv python3-pip
-RUN python3.9 -m venv /opt/venv
-ENV VIRTUAL_ENV=/opt/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    apt-get autoremove -y && \
-    apt-get autoclean -y && \
+        python3.8 && \
+    apt install -y python3-pip && \
+    python3 -mpip install --no-cache-dir --upgrade pip setuptools wheel && \
+    python3 -mpip install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
+   apt-get autoremove -y && \
+	 apt-get autoclean -y && \
+	 rm -rf /var/lib/apt/lists/* && \
     groupadd -g 9999 appuser && \
     useradd -r -u 9999 -g appuser appuser
 
