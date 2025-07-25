@@ -62,8 +62,6 @@ runs:
   
       - name: Run unit tests inside Docker container
         shell: bash
-        env:
-          MODULE_PATH: ${{ env.MODULE_PATH }}
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
