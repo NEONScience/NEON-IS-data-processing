@@ -1,18 +1,11 @@
-name: "Build-push_level1_group_consolidate_srf_reshape"
+name: "Build-push_flow.lt400.files"
 
 on:
   push:
     branches:
-      - 'master'
+      - 'subsurface_tchain'
     paths:
-      - 'modules_combined/level1_group_consolidate_srf_reshape/**'
-      - 'modules/level1_consolidate/**'
-      - 'modules/filter_joiner/**'
-      - 'modules/pub_workbook_loader/**'
-      - 'modules/common/**'
-      - 'modules/data_access/**'
-      - 'flow/flow.pub.tabl.srf/**'
-      - 'flow/flow.tsdl.comb.splt/**'
+      - 'flow/flow.leveltroll400.files/**'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
@@ -29,8 +22,8 @@ env:
   # Get just the repo name from the event, i.e., NEON-IS-data-processing
   REPO_NAME: ${{ github.event.repository.name }}
   # IS module name
-  MODULE_PATH: ./modules_combined/level1_group_consolidate_srf_reshape
-  IMAGE_NAME: neon-is-levl1-grp-cons-srf-reshape
+  MODULE_PATH: ./flow/flow.leveltroll400.files
+  IMAGE_NAME: neon-is-lt400-files
 
 jobs:
   build-push:

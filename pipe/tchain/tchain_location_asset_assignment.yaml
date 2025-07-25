@@ -13,6 +13,7 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=asset
+      "Prop=HOR|VER|install_date|remove_date|name|site|Data Rate|locations|location_properties:ThermistorDepth501|location_properties:ThermistorDepth502|location_properties:ThermistorDepth503|location_properties:ThermistorDepth504|location_properties:ThermistorDepth505|location_properties:ThermistorDepth506|location_properties:ThermistorDepth507|location_properties:ThermistorDepth508|location_properties:ThermistorDepth509|location_properties:ThermistorDepth510|location_properties:ThermistorDepth511"
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.2.1
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
@@ -22,18 +23,26 @@ input:
   cross:
   - pfs:
       name: DIR_IN
-      repo: location_asset_tchain
+      repo: tchain_location_asset
       glob: /tchain/*
   - pfs:
       name: FILE_YEAR
-      repo: data_source_tchain_list_years
+      repo: tchain_cron_daily_and_date_control
       glob: /data_year*.txt
 parallelism_spec:
-  constant: 1
-resource_requests:
-  memory: 300M
-  cpu: 1.3
+  constant: 5
 autoscaling: true
+resource_requests:
+  memory: 400M
+  cpu: 1.5
+resource_limits:
+  memory: 800M
+  cpu: 2
+sidecar_resource_requests:
+  memory: 2G
+  cpu: 0.3
+datum_set_spec:
+  number: 5
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -51,14 +60,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"200M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.2"
-    }
-  ]

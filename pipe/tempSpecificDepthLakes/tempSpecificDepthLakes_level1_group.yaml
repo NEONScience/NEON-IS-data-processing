@@ -15,35 +15,29 @@ transform:
       # Metadata indices will typically begin at index 3.
       input_paths:
         - path:
-            name: QUALITY_PATH
+            name: QUALITY_METRICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/QUALITY_PATH/tchain/*/*/*/*/quality_metrics/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
+            glob_pattern: /pfs/QUALITY_METRICS_PATH/*/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
         - path:
             name: STATISTICS_PATH
             # Filter for data directory
-            glob_pattern: /pfs/STATISTICS_PATH/tchain/*/*/*/*/stats/**
-            # Join on named location (already joined below by day
-            join_indices: [7]
+            glob_pattern: /pfs/STATISTICS_PATH/*/*/*/*/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
         - path:
-            name: INST_STATISTICS_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/INST_STATISTICS_PATH/tchain/*/*/*/*/quality_metrics/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
+            name: GROUP_PATH
+            # Grab group information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/group/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
         - path:
-            name: INST_DATA_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/INST_DATA_PATH/tchain/*/*/*/*/stats/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]
-        - path:
-            name: LOCATION_PATH
-            # Filter for data directory
-            glob_pattern: /pfs/LOCATION_PATH/tchain/*/*/*/*/location/**
-            # Join on named location (already joined below by day)
-            join_indices: [7]    
+            name: GROUP_PATH
+            # Grab location information
+            glob_pattern: /pfs/GROUP_PATH/*/*/*/*/*/*/location/**
+            # Join on Y/M/D/group ID 
+            join_indices: [3,4,5,6]
     OUT_PATH: /pfs/out
     LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX: "3"
@@ -51,41 +45,37 @@ transform:
 input:
   join:
   - pfs:
-      name: QUALITY_PATH
-      repo: tempSpecificDepthLakes_quality_metrics
-      glob: "/tchain/(*)/(*)/(*)"
+      name: QUALITY_METRICS_PATH
+      repo: tempSpecificDepthLakes_qm_group_and_compute
+      glob: "/(*)/(*)/(*)"
       joinOn: "$1/$2/$3" # month day and CFGLOC
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
       name: STATISTICS_PATH
-      repo: tempSpecificDepthLakes_statistics
-      glob: "/tchain/(*)/(*)/(*)"
+      repo: tempSpecificDepthLakes_stats_group_and_compute
+      glob: "/(*)/(*)/(*)"
       joinOn: "$1/$2/$3" # month day and CFGLOC
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
   - pfs:
-      name: INST_STATISTICS_PATH
-      repo: tempSpecificDepthLakes_qm_instantaneous
-      glob: "/tchain/(*)/(*)/(*)"
-      joinOn: "$1/$2/$3" # month day and CFGLOC
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: INST_DATA_PATH
-      repo: tempSpecificDepthLakes_stats_instantaneous
-      glob: "/tchain/(*)/(*)/(*)"
-      joinOn: "$1/$2/$3" # month day and CFGLOC
-      empty_files: false # Make sure this is false for LINK_TYPE=COPY
-  - pfs:
-      name: LOCATION_PATH
-      repo: tempSpecificDepthLakes_padded_timeseries_analyzer
-      glob: "/tchain/(*)/(*)/(*)"
+      name: GROUP_PATH
+      repo: tempSpecificDepthLakes_group_path
+      glob: "/(*)/(*)/(*)"
       joinOn: "$1/$2/$3" # month day and CFGLOC
       empty_files: false # Make sure this is false for LINK_TYPE=COPY
 parallelism_spec:
-  constant: 1
-resource_requests:
-  memory: 200M
-  cpu: 0.1
+  constant: 8
 autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 2.6
+resource_limits:
+  memory: 3G
+  cpu: 3.2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -103,14 +93,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": "0.3"
-    }
-  ]
