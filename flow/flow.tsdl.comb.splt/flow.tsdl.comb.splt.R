@@ -254,5 +254,4 @@ for (idxDirIn in DirIn) {
     error=function(err) {}
   )
   
-  return()
 } # End loop around datum paths
