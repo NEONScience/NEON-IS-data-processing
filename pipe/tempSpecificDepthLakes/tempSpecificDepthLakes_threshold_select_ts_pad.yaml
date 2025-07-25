@@ -2,7 +2,7 @@
 pipeline:
   name: tempSpecificDepthLakes_threshold_select_ts_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-thsh-slct-ts-pad:v2.1.1
   cmd:
   - sh
   - "-c"
@@ -51,7 +51,7 @@ transform:
     PAD_DIR: data
     COPY_DIR: location # Can be multiple, separated by commas without spaces. Directories other than the pad directory and threshold directory to copy to the output (e.g. location,flags). Set to something like 'none' if none other are desired.
     RELATIVE_PATH_INDEX: '3'
-    PARALLELIZATION_INTERNAL: '3' # For threshold select module
+    PARALLELIZATION_INTERNAL: '1' # For threshold select module
 output_branch: master
 input:
   cross:
@@ -67,13 +67,13 @@ parallelism_spec:
   constant: 5
 autoscaling: true
 resource_requests:
-  memory: 800M
-  cpu: 3.3
+  memory: 300M
+  cpu: 1.2
 resource_limits:
-  memory: 2G
-  cpu: 5
+  memory: 1G
+  cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 0.3
 datum_set_spec:
   number: 1

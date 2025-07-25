@@ -13,7 +13,7 @@ transform:
       DirErr=$ERR_PATH
       FileYear=$FILE_YEAR
       TypeFile=group
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-asgn:v1.2.1
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
   env:
@@ -38,8 +38,8 @@ resource_limits:
   memory: 400M
   cpu: 2
 sidecar_resource_requests:
-  memory: 3G
-  cpu: 0.8
+  memory: 1G
+  cpu: 0.5
 datum_set_spec:
   number: 5
 scheduling_spec:

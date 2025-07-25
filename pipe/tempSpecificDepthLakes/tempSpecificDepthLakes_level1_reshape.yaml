@@ -19,7 +19,7 @@ transform:
   - SplitGroupName=temp-specific-depths-lakes-split_
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:sha-949c8b0
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
 input:
   cross:
   - pfs:

@@ -64,7 +64,7 @@ resource_limits:
   memory: 2G
   cpu: 1.2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 1
 datum_set_spec:
   number: 1

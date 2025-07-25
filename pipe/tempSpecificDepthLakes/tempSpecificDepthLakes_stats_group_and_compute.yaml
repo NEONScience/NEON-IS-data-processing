@@ -2,7 +2,7 @@
 pipeline:
   name: tempSpecificDepthLakes_stats_group_and_compute
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-stat-basc-grp:v2.0.2
   cmd:
   - sh
   - "-c"
@@ -73,7 +73,7 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '5' # Option for stats module
+    PARALLELIZATION_INTERNAL: '1' # Option for stats module
 input:
   cross:
   - pfs:
@@ -100,13 +100,13 @@ input:
 parallelism_spec:
   constant: 5
 resource_requests: 
-  memory: 1.8G
-  cpu: 6
+  memory: 500M
+  cpu: 1.2
 resource_limits:
-  memory: 3G
-  cpu: 7
+  memory: 1G
+  cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 0.5
 autoscaling: true
 datum_set_spec:

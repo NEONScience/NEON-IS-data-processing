@@ -106,7 +106,7 @@ transform:
     RELATIVE_PATH_INDEX: "3"
     LINK_TYPE: COPY # options are COPY or SYMLINK. Use COPY for combined module.
     # Environment variables for calibration module
-    PARALLELIZATION_INTERNAL: '5' # Option for stats module
+    PARALLELIZATION_INTERNAL: '1' # Option for stats module
     
     # Environment variables for pub_workbook_loader
     OUT_PATH_WORKBOOK: /tmp/pub_workbooks
@@ -144,13 +144,13 @@ input:
 parallelism_spec:
   constant: 5
 resource_requests: 
-  memory: 1.8G
-  cpu: 6
+  memory: 500M
+  cpu: 1.2
 resource_limits:
-  memory: 3G
-  cpu: 7
+  memory: 1G
+  cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 1G
   cpu: 0.5
 autoscaling: true
 datum_set_spec:
