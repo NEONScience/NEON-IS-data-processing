@@ -23,6 +23,8 @@ runs:
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
+            -e MODULE_PATH=${{ env.MODULE_PATH }} \
+            -e MODULE_NAME=${{ env.MODULE_NAME }} \
             ${{ env.IMAGE_NAME }}:${{ inputs.image-tag }} \
             Rscript ${{ env.MODULE_PATH }}/run-tests.R
 
