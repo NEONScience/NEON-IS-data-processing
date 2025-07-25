@@ -1,44 +1,43 @@
 ---
 pipeline:
-  name: tchain_calibration_loader
+  name: tchain_location_loader
 transform:
   # image_pull_secrets:
   # - battelleecology-quay-read-all-pull-secret
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-cval-loader:v2.3.3
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-loader:v1.0.0
   cmd:
   - /bin/bash
   stdin:
   - '#!/bin/bash'
-  - python3 -m calval_loader.load_all_calval_files
+  - python3 -m location_loader.location_loader_main
   env:
-    CVAL_INGEST_BUCKET: neon-cval
-    OUT_PATH: /pfs/out
-    LOG_LEVEL: INFO
+    LOCATION_TYPE: CONFIG
     SOURCE_TYPE: tchain
-    STARTING_PATH_INDEX: "5"
+    OUT_PATH: /pfs/out    
+    # ERR_PATH can be changed, it is user specified
+    ERR_PATH: /pfs/out/errored_datums
+    LOG_LEVEL: INFO
   secrets:
   - name: pdr-secret
     mount_path: /var/db_secret
 input:
   pfs:
-    name: IN_PATH
-    repo: tchain_calibration_list_files
-    glob: /*/*/*/*
+    repo: tchain_cron_daily_and_date_control_tick
+    glob: /*
     empty_files: true
-parallelism_spec:
-  constant: 10
 autoscaling: true
 resource_requests:
-  memory: 500M
-  cpu: 0.5
+  memory: 100M
+  cpu: 0.1
 resource_limits:
-  memory: 1G
-  cpu: 1.5
+  memory: 300M
+  cpu: 0.5
 sidecar_resource_requests:
-  memory: 2G
-  cpu: 0.2
-datum_set_spec:
-  number: 1
+  memory: 500M
+  cpu: 0.1
+sidecar_resource_limits:
+  memory: 2Gi
+  cpu: 1.2
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"

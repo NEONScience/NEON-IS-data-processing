@@ -7,7 +7,7 @@ transform:
   - ./flow.tsdl.comb.splt.R
   - DirIn=$DIR_IN
   - DirOut=/pfs/out
-  - NameDirCombOut=/level1_reshape
+  - DirErr=/pfs/out/errored_datums
   - NameVarTime=001|030
   - MrgeCols=startDateTime|endDateTime
   - FileSchmMapDepth=$FILE_SCHEMA_MAP_DEPTH
@@ -16,9 +16,8 @@ transform:
   - StatDir=stats
   - QmDir=quality_metrics
   - NameFileSufxRm=basicStats|qualityMetrics
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:v1.0.4
-  # image_pull_secrets:
-  # - battelleecology-quay-read-all-pull-secret
+  - SplitGroupName=temp-specific-depths-lakes-split_
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-tsdl-comb-splt:sha-949c8b0
   env:
     LOG_LEVEL: INFO
 input:
@@ -26,24 +25,29 @@ input:
   - pfs:
       name: DIR_IN
       repo: tempSpecificDepthLakes_level1_group
-      branch: master
-      glob: "/tchain/*/*/*"
+      glob: "/*/*/*/*"
   - pfs:
       name: FILE_SCHEMA_MAP_COLS
-      repo: avro_schemas_tempSpecificDepthLakes
-      branch: master
-      glob: "/tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_column_term_substitutions.avsc"
+      repo: tempSpecificDepthLakes_avro_schemas
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_column_term_substitutions.avsc
   - pfs:
       name: FILE_SCHEMA_MAP_DEPTH
-      repo: avro_schemas_tempSpecificDepthLakes
-      branch: master
-      glob: "/tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_depth_term_map.avsc"
+      repo: tempSpecificDepthLakes_avro_schemas
+      glob: /tempSpecificDepthLakes/tempSpecificDepthLakes_dp01_depth_term_map.avsc
 parallelism_spec:
-  constant: 1
-resource_requests:
-  memory: 200M
-  cpu: 0.5
+  constant: 8
 autoscaling: true
+resource_requests:
+  memory: 2G
+  cpu: 2.6
+resource_limits:
+  memory: 3G
+  cpu: 3.2
+sidecar_resource_requests:
+  memory: 3G
+  cpu: 0.5
+datum_set_spec:
+  number: 1
 scheduling_spec:
   node_selector:
     cloud.google.com/gke-ephemeral-storage-local-ssd: "true"
@@ -61,14 +65,3 @@ pod_spec: |-
       "operator": "Exists"
     }  
   ] }
-pod_patch: |-
-  [
-    { "op": "replace",
-      "path":"/containers/1/resources/requests/memory",
-      "value":"500M"
-    },
-    { "op": "replace",
-      "path": "/containers/1/resources/requests/cpu",
-      "value": ".2"
-    }
-  ]
