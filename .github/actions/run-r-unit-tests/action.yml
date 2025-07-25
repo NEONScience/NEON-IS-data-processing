@@ -4,8 +4,6 @@ description: "Run R unit tests on NEONprocIS.base"
 inputs:
   image-tag:
     required: true
-  image-tag:
-    required: true
 
 runs:
    using: "composite"
