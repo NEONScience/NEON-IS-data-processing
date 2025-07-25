@@ -130,7 +130,7 @@ input:
   join:
     - pfs:
         name: GROUP_PATH
-        repo: tempSpecificDepthLakes_level1_reshape
+        repo: tempSpecificDepthLakes_level1_grp_reshape
         glob: /(*)/(*)/(*)
         joinOn: $1/$2/$3
         outer_join: true # Need outer join to pull in with or without SRFs
