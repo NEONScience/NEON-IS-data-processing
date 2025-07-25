@@ -1,6 +1,6 @@
 ---
 pipeline:
-  name: tchain_data_source_kafka_current
+  name: tchain_data_source_kafka
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-kfka-load-arry-pars:v1.2.3
   image_pull_secrets:

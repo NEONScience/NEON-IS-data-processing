@@ -2,7 +2,7 @@
 pipeline:
   name: tchain_fill_date_gaps_and_regularize
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.1.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-gf-rglr:v1.1.1
   cmd:
   - sh
   - "-c"
@@ -11,11 +11,14 @@ transform:
     # Use bash-scrict mode. See http://redsymbol.net/articles/unofficial-bash-strict-mode/
     set -euo pipefail
     IFS=$'\n\t'
+    
     # Refresh interim directories with each datum (otherwise they persist and cause probs)
     rm -rf $OUT_PATH
     mkdir -p $OUT_PATH
+    
     # Run first module - date-gap-filler (using environment variables below as input parameters)
     python3 -m date_gap_filler.date_gap_filler_main
+    
     # Run second module - regularize
     Rscript ./flow.rglr.R \
       DirIn=/tmp/pfs/date_filled \

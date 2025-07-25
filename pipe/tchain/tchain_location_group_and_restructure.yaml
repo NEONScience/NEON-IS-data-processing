@@ -2,7 +2,7 @@
 pipeline:
   name: tchain_location_group_and_restructure
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-loc-grp-strc-comb:v1.2.1
   cmd:
   - sh
   - "-c"
@@ -88,7 +88,7 @@ resource_limits:
   memory: 2G
   cpu: 4.5
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 0.5
 datum_set_spec:
   number: 1
