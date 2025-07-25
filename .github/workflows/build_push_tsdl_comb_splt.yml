@@ -1,4 +1,4 @@
-name: "Build-push_flow.tsdl.comb.splt"
+name: "Build-push_tsdl_comb_splt"
 
 on:
   push:
