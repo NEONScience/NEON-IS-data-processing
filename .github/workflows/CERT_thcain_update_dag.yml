@@ -1,13 +1,11 @@
-name: DEV-tchain-update-dag
+name: CERT-tchain-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'cert'
     paths:
       - 'pipe/tchain/*.yaml'
-      - 'pipe/tchain/pipe_list_tchain.txt'
-      - 'pipe/tempSpeificDepthLakes/*.yaml'
-      - 'pipe/tempSpeificDepthLakes/pipe_list_tempSpeificDepthLakes.txt'
+      - 'pipe/tchain/pipe_list_tchain_initial_load.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 jobs:
@@ -41,9 +39,9 @@ jobs:
     runs-on: arc-neon-gke
     #runs-on: ubuntu-latest 
     env:
-      PACHD_ADDRESS: grpcs://pachyderm-dev.transitions-nonprod.gcp.neoninternal.org:443
-      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermDev }}
-      PATHS: 'pipe/tchain=pipe_list_tchain.txt,pipe/tempSpeificDepthLakes=tempSpeificDepthLakes.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
+      PACHD_ADDRESS: grpcs://pachyderm-cert.transitions-nonprod.gcp.neoninternal.org:443
+      PACH_TOKEN: ${{ secrets.RepoOwnerPachydermCert }}
+      PATHS: 'pipe/tchain=pipe_list_tchain_initial_load.txt' # Format: '<directory>=<pipe_list_file>'. Separate multiple with comma (e.g. 'pipe/pqs1=pipe_list_pqs1.txt,pipe/parWaterSurface=pipe_list_parWaterSurface.txt'). Order matters.
       TRANSACTION: True
       UPDATE_SCOPE: changed # 'all' or 'changed'. If not specified, all will be updated. 'changed' will update/create any changed/non-existent pipelines.
       CHANGED_FILES: ${{needs.changed_files.outputs.changed_file_list}}
