@@ -35,7 +35,6 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip3 install --no-cache-dir --upgrade pip setuptools wheel && \
     pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR}/requirements.txt && \
-    pip3 install --no-cache-dir -r ${CONTAINER_APP_DIR}/${APP_DIR_2}/requirements.txt && \
     apt-get autoremove -y && \
     apt-get autoclean -y && \
     groupadd -g 9999 appuser && \
