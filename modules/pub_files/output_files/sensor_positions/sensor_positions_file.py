@@ -10,6 +10,9 @@ from pub_files.output_files.filename_format import get_filename
 from pub_files.output_files.sensor_positions.sensor_position import get_position
 from pub_files.output_files.sensor_positions.sensor_positions_database import SensorPositionsDatabase
 
+# Temporary - for tchain
+from pub_files.output_files.sensor_positions.sensor_position import get_property
+
 
 def write_file(out_path: Path, location_path: Path, elements: PathElements, timestamp: datetime,
                database: SensorPositionsDatabase) -> Path:
@@ -37,6 +40,14 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                     row_x_offset: float = round(geolocation.x_offset, 2)
                     row_y_offset: float = round(geolocation.y_offset, 2)
                     row_z_offset: float = round(geolocation.z_offset, 2)
+                    
+                    
+                    # Temp stuff for tchain
+                    location = database.get_named_location(named_location_name)
+                    p1=get_property(location.properties,'ThermistorDepth501')
+                    print(f'ThermistorDepth501={p1}')
+                    
+                    
                     row_pitch: float = round(geolocation.alpha, 2)
                     row_roll: float = round(geolocation.beta, 2)
                     row_azimuth: float = round(geolocation.gamma, 2)
