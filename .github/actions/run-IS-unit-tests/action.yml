@@ -91,7 +91,11 @@ runs:
         run: |
           devtools::install("./pack/NEONprocIS.base")
           library("${{ env.MODULE_BASE_NAME }}")
-          if ("${{ env.MODULE_NAME }}" != "${{ env.MODULE_BASE_NAME }}") {
+          if ("${{ env.MODULE_NAME }}" == "NEONprocIS.wq") {
+            devtools::install("./pack/NEONprocIS.cal")
+            library("NEONprocIS.cal")
+          }
+          else ("${{ env.MODULE_NAME }}" != "${{ env.MODULE_BASE_NAME }}") {
             devtools::install("${{ env.MODULE_PATH }}")
             library("${{ env.MODULE_NAME }}")
           }
