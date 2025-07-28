@@ -1,17 +1,14 @@
 import csv
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple, List
+from typing import Tuple, List, Dict, Optional
 
 import common.date_formatter as date_formatter
 from pub_files.database.geolocation_geometry import Geometry
 from pub_files.input_files.file_metadata import PathElements
 from pub_files.output_files.filename_format import get_filename
-from pub_files.output_files.sensor_positions.sensor_position import get_position
+from pub_files.output_files.sensor_positions.sensor_position import get_position, get_property
 from pub_files.output_files.sensor_positions.sensor_positions_database import SensorPositionsDatabase
-
-# Temporary - for tchain
-from pub_files.output_files.sensor_positions.sensor_position import get_property
 
 
 def write_file(out_path: Path, location_path: Path, elements: PathElements, timestamp: datetime,
@@ -28,8 +25,11 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
         for path in location_path.parent.parent.rglob(f'*/{site}/location/*/*.json'):
             if path.is_file() and path.name.startswith('CFGLOC'):
                 named_location_name = path.stem
+                location = database.get_named_location(named_location_name)
+                print(location.properties)
                 (row_hor_ver, row_location_id, row_description) = get_named_location_data(database, named_location_name)
                 geolocations = database.get_geolocations(named_location_name)
+                
                 for geolocation in geolocations:
                     # offset location
                     offset_name = geolocation.offset_name
@@ -43,7 +43,6 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                     
                     
                     # Temp stuff for tchain
-                    location = database.get_named_location(named_location_name)
                     thermistor_depths={}
                     thermistor_depths['501']=get_property(location.properties,'ThermistorDepth501')
                     thermistor_depths['502']=get_property(location.properties,'ThermistorDepth502')
