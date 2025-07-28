@@ -106,7 +106,7 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                                        row_reference_location_end_date,
                                        row_x_offset,
                                        row_y_offset,
-                                       round(row_z_offset-thermistor_depths[key], 2)
+                                       round(row_z_offset-thermistor_depths[key], 2),
                                        row_pitch,
                                        row_roll,
                                        row_azimuth,
