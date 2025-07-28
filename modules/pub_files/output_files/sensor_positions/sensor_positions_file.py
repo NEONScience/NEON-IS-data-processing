@@ -44,30 +44,20 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                     
                     # Temp stuff for tchain
                     location = database.get_named_location(named_location_name)
-                    p1=get_property(location.properties,'ThermistorDepth501')
-                    p2=get_property(location.properties,'ThermistorDepth502')
-                    p3=get_property(location.properties,'ThermistorDepth503')
-                    p4=get_property(location.properties,'ThermistorDepth504')
-                    p5=get_property(location.properties,'ThermistorDepth505')
-                    p6=get_property(location.properties,'ThermistorDepth506')
-                    p7=get_property(location.properties,'ThermistorDepth507')
-                    p8=get_property(location.properties,'ThermistorDepth508')
-                    p9=get_property(location.properties,'ThermistorDepth509')
-                    p10=get_property(location.properties,'ThermistorDepth510')
-                    p11=get_property(location.properties,'ThermistorDepth511')
-                    print(f'ThermistorDepth501={p1}')
-                    print(f'ThermistorDepth502={p2}')
-                    print(f'ThermistorDepth503={p3}')
-                    print(f'ThermistorDepth504={p4}')
-                    print(f'ThermistorDepth505={p5}')
-                    print(f'ThermistorDepth506={p6}')
-                    print(f'ThermistorDepth507={p7}')
-                    print(f'ThermistorDepth508={p8}')
-                    print(f'ThermistorDepth509={p9}')
-                    print(f'ThermistorDepth510={p10}')
-                    print(f'ThermistorDepth511={p11}')
-                    
-                    
+                    thermistor_depths={}
+                    thermistor_depths['501']=get_property(location.properties,'ThermistorDepth501')
+                    thermistor_depths['502']=get_property(location.properties,'ThermistorDepth502')
+                    thermistor_depths['503']=get_property(location.properties,'ThermistorDepth503')
+                    thermistor_depths['504']=get_property(location.properties,'ThermistorDepth504')
+                    thermistor_depths['505']=get_property(location.properties,'ThermistorDepth505')
+                    thermistor_depths['506']=get_property(location.properties,'ThermistorDepth506')
+                    thermistor_depths['507']=get_property(location.properties,'ThermistorDepth507')
+                    thermistor_depths['508']=get_property(location.properties,'ThermistorDepth508')
+                    thermistor_depths['509']=get_property(location.properties,'ThermistorDepth509')
+                    thermistor_depths['510']=get_property(location.properties,'ThermistorDepth510')
+                    thermistor_depths['511']=get_property(location.properties,'ThermistorDepth511')
+                    print(f'ThermistorDepth501={thermistor_depths["501"]}')
+
                     row_pitch: float = round(geolocation.alpha, 2)
                     row_roll: float = round(geolocation.beta, 2)
                     row_azimuth: float = round(geolocation.gamma, 2)
@@ -96,31 +86,40 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                         row_north_offset: float = round(north_offset, 2) if north_offset is not None else ''
                         row_reference_location_start_date = format_date(reference_geolocation.start_date)
                         row_reference_location_end_date = format_date(reference_geolocation.end_date)
-                        # create row
-                        row = [row_hor_ver,
-                               row_location_id,
-                               row_description,
-                               row_position_start_date,
-                               row_position_end_date,
-                               row_reference_location_id,
-                               row_reference_location_description,
-                               row_reference_location_start_date,
-                               row_reference_location_end_date,
-                               row_x_offset,
-                               row_y_offset,
-                               row_z_offset,
-                               row_pitch,
-                               row_roll,
-                               row_azimuth,
-                               row_reference_location_latitude,
-                               row_reference_location_longitude,
-                               row_reference_location_elevation,
-                               row_east_offset,
-                               row_north_offset,
-                               row_x_azimuth,
-                               row_y_azimuth]
-                        if row not in file_rows:  # prevent duplicates
-                            file_rows.append(row)
+                        
+                        # Loop around the thermistor depth properties and split out the main
+                        # hor.ver to each depth
+                        for key in thermistor_depths.keys():
+                            if thermistor_depths[key] is not None:
+                                hor_ver_split=row_hor_ver.split('.')
+                                hor_ver_split[1]=key
+                                row_hor_ver_depth=".".join(hor_ver_split)
+                                
+                                # create row
+                                row = [row_hor_ver_depth,
+                                       row_location_id,
+                                       row_description,
+                                       row_position_start_date,
+                                       row_position_end_date,
+                                       row_reference_location_id,
+                                       row_reference_location_description,
+                                       row_reference_location_start_date,
+                                       row_reference_location_end_date,
+                                       row_x_offset,
+                                       row_y_offset,
+                                       row_z_offset-thermistor_depths[key],
+                                       row_pitch,
+                                       row_roll,
+                                       row_azimuth,
+                                       row_reference_location_latitude,
+                                       row_reference_location_longitude,
+                                       row_reference_location_elevation,
+                                       row_east_offset,
+                                       row_north_offset,
+                                       row_x_azimuth,
+                                       row_y_azimuth]
+                                if row not in file_rows:  # prevent duplicates
+                                    file_rows.append(row)
         writer.writerows(file_rows)
     return file_path
 
