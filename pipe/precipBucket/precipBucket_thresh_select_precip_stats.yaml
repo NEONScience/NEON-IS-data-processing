@@ -2,7 +2,7 @@
 pipeline:
   name: precipBucket_thresh_select_precip_stats
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-thsh-slct-prcp-stat:sha-486f0c5
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-thsh-slct-prcp-stat:v1.0.0
   cmd:
   - sh
   - "-c"
@@ -39,7 +39,7 @@ transform:
       
     EOF
   env:
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     PARALLELIZATION_INTERNAL: '3' # For threshold select module
 output_branch: master
 input:
