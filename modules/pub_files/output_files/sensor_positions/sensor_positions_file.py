@@ -56,7 +56,6 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                     thermistor_depths['509']=get_property(location.properties,'ThermistorDepth509')
                     thermistor_depths['510']=get_property(location.properties,'ThermistorDepth510')
                     thermistor_depths['511']=get_property(location.properties,'ThermistorDepth511')
-                    print(f'ThermistorDepth501={thermistor_depths["501"]}')
 
                     row_pitch: float = round(geolocation.alpha, 2)
                     row_roll: float = round(geolocation.beta, 2)
@@ -107,7 +106,7 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                                        row_reference_location_end_date,
                                        row_x_offset,
                                        row_y_offset,
-                                       row_z_offset-thermistor_depths[key],
+                                       round(row_z_offset-thermistor_depths[key], 2)
                                        row_pitch,
                                        row_roll,
                                        row_azimuth,
