@@ -88,7 +88,7 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     for reference_geolocation in database.get_geolocations(offset_name):
         reference_position = get_position(reference_geolocation, geolocation.x_offset, geolocation.y_offset)
         
-        print(f'reference_geolocation.latitude={reference_geolocation.latitude}')
+        print(f'reference_geolocation={reference_geolocation')
         
         complete_row_data = base_data.copy()
         complete_row_data.update({
@@ -111,33 +111,35 @@ def _create_standard_row(database: SensorPositionsDatabase, geolocation,
     complete_rows = _add_reference_position_data(database, base_data, geolocation, geolocation.offset_name)
     
     # Convert to list format (assuming we take the first reference location for standard sensors)
+    rows=[]
     if complete_rows:
-        row_data = complete_rows[0]
-        return [
-            row_data['row_hor_ver'],
-            row_data['row_location_id'],
-            row_data['row_description'],
-            row_data['row_position_start_date'],
-            row_data['row_position_end_date'],
-            row_data['row_reference_location_id'],
-            row_data['row_reference_location_description'],
-            row_data['row_reference_location_start_date'],
-            row_data['row_reference_location_end_date'],
-            row_data['row_x_offset'],
-            row_data['row_y_offset'],
-            row_data['row_z_offset'],
-            row_data['row_pitch'],
-            row_data['row_roll'],
-            row_data['row_azimuth'],
-            row_data['row_reference_location_latitude'],
-            row_data['row_reference_location_longitude'],
-            row_data['row_reference_location_elevation'],
-            row_data['row_east_offset'],
-            row_data['row_north_offset'],
-            row_data['row_x_azimuth'],
-            row_data['row_y_azimuth']
-        ]
-    return []
+        for row_data in complete_rows:
+            row = [
+                row_data['row_hor_ver'],
+                row_data['row_location_id'],
+                row_data['row_description'],
+                row_data['row_position_start_date'],
+                row_data['row_position_end_date'],
+                row_data['row_reference_location_id'],
+                row_data['row_reference_location_description'],
+                row_data['row_reference_location_start_date'],
+                row_data['row_reference_location_end_date'],
+                row_data['row_x_offset'],
+                row_data['row_y_offset'],
+                row_data['row_z_offset'],
+                row_data['row_pitch'],
+                row_data['row_roll'],
+                row_data['row_azimuth'],
+                row_data['row_reference_location_latitude'],
+                row_data['row_reference_location_longitude'],
+                row_data['row_reference_location_elevation'],
+                row_data['row_east_offset'],
+                row_data['row_north_offset'],
+                row_data['row_x_azimuth'],
+                row_data['row_y_azimuth']
+            ]
+            rows.append(row)
+    return rows
 
 
 def get_column_names() -> List[str]:
