@@ -88,7 +88,7 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     for reference_geolocation in database.get_geolocations(offset_name):
         reference_position = get_position(reference_geolocation, geolocation.x_offset, geolocation.y_offset)
         
-        print(f'reference_geolocation={reference_geolocation')
+        print(f'reference_geolocation={reference_geolocation}')
         
         complete_row_data = base_data.copy()
         complete_row_data.update({
