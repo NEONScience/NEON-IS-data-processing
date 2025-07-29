@@ -91,8 +91,10 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
         print(f'reference_geolocation={type(reference_geolocation.geometry)}')
         rg=reference_geolocation.geometry.replace('POINT Z (','')
         rg=rg.replace(')','')
-        print(f'reference_lat={rg.split(' ')[1]}')
-        
+        print(f'reference_lat={rg.split(" ")[1]}')
+        print(f'reference_geolocation.start_date={reference_geolocation.start_date}')
+        print(f'type={type(reference_geolocation.start_date)}')
+
         complete_row_data = base_data.copy()
         complete_row_data.update({
             'row_x_azimuth': round(reference_position.x_azimuth, 2) if reference_position.x_azimuth is not None else '',
