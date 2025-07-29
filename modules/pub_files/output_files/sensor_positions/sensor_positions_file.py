@@ -105,7 +105,7 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
 
 
 def _create_standard_row(database: SensorPositionsDatabase, geolocation, 
-                        row_hor_ver: str, row_location_id: str, row_description: str) -> List:
+                        row_hor_ver: str, row_location_id: str, row_description: str) -> List[List]:
     """Create a standard sensor row."""
     base_data = _create_base_row_data(database, geolocation, row_hor_ver, row_location_id, row_description)
     complete_rows = _add_reference_position_data(database, base_data, geolocation, geolocation.offset_name)
