@@ -88,7 +88,7 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     for reference_geolocation in database.get_geolocations(offset_name):
         reference_position = get_position(reference_geolocation, geolocation.x_offset, geolocation.y_offset)
         
-        print(f'reference_geolocation={reference_geolocation}')
+        print(f'reference_geolocation={reference_geolocation.geometry}')
         
         complete_row_data = base_data.copy()
         complete_row_data.update({
@@ -139,6 +139,7 @@ def _create_standard_row(database: SensorPositionsDatabase, geolocation,
                 row_data['row_y_azimuth']
             ]
             rows.append(row)
+    print(rows)
     return rows
 
 
