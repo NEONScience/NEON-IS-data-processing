@@ -88,6 +88,8 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     for reference_geolocation in database.get_geolocations(offset_name):
         reference_position = get_position(reference_geolocation, geolocation.x_offset, geolocation.y_offset)
         
+        print(f'reference_geolocation.latitude={reference_geolocation.latitude}')
+        
         complete_row_data = base_data.copy()
         complete_row_data.update({
             'row_x_azimuth': round(reference_position.x_azimuth, 2) if reference_position.x_azimuth is not None else '',
