@@ -39,8 +39,8 @@ def write_file(out_path: Path, location_path: Path, elements: PathElements, time
                             row_location_id, row_description,
                             _create_base_row_data, _add_reference_position_data)
                     else:
-                        rows = [_create_standard_row(database, geolocation, row_hor_ver, 
-                                                   row_location_id, row_description)]
+                        rows = _create_standard_rows(database, geolocation, row_hor_ver, 
+                                                   row_location_id, row_description)
                     
                     # Add rows, preventing duplicates
                     for row in rows:
@@ -104,9 +104,9 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     return complete_rows
 
 
-def _create_standard_row(database: SensorPositionsDatabase, geolocation, 
+def _create_standard_rows(database: SensorPositionsDatabase, geolocation, 
                         row_hor_ver: str, row_location_id: str, row_description: str) -> List[List]:
-    """Create a standard sensor row."""
+    """Create a standard sensor rows."""
     base_data = _create_base_row_data(database, geolocation, row_hor_ver, row_location_id, row_description)
     complete_rows = _add_reference_position_data(database, base_data, geolocation, geolocation.offset_name)
     
@@ -139,7 +139,6 @@ def _create_standard_row(database: SensorPositionsDatabase, geolocation,
                 row_data['row_y_azimuth']
             ]
             rows.append(row)
-    print(rows)
     return rows
 
 

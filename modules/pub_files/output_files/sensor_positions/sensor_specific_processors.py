@@ -67,5 +67,4 @@ def create_tchain_rows(database: SensorPositionsDatabase, location, geolocation,
                 ]
                 tchain_rows.append(tchain_row)
     
-    print(tchain_rows)
     return tchain_rows
