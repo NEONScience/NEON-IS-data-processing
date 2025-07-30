@@ -15,7 +15,7 @@ concurrency:
       contains(github.workflow, 'update-dag') ||
       contains(github.workflow, 'site-list')
     }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   # -------------------------------------------------------------
   # Using GitHub's API is not supported for push events
