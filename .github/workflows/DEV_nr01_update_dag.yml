@@ -9,10 +9,13 @@ on:
       - 'pipe/nr01/pipe_list_nr01_development.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
+# Workflow-level concurrency
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{
+      contains(github.workflow, 'update-dag') ||
+      contains(github.workflow, 'site-list')
+    }}
   cancel-in-progress: true
-
 jobs:
   # -------------------------------------------------------------
   # Using GitHub's API is not supported for push events

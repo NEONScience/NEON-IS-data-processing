@@ -8,9 +8,13 @@ on:
       - 'pipe/nr01/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
+# Workflow-level concurrency
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{
+      contains(github.workflow, 'update-dag') ||
+      contains(github.workflow, 'site-list')
+    }}
+  cancel-in-progress: false    #queue new workflows behind running ones
 
 jobs:
   put_files:
