@@ -8,7 +8,6 @@ on:
       - 'pipe/nr01/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
-# Workflow-level concurrency
 concurrency:
   group: ${{ 
     contains(github.workflow, 'update-dag') && 'dag-queue' ||
