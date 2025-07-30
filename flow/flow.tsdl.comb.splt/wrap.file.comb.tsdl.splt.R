@@ -63,9 +63,15 @@
 
 ##############################################################################################
 wrap.file.comb.tsdl.splt <- function(filePths,
+                                     fileNames,
+                                     InfoDirIn,
+                                     DirOut,
+                                     NameFileSufxRm,
                                     nameVarTime, 
                                     nameSchmMapDpth,
                                     nameSchmMapCols,
+                                    GroupDir,
+                                    SplitGroupName,
                                     mrgeCols=c("startDateTime", "endDateTime"),
                                     locDir="location",
                                     statDir="stats",
@@ -329,11 +335,21 @@ wrap.file.comb.tsdl.splt <- function(filePths,
       stop()
     }
     
-    # Rename to HOR.VER
+    # Rename to group and HOR.VER
+    dirRepo<-InfoDirIn$dirRepo
+    #shorten dirRepo to include everything after the last "_" and before the next number
+    NEONsite <- sub(".*_", "", dirRepo)
+    NEONsite <- substr(NEONsite,1,4)
+    #verify that NEONsite is 4 capital letters
+    if (nchar(NEONsite) != 4) {
+      log$error(base::paste0("The site name is invalid: ",NEONsite))
+      stop()
+    }
+    
     base::names(lsDpth) <- base::unlist(base::lapply(1:base::length(lsDpth),
-                        function(i) base::unique(base::paste(lsDpth[[i]]$horizontalPosition,
-                                                             lsDpth[[i]]$verticalPosition,
-                                                             sep ="."))))
+                        function(i) base::unique(base::paste0(SplitGroupName,NEONsite,
+                                                            lsDpth[[i]]$horizontalPosition,
+                                                            lsDpth[[i]]$verticalPosition))))
     
     # Remove horizontalPosition & verticalPosition columns
     lsD <- lapply(1:length(lsDpth), function(i) {x <- lsDpth[[i]] %>% dplyr::select(-base::c("horizontalPosition","verticalPosition")); return(x)})
@@ -342,8 +358,166 @@ wrap.file.comb.tsdl.splt <- function(filePths,
     # A list of times and a list of depths containing dataframes of data
     lsDataVarTime[[varTime]] <- lsD
     log$debug(base::paste0('Successfully merged the contents of ', varTime,' time interval files.'))
+    
+    
+    dataTime <- lsDataVarTime[[varTime]]
+    
+    log$debug(base::paste0(
+      'HOR.VER locations found in the combined data files: ',
+      base::paste0(base::names(dataTime), collapse = ",")
+    ))
+    
+    for(nameLoc in base::names(dataTime)){
+      data <- dataTime[[nameLoc]]
+      
+      #split 
+      dirRepoParts <- strsplit(dirRepo, "/")[[1]]
+      dirRepoParts <- dirRepoParts[dirRepoParts != ""]  # Remove empty strings
+      idxDirOut <- base::paste0(DirOut,
+                                "/",dirRepoParts[1],
+                               "/",dirRepoParts[2],
+                               "/",dirRepoParts[3],
+                               "/",nameLoc)
+      
+      NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
+                                    DirSub = "data",
+                                    log = log)
+      NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
+                                    DirSub = "group",
+                                    log = log)
+      NEONprocIS.base::def.dir.crea(DirBgn = idxDirOut,
+                                    DirSub = "location",
+                                    log = log)
+      
+      
+      # Take stock of the combined data
+      nameCol <- base::names(data)
+      log$debug(base::paste0(
+        'Columns found in the combined data files: ',
+        base::paste0(nameCol, collapse = ',')
+      ))
+      
+      # ----------------------------------------------------------------------- #
+      # Remove suffix strings, Take the shortest file name, insert HOR.VER.TMI
+      # ----------------------------------------------------------------------- #
+      # Subset to dat files that should begin with 'tchain'
+      fileDat <- fileNames[base::intersect(base::grep("tchain", fileNames), base::grep(varTime,fileNames))] 
+      
+      # Remove the NameFileSufx strings to simplify output filename
+      fileDats <-  base::lapply(NameFileSufxRm, 
+                                function(x) 
+                                  base::gsub(pattern="__",replacement="_",
+                                             base::gsub(pattern=x,replacement = "",
+                                                        fileDat) ) )
+      fileDats <- base::unlist(base::lapply(fileDats, 
+                                            function(x) x[base::which.min(base::nchar(x))]))
+      
+      fileBase <-
+        fileDats[base::nchar(fileDats) == base::min(base::nchar(fileDats))][1]
+      # Insert the HOR.VER into the filename by replacing the varTime with the standard HORVER_TMI
+      HORVER <- substr(nameLoc, nchar(nameLoc) - 5, nchar(nameLoc))
+      VER <- substr(HORVER, nchar(HORVER) - 2, nchar(HORVER))
+      fileBaseLoc <- base::gsub(varTime,
+                                base::paste0(HORVER,"_",varTime),fileBase)
+      
+      fileOut <-
+        NEONprocIS.base::def.file.name.out(nameFileIn = fileBaseLoc,
+                                           sufx = "",
+                                           log = log)
+      log$debug(base::paste0(
+        "Named output filepath as ", fileOut))
+      
+      nameFileOut <- base::paste0(idxDirOut, '/data/', fileOut)
+      
+      # ----------------------------------------------------------------------- #
+      # Write out the data file.
+      # ----------------------------------------------------------------------- #
+      rptWrte <-
+        base::try(NEONprocIS.base::def.wrte.parq(
+          data = data,
+          NameFile = nameFileOut,
+          NameFileSchm = NULL,
+          Schm = NULL,
+          log=log
+        ),
+        silent = TRUE)
+      if (base::class(rptWrte) == 'try-error') {
+        log$error(base::paste0(
+          'Cannot write combined file ',
+          nameFileOut,
+          '. ',
+          attr(rptWrte, "condition")
+        ))
+        stop()
+      } else {
+        log$info(base::paste0('Combined data written successfully in file: ',
+                              nameFileOut))
+      }
+      
+      
+      
+      # ----------------------------------------------------------------------- #
+      # Update group file
+      # ----------------------------------------------------------------------- #
+      log$debug(base::paste0("GroupDir: ", GroupDir))
+      groupFilePths <- base::list.files(GroupDir, full.names = TRUE)
+      log$debug(base::paste0("groupFilePths: ", groupFilePths))
+      if(base::length(groupFilePths) > 1){
+        log$info(base::paste0("Multiple location files exist. Using the first location file, ", groupFilePths[1]))
+      }
+      groupFilePth <- groupFilePths[1]
+      log$debug(base::paste0("groupFilePth: ", groupFilePth))
+      groupData <- try(rjson::fromJSON(file=groupFilePth))
+      log$debug(base::paste0("VER: ", VER))
+      groupData$features[[1]]$VER<-VER
+      groupData$features[[1]]$properties$group<-nameLoc
+      log$debug(base::paste0("updated VER: ", groupData$features[[1]]$VER))
+      log$debug(base::paste0("updated group: ", groupData$features[[1]]$properties$group))
+      #need to keep some features boxed in json formatting
+      groupData$features[[1]]$properties$data_product_ID<-list(groupData$features[[1]]$properties$data_product_ID)
+      
+      # ----------------------------------------------------------------------- #
+      # Write out group file
+      # ----------------------------------------------------------------------- #
+      
+      groupFileName <- sub(".*/", "", groupFilePth)
+      nameJsonOut <- base::paste0(idxDirOut, '/group/', groupFileName)
+      log$debug(base::paste0("groupFileName: ", groupFileName))
+      log$debug(base::paste0("nameJsonOut: ", nameJsonOut))
+      
+      jsonWrte <-
+        base::try(jsonlite::write_json(groupData, nameJsonOut, pretty = TRUE, auto_unbox=TRUE),
+                  silent = TRUE)
+      if (base::class(jsonWrte) == 'try-error') {
+        log$error(base::paste0(
+          'Cannot write combined file ',
+          nameJsonOut,
+          '. ',
+          attr(jsonWrte, "condition")
+        ))
+        stop()
+      } else {
+        log$info(base::paste0('Group JSON written successfully in file: ',
+                              nameJsonOut))
+      }
+      
+      
+      # ----------------------------------------------------------------------- #
+      # Copy over location file
+      # ----------------------------------------------------------------------- #
+      # Symbolically link each file
+      for(idxFileCopy in locFilePths){
+        idxFileName <- sub(".*\\/", "", idxFileCopy)
+        cmdCopy <- base::paste0('ln -s ',idxFileCopy,' ',base::paste0(idxDirOut,'/',locDir,'/',idxFileName))
+        rptCopy <- base::system(cmdCopy)
+      }
+      
+      
+      
+    } # end loop on HOR.VER
+    
   } # End loop around time variables
   
-  return(lsDataVarTime)
+  return()
 }
 

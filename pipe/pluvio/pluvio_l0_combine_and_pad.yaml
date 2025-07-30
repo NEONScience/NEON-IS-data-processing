@@ -2,7 +2,7 @@
 pipeline:
   name: pluvio_l0_combine_and_pad
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-data-pad-shft:sha-63f2a91
+  image: us-central1-docker.pkg.dev/neon-shared-service/neonscience/neon-is-l0-comb-pad:v1.0.0
   cmd:
   - sh
   - "-c"
@@ -88,7 +88,7 @@ transform:
             # Join on named location (already joined below by day)
             join_indices: [7]
     OUT_PATH_JOINER: /tmp/pfs/filter_joined # Note that R modules use "pfs" in the path structure to determine datums
-    LOG_LEVEL: DEBUG
+    LOG_LEVEL: INFO
     RELATIVE_PATH_INDEX_JOINER: "3" # Must be consistent across inputs 
     LINK_TYPE: COPY # options are COPY or SYMLINK. MUST BE SIMLINK IF USING COMBINED MODULE.
     ### parser pad  
