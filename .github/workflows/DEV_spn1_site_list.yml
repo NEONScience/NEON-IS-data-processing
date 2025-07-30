@@ -1,11 +1,20 @@
-name: DEV-spn1-site-list
+name: Parallel-Jobs-DEV-spn1-site-list
 on:
   push:
     branches:
-      - 'master'
+      - 'choim-test-concurr'
     paths:
       - 'pipe/spn1/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
+
+concurrency:
+  group: ${{ 
+    contains(github.workflow, 'update-dag') && 'dag-queue' ||
+    contains(github.workflow, 'site-list') && 'site-queue' ||
+    github.workflow 
+  }}
+  cancel-in-progress: false # Queue them up, don't cancel
+
 jobs:
   put_files:
     runs-on: arc-neon-gke
