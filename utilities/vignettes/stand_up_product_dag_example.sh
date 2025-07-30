@@ -9,12 +9,12 @@
 
 # Define paths
 data_path='/scratch/pfs' # Where base repos like avro_schemas, empty_files, etc. are stored
-git_path_pipelines='/home/NEON/csturtevant/R/NEON-IS-data-processing-homeDir/pipe'
-git_path_avro='/home/NEON/csturtevant/R/NEON-IS-avro-schemas'
-git_path_avro_l0='/home/NEON/csturtevant/R/neon-avro-schemas'
+git_path_pipelines='/home/NEON/ncatolico/NEON-IS-data-processing-homeDir/pipe'
+git_path_avro='/home/NEON/ncatolico/NEON-IS-avro-schemas'
+git_path_avro_l0='/home/NEON/ncatolico/neon-avro-schemas'
 pipe_list_prefix='pipe_list_'
-source_type='prt'
-product='tempSoil'
+source_type='tchain'
+product='tempSpecificDepthLakes'
 
 # Define paths based on base paths and product information above 
 spec_path_source_type=$git_path_pipelines/$source_type
