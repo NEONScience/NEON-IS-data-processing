@@ -95,10 +95,11 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
         elif (geolocation.end_date is None) and (reference_geolocation.end_date is not None):
             if geolocation.start_date >= reference_geolocation.end_date:
                 continue
-        elif geolocation.end_date <= reference_geolocation.start_date:
-            continue
-        elif geolocation.start_date >= reference_geolocation.end_date:
-            continue
+        elif (geolocation.end_date is not None) and (reference_geolocation.end_date is not None):
+            if geolocation.end_date <= reference_geolocation.start_date:
+                continue
+            elif geolocation.start_date >= reference_geolocation.end_date:
+                continue
         
         reference_position = get_position(reference_geolocation, geolocation.x_offset, geolocation.y_offset)
         
