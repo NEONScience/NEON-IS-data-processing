@@ -10,8 +10,7 @@ on:
 concurrency:
   group: ${{ 
     contains(github.workflow, 'update-dag') && 'dag-queue' ||
-    contains(github.workflow, 'site-list') && 'site-queue' ||
-    github.workflow 
+    contains(github.workflow, 'site-list') && 'site-queue'
   }}
   cancel-in-progress: false # Queue them up, don't cancel
 
