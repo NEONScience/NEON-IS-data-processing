@@ -1,4 +1,4 @@
-name: DEV-spn1-update-dag
+name: Parallel-Jobs-DEV-spn1-update-dag
 on:
   push:
     branches:
