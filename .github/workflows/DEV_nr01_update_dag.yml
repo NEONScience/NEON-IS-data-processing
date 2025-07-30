@@ -10,11 +10,11 @@ on:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
-concurrency
+concurrency:
   group: ${{ 
-    (endsWith(github.workflow, 'update-dag') || endsWith(github.workflow, 'site-list')) 
-    && 'dag-site-queue' 
-    || github.workflow 
+    contains(github.workflow, 'update-dag') && 'dag-queue' ||
+    contains(github.workflow, 'site-list') && 'site-queue' ||
+    github.workflow 
   }}
   cancel-in-progress: false  # Queue them up, don't cancel
 jobs:
