@@ -56,7 +56,7 @@ def _create_base_row_data(database: SensorPositionsDatabase, geolocation,
     """Create the common row data used by both standard and specific sensors."""
     offset_name = geolocation.offset_name
     offset_geometry: Geometry = database.get_geometry(offset_name)
-    print(offset_geometry)
+
     # Basic geolocation data
     base_data = {
         'row_hor_ver': row_hor_ver,
@@ -86,15 +86,22 @@ def _add_reference_position_data(database: SensorPositionsDatabase, base_data: D
     complete_rows = []
     
     for reference_geolocation in database.get_geolocations(offset_name):
+        
+        # Determine if this reference position is applicable based on the time.
+        # If reference location and geolocation don't overlap, skip
+        if (reference_geolocation.end_date is None) and (geolocation.end_date is not None):
+            if geolocation.end_date <= reference_geolocation.start_date:
+                continue
+        elif (geolocation.end_date is None) and (reference_geolocation.end_date is not None):
+            if geolocation.start_date >= reference_geolocation.end_date:
+                continue
+        elif geolocation.end_date <= reference_geolocation.start_date:
+            continue
+        elif geolocation.start_date >= reference_geolocation.end_date:
+            continue
+        
         reference_position = get_position(reference_geolocation, geolocation.x_offset, geolocation.y_offset)
         
-        print(f'reference_geolocation={type(reference_geolocation.geometry)}')
-        rg=reference_geolocation.geometry.replace('POINT Z (','')
-        rg=rg.replace(')','')
-        print(f'reference_lat={rg.split(" ")[1]}')
-        print(f'reference_geolocation.start_date={reference_geolocation.start_date}')
-        print(f'type={type(reference_geolocation.start_date)}')
-
         complete_row_data = base_data.copy()
         complete_row_data.update({
             'row_x_azimuth': round(reference_position.x_azimuth, 2) if reference_position.x_azimuth is not None else '',
