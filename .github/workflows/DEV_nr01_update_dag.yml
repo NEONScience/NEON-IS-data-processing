@@ -1,12 +1,17 @@
-name: DEV-nr01-update-dag
+name: Parallel-Jobs-lDEV-nr01-update-dag
 on:
   push:
     branches:
-      - 'master'
+ #     - 'master'
+      - 'choim-test-concurr'
     paths:
       - 'pipe/nr01/*.yaml'
       - 'pipe/nr01/pipe_list_nr01_development.txt'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   # -------------------------------------------------------------

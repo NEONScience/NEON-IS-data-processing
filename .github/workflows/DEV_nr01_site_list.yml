@@ -1,11 +1,17 @@
-name: DEV-nr01-site-list
+name: Parallel-Jobs-DEV-nr01-site-list
 on:
   push:
     branches:
-      - 'master'
+ #     - 'master'
+      - 'choim-test-concurr'
     paths:
       - 'pipe/nr01/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   put_files:
     runs-on: arc-neon-gke
