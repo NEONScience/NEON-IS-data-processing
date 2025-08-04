@@ -1,4 +1,4 @@
-name: Parallel-Jobs-lDEV-nr01-update-dag
+name: Parallel-Jobs-DEV-nr01-update-dag
 on:
   push:
     branches:
