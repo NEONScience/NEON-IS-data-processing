@@ -9,7 +9,7 @@ on:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
-    source_type: gmp343
+    source_type: 'gmp343'
   
 # Workflow-level concurrency
 concurrency:
