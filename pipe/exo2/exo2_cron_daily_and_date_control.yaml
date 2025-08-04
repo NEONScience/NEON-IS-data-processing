@@ -33,7 +33,8 @@ transform:
     export SOURCE_TYPE=$SOURCE_TYPE_BUOY
     export SITE_FILE=$SITE_FILE_BUOY
     python3 -m cron_daily_and_date_control.cron_daily_and_date_control_main
-
+    
+    EOF
 input:
   cross:
   # This cron is the central driver for daily scheduled updates, such as data ingest and metadata loaders.
