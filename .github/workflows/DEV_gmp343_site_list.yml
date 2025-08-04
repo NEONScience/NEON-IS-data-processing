@@ -1,11 +1,13 @@
-name: DEV-gmp343-site-list
+name: Parallel-Jobs-DEV-gmp343-site-list
 on:
   push:
+    branches:
  #     - 'master'
       - 'choim-test-concurr'
     paths:
-      - 'pipe/gmp343/site-list.json'
+      - 'pipe/nr01/site-list.json'
   workflow_dispatch: {} # Allows trigger of workflow from web interface
+
 
 # Workflow-level concurrency
 concurrency:
