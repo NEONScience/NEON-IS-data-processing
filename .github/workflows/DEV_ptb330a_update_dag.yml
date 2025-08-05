@@ -2,7 +2,7 @@ name: DEV-ptb330a-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/ptb330a/*.yaml'
       - 'pipe/ptb330a/pipe_list_ptb330a_development.txt'

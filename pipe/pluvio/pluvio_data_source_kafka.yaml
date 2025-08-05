@@ -2,13 +2,14 @@
 pipeline:
   name: pluvio_data_source_kafka
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.9.6
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
   # environment variables for kafka loader
     OUT_PATH:  /pfs/out #also used for parser
     LOG_LEVEL: INFO
+    SOURCE_TYPE: 'pluvio_raw' # Also used for parser
     SOURCE_TYPE_INDEX: "5"
     YEAR_INDEX: "6"
     MONTH_INDEX: "7"
@@ -21,7 +22,8 @@ transform:
     SOURCE_TYPE: 'pluvio_raw'
     DATA_PATH: /pfs/out # takes output of kafka loader as it's input to parse
     UPDATE_TRIGGER_TABLE: "False"
-    
+    RM_OFFSETS: "False"
+
   secrets:
   - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_USER
@@ -32,6 +34,9 @@ transform:
   - name: pachyderm-kafka-nonprod-auth
     env_var: KAFKA_BROKER
     key: KAFKA_BROKER
+  - name: pachyderm-kafka-auth
+    env_var: KAFKA_LOG_TOPIC
+    key: KAFKA_LOG_TOPIC
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
@@ -117,7 +122,7 @@ transform:
       done
       
       # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset 
       
       # set +x # Uncomment for debugging
       rm -rf $linkdir
@@ -153,7 +158,7 @@ transform:
       done
       
       # Upload to bucket, compacting with any existing file 
-      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}"
+      ./compact-bucket-copy.py --sourcepath "${linkdir}" --destbucket "${BUCKET_NAME}" --stripoffset
 
       # set +x # Uncomment for debugging
       rm -rf $linkdir

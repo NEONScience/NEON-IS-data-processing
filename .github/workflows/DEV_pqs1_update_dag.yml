@@ -2,7 +2,7 @@ name: DEV-pqs1-update-dag
 on:
   push:
     branches:
-      - 'master'
+      - 'none'
     paths:
       - 'pipe/pqs1/*.yaml'
       - 'pipe/pqs1/pipe_list_pqs1_development.txt'
