@@ -11,7 +11,7 @@ on:
 # Workflow-level concurrency
 concurrency: 
   group: ${{
-      endWith(github.workflow, 'update-dag') ||
+      endsWith(github.workflow, 'update-dag') ||
       endsWith(github.workflow, 'site-list') && 'operations-queue' 
     || github.workflow 
     }}
