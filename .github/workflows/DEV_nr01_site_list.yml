@@ -15,7 +15,6 @@ concurrency: site-list-update-dag-concurrency
       endsWith(github.workflow, 'site-list') && 'operations-queue' 
     || github.workflow 
     }}
-  cancel-in-queue: false
   cancel-in-progress: false  # Queue them up, don't cancel
 jobs:
   put_files:
