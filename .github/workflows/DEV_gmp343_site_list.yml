@@ -12,7 +12,7 @@ on:
 env:
       SOURCE_TYPE: "gmp343"
 concurrency: 
-  group: 
+  group:  ${{ 
     (endsWith(github.workflow, 'update-dag') ||
     endswith(github.workflow, 'site-list')) && 'operations-queue' 
     || github.workflow 
