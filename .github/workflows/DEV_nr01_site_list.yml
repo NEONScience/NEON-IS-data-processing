@@ -9,7 +9,7 @@ on:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 # Workflow-level concurrency
-concurrency: site-list-update-dag-concurrency
+concurrency: 
   group: ${{
       endWith(github.workflow, 'update-dag') ||
       endsWith(github.workflow, 'site-list') && 'operations-queue' 
