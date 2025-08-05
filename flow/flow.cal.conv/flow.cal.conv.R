@@ -80,39 +80,47 @@
 #' (and order) is "readout_time", "resistance_qfExpi","voltage_qfExpi","resistance_qfSusp","voltage_qfSusp".
 #'
 #' 6-N. "ConvFuncTermX=value" (optional), where X is an integer beginning at 1 and value contains the calibration
-#' conversion function and associated term to convert with a single call to that function. Begin each "value" 
+#' conversion function and associated term(s) to convert with a single call to that function. Begin each "value" 
 #' with the calibration conversion function to use within the NEONprocIS.cal package, followed by a 
 #' colon (:), and then the L0 term name to apply the calibration function to. 
 #' For example: "ConvFuncTerm1=def.cal.conv.poly:resistance" indicates that the L0 term "resistance"
-#' will be calibrated using the function def.cal.conv.poly. Use additional ConvFuncTermX arguments to specify
-#' additional terms and associated calibration functions to apply. For example, if the term "voltage" also uses the
+#' will be calibrated using the function def.cal.conv.poly. Use additional instances of the ConvFuncTermX 
+#' argument to indicate additional functions and associated L0 terms to calibrate, incrementing the X integer with each 
+#' additional argument. For example, if another L0 term "voltage" also uses the
 #' def.cal.conv.poly function, create and additional argument "ConvFuncTerm2=def.cal.conv.poly:voltage". Note
 #' the increment in X. An unlimited number of ConvFuncTermX arguments are allowed. 
+#'    In most cases a single call to a calibration function will convert a single L0 term, as shown in the examples above. 
+#' However, this is not required. A calibration function can produce multiple calibrated outputs from a single L0 
+#' input term, and/or multiple L0 input terms can produce a single calibrated output. The relationship between L0 
+#' input term(s) and calibrated output term(s) can be one:one, one:many, many:one, or many:many. If multiple L0 
+#' terms are used/converted in the same call to the calibration function, delimit the terms with pipes (|). For example, 
+#' if both L0 terms "resistance" and "voltage" are used to produce one or more calibrated outputs in the same call to 
+#' the calibration function def.cal.conv.cust, the argument would be "ConvFuncTermX=def.cal.conv.cust:resistance|voltage".
 #'    Note that any and all calibration functions specified here must accept arguments "data", "infoCal", "varCal", "slctCal", 
 #' "Meta", and "log", even if they are unused in the function. See any def.cal.conv.____.R function in the NEONprocIS.cal package for 
-#' explanation of these inputs, but in short, the entire L0 data frame and available calibration information and additional 
+#' explanation of these inputs, but in short, the entire input data frame and available calibration information and additional 
 #' metadata (see the PathMeta argument below) are passed into each calibration function.
-#'    In most cases a single call to a calibration function will convert a single L0 term, as shown in the examples above. 
-#' However, this is not required. A calibration function can produce multiple L0' calibrated outputs from a single L0 input term, 
-#' and/or multiple L0 input terms can produce a single calibrated L0' output. In addition, - outputs from a single L0 input If multiple terms are converted in the same call
-#' to the calibration function, delimit the terms with pipes (|). For example, if the same call to the calibration
-#' function simlultaneously  Use additional instances of the ConvFuncTermX 
-#' input to indicate additional functions and associated terms to calibrate, incrementing the X integer with each 
-#' additional argument.
 #' 
-#' If this argument is not included, no calibration conversion will be performed for any L0 data, and the output L0' data will be
-#' identical to the L0 data, aside from any relabeling of the columns as specified in FileSchmData. 
+#'    In the typical case where term(s) listed in this set of arguments match L0 term(s) in the input data and standard 
+#' calibration functions are used (such as the def.cal.conv.poly series), the calibrated output will overwrite the 
+#' original L0 data (the columns may be relabeled as specified in the output schema provided in FileSchmData). 
+#' However, if the L0 terms are desired to be retained, or there is a special case where a 
+#' "calibrated" output is generated without any L0 terms, the ConvFuncTermX argument need not specify any L0 term(s), or the
+#' specified L0 term(s) need not match any terms in the L0 data, so long as the specified calibration function knows 
+#' how to handle this. (Note that in many calibration functions, the L0 term must be indicated in order to retrieve the 
+#' applicable calibration coefficients used in the function.) The calibrated output data frame is entirely 
+#' dependent on the transformations that each calibration function performs on the input data frame, performed in sequence 
+#' according to the ConvFuncTermX arguments. For example, consider two ConvFuncTermX arguments
+#' specified as follows: "ConvFuncTerm1=voltage:def.cal.conv.poly" and "ConvFuncTerm2=:def.cal.conv.cust". The first 
+#' function is a standard polynomial conversion function requiring the L0 term to be converted, and its calibrated output 
+#' replaces the data in the "voltage" column of the data frame. The output will then be passed into the def.cal.conv.cust 
+#' function, and whatever output data frame that function returns will be passed to any successive functions specified in 
+#' arguments ConvFuncTerm3, ConvFuncTerm4, etc. Thus, the user should know what operations each function performs in order to 
+#' create a schema for the final output data frame. Best practice is to first run this code without specifying an output schema 
+#' to verify the outputs and column ordering. Then provide an output schema to relabel the output columns as desired. 
 #' 
-#'    In the typical case where term(s) listed in this set of arguments match L0 term(s) in the input data, their calibrated output will 
-#' overwrite the original L0 data (the columns may be relabeled as specified in the output schema provided in FileSchmData).
-#' However, a term listed in this argument does not need to match any of the L0 terms in the input data, so long the specified 
-#' calibration function knows how to handle this. This may be the case if multiple L0 terms are used to create a single calibrated output.
-#' In this case, no L0 data will be overwritten by the function's output and instead a new column will be appended to the end of the 
-#' output data in the order it appears here, with the column name defaulting to the term name indicated in this argument (but 
-#' it may also be relabeled as specified in the output schema provided in FileSchmData).#' 
-#' 
-#'  
-#' 
+#' If this argument is not included, no calibration conversion will be performed for any L0 data, and the output data will be
+#' identical to the input data, aside from any relabeling of the columns as specified in FileSchmData. 
 #' 
 #'
 #' 7. "NumDayExpiMax=value" (optional), where value contains the max days since expiration that calibration information is
@@ -151,7 +159,7 @@
 #' and "log", even if they are unused in the function. See any def.ucrt.meas.____.R function in the NEONprocIS.cal package for 
 #' explanation of these inputs, but in short, the entire L0 data frame and available calibration information are passed into each 
 #' uncertainty function.
-#' In the typical calse, a term listed in this argument will match a L0 term in the input data. However, it need not match any of 
+#' In the typical case, a term listed in this argument will match a L0 term in the input data. However, it need not match any of 
 #' the L0 terms in the input data, so long as it the specified (custom) uncertainty function knows this and the term matches one 
 #' of the terms listed in the TermFuncConv. 
 #' Custom uncertainty functions may output any amount of variables/columns as needed, but the variable naming is important. 
