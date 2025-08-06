@@ -2,8 +2,7 @@ name: DEV-spn1-update-dag
 on:
   push:
     branches:
- #     - 'master'
-      - 'choim-test-concurr'
+      - 'master'
     paths:
       - 'pipe/spn1/*.yaml'
       - 'pipe/spn1/pipe_list_spn1_development.txt'
