@@ -1,14 +1,20 @@
 ---
 pipeline:
-  name: exo2dissolvedoxygen_step_data_source_kafka
+  name: exo2_hourly_data_source_kafka
 transform:
   image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
   image_pull_secrets:
   - battelleecology-quay-read-all-pull-secret
   env:
     OUT_PATH: /pfs/out
-    SOURCE_TYPE: "exo2dissolvedoxygen_step"
-    LOGLEVEL: info
+    SOURCE_TYPE_1: "exo2_hourly"
+    SOURCE_TYPE_2: "exo2algae_hourly"
+    SOURCE_TYPE_3: "exo2conductivity_hourly"
+    SOURCE_TYPE_4: "exo2dissolvedoxygen_hourly"
+    SOURCE_TYPE_5: "exo2fdom_hourly"
+    SOURCE_TYPE_6: "exo2phorp_hourly"
+    SOURCE_TYPE_7: "exo2turbidity_hourly"
+    LOG_LEVEL: INFO
     YEAR_INDEX: "5"
     MONTH_INDEX: "6"
     DAY_INDEX: "7"
@@ -29,6 +35,18 @@ transform:
   - name: l0-bucket
     env_var: BUCKET_NAME
     key: LO_BUCKET
+  - name: pdr-secret
+    env_var: PDR_HOST
+    key: hostname
+  - name: pdr-secret
+    env_var: PDR_DBNAME
+    key: database
+  - name: pdr-secret
+    env_var: PDR_USER
+    key: username
+  - name: pdr-secret
+    env_var: PDR_PASSWORD
+    key: password
   cmd:
   - sh
   - "-c"
@@ -61,6 +79,8 @@ transform:
       import_trigger_glob="${import_trigger}/*"
     fi
     
+    sites_output=()
+    
     for site_kafka in $import_trigger_glob; do
       site_file=$(basename $site_kafka) # Strip off any path prefix
       site=$(echo $site_file | cut -f 1 -d "." --only-delimited) # Extract the site from site.kafka. Ignore site-only files (e.g. CPER vs. CPER.kafka)
@@ -81,20 +101,34 @@ transform:
       
       # Get "current data" - data that came in on the specified day, which is the same day it was measured
       # Note: We cannot use the --removeoffset flag on the kafka loader (which removes the offsets from the filenames. This will often violate the Pachyderm requirement that different datums cannot write the same file)
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str --only current --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_1 -D "$OUT_PATH/${SOURCE_TYPE_1/_hourly/}" -d $date_str --only current --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_2 -D "$OUT_PATH/${SOURCE_TYPE_2/_hourly/}" -d $date_str --only current --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_3 -D "$OUT_PATH/${SOURCE_TYPE_3/_hourly/}" -d $date_str --only current --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_4 -D "$OUT_PATH/${SOURCE_TYPE_4/_hourly/}" -d $date_str --only current --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_5 -D "$OUT_PATH/${SOURCE_TYPE_5/_hourly/}" -d $date_str --only current --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_6 -D "$OUT_PATH/${SOURCE_TYPE_6/_hourly/}" -d $date_str --only current --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_7 -D "$OUT_PATH/${SOURCE_TYPE_7/_hourly/}" -d $date_str --only current --consumer client.rack=$zone
       
       # Get "non-current data" - data that came in on the specified day, which is NOT the same day it was measured
       date_str_1=$(date +%Y-%m-%d -d "$date_str + 1 day")
-      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE -D "$OUT_PATH/$SOURCE_TYPE" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_1 -D "$OUT_PATH/${SOURCE_TYPE_1/_hourly/}" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_2 -D "$OUT_PATH/${SOURCE_TYPE_2/_hourly/}" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_3 -D "$OUT_PATH/${SOURCE_TYPE_3/_hourly/}" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_4 -D "$OUT_PATH/${SOURCE_TYPE_4/_hourly/}" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_5 -D "$OUT_PATH/${SOURCE_TYPE_5/_hourly/}" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_6 -D "$OUT_PATH/${SOURCE_TYPE_6/_hourly/}" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
+      ./extract-kafka-sensor.py -s $site -S $SOURCE_TYPE_7 -D "$OUT_PATH/${SOURCE_TYPE_7/_hourly/}" -d $date_str_1 --only noncurrent --consumer client.rack=$zone
       
+      sites_output+=($site)
+
     done
     
     # Upload L0 files to bucket, compacting with any existing file with the same name
-    if [[ -d "$OUT_PATH/$SOURCE_TYPE" ]]; then
+    if [[ -d "$OUT_PATH/${SOURCE_TYPE_1/_hourly/}" || -d "$OUT_PATH/${SOURCE_TYPE_2/_hourly/}" || -d "$OUT_PATH/${SOURCE_TYPE_3/_hourly/}" || -d "$OUT_PATH/${SOURCE_TYPE_4/_hourly/}" || -d "$OUT_PATH/${SOURCE_TYPE_5/_hourly/}" || -d "$OUT_PATH/${SOURCE_TYPE_6/_hourly/}" || -d "$OUT_PATH/${SOURCE_TYPE_7/_hourly/}" ]]; then
       linkdir=$(mktemp -d)
       shopt -s globstar
       out_parquet_glob="${OUT_PATH}/**/*.parquet"
-      # /pfs/out/exo2dissolvedoxygen_step/2023/01/01/12345/data/file.parquet
+      # /pfs/out/exo2/2023/01/01/12345/data/file.parquet
       echo "Linking output files to ${linkdir}"
       # set -x # Uncomment for debugging
       for f in $out_parquet_glob; do
@@ -106,10 +140,10 @@ transform:
         fday="${BASH_REMATCH[4]}"
         fsourceid="${BASH_REMATCH[5]}"
         fname="${BASH_REMATCH[6]}"
-        # fname_out="${fsourcetype}_${fsourceid}_${fyear}-${fmonth}-${fday}.parquet"  # Remove offsets from the filename
+        fname_out="${fname/_hourly/}" # Remove "_hourly" from output file names
         outdir="${linkdir}/v2/${fsourcetype}/ms=${fyear}-${fmonth}/source_id=${fsourceid}"
         mkdir -p "${outdir}"
-        ln -s "${f}" "${outdir}/${fname}"
+        ln -s "${f}" "${outdir}/${fname_out}"
         
       done
       
@@ -123,9 +157,9 @@ transform:
 input:
   pfs:
     name: import_trigger
-    repo: exo2_step_kafka_cron_daily_and_date_control
+    repo: exo2_cron_daily_and_date_control
     # Must be datum by day (e.g. /SOURCE_TYPE/*/*/*) or by day/site (e.g. /SOURCE_TYPE/*/*/*/*)
-    glob: "/exo2_step/*/*/*"
+    glob: "/exo2_buoy/*/*/*"
 parallelism_spec:
   constant: 3
 autoscaling: true
