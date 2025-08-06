@@ -1,4 +1,4 @@
-name: Parallel-Jobs-DEV-nr01-site-list
+name: DEV-nr01-site-list
 on:
   push:
     branches:

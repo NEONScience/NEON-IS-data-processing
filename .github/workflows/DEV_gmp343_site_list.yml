@@ -1,4 +1,4 @@
-name: Parallel-Jobs-DEV-gmp343-site-list
+name: DEV-gmp343-site-list
 on:
   push:
     branches:
@@ -9,10 +9,8 @@ on:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
   
 # Workflow-level concurrency
-env:
-      SOURCE_TYPE: "gmp343"
 concurrency: 
-  group:${{
+  group: ${{
       contains(github.workflow, 'update-dag') ||
       contains(github.workflow, 'site-list') && 'operations-queue'
     || github.workflow

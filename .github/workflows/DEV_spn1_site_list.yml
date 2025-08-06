@@ -1,4 +1,4 @@
-name: Parallel-Jobs-DEV-spn1-site-list
+name: DEV-spn1-site-list
 on:
   push:
     branches:
