@@ -14,7 +14,7 @@ concurrency:
   group: ${{
       contains(github.workflow, 'update-dag') ||
       contains(github.workflow, 'site-list') && 'operations-queue' 
-    || github.workflow-github.run_id 
+    || github.workflow
     }}
   cancel-in-progress: false  # Queue them up, don't cancel
 jobs:
