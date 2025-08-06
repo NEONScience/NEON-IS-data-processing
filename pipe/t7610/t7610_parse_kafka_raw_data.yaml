@@ -2,18 +2,15 @@
 pipeline:
   name: t7610_parse_kafka_raw_data
 transform:
-  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:v4.11.0
+  image: us-central1-docker.pkg.dev/neon-shared-service/bei/neon-avro-kafka-loader:sha-163cfc3
   env:
-    # if use default PARSED_START_INDEX and PARSED_END_INDEX, parse all elements in parse_field
-    # if use default for FIELD_START_INDEX and FIELD_END_INDEX,
-    #   skip first 3 fields (source_id, site_id, readout_time) in parsed schema
     OUT_PATH: /pfs/out
     RELATIVE_PATH_INDEX: "4"
     LOG_LEVEL: DEBUG 
     UPDATE_TRIGGER_TABLE: "True"
     SOURCE_TYPE: "t7610_raw"
-    PARSE_FIELD: "ethernet_output"
-    PARSED_START_INDEX: "1" # skip first element 'time' in parse_field for parsing
+    PARSE_FIELD: ""
+    PARSED_START_INDEX: "1"
     PARSED_SCHEMA_PATH: /usr/src/app/parsed-schemas/t7610/t7610.avsc
   secrets:
   - name: l0-bucket
