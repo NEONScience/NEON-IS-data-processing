@@ -9,11 +9,12 @@ on:
 
 # Workflow-level concurrency
 concurrency: 
-  group: ${{
-      contains(github.workflow, 'update-dag') ||
-      contains(github.workflow, 'site-list') && 'operations-queue' 
-    || github.workflow 
-    }}
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # ${{
+  #     contains(github.workflow, 'update-dag') ||
+  #     contains(github.workflow, 'site-list') && 'operations-queue' 
+  #   || github.workflow
+  #   }}
   cancel-in-progress: false  # Queue them up, don't cancel
 
 jobs:
