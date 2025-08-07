@@ -85,17 +85,20 @@ input:
     repo: t7610_data_source_kafka
     glob: /t7610_raw/*/*/*/*
 parallelism_spec:
-  constant: 5
+  constant: 3
 autoscaling: true
 resource_requests:
-  memory: 5G
-  cpu: 1.8
+  memory: 300M
+  cpu: 1.6
 resource_limits:
-  memory: 7G
-  cpu: 3
+  memory: 1.5G
+  cpu: 2
 sidecar_resource_requests:
-  memory: 3G
+  memory: 2G
   cpu: 0.5
+sidecar_resource_limits:
+  memory: 4Gi
+  cpu: 1.2
 datum_set_spec:
   number: 1
 scheduling_spec:
