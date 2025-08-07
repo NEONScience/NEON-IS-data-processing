@@ -1,11 +1,11 @@
-name: "Run IS qaqc package unit tests"
+name: "Run IS base package unit tests"
 
 on:
   push:
     branches:
      - 'master'
     paths:
-      - 'pack/NEONprocIS.qaqc/**'
+      - 'pack/NEONprocIS.base/**'
       
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
@@ -26,9 +26,9 @@ env:
   # IS package name
   MODULE_BASE_NAME: NEONprocIS.base
   MODULE_BASE_PATH: ./pack/NEONprocIS.base
-  MODULE_PATH: ./pack/NEONprocIS.qaqc
-  MODULE_NAME: NEONprocIS.qaqc
-  IMAGE_NAME: neon-is-pack-qaqc-r
+  MODULE_NAME: NEONprocIS.base
+  MODULE_PATH: ./pack/NEONprocIS.base
+  IMAGE_NAME: neon-is-pack-base-r
 
 jobs:
   run-unit-test:
@@ -75,10 +75,8 @@ jobs:
           # Relative path under $GITHUB_WORKSPACE to place the repository
           path: './avro'
 
-      # - name: Get short SHA
-      #   run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Get short SHA
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Run IS ${{ env.MODULE_NAME }} unit tests
         uses: ./.github/actions/run-IS-unit-tests
-        # with:
-        #     image-tag: "${short_sha}"
