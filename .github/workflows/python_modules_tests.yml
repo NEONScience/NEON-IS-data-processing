@@ -28,7 +28,7 @@ jobs:
           psycopg2-binary==2.9.5
           pyarrow==11.0.0
           pyfakefs==5.1.0
-          pylint==2.17.0
+          pylint==3.3.7
           pytest==7.2.2
           python-eml==0.0.2
           PyYAML==6.0
