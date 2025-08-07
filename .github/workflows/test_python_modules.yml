@@ -45,5 +45,4 @@ jobs:
           output: file
 
       - name: Add Coverage to Summary
-        shell: bash
         run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
