@@ -1,4 +1,4 @@
-name: Run Python Modules Tests
+name: Test-python-modules
 
 on:
   push:
