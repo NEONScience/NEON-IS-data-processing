@@ -101,17 +101,16 @@
 #' explanation of these inputs, but in short, the entire input data frame and available calibration information and additional 
 #' metadata (see the PathMeta argument below) are passed into each calibration function.
 #' 
-#'    In the typical case where term(s) listed in this set of arguments match L0 term(s) in the input data and standard 
-#' calibration functions are used (such as the def.cal.conv.poly series), the calibrated output will overwrite the 
+#'    In the typical case where standard calibration functions are used (such as the def.cal.conv.poly series)
+#' and term(s) listed in this set of arguments match L0 term(s) in the input data, the calibrated output will overwrite the 
 #' original L0 data (the columns may be relabeled as specified in the output schema provided in FileSchmData). 
 #' However, if the L0 terms are desired to be retained, or there is a special case where a 
 #' "calibrated" output is generated without any L0 terms, the ConvFuncTermX argument need not specify any L0 term(s), or the
-#' specified L0 term(s) need not match any terms in the L0 data, so long as the specified calibration function knows 
-#' how to handle this. (Note that in many calibration functions, the L0 term must be indicated in order to retrieve the 
-#' applicable calibration coefficients used in the function.) The calibrated output data frame is entirely 
+#' specified L0 term(s) need not match any terms in the L0 data, so long as the specified (custom) calibration function knows 
+#' how to handle this. The calibrated output data frame is entirely 
 #' dependent on the transformations that each calibration function performs on the input data frame, performed in sequence 
 #' according to the ConvFuncTermX arguments. For example, consider two ConvFuncTermX arguments
-#' specified as follows: "ConvFuncTerm1=voltage:def.cal.conv.poly" and "ConvFuncTerm2=:def.cal.conv.cust". The first 
+#' specified as follows: "ConvFuncTerm1=def.cal.conv.poly:voltage" and "ConvFuncTerm2=def.cal.conv.cust:". The first 
 #' function is a standard polynomial conversion function requiring the L0 term to be converted, and its calibrated output 
 #' replaces the data in the "voltage" column of the data frame. The output will then be passed into the def.cal.conv.cust 
 #' function, and whatever output data frame that function returns will be passed to any successive functions specified in 
@@ -144,6 +143,7 @@
 #' expected subfolders in the calibration directory. If no subfolder exists matching the term names here, the valid
 #' calibration flag will be 1, and the suspect calibration flag will be -1.
 #'
+#'Make this UcrtFuncTermX
 #' 9. "TermFuncUcrt=value" (optional), where value contains the combination of the L0 term and the associated uncertainty 
 #' function to use within the NEONprocIS.cal package to compute individual measurement uncertainty. The argument is formatted 
 #' as term:functionMeas,functionFdas|term:functionMeas,functionFdas... where term is the L0 term, functionMeas is the function 
@@ -317,7 +317,7 @@ Para <-
     NameParaOptn = c(
       "FileSchmData",
       "FileSchmQf",
-      "TermFuncConv",
+      base::paste0("ConvFuncTerm",1:100),
       "NumDayExpiMax",
       "TermQf",
       "TermFuncUcrt",
@@ -326,7 +326,6 @@ Para <-
       "DirSubCopy"
     ),
     ValuParaOptn = base::list(
-      TermFuncConv = NULL,
       TermQf = NULL,
       TermFuncUcrt = NULL,
       NumDayExpiMax = NA,
@@ -363,6 +362,41 @@ if (!base::is.null(Para$FileSchmQf)) {
 } else {
   SchmQf <- NULL
 }
+
+
+# Parse the terms and associated statistics to compute 
+nameParaConv <- base::names(Para)[names(Para) %in% base::paste0("ConvFuncTerm",1:100)]
+if(base::length(namePara > 0)){
+  spltConv <- Para[nameParaConv]
+  FuncConv <- base::lapply(spltConv,
+                           FUN=function(argSplt){
+                             func <- argSplt[1]
+                             var <- setdiff(utils::tail(x=argSplt,n=-1),func)
+                             if (base::length(var) == 0){
+                               var<-NA
+                             } else {
+                               var <- base::paste0(var,collapse="|")
+                             }
+                             return(base::data.frame(FuncConv=func,var=var))
+                           })
+  FuncConv <- base::do.call(rbind,FuncConv)
+  log$debug(base::paste0(
+    'Functions and associated terms to calibrate: ',
+    base::paste0(apply(as.matrix(FuncConv),1,base::paste0,collapse=':'), collapse = ', ')
+  ))
+  
+} else {
+  FuncConv <- NULL
+  log$debug('Functions and associated terms to calibrate: None')
+}
+
+
+
+############ START HERE ##############
+
+
+
+
 
 # Determine the calibration function to be used for each converted term
 if(!base::is.null(Para$TermFuncConv) && 
