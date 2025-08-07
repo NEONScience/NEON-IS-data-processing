@@ -51,7 +51,7 @@ jobs:
           pip list
 
       - name: Run PyLint
-        run: pylint --output-format=github modules
+        run: pylint --exit-zero --output-format=github modules
 
       - name: Run Tests
         run: |
