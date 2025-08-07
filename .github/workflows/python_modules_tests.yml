@@ -50,6 +50,9 @@ jobs:
           pip install -r requirements-test.txt
           pip list
 
+      - name: Run PyLint
+        run: pylint --output-format=github modules
+
       - name: Run Tests
         run: |
           cd modules
@@ -62,7 +65,7 @@ jobs:
           filename: modules/coverage.xml
           badge: true
           format: markdown
-          output: both
+          output: file
 
       - name: Add Coverage to Summary
         shell: bash
