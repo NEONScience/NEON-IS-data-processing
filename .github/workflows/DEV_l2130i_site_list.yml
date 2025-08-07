@@ -21,8 +21,8 @@ env:
   # GCP_PROVIDER:  ${{ vars.SHARED_WIF_PROVIDER }}
   # GCP_SERVICE_ACCOUNT: ${{ vars.SHARED_WIF_SERVICE_ACCOUNT }}
   # # Use docker.io for Docker Hub if empty
-  # REGISTRY: ghcr.io
-  # REPO_NAME: neon-is-data-processing
+  REGISTRY: ghcr.io
+  REPO_NAME: neon-is-data-processing
   # IS package name
   MODULE_BASE_NAME: NEONprocIS.base
   MODULE_BASE_PATH: ./pack/NEONprocIS.base
