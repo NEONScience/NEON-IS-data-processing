@@ -1,9 +1,9 @@
 name: "Run IS package unit tests"
 description: "Run R unit tests on IS package"
 
-inputs:
-  image-tag:
-    required: true
+# inputs:
+#   image-tag:
+#     required: true
 
 runs:
    using: "composite"
