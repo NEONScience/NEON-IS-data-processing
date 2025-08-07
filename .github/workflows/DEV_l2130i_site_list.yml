@@ -10,11 +10,11 @@ on:
   workflow_dispatch: {} # Allows trigger of workflow from web interface
 
 env:
-  # GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
-  # # Use github and google registries
-  # GHCR_REGISTRY: ghcr.io
-  # # GHCR_NS, i.e, NEONSciene, in lowercase
-  # # GHCR_NS: ${{ github.repository_owner }}
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}
+  # Use github and google registries
+  GHCR_REGISTRY: ghcr.io
+  # GHCR_NS, i.e, NEONSciene, in lowercase
+  # GHCR_NS: ${{ github.repository_owner }}
   # GHCR_NS: ${{ vars.SHARED_WIF_REPO }}
   # GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
   # GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
