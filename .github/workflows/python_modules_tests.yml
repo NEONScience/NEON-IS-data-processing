@@ -2,7 +2,13 @@ name: Run Python Modules Tests
 
 on:
   push:
-    branches: [ jw-python-module-tests ]
+    branches:
+      - 'jw-python-module-tests'
+  # pull_request:
+  #   branches:
+  #     - 'master'
+  #   paths:
+  #     - 'modules/**'
 
 jobs:
   run-python-modules-tests:
