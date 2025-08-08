@@ -14,7 +14,7 @@
 #'    4. lower ID if multiple cals wtih same expiration dates in #3
 #' Note that calibrations with a valid date range beginning after the date range of interest and
 #' calibrations that are expired more than their max allowable days since expiration are treated
-#' as if they don't exist. Data points are turned to NA if no valid or expired valibration is found.
+#' as if they don't exist. Data points are turned to NA if no valid or expired calibration is found.
 #' Quality flags are output indicating whether an expired calibration was used.
 #'
 #' General code workflow:

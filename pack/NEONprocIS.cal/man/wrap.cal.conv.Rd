@@ -14,15 +14,16 @@ The data frame in each list element holds
 information about the calibration files and time periods that apply to the variable, as returned 
 from NEONprocIS.cal::def.cal.slct. See documentation for that function.}
 
-\item{FuncConv}{A data frame of the terms/variables to convert and the function to convert 
-them with. Columns include:\cr
-\code{var} Character. The variable in data to apply calibration to. If this variable does not 
-exist in the data, it must be created by the associated calibration function in FuncConv. 
-ENABLE MULTIPLE VARS TO BE INDICATED HERE FOR PRODUCTION WITH A SINGLE FUNCTION CALL.\cr
-\code{FuncConv} A character string indicating the calibration conversion function  
-within the NEONprocIS.cal package that should be used. For most NEON data products, this will be 
-"def.cal.conv.poly". Note that any alternative function must accept the same arguments as 
-def.cal.conv.poly, even if they are unused. See that function for details.}
+\item{FuncConv}{A data frame indicating the calibration functions to apply and (optionally) the 
+L0 terms to apply them to. The columns of the data frame are:
+\code{FuncConv}: Character. The calibration conversion function within the NEONprocIS.cal package . Note that 
+any and all calibration functions specified here must accept arguments "data", "infoCal", "varCal", "slctCal", 
+"Meta", and "log", even if they are unused in the function. See any def.cal.conv.____.R 
+\code{var}: Character. The name of the variable/term to be calibrated. Typically this will be a single L0 term matching
+a column in the input data frame. However, it can be a term not found in the input data frame, multiple terms separated 
+by pipes (e.g. "resistance|voltage") or no term at all (indicated by an NA). These uncommon cases are acceptable so long 
+as the calibration conversion function is able to handle the case, for example if multiple L0 terms are used to create 
+a single calibrated output. \cr}
 
 \item{Meta}{(optional). A named list (default is an empty list) containing additional metadata to pass to 
 calibration and uncertainty functions. This can contain whatever information might be needed in the
