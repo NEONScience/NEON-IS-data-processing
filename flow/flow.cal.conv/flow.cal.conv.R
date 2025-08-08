@@ -281,9 +281,11 @@
 #     Add datum error routing
 #   Nora Catolico (2023-01-26)
 #     Update dirSubCopy to allow copying of individual files as opposed to the whole directory
-#   Cove Sturtevant (2025-06-19)
+#   Cove Sturtevant (2025-08-10)
 #     Incorporate an optional input to specific directory or file paths to send
 #     in as metadata to specified calibration and uncertainty functions
+#     Refactor to allow greater flexibility in custom functions, like calibrating multiple 
+#       variables in a single function call, creating new variables, etc.
 ##############################################################################################
 options(digits.secs = 3)
 library(foreach)

@@ -70,7 +70,7 @@
 #     variable to be calibrated, and the (unused) argument calSlct
 #   Cove Sturtevant (2025-06-23)
 #     Add unused Meta input to accommodate changes in upstream calibration module
-#   Cove Sturtevant (2025-08-07)
+#   Cove Sturtevant (2025-08-10)
 #     Refactor to loop through applicable calibration files within this function
 ##############################################################################################
 def.cal.conv.poly <- function(data = data.frame(data=base::numeric(0)),

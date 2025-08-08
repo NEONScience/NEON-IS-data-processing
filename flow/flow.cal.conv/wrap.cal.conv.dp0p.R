@@ -208,9 +208,10 @@
 #     Write empty uncertainty_coef json file even if no uncertainty coefs. 
 #   Nora Catolico (2023-01-26)
 #     Update dirSubCopy to allow copying of individual files as opposed to the whole directory
-#   Cove Sturtevant (2025-06-18)
+#   Cove Sturtevant (2025-08-10)
 #     Read in and pass location metadata to calibration routine if present
-#     MORE STUFF
+#     Refactor to allow greater flexibility in custom functions, like calibrating multiple 
+#       variables in a single function call, creating new variables, etc.
 ##############################################################################################
 wrap.cal.conv.dp0p <- function(DirIn,
                                DirOutBase,

@@ -59,7 +59,7 @@
 #     removed DirCal from inputs since the calibration path is now included in calSlct
 #   Cove Sturtevant (2025-06-23)
 #     accept Meta object for passing additional metadata to calibration functions
-#   Cove Sturtevant (2025-08-07)
+#   Cove Sturtevant (2025-08-10)
 #     Refactor to loop through applicable calibration files within individual cal funcs
 ##############################################################################################
 wrap.cal.conv <- function(data,
