@@ -75,6 +75,14 @@ runs:
       - name: Run ${{ env.MODULE_NAME }} unit test coverage using covr package
         shell: Rscript {0}
         run: |
+          library(dplyr)
+          library(arrow)
+          library(jsonlite)
+          library(base)
+          library(utils)
+          library(rlang)
+          library(stringr)
+          library(covr)
           # Install NEONprocIS.base
           devtools::install("${{ env.MODULE_BASE_PATH }}")
           library("${{ env.MODULE_BASE_NAME }}")
@@ -88,13 +96,15 @@ runs:
             devtools::install("${{ env.MODULE_PATH }}")
             library("${{ env.MODULE_NAME }}")
           }
-          library(dplyr)
-          library(arrow)
-          library(jsonlite)
-          library(base)
-          library(utils)
-          library(rlang)
-          library(stringr)
           devtools::test(pkg="${{ env.MODULE_PATH }}")
-          cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")
+          cov <- covr::package_coverage
+          # Generates an interactive HTML report
           covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
+          
+      - name: Upload coverage.html artifact
+        shell: Rscript {0}
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-coverage-report
+          path: coverage.html
+          retention-days: 5 # Adjust retention days as needed
