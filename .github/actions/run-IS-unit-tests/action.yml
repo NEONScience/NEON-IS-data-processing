@@ -96,5 +96,5 @@ runs:
           library(rlang)
           library(stringr)
           devtools::test(pkg="${{ env.MODULE_PATH }}")
-          # cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")
-          # covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
+          cov <- covr::package_coverage(path="${{ env.MODULE_PATH }}")
+          covr::report(cov, file="${{ env.MODULE_NAME }}-coverage.html")
