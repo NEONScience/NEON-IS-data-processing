@@ -9,6 +9,7 @@ on:
   #     - 'master'
   #   paths:
   #     - 'modules/**'
+  workflow_dispatch:
 
 jobs:
   run-python-modules-tests:
