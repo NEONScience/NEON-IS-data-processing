@@ -135,7 +135,7 @@ def.cal.conv.poly <- function(data = data.frame(data=base::numeric(0)),
       
       # If infoCal is NULL, return NA data
       if (is.null(infoCal)) {
-        [setCal] <- as.numeric(NA)
+        dataConvOutIdx[setCal] <- as.numeric(NA)
         next
       }
       
